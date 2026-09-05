@@ -1,0 +1,13 @@
+import type { Metadata } from 'next';
+
+import { PdfMergeTool } from '@/components/pdf-merge-tool';
+
+export const metadata: Metadata = {
+  title: 'Merge PDF',
+  description:
+    'Combine PDF files in your chosen order using a local browser worker.',
+};
+
+export default function MergePdfPage() {
+  return <PdfMergeTool />;
+}

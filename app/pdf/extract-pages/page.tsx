@@ -1,0 +1,12 @@
+import type { Metadata } from 'next';
+
+import { PdfExtractTool } from '@/components/pdf-extract-tool';
+
+export const metadata: Metadata = {
+  title: 'Extract PDF Pages',
+  description: 'Choose PDF pages or ranges and save them as a new local PDF.',
+};
+
+export default function Page() {
+  return <PdfExtractTool />;
+}
