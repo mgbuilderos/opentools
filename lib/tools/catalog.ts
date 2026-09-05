@@ -6,6 +6,7 @@ import { DEVELOPER_DATA_OPERATIONS } from './developer-data-workbench';
 import { DOCUMENT_OPERATIONS } from './document-workbench';
 import { FILE_WORKBENCH_OPERATIONS } from './file-workbench';
 import { FINANCE_OPERATIONS } from './finance-business-workbench';
+import { LIFE_ADMIN_OPERATIONS } from './life-admin-workbench';
 import { MATH_OPERATIONS } from './math-workbench';
 import { PRODUCTIVITY_OPERATIONS } from './productivity-workbench';
 import { SCIENCE_OPERATIONS } from './science-education-workbench';
@@ -607,6 +608,32 @@ export const publicTools: ToolManifest[] = [
     },
     owner: 'platform-foundation',
   },
+  {
+    id: 'life-admin-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'India & life-admin workbench',
+    shortDescription:
+      'Mask identifiers, check formats, estimate household costs, and plan dates.',
+    category: 'Life Admin',
+    aliases: LIFE_ADMIN_OPERATIONS.map((operation) => operation.name),
+    jobs: LIFE_ADMIN_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries(
+      '/life-admin/workbench',
+      LIFE_ADMIN_OPERATIONS,
+    ),
+    href: '/life-admin/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'life-admin.identifier.mask',
+        'life-admin.format.check',
+        'life-admin.plan.calculate',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
 ];
 
 export interface ToolGroup {
@@ -620,7 +647,8 @@ export interface ToolGroup {
     | 'science-education'
     | 'finance-business'
     | 'web-seo'
-    | 'creator-social';
+    | 'creator-social'
+    | 'life-admin';
   name: string;
   shortDescription: string;
   toolIds: string[];
@@ -710,6 +738,13 @@ export const toolGroups: ToolGroup[] = [
     name: 'Creator & social',
     shortDescription: 'Content formatting, feeds, planning, and creator math.',
     toolIds: ['creator-workbench'],
+  },
+  {
+    id: 'life-admin',
+    name: 'India & life admin',
+    shortDescription:
+      'Everyday privacy, household, travel, payment, and date helpers.',
+    toolIds: ['life-admin-workbench'],
   },
 ];
 

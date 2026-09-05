@@ -8,6 +8,7 @@ import {
   FlaskConical,
   Globe2,
   Image as ImageIcon,
+  Landmark,
   LockKeyhole,
   Megaphone,
   Search,
@@ -34,6 +35,7 @@ const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   'finance-business': BriefcaseBusiness,
   'web-seo': Globe2,
   'creator-social': Megaphone,
+  'life-admin': Landmark,
 };
 
 export function HomeWorkspace() {

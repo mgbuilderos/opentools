@@ -21,7 +21,8 @@ export interface ToolManifest {
     | 'Creator'
     | 'Document'
     | 'Science'
-    | 'Finance';
+    | 'Finance'
+    | 'Life Admin';
   aliases: string[];
   jobs: string[];
   searchEntries?: Array<{

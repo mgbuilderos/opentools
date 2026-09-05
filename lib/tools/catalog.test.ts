@@ -6,7 +6,7 @@ import { publicTools, searchTools, toolGroups, toolsForGroup } from './catalog';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
-    expect(publicTools).toHaveLength(28);
+    expect(publicTools).toHaveLength(29);
     const ids = new Set<string>();
     const routes = new Set<string>();
 
@@ -129,6 +129,12 @@ describe('public canary catalog', () => {
     expect(searchTools('loan EMI calculator')[0]?.href).toBe(
       '/finance/workbench?tool=loan-emi-calculator',
     );
+    expect(
+      searchTools('Aadhaar masking tool').map((tool) => tool.id),
+    ).toContain('life-admin-workbench');
+    expect(searchTools('Aadhaar masking tool')[0]?.href).toBe(
+      '/life-admin/workbench?tool=aadhaar-masking-tool',
+    );
   });
 
   it('assigns every working tool to exactly one compact workspace', () => {
@@ -136,7 +142,7 @@ describe('public canary catalog', () => {
       toolsForGroup(group).map((tool) => tool.id),
     );
 
-    expect(toolGroups).toHaveLength(10);
+    expect(toolGroups).toHaveLength(11);
     expect(assignedIds).toHaveLength(publicTools.length);
     expect(new Set(assignedIds).size).toBe(publicTools.length);
     expect(assignedIds.toSorted()).toEqual(
@@ -148,7 +154,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(495);
+    expect(entries).toHaveLength(518);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

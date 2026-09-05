@@ -16,6 +16,7 @@ import {
   Grid2X2,
   Globe2,
   Image as ImageIcon,
+  Landmark,
   Moon,
   Megaphone,
   Search,
@@ -43,6 +44,7 @@ const categoryIcons = {
   Document: FileText,
   Science: FlaskConical,
   Finance: BriefcaseBusiness,
+  'Life Admin': Landmark,
 };
 
 export function AppShell({
