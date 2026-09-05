@@ -1,0 +1,13 @@
+import type { Metadata } from 'next';
+
+import { WebWorkbenchTool } from '@/components/web-workbench-tool';
+
+export const metadata: Metadata = {
+  title: 'Web & SEO Workbench',
+  description:
+    'Generate and inspect metadata, URLs, sitemaps, CSS, HTML, and accessibility signals locally.',
+};
+
+export default function Page() {
+  return <WebWorkbenchTool />;
+}

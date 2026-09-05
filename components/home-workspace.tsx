@@ -1,10 +1,15 @@
 import {
   ArrowRight,
   Braces,
+  BriefcaseBusiness,
   Calculator,
   FileStack,
+  FileText,
+  FlaskConical,
+  Globe2,
   Image as ImageIcon,
   LockKeyhole,
+  Megaphone,
   Search,
   Type,
   Workflow,
@@ -24,6 +29,11 @@ const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   'text-data': Type,
   'developer-files': Braces,
   calculators: Calculator,
+  'documents-office': FileText,
+  'science-education': FlaskConical,
+  'finance-business': BriefcaseBusiness,
+  'web-seo': Globe2,
+  'creator-social': Megaphone,
 };
 
 export function HomeWorkspace() {

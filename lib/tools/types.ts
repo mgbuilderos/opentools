@@ -3,6 +3,7 @@ export type ExecutionMode = 'local-js' | 'local-wasm';
 
 export interface ToolManifest {
   id: string;
+  resultId?: string;
   version: string;
   status: ToolStatus;
   name: string;
@@ -15,9 +16,20 @@ export interface ToolManifest {
     | 'Developer'
     | 'File'
     | 'Math'
-    | 'Date';
+    | 'Date'
+    | 'Web'
+    | 'Creator'
+    | 'Document'
+    | 'Science'
+    | 'Finance';
   aliases: string[];
   jobs: string[];
+  searchEntries?: Array<{
+    id: string;
+    name: string;
+    description: string;
+    href: string;
+  }>;
   href: string;
   execution: {
     mode: ExecutionMode;

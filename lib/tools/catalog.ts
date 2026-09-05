@@ -1,4 +1,30 @@
 import type { ToolManifest } from './types';
+import { CREATOR_OPERATIONS } from './creator-workbench';
+import { DATE_OPERATIONS } from './date-workbench';
+import { ADVANCED_DEVELOPER_OPERATIONS } from './developer-advanced-workbench';
+import { DEVELOPER_DATA_OPERATIONS } from './developer-data-workbench';
+import { DOCUMENT_OPERATIONS } from './document-workbench';
+import { FILE_WORKBENCH_OPERATIONS } from './file-workbench';
+import { FINANCE_OPERATIONS } from './finance-business-workbench';
+import { MATH_OPERATIONS } from './math-workbench';
+import { PRODUCTIVITY_OPERATIONS } from './productivity-workbench';
+import { SCIENCE_OPERATIONS } from './science-education-workbench';
+import { SPREADSHEET_OPERATIONS } from './spreadsheet-workbench';
+import { TEXT_OPERATIONS } from './text-workbench';
+import { WEB_OPERATIONS } from './web-workbench';
+import { WRITING_OPERATIONS } from './writing-workbench';
+
+function searchEntries(
+  href: string,
+  operations: readonly { id: string; name: string; description: string }[],
+) {
+  return operations.map((operation) => ({
+    id: operation.id,
+    name: operation.name,
+    description: operation.description,
+    href: `${href}?tool=${operation.id}`,
+  }));
+}
 
 export const publicTools: ToolManifest[] = [
   {
@@ -20,6 +46,48 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['text.transform.case'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'text-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Text workbench',
+    shortDescription:
+      'Count, clean, transform, inspect, and translate text locally.',
+    category: 'Text',
+    aliases: TEXT_OPERATIONS.map((operation) => operation.name),
+    jobs: TEXT_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/text/workbench', TEXT_OPERATIONS),
+    href: '/text/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['text.workbench.transform'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'writing-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Writing workbench',
+    shortDescription:
+      'Edit, convert, compare, summarize, structure, and export writing.',
+    category: 'Text',
+    aliases: WRITING_OPERATIONS.map((operation) => operation.name),
+    jobs: WRITING_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/text/writing', WRITING_OPERATIONS),
+    href: '/text/writing',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'text.markup.convert',
+        'text.diff.merge',
+        'text.extractive.summarize',
+      ],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -65,6 +133,25 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['data.csv.parse', 'data.json.serialize'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'spreadsheet-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'CSV & spreadsheet workbench',
+    shortDescription:
+      'Clean, reshape, compare, inspect, and convert tabular data.',
+    category: 'Data',
+    aliases: SPREADSHEET_OPERATIONS.map((operation) => operation.name),
+    jobs: SPREADSHEET_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/data/workbench', SPREADSHEET_OPERATIONS),
+    href: '/data/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['data.table.transform', 'data.table.profile'],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -226,6 +313,83 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'file-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Private file workbench',
+    shortDescription:
+      'Inspect, hash, split, join, rename, encode, and download local files.',
+    category: 'File',
+    aliases: FILE_WORKBENCH_OPERATIONS.map((operation) => operation.name),
+    jobs: FILE_WORKBENCH_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/file/workbench', FILE_WORKBENCH_OPERATIONS),
+    href: '/file/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'file.bytes.inspect',
+        'file.bytes.transform',
+        'file.crypto.digest',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'developer-data-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Developer & data workbench',
+    shortDescription:
+      'Encode, decode, inspect, convert, test, and hash developer data.',
+    category: 'Developer',
+    aliases: DEVELOPER_DATA_OPERATIONS.map((operation) => operation.name),
+    jobs: DEVELOPER_DATA_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries(
+      '/developer/workbench',
+      DEVELOPER_DATA_OPERATIONS,
+    ),
+    href: '/developer/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'developer.data.transform',
+        'developer.regex.bounded',
+        'crypto.digest.text',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'developer-advanced-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Advanced developer workbench',
+    shortDescription:
+      'Inspect JSON, generate secure tokens, calculate networks, and build configs.',
+    category: 'Developer',
+    aliases: ADVANCED_DEVELOPER_OPERATIONS.map((operation) => operation.name),
+    jobs: ADVANCED_DEVELOPER_OPERATIONS.map(
+      (operation) => operation.description,
+    ),
+    searchEntries: searchEntries(
+      '/developer/advanced',
+      ADVANCED_DEVELOPER_OPERATIONS,
+    ),
+    href: '/developer/advanced',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'developer.structured.inspect',
+        'crypto.random.generate',
+        'network.ipv4.calculate',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'percentage-calculator',
     version: '0.1.0-canary',
     status: 'canary',
@@ -238,6 +402,25 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['math.percentage'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'math-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Math & unit workbench',
+    shortDescription:
+      'Arithmetic, statistics, number theory, geometry, and unit conversion.',
+    category: 'Math',
+    aliases: MATH_OPERATIONS.map((operation) => operation.name),
+    jobs: MATH_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/math/workbench', MATH_OPERATIONS),
+    href: '/math/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['math.workbench.calculate', 'units.linear.convert'],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -276,10 +459,168 @@ export const publicTools: ToolManifest[] = [
     },
     owner: 'platform-foundation',
   },
+  {
+    id: 'date-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Date & time workbench',
+    shortDescription:
+      'Calculate dates, workdays, time zones, hours, and timesheets.',
+    category: 'Date',
+    aliases: DATE_OPERATIONS.map((operation) => operation.name),
+    jobs: DATE_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/date/workbench', DATE_OPERATIONS),
+    href: '/date/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['date.calendar.calculate', 'time.zone.format'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'web-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Web & SEO workbench',
+    shortDescription:
+      'Generate and inspect metadata, URLs, CSS, HTML, and SEO assets.',
+    category: 'Web',
+    aliases: WEB_OPERATIONS.map((operation) => operation.name),
+    jobs: WEB_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/web/workbench', WEB_OPERATIONS),
+    href: '/web/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['web.metadata.transform', 'web.css.calculate'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'productivity-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Planning & productivity workbench',
+    shortDescription:
+      'Prioritize, schedule, compare, pick, group, and plan locally.',
+    category: 'Date',
+    aliases: PRODUCTIVITY_OPERATIONS.map((operation) => operation.name),
+    jobs: PRODUCTIVITY_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries(
+      '/productivity/workbench',
+      PRODUCTIVITY_OPERATIONS,
+    ),
+    href: '/productivity/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['productivity.plan', 'productivity.randomize'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'finance-business-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Finance & business workbench',
+    shortDescription:
+      'Transparent borrowing, savings, pricing, budget, and operating scenarios.',
+    category: 'Finance',
+    aliases: FINANCE_OPERATIONS.map((operation) => operation.name),
+    jobs: FINANCE_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/finance/workbench', FINANCE_OPERATIONS),
+    href: '/finance/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'finance.scenario.calculate',
+        'business.metric.calculate',
+        'cashflow.root.solve',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'science-education-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Science & learning workbench',
+    shortDescription:
+      'Transparent formula calculators, study materials, logic, and sets.',
+    category: 'Science',
+    aliases: SCIENCE_OPERATIONS.map((operation) => operation.name),
+    jobs: SCIENCE_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/science/workbench', SCIENCE_OPERATIONS),
+    href: '/science/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'science.formula.calculate',
+        'education.material.structure',
+        'logic.truth-table.evaluate',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'document-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Documents & office workbench',
+    shortDescription:
+      'Draft, calculate, inspect, compare, merge, and download documents.',
+    category: 'Document',
+    aliases: DOCUMENT_OPERATIONS.map((operation) => operation.name),
+    jobs: DOCUMENT_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/documents/workbench', DOCUMENT_OPERATIONS),
+    href: '/documents/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'document.template.render',
+        'document.table.calculate',
+        'document.text.inspect',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'creator-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Creator & social workbench',
+    shortDescription:
+      'Format, plan, measure, and package creator content locally.',
+    category: 'Creator',
+    aliases: CREATOR_OPERATIONS.map((operation) => operation.name),
+    jobs: CREATOR_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/creator/workbench', CREATOR_OPERATIONS),
+    href: '/creator/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['creator.content.transform', 'creator.metrics.calculate'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
 ];
 
 export interface ToolGroup {
-  id: 'pdf' | 'images' | 'text-data' | 'developer-files' | 'calculators';
+  id:
+    | 'pdf'
+    | 'images'
+    | 'text-data'
+    | 'developer-files'
+    | 'calculators'
+    | 'documents-office'
+    | 'science-education'
+    | 'finance-business'
+    | 'web-seo'
+    | 'creator-social';
   name: string;
   shortDescription: string;
   toolIds: string[];
@@ -302,7 +643,14 @@ export const toolGroups: ToolGroup[] = [
     id: 'text-data',
     name: 'Text & data',
     shortDescription: 'Case conversion, JSON, and CSV utilities.',
-    toolIds: ['text-case-converter', 'json-format', 'csv-to-json'],
+    toolIds: [
+      'text-case-converter',
+      'text-workbench',
+      'writing-workbench',
+      'json-format',
+      'csv-to-json',
+      'spreadsheet-workbench',
+    ],
   },
   {
     id: 'developer-files',
@@ -314,13 +662,54 @@ export const toolGroups: ToolGroup[] = [
       'uuid-generator',
       'unix-timestamp',
       'file-hash',
+      'file-workbench',
+      'developer-data-workbench',
+      'developer-advanced-workbench',
     ],
   },
   {
     id: 'calculators',
     name: 'Calculators',
     shortDescription: 'Percentage, date difference, and age.',
-    toolIds: ['percentage-calculator', 'date-difference', 'age-calculator'],
+    toolIds: [
+      'percentage-calculator',
+      'math-workbench',
+      'date-difference',
+      'age-calculator',
+      'date-workbench',
+      'productivity-workbench',
+    ],
+  },
+  {
+    id: 'finance-business',
+    name: 'Finance & business',
+    shortDescription: 'Scenario math for money, pricing, budgets, and metrics.',
+    toolIds: ['finance-business-workbench'],
+  },
+  {
+    id: 'science-education',
+    name: 'Science & education',
+    shortDescription: 'Physics formulas, grades, study aids, logic, and sets.',
+    toolIds: ['science-education-workbench'],
+  },
+  {
+    id: 'documents-office',
+    name: 'Documents & office',
+    shortDescription:
+      'Drafts, templates, mail merge, citations, and comparison.',
+    toolIds: ['document-workbench'],
+  },
+  {
+    id: 'web-seo',
+    name: 'Web & SEO',
+    shortDescription: 'Metadata, URLs, CSS, HTML, and accessibility checks.',
+    toolIds: ['web-workbench'],
+  },
+  {
+    id: 'creator-social',
+    name: 'Creator & social',
+    shortDescription: 'Content formatting, feeds, planning, and creator math.',
+    toolIds: ['creator-workbench'],
   },
 ];
 
@@ -340,27 +729,70 @@ export function searchTools(query: string): ToolManifest[] {
       .filter(Boolean)
       .map(normalizeToken);
   const queryTokens = tokenize(query);
-  if (!queryTokens.length) return publicTools;
+  if (!queryTokens.length)
+    return publicTools.map((tool) => ({ ...tool, resultId: tool.id }));
 
   const tokenMatches = (documentToken: string, queryToken: string) => {
     if (documentToken === queryToken) return true;
-    if (documentToken.length < 3 || queryToken.length < 3) return false;
+    if (documentToken.length < 4 || queryToken.length < 4) return false;
     return (
       documentToken.startsWith(queryToken) ||
       queryToken.startsWith(documentToken)
     );
   };
 
-  return publicTools.filter((tool) => {
-    const documentTokens = tokenize(
-      [tool.name, tool.shortDescription, ...tool.aliases, ...tool.jobs].join(
-        ' ',
-      ),
-    );
-    return queryTokens.every((queryToken) =>
-      documentTokens.some((documentToken) =>
-        tokenMatches(documentToken, queryToken),
-      ),
-    );
-  });
+  const normalizedQuery = query.trim().toLocaleLowerCase('en-US');
+  return publicTools
+    .flatMap((tool) => {
+      const candidates = [
+        {
+          ...tool,
+          resultId: tool.id,
+          scoreText: [
+            tool.name,
+            tool.shortDescription,
+            ...tool.aliases,
+            ...tool.jobs,
+          ].join(' '),
+        },
+        ...(tool.searchEntries ?? []).map((entry) => ({
+          ...tool,
+          resultId: `${tool.id}:${entry.id}`,
+          name: entry.name,
+          shortDescription: entry.description,
+          href: entry.href,
+          scoreText: `${entry.name} ${entry.description}`,
+        })),
+      ];
+      return candidates.flatMap((candidate) => {
+        const documentTokens = tokenize(candidate.scoreText);
+        if (
+          !queryTokens.every((queryToken) =>
+            documentTokens.some((documentToken) =>
+              tokenMatches(documentToken, queryToken),
+            ),
+          )
+        )
+          return [];
+        const normalizedName = candidate.name.toLocaleLowerCase('en-US');
+        const score =
+          normalizedName === normalizedQuery
+            ? 100
+            : normalizedName.startsWith(normalizedQuery)
+              ? 80
+              : queryTokens.every((token) =>
+                    tokenize(candidate.name).includes(token),
+                  )
+                ? 60
+                : candidate.resultId === tool.id
+                  ? 20
+                  : 40;
+        return [{ ...candidate, score }];
+      });
+    })
+    .sort(
+      (left, right) =>
+        right.score - left.score || left.name.localeCompare(right.name),
+    )
+    .slice(0, 20);
 }

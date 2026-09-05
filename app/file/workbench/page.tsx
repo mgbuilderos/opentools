@@ -1,0 +1,13 @@
+import type { Metadata } from 'next';
+
+import { FileWorkbenchTool } from '@/components/file-workbench-tool';
+
+export const metadata: Metadata = {
+  title: 'Private File Workbench',
+  description:
+    'Inspect, hash, split, join, rename, encode, and download files locally in your browser.',
+};
+
+export default function Page() {
+  return <FileWorkbenchTool />;
+}

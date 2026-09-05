@@ -6,7 +6,7 @@ import { publicTools, searchTools, toolGroups, toolsForGroup } from './catalog';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
-    expect(publicTools).toHaveLength(14);
+    expect(publicTools).toHaveLength(28);
     const ids = new Set<string>();
     const routes = new Set<string>();
 
@@ -63,6 +63,72 @@ describe('public canary catalog', () => {
     expect(searchTools('age').map((tool) => tool.id)).not.toContain(
       'pdf-extract',
     );
+    expect(
+      searchTools('morse code translator').map((tool) => tool.id),
+    ).toContain('text-workbench');
+    expect(
+      searchTools('temperature converter').map((tool) => tool.id),
+    ).toContain('math-workbench');
+    expect(searchTools('temperature converter')[0]?.href).toBe(
+      '/math/workbench?tool=temperature-converter',
+    );
+    expect(
+      searchTools('business days calculator').map((tool) => tool.id),
+    ).toContain('date-workbench');
+    expect(searchTools('JWT inspector').map((tool) => tool.id)).toContain(
+      'developer-data-workbench',
+    );
+    expect(searchTools('CIDR calculator').map((tool) => tool.id)).toContain(
+      'developer-advanced-workbench',
+    );
+    expect(searchTools('CIDR calculator')[0]?.href).toBe(
+      '/developer/advanced?tool=cidr-calculator',
+    );
+    expect(searchTools('UTM builder').map((tool) => tool.id)).toContain(
+      'web-workbench',
+    );
+    expect(searchTools('UTM builder')[0]?.href).toBe(
+      '/web/workbench?tool=utm-builder',
+    );
+    expect(searchTools('pivot table').map((tool) => tool.id)).toContain(
+      'spreadsheet-workbench',
+    );
+    expect(searchTools('team generator').map((tool) => tool.id)).toContain(
+      'productivity-workbench',
+    );
+    expect(searchTools('podcast show notes').map((tool) => tool.id)).toContain(
+      'creator-workbench',
+    );
+    expect(searchTools('invoice generator').map((tool) => tool.id)).toContain(
+      'document-workbench',
+    );
+    expect(searchTools('invoice generator')[0]?.href).toBe(
+      '/documents/workbench?tool=invoice-generator',
+    );
+    expect(searchTools('Ohm law calculator').map((tool) => tool.id)).toContain(
+      'science-education-workbench',
+    );
+    expect(searchTools('Ohm law calculator')[0]?.href).toBe(
+      '/science/workbench?tool=ohm-s-law-calculator',
+    );
+    expect(searchTools('Vigenere cipher').map((tool) => tool.id)).toContain(
+      'writing-workbench',
+    );
+    expect(searchTools('Vigenere cipher')[0]?.href).toBe(
+      '/text/writing?tool=vigenere-cipher',
+    );
+    expect(searchTools('file chunk splitter').map((tool) => tool.id)).toContain(
+      'file-workbench',
+    );
+    expect(searchTools('file chunk splitter')[0]?.href).toBe(
+      '/file/workbench?tool=file-chunk-splitter',
+    );
+    expect(searchTools('loan EMI calculator').map((tool) => tool.id)).toContain(
+      'finance-business-workbench',
+    );
+    expect(searchTools('loan EMI calculator')[0]?.href).toBe(
+      '/finance/workbench?tool=loan-emi-calculator',
+    );
   });
 
   it('assigns every working tool to exactly one compact workspace', () => {
@@ -70,11 +136,25 @@ describe('public canary catalog', () => {
       toolsForGroup(group).map((tool) => tool.id),
     );
 
-    expect(toolGroups).toHaveLength(5);
+    expect(toolGroups).toHaveLength(10);
     expect(assignedIds).toHaveLength(publicTools.length);
     expect(new Set(assignedIds).size).toBe(publicTools.length);
     expect(assignedIds.toSorted()).toEqual(
       publicTools.map((tool) => tool.id).toSorted(),
     );
+  });
+
+  it('keeps operation-level search destinations explicit and unique', () => {
+    const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
+    const destinations = entries.map((entry) => entry.href);
+
+    expect(entries).toHaveLength(495);
+    expect(new Set(destinations).size).toBe(entries.length);
+    for (const entry of entries) {
+      expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+      expect(entry.name.length).toBeGreaterThan(2);
+      expect(entry.description.length).toBeGreaterThan(8);
+      expect(entry.href).toMatch(/^\/[a-z0-9/-]+\?tool=[a-z0-9-]+$/);
+    }
   });
 });

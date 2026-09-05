@@ -5,14 +5,19 @@
 import {
   CheckCircle2,
   Braces,
+  BriefcaseBusiness,
   CalendarDays,
   Calculator,
   Database,
   FileKey2,
+  FileText,
+  FlaskConical,
   FileStack,
   Grid2X2,
+  Globe2,
   Image as ImageIcon,
   Moon,
+  Megaphone,
   Search,
   Sun,
   Type,
@@ -33,6 +38,11 @@ const categoryIcons = {
   File: FileKey2,
   Math: Calculator,
   Date: CalendarDays,
+  Web: Globe2,
+  Creator: Megaphone,
+  Document: FileText,
+  Science: FlaskConical,
+  Finance: BriefcaseBusiness,
 };
 
 export function AppShell({
@@ -161,7 +171,7 @@ export function AppShell({
               aria-expanded={searchOpen}
               aria-activedescendant={
                 activeResult
-                  ? `tool-search-result-${activeResult.id}`
+                  ? `tool-search-result-${activeResult.resultId ?? activeResult.id}`
                   : undefined
               }
               className="focus-ring h-11 w-full rounded-xl border bg-muted/70 pl-10 pr-16 text-sm placeholder:text-muted-foreground"
@@ -179,8 +189,8 @@ export function AppShell({
                 {results.length ? (
                   results.map((tool, index) => (
                     <a
-                      key={tool.id}
-                      id={`tool-search-result-${tool.id}`}
+                      key={tool.resultId ?? tool.id}
+                      id={`tool-search-result-${tool.resultId ?? tool.id}`}
                       href={tool.href}
                       role="option"
                       aria-selected={activeResultIndex === index}
