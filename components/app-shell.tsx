@@ -1,5 +1,7 @@
 'use client';
 
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- A styled WAI-ARIA combobox requires a popup listbox; native select/datalist cannot provide this search-and-navigation interaction. */
+
 import {
   CheckCircle2,
   Braces,
@@ -15,11 +17,12 @@ import {
   Sun,
   Type,
 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { publicTools, searchTools } from '@/lib/tools/catalog';
+import { searchTools, toolGroups, toolsForGroup } from '@/lib/tools/catalog';
+import { moveSearchSelection } from '@/lib/tools/search-navigation';
 
 const categoryIcons = {
   Text: Type,
@@ -41,8 +44,12 @@ export function AppShell({
 }) {
   const searchRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
+  const [activeResultIndex, setActiveResultIndex] = useState(-1);
   const [isDark, setIsDark] = useState(false);
   const results = useMemo(() => searchTools(query), [query]);
+  const searchOpen = query.length > 0;
+  const activeResult =
+    activeResultIndex >= 0 ? results[activeResultIndex] : undefined;
 
   useEffect(() => {
     const themeFrame = requestAnimationFrame(() => {
@@ -80,6 +87,32 @@ export function AppShell({
     setIsDark(next);
   };
 
+  const handleSearchKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape' && searchOpen) {
+      event.preventDefault();
+      setQuery('');
+      setActiveResultIndex(-1);
+      return;
+    }
+
+    if (!results.length) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveResultIndex((current) =>
+        moveSearchSelection(current, results.length, 'next'),
+      );
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveResultIndex((current) =>
+        moveSearchSelection(current, results.length, 'previous'),
+      );
+    } else if (event.key === 'Enter' && activeResult) {
+      event.preventDefault();
+      window.location.assign(activeResult.href);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <a
@@ -114,11 +147,23 @@ export function AppShell({
             <input
               ref={searchRef}
               type="search"
+              role="combobox"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setActiveResultIndex(-1);
+              }}
+              onKeyDown={handleSearchKeyDown}
               placeholder="What do you need to do?"
               aria-label="Search tools"
+              aria-autocomplete="list"
               aria-controls="tool-search-results"
+              aria-expanded={searchOpen}
+              aria-activedescendant={
+                activeResult
+                  ? `tool-search-result-${activeResult.id}`
+                  : undefined
+              }
               className="focus-ring h-11 w-full rounded-xl border bg-muted/70 pl-10 pr-16 text-sm placeholder:text-muted-foreground"
             />
             <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border bg-background px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:block">
@@ -127,14 +172,21 @@ export function AppShell({
             {query ? (
               <div
                 id="tool-search-results"
+                role="listbox"
+                aria-label="Matching tools"
                 className="absolute inset-x-0 top-[calc(100%+8px)] rounded-xl border bg-popover p-2 shadow-[0_18px_50px_rgb(0_0_0/10%)]"
               >
                 {results.length ? (
-                  results.map((tool) => (
+                  results.map((tool, index) => (
                     <a
                       key={tool.id}
+                      id={`tool-search-result-${tool.id}`}
                       href={tool.href}
-                      className="focus-ring flex w-full items-center justify-between rounded-lg px-3 py-3 text-left hover:bg-muted"
+                      role="option"
+                      aria-selected={activeResultIndex === index}
+                      onFocus={() => setActiveResultIndex(index)}
+                      onMouseEnter={() => setActiveResultIndex(index)}
+                      className="focus-ring flex w-full items-center justify-between rounded-lg px-3 py-3 text-left hover:bg-muted aria-selected:bg-muted"
                     >
                       <span>
                         <span className="block text-sm font-semibold">
@@ -161,6 +213,11 @@ export function AppShell({
                 )}
               </div>
             ) : null}
+            <p className="sr-only" aria-live="polite">
+              {query
+                ? `${results.length} working ${results.length === 1 ? 'tool' : 'tools'} found.`
+                : ''}
+            </p>
           </div>
 
           <Button
@@ -178,41 +235,53 @@ export function AppShell({
       <main className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[248px_minmax(0,1fr)]">
         <aside className="hidden min-h-[calc(100vh-64px)] border-r px-5 py-8 lg:block">
           <nav aria-label="Working tools">
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Tools
+            <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              Tool workspaces
             </p>
-            <div className="mt-3 space-y-1">
-              {publicTools.map((tool) => {
-                const active = tool.id === currentToolId;
-                const Icon = categoryIcons[tool.category];
-                return (
-                  <a
-                    key={tool.id}
-                    href={tool.href}
-                    aria-current={active ? 'page' : undefined}
-                    className={`focus-ring flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold ${
-                      active
-                        ? 'bg-foreground text-background'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
+            <div className="mt-4 space-y-5">
+              {toolGroups.map((group) => (
+                <section key={group.id} aria-labelledby={`nav-${group.id}`}>
+                  <h2
+                    id={`nav-${group.id}`}
+                    className="px-2 text-[11px] font-semibold text-foreground"
                   >
-                    <span
-                      className={`grid size-7 place-items-center rounded-lg ${
-                        active ? 'bg-background/12' : 'bg-muted'
-                      }`}
-                    >
-                      <Icon aria-hidden="true" className="size-3.5" />
-                    </span>
-                    {tool.name.replace(' converter', '')}
-                  </a>
-                );
-              })}
+                    {group.name}
+                  </h2>
+                  <div className="mt-1 space-y-0.5">
+                    {toolsForGroup(group).map((tool) => {
+                      const active = tool.id === currentToolId;
+                      const Icon = categoryIcons[tool.category];
+                      return (
+                        <a
+                          key={tool.id}
+                          href={tool.href}
+                          aria-label={tool.name}
+                          aria-current={active ? 'page' : undefined}
+                          className={`focus-ring flex items-center gap-2 rounded-lg px-2 py-2 text-[13px] font-medium ${
+                            active
+                              ? 'bg-foreground text-background'
+                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                          }`}
+                        >
+                          <Icon
+                            aria-hidden="true"
+                            className="size-3.5 shrink-0"
+                          />
+                          <span className="truncate">
+                            {tool.name.replace(' converter', '')}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
             </div>
 
-            <p className="mt-8 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <p className="mt-8 px-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Release-candidate status
             </p>
-            <div className="mt-3 space-y-3 px-3 text-xs text-muted-foreground">
+            <div className="mt-3 space-y-2 px-2 text-xs text-muted-foreground">
               <p className="flex items-center gap-2">
                 <CheckCircle2
                   aria-hidden="true"

@@ -278,6 +278,57 @@ export const publicTools: ToolManifest[] = [
   },
 ];
 
+export interface ToolGroup {
+  id: 'pdf' | 'images' | 'text-data' | 'developer-files' | 'calculators';
+  name: string;
+  shortDescription: string;
+  toolIds: string[];
+}
+
+export const toolGroups: ToolGroup[] = [
+  {
+    id: 'pdf',
+    name: 'PDF',
+    shortDescription: 'Merge, split, extract, and reorder pages.',
+    toolIds: ['pdf-merge', 'pdf-extract'],
+  },
+  {
+    id: 'images',
+    name: 'Images',
+    shortDescription: 'Compress, resize, convert, and remove metadata.',
+    toolIds: ['image-optimize'],
+  },
+  {
+    id: 'text-data',
+    name: 'Text & data',
+    shortDescription: 'Case conversion, JSON, and CSV utilities.',
+    toolIds: ['text-case-converter', 'json-format', 'csv-to-json'],
+  },
+  {
+    id: 'developer-files',
+    name: 'Developer & files',
+    shortDescription: 'Base64, UUID, timestamps, and file checksums.',
+    toolIds: [
+      'base64-encode',
+      'base64-decode',
+      'uuid-generator',
+      'unix-timestamp',
+      'file-hash',
+    ],
+  },
+  {
+    id: 'calculators',
+    name: 'Calculators',
+    shortDescription: 'Percentage, date difference, and age.',
+    toolIds: ['percentage-calculator', 'date-difference', 'age-calculator'],
+  },
+];
+
+export function toolsForGroup(group: ToolGroup) {
+  const ids = new Set(group.toolIds);
+  return publicTools.filter((tool) => ids.has(tool.id));
+}
+
 export function searchTools(query: string): ToolManifest[] {
   const normalizeToken = (token: string) =>
     token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;
@@ -291,6 +342,15 @@ export function searchTools(query: string): ToolManifest[] {
   const queryTokens = tokenize(query);
   if (!queryTokens.length) return publicTools;
 
+  const tokenMatches = (documentToken: string, queryToken: string) => {
+    if (documentToken === queryToken) return true;
+    if (documentToken.length < 3 || queryToken.length < 3) return false;
+    return (
+      documentToken.startsWith(queryToken) ||
+      queryToken.startsWith(documentToken)
+    );
+  };
+
   return publicTools.filter((tool) => {
     const documentTokens = tokenize(
       [tool.name, tool.shortDescription, ...tool.aliases, ...tool.jobs].join(
@@ -298,10 +358,8 @@ export function searchTools(query: string): ToolManifest[] {
       ),
     );
     return queryTokens.every((queryToken) =>
-      documentTokens.some(
-        (documentToken) =>
-          documentToken.includes(queryToken) ||
-          queryToken.includes(documentToken),
+      documentTokens.some((documentToken) =>
+        tokenMatches(documentToken, queryToken),
       ),
     );
   });

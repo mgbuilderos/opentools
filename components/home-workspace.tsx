@@ -1,10 +1,7 @@
 import {
   ArrowRight,
   Braces,
-  CalendarDays,
   Calculator,
-  Database,
-  FileKey2,
   FileStack,
   Image as ImageIcon,
   LockKeyhole,
@@ -14,17 +11,19 @@ import {
 } from 'lucide-react';
 
 import { AppShell } from '@/components/app-shell';
-import { publicTools } from '@/lib/tools/catalog';
+import {
+  publicTools,
+  toolGroups,
+  toolsForGroup,
+  type ToolGroup,
+} from '@/lib/tools/catalog';
 
-const toolIcons = {
-  Text: Type,
-  PDF: FileStack,
-  Data: Database,
-  Image: ImageIcon,
-  Developer: Braces,
-  File: FileKey2,
-  Math: Calculator,
-  Date: CalendarDays,
+const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
+  pdf: FileStack,
+  images: ImageIcon,
+  'text-data': Type,
+  'developer-files': Braces,
+  calculators: Calculator,
 };
 
 export function HomeWorkspace() {
@@ -32,17 +31,18 @@ export function HomeWorkspace() {
     <AppShell currentToolId="">
       <section
         id="tool"
-        className="min-w-0 px-4 py-8 sm:px-8 lg:px-12 lg:py-12"
+        tabIndex={-1}
+        className="min-w-0 px-4 py-7 sm:px-8 lg:px-10 lg:py-9"
       >
         <div className="mx-auto max-w-5xl">
-          <div className="border-b pb-10">
+          <div className="border-b pb-7">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Local-first utility workspace
             </p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-[-0.055em] sm:text-5xl">
+            <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">
               Small jobs. One private workspace.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
               Find the right tool, finish the task, and keep moving. Working
               canaries process content in your browser with no account or output
               gate. This candidate deliberately ships a small, testable set
@@ -50,7 +50,7 @@ export function HomeWorkspace() {
             </p>
           </div>
 
-          <section aria-labelledby="working-tools-heading" className="mt-8">
+          <section aria-labelledby="working-tools-heading" className="mt-6">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <h2
@@ -69,38 +69,66 @@ export function HomeWorkspace() {
               </span>
             </div>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {publicTools.map((tool) => {
-                const Icon = toolIcons[tool.category];
+            <div className="mt-4 grid items-start gap-3 lg:grid-cols-2">
+              {toolGroups.map((group) => {
+                const Icon = groupIcons[group.id];
+                const tools = toolsForGroup(group);
                 return (
-                  <a
-                    key={tool.id}
-                    href={tool.href}
-                    className="focus-ring group rounded-2xl border bg-card p-5 transition-colors hover:bg-muted/60 sm:p-6"
+                  <section
+                    key={group.id}
+                    aria-labelledby={`group-${group.id}`}
+                    className="overflow-hidden rounded-xl border bg-card"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <span className="grid size-11 place-items-center rounded-xl border bg-muted">
-                        <Icon aria-hidden="true" className="size-5" />
-                      </span>
-                      <span className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold">
-                        <LockKeyhole aria-hidden="true" className="size-3" />
-                        On-device
+                    <div className="flex items-start justify-between gap-4 border-b bg-muted/40 px-4 py-3.5">
+                      <div className="flex min-w-0 items-start gap-3">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-lg border bg-background">
+                          <Icon aria-hidden="true" className="size-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <h3
+                            id={`group-${group.id}`}
+                            className="text-sm font-semibold"
+                          >
+                            {group.name}
+                          </h3>
+                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
+                            {group.shortDescription}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="tabular shrink-0 rounded-full border bg-background px-2 py-1 text-[11px] font-semibold">
+                        {tools.length}
                       </span>
                     </div>
-                    <h3 className="mt-8 text-xl font-semibold tracking-[-0.03em]">
-                      {tool.name}
-                    </h3>
-                    <p className="mt-2 min-h-12 text-sm leading-6 text-muted-foreground">
-                      {tool.shortDescription}
-                    </p>
-                    <span className="mt-6 flex items-center gap-2 text-sm font-semibold">
-                      Open tool
-                      <ArrowRight
-                        aria-hidden="true"
-                        className="size-4 transition-transform group-hover:translate-x-0.5"
-                      />
-                    </span>
-                  </a>
+                    <div className="divide-y">
+                      {tools.map((tool) => (
+                        <a
+                          key={tool.id}
+                          href={tool.href}
+                          className="focus-ring group flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-muted/55"
+                        >
+                          <span className="min-w-0">
+                            <span className="block text-sm font-semibold">
+                              {tool.name}
+                            </span>
+                            <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                              {tool.shortDescription}
+                            </span>
+                          </span>
+                          <span className="flex shrink-0 items-center gap-2 text-xs font-semibold">
+                            <LockKeyhole
+                              aria-hidden="true"
+                              className="size-3"
+                            />
+                            <ArrowRight
+                              aria-hidden="true"
+                              className="size-3.5 transition-transform group-hover:translate-x-0.5"
+                            />
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </section>
                 );
               })}
             </div>

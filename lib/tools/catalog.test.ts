@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { publicTools, searchTools } from './catalog';
+import { publicTools, searchTools, toolGroups, toolsForGroup } from './catalog';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
@@ -56,6 +56,25 @@ describe('public canary catalog', () => {
     );
     expect(searchTools('days between dates').map((tool) => tool.id)).toContain(
       'date-difference',
+    );
+    expect(searchTools('calculate age').map((tool) => tool.id)).toEqual([
+      'age-calculator',
+    ]);
+    expect(searchTools('age').map((tool) => tool.id)).not.toContain(
+      'pdf-extract',
+    );
+  });
+
+  it('assigns every working tool to exactly one compact workspace', () => {
+    const assignedIds = toolGroups.flatMap((group) =>
+      toolsForGroup(group).map((tool) => tool.id),
+    );
+
+    expect(toolGroups).toHaveLength(5);
+    expect(assignedIds).toHaveLength(publicTools.length);
+    expect(new Set(assignedIds).size).toBe(publicTools.length);
+    expect(assignedIds.toSorted()).toEqual(
+      publicTools.map((tool) => tool.id).toSorted(),
     );
   });
 });
