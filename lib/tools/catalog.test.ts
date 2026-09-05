@@ -6,6 +6,7 @@ import { publicTools, searchTools } from './catalog';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
+    expect(publicTools).toHaveLength(14);
     const ids = new Set<string>();
     const routes = new Set<string>();
 
@@ -46,6 +47,15 @@ describe('public canary catalog', () => {
     );
     expect(searchTools('split pdf').map((tool) => tool.id)).toContain(
       'pdf-extract',
+    );
+    expect(searchTools('base64 to text').map((tool) => tool.id)).toContain(
+      'base64-decode',
+    );
+    expect(searchTools('sha256 file').map((tool) => tool.id)).toContain(
+      'file-hash',
+    );
+    expect(searchTools('days between dates').map((tool) => tool.id)).toContain(
+      'date-difference',
     );
   });
 });

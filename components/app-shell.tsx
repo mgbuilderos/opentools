@@ -2,7 +2,11 @@
 
 import {
   CheckCircle2,
+  Braces,
+  CalendarDays,
+  Calculator,
   Database,
+  FileKey2,
   FileStack,
   Grid2X2,
   Image as ImageIcon,
@@ -22,6 +26,10 @@ const categoryIcons = {
   PDF: FileStack,
   Data: Database,
   Image: ImageIcon,
+  Developer: Braces,
+  File: FileKey2,
+  Math: Calculator,
+  Date: CalendarDays,
 };
 
 export function AppShell({

@@ -7,7 +7,15 @@ export interface ToolManifest {
   status: ToolStatus;
   name: string;
   shortDescription: string;
-  category: 'Text' | 'PDF' | 'Data' | 'Image';
+  category:
+    | 'Text'
+    | 'PDF'
+    | 'Data'
+    | 'Image'
+    | 'Developer'
+    | 'File'
+    | 'Math'
+    | 'Date';
   aliases: string[];
   jobs: string[];
   href: string;

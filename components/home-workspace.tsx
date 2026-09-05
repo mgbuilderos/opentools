@@ -1,6 +1,10 @@
 import {
   ArrowRight,
+  Braces,
+  CalendarDays,
+  Calculator,
   Database,
+  FileKey2,
   FileStack,
   Image as ImageIcon,
   LockKeyhole,
@@ -17,6 +21,10 @@ const toolIcons = {
   PDF: FileStack,
   Data: Database,
   Image: ImageIcon,
+  Developer: Braces,
+  File: FileKey2,
+  Math: Calculator,
+  Date: CalendarDays,
 };
 
 export function HomeWorkspace() {
