@@ -17,15 +17,15 @@ Delete PDF pages, and PDF watermark all use the same `ToolLinkCard` component.
 
 ## Typography
 
-| Role | Size | Weight | Line height | Tracking |
-| --- | ---: | ---: | ---: | ---: |
-| Page title | 30–36 px | 600 | 1.1 | -0.04 em |
-| Section title | 20–24 px | 600 | 1.2 | -0.03 em |
-| Card/tool title | 14–16 px | 600 | 1.25 | -0.01 em |
-| Body | 14–16 px | 400 | 1.5–1.75 | normal |
-| Label | 12 px | 600 | 1.33 | normal |
-| Eyebrow | 11 px | 600 | 16 px | 0.12 em uppercase |
-| Data/code | contextual | 400–600 | contextual | tabular/monospace |
+| Role            |       Size |  Weight | Line height |          Tracking |
+| --------------- | ---------: | ------: | ----------: | ----------------: |
+| Page title      |   30–36 px |     600 |         1.1 |          -0.04 em |
+| Section title   |   20–24 px |     600 |         1.2 |          -0.03 em |
+| Card/tool title |   14–16 px |     600 |        1.25 |          -0.01 em |
+| Body            |   14–16 px |     400 |    1.5–1.75 |            normal |
+| Label           |      12 px |     600 |        1.33 |            normal |
+| Eyebrow         |      11 px |     600 |       16 px | 0.12 em uppercase |
+| Data/code       | contextual | 400–600 |  contextual | tabular/monospace |
 
 The product uses the operating-system sans stack and a system monospace stack.
 No remote fonts may be added to local-processing routes.
@@ -39,6 +39,9 @@ No remote fonts may be added to local-processing routes.
 - Spacing is based on a 4 px unit. Default surface padding is 16–24 px.
 - Elevation is reserved for transient overlays. Ordinary tools use borders, not shadows.
 - Buttons use the shared `Button`; task links use `ToolLinkCard`.
+- Every task card uses one restrained 16 px Lucide icon inside the shared 36 px
+  monochrome icon well. The icon clarifies the operation but never replaces the
+  visible task label.
 - Tool frames, headings, surfaces, receipts, and future charts use exports from
   `components/ui/tool-system.tsx` or the matching `ds-*` semantic class.
 

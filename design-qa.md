@@ -7,7 +7,7 @@ Date: 2026-09-07
 - Source visual truth: `/var/folders/8m/vptdd2nn261fmf5g1f_p9_x80000gp/T/TemporaryItems/NSIRD_screencaptureui_lJY8lQ/Screenshot 2026-09-07 at 2.08.07 AM.png`
 - Source pixels: 2940 × 1912, desktop screenshot including browser and Codex chrome.
 - Implementation: `http://localhost:3011/pdf/page-tools`, PDF drawer open after selecting PDF.
-- Implementation capture: 842 × 775 CSS pixels at device scale factor 1, captured in the Codex in-app browser.
+- Implementation capture: 842 × 775 CSS pixels at device scale factor 1, recaptured in the Codex in-app browser after the icon pass.
 - State: light theme, drawer open, PDF selected, empty PDF tool behind the scrim.
 - Normalization: comparison focused on the app-owned 432 px drawer region. Browser/Codex chrome and the source screenshot’s larger density were excluded from hierarchy judgment.
 
@@ -18,7 +18,7 @@ workspace cards, while Rotate, Reorder, Delete, Page numbers, Watermark and
 Metadata are visually subordinate rows inside a “PDF page tools” parent. The
 revised implementation removes the parent card from category navigation and
 renders eight task destinations as identical bordered cards with the same title,
-description, chevron, spacing, hover/focus behavior, and minimum height.
+description, icon well, chevron, spacing, hover/focus behavior, and minimum height.
 
 The category level remains separate and stronger, as intended. The tool canvas
 behind the drawer, monochrome scrim, top bar, left origin, and closed-by-default
@@ -31,7 +31,9 @@ this QA pass. In the focused PDF list, card left/right padding, inter-card gaps,
 title weight, description line height, border value, radius, and chevron position
 are uniform. “PDF page tools” no longer appears as a competing destination.
 The accessibility tree reports eight PDF links in the intended order and gives
-each link its task name plus description.
+each link its task name plus description. The rendered capture shows a quiet
+36 px monochrome icon well on every task; Merge, Extract, Rotate, Reorder,
+Delete, Page numbers, Watermark, and Metadata use distinct operation glyphs.
 
 ## Required fidelity surfaces — current pass
 
@@ -45,7 +47,8 @@ each link its task name plus description.
   gray, border, focus, and foreground-success tokens. No green or decorative
   gradient was introduced.
 - Image quality and assets: this state contains no raster imagery. Icons come
-  from the existing Lucide set; no placeholder or custom-drawn asset was added.
+  from the existing Lucide set at a consistent 16 px optical size and 1.75 px
+  stroke; no placeholder, emoji, or custom-drawn asset was added.
 - Copy and content: task labels are direct and parallel. Descriptions explain the
   output rather than the implementation parent workspace.
 
@@ -62,12 +65,16 @@ No actionable P0, P1, or P2 issue remains for the requested equal hierarchy.
    destinations.
 3. Post-fix capture: eight equal PDF cards rendered in the in-app browser; the
    accessibility tree confirmed unique working destinations and correct order.
+4. Icon refinement: each equal card received the shared monochrome icon well.
+   The recapture preserved hierarchy, spacing, labeling, focus semantics, and
+   PDF-only category content; no new P0/P1/P2 issue was introduced.
 
 ## Current implementation checklist
 
 - [x] Equalize standalone and shared-workbench task destinations.
 - [x] Remove parent-workspace hierarchy from category drill-ins.
 - [x] Add reusable tool-card, page, heading, surface, receipt, and chart contracts.
+- [x] Add one consistent task icon treatment without creating a second hierarchy.
 - [x] Add typography, spacing, surface, motion, and monochrome chart tokens.
 - [x] Add a blocking automated design gate to prebuild and full QC.
 - [x] Pass visual, accessibility-tree, design-gate, lint, type, unit, and build checks.

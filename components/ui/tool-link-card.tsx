@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -6,12 +6,14 @@ export function ToolLinkCard({
   name,
   description,
   href,
+  icon: Icon,
   compact = false,
   className,
 }: {
   name: string;
   description: string;
   href: string;
+  icon: LucideIcon;
   compact?: boolean;
   className?: string;
 }) {
@@ -26,12 +28,21 @@ export function ToolLinkCard({
         className,
       )}
     >
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold tracking-[-0.01em]">
-          {name}
+      <span className="flex min-w-0 items-center gap-3">
+        <span
+          aria-hidden="true"
+          data-design="tool-icon"
+          className="grid size-9 shrink-0 place-items-center rounded-lg border bg-muted/45 text-foreground transition-colors duration-[var(--motion-fast)] ease-[var(--motion-ease)] group-hover:bg-background"
+        >
+          <Icon className="size-4" strokeWidth={1.75} />
         </span>
-        <span className="mt-1 block text-xs leading-5 text-muted-foreground">
-          {description}
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold tracking-[-0.01em]">
+            {name}
+          </span>
+          <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+            {description}
+          </span>
         </span>
       </span>
       <ChevronRight

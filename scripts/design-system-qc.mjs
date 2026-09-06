@@ -59,6 +59,11 @@ requireText(
   'tool cards must use the shared component',
 );
 requireText(
+  'components/ui/tool-link-card.tsx',
+  'data-design="tool-icon"',
+  'task cards must include the restrained shared icon treatment',
+);
+requireText(
   'components/ui/tool-system.tsx',
   'data-design="chart"',
   'chart wrapper must remain available',
