@@ -124,8 +124,12 @@ describe('local tool source policy', () => {
       'const [sidebarOpen, setSidebarOpen] = useState(false)',
     );
     expect(shell).toContain('inert={!sidebarOpen}');
+    expect(shell).toContain('fixed bottom-0 right-0 top-16');
+    expect(shell).toContain('setDrawerGroupId(group.id)');
+    expect(shell).toContain('tool.searchEntries.map');
     expect(shell).not.toContain("localStorage.getItem('tools-sidebar')");
     expect(shell).not.toContain('grid-cols-[240px');
+    expect(shell).not.toContain('fixed bottom-0 left-0 top-16');
   });
 
   it('keeps focus and success product chrome monochrome', () => {

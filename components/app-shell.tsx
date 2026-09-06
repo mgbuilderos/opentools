@@ -4,9 +4,11 @@
 /* oxlint-disable jsx-a11y/no-noninteractive-element-interactions -- The modal category drawer listens for Tab only to keep keyboard focus inside its active dialog boundary. */
 
 import {
+  ArrowLeft,
   Braces,
   BriefcaseBusiness,
   Calculator,
+  ChevronRight,
   FileText,
   FlaskConical,
   FileStack,
@@ -63,11 +65,13 @@ export function AppShell({
   const searchRef = useRef<HTMLInputElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
-  const firstCategoryRef = useRef<HTMLAnchorElement>(null);
+  const firstCategoryRef = useRef<HTMLButtonElement>(null);
+  const drawerBackRef = useRef<HTMLButtonElement>(null);
   const [query, setQuery] = useState('');
   const [activeResultIndex, setActiveResultIndex] = useState(-1);
   const [isDark, setIsDark] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [drawerGroupId, setDrawerGroupId] = useState<ToolGroup['id']>();
   const results = useMemo(() => searchTools(query), [query]);
   const searchOpen = query.length > 0;
   const activeResult =
@@ -104,12 +108,14 @@ export function AppShell({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const focusFrame = requestAnimationFrame(() => {
-      firstCategoryRef.current?.focus();
+      if (drawerGroupId) drawerBackRef.current?.focus();
+      else firstCategoryRef.current?.focus();
     });
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       event.preventDefault();
       setSidebarOpen(false);
+      setDrawerGroupId(undefined);
       menuButtonRef.current?.focus();
     };
 
@@ -119,11 +125,18 @@ export function AppShell({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', closeOnEscape);
     };
-  }, [sidebarOpen]);
+  }, [drawerGroupId, sidebarOpen]);
 
   const activeGroupId =
     currentGroupId ??
     toolGroups.find((group) => group.toolIds.includes(currentToolId))?.id;
+  const drawerGroup = toolGroups.find((group) => group.id === drawerGroupId);
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+    setDrawerGroupId(undefined);
+    menuButtonRef.current?.focus();
+  };
 
   const toggleTheme = () => {
     const next = !isDark;
@@ -187,31 +200,13 @@ export function AppShell({
       <CompletionValueDialog />
       <a
         href="#tool"
-        className="focus-ring fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background focus:translate-y-0"
+        className="focus-ring fixed left-3 top-3 z-[70] -translate-y-20 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background focus:translate-y-0"
       >
         Skip to tool
       </a>
 
       <header className="sticky top-0 z-[60] border-b bg-background/95 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
-          <Button
-            ref={menuButtonRef}
-            variant="ghost"
-            size="icon"
-            className="h-11 w-11 shrink-0 rounded-lg border"
-            onClick={() => setSidebarOpen((current) => !current)}
-            aria-label={
-              sidebarOpen ? 'Close tool categories' : 'Open tool categories'
-            }
-            aria-controls="tool-category-drawer"
-            aria-expanded={sidebarOpen}
-          >
-            {sidebarOpen ? (
-              <X aria-hidden="true" />
-            ) : (
-              <Menu aria-hidden="true" />
-            )}
-          </Button>
           <a
             href="/"
             className="focus-ring flex shrink-0 items-center gap-2 rounded-lg"
@@ -314,6 +309,30 @@ export function AppShell({
           >
             {isDark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </Button>
+          <Button
+            ref={menuButtonRef}
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 shrink-0 rounded-lg border"
+            onClick={() => {
+              if (sidebarOpen) closeSidebar();
+              else {
+                setDrawerGroupId(undefined);
+                setSidebarOpen(true);
+              }
+            }}
+            aria-label={
+              sidebarOpen ? 'Close tool categories' : 'Open tool categories'
+            }
+            aria-controls="tool-category-drawer"
+            aria-expanded={sidebarOpen}
+          >
+            {sidebarOpen ? (
+              <X aria-hidden="true" />
+            ) : (
+              <Menu aria-hidden="true" />
+            )}
+          </Button>
         </div>
       </header>
 
@@ -321,7 +340,7 @@ export function AppShell({
         type="button"
         aria-hidden="true"
         tabIndex={-1}
-        onClick={() => setSidebarOpen(false)}
+        onClick={closeSidebar}
         className={`fixed inset-x-0 bottom-0 top-16 z-40 bg-foreground/18 backdrop-blur-[2px] transition-opacity duration-200 ${
           sidebarOpen
             ? 'pointer-events-auto opacity-100'
@@ -339,77 +358,159 @@ export function AppShell({
         inert={!sidebarOpen}
         tabIndex={-1}
         onKeyDown={handleDrawerKeyDown}
-        className={`fixed bottom-0 left-0 top-16 z-50 w-[min(21rem,calc(100vw-2rem))] overflow-y-auto border-r bg-background shadow-[18px_0_50px_rgb(0_0_0/12%)] transition-transform duration-200 ease-out ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed bottom-0 right-0 top-16 z-50 w-[min(28rem,calc(100vw-1rem))] overflow-y-auto border-l bg-background shadow-[-18px_0_50px_rgb(0_0_0/12%)] transition-transform duration-200 ease-out ${
+          sidebarOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex items-start justify-between gap-4 border-b px-5 py-5">
-          <div>
-            <p
-              id="tool-category-drawer-title"
-              className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
-            >
-              Popular categories
-            </p>
-            <p className="mt-1 text-sm leading-5 text-muted-foreground">
-              Working categories ranked from broad daily demand to specialist
-              use.
-            </p>
-          </div>
+          {drawerGroup ? (
+            <div className="flex min-w-0 items-start gap-3">
+              <Button
+                ref={drawerBackRef}
+                variant="ghost"
+                size="icon"
+                className="size-10 shrink-0 rounded-lg border"
+                onClick={() => setDrawerGroupId(undefined)}
+                aria-label="Back to all categories"
+              >
+                <ArrowLeft aria-hidden="true" />
+              </Button>
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Category
+                </p>
+                <h2
+                  id="tool-category-drawer-title"
+                  className="mt-1 truncate text-base font-semibold"
+                >
+                  {drawerGroup.name}
+                </h2>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  {drawerGroup.shortDescription}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p
+                id="tool-category-drawer-title"
+                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+              >
+                Tool groups
+              </p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                Select a category to open its tools and subtools.
+              </p>
+            </div>
+          )}
           <Button
             variant="ghost"
             size="icon"
             className="size-10 shrink-0 rounded-lg border"
-            onClick={() => {
-              setSidebarOpen(false);
-              menuButtonRef.current?.focus();
-            }}
+            onClick={closeSidebar}
             aria-label="Close tool categories"
           >
             <X aria-hidden="true" />
           </Button>
         </div>
 
-        <nav aria-label="Tool categories" className="space-y-1 p-3">
-          {toolGroups.map((group, index) => {
-            const Icon = groupIcons[group.id];
-            const active = group.id === activeGroupId;
-            const actionCount = toolsForGroup(group).reduce(
-              (total, tool) => total + (tool.searchEntries?.length ?? 1),
-              0,
-            );
-            return (
-              <a
-                ref={index === 0 ? firstCategoryRef : undefined}
-                key={group.id}
-                href={`/?category=${group.id}#category-tools`}
-                aria-current={active ? 'page' : undefined}
-                className={`focus-ring group flex min-h-12 items-center justify-between gap-3 rounded-lg px-3 text-sm font-semibold transition-colors ${
-                  active
-                    ? 'bg-foreground text-background'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
+        {drawerGroup ? (
+          <nav
+            aria-label={`${drawerGroup.name} tools`}
+            className="space-y-3 p-3"
+          >
+            {toolsForGroup(drawerGroup).map((tool) => (
+              <section
+                key={tool.id}
+                aria-labelledby={`drawer-tool-${tool.id}`}
+                className="overflow-hidden rounded-lg border"
               >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="tabular w-5 shrink-0 font-mono text-[10px] opacity-60">
-                    {String(index + 1).padStart(2, '0')}
+                <a
+                  href={tool.href}
+                  className="focus-ring group flex min-h-14 items-center justify-between gap-3 bg-card px-4 py-3"
+                >
+                  <span className="min-w-0">
+                    <span
+                      id={`drawer-tool-${tool.id}`}
+                      className="block text-sm font-semibold"
+                    >
+                      {tool.name}
+                    </span>
+                    <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
+                      {tool.shortDescription}
+                    </span>
                   </span>
-                  <Icon aria-hidden="true" className="size-4 shrink-0" />
-                  <span className="truncate">{group.name}</span>
-                </span>
-                <span
-                  className={`tabular rounded-md border px-1.5 py-0.5 font-mono text-[10px] ${
+                  <ChevronRight
+                    aria-hidden="true"
+                    className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                  />
+                </a>
+                {tool.searchEntries?.length ? (
+                  <div className="border-t bg-background p-2">
+                    {tool.searchEntries.map((entry) => (
+                      <a
+                        key={entry.id}
+                        href={entry.href}
+                        className="focus-ring flex min-h-10 items-center justify-between gap-3 rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                      >
+                        <span>{entry.name}</span>
+                        <ChevronRight
+                          aria-hidden="true"
+                          className="size-3.5 shrink-0"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+              </section>
+            ))}
+          </nav>
+        ) : (
+          <nav aria-label="Tool categories" className="space-y-1 p-3">
+            {toolGroups.map((group, index) => {
+              const Icon = groupIcons[group.id];
+              const active = group.id === activeGroupId;
+              const actionCount = toolsForGroup(group).reduce(
+                (total, tool) => total + (tool.searchEntries?.length ?? 1),
+                0,
+              );
+              return (
+                <button
+                  ref={index === 0 ? firstCategoryRef : undefined}
+                  key={group.id}
+                  type="button"
+                  onClick={() => setDrawerGroupId(group.id)}
+                  aria-label={`Open ${group.name}, ${actionCount} working actions`}
+                  className={`focus-ring group flex min-h-12 w-full items-center justify-between gap-3 rounded-lg px-3 text-left text-sm font-semibold transition-colors ${
                     active
-                      ? 'border-background/25 text-background'
-                      : 'text-muted-foreground'
+                      ? 'bg-foreground text-background'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 >
-                  {actionCount}
-                </span>
-              </a>
-            );
-          })}
-        </nav>
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="tabular w-5 shrink-0 font-mono text-[10px] opacity-60">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                    <span className="truncate">{group.name}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <span
+                      className={`tabular rounded-md border px-1.5 py-0.5 font-mono text-[10px] ${
+                        active
+                          ? 'border-background/25 text-background'
+                          : 'text-muted-foreground'
+                      }`}
+                    >
+                      {actionCount}
+                    </span>
+                    <ChevronRight aria-hidden="true" className="size-4" />
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        )}
       </aside>
 
       <main className="mx-auto max-w-[1440px]">{children}</main>
