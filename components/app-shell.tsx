@@ -207,6 +207,30 @@ export function AppShell({
 
       <header className="sticky top-0 z-[60] border-b bg-background/95 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
+          <Button
+            ref={menuButtonRef}
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 shrink-0 rounded-lg border"
+            onClick={() => {
+              if (sidebarOpen) closeSidebar();
+              else {
+                setDrawerGroupId(undefined);
+                setSidebarOpen(true);
+              }
+            }}
+            aria-label={
+              sidebarOpen ? 'Close tool categories' : 'Open tool categories'
+            }
+            aria-controls="tool-category-drawer"
+            aria-expanded={sidebarOpen}
+          >
+            {sidebarOpen ? (
+              <X aria-hidden="true" />
+            ) : (
+              <Menu aria-hidden="true" />
+            )}
+          </Button>
           <a
             href="/"
             className="focus-ring flex shrink-0 items-center gap-2 rounded-lg"
@@ -309,30 +333,6 @@ export function AppShell({
           >
             {isDark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </Button>
-          <Button
-            ref={menuButtonRef}
-            variant="ghost"
-            size="icon"
-            className="h-11 w-11 shrink-0 rounded-lg border"
-            onClick={() => {
-              if (sidebarOpen) closeSidebar();
-              else {
-                setDrawerGroupId(undefined);
-                setSidebarOpen(true);
-              }
-            }}
-            aria-label={
-              sidebarOpen ? 'Close tool categories' : 'Open tool categories'
-            }
-            aria-controls="tool-category-drawer"
-            aria-expanded={sidebarOpen}
-          >
-            {sidebarOpen ? (
-              <X aria-hidden="true" />
-            ) : (
-              <Menu aria-hidden="true" />
-            )}
-          </Button>
         </div>
       </header>
 
@@ -341,7 +341,7 @@ export function AppShell({
         aria-hidden="true"
         tabIndex={-1}
         onClick={closeSidebar}
-        className={`fixed inset-x-0 bottom-0 top-16 z-40 bg-foreground/18 backdrop-blur-[2px] transition-opacity duration-200 ${
+        className={`fixed inset-x-0 bottom-0 top-16 z-40 bg-foreground/18 backdrop-blur-[2px] transition-opacity duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
           sidebarOpen
             ? 'pointer-events-auto opacity-100'
             : 'pointer-events-none opacity-0'
@@ -358,8 +358,8 @@ export function AppShell({
         inert={!sidebarOpen}
         tabIndex={-1}
         onKeyDown={handleDrawerKeyDown}
-        className={`fixed bottom-0 right-0 top-16 z-50 w-[min(28rem,calc(100vw-1rem))] overflow-y-auto border-l bg-background shadow-[-18px_0_50px_rgb(0_0_0/12%)] transition-transform duration-200 ease-out ${
-          sidebarOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed bottom-0 left-0 top-16 z-50 w-[min(28rem,calc(100vw-1rem))] overflow-y-auto border-r bg-background shadow-[18px_0_50px_rgb(0_0_0/12%)] transition-transform duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex items-start justify-between gap-4 border-b px-5 py-5">
