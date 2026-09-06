@@ -28,6 +28,72 @@ function searchEntries(
   }));
 }
 
+export const PDF_PAGE_OPERATIONS = [
+  {
+    id: 'rotate-pdf',
+    name: 'Rotate PDF',
+    description: 'Rotate every PDF page by a quarter turn.',
+  },
+  {
+    id: 'reorder-pdf-pages',
+    name: 'Reorder PDF pages',
+    description: 'Save PDF pages in a new requested order.',
+  },
+  {
+    id: 'delete-pdf-pages',
+    name: 'Delete PDF pages',
+    description: 'Omit selected pages from a new local PDF.',
+  },
+  {
+    id: 'pdf-page-numbers',
+    name: 'PDF page numbers',
+    description: 'Add centered page numbers to every output page.',
+  },
+  {
+    id: 'pdf-watermark',
+    name: 'PDF watermark',
+    description: 'Place a text watermark across every PDF page.',
+  },
+  {
+    id: 'pdf-metadata-editor',
+    name: 'PDF metadata editor',
+    description: 'Set PDF title, author, subject, and keywords.',
+  },
+] as const;
+
+export const IMAGE_EDITOR_OPERATIONS = [
+  {
+    id: 'image-cropper',
+    name: 'Image cropper',
+    description: 'Crop an image to exact pixel coordinates.',
+  },
+  {
+    id: 'image-flipper',
+    name: 'Image flipper',
+    description: 'Flip an image horizontally in the browser.',
+  },
+  {
+    id: 'image-rotator',
+    name: 'Rotate image',
+    description: 'Rotate an image in 90 degree steps.',
+  },
+  {
+    id: 'image-brightness',
+    name: 'Image brightness',
+    description: 'Adjust image brightness before saving.',
+  },
+  {
+    id: 'image-contrast',
+    name: 'Image contrast',
+    description: 'Adjust image contrast before saving.',
+  },
+  {
+    id: 'image-grayscale',
+    name: 'Image grayscale',
+    description: 'Convert image colors toward grayscale.',
+  },
+] as const;
+
 export const publicTools: ToolManifest[] = [
   {
     id: 'text-case-converter',
@@ -203,6 +269,25 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-page-tools',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'PDF page tools',
+    shortDescription:
+      'Reorder, remove, rotate, number, watermark, and label PDF pages.',
+    category: 'PDF',
+    aliases: PDF_PAGE_OPERATIONS.map((operation) => operation.name),
+    jobs: PDF_PAGE_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/pdf/page-tools', PDF_PAGE_OPERATIONS),
+    href: '/pdf/page-tools',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.pagegraph.transform', 'pdf.annotation.draw'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'image-optimize',
     version: '0.1.0-canary',
     status: 'canary',
@@ -225,6 +310,24 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['image.raster.decode', 'image.raster.encode'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'image-editor',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Image editor',
+    shortDescription: 'Crop, rotate, flip, and adjust a static image locally.',
+    category: 'Image',
+    aliases: IMAGE_EDITOR_OPERATIONS.map((operation) => operation.name),
+    jobs: IMAGE_EDITOR_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/image/editor', IMAGE_EDITOR_OPERATIONS),
+    href: '/image/editor',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['image.raster.crop', 'image.raster.transform'],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -684,13 +787,13 @@ export const toolGroups: ToolGroup[] = [
     id: 'pdf',
     name: 'PDF',
     shortDescription: 'Merge, split, extract, and reorder pages.',
-    toolIds: ['pdf-merge', 'pdf-extract'],
+    toolIds: ['pdf-merge', 'pdf-extract', 'pdf-page-tools'],
   },
   {
     id: 'images',
     name: 'Images',
     shortDescription: 'Compress, resize, convert, and remove metadata.',
-    toolIds: ['image-optimize'],
+    toolIds: ['image-optimize', 'image-editor'],
   },
   {
     id: 'text-data',

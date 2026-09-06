@@ -1,4 +1,4 @@
-import { PDFDocument } from 'pdf-lib';
+import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 import type { PdfWorkerInput } from './protocol';
 
@@ -7,7 +7,8 @@ export type PdfEngineErrorCode =
   | 'ENCRYPTED_PDF'
   | 'EMPTY_PDF'
   | 'MERGE_FAILED'
-  | 'EXTRACT_FAILED';
+  | 'EXTRACT_FAILED'
+  | 'TRANSFORM_FAILED';
 
 export class PdfEngineError extends Error {
   constructor(
@@ -207,4 +208,134 @@ export async function extractPdfPages(
   }
 
   return { bytes, pageCount, computeDurationMs, validationDurationMs };
+}
+
+export async function transformPdfPages(
+  input: PdfWorkerInput,
+  options: import('./protocol').PdfPageTransformOptions,
+  onProgress?: (
+    phase: 'reading' | 'copying' | 'validating',
+    completed: number,
+    total: number,
+  ) => void,
+) {
+  if (!options.pageOrder.length) {
+    throw new PdfEngineError(
+      'TRANSFORM_FAILED',
+      'Keep at least one page in the output.',
+      input.id,
+    );
+  }
+  const computeStarted = performance.now();
+  onProgress?.('reading', 0, options.pageOrder.length);
+  const source = await loadPdf(input);
+  const sourcePageCount = source.getPageCount();
+  if (
+    options.pageOrder.some(
+      (page) => !Number.isInteger(page) || page < 1 || page > sourcePageCount,
+    )
+  ) {
+    throw new PdfEngineError(
+      'TRANSFORM_FAILED',
+      `Use page numbers between 1 and ${sourcePageCount}.`,
+      input.id,
+    );
+  }
+
+  const destination = await PDFDocument.create();
+  const copied = await destination.copyPages(
+    source,
+    options.pageOrder.map((page) => page - 1),
+  );
+  copied.forEach((page, index) => {
+    destination.addPage(page);
+    onProgress?.('copying', index + 1, copied.length);
+  });
+
+  const pageFont =
+    options.pageNumbers || options.watermark.trim()
+      ? await destination.embedFont(StandardFonts.Helvetica)
+      : null;
+  for (const [index, page] of destination.getPages().entries()) {
+    const current = page.getRotation().angle;
+    page.setRotation(degrees((current + options.rotation) % 360));
+    const { width, height } = page.getSize();
+    if (options.watermark.trim() && pageFont) {
+      const text = options.watermark.trim().slice(0, 80);
+      const size = Math.max(
+        18,
+        Math.min(54, width / Math.max(5, text.length / 1.8)),
+      );
+      const textWidth = pageFont.widthOfTextAtSize(text, size);
+      page.drawText(text, {
+        x: Math.max(16, (width - textWidth) / 2),
+        y: height / 2,
+        size,
+        font: pageFont,
+        color: rgb(0.25, 0.25, 0.25),
+        opacity: 0.2,
+        rotate: degrees(-35),
+      });
+    }
+    if (options.pageNumbers && pageFont) {
+      const text = String(index + 1);
+      const size = 10;
+      const textWidth = pageFont.widthOfTextAtSize(text, size);
+      page.drawText(text, {
+        x: (width - textWidth) / 2,
+        y: 18,
+        size,
+        font: pageFont,
+        color: rgb(0.15, 0.15, 0.15),
+      });
+    }
+  }
+
+  const title = options.metadata.title.trim();
+  const author = options.metadata.author.trim();
+  const subject = options.metadata.subject.trim();
+  const keywords = options.metadata.keywords
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (title) destination.setTitle(title);
+  if (author) destination.setAuthor(author);
+  if (subject) destination.setSubject(subject);
+  if (keywords.length) destination.setKeywords(keywords);
+  destination.setProducer('Browser Tools');
+  destination.setModificationDate(new Date());
+
+  const bytes = await destination.save({
+    addDefaultPage: false,
+    useObjectStreams: true,
+    objectsPerTick: 50,
+  });
+  const computeDurationMs = performance.now() - computeStarted;
+  onProgress?.('validating', copied.length, copied.length);
+  const validationStarted = performance.now();
+  const reopened = await PDFDocument.load(bytes, {
+    ignoreEncryption: false,
+    updateMetadata: false,
+  });
+  if (reopened.getPageCount() !== options.pageOrder.length) {
+    throw new PdfEngineError(
+      'TRANSFORM_FAILED',
+      'The edited PDF failed its page-count check.',
+      input.id,
+    );
+  }
+  if (reopened.getPages().some((page) => page.getRotation().angle % 90 !== 0)) {
+    throw new PdfEngineError(
+      'TRANSFORM_FAILED',
+      'The edited PDF failed its rotation check.',
+      input.id,
+    );
+  }
+  const validationDurationMs = performance.now() - validationStarted;
+  return {
+    bytes,
+    pageCount: reopened.getPageCount(),
+    computeDurationMs,
+    validationDurationMs,
+  };
 }

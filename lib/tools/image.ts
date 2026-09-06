@@ -33,3 +33,59 @@ export function extensionForRasterType(type: RasterFormat) {
   if (type === 'image/webp') return 'webp';
   return 'png';
 }
+
+export type ImageCrop = { x: number; y: number; width: number; height: number };
+export type QuarterTurn = 0 | 90 | 180 | 270;
+
+export function validateCrop(
+  crop: ImageCrop,
+  sourceWidth: number,
+  sourceHeight: number,
+) {
+  const values = [crop.x, crop.y, crop.width, crop.height];
+  if (!values.every(Number.isFinite) || !values.every(Number.isInteger)) {
+    throw new Error('Crop values must be whole numbers.');
+  }
+  if (
+    crop.x < 0 ||
+    crop.y < 0 ||
+    crop.width < 1 ||
+    crop.height < 1 ||
+    crop.x + crop.width > sourceWidth ||
+    crop.y + crop.height > sourceHeight
+  ) {
+    throw new Error(
+      `Crop must stay inside the ${sourceWidth} × ${sourceHeight}px image.`,
+    );
+  }
+  return crop;
+}
+
+export function transformedDimensions(
+  width: number,
+  height: number,
+  rotation: QuarterTurn,
+) {
+  return rotation === 90 || rotation === 270
+    ? { width: height, height: width }
+    : { width, height };
+}
+
+export function canvasFilter(options: {
+  brightness: number;
+  contrast: number;
+  grayscale: number;
+  sepia: number;
+}) {
+  const clamp = (value: number, minimum: number, maximum: number) =>
+    Math.min(
+      maximum,
+      Math.max(minimum, Number.isFinite(value) ? value : minimum),
+    );
+  return [
+    `brightness(${clamp(options.brightness, 0, 200)}%)`,
+    `contrast(${clamp(options.contrast, 0, 200)}%)`,
+    `grayscale(${clamp(options.grayscale, 0, 100)}%)`,
+    `sepia(${clamp(options.sepia, 0, 100)}%)`,
+  ].join(' ');
+}

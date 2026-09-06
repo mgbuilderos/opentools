@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { publicTools } from './catalog';
+import {
+  IMAGE_EDITOR_OPERATIONS,
+  PDF_PAGE_OPERATIONS,
+  publicTools,
+} from './catalog';
 import {
   ADVANCED_DEVELOPER_OPERATIONS,
   runAdvancedDeveloperOperation,
@@ -331,7 +335,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 548 operation-level tool destinations', () => {
+  it('accounts for all 560 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -341,12 +345,18 @@ describe('exhaustive workbench input/output QC', () => {
       ...TEXT_OPERATIONS.map(
         (operation) => `/text/workbench?tool=${operation.id}`,
       ),
+      ...PDF_PAGE_OPERATIONS.map(
+        (operation) => `/pdf/page-tools?tool=${operation.id}`,
+      ),
+      ...IMAGE_EDITOR_OPERATIONS.map(
+        (operation) => `/image/editor?tool=${operation.id}`,
+      ),
     ].toSorted();
     const catalogDestinations = publicTools
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(548);
+    expect(expectedDestinations).toHaveLength(560);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

@@ -20,10 +20,30 @@ export type PdfExtractRequest = {
   pages: number[];
 };
 
+export type PdfPageTransformOptions = {
+  pageOrder: number[];
+  rotation: 0 | 90 | 180 | 270;
+  pageNumbers: boolean;
+  watermark: string;
+  metadata: {
+    title: string;
+    author: string;
+    subject: string;
+    keywords: string;
+  };
+};
+
+export type PdfTransformRequest = {
+  type: 'transform';
+  input: PdfWorkerInput;
+  options: PdfPageTransformOptions;
+};
+
 export type PdfWorkerRequest =
   | PdfInspectRequest
   | PdfMergeRequest
-  | PdfExtractRequest;
+  | PdfExtractRequest
+  | PdfTransformRequest;
 
 export type PdfWorkerResponse =
   | {
@@ -50,7 +70,8 @@ export type PdfWorkerResponse =
         | 'ENCRYPTED_PDF'
         | 'EMPTY_PDF'
         | 'MERGE_FAILED'
-        | 'EXTRACT_FAILED';
+        | 'EXTRACT_FAILED'
+        | 'TRANSFORM_FAILED';
       message: string;
       inputId?: string;
     };

@@ -6,7 +6,7 @@ import { publicTools, searchTools, toolGroups, toolsForGroup } from './catalog';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
-    expect(publicTools).toHaveLength(30);
+    expect(publicTools).toHaveLength(32);
     const ids = new Set<string>();
     const routes = new Set<string>();
 
@@ -47,6 +47,12 @@ describe('public canary catalog', () => {
     );
     expect(searchTools('split pdf').map((tool) => tool.id)).toContain(
       'pdf-extract',
+    );
+    expect(searchTools('rotate pdf')[0]?.href).toBe(
+      '/pdf/page-tools?tool=rotate-pdf',
+    );
+    expect(searchTools('image cropper')[0]?.href).toBe(
+      '/image/editor?tool=image-cropper',
     );
     expect(searchTools('base64 to text').map((tool) => tool.id)).toContain(
       'base64-decode',
@@ -187,7 +193,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(548);
+    expect(entries).toHaveLength(560);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

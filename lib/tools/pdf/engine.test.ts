@@ -7,6 +7,7 @@ import {
   inspectPdfInputs,
   mergePdfInputs,
   PdfEngineError,
+  transformPdfPages,
 } from './engine';
 import type { PdfWorkerInput } from './protocol';
 
@@ -118,5 +119,46 @@ describe('PDF merge engine', () => {
     await expect(extractPdfPages(source, [2])).rejects.toThrow(
       'between 1 and 1',
     );
+  });
+
+  it('reorders, removes, rotates, numbers, watermarks, and labels pages', async () => {
+    const source = await makePdf('source', [210, 320, 430]);
+    const result = await transformPdfPages(source, {
+      pageOrder: [3, 1],
+      rotation: 90,
+      pageNumbers: true,
+      watermark: 'DRAFT',
+      metadata: {
+        title: 'Local output',
+        author: 'Browser user',
+        subject: 'Test',
+        keywords: 'local, private',
+      },
+    });
+    const reopened = await PDFDocument.load(result.bytes, {
+      updateMetadata: false,
+    });
+    expect(reopened.getPageCount()).toBe(2);
+    expect(reopened.getPages().map((page) => page.getWidth())).toEqual([
+      430, 210,
+    ]);
+    expect(reopened.getPages().map((page) => page.getRotation().angle)).toEqual(
+      [90, 90],
+    );
+    expect(reopened.getTitle()).toBe('Local output');
+    expect(reopened.getAuthor()).toBe('Browser user');
+  });
+
+  it('rejects an invalid page order for PDF transforms', async () => {
+    const source = await makePdf('source', [210]);
+    await expect(
+      transformPdfPages(source, {
+        pageOrder: [2],
+        rotation: 0,
+        pageNumbers: false,
+        watermark: '',
+        metadata: { title: '', author: '', subject: '', keywords: '' },
+      }),
+    ).rejects.toMatchObject({ code: 'TRANSFORM_FAILED' });
   });
 });

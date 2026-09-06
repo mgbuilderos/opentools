@@ -5,6 +5,7 @@ import {
   inspectPdfInputs,
   mergePdfInputs,
   PdfEngineError,
+  transformPdfPages,
 } from '@/lib/tools/pdf/engine';
 import type {
   PdfWorkerRequest,
@@ -50,6 +51,31 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
     extractPdfPages(request.input, request.pages, (phase, completed, total) => {
       send({ type: 'progress', phase, completed, total });
     })
+      .then((result) => {
+        const output = result.bytes.slice().buffer as ArrayBuffer;
+        send(
+          {
+            type: 'result',
+            bytes: output,
+            pageCount: result.pageCount,
+            computeDurationMs: result.computeDurationMs,
+            validationDurationMs: result.validationDurationMs,
+          },
+          [output],
+        );
+      })
+      .catch(sendError);
+    return;
+  }
+
+  if (request.type === 'transform') {
+    transformPdfPages(
+      request.input,
+      request.options,
+      (phase, completed, total) => {
+        send({ type: 'progress', phase, completed, total });
+      },
+    )
       .then((result) => {
         const output = result.bytes.slice().buffer as ArrayBuffer;
         send(
