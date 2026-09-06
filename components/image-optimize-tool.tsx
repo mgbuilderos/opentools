@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
 import {
   calculateContainDimensions,
@@ -221,6 +222,19 @@ export function ImageOptimizeTool() {
       };
       resultRef.current = next;
       setResult(next);
+      announceCompletion({
+        operation: 'Image optimizer',
+        durationMs: next.durationMs,
+        summary: `Image converted to ${targetFormat.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
+        metrics: [
+          { label: 'Before', value: formatBytes(source.file.size) },
+          { label: 'After', value: formatBytes(blob.size) },
+          {
+            label: 'Saved',
+            value: `${Math.max(0, Math.round((1 - blob.size / source.file.size) * 100))}%`,
+          },
+        ],
+      });
     } catch (caught) {
       setError(
         caught instanceof Error

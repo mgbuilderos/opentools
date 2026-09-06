@@ -16,11 +16,11 @@ function defaults(id: string) {
 }
 
 describe('advanced developer workbench', () => {
-  it('publishes 34 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(34);
+  it('publishes 40 unique operations whose defaults all run', async () => {
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(40);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(34);
+    ).toBe(40);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -50,6 +50,21 @@ describe('advanced developer workbench', () => {
     );
     expect(output).toContain('"verified": false');
     expect(output).toContain('"name": "Ada"');
+  });
+
+  it('explains valid regex structure without executing it', async () => {
+    await expect(
+      runAdvancedDeveloperOperation('regex-explainer', {
+        pattern: '^user-(\\d{2,4})$',
+        flags: 'iu',
+      }),
+    ).resolves.toContain('\\d — decimal digit');
+    await expect(
+      runAdvancedDeveloperOperation('regex-explainer', {
+        pattern: '[',
+        flags: 'g',
+      }),
+    ).rejects.toThrow('Invalid JavaScript regular expression');
   });
 
   it('generates correctly shaped random identifiers and tokens', async () => {
@@ -145,6 +160,18 @@ describe('advanced developer workbench', () => {
     ).resolves.toContain('"network": "10.20.16.0"');
   });
 
+  it('normalizes IPv6 subnets and calculates exact bounds', async () => {
+    const output = await runAdvancedDeveloperOperation(
+      'ipv6-subnet-calculator',
+      { address: '2001:0db8:abcd:0012::1234', prefix: '64' },
+    );
+    expect(output).toContain('"address": "2001:db8:abcd:12::1234"');
+    expect(output).toContain('"network": "2001:db8:abcd:12::"');
+    expect(output).toContain(
+      '"lastAddress": "2001:db8:abcd:12:ffff:ffff:ffff:ffff"',
+    );
+  });
+
   it('parses headers and cookies without making a request', async () => {
     await expect(
       runAdvancedDeveloperOperation('http-header-parser', {
@@ -156,6 +183,19 @@ describe('advanced developer workbench', () => {
         input: 'name=Ada%20Example; theme=dark',
       }),
     ).resolves.toContain('"name": "Ada Example"');
+  });
+
+  it('parses a bounded INI subset without coercing values', async () => {
+    const output = await runAdvancedDeveloperOperation('ini-viewer', {
+      input: 'name=Tools\n[server]\nport=3010\nenabled=true',
+    });
+    expect(output).toContain('"port": "3010"');
+    expect(output).toContain('"enabled": "true"');
+    await expect(
+      runAdvancedDeveloperOperation('ini-viewer', {
+        input: '[server]\nport=1\nport=2',
+      }),
+    ).rejects.toThrow('repeats key port');
   });
 
   it('quotes SQL preview literals and rejects parameter-count mismatch', async () => {
@@ -171,6 +211,28 @@ describe('advanced developer workbench', () => {
         parameters: '[1,2]',
       }),
     ).rejects.toThrow('unused');
+  });
+
+  it('formats and minifies SQL and formats GraphQL lexically', async () => {
+    const formatted = await runAdvancedDeveloperOperation('sql-formatter', {
+      input: "select id,name from users where role='editor' and active=true;",
+    });
+    expect(formatted).toContain('SELECT id,');
+    expect(formatted).toContain('\nFROM users');
+    expect(formatted).toContain('\nWHERE role');
+    expect(formatted).toContain('\nAND active');
+
+    await expect(
+      runAdvancedDeveloperOperation('sql-minifier', {
+        input: "SELECT 'a -- value' AS value -- remove\nFROM items;",
+      }),
+    ).resolves.toBe("SELECT 'a -- value' AS value FROM items;");
+
+    const graphql = await runAdvancedDeveloperOperation('graphql-formatter', {
+      input: 'query User($id:ID!){user(id:$id){id name}}',
+    });
+    expect(graphql).toContain('query User ($id:ID!) {');
+    expect(graphql).toContain('\n  user (id:$id) {');
   });
 
   it('inspects package and OpenAPI structures and builds schema examples', async () => {

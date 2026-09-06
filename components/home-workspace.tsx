@@ -41,6 +41,11 @@ const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
 };
 
 export function HomeWorkspace() {
+  const workingActions = publicTools.reduce(
+    (total, tool) => total + (tool.searchEntries?.length ?? 1),
+    0,
+  );
+
   return (
     <AppShell currentToolId="">
       <section
@@ -79,68 +84,138 @@ export function HomeWorkspace() {
                 </p>
               </div>
               <span className="tabular rounded-full border px-3 py-1.5 text-xs font-semibold">
-                {publicTools.length} working tools
+                {publicTools.length} workspaces · {workingActions} actions
               </span>
             </div>
 
-            <div className="mt-4 grid items-start gap-3 lg:grid-cols-2">
-              {toolGroups.map((group) => {
+            <nav
+              aria-label="Tool categories"
+              className="mt-5 grid grid-cols-2 overflow-hidden rounded-xl border bg-card sm:grid-cols-3 lg:grid-cols-6"
+            >
+              {toolGroups.map((group, index) => {
                 const Icon = groupIcons[group.id];
                 const tools = toolsForGroup(group);
+                const operationCount = tools.reduce(
+                  (total, tool) => total + (tool.searchEntries?.length ?? 1),
+                  0,
+                );
+                return (
+                  <a
+                    key={group.id}
+                    href={`#group-${group.id}`}
+                    className="focus-ring group border-b border-r p-3 transition-colors hover:bg-muted sm:p-4"
+                  >
+                    <span className="flex items-center justify-between gap-2">
+                      <Icon aria-hidden="true" className="size-4" />
+                      <span className="tabular text-[10px] text-muted-foreground">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    </span>
+                    <span className="mt-3 block text-xs font-semibold">
+                      {group.name}
+                    </span>
+                    <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                      {operationCount.toLocaleString()} working{' '}
+                      {operationCount === 1 ? 'action' : 'actions'}
+                    </span>
+                  </a>
+                );
+              })}
+            </nav>
+
+            <div className="mt-5 space-y-4">
+              {toolGroups.map((group, index) => {
+                const Icon = groupIcons[group.id];
+                const tools = toolsForGroup(group);
+                const operationCount = tools.reduce(
+                  (total, tool) => total + (tool.searchEntries?.length ?? 1),
+                  0,
+                );
                 return (
                   <section
                     key={group.id}
                     aria-labelledby={`group-${group.id}`}
-                    className="overflow-hidden rounded-xl border bg-card"
+                    className={`scroll-mt-24 overflow-hidden rounded-2xl border ${
+                      index % 2 === 0 ? 'bg-card' : 'bg-muted/30'
+                    }`}
                   >
-                    <div className="flex items-start justify-between gap-4 border-b bg-muted/40 px-4 py-3.5">
-                      <div className="flex min-w-0 items-start gap-3">
-                        <span className="grid size-8 shrink-0 place-items-center rounded-lg border bg-background">
-                          <Icon aria-hidden="true" className="size-4" />
-                        </span>
-                        <div className="min-w-0">
+                    <div className="grid md:grid-cols-[220px_minmax(0,1fr)]">
+                      <header className="border-b p-5 md:border-b-0 md:border-r md:p-6">
+                        <div className="flex items-center justify-between">
+                          <span className="grid size-10 place-items-center rounded-xl bg-foreground text-background">
+                            <Icon aria-hidden="true" className="size-5" />
+                          </span>
+                          <span className="tabular text-3xl font-semibold tracking-[-0.06em] text-muted-foreground/50">
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+                        </div>
+                        <div className="mt-5">
                           <h3
                             id={`group-${group.id}`}
-                            className="text-sm font-semibold"
+                            className="text-lg font-semibold tracking-[-0.03em]"
                           >
                             {group.name}
                           </h3>
-                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
                             {group.shortDescription}
                           </p>
+                          <p className="tabular mt-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                            {operationCount.toLocaleString()} local actions
+                          </p>
                         </div>
+                      </header>
+                      <div className="grid content-start gap-px bg-border sm:grid-cols-2">
+                        {tools.map((tool) => (
+                          <article key={tool.id} className="bg-background p-4">
+                            <a
+                              href={tool.href}
+                              className="focus-ring group flex items-start justify-between gap-4 rounded-lg"
+                            >
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold">
+                                  {tool.name}
+                                </span>
+                                <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+                                  {tool.shortDescription}
+                                </span>
+                              </span>
+                              <ArrowRight
+                                aria-hidden="true"
+                                className="mt-0.5 size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                              />
+                            </a>
+                            {tool.searchEntries?.length ? (
+                              <div className="mt-3 flex flex-wrap gap-1.5 border-t pt-3">
+                                {tool.searchEntries.slice(0, 3).map((entry) => (
+                                  <a
+                                    key={entry.id}
+                                    href={entry.href}
+                                    className="focus-ring rounded-md border bg-muted/50 px-2 py-1 text-[11px] font-medium hover:bg-muted"
+                                  >
+                                    {entry.name}
+                                  </a>
+                                ))}
+                                {tool.searchEntries.length > 3 ? (
+                                  <a
+                                    href={tool.href}
+                                    className="focus-ring rounded-md px-2 py-1 text-[11px] font-semibold text-muted-foreground hover:bg-muted"
+                                  >
+                                    +{tool.searchEntries.length - 3} more
+                                  </a>
+                                ) : null}
+                              </div>
+                            ) : (
+                              <p className="mt-3 flex items-center gap-1.5 border-t pt-3 text-[11px] font-medium text-muted-foreground">
+                                <LockKeyhole
+                                  aria-hidden="true"
+                                  className="size-3"
+                                />
+                                Focused single-purpose tool
+                              </p>
+                            )}
+                          </article>
+                        ))}
                       </div>
-                      <span className="tabular shrink-0 rounded-full border bg-background px-2 py-1 text-[11px] font-semibold">
-                        {tools.length}
-                      </span>
-                    </div>
-                    <div className="divide-y">
-                      {tools.map((tool) => (
-                        <a
-                          key={tool.id}
-                          href={tool.href}
-                          className="focus-ring group flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-muted/55"
-                        >
-                          <span className="min-w-0">
-                            <span className="block text-sm font-semibold">
-                              {tool.name}
-                            </span>
-                            <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                              {tool.shortDescription}
-                            </span>
-                          </span>
-                          <span className="flex shrink-0 items-center gap-2 text-xs font-semibold">
-                            <LockKeyhole
-                              aria-hidden="true"
-                              className="size-3"
-                            />
-                            <ArrowRight
-                              aria-hidden="true"
-                              className="size-3.5 transition-transform group-hover:translate-x-0.5"
-                            />
-                          </span>
-                        </a>
-                      ))}
                     </div>
                   </section>
                 );

@@ -92,9 +92,9 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     },
     {
       id: 'jwt-decoder',
-      name: 'JWT decoder',
+      name: 'JWT decoder & inspector',
       description:
-        'Decode compact JWT header and payload segments without verification.',
+        'Decode and inspect compact JWT header, payload, signature presence, and time claims without verification.',
       fields: [
         area(
           'input',
@@ -105,6 +105,18 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       notice:
         'Decoded does not mean trusted. This tool does not verify signatures, issuers, audiences, or claims.',
       outputExtension: 'json',
+    },
+    {
+      id: 'regex-explainer',
+      name: 'Regex explainer',
+      description:
+        'Validate a JavaScript regular expression and annotate its common tokens in source order.',
+      fields: [
+        area('pattern', 'Regular-expression source', '^user-(\\d{2,4})$'),
+        text('flags', 'JavaScript flags', 'iu'),
+      ],
+      notice:
+        'Structural aid only. It explains a documented common JavaScript subset, does not prove safety or intent, and does not execute the expression against input.',
     },
     {
       id: 'ulid-generator',
@@ -280,6 +292,19 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       fields: [text('input', 'IPv4 CIDR', '10.20.30.40/20')],
     },
     {
+      id: 'ipv6-subnet-calculator',
+      name: 'IPv6 subnet calculator',
+      description:
+        'Parse an IPv6 address and calculate the normalized network and final address for a prefix.',
+      fields: [
+        text('address', 'IPv6 address', '2001:db8:abcd:12::1234'),
+        number('prefix', 'Prefix length (0–128)', '64'),
+      ],
+      notice:
+        'Pure IPv6 hexadecimal notation is supported. Embedded IPv4 tails, zone identifiers, routing policy, address assignment, and reachability are intentionally excluded.',
+      outputExtension: 'json',
+    },
+    {
       id: 'http-header-parser',
       name: 'HTTP header parser',
       description:
@@ -305,6 +330,22 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
           'theme=dark; locale=en-IN; display=Ada%20Example',
         ),
       ],
+      outputExtension: 'json',
+    },
+    {
+      id: 'ini-viewer',
+      name: 'INI viewer',
+      description:
+        'Parse a bounded INI subset into a section-preserving JSON object.',
+      fields: [
+        area(
+          'input',
+          'INI text',
+          '; local configuration\nname = Tools\n[server]\nhost = localhost\nport = 3010',
+        ),
+      ],
+      notice:
+        'Supports comments, [sections], and key=value or key:value rows. Values remain strings; interpolation, arrays, escapes, includes, and dialect-specific coercion are not applied.',
       outputExtension: 'json',
     },
     {
@@ -339,6 +380,54 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       notice:
         'Preview only—not a database driver or security boundary. Use native parameterized queries in production.',
       outputExtension: 'sql',
+    },
+    {
+      id: 'sql-formatter',
+      name: 'SQL formatter',
+      description:
+        'Format a bounded SQL statement using quote- and comment-aware tokenization.',
+      fields: [
+        area(
+          'input',
+          'SQL',
+          "select u.id,u.name from users u where u.active=true and u.role in ('editor','owner') order by u.name;",
+        ),
+      ],
+      notice:
+        'Readability formatter, not a SQL parser or validator. Review vendor-specific syntax, procedural SQL, operators, comments, and generated queries before use.',
+      outputExtension: 'sql',
+    },
+    {
+      id: 'sql-minifier',
+      name: 'SQL minifier',
+      description:
+        'Remove comments and unnecessary whitespace with quote-aware SQL tokenization.',
+      fields: [
+        area(
+          'input',
+          'SQL',
+          'SELECT id, name\nFROM users\nWHERE active = TRUE; -- local query',
+        ),
+      ],
+      notice:
+        'Conservative lexical transform, not dialect validation. It preserves quoted values but may not understand vendor-specific quoting or procedural blocks; verify the result before execution.',
+      outputExtension: 'sql',
+    },
+    {
+      id: 'graphql-formatter',
+      name: 'GraphQL formatter',
+      description:
+        'Indent a bounded GraphQL document with string- and comment-aware lexical formatting.',
+      fields: [
+        area(
+          'input',
+          'GraphQL document',
+          'query User($id:ID!){user(id:$id){id name posts(limit:3){title}}}',
+        ),
+      ],
+      notice:
+        'Lexical formatter only. It does not validate a schema, operation semantics, directives, variables, fragments, or server compatibility.',
+      outputExtension: 'graphql',
     },
     {
       id: 'graphql-variable-builder',
@@ -739,6 +828,489 @@ function subnet(address: string, prefix: number) {
   };
 }
 
+function explainRegex(sourceValue: string, flagsValue: string) {
+  const source = required(sourceValue, 'Regular-expression source', 10_000);
+  const flags = flagsValue.trim();
+  if (!/^[dgimsuvy]*$/u.test(flags) || new Set(flags).size !== flags.length)
+    throw new Error(
+      'Flags must be unique JavaScript d, g, i, m, s, u, v, or y flags.',
+    );
+  try {
+    new RegExp(source, flags);
+  } catch (error) {
+    throw new Error(
+      `Invalid JavaScript regular expression: ${error instanceof Error ? error.message : 'unknown syntax error'}`,
+    );
+  }
+
+  const explanations: string[] = [];
+  const escaped: Record<string, string> = {
+    d: 'decimal digit',
+    D: 'non-digit',
+    s: 'whitespace',
+    S: 'non-whitespace',
+    w: 'word character',
+    W: 'non-word character',
+    b: 'word boundary',
+    B: 'non-word boundary',
+    n: 'line feed',
+    r: 'carriage return',
+    t: 'tab',
+  };
+  let index = 0;
+  while (index < source.length) {
+    const rest = source.slice(index);
+    if (source[index] === '\\') {
+      const token = source.slice(index, index + 2);
+      explanations.push(
+        `${token} — ${escaped[source[index + 1]] ?? 'escaped literal or character escape'}`,
+      );
+      index += 2;
+      continue;
+    }
+    if (source[index] === '[') {
+      let end = index + 1;
+      while (end < source.length) {
+        if (source[end] === '\\') end += 2;
+        else if (source[end++] === ']') break;
+      }
+      const token = source.slice(index, end);
+      explanations.push(
+        `${token} — ${token.startsWith('[^') ? 'negated ' : ''}character class`,
+      );
+      index = end;
+      continue;
+    }
+    const brace = /^\{\d+(?:,\d*)?\}\??/u.exec(rest)?.[0];
+    if (brace) {
+      explanations.push(
+        `${brace} — bounded repetition${brace.endsWith('?') ? ', lazy' : ''}`,
+      );
+      index += brace.length;
+      continue;
+    }
+    const group = /^(?:\(\?:|\(\?=|\(\?!|\(\?<=|\(\?<!|\(\?<[^>]+>|\()/u.exec(
+      rest,
+    )?.[0];
+    if (group) {
+      const meaning =
+        group === '('
+          ? 'capturing group'
+          : group === '(?:'
+            ? 'non-capturing group'
+            : group === '(?='
+              ? 'positive lookahead'
+              : group === '(?!'
+                ? 'negative lookahead'
+                : group === '(?<='
+                  ? 'positive lookbehind'
+                  : group === '(?<!'
+                    ? 'negative lookbehind'
+                    : 'named capturing group';
+      explanations.push(`${group} — ${meaning}`);
+      index += group.length;
+      continue;
+    }
+    const meanings: Record<string, string> = {
+      '^': 'start assertion',
+      $: 'end assertion',
+      '.': 'any character allowed by the dotAll setting',
+      '|': 'alternative',
+      ')': 'end group',
+      '*': 'zero or more repetitions',
+      '+': 'one or more repetitions',
+      '?': 'optional item or lazy modifier',
+    };
+    if (meanings[source[index]]) {
+      explanations.push(`${source[index]} — ${meanings[source[index]]}`);
+      index += 1;
+      continue;
+    }
+    const literal = /^[^\\[\]{}()^$.*+?|]+/u.exec(rest)?.[0] ?? source[index];
+    explanations.push(`${JSON.stringify(literal)} — literal text`);
+    index += literal.length;
+  }
+  return [
+    `Valid JavaScript regular expression /${source}/${flags}`,
+    `Flags: ${flags || 'none'}`,
+    ...explanations.map((item, itemIndex) => `${itemIndex + 1}. ${item}`),
+  ].join('\n');
+}
+
+function parseIpv6(value: string) {
+  const source = required(value, 'IPv6 address', 100).toLocaleLowerCase();
+  if (source.includes('%'))
+    throw new Error(
+      'Remove the zone identifier; this calculator accepts an address only.',
+    );
+  if (source.includes('.'))
+    throw new Error(
+      'Embedded IPv4 tails are not supported by this calculator.',
+    );
+  if ((source.match(/::/gu) ?? []).length > 1)
+    throw new Error(
+      'IPv6 address may contain at most one :: compression marker.',
+    );
+  const compressed = source.includes('::');
+  const [leftText, rightText = ''] = source.split('::');
+  const left = leftText ? leftText.split(':') : [];
+  const right = rightText ? rightText.split(':') : [];
+  if (
+    (!compressed && left.length !== 8) ||
+    (compressed && left.length + right.length > 7)
+  )
+    throw new Error(
+      'IPv6 address must expand to exactly eight hexadecimal groups.',
+    );
+  const parseGroup = (group: string) => {
+    if (!/^[0-9a-f]{1,4}$/u.test(group))
+      throw new Error(`Invalid IPv6 group: ${group || '(empty)'}.`);
+    return Number.parseInt(group, 16);
+  };
+  const groups = [
+    ...left.map(parseGroup),
+    ...Array.from(
+      { length: compressed ? 8 - left.length - right.length : 0 },
+      () => 0,
+    ),
+    ...right.map(parseGroup),
+  ];
+  if (groups.length !== 8)
+    throw new Error('IPv6 address must expand to exactly eight groups.');
+  return groups.reduce(
+    (result, group) => (result << BigInt(16)) | BigInt(group),
+    BigInt(0),
+  );
+}
+
+function ipv6Text(value: bigint) {
+  const groups = Array.from({ length: 8 }, (_, index) =>
+    Number((value >> BigInt((7 - index) * 16)) & BigInt(0xffff)).toString(16),
+  );
+  let bestStart = -1;
+  let bestLength = 0;
+  for (let start = 0; start < groups.length;) {
+    if (groups[start] !== '0') {
+      start += 1;
+      continue;
+    }
+    let end = start;
+    while (end < groups.length && groups[end] === '0') end += 1;
+    if (end - start > bestLength && end - start >= 2) {
+      bestStart = start;
+      bestLength = end - start;
+    }
+    start = end;
+  }
+  if (bestStart < 0) return groups.join(':');
+  return `${groups.slice(0, bestStart).join(':')}::${groups.slice(bestStart + bestLength).join(':')}`;
+}
+
+function ipv6Subnet(address: string, prefix: number) {
+  const value = parseIpv6(address);
+  const all = (BigInt(1) << BigInt(128)) - BigInt(1);
+  const mask = prefix === 0 ? BigInt(0) : (all << BigInt(128 - prefix)) & all;
+  const network = value & mask;
+  const last = network | (all ^ mask);
+  return {
+    address: ipv6Text(value),
+    prefix,
+    network: ipv6Text(network),
+    lastAddress: ipv6Text(last),
+    addressCount: (BigInt(1) << BigInt(128 - prefix)).toString(),
+  };
+}
+
+function parseIni(value: string) {
+  const lines = required(value, 'INI text')
+    .replace(/\r\n?/gu, '\n')
+    .split('\n');
+  if (lines.length > 10_000)
+    throw new Error('INI input is limited to 10,000 lines.');
+  const root: Record<string, string> = {};
+  const sections: Record<string, Record<string, string>> = {};
+  let target = root;
+  for (const [index, original] of lines.entries()) {
+    const line = original.trim();
+    if (!line || line.startsWith(';') || line.startsWith('#')) continue;
+    const section = /^\[([^\]\r\n]+)\]$/u.exec(line);
+    if (section) {
+      const name = section[1].trim();
+      if (!name) throw new Error(`INI line ${index + 1} has an empty section.`);
+      target = sections[name] ??= {};
+      continue;
+    }
+    const pair = /^([^=:]+?)\s*[=:]\s*(.*)$/u.exec(line);
+    if (!pair)
+      throw new Error(
+        `INI line ${index + 1} must be a section, comment, or key/value row.`,
+      );
+    const key = pair[1].trim();
+    if (!key) throw new Error(`INI line ${index + 1} has an empty key.`);
+    if (Object.hasOwn(target, key))
+      throw new Error(`INI line ${index + 1} repeats key ${key}.`);
+    target[key] = pair[2].trim();
+  }
+  return { root, sections };
+}
+
+type CodeToken = {
+  value: string;
+  kind: 'word' | 'quoted' | 'symbol' | 'comment';
+};
+
+function codeTokens(value: string, language: 'sql' | 'graphql') {
+  const source = required(
+    value,
+    language === 'sql' ? 'SQL' : 'GraphQL document',
+  );
+  const tokens: CodeToken[] = [];
+  let index = 0;
+  const push = (token: CodeToken) => tokens.push(token);
+  while (index < source.length) {
+    if (/\s/u.test(source[index])) {
+      index += 1;
+      continue;
+    }
+    if (language === 'sql' && source.startsWith('--', index)) {
+      const end = source.indexOf('\n', index);
+      index = end < 0 ? source.length : end + 1;
+      continue;
+    }
+    if (language === 'sql' && source.startsWith('/*', index)) {
+      const end = source.indexOf('*/', index + 2);
+      if (end < 0) throw new Error('SQL block comment is not closed.');
+      index = end + 2;
+      continue;
+    }
+    if (language === 'graphql' && source[index] === '#') {
+      const end = source.indexOf('\n', index);
+      const stop = end < 0 ? source.length : end;
+      push({ value: source.slice(index, stop), kind: 'comment' });
+      index = stop;
+      continue;
+    }
+    const quote = source[index];
+    if (language === 'graphql' && source.startsWith('"""', index)) {
+      const end = source.indexOf('"""', index + 3);
+      if (end < 0) throw new Error('GraphQL block string is not closed.');
+      push({ value: source.slice(index, end + 3), kind: 'quoted' });
+      index = end + 3;
+      continue;
+    }
+    if (
+      ["'", '"', '`'].includes(quote) ||
+      (language === 'sql' && quote === '[')
+    ) {
+      const closing = quote === '[' ? ']' : quote;
+      let end = index + 1;
+      while (end < source.length) {
+        if (source[end] === '\\') end += 2;
+        else if (source[end] === closing) {
+          if (source[end + 1] === closing && closing !== ']') end += 2;
+          else {
+            end += 1;
+            break;
+          }
+        } else end += 1;
+      }
+      if (source[end - 1] !== closing)
+        throw new Error('Quoted value is not closed.');
+      push({ value: source.slice(index, end), kind: 'quoted' });
+      index = end;
+      continue;
+    }
+    const word = /^[\p{L}\p{N}_$.-]+/u.exec(source.slice(index))?.[0];
+    if (word) {
+      push({ value: word, kind: 'word' });
+      index += word.length;
+      continue;
+    }
+    const operator = /^(?:<=|>=|<>|!=|==|\|\||&&|::|->>|->)/u.exec(
+      source.slice(index),
+    )?.[0];
+    push({ value: operator ?? source[index], kind: 'symbol' });
+    index += operator?.length ?? 1;
+    if (tokens.length > 200_000)
+      throw new Error('Input is limited to 200,000 lexical tokens.');
+  }
+  return tokens;
+}
+
+function needsTokenSpace(left: CodeToken | undefined, right: CodeToken) {
+  if (!left) return false;
+  if ([')', ']', ',', ';', '.', ':', '!'].includes(right.value)) return false;
+  if (['(', '[', '.', ':'].includes(left.value)) return false;
+  return left.kind !== 'symbol' || right.kind !== 'symbol';
+}
+
+function sqlMinify(value: string) {
+  const tokens = codeTokens(value, 'sql');
+  let output = '';
+  for (const [index, token] of tokens.entries()) {
+    if (needsTokenSpace(tokens[index - 1], token)) output += ' ';
+    output += token.value;
+  }
+  return output.trim();
+}
+
+const SQL_KEYWORDS = new Set([
+  'select',
+  'from',
+  'where',
+  'and',
+  'or',
+  'as',
+  'join',
+  'left',
+  'right',
+  'inner',
+  'outer',
+  'full',
+  'cross',
+  'on',
+  'group',
+  'by',
+  'order',
+  'having',
+  'limit',
+  'offset',
+  'union',
+  'all',
+  'distinct',
+  'insert',
+  'into',
+  'values',
+  'update',
+  'set',
+  'delete',
+  'create',
+  'alter',
+  'drop',
+  'table',
+  'case',
+  'when',
+  'then',
+  'else',
+  'end',
+  'in',
+  'is',
+  'not',
+  'null',
+  'true',
+  'false',
+  'asc',
+  'desc',
+]);
+const SQL_BREAKS = new Set([
+  'SELECT',
+  'FROM',
+  'WHERE',
+  'JOIN',
+  'LEFT',
+  'RIGHT',
+  'INNER',
+  'OUTER',
+  'FULL',
+  'CROSS',
+  'ON',
+  'GROUP',
+  'ORDER',
+  'HAVING',
+  'LIMIT',
+  'OFFSET',
+  'UNION',
+  'INSERT',
+  'UPDATE',
+  'DELETE',
+  'VALUES',
+  'SET',
+  'AND',
+  'OR',
+]);
+
+function sqlFormat(value: string) {
+  const tokens = codeTokens(value, 'sql').map((token) => ({
+    ...token,
+    value:
+      token.kind === 'word' && SQL_KEYWORDS.has(token.value.toLocaleLowerCase())
+        ? token.value.toLocaleUpperCase()
+        : token.value,
+  }));
+  const lines: string[] = [];
+  let line = '';
+  const flush = () => {
+    if (line.trim()) lines.push(line.trim());
+    line = '';
+  };
+  for (const [index, token] of tokens.entries()) {
+    if (SQL_BREAKS.has(token.value)) flush();
+    if (token.value === ',' && line) {
+      line += ',';
+      flush();
+      continue;
+    }
+    if (
+      needsTokenSpace(tokens[index - 1], token) &&
+      line &&
+      !line.endsWith(' ')
+    )
+      line += ' ';
+    line += token.value;
+    if (token.value === ';') flush();
+  }
+  flush();
+  return lines.join('\n');
+}
+
+function graphqlFormat(value: string) {
+  const tokens = codeTokens(value, 'graphql');
+  const lines: string[] = [];
+  let line = '';
+  let indent = 0;
+  const flush = () => {
+    if (line.trim()) lines.push(`${'  '.repeat(indent)}${line.trim()}`);
+    line = '';
+  };
+  for (const [index, token] of tokens.entries()) {
+    if (token.kind === 'comment') {
+      flush();
+      line = token.value;
+      flush();
+      continue;
+    }
+    if (token.value === '{') {
+      if (line && !line.endsWith(' ')) line += ' ';
+      line += '{';
+      flush();
+      indent += 1;
+      continue;
+    }
+    if (token.value === '}') {
+      flush();
+      indent = Math.max(0, indent - 1);
+      line = '}';
+      const next = tokens[index + 1]?.value;
+      if (next !== ')' && next !== ']') flush();
+      continue;
+    }
+    if (token.value === ',') {
+      line += ',';
+      continue;
+    }
+    if (
+      needsTokenSpace(tokens[index - 1], token) &&
+      line &&
+      !line.endsWith(' ')
+    )
+      line += ' ';
+    line += token.value;
+  }
+  flush();
+  if (indent !== 0) throw new Error('GraphQL braces are not balanced.');
+  return lines.join('\n');
+}
+
 function validateCronField(
   value: string,
   label: string,
@@ -874,6 +1446,8 @@ export async function runAdvancedDeveloperOperation(
         2,
       );
     }
+    case 'regex-explainer':
+      return explainRegex(values.pattern, values.flags ?? '');
     case 'ulid-generator': {
       const count = integer(values, 'count', 1, 100);
       return Array.from(
@@ -1053,6 +1627,12 @@ export async function runAdvancedDeveloperOperation(
       if (prefix > 32) throw new Error('CIDR prefix must be from 0 to 32.');
       return JSON.stringify(subnet(match[1], prefix), null, 2);
     }
+    case 'ipv6-subnet-calculator':
+      return JSON.stringify(
+        ipv6Subnet(values.address, integer(values, 'prefix', 0, 128)),
+        null,
+        2,
+      );
     case 'http-header-parser': {
       const result: Record<string, string | string[]> = {};
       for (const [index, line] of required(values.input, 'Header lines')
@@ -1089,6 +1669,8 @@ export async function runAdvancedDeveloperOperation(
       }
       return JSON.stringify(result, null, 2);
     }
+    case 'ini-viewer':
+      return JSON.stringify(parseIni(values.input), null, 2);
     case 'user-agent-parser': {
       const ua = required(values.input, 'User-Agent');
       const browser = /Edg\/(\S+)/u.exec(ua)?.[1]
@@ -1136,6 +1718,12 @@ export async function runAdvancedDeveloperOperation(
         throw new Error('Parameters array has unused values.');
       return output;
     }
+    case 'sql-formatter':
+      return sqlFormat(values.input);
+    case 'sql-minifier':
+      return sqlMinify(values.input);
+    case 'graphql-formatter':
+      return graphqlFormat(values.input);
     case 'graphql-variable-builder':
       return JSON.stringify(
         object(json(values.input), 'GraphQL variables'),

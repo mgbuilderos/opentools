@@ -24,11 +24,25 @@ The quality-first implementation slice of the All-in-One Browser Tools blueprint
 ```text
 npm run dev
 npm run format
-npm run lint
-npm run typecheck
-npm test
-npm run build
+npm run test:operations
+npm run qc
+npm run qc:release
 ```
+
+`npm run qc` is the fail-fast local gate: format check, the full unit suite,
+all 548 operation input/output contracts, typecheck, lint with warnings denied,
+production build, checked-in SBOM drift check, and blueprint verification.
+`qc:release` additionally queries dependency advisories. The automated pass is
+necessary but does not replace browser/device, accessibility, corpus,
+independent-decoder, formal egress, license, or human release sign-off. See
+[`../../implementation/ZERO_COMPROMISE_OUTPUT_QC.md`](../../implementation/ZERO_COMPROMISE_OUTPUT_QC.md).
+
+The compact home catalog separates 12 numbered categories, shows canonical
+workspaces and direct subtool shortcuts, and labels action counts separately
+from route counts. Every implemented tool family emits the same local
+completion dialog with measured duration, bounded output facts, an explicit
+privacy boundary, and optional open-source support language. No result is
+gated and no payment provider is connected.
 
 ## Privacy state
 

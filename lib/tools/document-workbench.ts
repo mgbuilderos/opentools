@@ -69,7 +69,11 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
     description:
       'Normalize pasted text to LF line endings and download a UTF-8 .txt file.',
     fields: [
-      area('content', 'Text', 'A clean local text file.\nNothing is uploaded.'),
+      area(
+        'content',
+        'Text',
+        'A clean local text file.\nReview it before downloading.',
+      ),
     ],
     outputExtension: 'txt',
   },

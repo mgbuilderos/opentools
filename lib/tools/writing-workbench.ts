@@ -103,7 +103,8 @@ export const WRITING_OPERATIONS: readonly WritingOperation[] = [
   {
     id: 'text-diff',
     name: 'Text diff',
-    description: 'Create a bounded line-level longest-common-subsequence diff.',
+    description:
+      'Create a bounded line-level longest-common-subsequence diff for text or code.',
     fields: [
       area('before', 'Before', 'Title\nOld sentence\nShared line'),
       area('after', 'After', 'Title\nNew sentence\nShared line'),

@@ -28,6 +28,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { CompletionValueDialog } from '@/components/completion-value-dialog';
 import { searchTools, toolGroups, toolsForGroup } from '@/lib/tools/catalog';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
 
@@ -129,6 +130,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-background">
+      <CompletionValueDialog />
       <a
         href="#tool"
         className="focus-ring fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background focus:translate-y-0"

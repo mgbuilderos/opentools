@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
 import type {
   PdfWorkerInput,
@@ -75,29 +76,6 @@ function now() {
   return performance.now();
 }
 
-function shouldShowSupportPrompt() {
-  try {
-    const suppressedUntil = Number(
-      localStorage.getItem('tools-support-suppressed-until') ?? 0,
-    );
-    return Date.now() >= suppressedUntil;
-  } catch {
-    return false;
-  }
-}
-
-function suppressSupportPrompt() {
-  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
-  try {
-    localStorage.setItem(
-      'tools-support-suppressed-until',
-      String(Date.now() + sevenDaysMs),
-    );
-  } catch {
-    // Dismissal still works for the current view when storage is unavailable.
-  }
-}
-
 async function toWorkerInputs(items: Array<{ id: string; file: File }>) {
   return Promise.all(
     items.map(
@@ -124,7 +102,6 @@ export function PdfMergeTool() {
     total: 0,
   });
   const [receipt, setReceipt] = useState<MergeReceipt | null>(null);
-  const [showSupport, setShowSupport] = useState(false);
   const manifest = publicTools.find((tool) => tool.id === 'pdf-merge')!;
 
   useEffect(
@@ -143,7 +120,6 @@ export function PdfMergeTool() {
     if (outputUrlRef.current) URL.revokeObjectURL(outputUrlRef.current);
     outputUrlRef.current = null;
     setReceipt(null);
-    setShowSupport(false);
   };
 
   const addFiles = async (incoming: File[]) => {
@@ -303,18 +279,33 @@ export function PdfMergeTool() {
         const blob = new Blob([message.bytes], { type: 'application/pdf' });
         const outputUrl = URL.createObjectURL(blob);
         outputUrlRef.current = outputUrl;
+        const completedIn = now() - jobStarted;
         setReceipt({
           outputUrl,
           outputBytes: blob.size,
           pageCount: message.pageCount,
-          durationMs: now() - jobStarted,
+          durationMs: completedIn,
           computeDurationMs: message.computeDurationMs,
           validationDurationMs: message.validationDurationMs,
         });
         setStatus('success');
         worker.terminate();
         workerRef.current = null;
-        setShowSupport(shouldShowSupportPrompt());
+        announceCompletion({
+          operation: 'PDF merge',
+          durationMs: completedIn,
+          summary: `${files.length.toLocaleString()} PDF files merged into ${message.pageCount.toLocaleString()} pages.`,
+          metrics: [
+            { label: 'Files', value: files.length.toLocaleString() },
+            {
+              label: 'Input',
+              value: formatBytes(
+                files.reduce((total, item) => total + item.file.size, 0),
+              ),
+            },
+            { label: 'Output', value: formatBytes(blob.size) },
+          ],
+        });
         return;
       }
 
@@ -718,39 +709,6 @@ export function PdfMergeTool() {
                   a payment gate. Formal zero-egress release proof is still
                   pending for this canary.
                 </p>
-                {showSupport ? (
-                  <div className="mt-3 flex flex-wrap items-center gap-3">
-                    <span className="text-sm font-semibold">
-                      If that was worth ₹29, you can support the tools once.
-                    </span>
-                    <Button
-                      render={
-                        <a
-                          href="/support"
-                          aria-label="Open optional support preview"
-                        />
-                      }
-                      variant="outline"
-                      className="h-10 px-4"
-                    >
-                      Support once — ₹29
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="h-10 px-3 text-muted-foreground"
-                      onClick={() => {
-                        suppressSupportPrompt();
-                        setShowSupport(false);
-                      }}
-                    >
-                      Not now
-                    </Button>
-                    <span className="text-xs text-muted-foreground">
-                      Optional · preview only
-                    </span>
-                  </div>
-                ) : null}
               </div>
             </section>
           ) : null}

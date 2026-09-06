@@ -14,6 +14,7 @@ import { useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
 import {
   countWords,
@@ -68,6 +69,15 @@ export function ToolWorkspace() {
         durationMs: measurement.duration,
         outputCharacters: nextOutput.length,
         words: countWords(nextOutput),
+      });
+      announceCompletion({
+        operation: `${textCaseOptions.find((item) => item.id === mode)?.label ?? 'Text case'} conversion`,
+        durationMs: measurement.duration,
+        summary: 'Your converted text is ready.',
+        metrics: [
+          { label: 'Characters', value: nextOutput.length.toLocaleString() },
+          { label: 'Words', value: countWords(nextOutput).toLocaleString() },
+        ],
       });
     });
   };

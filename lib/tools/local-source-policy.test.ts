@@ -57,4 +57,38 @@ describe('local tool source policy', () => {
 
     expect(violations).toEqual([]);
   });
+
+  it('does not present an unproved zero-upload result claim', () => {
+    const guardedFiles = guardedRoots.flatMap(sourceFiles);
+    const forbiddenReleaseClaims = [
+      /Nothing (?:was|is) uploaded/iu,
+      /0\s*(?:B|bytes?)\s+(?:of\s+)?(?:file\s+)?(?:data\s+)?uploaded/iu,
+      /0\s+file bytes uploaded/iu,
+    ];
+    const violations = guardedFiles.flatMap((file) => {
+      const source = readFileSync(file, 'utf8');
+      return forbiddenReleaseClaims
+        .filter((pattern) => pattern.test(source))
+        .map(
+          (pattern) =>
+            `${path.relative(projectRoot, file)} matched ${pattern.source}`,
+        );
+    });
+
+    expect(violations).toEqual([]);
+  });
+
+  it('uses support language instead of donation language', () => {
+    const interfaceFiles = [
+      path.join(projectRoot, 'components'),
+      path.join(projectRoot, 'app'),
+    ].flatMap(sourceFiles);
+    const violations = interfaceFiles
+      .filter((file) =>
+        /\bdonat(?:e|ion|ions|ing)\b/iu.test(readFileSync(file, 'utf8')),
+      )
+      .map((file) => path.relative(projectRoot, file));
+
+    expect(violations).toEqual([]);
+  });
 });

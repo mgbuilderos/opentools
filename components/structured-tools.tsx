@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
 import {
   csvToJson,
@@ -277,8 +278,9 @@ export function JsonTool() {
       setOutput(next);
       setError('');
       setCopied(false);
+      const completedIn = performance.now() - started;
       setReceipt({
-        durationMs: performance.now() - started,
+        durationMs: completedIn,
         inputCharacters: input.length,
         outputCharacters: next.length,
         detail:
@@ -287,6 +289,15 @@ export function JsonTool() {
             : mode === 'sort'
               ? 'valid JSON formatted and sorted'
               : 'valid JSON formatted',
+      });
+      announceCompletion({
+        operation: `JSON ${mode === 'pretty' ? 'formatter' : mode}`,
+        durationMs: completedIn,
+        summary: 'Valid JSON is ready.',
+        metrics: [
+          { label: 'Input', value: `${input.length.toLocaleString()} chars` },
+          { label: 'Output', value: `${next.length.toLocaleString()} chars` },
+        ],
       });
     } catch (caught) {
       setOutput('');
@@ -434,11 +445,25 @@ export function CsvToJsonTool() {
       setOutput(result.json);
       setError('');
       setCopied(false);
+      const completedIn = performance.now() - started;
       setReceipt({
-        durationMs: performance.now() - started,
+        durationMs: completedIn,
         inputCharacters: input.length,
         outputCharacters: result.json.length,
         detail: `${result.rows.length.toLocaleString()} rows × ${result.headers.length.toLocaleString()} columns converted`,
+      });
+      announceCompletion({
+        operation: 'CSV to JSON',
+        durationMs: completedIn,
+        summary: `${result.rows.length.toLocaleString()} rows × ${result.headers.length.toLocaleString()} columns converted.`,
+        metrics: [
+          { label: 'Rows', value: result.rows.length.toLocaleString() },
+          { label: 'Columns', value: result.headers.length.toLocaleString() },
+          {
+            label: 'Output',
+            value: `${result.json.length.toLocaleString()} chars`,
+          },
+        ],
       });
     } catch (caught) {
       setOutput('');

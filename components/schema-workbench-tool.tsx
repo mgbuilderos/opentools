@@ -15,6 +15,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 
 interface WorkbenchField {
   id: string;
@@ -155,9 +156,20 @@ export function SchemaWorkbenchTool({
     const started = performance.now();
     setRunning(true);
     try {
-      setOutput(await run(operation.id, values));
-      setDuration(performance.now() - started);
+      const nextOutput = await run(operation.id, values);
+      const completedIn = performance.now() - started;
+      setOutput(nextOutput);
+      setDuration(completedIn);
       setError('');
+      announceCompletion({
+        operation: operation.name,
+        durationMs: completedIn,
+        summary: operation.description,
+        metrics: [
+          { label: 'Result', value: 'Ready' },
+          { label: 'Method', value: methodLabel },
+        ],
+      });
     } catch (caught) {
       setOutput('');
       setError(
@@ -417,7 +429,7 @@ export function SchemaWorkbenchTool({
                       aria-hidden="true"
                       className="size-4 text-success"
                     />
-                    Nothing was uploaded
+                    Ran in this browser tab
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">

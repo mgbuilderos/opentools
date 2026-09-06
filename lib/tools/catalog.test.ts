@@ -144,6 +144,12 @@ describe('public canary catalog', () => {
     expect(searchTools('EAN 13 generator')[0]?.href).toBe(
       '/qr/workbench?tool=ean-13-generator',
     );
+    expect(searchTools('JWT inspector')[0]?.href).toBe(
+      '/developer/workbench?tool=jwt-inspector',
+    );
+    expect(searchTools('code diff')[0]?.href).toBe(
+      '/text/writing?tool=text-diff',
+    );
   });
 
   it('assigns every working tool to exactly one compact workspace', () => {
@@ -163,7 +169,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(542);
+    expect(entries).toHaveLength(548);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

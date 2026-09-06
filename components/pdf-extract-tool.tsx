@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
 import { parsePageSelection } from '@/lib/tools/pdf/page-selection';
 import type {
@@ -214,16 +215,30 @@ export function PdfExtractTool() {
         const blob = new Blob([message.bytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         outputUrlRef.current = url;
+        const completedIn = performance.now() - started;
         setReceipt({
           url,
           bytes: blob.size,
           pages: message.pageCount,
-          durationMs: performance.now() - started,
+          durationMs: completedIn,
           validationDurationMs: message.validationDurationMs,
         });
         setStatus('success');
         worker.terminate();
         workerRef.current = null;
+        announceCompletion({
+          operation: 'PDF page extraction',
+          durationMs: completedIn,
+          summary: `${message.pageCount.toLocaleString()} selected ${message.pageCount === 1 ? 'page' : 'pages'} saved as a new PDF.`,
+          metrics: [
+            { label: 'Pages', value: message.pageCount.toLocaleString() },
+            {
+              label: 'Input',
+              value: source ? formatBytes(source.file.size) : '—',
+            },
+            { label: 'Output', value: formatBytes(blob.size) },
+          ],
+        });
       } else if (message.type === 'error') {
         setStatus('error');
         setError(message.message);

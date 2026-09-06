@@ -13,6 +13,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import {
   MATH_OPERATIONS,
   runMathOperation,
@@ -85,9 +86,17 @@ export function MathWorkbenchTool() {
   const calculate = () => {
     const started = performance.now();
     try {
-      setOutput(runMathOperation(operation.id, values));
-      setDuration(performance.now() - started);
+      const nextOutput = runMathOperation(operation.id, values);
+      const completedIn = performance.now() - started;
+      setOutput(nextOutput);
+      setDuration(completedIn);
       setError('');
+      announceCompletion({
+        operation: operation.name,
+        durationMs: completedIn,
+        summary: operation.description,
+        metrics: [{ label: 'Result', value: 'Ready' }],
+      });
     } catch (caught) {
       setOutput('');
       setError(

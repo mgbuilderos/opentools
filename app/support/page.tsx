@@ -22,9 +22,10 @@ export default function SupportPage() {
             Keep useful tools free
           </h1>
           <p className="mt-4 leading-7 text-muted-foreground">
-            Support will fund compatibility testing, security maintenance, and
-            accessible tools. Your files, filenames, job details, and receipt
-            were not passed here.
+            These tools are open source and free to use. Optional support will
+            fund compatibility testing, security maintenance, and accessible
+            tools. Your files, filenames, job details, and receipt were not
+            passed here.
           </p>
           <div className="mt-6 rounded-xl border bg-muted/50 p-4">
             <p className="flex items-center gap-2 text-sm font-semibold">
@@ -40,11 +41,11 @@ export default function SupportPage() {
         </div>
         <div className="border-t bg-muted/35 p-4 sm:px-8">
           <a
-            href="/pdf/merge"
+            href="/"
             className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold hover:bg-muted"
           >
             <ArrowLeft aria-hidden="true" className="size-4" />
-            Back to your tool
+            Back to all tools
           </a>
         </div>
       </section>

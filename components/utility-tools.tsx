@@ -15,6 +15,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import {
   calculatePercentage,
   calendarAge,
@@ -36,6 +37,12 @@ function duration(value: number) {
   return value < 1000
     ? `${value.toFixed(1)} ms`
     : `${(value / 1000).toFixed(2)} s`;
+}
+
+function fileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${(bytes / 1024 ** 2).toFixed(1)} MiB`;
 }
 
 function copyText(value: string, onDone: (copied: boolean) => void) {
@@ -221,9 +228,18 @@ function TextTransformTool({ mode }: { mode: 'encode' | 'decode' }) {
           'Text is limited to 2,000,000 characters in this candidate.',
         );
       const next = isEncode ? encodeBase64Text(input) : decodeBase64Text(input);
+      const completedIn = performance.now() - started;
       setOutput(next);
-      setElapsed(performance.now() - started);
+      setElapsed(completedIn);
       setError('');
+      announceCompletion({
+        operation: `Base64 ${isEncode ? 'encoder' : 'decoder'}`,
+        durationMs: completedIn,
+        summary: `Your ${isEncode ? 'encoded' : 'decoded'} text is ready.`,
+        metrics: [
+          { label: 'Output', value: `${next.length.toLocaleString()} chars` },
+        ],
+      });
     } catch (caught) {
       setOutput('');
       setError(
@@ -296,9 +312,16 @@ export function UuidGeneratorTool() {
     const started = performance.now();
     try {
       const next = generateUuids(count).join('\n');
+      const completedIn = performance.now() - started;
       setOutput(next);
-      setElapsed(performance.now() - started);
+      setElapsed(completedIn);
       setError('');
+      announceCompletion({
+        operation: 'UUID generator',
+        durationMs: completedIn,
+        summary: `${count.toLocaleString()} ${count === 1 ? 'UUID' : 'UUIDs'} generated.`,
+        metrics: [{ label: 'UUIDs', value: count.toLocaleString() }],
+      });
     } catch (caught) {
       setOutput('');
       setError(
@@ -360,11 +383,17 @@ export function TimestampTool() {
     const started = performance.now();
     try {
       const result = convertTimestamp(input);
+      const completedIn = performance.now() - started;
       setOutput(
         `UTC: ${result.iso}\nUnix seconds: ${result.unixSeconds}\nUnix milliseconds: ${result.unixMilliseconds}`,
       );
-      setElapsed(performance.now() - started);
+      setElapsed(completedIn);
       setError('');
+      announceCompletion({
+        operation: 'Unix timestamp converter',
+        durationMs: completedIn,
+        summary: 'UTC, Unix seconds, and Unix milliseconds are ready.',
+      });
     } catch (caught) {
       setOutput('');
       setError(
@@ -435,9 +464,17 @@ export function PercentageTool() {
     const started = performance.now();
     try {
       const result = calculatePercentage(mode, Number(first), Number(second));
-      setOutput(`${formatNumber(result)}${mode === 'percent-of' ? '' : '%'}`);
-      setElapsed(performance.now() - started);
+      const next = `${formatNumber(result)}${mode === 'percent-of' ? '' : '%'}`;
+      const completedIn = performance.now() - started;
+      setOutput(next);
+      setElapsed(completedIn);
       setError('');
+      announceCompletion({
+        operation: 'Percentage calculator',
+        durationMs: completedIn,
+        summary: 'Your percentage result is ready.',
+        metrics: [{ label: 'Result', value: next }],
+      });
     } catch (caught) {
       setOutput('');
       setError(
@@ -529,15 +566,22 @@ function DatePairTool({ age }: { age: boolean }) {
       if (!first || !second) throw new Error('Choose both calendar dates.');
       if (age) {
         const result = calendarAge(first, second);
-        setOutput(
-          `${result.years} years, ${result.months} months, ${result.days} days\n${result.totalDays.toLocaleString()} total days`,
-        );
+        const next = `${result.years} years, ${result.months} months, ${result.days} days\n${result.totalDays.toLocaleString()} total days`;
+        setOutput(next);
       } else {
         const days = dateDifference(first, second);
         setOutput(`${days.toLocaleString()} ${days === 1 ? 'day' : 'days'}`);
       }
-      setElapsed(performance.now() - started);
+      const completedIn = performance.now() - started;
+      setElapsed(completedIn);
       setError('');
+      announceCompletion({
+        operation: age ? 'Age calculator' : 'Date difference calculator',
+        durationMs: completedIn,
+        summary: age
+          ? 'Your calendar age result is ready.'
+          : 'The exact calendar-day difference is ready.',
+      });
     } catch (caught) {
       setOutput('');
       setError(
@@ -636,8 +680,18 @@ export function FileHashTool() {
       if (file.size > HASH_FILE_LIMIT)
         throw new Error('Files are limited to 500 MB in this candidate.');
       const next = await hashBytes(await file.arrayBuffer(), algorithm);
+      const completedIn = performance.now() - started;
       setOutput(next);
-      setElapsed(performance.now() - started);
+      setElapsed(completedIn);
+      announceCompletion({
+        operation: 'File hash calculator',
+        durationMs: completedIn,
+        summary: `${algorithm} checksum created for the selected file.`,
+        metrics: [
+          { label: 'File size', value: fileSize(file.size) },
+          { label: 'Algorithm', value: algorithm },
+        ],
+      });
     } catch (caught) {
       setError(
         caught instanceof Error

@@ -15,6 +15,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import {
   FILE_WORKBENCH_OPERATIONS,
   type FileWorkbenchOperation,
@@ -103,7 +104,7 @@ export function FileWorkbenchTool() {
   const execute = async () => {
     setRunning(true);
     setError('');
-    const started = performance.now();
+    const started = Date.now();
     try {
       if (files.some((file) => file.size > 256 * 1024 * 1024))
         throw new Error('Each selected file must be 256 MiB or smaller.');
@@ -122,8 +123,25 @@ export function FileWorkbenchTool() {
           };
         }),
       );
-      setResult(await runFileWorkbenchOperation(operation.id, values, inputs));
-      setDuration(performance.now() - started);
+      const nextResult = await runFileWorkbenchOperation(
+        operation.id,
+        values,
+        inputs,
+      );
+      const completedIn = Date.now() - started;
+      const inputBytes = files.reduce((sum, file) => sum + file.size, 0);
+      setResult(nextResult);
+      setDuration(completedIn);
+      announceCompletion({
+        operation: operation.name,
+        durationMs: completedIn,
+        summary: nextResult.summary,
+        metrics: [
+          { label: 'Files', value: String(files.length) },
+          { label: 'Input', value: fileSize(inputBytes) },
+          { label: 'Downloads', value: String(nextResult.downloads.length) },
+        ],
+      });
     } catch (caught) {
       setResult(null);
       setError(
@@ -409,7 +427,7 @@ export function FileWorkbenchTool() {
                       aria-hidden="true"
                       className="size-4 text-success"
                     />
-                    Nothing was uploaded
+                    Processed in this browser tab
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">

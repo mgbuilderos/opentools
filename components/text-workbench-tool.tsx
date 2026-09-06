@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
 import {
   runTextOperation,
   TEXT_OPERATIONS,
@@ -115,10 +116,23 @@ export function TextWorkbenchTool() {
         sortDirection,
         candidates,
       });
+      const completedIn = performance.now() - started;
       setOutput(result.output);
       setSummary(result.summary);
-      setElapsed(performance.now() - started);
+      setElapsed(completedIn);
       setError('');
+      announceCompletion({
+        operation: operation.name,
+        durationMs: completedIn,
+        summary: result.summary,
+        metrics: [
+          { label: 'Input', value: `${input.length.toLocaleString()} chars` },
+          {
+            label: 'Output',
+            value: `${result.output.length.toLocaleString()} chars`,
+          },
+        ],
+      });
     } catch (caught) {
       setOutput('');
       setSummary('');
