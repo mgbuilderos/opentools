@@ -392,6 +392,7 @@ export function SchemaWorkbenchTool({
                 </div>
                 <div className="flex shrink-0 gap-1">
                   <Button
+                    data-receipt-download
                     variant="ghost"
                     size="icon"
                     aria-label={`Download result as .${operation.outputExtension ?? 'txt'}`}

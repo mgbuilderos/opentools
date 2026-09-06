@@ -54,9 +54,9 @@
   --destructive: #b42318;
   --border: #dadad5;
   --input: #dadad5;
-  --ring: #175cd3;
-  --success: #16794b;
-  --radius: 0.625rem;
+  --ring: #111111;
+  --success: #111111;
+  --radius: 0.5rem;
 }
 
 .dark {
@@ -78,8 +78,8 @@
   --destructive: #ff8a80;
   --border: #383834;
   --input: #383834;
-  --ring: #78a9ff;
-  --success: #55d89b;
+  --ring: #f5f5f2;
+  --success: #f5f5f2;
 }
 
 @layer base {

@@ -22,10 +22,10 @@ export default function SupportPage() {
             Keep useful tools free
           </h1>
           <p className="mt-4 leading-7 text-muted-foreground">
-            These tools are open source and free to use. Optional support will
-            fund compatibility testing, security maintenance, and accessible
-            tools. Your files, filenames, job details, and receipt were not
-            passed here.
+            These tools are free to use. An open-source release is planned, and
+            optional support is intended to fund compatibility testing, security
+            maintenance, and accessible tools. Your files, filenames, job
+            details, and receipt were not passed here.
           </p>
           <div className="mt-6 rounded-xl border bg-muted/50 p-4">
             <p className="flex items-center gap-2 text-sm font-semibold">
@@ -33,9 +33,9 @@ export default function SupportPage() {
               Checkout intentionally not connected
             </p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              This canary demonstrates the privacy boundary. A reviewed hosted
-              provider, tax treatment, and final amount must be approved before
-              payments go live.
+              This preview demonstrates the intended privacy boundary. A project
+              license, reviewed hosted provider, tax treatment, and final amount
+              must be approved before support payments go live.
             </p>
           </div>
         </div>

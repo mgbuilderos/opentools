@@ -514,7 +514,7 @@ export function ImageOptimizeTool() {
                     profiles, and edit history are not preserved.
                   </p>
                 </div>
-                <Button className="h-11" onClick={save}>
+                <Button data-receipt-download className="h-11" onClick={save}>
                   <ArrowDownToLine aria-hidden="true" />
                   Save image
                 </Button>

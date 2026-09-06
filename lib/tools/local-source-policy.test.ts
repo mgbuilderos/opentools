@@ -91,4 +91,53 @@ describe('local tool source policy', () => {
 
     expect(violations).toEqual([]);
   });
+
+  it('marks every current result-download surface for the value receipt', () => {
+    const downloadSurfaces = [
+      'components/text-workbench-tool.tsx',
+      'components/tool-workspace.tsx',
+      'components/utility-tools.tsx',
+      'components/structured-tools.tsx',
+      'components/file-workbench-tool.tsx',
+      'components/schema-workbench-tool.tsx',
+      'components/pdf-merge-tool.tsx',
+      'components/pdf-extract-tool.tsx',
+      'components/image-optimize-tool.tsx',
+    ];
+    const missing = downloadSurfaces.filter(
+      (relativePath) =>
+        !readFileSync(path.join(projectRoot, relativePath), 'utf8').includes(
+          'data-receipt-download',
+        ),
+    );
+
+    expect(missing).toEqual([]);
+  });
+
+  it('keeps the category drawer closed by default and out of the page grid', () => {
+    const shell = readFileSync(
+      path.join(projectRoot, 'components/app-shell.tsx'),
+      'utf8',
+    );
+
+    expect(shell).toContain(
+      'const [sidebarOpen, setSidebarOpen] = useState(false)',
+    );
+    expect(shell).toContain('inert={!sidebarOpen}');
+    expect(shell).not.toContain("localStorage.getItem('tools-sidebar')");
+    expect(shell).not.toContain('grid-cols-[240px');
+  });
+
+  it('keeps focus and success product chrome monochrome', () => {
+    const styles = readFileSync(
+      path.join(projectRoot, 'app/globals.css'),
+      'utf8',
+    );
+
+    expect(styles).not.toMatch(/#175cd3|#78a9ff|#16794b|#55d89b/iu);
+    expect(styles).toContain('--ring: #111111');
+    expect(styles).toContain('--success: #111111');
+    expect(styles).toContain('--ring: #f5f5f2');
+    expect(styles).toContain('--success: #f5f5f2');
+  });
 });

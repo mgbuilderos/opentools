@@ -403,6 +403,7 @@ export function FileWorkbenchTool() {
                     <div className="mt-2 grid max-h-72 gap-2 overflow-auto sm:grid-cols-2">
                       {result.downloads.map((generated, index) => (
                         <Button
+                          data-receipt-download
                           key={`${generated.name}-${index}`}
                           variant="outline"
                           className="justify-between"

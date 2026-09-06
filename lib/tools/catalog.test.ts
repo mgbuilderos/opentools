@@ -165,6 +165,24 @@ describe('public canary catalog', () => {
     );
   });
 
+  it('keeps the evidence-weighted launch order explicit', () => {
+    expect(toolGroups.map((group) => group.id)).toEqual([
+      'pdf',
+      'images',
+      'text-data',
+      'qr-barcode',
+      'calculators',
+      'developer-files',
+      'documents-office',
+      'web-seo',
+      'finance-business',
+      'science-education',
+      'creator-social',
+      'life-admin',
+    ]);
+    expect(toolsForGroup(toolGroups[0]!)[0]?.id).toBe('pdf-merge');
+  });
+
   it('keeps operation-level search destinations explicit and unique', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);

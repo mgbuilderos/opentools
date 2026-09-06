@@ -44,4 +44,29 @@ describe('completion value receipt', () => {
     });
     vi.unstubAllGlobals();
   });
+
+  it('removes control characters and bounds receipt copy', () => {
+    const dispatchEvent = vi.fn();
+    vi.stubGlobal('window', { dispatchEvent });
+
+    announceCompletion({
+      operation: `\u0000${'A'.repeat(100)}`,
+      durationMs: Number.POSITIVE_INFINITY,
+      summary: `line one\n${'B'.repeat(220)}`,
+      metrics: [
+        { label: '  ', value: 'ignored' },
+        { label: 'Rows\tcounted', value: '  12  ' },
+      ],
+    });
+
+    const event = dispatchEvent.mock.calls[0][0] as CustomEvent;
+    expect(event.detail.operation).toHaveLength(80);
+    expect(event.detail.durationMs).toBe(0);
+    expect(event.detail.summary).not.toContain('\n');
+    expect(event.detail.summary.length).toBeLessThanOrEqual(180);
+    expect(event.detail.metrics).toEqual([
+      { label: 'Rows counted', value: '12' },
+    ]);
+    vi.unstubAllGlobals();
+  });
 });

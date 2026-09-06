@@ -495,9 +495,11 @@ export function PdfExtractTool() {
                   </div>
                 </div>
                 <Button
+                  nativeButton={false}
                   className="h-11 px-5"
                   render={
                     <a
+                      data-receipt-download
                       href={receipt.url}
                       download="extracted-pages.pdf"
                       aria-label="Save extracted PDF"

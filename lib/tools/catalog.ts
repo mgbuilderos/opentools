@@ -706,19 +706,10 @@ export const toolGroups: ToolGroup[] = [
     ],
   },
   {
-    id: 'developer-files',
-    name: 'Developer & files',
-    shortDescription: 'Base64, UUID, timestamps, and file checksums.',
-    toolIds: [
-      'base64-encode',
-      'base64-decode',
-      'uuid-generator',
-      'unix-timestamp',
-      'file-hash',
-      'file-workbench',
-      'developer-data-workbench',
-      'developer-advanced-workbench',
-    ],
+    id: 'qr-barcode',
+    name: 'QR & barcodes',
+    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
+    toolIds: ['qr-barcode-workbench'],
   },
   {
     id: 'calculators',
@@ -734,16 +725,19 @@ export const toolGroups: ToolGroup[] = [
     ],
   },
   {
-    id: 'finance-business',
-    name: 'Finance & business',
-    shortDescription: 'Scenario math for money, pricing, budgets, and metrics.',
-    toolIds: ['finance-business-workbench'],
-  },
-  {
-    id: 'science-education',
-    name: 'Science & education',
-    shortDescription: 'Physics formulas, grades, study aids, logic, and sets.',
-    toolIds: ['science-education-workbench'],
+    id: 'developer-files',
+    name: 'Developer & files',
+    shortDescription: 'Base64, UUID, timestamps, and file checksums.',
+    toolIds: [
+      'base64-encode',
+      'base64-decode',
+      'uuid-generator',
+      'unix-timestamp',
+      'file-hash',
+      'file-workbench',
+      'developer-data-workbench',
+      'developer-advanced-workbench',
+    ],
   },
   {
     id: 'documents-office',
@@ -759,6 +753,18 @@ export const toolGroups: ToolGroup[] = [
     toolIds: ['web-workbench'],
   },
   {
+    id: 'finance-business',
+    name: 'Finance & business',
+    shortDescription: 'Scenario math for money, pricing, budgets, and metrics.',
+    toolIds: ['finance-business-workbench'],
+  },
+  {
+    id: 'science-education',
+    name: 'Science & education',
+    shortDescription: 'Physics formulas, grades, study aids, logic, and sets.',
+    toolIds: ['science-education-workbench'],
+  },
+  {
     id: 'creator-social',
     name: 'Creator & social',
     shortDescription: 'Content formatting, feeds, planning, and creator math.',
@@ -770,12 +776,6 @@ export const toolGroups: ToolGroup[] = [
     shortDescription:
       'Everyday privacy, household, travel, payment, and date helpers.',
     toolIds: ['life-admin-workbench'],
-  },
-  {
-    id: 'qr-barcode',
-    name: 'QR & barcodes',
-    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
-    toolIds: ['qr-barcode-workbench'],
   },
 ];
 

@@ -178,6 +178,7 @@ function Result({
           </Button>
           {fileName ? (
             <Button
+              data-receipt-download
               variant="ghost"
               size="icon"
               className="h-10 w-10"

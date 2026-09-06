@@ -665,8 +665,10 @@ export function PdfMergeTool() {
                   </div>
                 </div>
                 <Button
+                  nativeButton={false}
                   render={
                     <a
+                      data-receipt-download
                       href={receipt.outputUrl}
                       download="merged.pdf"
                       aria-label="Download merged PDF"

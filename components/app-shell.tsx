@@ -1,15 +1,12 @@
 'use client';
 
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- A styled WAI-ARIA combobox requires a popup listbox; native select/datalist cannot provide this search-and-navigation interaction. */
+/* oxlint-disable jsx-a11y/no-noninteractive-element-interactions -- The modal category drawer listens for Tab only to keep keyboard focus inside its active dialog boundary. */
 
 import {
-  CheckCircle2,
   Braces,
   BriefcaseBusiness,
-  CalendarDays,
   Calculator,
-  Database,
-  FileKey2,
   FileText,
   FlaskConical,
   FileStack,
@@ -17,50 +14,60 @@ import {
   Globe2,
   Image as ImageIcon,
   Landmark,
+  Menu,
   Moon,
   Megaphone,
   QrCode,
   Search,
   Sun,
   Type,
+  X,
 } from 'lucide-react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { CompletionValueDialog } from '@/components/completion-value-dialog';
-import { searchTools, toolGroups, toolsForGroup } from '@/lib/tools/catalog';
+import {
+  searchTools,
+  toolGroups,
+  toolsForGroup,
+  type ToolGroup,
+} from '@/lib/tools/catalog';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
 
-const categoryIcons = {
-  Text: Type,
-  PDF: FileStack,
-  Data: Database,
-  Image: ImageIcon,
-  Developer: Braces,
-  File: FileKey2,
-  Math: Calculator,
-  Date: CalendarDays,
-  Web: Globe2,
-  Creator: Megaphone,
-  Document: FileText,
-  Science: FlaskConical,
-  Finance: BriefcaseBusiness,
-  'Life Admin': Landmark,
-  'QR & Barcode': QrCode,
+const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
+  pdf: FileStack,
+  images: ImageIcon,
+  'text-data': Type,
+  'developer-files': Braces,
+  calculators: Calculator,
+  'documents-office': FileText,
+  'science-education': FlaskConical,
+  'finance-business': BriefcaseBusiness,
+  'web-seo': Globe2,
+  'creator-social': Megaphone,
+  'life-admin': Landmark,
+  'qr-barcode': QrCode,
 };
 
 export function AppShell({
   currentToolId,
+  currentGroupId,
   children,
 }: {
   currentToolId: string;
+  currentGroupId?: ToolGroup['id'];
   children: ReactNode;
 }) {
   const searchRef = useRef<HTMLInputElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
+  const firstCategoryRef = useRef<HTMLAnchorElement>(null);
   const [query, setQuery] = useState('');
   const [activeResultIndex, setActiveResultIndex] = useState(-1);
   const [isDark, setIsDark] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const results = useMemo(() => searchTools(query), [query]);
   const searchOpen = query.length > 0;
   const activeResult =
@@ -90,6 +97,33 @@ export function AppShell({
       window.removeEventListener('keydown', focusSearch);
     };
   }, []);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const focusFrame = requestAnimationFrame(() => {
+      firstCategoryRef.current?.focus();
+    });
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      setSidebarOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [sidebarOpen]);
+
+  const activeGroupId =
+    currentGroupId ??
+    toolGroups.find((group) => group.toolIds.includes(currentToolId))?.id;
 
   const toggleTheme = () => {
     const next = !isDark;
@@ -128,6 +162,26 @@ export function AppShell({
     }
   };
 
+  const handleDrawerKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(
+      drawerRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      ) ?? [],
+    );
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (!first || !last) return;
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <CompletionValueDialog />
@@ -138,8 +192,26 @@ export function AppShell({
         Skip to tool
       </a>
 
-      <header className="sticky top-0 z-40 border-b bg-background/92 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-[60] border-b bg-background/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
+          <Button
+            ref={menuButtonRef}
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 shrink-0 rounded-lg border"
+            onClick={() => setSidebarOpen((current) => !current)}
+            aria-label={
+              sidebarOpen ? 'Close tool categories' : 'Open tool categories'
+            }
+            aria-controls="tool-category-drawer"
+            aria-expanded={sidebarOpen}
+          >
+            {sidebarOpen ? (
+              <X aria-hidden="true" />
+            ) : (
+              <Menu aria-hidden="true" />
+            )}
+          </Button>
           <a
             href="/"
             className="focus-ring flex shrink-0 items-center gap-2 rounded-lg"
@@ -147,11 +219,8 @@ export function AppShell({
             <span className="grid size-8 place-items-center rounded-lg bg-foreground text-background">
               <Grid2X2 aria-hidden="true" className="size-4" />
             </span>
-            <span className="text-[15px] font-semibold tracking-[-0.02em]">
+            <span className="hidden text-[15px] font-semibold tracking-[-0.02em] sm:inline">
               Tools
-            </span>
-            <span className="hidden rounded-md border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:inline">
-              Preview
             </span>
           </a>
 
@@ -239,7 +308,7 @@ export function AppShell({
           <Button
             variant="ghost"
             size="icon"
-            className="h-11 w-11 rounded-xl"
+            className="h-11 w-11 shrink-0 rounded-lg"
             onClick={toggleTheme}
             aria-label={isDark ? 'Use light theme' : 'Use dark theme'}
           >
@@ -248,83 +317,102 @@ export function AppShell({
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[248px_minmax(0,1fr)]">
-        <aside className="hidden min-h-[calc(100vh-64px)] border-r px-5 py-8 lg:block">
-          <nav aria-label="Working tools">
-            <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Tool workspaces
-            </p>
-            <div className="mt-4 space-y-5">
-              {toolGroups.map((group) => (
-                <section key={group.id} aria-labelledby={`nav-${group.id}`}>
-                  <h2
-                    id={`nav-${group.id}`}
-                    className="px-2 text-[11px] font-semibold text-foreground"
-                  >
-                    {group.name}
-                  </h2>
-                  <div className="mt-1 space-y-0.5">
-                    {toolsForGroup(group).map((tool) => {
-                      const active = tool.id === currentToolId;
-                      const Icon = categoryIcons[tool.category];
-                      return (
-                        <a
-                          key={tool.id}
-                          href={tool.href}
-                          aria-label={tool.name}
-                          aria-current={active ? 'page' : undefined}
-                          className={`focus-ring flex items-center gap-2 rounded-lg px-2 py-2 text-[13px] font-medium ${
-                            active
-                              ? 'bg-foreground text-background'
-                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                          }`}
-                        >
-                          <Icon
-                            aria-hidden="true"
-                            className="size-3.5 shrink-0"
-                          />
-                          <span className="truncate">
-                            {tool.name.replace(' converter', '')}
-                          </span>
-                        </a>
-                      );
-                    })}
-                  </div>
-                </section>
-              ))}
-            </div>
+      <button
+        type="button"
+        aria-hidden="true"
+        tabIndex={-1}
+        onClick={() => setSidebarOpen(false)}
+        className={`fixed inset-x-0 bottom-0 top-16 z-40 bg-foreground/18 backdrop-blur-[2px] transition-opacity duration-200 ${
+          sidebarOpen
+            ? 'pointer-events-auto opacity-100'
+            : 'pointer-events-none opacity-0'
+        }`}
+      />
 
-            <p className="mt-8 px-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Release-candidate status
+      <aside
+        ref={drawerRef}
+        id="tool-category-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tool-category-drawer-title"
+        aria-hidden={!sidebarOpen}
+        inert={!sidebarOpen}
+        tabIndex={-1}
+        onKeyDown={handleDrawerKeyDown}
+        className={`fixed bottom-0 left-0 top-16 z-50 w-[min(21rem,calc(100vw-2rem))] overflow-y-auto border-r bg-background shadow-[18px_0_50px_rgb(0_0_0/12%)] transition-transform duration-200 ease-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-4 border-b px-5 py-5">
+          <div>
+            <p
+              id="tool-category-drawer-title"
+              className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+            >
+              Popular categories
             </p>
-            <div className="mt-3 space-y-2 px-2 text-xs text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="size-4 text-success"
-                />
-                Manifest shell
-              </p>
-              <p className="flex items-center gap-2">
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="size-4 text-success"
-                />
-                Local text/data engines
-              </p>
-              <p className="flex items-center gap-2">
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="size-4 text-success"
-                />
-                PDF worker + image pipeline
-              </p>
-            </div>
-          </nav>
-        </aside>
+            <p className="mt-1 text-sm leading-5 text-muted-foreground">
+              Working categories ranked from broad daily demand to specialist
+              use.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-10 shrink-0 rounded-lg border"
+            onClick={() => {
+              setSidebarOpen(false);
+              menuButtonRef.current?.focus();
+            }}
+            aria-label="Close tool categories"
+          >
+            <X aria-hidden="true" />
+          </Button>
+        </div>
 
-        {children}
-      </main>
+        <nav aria-label="Tool categories" className="space-y-1 p-3">
+          {toolGroups.map((group, index) => {
+            const Icon = groupIcons[group.id];
+            const active = group.id === activeGroupId;
+            const actionCount = toolsForGroup(group).reduce(
+              (total, tool) => total + (tool.searchEntries?.length ?? 1),
+              0,
+            );
+            return (
+              <a
+                ref={index === 0 ? firstCategoryRef : undefined}
+                key={group.id}
+                href={`/?category=${group.id}#category-tools`}
+                aria-current={active ? 'page' : undefined}
+                className={`focus-ring group flex min-h-12 items-center justify-between gap-3 rounded-lg px-3 text-sm font-semibold transition-colors ${
+                  active
+                    ? 'bg-foreground text-background'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <span className="tabular w-5 shrink-0 font-mono text-[10px] opacity-60">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <Icon aria-hidden="true" className="size-4 shrink-0" />
+                  <span className="truncate">{group.name}</span>
+                </span>
+                <span
+                  className={`tabular rounded-md border px-1.5 py-0.5 font-mono text-[10px] ${
+                    active
+                      ? 'border-background/25 text-background'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {actionCount}
+                </span>
+              </a>
+            );
+          })}
+        </nav>
+      </aside>
+
+      <main className="mx-auto max-w-[1440px]">{children}</main>
     </div>
   );
 }

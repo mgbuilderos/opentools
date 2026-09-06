@@ -418,6 +418,7 @@ export function TextWorkbenchTool() {
                     )}
                   </Button>
                   <Button
+                    data-receipt-download
                     variant="ghost"
                     size="icon"
                     aria-label="Download result"

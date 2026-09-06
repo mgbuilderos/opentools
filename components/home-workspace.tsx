@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ArrowRight,
   Braces,
@@ -16,6 +18,7 @@ import {
   Type,
   Workflow,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import {
@@ -41,13 +44,33 @@ const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
 };
 
 export function HomeWorkspace() {
+  const [selectedGroupId, setSelectedGroupId] = useState<
+    ToolGroup['id'] | undefined
+  >();
   const workingActions = publicTools.reduce(
     (total, tool) => total + (tool.searchEntries?.length ?? 1),
     0,
   );
+  const selectedGroup = toolGroups.find(
+    (group) => group.id === selectedGroupId,
+  );
+  const visibleGroups = selectedGroup ? [selectedGroup] : toolGroups;
+
+  useEffect(() => {
+    const readCategory = () => {
+      const candidate = new URLSearchParams(window.location.search).get(
+        'category',
+      );
+      const valid = toolGroups.find((group) => group.id === candidate)?.id;
+      setSelectedGroupId(valid);
+    };
+    readCategory();
+    window.addEventListener('popstate', readCategory);
+    return () => window.removeEventListener('popstate', readCategory);
+  }, []);
 
   return (
-    <AppShell currentToolId="">
+    <AppShell currentToolId="" currentGroupId={selectedGroupId}>
       <section
         id="tool"
         tabIndex={-1}
@@ -62,10 +85,9 @@ export function HomeWorkspace() {
               Small jobs. One private workspace.
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Find the right tool, finish the task, and keep moving. Working
-              canaries process content in your browser with no account or output
-              gate. This candidate deliberately ships a small, testable set
-              instead of thousands of placeholder pages.
+              Find the right tool, finish the task in this browser tab, and keep
+              moving. No account and no output gate. Only working tools appear
+              here—never placeholder pages.
             </p>
           </div>
 
@@ -76,11 +98,11 @@ export function HomeWorkspace() {
                   id="working-tools-heading"
                   className="text-xl font-semibold tracking-[-0.03em]"
                 >
-                  Working tools
+                  Popular tools first
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Every listed route performs the advertised job; the research
-                  backlog stays private.
+                  Merge PDF leads the evidence-weighted list. Every shown route
+                  works; research-only ideas stay out of the interface.
                 </p>
               </div>
               <span className="tabular rounded-full border px-3 py-1.5 text-xs font-semibold">
@@ -88,105 +110,109 @@ export function HomeWorkspace() {
               </span>
             </div>
 
-            <nav
-              aria-label="Tool categories"
-              className="mt-5 grid grid-cols-2 overflow-hidden rounded-xl border bg-card sm:grid-cols-3 lg:grid-cols-6"
+            <section
+              id="category-tools"
+              aria-labelledby="category-tools-heading"
+              className="scroll-mt-32 mt-5 lg:scroll-mt-24"
             >
-              {toolGroups.map((group, index) => {
-                const Icon = groupIcons[group.id];
-                const tools = toolsForGroup(group);
-                const operationCount = tools.reduce(
-                  (total, tool) => total + (tool.searchEntries?.length ?? 1),
-                  0,
-                );
-                return (
+              <header className="flex flex-col gap-4 border-y py-5 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    {selectedGroup ? 'Selected category' : 'All categories'}
+                  </p>
+                  <h3
+                    id="category-tools-heading"
+                    className="mt-1 text-2xl font-semibold tracking-[-0.04em]"
+                  >
+                    {selectedGroup?.name ?? 'All working tool workspaces'}
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
+                    {selectedGroup?.shortDescription ??
+                      'Ordered by broad task demand, then specialist use. Open the menu to focus one category.'}
+                  </p>
+                </div>
+                {selectedGroup ? (
                   <a
-                    key={group.id}
-                    href={`#group-${group.id}`}
-                    className="focus-ring group border-b border-r p-3 transition-colors hover:bg-muted sm:p-4"
+                    href="/#category-tools"
+                    className="focus-ring min-h-10 rounded-lg border px-3 py-2 text-center text-xs font-semibold hover:bg-muted"
                   >
-                    <span className="flex items-center justify-between gap-2">
-                      <Icon aria-hidden="true" className="size-4" />
-                      <span className="tabular text-[10px] text-muted-foreground">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                    </span>
-                    <span className="mt-3 block text-xs font-semibold">
-                      {group.name}
-                    </span>
-                    <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                      {operationCount.toLocaleString()} working{' '}
-                      {operationCount === 1 ? 'action' : 'actions'}
-                    </span>
+                    Show all categories
                   </a>
-                );
-              })}
-            </nav>
+                ) : null}
+              </header>
 
-            <div className="mt-5 space-y-4">
-              {toolGroups.map((group, index) => {
-                const Icon = groupIcons[group.id];
-                const tools = toolsForGroup(group);
-                const operationCount = tools.reduce(
-                  (total, tool) => total + (tool.searchEntries?.length ?? 1),
-                  0,
-                );
-                return (
-                  <section
-                    key={group.id}
-                    aria-labelledby={`group-${group.id}`}
-                    className={`scroll-mt-24 overflow-hidden rounded-2xl border ${
-                      index % 2 === 0 ? 'bg-card' : 'bg-muted/30'
-                    }`}
-                  >
-                    <div className="grid md:grid-cols-[220px_minmax(0,1fr)]">
-                      <header className="border-b p-5 md:border-b-0 md:border-r md:p-6">
-                        <div className="flex items-center justify-between">
-                          <span className="grid size-10 place-items-center rounded-xl bg-foreground text-background">
-                            <Icon aria-hidden="true" className="size-5" />
+              <div className="mt-5 space-y-5">
+                {visibleGroups.map((group) => {
+                  const Icon = groupIcons[group.id];
+                  const groupTools = toolsForGroup(group);
+                  const groupIndex = toolGroups.findIndex(
+                    (candidate) => candidate.id === group.id,
+                  );
+                  const actionCount = groupTools.reduce(
+                    (total, tool) => total + (tool.searchEntries?.length ?? 1),
+                    0,
+                  );
+
+                  return (
+                    <section
+                      key={group.id}
+                      aria-labelledby={`group-${group.id}`}
+                      className="overflow-hidden rounded-xl border bg-card"
+                    >
+                      <header className="flex items-start justify-between gap-4 border-b p-4 sm:p-5">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <span className="tabular mt-0.5 font-mono text-[11px] text-muted-foreground">
+                            {String(groupIndex + 1).padStart(2, '0')}
                           </span>
-                          <span className="tabular text-3xl font-semibold tracking-[-0.06em] text-muted-foreground/50">
-                            {String(index + 1).padStart(2, '0')}
+                          <span className="grid size-9 shrink-0 place-items-center rounded-lg border bg-background">
+                            <Icon aria-hidden="true" className="size-4" />
                           </span>
+                          <div>
+                            <h3
+                              id={`group-${group.id}`}
+                              className="text-base font-semibold tracking-[-0.02em]"
+                            >
+                              {group.name}
+                            </h3>
+                            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                              {group.shortDescription}
+                            </p>
+                          </div>
                         </div>
-                        <div className="mt-5">
-                          <h3
-                            id={`group-${group.id}`}
-                            className="text-lg font-semibold tracking-[-0.03em]"
-                          >
-                            {group.name}
-                          </h3>
-                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            {group.shortDescription}
-                          </p>
-                          <p className="tabular mt-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                            {operationCount.toLocaleString()} local actions
-                          </p>
-                        </div>
+                        <span className="tabular shrink-0 rounded-md border px-2 py-1 font-mono text-[10px] text-muted-foreground">
+                          {actionCount} actions
+                        </span>
                       </header>
-                      <div className="grid content-start gap-px bg-border sm:grid-cols-2">
-                        {tools.map((tool) => (
-                          <article key={tool.id} className="bg-background p-4">
+
+                      <div className="grid gap-px bg-border sm:grid-cols-2 xl:grid-cols-3">
+                        {groupTools.map((tool) => (
+                          <article
+                            key={tool.id}
+                            className="bg-background p-4 sm:p-5"
+                          >
                             <a
                               href={tool.href}
-                              className="focus-ring group flex items-start justify-between gap-4 rounded-lg"
+                              aria-label={`${tool.name}: ${tool.shortDescription}`}
+                              className="focus-ring group flex min-h-20 items-start gap-3 rounded-lg"
                             >
-                              <span className="min-w-0">
-                                <span className="block text-sm font-semibold">
-                                  {tool.name}
+                              <span className="min-w-0 flex-1">
+                                <span className="flex items-start justify-between gap-3">
+                                  <span className="text-sm font-semibold">
+                                    {tool.name}
+                                  </span>
+                                  <ArrowRight
+                                    aria-hidden="true"
+                                    className="mt-0.5 size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                                  />
                                 </span>
                                 <span className="mt-1 block text-xs leading-5 text-muted-foreground">
                                   {tool.shortDescription}
                                 </span>
                               </span>
-                              <ArrowRight
-                                aria-hidden="true"
-                                className="mt-0.5 size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
-                              />
                             </a>
                             {tool.searchEntries?.length ? (
                               <div className="mt-3 flex flex-wrap gap-1.5 border-t pt-3">
-                                {tool.searchEntries.slice(0, 3).map((entry) => (
+                                {tool.searchEntries.slice(0, 5).map((entry) => (
                                   <a
                                     key={entry.id}
                                     href={entry.href}
@@ -195,12 +221,12 @@ export function HomeWorkspace() {
                                     {entry.name}
                                   </a>
                                 ))}
-                                {tool.searchEntries.length > 3 ? (
+                                {tool.searchEntries.length > 5 ? (
                                   <a
                                     href={tool.href}
                                     className="focus-ring rounded-md px-2 py-1 text-[11px] font-semibold text-muted-foreground hover:bg-muted"
                                   >
-                                    +{tool.searchEntries.length - 3} more
+                                    +{tool.searchEntries.length - 5} more
                                   </a>
                                 ) : null}
                               </div>
@@ -216,11 +242,11 @@ export function HomeWorkspace() {
                           </article>
                         ))}
                       </div>
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
+                    </section>
+                  );
+                })}
+              </div>
+            </section>
           </section>
 
           <section className="mt-8 grid overflow-hidden rounded-2xl border bg-card md:grid-cols-3">
@@ -253,11 +279,6 @@ export function HomeWorkspace() {
               </p>
             </div>
           </section>
-
-          <footer className="mt-10 border-t py-6 text-xs leading-5 text-muted-foreground">
-            Neutral working label · no approved public brand, analytics,
-            account, or payment provider in this release candidate.
-          </footer>
         </div>
       </section>
     </AppShell>

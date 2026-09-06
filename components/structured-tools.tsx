@@ -236,6 +236,7 @@ function EditorPair({
                 )}
               </Button>
               <Button
+                data-receipt-download
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
