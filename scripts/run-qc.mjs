@@ -34,6 +34,12 @@ const gates = [
     args: ['run', 'lint', '--', '--deny-warnings'],
     cwd: appRoot,
   },
+  {
+    name: 'DESIGN SYSTEM',
+    command: 'npm',
+    args: ['run', 'design:qc'],
+    cwd: appRoot,
+  },
   { name: 'BUILD', command: 'npm', args: ['run', 'build'], cwd: appRoot },
   {
     name: 'SBOM INVENTORY',

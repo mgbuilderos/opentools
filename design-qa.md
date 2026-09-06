@@ -1,4 +1,88 @@
-# Design QA — left category drawer and fluid motion
+# Design QA — Operator v1 equal task hierarchy
+
+Date: 2026-09-07
+
+## Current comparison target
+
+- Source visual truth: `/var/folders/8m/vptdd2nn261fmf5g1f_p9_x80000gp/T/TemporaryItems/NSIRD_screencaptureui_lJY8lQ/Screenshot 2026-09-07 at 2.08.07 AM.png`
+- Source pixels: 2940 × 1912, desktop screenshot including browser and Codex chrome.
+- Implementation: `http://localhost:3011/pdf/page-tools`, PDF drawer open after selecting PDF.
+- Implementation capture: 842 × 775 CSS pixels at device scale factor 1, captured in the Codex in-app browser.
+- State: light theme, drawer open, PDF selected, empty PDF tool behind the scrim.
+- Normalization: comparison focused on the app-owned 432 px drawer region. Browser/Codex chrome and the source screenshot’s larger density were excluded from hierarchy judgment.
+
+## Current full-view comparison evidence
+
+The source clearly exposes the defect: Merge PDF and Extract PDF pages are large
+workspace cards, while Rotate, Reorder, Delete, Page numbers, Watermark and
+Metadata are visually subordinate rows inside a “PDF page tools” parent. The
+revised implementation removes the parent card from category navigation and
+renders eight task destinations as identical bordered cards with the same title,
+description, chevron, spacing, hover/focus behavior, and minimum height.
+
+The category level remains separate and stronger, as intended. The tool canvas
+behind the drawer, monochrome scrim, top bar, left origin, and closed-by-default
+behavior are unchanged.
+
+## Current focused-region comparison evidence
+
+Both the supplied screenshot and the revised drawer capture were opened during
+this QA pass. In the focused PDF list, card left/right padding, inter-card gaps,
+title weight, description line height, border value, radius, and chevron position
+are uniform. “PDF page tools” no longer appears as a competing destination.
+The accessibility tree reports eight PDF links in the intended order and gives
+each link its task name plus description.
+
+## Required fidelity surfaces — current pass
+
+- Fonts and typography: system sans/mono stacks remain local. All task titles
+  use 14 px/600 with -0.01 em tracking; descriptions use 12 px/20 px. Category
+  and page hierarchy remain visibly distinct.
+- Spacing and layout rhythm: every task card uses the same 72 px minimum height,
+  16 px horizontal padding, 12 px vertical padding, 8 px list gap, and shared
+  radius/border. The list scrolls without horizontal clipping.
+- Colors and visual tokens: all hierarchy surfaces use semantic black, white,
+  gray, border, focus, and foreground-success tokens. No green or decorative
+  gradient was introduced.
+- Image quality and assets: this state contains no raster imagery. Icons come
+  from the existing Lucide set; no placeholder or custom-drawn asset was added.
+- Copy and content: task labels are direct and parallel. Descriptions explain the
+  output rather than the implementation parent workspace.
+
+## Current findings
+
+No actionable P0, P1, or P2 issue remains for the requested equal hierarchy.
+
+## Current comparison history
+
+1. Source: mixed large workspace cards plus subordinate page-tool rows. P1
+   hierarchy mismatch because equivalent jobs were presented unequally.
+2. Fix: introduced `toolDestinationsForGroup` and the shared `ToolLinkCard`;
+   category views now replace multi-operation workspace cards with their task
+   destinations.
+3. Post-fix capture: eight equal PDF cards rendered in the in-app browser; the
+   accessibility tree confirmed unique working destinations and correct order.
+
+## Current implementation checklist
+
+- [x] Equalize standalone and shared-workbench task destinations.
+- [x] Remove parent-workspace hierarchy from category drill-ins.
+- [x] Add reusable tool-card, page, heading, surface, receipt, and chart contracts.
+- [x] Add typography, spacing, surface, motion, and monochrome chart tokens.
+- [x] Add a blocking automated design gate to prebuild and full QC.
+- [x] Pass visual, accessibility-tree, design-gate, lint, type, unit, and build checks.
+
+## Current follow-up polish
+
+Formal 320 px, dark-mode, assistive-technology, and cross-browser capture remains
+part of the independent production release gate; it does not block this scoped
+local hierarchy correction.
+
+final result: passed
+
+---
+
+# Prior comparison — left category drawer and fluid motion
 
 Date: 2026-09-06
 

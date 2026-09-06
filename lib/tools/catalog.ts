@@ -887,6 +887,36 @@ export function toolsForGroup(group: ToolGroup) {
   return publicTools.filter((tool) => ids.has(tool.id));
 }
 
+export interface ToolDestination {
+  id: string;
+  name: string;
+  description: string;
+  href: string;
+  workspaceId: string;
+}
+
+export function toolDestinationsForGroup(group: ToolGroup): ToolDestination[] {
+  return toolsForGroup(group).flatMap((tool) =>
+    tool.searchEntries?.length
+      ? tool.searchEntries.map((entry) => ({
+          id: `${tool.id}:${entry.id}`,
+          name: entry.name,
+          description: entry.description,
+          href: entry.href,
+          workspaceId: tool.id,
+        }))
+      : [
+          {
+            id: tool.id,
+            name: tool.name,
+            description: tool.shortDescription,
+            href: tool.href,
+            workspaceId: tool.id,
+          },
+        ],
+  );
+}
+
 export function searchTools(query: string): ToolManifest[] {
   const normalizeToken = (token: string) =>
     token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;

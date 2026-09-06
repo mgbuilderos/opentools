@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { publicTools, searchTools, toolGroups, toolsForGroup } from './catalog';
+import {
+  publicTools,
+  searchTools,
+  toolDestinationsForGroup,
+  toolGroups,
+  toolsForGroup,
+} from './catalog';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
@@ -187,6 +193,25 @@ describe('public canary catalog', () => {
       'life-admin',
     ]);
     expect(toolsForGroup(toolGroups[0]!)[0]?.id).toBe('pdf-merge');
+  });
+
+  it('gives every task in a selected category equal destination hierarchy', () => {
+    const pdf = toolDestinationsForGroup(toolGroups[0]!);
+    expect(pdf.map((destination) => destination.name)).toEqual([
+      'Merge PDF',
+      'Extract PDF pages',
+      'Rotate PDF',
+      'Reorder PDF pages',
+      'Delete PDF pages',
+      'PDF page numbers',
+      'PDF watermark',
+      'PDF metadata editor',
+    ]);
+    expect(pdf).toHaveLength(8);
+    expect(
+      pdf.some((destination) => destination.name === 'PDF page tools'),
+    ).toBe(false);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(8);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

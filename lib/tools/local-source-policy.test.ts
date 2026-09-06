@@ -131,7 +131,9 @@ describe('local tool source policy', () => {
     expect(shell).toContain('duration-[360ms]');
     expect(shell).toContain('motion-reduce:transition-none');
     expect(shell).toContain('setDrawerGroupId(group.id)');
-    expect(shell).toContain('tool.searchEntries.map');
+    expect(shell).toContain('toolDestinationsForGroup(drawerGroup)');
+    expect(shell).toContain('data-design="equal-tool-hierarchy"');
+    expect(shell).not.toContain('tool.searchEntries.map');
     expect(shell).not.toContain("localStorage.getItem('tools-sidebar')");
     expect(shell).not.toContain('grid-cols-[240px');
     expect(shell).not.toContain('fixed bottom-0 right-0 top-16');

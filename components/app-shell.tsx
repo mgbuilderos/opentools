@@ -29,11 +29,12 @@ import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { ToolLinkCard } from '@/components/ui/tool-link-card';
 import { CompletionValueDialog } from '@/components/completion-value-dialog';
 import {
   searchTools,
+  toolDestinationsForGroup,
   toolGroups,
-  toolsForGroup,
   type ToolGroup,
 } from '@/lib/tools/catalog';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
@@ -417,52 +418,17 @@ export function AppShell({
         {drawerGroup ? (
           <nav
             aria-label={`${drawerGroup.name} tools`}
-            className="space-y-3 p-3"
+            className="grid gap-2 p-3"
+            data-design="equal-tool-hierarchy"
           >
-            {toolsForGroup(drawerGroup).map((tool) => (
-              <section
-                key={tool.id}
-                aria-labelledby={`drawer-tool-${tool.id}`}
-                className="overflow-hidden rounded-lg border"
-              >
-                <a
-                  href={tool.href}
-                  className="focus-ring group flex min-h-14 items-center justify-between gap-3 bg-card px-4 py-3"
-                >
-                  <span className="min-w-0">
-                    <span
-                      id={`drawer-tool-${tool.id}`}
-                      className="block text-sm font-semibold"
-                    >
-                      {tool.name}
-                    </span>
-                    <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
-                      {tool.shortDescription}
-                    </span>
-                  </span>
-                  <ChevronRight
-                    aria-hidden="true"
-                    className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
-                  />
-                </a>
-                {tool.searchEntries?.length ? (
-                  <div className="border-t bg-background p-2">
-                    {tool.searchEntries.map((entry) => (
-                      <a
-                        key={entry.id}
-                        href={entry.href}
-                        className="focus-ring flex min-h-10 items-center justify-between gap-3 rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                      >
-                        <span>{entry.name}</span>
-                        <ChevronRight
-                          aria-hidden="true"
-                          className="size-3.5 shrink-0"
-                        />
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </section>
+            {toolDestinationsForGroup(drawerGroup).map((destination) => (
+              <ToolLinkCard
+                key={destination.id}
+                name={destination.name}
+                description={destination.description}
+                href={destination.href}
+                compact
+              />
             ))}
           </nav>
         ) : (
@@ -470,10 +436,7 @@ export function AppShell({
             {toolGroups.map((group, index) => {
               const Icon = groupIcons[group.id];
               const active = group.id === activeGroupId;
-              const actionCount = toolsForGroup(group).reduce(
-                (total, tool) => total + (tool.searchEntries?.length ?? 1),
-                0,
-              );
+              const actionCount = toolDestinationsForGroup(group).length;
               return (
                 <button
                   ref={index === 0 ? firstCategoryRef : undefined}
@@ -513,7 +476,9 @@ export function AppShell({
         )}
       </aside>
 
-      <main className="mx-auto max-w-[1440px]">{children}</main>
+      <main className="mx-auto max-w-[1440px]" data-design-system="operator-v1">
+        {children}
+      </main>
     </div>
   );
 }

@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "vinext dev",
+    "prebuild": "npm run design:qc",
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
@@ -16,6 +17,7 @@
     "test": "vitest run",
     "test:operations": "vitest run lib/tools/all-operations-qc.test.ts",
     "typecheck": "tsc --noEmit",
+    "design:qc": "node scripts/design-system-qc.mjs",
     "qc": "node scripts/run-qc.mjs",
     "qc:release": "node scripts/run-qc.mjs --release"
   },
