@@ -11,6 +11,7 @@ import {
   Landmark,
   LockKeyhole,
   Megaphone,
+  QrCode,
   Search,
   Type,
   Workflow,
@@ -36,6 +37,7 @@ const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   'web-seo': Globe2,
   'creator-social': Megaphone,
   'life-admin': Landmark,
+  'qr-barcode': QrCode,
 };
 
 export function HomeWorkspace() {

@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
@@ -18,9 +19,11 @@ import { Button } from '@/components/ui/button';
 interface WorkbenchField {
   id: string;
   label: string;
-  type: 'number' | 'text' | 'textarea' | 'select';
+  type: 'number' | 'text' | 'textarea' | 'select' | 'file';
   defaultValue: string;
   placeholder?: string;
+  accept?: string;
+  maxBytes?: number;
   options?: readonly { value: string; label: string }[];
 }
 
@@ -124,6 +127,30 @@ export function SchemaWorkbenchTool({
     setError('');
   };
 
+  const updateFile = (field: WorkbenchField, file?: File) => {
+    setOutput('');
+    setError('');
+    if (!file) {
+      setValues((current) => ({ ...current, [field.id]: '' }));
+      return;
+    }
+    const maximum = field.maxBytes ?? 5_000_000;
+    if (file.size > maximum) {
+      setError(
+        `Choose a file no larger than ${(maximum / 1_000_000).toFixed(1)} MB.`,
+      );
+      return;
+    }
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      if (typeof reader.result === 'string') update(field.id, reader.result);
+    });
+    reader.addEventListener('error', () => {
+      setError('The selected file could not be read in this browser.');
+    });
+    reader.readAsDataURL(file);
+  };
+
   const execute = async () => {
     const started = performance.now();
     setRunning(true);
@@ -152,7 +179,9 @@ export function SchemaWorkbenchTool({
           ? 'application/json'
           : extension === 'csv'
             ? 'text/csv'
-            : 'text/plain';
+            : extension === 'svg'
+              ? 'image/svg+xml'
+              : 'text/plain';
     const blob = new Blob([output], { type: `${mime};charset=utf-8` });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
@@ -256,6 +285,22 @@ export function SchemaWorkbenchTool({
                           </option>
                         ))}
                       </select>
+                    ) : field.type === 'file' ? (
+                      <>
+                        <input
+                          type="file"
+                          accept={field.accept}
+                          onChange={(event) =>
+                            updateFile(field, event.target.files?.[0])
+                          }
+                          className="focus-ring mt-2 block min-h-11 w-full rounded-lg border bg-background px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-sm file:font-semibold"
+                        />
+                        <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                          {values[field.id]
+                            ? 'Selected and held only in this tab'
+                            : 'No file selected'}
+                        </span>
+                      </>
                     ) : field.type === 'textarea' ? (
                       <textarea
                         value={values[field.id] ?? ''}
@@ -308,9 +353,30 @@ export function SchemaWorkbenchTool({
                     />
                     Done — {operation.name}
                   </h2>
-                  <pre className="mt-3 max-h-[34rem] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-muted p-4 font-mono text-sm leading-6">
-                    {output}
-                  </pre>
+                  {operation.outputExtension === 'svg' ? (
+                    <div className="mt-3 rounded-lg bg-muted p-4">
+                      <Image
+                        src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(output)}`}
+                        alt={`${operation.name} result preview`}
+                        width={720}
+                        height={720}
+                        unoptimized
+                        className="mx-auto max-h-[34rem] max-w-full rounded-md bg-white object-contain"
+                      />
+                      <details className="mt-3 border-t pt-3">
+                        <summary className="cursor-pointer text-xs font-semibold">
+                          View SVG source
+                        </summary>
+                        <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-5">
+                          {output}
+                        </pre>
+                      </details>
+                    </div>
+                  ) : (
+                    <pre className="mt-3 max-h-[34rem] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-muted p-4 font-mono text-sm leading-6">
+                      {output}
+                    </pre>
+                  )}
                 </div>
                 <div className="flex shrink-0 gap-1">
                   <Button

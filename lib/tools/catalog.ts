@@ -9,6 +9,7 @@ import { FINANCE_OPERATIONS } from './finance-business-workbench';
 import { LIFE_ADMIN_OPERATIONS } from './life-admin-workbench';
 import { MATH_OPERATIONS } from './math-workbench';
 import { PRODUCTIVITY_OPERATIONS } from './productivity-workbench';
+import { QR_BARCODE_OPERATIONS } from './qr-barcode-workbench';
 import { SCIENCE_OPERATIONS } from './science-education-workbench';
 import { SPREADSHEET_OPERATIONS } from './spreadsheet-workbench';
 import { TEXT_OPERATIONS } from './text-workbench';
@@ -634,6 +635,29 @@ export const publicTools: ToolManifest[] = [
     },
     owner: 'platform-foundation',
   },
+  {
+    id: 'qr-barcode-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'QR & barcode workbench',
+    shortDescription:
+      'Create QR payloads, printable sheets, and common linear barcodes locally.',
+    category: 'QR & Barcode',
+    aliases: QR_BARCODE_OPERATIONS.map((operation) => operation.name),
+    jobs: QR_BARCODE_OPERATIONS.map((operation) => operation.description),
+    searchEntries: searchEntries('/qr/workbench', QR_BARCODE_OPERATIONS),
+    href: '/qr/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'qr.payload.compose',
+        'qr.svg.encode',
+        'barcode.linear.encode',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
 ];
 
 export interface ToolGroup {
@@ -648,7 +672,8 @@ export interface ToolGroup {
     | 'finance-business'
     | 'web-seo'
     | 'creator-social'
-    | 'life-admin';
+    | 'life-admin'
+    | 'qr-barcode';
   name: string;
   shortDescription: string;
   toolIds: string[];
@@ -745,6 +770,12 @@ export const toolGroups: ToolGroup[] = [
     shortDescription:
       'Everyday privacy, household, travel, payment, and date helpers.',
     toolIds: ['life-admin-workbench'],
+  },
+  {
+    id: 'qr-barcode',
+    name: 'QR & barcodes',
+    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
+    toolIds: ['qr-barcode-workbench'],
   },
 ];
 

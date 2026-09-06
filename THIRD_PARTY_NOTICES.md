@@ -9,6 +9,10 @@ Primary runtime packages:
 - `@pdf-lib/upng` 1.0.1 — MIT.
 - `pako` 1.0.11 — MIT and Zlib.
 - `tslib` 1.14.1 — 0BSD.
+- `qrcode` 1.5.4 — MIT.
+- `dijkstrajs` 1.0.3 — MIT.
+- `pngjs` 5.0.0 — MIT.
+- `yargs` 15.4.1 and its locked transitives — MIT-family/package-declared terms; see the SBOM for the complete graph.
 - React packages 19.2.8 — MIT.
 - Base UI React 1.7.0 — MIT.
 - Lucide React 1.31.0 — ISC.

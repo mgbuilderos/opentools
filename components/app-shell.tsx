@@ -19,6 +19,7 @@ import {
   Landmark,
   Moon,
   Megaphone,
+  QrCode,
   Search,
   Sun,
   Type,
@@ -45,6 +46,7 @@ const categoryIcons = {
   Science: FlaskConical,
   Finance: BriefcaseBusiness,
   'Life Admin': Landmark,
+  'QR & Barcode': QrCode,
 };
 
 export function AppShell({

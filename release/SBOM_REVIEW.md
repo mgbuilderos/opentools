@@ -13,7 +13,7 @@ npm run sbom
 npm audit --audit-level=moderate
 ```
 
-`npm run sbom` invokes the checked-in `scripts/generate-sbom.mjs`, which asks npm for a package-lock-based CycloneDX 1.5 document. The checked-in artifact currently contains 400 components and 401 dependency-graph nodes. Every component has package version and declared license metadata. The 2026-09-06 npm audit reported zero known vulnerabilities at moderate-or-higher severity.
+`npm run sbom` invokes the checked-in `scripts/generate-sbom.mjs`, which asks npm for a package-lock-based CycloneDX 1.5 document. The checked-in artifact currently contains 428 components and 429 dependency-graph nodes. Every component has package version and declared license metadata. The 2026-09-06 npm audit reported zero known vulnerabilities at moderate-or-higher severity.
 
 ## What this proves
 
