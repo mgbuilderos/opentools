@@ -89,3 +89,57 @@ export function canvasFilter(options: {
     `sepia(${clamp(options.sepia, 0, 100)}%)`,
   ].join(' ');
 }
+
+export function parseHexColor(value: string): [number, number, number] {
+  const match = /^#([\da-f]{6})$/iu.exec(value.trim());
+  if (!match) throw new Error('Choose a six-digit background color.');
+  const hex = match[1]!;
+  return [
+    Number.parseInt(hex.slice(0, 2), 16),
+    Number.parseInt(hex.slice(2, 4), 16),
+    Number.parseInt(hex.slice(4, 6), 16),
+  ];
+}
+
+export function makeSolidBackgroundTransparent(
+  pixels: Uint8ClampedArray,
+  targetHex: string,
+  tolerance: number,
+  softness: number,
+) {
+  if (pixels.length % 4 !== 0) {
+    throw new Error('Pixel data must contain complete RGBA values.');
+  }
+  if (
+    !Number.isFinite(tolerance) ||
+    !Number.isFinite(softness) ||
+    tolerance < 0 ||
+    tolerance > 255 ||
+    softness < 0 ||
+    softness > 128
+  ) {
+    throw new Error('Background tolerance or softness is outside its limit.');
+  }
+  const [targetRed, targetGreen, targetBlue] = parseHexColor(targetHex);
+  let changedPixels = 0;
+  for (let index = 0; index < pixels.length; index += 4) {
+    const distance = Math.sqrt(
+      (pixels[index]! - targetRed) ** 2 +
+        (pixels[index + 1]! - targetGreen) ** 2 +
+        (pixels[index + 2]! - targetBlue) ** 2,
+    );
+    const originalAlpha = pixels[index + 3]!;
+    let nextAlpha = originalAlpha;
+    if (distance <= tolerance) nextAlpha = 0;
+    else if (softness > 0 && distance < tolerance + softness) {
+      nextAlpha = Math.round(
+        originalAlpha * ((distance - tolerance) / softness),
+      );
+    }
+    if (nextAlpha !== originalAlpha) {
+      pixels[index + 3] = nextAlpha;
+      changedPixels += 1;
+    }
+  }
+  return changedPixels;
+}

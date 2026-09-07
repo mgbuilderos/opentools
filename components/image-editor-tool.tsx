@@ -3,6 +3,7 @@
 import {
   ArrowDownToLine,
   CheckCircle2,
+  Eraser,
   FileImage,
   FlipHorizontal2,
   FlipVertical2,
@@ -23,6 +24,7 @@ import { publicTools } from '@/lib/tools/catalog';
 import {
   canvasFilter,
   extensionForRasterType,
+  makeSolidBackgroundTransparent,
   supportedRasterTypes,
   transformedDimensions,
   validateCrop,
@@ -38,6 +40,7 @@ type Result = {
   height: number;
   durationMs: number;
   format: RasterFormat;
+  removedPixels: number;
 };
 const MAX_BYTES = 25 * 1024 * 1024;
 
@@ -80,7 +83,11 @@ function formatDuration(durationMs: number) {
     : `${(durationMs / 1000).toFixed(2)} s`;
 }
 
-export function ImageEditorTool() {
+export function ImageEditorTool({
+  defaultRemoveBackground = false,
+}: {
+  defaultRemoveBackground?: boolean;
+}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const sourceRef = useRef<SourceImage | null>(null);
   const resultRef = useRef<Result | null>(null);
@@ -95,7 +102,15 @@ export function ImageEditorTool() {
   const [contrast, setContrast] = useState(100);
   const [grayscale, setGrayscale] = useState(0);
   const [sepia, setSepia] = useState(0);
-  const [format, setFormat] = useState<RasterFormat>('image/webp');
+  const [removeBackground, setRemoveBackground] = useState(
+    defaultRemoveBackground,
+  );
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [backgroundTolerance, setBackgroundTolerance] = useState(36);
+  const [edgeSoftness, setEdgeSoftness] = useState(24);
+  const [format, setFormat] = useState<RasterFormat>(
+    defaultRemoveBackground ? 'image/png' : 'image/webp',
+  );
   const [quality, setQuality] = useState(90);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -188,6 +203,19 @@ export function ImageEditorTool() {
           'The edited image exceeds the 64 megapixel canvas limit.',
         );
       }
+      if (
+        removeBackground &&
+        dimensions.width * dimensions.height > 16_000_000
+      ) {
+        throw new Error(
+          'Solid-background removal is limited to 16 megapixels per image.',
+        );
+      }
+      if (removeBackground && format === 'image/jpeg') {
+        throw new Error(
+          'Choose PNG or WebP to preserve the transparent background.',
+        );
+      }
       const canvas = document.createElement('canvas');
       canvas.width = dimensions.width;
       canvas.height = dimensions.height;
@@ -219,6 +247,22 @@ export function ImageEditorTool() {
         safeCrop.height,
       );
       context.restore();
+      let removedPixels = 0;
+      if (removeBackground) {
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        );
+        removedPixels = makeSolidBackgroundTransparent(
+          imageData.data,
+          backgroundColor,
+          backgroundTolerance,
+          edgeSoftness,
+        );
+        context.putImageData(imageData, 0, 0);
+      }
       const blob = await encodeCanvas(canvas, format, quality / 100);
       if (blob.type !== format)
         throw new Error(
@@ -239,11 +283,14 @@ export function ImageEditorTool() {
         ...dimensions,
         durationMs: performance.now() - started,
         format,
+        removedPixels,
       };
       resultRef.current = next;
       setResult(next);
       announceCompletion({
-        operation: 'Local photo editor',
+        operation: removeBackground
+          ? 'Solid background remover'
+          : 'Local photo editor',
         durationMs: next.durationMs,
         summary: `${next.width} × ${next.height}px image edited and checked in this browser.`,
         metrics: [
@@ -253,6 +300,14 @@ export function ImageEditorTool() {
             label: 'Output',
             value: format.replace('image/', '').toUpperCase(),
           },
+          ...(removeBackground
+            ? [
+                {
+                  label: 'Pixels cleared',
+                  value: removedPixels.toLocaleString('en-US'),
+                },
+              ]
+            : []),
         ],
       });
     } catch (caught) {
@@ -296,14 +351,17 @@ export function ImageEditorTool() {
               <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                 <span>Images</span>
                 <span aria-hidden="true">/</span>
-                <span>Edit</span>
+                <span>{defaultRemoveBackground ? 'Background' : 'Edit'}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Edit image
+                {defaultRemoveBackground
+                  ? 'Remove solid background'
+                  : 'Edit image'}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Crop, rotate, flip, and tune one static image without uploading
-                it.
+                {defaultRemoveBackground
+                  ? 'Make a white or selected plain-color background transparent, with adjustable edge tolerance.'
+                  : 'Crop, rotate, flip, and tune one static image without uploading it.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -496,6 +554,102 @@ export function ImageEditorTool() {
                     />
                   </label>
                 ))}
+                <section className="mt-5 rounded-xl border bg-muted/35 p-4">
+                  <label className="flex items-start gap-3 text-sm font-semibold">
+                    <input
+                      type="checkbox"
+                      checked={removeBackground}
+                      disabled={!source || busy}
+                      onChange={(event) =>
+                        change(() => {
+                          setRemoveBackground(event.target.checked);
+                          if (event.target.checked) setFormat('image/png');
+                        })
+                      }
+                      className="mt-0.5 size-4 accent-foreground"
+                    />
+                    <span>
+                      Remove a plain-color background
+                      <span className="mt-1 block text-xs font-normal leading-5 text-muted-foreground">
+                        Best for white studio, document, logo, and flat-color
+                        backgrounds. This is not AI subject detection.
+                      </span>
+                    </span>
+                  </label>
+                  {removeBackground ? (
+                    <div className="mt-4 space-y-4 border-t pt-4">
+                      <label className="flex items-center justify-between gap-3 text-xs font-semibold">
+                        Background color
+                        <span className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={backgroundColor}
+                            disabled={!source || busy}
+                            onChange={(event) =>
+                              change(() =>
+                                setBackgroundColor(event.target.value),
+                              )
+                            }
+                            className="focus-ring size-9 rounded-lg border bg-background p-1"
+                            aria-label="Background color to remove"
+                          />
+                          <input
+                            value={backgroundColor}
+                            maxLength={7}
+                            disabled={!source || busy}
+                            onChange={(event) =>
+                              change(() =>
+                                setBackgroundColor(event.target.value),
+                              )
+                            }
+                            className="focus-ring h-9 w-24 rounded-lg border bg-background px-2 font-mono text-xs"
+                            aria-label="Background color hex value"
+                          />
+                        </span>
+                      </label>
+                      <label className="block text-xs font-semibold">
+                        Color tolerance{' '}
+                        <span className="tabular text-muted-foreground">
+                          {backgroundTolerance}
+                        </span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="180"
+                          value={backgroundTolerance}
+                          disabled={!source || busy}
+                          onChange={(event) =>
+                            change(() =>
+                              setBackgroundTolerance(
+                                Number(event.target.value),
+                              ),
+                            )
+                          }
+                          className="mt-2 w-full accent-foreground"
+                        />
+                      </label>
+                      <label className="block text-xs font-semibold">
+                        Edge softness{' '}
+                        <span className="tabular text-muted-foreground">
+                          {edgeSoftness}
+                        </span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="96"
+                          value={edgeSoftness}
+                          disabled={!source || busy}
+                          onChange={(event) =>
+                            change(() =>
+                              setEdgeSoftness(Number(event.target.value)),
+                            )
+                          }
+                          className="mt-2 w-full accent-foreground"
+                        />
+                      </label>
+                    </div>
+                  ) : null}
+                </section>
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <label className="text-xs font-semibold">
                     Format
@@ -510,7 +664,9 @@ export function ImageEditorTool() {
                       className="focus-ring mt-2 h-10 w-full rounded-lg border bg-background px-3 text-sm"
                     >
                       <option value="image/webp">WebP</option>
-                      <option value="image/jpeg">JPEG</option>
+                      <option value="image/jpeg" disabled={removeBackground}>
+                        JPEG
+                      </option>
                       <option value="image/png">PNG</option>
                     </select>
                   </label>
@@ -537,7 +693,11 @@ export function ImageEditorTool() {
                   disabled={!source || busy}
                   onClick={() => void run()}
                 >
-                  <SlidersHorizontal aria-hidden="true" />
+                  {removeBackground ? (
+                    <Eraser aria-hidden="true" />
+                  ) : (
+                    <SlidersHorizontal aria-hidden="true" />
+                  )}
                   {busy ? 'Rendering locally…' : 'Apply edits'}
                 </Button>
                 {source ? (
@@ -595,7 +755,9 @@ export function ImageEditorTool() {
                     Output behavior
                   </p>
                   <p className="mt-1 text-sm font-semibold">
-                    Metadata is not copied
+                    {result.removedPixels
+                      ? `${result.removedPixels.toLocaleString('en-US')} pixels cleared`
+                      : 'Metadata is not copied'}
                   </p>
                 </div>
               </div>

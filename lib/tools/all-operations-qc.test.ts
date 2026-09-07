@@ -335,7 +335,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 560 operation-level tool destinations', () => {
+  it('accounts for all 561 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -348,15 +348,17 @@ describe('exhaustive workbench input/output QC', () => {
       ...PDF_PAGE_OPERATIONS.map(
         (operation) => `/pdf/page-tools?tool=${operation.id}`,
       ),
-      ...IMAGE_EDITOR_OPERATIONS.map(
-        (operation) => `/image/editor?tool=${operation.id}`,
+      ...IMAGE_EDITOR_OPERATIONS.map((operation) =>
+        operation.id === 'solid-background-remover'
+          ? '/image/background-remover?tool=solid-background-remover'
+          : `/image/editor?tool=${operation.id}`,
       ),
     ].toSorted();
     const catalogDestinations = publicTools
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(560);
+    expect(expectedDestinations).toHaveLength(561);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

@@ -2,6 +2,27 @@
 
 Date: 2026-09-07
 
+## Solid-background-remover tranche check
+
+- Rendered route: `http://localhost:3011/image/background-remover?tool=solid-background-remover`.
+- The focused route uses the existing monochrome Operator v1 editor shell and
+  labels the capability as a plain-color remover, not AI subject detection.
+- The left drawer remains closed by default. Opening it reports 12 categories;
+  selecting Images replaces that list with exactly eight equal-ranked actions.
+  Solid background remover appears as its own card and links back to the focused
+  route.
+- Accessibility state exposes labeled image selection, crop and adjustment
+  controls, a checked plain-background option, background color, tolerance and
+  softness controls, PNG output by default, and a disabled JPEG option because
+  JPEG cannot preserve transparency.
+- The empty route and category drill-in were checked in the in-app browser. A
+  real file-selection/output journey was not performed in this pass; the pixel
+  transformation is covered by unit tests and the existing image pipeline's
+  decoded-output tests.
+- Full QC passed with 27 test files / 244 tests and a 36-route production build.
+
+No actionable P0, P1 or P2 visual issue was found in this tranche.
+
 ## Images-to-PDF tranche check
 
 - Rendered route: `http://localhost:3011/pdf/images-to-pdf`.

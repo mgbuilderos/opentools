@@ -92,6 +92,11 @@ export const IMAGE_EDITOR_OPERATIONS = [
     name: 'Image grayscale',
     description: 'Convert image colors toward grayscale.',
   },
+  {
+    id: 'solid-background-remover',
+    name: 'Solid background remover',
+    description: 'Make a selected plain-color image background transparent.',
+  },
 ] as const;
 
 export const publicTools: ToolManifest[] = [
@@ -351,7 +356,13 @@ export const publicTools: ToolManifest[] = [
     category: 'Image',
     aliases: IMAGE_EDITOR_OPERATIONS.map((operation) => operation.name),
     jobs: IMAGE_EDITOR_OPERATIONS.map((operation) => operation.description),
-    searchEntries: searchEntries('/image/editor', IMAGE_EDITOR_OPERATIONS),
+    searchEntries: IMAGE_EDITOR_OPERATIONS.map((operation) => ({
+      ...operation,
+      href:
+        operation.id === 'solid-background-remover'
+          ? '/image/background-remover?tool=solid-background-remover'
+          : `/image/editor?tool=${operation.id}`,
+    })),
     href: '/image/editor',
     execution: {
       mode: 'local-js',

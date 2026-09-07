@@ -63,6 +63,9 @@ describe('public canary catalog', () => {
     expect(searchTools('image cropper')[0]?.href).toBe(
       '/image/editor?tool=image-cropper',
     );
+    expect(searchTools('background remover')[0]?.href).toBe(
+      '/image/background-remover?tool=solid-background-remover',
+    );
     expect(searchTools('base64 to text').map((tool) => tool.id)).toContain(
       'base64-decode',
     );
@@ -222,7 +225,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(560);
+    expect(entries).toHaveLength(561);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

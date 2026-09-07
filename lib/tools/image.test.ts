@@ -4,6 +4,8 @@ import {
   calculateContainDimensions,
   canvasFilter,
   extensionForRasterType,
+  makeSolidBackgroundTransparent,
+  parseHexColor,
   transformedDimensions,
   validateCrop,
 } from './image';
@@ -60,5 +62,40 @@ describe('image tool helpers', () => {
     expect(
       canvasFilter({ brightness: 240, contrast: 80, grayscale: 25, sepia: -5 }),
     ).toBe('brightness(200%) contrast(80%) grayscale(25%) sepia(0%)');
+  });
+
+  it('parses an exact six-digit background color', () => {
+    expect(parseHexColor('#fF0080')).toEqual([255, 0, 128]);
+    expect(() => parseHexColor('#fff')).toThrow('six-digit');
+  });
+
+  it('removes a matching solid background and softens nearby pixels', () => {
+    const pixels = new Uint8ClampedArray([
+      255, 255, 255, 255, 245, 245, 245, 255, 20, 30, 40, 255,
+    ]);
+    expect(makeSolidBackgroundTransparent(pixels, '#ffffff', 5, 30)).toBe(2);
+    expect(pixels[3]).toBe(0);
+    expect(pixels[7]).toBeGreaterThan(0);
+    expect(pixels[7]).toBeLessThan(255);
+    expect(pixels[11]).toBe(255);
+  });
+
+  it('rejects malformed pixel and threshold input', () => {
+    expect(() =>
+      makeSolidBackgroundTransparent(
+        new Uint8ClampedArray([1, 2, 3]),
+        '#ffffff',
+        10,
+        10,
+      ),
+    ).toThrow('complete RGBA');
+    expect(() =>
+      makeSolidBackgroundTransparent(
+        new Uint8ClampedArray([1, 2, 3, 255]),
+        '#ffffff',
+        300,
+        10,
+      ),
+    ).toThrow('outside');
   });
 });
