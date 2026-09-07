@@ -12,7 +12,7 @@ import {
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
-    expect(publicTools).toHaveLength(32);
+    expect(publicTools).toHaveLength(33);
     const ids = new Set<string>();
     const routes = new Set<string>();
 
@@ -53,6 +53,9 @@ describe('public canary catalog', () => {
     );
     expect(searchTools('split pdf').map((tool) => tool.id)).toContain(
       'pdf-extract',
+    );
+    expect(searchTools('jpg to pdf').map((tool) => tool.id)).toContain(
+      'images-to-pdf',
     );
     expect(searchTools('rotate pdf')[0]?.href).toBe(
       '/pdf/page-tools?tool=rotate-pdf',
@@ -200,6 +203,7 @@ describe('public canary catalog', () => {
     expect(pdf.map((destination) => destination.name)).toEqual([
       'Merge PDF',
       'Extract PDF pages',
+      'Images to PDF',
       'Rotate PDF',
       'Reorder PDF pages',
       'Delete PDF pages',
@@ -207,11 +211,11 @@ describe('public canary catalog', () => {
       'PDF watermark',
       'PDF metadata editor',
     ]);
-    expect(pdf).toHaveLength(8);
+    expect(pdf).toHaveLength(9);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(8);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(9);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

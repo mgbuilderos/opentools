@@ -102,6 +102,7 @@ describe('local tool source policy', () => {
       'components/schema-workbench-tool.tsx',
       'components/pdf-merge-tool.tsx',
       'components/pdf-extract-tool.tsx',
+      'components/images-to-pdf-tool.tsx',
       'components/image-optimize-tool.tsx',
     ];
     const missing = downloadSurfaces.filter(

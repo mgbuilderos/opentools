@@ -4,12 +4,13 @@ import { describe, expect, it } from 'vitest';
 import {
   extractPdfPages,
   hasPdfSignature,
+  imagesToPdf,
   inspectPdfInputs,
   mergePdfInputs,
   PdfEngineError,
   transformPdfPages,
 } from './engine';
-import type { PdfWorkerInput } from './protocol';
+import type { PdfImageInput, PdfWorkerInput } from './protocol';
 
 async function makePdf(
   id: string,
@@ -160,5 +161,50 @@ describe('PDF merge engine', () => {
         metadata: { title: '', author: '', subject: '', keywords: '' },
       }),
     ).rejects.toMatchObject({ code: 'TRANSFORM_FAILED' });
+  });
+
+  it('embeds ordered PNG images into a validated fixed-size PDF', async () => {
+    const png = Uint8Array.from(
+      Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+        'base64',
+      ),
+    );
+    const inputs: PdfImageInput[] = ['first', 'second'].map((id) => ({
+      id,
+      name: `${id}.png`,
+      mimeType: 'image/png',
+      bytes: png.slice().buffer,
+    }));
+    const result = await imagesToPdf(inputs, {
+      pageSize: 'a4',
+      orientation: 'portrait',
+      margin: 24,
+    });
+    const reopened = await PDFDocument.load(result.bytes, {
+      updateMetadata: false,
+    });
+    expect(reopened.getPageCount()).toBe(2);
+    expect(reopened.getPages()[0]?.getWidth()).toBeCloseTo(595.28, 2);
+    expect(reopened.getPages()[0]?.getHeight()).toBeCloseTo(841.89, 2);
+  });
+
+  it('rejects an image whose bytes do not match its declared type', async () => {
+    const invalid: PdfImageInput = {
+      id: 'bad-image',
+      name: 'private.png',
+      mimeType: 'image/png',
+      bytes: new TextEncoder().encode('not an image').buffer,
+    };
+    await expect(
+      imagesToPdf([invalid], {
+        pageSize: 'image',
+        orientation: 'auto',
+        margin: 0,
+      }),
+    ).rejects.toMatchObject({
+      code: 'IMAGE_TO_PDF_FAILED',
+      inputId: 'bad-image',
+    });
   });
 });

@@ -4,6 +4,16 @@ export type PdfWorkerInput = {
   bytes: ArrayBuffer;
 };
 
+export type PdfImageInput = PdfWorkerInput & {
+  mimeType: 'image/jpeg' | 'image/png';
+};
+
+export type ImagesToPdfOptions = {
+  pageSize: 'image' | 'a4' | 'letter';
+  orientation: 'auto' | 'portrait' | 'landscape';
+  margin: 0 | 12 | 24 | 36;
+};
+
 export type PdfInspectRequest = {
   type: 'inspect';
   inputs: PdfWorkerInput[];
@@ -39,11 +49,18 @@ export type PdfTransformRequest = {
   options: PdfPageTransformOptions;
 };
 
+export type ImagesToPdfRequest = {
+  type: 'images-to-pdf';
+  inputs: PdfImageInput[];
+  options: ImagesToPdfOptions;
+};
+
 export type PdfWorkerRequest =
   | PdfInspectRequest
   | PdfMergeRequest
   | PdfExtractRequest
-  | PdfTransformRequest;
+  | PdfTransformRequest
+  | ImagesToPdfRequest;
 
 export type PdfWorkerResponse =
   | {
@@ -71,7 +88,8 @@ export type PdfWorkerResponse =
         | 'EMPTY_PDF'
         | 'MERGE_FAILED'
         | 'EXTRACT_FAILED'
-        | 'TRANSFORM_FAILED';
+        | 'TRANSFORM_FAILED'
+        | 'IMAGE_TO_PDF_FAILED';
       message: string;
       inputId?: string;
     };

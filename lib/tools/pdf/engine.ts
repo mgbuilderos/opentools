@@ -1,6 +1,10 @@
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
-import type { PdfWorkerInput } from './protocol';
+import type {
+  ImagesToPdfOptions,
+  PdfImageInput,
+  PdfWorkerInput,
+} from './protocol';
 
 export type PdfEngineErrorCode =
   | 'INVALID_PDF'
@@ -8,7 +12,8 @@ export type PdfEngineErrorCode =
   | 'EMPTY_PDF'
   | 'MERGE_FAILED'
   | 'EXTRACT_FAILED'
-  | 'TRANSFORM_FAILED';
+  | 'TRANSFORM_FAILED'
+  | 'IMAGE_TO_PDF_FAILED';
 
 export class PdfEngineError extends Error {
   constructor(
@@ -338,4 +343,146 @@ export async function transformPdfPages(
     computeDurationMs,
     validationDurationMs,
   };
+}
+
+const FIXED_PAGE_SIZES = {
+  a4: [595.28, 841.89],
+  letter: [612, 792],
+} as const;
+
+function hasImageSignature(input: PdfImageInput) {
+  const bytes = new Uint8Array(input.bytes);
+  if (input.mimeType === 'image/jpeg') {
+    return (
+      bytes.length >= 3 &&
+      bytes[0] === 0xff &&
+      bytes[1] === 0xd8 &&
+      bytes[2] === 0xff
+    );
+  }
+  return (
+    bytes.length >= 8 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a
+  );
+}
+
+export async function imagesToPdf(
+  inputs: PdfImageInput[],
+  options: ImagesToPdfOptions,
+  onProgress?: (
+    phase: 'reading' | 'copying' | 'validating',
+    completed: number,
+    total: number,
+  ) => void,
+) {
+  if (!inputs.length) {
+    throw new PdfEngineError(
+      'IMAGE_TO_PDF_FAILED',
+      'Choose at least one JPEG or PNG image.',
+    );
+  }
+  if (![0, 12, 24, 36].includes(options.margin)) {
+    throw new PdfEngineError(
+      'IMAGE_TO_PDF_FAILED',
+      'Choose a supported page margin.',
+    );
+  }
+
+  const computeStarted = performance.now();
+  const destination = await PDFDocument.create();
+
+  for (const [index, input] of inputs.entries()) {
+    onProgress?.('reading', index, inputs.length);
+    if (!hasImageSignature(input)) {
+      throw new PdfEngineError(
+        'IMAGE_TO_PDF_FAILED',
+        'One image does not match its JPEG or PNG file type.',
+        input.id,
+      );
+    }
+
+    let image;
+    try {
+      image =
+        input.mimeType === 'image/jpeg'
+          ? await destination.embedJpg(input.bytes)
+          : await destination.embedPng(input.bytes);
+    } catch {
+      throw new PdfEngineError(
+        'IMAGE_TO_PDF_FAILED',
+        'One image could not be decoded safely.',
+        input.id,
+      );
+    }
+
+    const sourceLandscape = image.width > image.height;
+    let pageWidth: number;
+    let pageHeight: number;
+    if (options.pageSize === 'image') {
+      pageWidth = image.width + options.margin * 2;
+      pageHeight = image.height + options.margin * 2;
+    } else {
+      const fixed = FIXED_PAGE_SIZES[options.pageSize];
+      const landscape =
+        options.orientation === 'landscape' ||
+        (options.orientation === 'auto' && sourceLandscape);
+      [pageWidth, pageHeight] = landscape ? [fixed[1], fixed[0]] : fixed;
+    }
+
+    const availableWidth = pageWidth - options.margin * 2;
+    const availableHeight = pageHeight - options.margin * 2;
+    if (availableWidth <= 0 || availableHeight <= 0) {
+      throw new PdfEngineError(
+        'IMAGE_TO_PDF_FAILED',
+        'The selected margin leaves no printable page area.',
+      );
+    }
+    const scale = Math.min(
+      availableWidth / image.width,
+      availableHeight / image.height,
+      options.pageSize === 'image' ? 1 : Number.POSITIVE_INFINITY,
+    );
+    const width = image.width * scale;
+    const height = image.height * scale;
+    const page = destination.addPage([pageWidth, pageHeight]);
+    page.drawImage(image, {
+      x: (pageWidth - width) / 2,
+      y: (pageHeight - height) / 2,
+      width,
+      height,
+    });
+    onProgress?.('copying', index + 1, inputs.length);
+  }
+
+  destination.setProducer('Browser Tools');
+  destination.setCreationDate(new Date());
+  const bytes = await destination.save({
+    addDefaultPage: false,
+    useObjectStreams: true,
+    objectsPerTick: 50,
+  });
+  const computeDurationMs = performance.now() - computeStarted;
+  onProgress?.('validating', inputs.length, inputs.length);
+  const validationStarted = performance.now();
+  const reopened = await PDFDocument.load(bytes, {
+    ignoreEncryption: false,
+    updateMetadata: false,
+  });
+  const pageCount = reopened.getPageCount();
+  const validationDurationMs = performance.now() - validationStarted;
+  if (pageCount !== inputs.length) {
+    throw new PdfEngineError(
+      'IMAGE_TO_PDF_FAILED',
+      'The generated PDF failed its page-count check.',
+    );
+  }
+
+  return { bytes, pageCount, computeDurationMs, validationDurationMs };
 }

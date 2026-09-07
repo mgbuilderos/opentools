@@ -2,6 +2,7 @@
 
 import {
   extractPdfPages,
+  imagesToPdf,
   inspectPdfInputs,
   mergePdfInputs,
   PdfEngineError,
@@ -76,6 +77,27 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
         send({ type: 'progress', phase, completed, total });
       },
     )
+      .then((result) => {
+        const output = result.bytes.slice().buffer as ArrayBuffer;
+        send(
+          {
+            type: 'result',
+            bytes: output,
+            pageCount: result.pageCount,
+            computeDurationMs: result.computeDurationMs,
+            validationDurationMs: result.validationDurationMs,
+          },
+          [output],
+        );
+      })
+      .catch(sendError);
+    return;
+  }
+
+  if (request.type === 'images-to-pdf') {
+    imagesToPdf(request.inputs, request.options, (phase, completed, total) => {
+      send({ type: 'progress', phase, completed, total });
+    })
       .then((result) => {
         const output = result.bytes.slice().buffer as ArrayBuffer;
         send(

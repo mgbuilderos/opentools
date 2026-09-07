@@ -14,6 +14,7 @@ import {
   Combine,
   Crop,
   FileCog,
+  FileImage,
   FileOutput,
   FileText,
   FlaskConical,
@@ -78,6 +79,7 @@ function destinationIcon(
 
   if (/merge|combine|join/u.test(label)) return Combine;
   if (/extract|export/u.test(label)) return FileOutput;
+  if (/image.*pdf|jpg.*pdf|png.*pdf|photo.*pdf/u.test(label)) return FileImage;
   if (/rotate/u.test(label)) return RotateCw;
   if (/reorder|sort|order/u.test(label)) return ListOrdered;
   if (/delete|remove|omit/u.test(label)) return Trash2;

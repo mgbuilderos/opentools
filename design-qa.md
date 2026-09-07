@@ -2,6 +2,23 @@
 
 Date: 2026-09-07
 
+## Images-to-PDF tranche check
+
+- Rendered route: `http://localhost:3011/pdf/images-to-pdf`.
+- The empty state, upload surface, header, privacy badge and footer use the
+  existing monochrome Operator v1 contracts; no new color, font, radius or
+  promotional pattern was introduced.
+- The left drawer remains closed by default. Opening it reports 12 categories;
+  selecting PDF replaces that list with exactly nine equal-ranked actions.
+  Images to PDF appears third with the shared 36 px monochrome icon well.
+- Job-language search for `jpg to pdf` returns the new working route as the sole
+  result.
+- Accessibility state exposes a labeled multi-file control, a separately labeled
+  drop-zone button, semantic headings, and the existing keyboard-safe drawer.
+- Full QC passed with 27 test files / 241 tests and a 35-route production build.
+
+No actionable P0, P1 or P2 visual issue was found in this tranche.
+
 ## Current comparison target
 
 - Source visual truth: `/var/folders/8m/vptdd2nn261fmf5g1f_p9_x80000gp/T/TemporaryItems/NSIRD_screencaptureui_lJY8lQ/Screenshot 2026-09-07 at 2.08.07 AM.png`

@@ -269,6 +269,34 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'images-to-pdf',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Images to PDF',
+    shortDescription:
+      'Arrange JPEG and PNG images into one locally generated PDF.',
+    category: 'PDF',
+    aliases: [
+      'jpg to pdf',
+      'jpeg to pdf',
+      'png to pdf',
+      'photo to pdf',
+      'image pdf converter',
+    ],
+    jobs: [
+      'convert images to pdf',
+      'combine photos into a pdf',
+      'make a pdf from jpg files',
+    ],
+    href: '/pdf/images-to-pdf',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.image.embed', 'pdf.document.create'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-page-tools',
     version: '0.1.0-canary',
     status: 'canary',
@@ -787,7 +815,7 @@ export const toolGroups: ToolGroup[] = [
     id: 'pdf',
     name: 'PDF',
     shortDescription: 'Merge, split, extract, and reorder pages.',
-    toolIds: ['pdf-merge', 'pdf-extract', 'pdf-page-tools'],
+    toolIds: ['pdf-merge', 'pdf-extract', 'images-to-pdf', 'pdf-page-tools'],
   },
   {
     id: 'images',
