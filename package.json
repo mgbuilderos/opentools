@@ -10,6 +10,7 @@
     "prebuild": "npm run design:qc",
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
+    "deploy": "wrangler deploy --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt",
     "format:check": "oxfmt --check app components lib workers scripts types proxy.ts next.config.ts vite.config.ts vitest.config.ts package.json tsconfig.json",

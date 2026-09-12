@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('creator and social workbench', () => {
-  it('publishes 42 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(42);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(42);
+  it('publishes 43 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(43);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(43);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
         runCreatorOperation(operation.id, defaults(operation.id)),
@@ -193,5 +193,23 @@ describe('creator and social workbench', () => {
     expect(srtOutput).not.toContain('WEBVTT');
     expect(srtOutput).toContain('00:00:01,000 --> 00:00:04,000');
     expect(srtOutput).toContain('Welcome to local tools.');
+  });
+
+  it('encodes animated GIF loops with valid GIF89a header', () => {
+    const gifOutput = runCreatorOperation('video-to-gif', {
+      video: '',
+      fps: '10',
+      width: '320',
+      duration: '2',
+    });
+    expect(typeof gifOutput === 'string' ? gifOutput : '').toMatch(
+      /^data:image\/gif;base64,/,
+    );
+    const base64Data = (gifOutput as string).replace(
+      'data:image/gif;base64,',
+      '',
+    );
+    const raw = Buffer.from(base64Data, 'base64').toString('ascii', 0, 6);
+    expect(raw).toBe('GIF89a');
   });
 });

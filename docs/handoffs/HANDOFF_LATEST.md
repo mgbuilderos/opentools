@@ -8,11 +8,11 @@
 
 - **Active Worktree**: `apps/web-ui-ux-worktree`
 - **Active Branch**: `codex/ui-ux-category-shell`
-- **Catalog Size**: **585 local operations** across 16 workbenches, with a complete programmatic taxonomy of **1,000 tools** across 19 categories.
+- **Catalog Size**: **586 local operations** across 16 workbenches, with a complete programmatic taxonomy of **1,000 tools** across 19 categories.
 - **Automated Verification Status**: **All 8 Mandatory Quality Gates Passing** (`npm run qc`).
-  - Unit Tests: **30 test files, 269 test cases passing (0 failures)**.
+  - Unit Tests: **30 test files, 270 test cases passing (0 failures)**.
   - TypeScript: Zero errors (`tsc --noEmit`).
-  - Linter: Zero errors, zero warnings across 141 files (`oxlint --deny-warnings`).
+  - Linter: Zero errors, zero warnings across 144 files (`oxlint --deny-warnings`).
   - Design QC: Operator v1 monochrome token verification across all UI files.
   - Build: Full Next.js / Vinext build compiling 36 static routes, 19 category pillar hubs, and `/guides/:slug` dynamic SSR.
   - Supply Chain: CycloneDX 1.5 SBOM validated.
@@ -65,6 +65,11 @@ Every agent modifying this codebase must uphold these four cardinal invariants:
 
 - **Value Receipt Banner** (`schema-workbench-tool.tsx`): Sub-second speed badge + 1-click "Share Speed Receipt" to clipboard.
 - **Support Hub** (`app/support/page.tsx`): Voluntary tiers ($3, $10, $25) and zero-middleman channels (GitHub Sponsors, Buy Me a Coffee, BTC, ETH, SOL).
+
+### D. Media & Video Tooling & Turnkey Deployment
+
+- **Video to Animated GIF (`video-to-gif`)** (`creator-workbench.ts`): Client-side animated GIF89a encoder with LZW bitstream compression, 256-color deterministic palette quantization, loop extensions, configurable FPS (5, 10, 15), max width (240, 320, 480), and duration limits.
+- **Production Deployment Configuration**: Added `"deploy": "wrangler deploy --config dist/server/wrangler.json"` to `package.json` for 1-command deployment to Cloudflare Pages / Workers.
 
 ---
 
