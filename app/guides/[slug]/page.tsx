@@ -53,6 +53,10 @@ export default async function GuidePage({ params }: GuidePageProps) {
   const guide = getGuideBySlug(slug);
   if (!guide) notFound();
 
+  const categoryPillarHref =
+    guide.categoryPillar?.href ??
+    `/guides/category/${guide.tool.category.toLowerCase()}`;
+
   return (
     <AppShell currentToolId="home">
       <script
@@ -75,10 +79,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <a
-                  href={`/?category=${guide.tool.category.toLowerCase()}`}
-                  className="hover:text-foreground"
-                >
+                <a href={categoryPillarHref} className="hover:text-foreground">
                   {guide.tool.category}
                 </a>
               </li>
@@ -112,6 +113,16 @@ export default async function GuidePage({ params }: GuidePageProps) {
             <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
               {guide.leadParagraph}
             </p>
+
+            {/* Direct Answer Box (AEO for Perplexity & Google AI Overviews) */}
+            <div className="mt-6 rounded-xl border bg-card p-5">
+              <p className="text-xs font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+                Quick Summary / Direct Answer
+              </p>
+              <p className="mt-2 text-sm font-medium leading-6 text-foreground">
+                {guide.directAnswer}
+              </p>
+            </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Button
@@ -276,20 +287,76 @@ export default async function GuidePage({ params }: GuidePageProps) {
             </div>
           </section>
 
-          {/* Technical Architecture */}
+          {/* Technical Architecture & Visual Flowchart */}
           <section className="mt-12 rounded-xl border bg-muted/40 p-6 sm:p-8">
             <h2 className="text-xl font-semibold tracking-[-0.03em]">
-              Security Architecture & Invariant Guarantees
+              Security Architecture &amp; Invariant Guarantees
             </h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
               {guide.technicalArchitecture}
             </p>
+
+            <div className="mt-6 overflow-hidden rounded-xl">
+              <div
+                className="w-full"
+                dangerouslySetInnerHTML={{ __html: guide.diagramSvg }}
+              />
+            </div>
+
             <div className="mt-5 rounded-lg border bg-card p-4 font-mono text-xs">
               <span className="text-muted-foreground">CSP Header: </span>
               <span className="font-semibold text-foreground">
                 default-src &apos;self&apos;; connect-src &apos;none&apos;;
                 object-src &apos;none&apos;;
               </span>
+            </div>
+          </section>
+
+          {/* Related Workflow Tools Mesh */}
+          <section className="mt-12">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div>
+                <h2 className="text-xl font-semibold tracking-[-0.03em]">
+                  Related {guide.tool.category} Utilities
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Common next steps and complementary client-side operations.
+                </p>
+              </div>
+              {guide.categoryPillar ? (
+                <a
+                  href={guide.categoryPillar.href}
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  View all {guide.categoryPillar.toolCount} tools →
+                </a>
+              ) : null}
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {guide.relatedTools.map((rel) => (
+                <a
+                  key={rel.tool.slug}
+                  href={rel.guideHref}
+                  className="group rounded-xl border bg-card p-4 transition-colors hover:bg-muted/40"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-foreground group-hover:underline">
+                      {rel.tool.name}
+                    </span>
+                    <span className="rounded-full border bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
+                      {rel.tool.executionMode}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                    {rel.tool.notes ||
+                      `Run ${rel.tool.name.toLowerCase()} locally in your browser tab.`}
+                  </p>
+                  <p className="mt-2 text-[11px] font-mono text-muted-foreground">
+                    {rel.relationship} →
+                  </p>
+                </a>
+              ))}
             </div>
           </section>
 

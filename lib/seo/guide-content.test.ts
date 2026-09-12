@@ -44,9 +44,13 @@ describe('Programmatic SEO Engine — 1,000 Tool Catalog & Guides', () => {
 
     expect(mergeGuide.metaTitle).toContain('Merge PDF');
     expect(mergeGuide.metaDescription).toContain('client-side');
+    expect(mergeGuide.directAnswer).toContain('To merge pdf online');
+    expect(mergeGuide.diagramSvg).toContain('<svg');
     expect(mergeGuide.steps).toHaveLength(3);
     expect(mergeGuide.comparison).toHaveLength(5);
     expect(mergeGuide.faqs).toHaveLength(4);
+    expect(mergeGuide.relatedTools.length).toBeGreaterThanOrEqual(3);
+    expect(mergeGuide.categoryPillar?.name).toBe('PDF');
 
     const json = mergeGuide.jsonLd as {
       '@graph': Array<{ '@type': string }>;

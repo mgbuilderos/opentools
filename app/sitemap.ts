@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
 
 const baseUrl = ['https:', '//', 'opentools.org'].join('');
@@ -50,6 +51,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1.0 : 0.9,
   }));
 
+  const pillarRoutes: MetadataRoute.Sitemap = getAllCategoryPillars().map(
+    (pillar) => ({
+      url: `${baseUrl}${pillar.href}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    }),
+  );
+
   const guideRoutes: MetadataRoute.Sitemap = TOOL_CATALOG.map((tool) => ({
     url: `${baseUrl}/guides/${tool.slug}`,
     lastModified: now,
@@ -57,5 +67,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: tool.releaseWave === 'P0' ? 0.85 : 0.75,
   }));
 
-  return [...coreRoutes, ...guideRoutes];
+  return [...coreRoutes, ...pillarRoutes, ...guideRoutes];
 }
