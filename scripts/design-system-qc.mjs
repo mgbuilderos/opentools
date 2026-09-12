@@ -39,14 +39,14 @@ requireText(
   'shell must declare the active design-system version',
 );
 requireText(
-  'components/app-shell.tsx',
+  'components/home-workspace.tsx',
   'data-design="equal-tool-hierarchy"',
-  'drawer must expose equal task hierarchy',
+  'main category surface must expose equal task hierarchy',
 );
 requireText(
-  'components/app-shell.tsx',
-  'toolDestinationsForGroup(drawerGroup)',
-  'drawer must flatten workspaces into equal task destinations',
+  'components/home-workspace.tsx',
+  'toolDestinationsForGroup(selectedGroup)',
+  'main category surface must flatten workspaces into equal task destinations',
 );
 requireText(
   'components/ui/button.tsx',

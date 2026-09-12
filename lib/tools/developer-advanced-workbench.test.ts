@@ -170,6 +170,12 @@ describe('advanced developer workbench', () => {
     expect(output).toContain(
       '"lastAddress": "2001:db8:abcd:12:ffff:ffff:ffff:ffff"',
     );
+    await expect(
+      runAdvancedDeveloperOperation('ipv6-subnet-calculator', {
+        address: '2001:db8::1',
+        prefix: '',
+      }),
+    ).rejects.toThrow('prefix must be a whole number');
   });
 
   it('parses headers and cookies without making a request', async () => {
@@ -196,6 +202,12 @@ describe('advanced developer workbench', () => {
         input: '[server]\nport=1\nport=2',
       }),
     ).rejects.toThrow('repeats key port');
+    const prototypeBefore = ({} as Record<string, unknown>).polluted;
+    const hostile = await runAdvancedDeveloperOperation('ini-viewer', {
+      input: '[__proto__]\npolluted=yes',
+    });
+    expect(({} as Record<string, unknown>).polluted).toBe(prototypeBefore);
+    expect(hostile).toContain('"__proto__"');
   });
 
   it('quotes SQL preview literals and rejects parameter-count mismatch', async () => {
@@ -233,6 +245,39 @@ describe('advanced developer workbench', () => {
     });
     expect(graphql).toContain('query User ($id:ID!) {');
     expect(graphql).toContain('\n  user (id:$id) {');
+
+    await expect(
+      runAdvancedDeveloperOperation('sql-formatter', {
+        input: "-- keep this\nSELECT X'AB' AS payload;",
+      }),
+    ).resolves.toContain("-- keep this\nSELECT X'AB'");
+    await expect(
+      runAdvancedDeveloperOperation('sql-minifier', {
+        input: "SELECT X'AB' AS payload;",
+      }),
+    ).resolves.toContain("X'AB'");
+    await expect(
+      runAdvancedDeveloperOperation('sql-minifier', {
+        input: "SELECT x 'alias' FROM items;",
+      }),
+    ).resolves.toContain("x 'alias'");
+    await expect(
+      runAdvancedDeveloperOperation('graphql-formatter', { input: '}' }),
+    ).rejects.toThrow('braces are not balanced');
+    await expect(
+      runAdvancedDeveloperOperation('graphql-formatter', {
+        input: 'query { note(text: """hello \\""" world""") }',
+      }),
+    ).resolves.toContain('hello \\""" world');
+  });
+
+  it('preserves meaningful whitespace in regular-expression sources', async () => {
+    await expect(
+      runAdvancedDeveloperOperation('regex-explainer', {
+        pattern: ' a ',
+        flags: '',
+      }),
+    ).resolves.toContain('/ a /');
   });
 
   it('inspects package and OpenAPI structures and builds schema examples', async () => {

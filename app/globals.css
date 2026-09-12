@@ -250,3 +250,37 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Category rail reserves a constant footprint, so expansion does not move cards. */
+.category-rail {
+  width: 72px;
+  transition:
+    width 220ms var(--motion-ease),
+    box-shadow 220ms var(--motion-ease);
+}
+.category-rail[data-expanded='true'] {
+  width: 272px;
+  box-shadow: 14px 0 32px rgb(0 0 0 / 6%);
+}
+.category-rail .category-label {
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+}
+.category-rail[data-expanded='true'] .category-label {
+  opacity: 1;
+}
+.category-link {
+  width: 248px;
+}
+.category-rail[data-expanded='false'] .category-link {
+  width: 48px;
+}
+.category-mobile .category-link {
+  width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .category-rail,
+  .category-rail .category-label {
+    transition: none;
+  }
+}

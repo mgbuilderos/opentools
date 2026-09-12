@@ -115,29 +115,38 @@ describe('local tool source policy', () => {
     expect(missing).toEqual([]);
   });
 
-  it('keeps the category drawer closed by default and out of the page grid', () => {
+  it('keeps categories in navigation and equal task cards in the main workspace', () => {
     const shell = readFileSync(
       path.join(projectRoot, 'components/app-shell.tsx'),
       'utf8',
     );
+    const home = readFileSync(
+      path.join(projectRoot, 'components/home-workspace.tsx'),
+      'utf8',
+    );
+    expect(shell).toContain('aria-label="Tool categories"');
+    expect(shell).toContain('onCategorySelect(group.id)');
+    expect(shell).not.toContain('<ToolLinkCard');
+    expect(home).toContain('toolDestinationsForGroup(selectedGroup)');
+    expect(home).toContain('data-design="equal-tool-hierarchy"');
+    expect(home).toContain('<ToolLinkCard');
+    expect(shell).toContain('showModal()');
+    expect(shell).toContain('contains(document.activeElement)');
+  });
 
-    expect(shell).toContain(
-      'const [sidebarOpen, setSidebarOpen] = useState(false)',
+  it('leaves native downloads and other work accessible during optional support', () => {
+    const source = readFileSync(
+      path.join(projectRoot, 'components/completion-value-dialog.tsx'),
+      'utf8',
     );
-    expect(shell).toContain('inert={!sidebarOpen}');
-    expect(shell).toContain('fixed bottom-0 left-0 top-16');
-    expect(shell).toContain(
-      "sidebarOpen ? 'translate-x-0' : '-translate-x-full'",
-    );
-    expect(shell).toContain('duration-[360ms]');
-    expect(shell).toContain('motion-reduce:transition-none');
-    expect(shell).toContain('setDrawerGroupId(group.id)');
-    expect(shell).toContain('toolDestinationsForGroup(drawerGroup)');
-    expect(shell).toContain('data-design="equal-tool-hierarchy"');
-    expect(shell).not.toContain('tool.searchEntries.map');
-    expect(shell).not.toContain("localStorage.getItem('tools-sidebar')");
-    expect(shell).not.toContain('grid-cols-[240px');
-    expect(shell).not.toContain('fixed bottom-0 right-0 top-16');
+    expect(source).not.toContain('preventDefault()');
+    expect(source).not.toContain('stopPropagation()');
+    expect(source).not.toContain('showModal()');
+    expect(source).not.toContain('.click()');
+    expect(source).toContain('aria-modal="false"');
+    expect(source).toContain('SUPPORT_PREFERENCE_KEY');
+    expect(source).toContain('href="/support"');
+    expect(source).toContain('rel="noopener noreferrer"');
   });
 
   it('keeps focus and success product chrome monochrome', () => {

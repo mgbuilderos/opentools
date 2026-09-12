@@ -600,7 +600,12 @@ function integer(
   minimum: number,
   maximum: number,
 ) {
-  const output = Number(values[key]);
+  const raw = values[key]?.trim();
+  const output = Number(raw);
+  if (!raw)
+    throw new Error(
+      `${key} must be a whole number from ${minimum} to ${maximum}.`,
+    );
   if (!Number.isSafeInteger(output) || output < minimum || output > maximum)
     throw new Error(
       `${key} must be a whole number from ${minimum} to ${maximum}.`,
@@ -829,7 +834,13 @@ function subnet(address: string, prefix: number) {
 }
 
 function explainRegex(sourceValue: string, flagsValue: string) {
-  const source = required(sourceValue, 'Regular-expression source', 10_000);
+  if (sourceValue.length === 0)
+    throw new Error('Regular-expression source is required.');
+  if (sourceValue.length > 10_000)
+    throw new Error(
+      'Regular-expression source is limited to 10,000 characters.',
+    );
+  const source = sourceValue;
   const flags = flagsValue.trim();
   if (!/^[dgimsuvy]*$/u.test(flags) || new Set(flags).size !== flags.length)
     throw new Error(
@@ -1027,8 +1038,11 @@ function parseIni(value: string) {
     .split('\n');
   if (lines.length > 10_000)
     throw new Error('INI input is limited to 10,000 lines.');
-  const root: Record<string, string> = {};
-  const sections: Record<string, Record<string, string>> = {};
+  const root = Object.create(null) as Record<string, string>;
+  const sections = Object.create(null) as Record<
+    string,
+    Record<string, string>
+  >;
   let target = root;
   for (const [index, original] of lines.entries()) {
     const line = original.trim();
@@ -1037,7 +1051,7 @@ function parseIni(value: string) {
     if (section) {
       const name = section[1].trim();
       if (!name) throw new Error(`INI line ${index + 1} has an empty section.`);
-      target = sections[name] ??= {};
+      target = sections[name] ??= Object.create(null) as Record<string, string>;
       continue;
     }
     const pair = /^([^=:]+?)\s*[=:]\s*(.*)$/u.exec(line);
@@ -1059,7 +1073,11 @@ type CodeToken = {
   kind: 'word' | 'quoted' | 'symbol' | 'comment';
 };
 
-function codeTokens(value: string, language: 'sql' | 'graphql') {
+function codeTokens(
+  value: string,
+  language: 'sql' | 'graphql',
+  preserveSqlComments = false,
+) {
   const source = required(
     value,
     language === 'sql' ? 'SQL' : 'GraphQL document',
@@ -1074,12 +1092,17 @@ function codeTokens(value: string, language: 'sql' | 'graphql') {
     }
     if (language === 'sql' && source.startsWith('--', index)) {
       const end = source.indexOf('\n', index);
+      const stop = end < 0 ? source.length : end;
+      if (preserveSqlComments)
+        push({ value: source.slice(index, stop), kind: 'comment' });
       index = end < 0 ? source.length : end + 1;
       continue;
     }
     if (language === 'sql' && source.startsWith('/*', index)) {
       const end = source.indexOf('*/', index + 2);
       if (end < 0) throw new Error('SQL block comment is not closed.');
+      if (preserveSqlComments)
+        push({ value: source.slice(index, end + 2), kind: 'comment' });
       index = end + 2;
       continue;
     }
@@ -1092,8 +1115,16 @@ function codeTokens(value: string, language: 'sql' | 'graphql') {
     }
     const quote = source[index];
     if (language === 'graphql' && source.startsWith('"""', index)) {
-      const end = source.indexOf('"""', index + 3);
-      if (end < 0) throw new Error('GraphQL block string is not closed.');
+      let end = index + 3;
+      while (true) {
+        end = source.indexOf('"""', end);
+        if (end < 0) throw new Error('GraphQL block string is not closed.');
+        let backslashes = 0;
+        for (let cursor = end - 1; source[cursor] === '\\'; cursor -= 1)
+          backslashes += 1;
+        if (backslashes % 2 === 0) break;
+        end += 3;
+      }
       push({ value: source.slice(index, end + 3), kind: 'quoted' });
       index = end + 3;
       continue;
@@ -1116,7 +1147,18 @@ function codeTokens(value: string, language: 'sql' | 'graphql') {
       }
       if (source[end - 1] !== closing)
         throw new Error('Quoted value is not closed.');
-      push({ value: source.slice(index, end), kind: 'quoted' });
+      const quotedValue = source.slice(index, end);
+      const previous = tokens.at(-1);
+      const adjacentPrefix =
+        language === 'sql' &&
+        previous?.kind === 'word' &&
+        source.slice(index - previous.value.length, index) === previous.value;
+      if (adjacentPrefix) {
+        tokens.pop();
+        push({ value: `${previous.value}${quotedValue}`, kind: 'quoted' });
+      } else {
+        push({ value: quotedValue, kind: 'quoted' });
+      }
       index = end;
       continue;
     }
@@ -1230,7 +1272,7 @@ const SQL_BREAKS = new Set([
 ]);
 
 function sqlFormat(value: string) {
-  const tokens = codeTokens(value, 'sql').map((token) => ({
+  const tokens = codeTokens(value, 'sql', true).map((token) => ({
     ...token,
     value:
       token.kind === 'word' && SQL_KEYWORDS.has(token.value.toLocaleLowerCase())
@@ -1244,6 +1286,12 @@ function sqlFormat(value: string) {
     line = '';
   };
   for (const [index, token] of tokens.entries()) {
+    if (token.kind === 'comment') {
+      flush();
+      line = token.value;
+      flush();
+      continue;
+    }
     if (SQL_BREAKS.has(token.value)) flush();
     if (token.value === ',' && line) {
       line += ',';
@@ -1288,7 +1336,8 @@ function graphqlFormat(value: string) {
     }
     if (token.value === '}') {
       flush();
-      indent = Math.max(0, indent - 1);
+      if (indent === 0) throw new Error('GraphQL braces are not balanced.');
+      indent -= 1;
       line = '}';
       const next = tokens[index + 1]?.value;
       if (next !== ')' && next !== ']') flush();

@@ -5,10 +5,13 @@ Visual direction: classical, monochrome, compact, local-first utility software
 
 ## Hierarchy
 
-The category drawer has two levels only:
-
-1. Categories, ordered by the evidence prior in `lib/tools/catalog.ts`.
-2. Equal task destinations.
+Categories live only in the side navigation. Selecting one reveals equal task
+cards in the main workspace. Desktop uses a 72px rail expanding to 272px in
+220ms; pointer exit has a 450ms grace period and never collapses keyboard focus.
+Mobile uses a native category dialog. Reduced motion removes transitions.
+ADR-015 supersedes the former drawer drill-in. Support is a non-modal receipt
+observing the original download click; seven-day and permanent opt-out preferences
+stay local. No payment provider is connected.
 
 A workspace is an implementation detail, not a stronger visual rank. If one
 workspace implements multiple tasks, its `searchEntries` replace the workspace
