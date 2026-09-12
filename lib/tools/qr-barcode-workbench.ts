@@ -365,6 +365,87 @@ export const QR_BARCODE_OPERATIONS: readonly QrBarcodeOperation[] = [
     outputExtension: 'svg',
   },
   {
+    id: 'qr-code-frame-generator',
+    name: 'Framed QR card generator',
+    description:
+      'Generate a print-ready vector QR card with custom CTA badge and border.',
+    fields: [
+      area('payload', 'Content or URL', `${secureWebPrefix}example.com/menu`),
+      text('frameText', 'Banner badge text', 'SCAN ME'),
+      text('subText', 'Subtitle note', 'Point your camera to view'),
+      select('badgePosition', 'Badge placement', 'bottom', [
+        { value: 'bottom', label: 'Bottom banner' },
+        { value: 'top', label: 'Top banner' },
+      ]),
+      errorField,
+      sizeField,
+    ],
+    notice: qrNotice,
+    outputExtension: 'svg',
+  },
+  {
+    id: 'mecard-qr-code',
+    name: 'MeCard QR code',
+    description:
+      'Create an ultra-compact MeCard contact QR code for fast mobile address-book scanning.',
+    fields: [
+      text('name', 'Name (Last, First)', 'Lovelace, Ada'),
+      text('phone', 'Phone number', '+15550199'),
+      text('email', 'Email address', 'ada@example.com'),
+      text('note', 'Note or company', 'Private Tools'),
+      errorField,
+      sizeField,
+    ],
+    notice: payloadNotice,
+    outputExtension: 'svg',
+  },
+  {
+    id: 'social-media-qr-code',
+    name: 'Social media QR code',
+    description:
+      'Create a direct profile link QR code for YouTube, X, Instagram, LinkedIn, GitHub, or Facebook.',
+    fields: [
+      select('platform', 'Social platform', 'youtube', [
+        { value: 'youtube', label: 'YouTube (@handle)' },
+        { value: 'x', label: 'X / Twitter (@handle)' },
+        { value: 'instagram', label: 'Instagram (@handle)' },
+        { value: 'linkedin', label: 'LinkedIn (in/profile)' },
+        { value: 'github', label: 'GitHub (username)' },
+        { value: 'facebook', label: 'Facebook (page/user)' },
+      ]),
+      text('handle', 'Username / Handle', 'googledeepmind'),
+      errorField,
+      sizeField,
+    ],
+    notice: payloadNotice,
+    outputExtension: 'svg',
+  },
+  {
+    id: 'crypto-payment-qr-code',
+    name: 'Crypto payment QR code',
+    description:
+      'Create a direct wallet payment QR code for Ethereum, Solana, Bitcoin, or USDT.',
+    fields: [
+      select('network', 'Blockchain network', 'ethereum', [
+        { value: 'ethereum', label: 'Ethereum (ETH)' },
+        { value: 'solana', label: 'Solana (SOL)' },
+        { value: 'bitcoin', label: 'Bitcoin (BTC)' },
+        { value: 'usdt', label: 'Tether (USDT - ERC20)' },
+      ]),
+      text(
+        'address',
+        'Wallet address',
+        '0x000000000000000000000000000000000000dEaD',
+      ),
+      number('amount', 'Amount (0 for open amount)', '0'),
+      errorField,
+      sizeField,
+    ],
+    notice:
+      'Always verify destination wallet addresses on hardware or secure device before sending funds.',
+    outputExtension: 'svg',
+  },
+  {
     id: 'ean-13-generator',
     name: 'EAN-13 generator',
     description:
@@ -550,6 +631,7 @@ export function buildQrPayload(
     case 'qr-code-svg-export':
     case 'qr-code-logo-embedder':
     case 'qr-code-error-correction-tester':
+    case 'qr-code-frame-generator':
       return required(values, 'payload', 'content', 8_000);
     case 'url-qr-code':
     case 'app-store-qr-code':
@@ -675,6 +757,79 @@ export function buildQrPayload(
       });
       const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Links</title><style>body{font:16px system-ui;max-width:36rem;margin:3rem auto;padding:1rem}a{display:block;padding:1rem;margin:.5rem 0;border:1px solid;border-radius:.6rem;color:inherit}</style><h1>Links</h1>${links.map((link) => `<a href="${escapeHtml(link.url)}">${escapeHtml(link.label || link.url)}</a>`).join('')}`;
       return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
+    }
+    case 'mecard-qr-code': {
+      const name = escapePayload(
+        required(values, 'name', 'a contact name', 200),
+      );
+      const phone = escapePayload(raw(values, 'phone').trim());
+      const email = raw(values, 'email').trim();
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email))
+        throw new Error('Enter a valid-looking email address.');
+      const note = escapePayload(raw(values, 'note').trim());
+      let result = `MECARD:N:${name};`;
+      if (phone) result += `TEL:${phone};`;
+      if (email) result += `EMAIL:${escapePayload(email)};`;
+      if (note) result += `NOTE:${note};`;
+      result += ';';
+      return result;
+    }
+    case 'social-media-qr-code': {
+      const platform = raw(values, 'platform') || 'youtube';
+      const handle = required(values, 'handle', 'a handle or username', 100)
+        .replace(/^@+/u, '')
+        .trim();
+      switch (platform) {
+        case 'youtube':
+          return `${secureWebPrefix}youtube.com/@${encodeURIComponent(handle)}`;
+        case 'x':
+          return `${secureWebPrefix}x.com/${encodeURIComponent(handle)}`;
+        case 'instagram':
+          return `${secureWebPrefix}instagram.com/${encodeURIComponent(handle)}`;
+        case 'linkedin':
+          return `${secureWebPrefix}linkedin.com/in/${encodeURIComponent(handle)}`;
+        case 'github':
+          return `${secureWebPrefix}github.com/${encodeURIComponent(handle)}`;
+        case 'facebook':
+          return `${secureWebPrefix}facebook.com/${encodeURIComponent(handle)}`;
+        default:
+          throw new Error('Choose a supported social media platform.');
+      }
+    }
+    case 'crypto-payment-qr-code': {
+      const network = raw(values, 'network') || 'ethereum';
+      const address = required(values, 'address', 'a wallet address', 120);
+      const amount = finite(values, 'amount', 'Amount', 0, 1_000_000_000);
+      switch (network) {
+        case 'ethereum': {
+          if (!/^0x[0-9a-fA-F]{40}$/u.test(address))
+            throw new Error(
+              'Enter a valid Ethereum address (0x followed by 40 hex characters).',
+            );
+          return `ethereum:${address}${amount > 0 ? `?value=${amount}` : ''}`;
+        }
+        case 'solana': {
+          if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/u.test(address))
+            throw new Error(
+              'Enter a valid Solana base58 address (32-44 characters).',
+            );
+          return `solana:${address}${amount > 0 ? `?amount=${amount}` : ''}`;
+        }
+        case 'bitcoin': {
+          if (!/^(?:bc1|[13])[A-Za-z0-9]{20,90}$/u.test(address))
+            throw new Error('Enter a valid Bitcoin address.');
+          return `bitcoin:${address}${amount > 0 ? `?amount=${amount}` : ''}`;
+        }
+        case 'usdt': {
+          if (!/^0x[0-9a-fA-F]{40}$/u.test(address))
+            throw new Error(
+              'Enter a valid Ethereum (ERC-20) address for USDT.',
+            );
+          return `ethereum:${address}?token=USDT${amount > 0 ? `&amount=${amount}` : ''}`;
+        }
+        default:
+          throw new Error('Choose a supported blockchain network.');
+      }
     }
     default:
       throw new Error('This operation does not create a QR payload.');
@@ -948,6 +1103,44 @@ function logoSvg(svg: string, dataUrl: string) {
   );
 }
 
+function framedQrSvg(
+  rawSvg: string,
+  values: Record<string, string>,
+  qrSize: number,
+) {
+  const frameText = raw(values, 'frameText').trim() || 'SCAN ME';
+  const subText = raw(values, 'subText').trim();
+  const badgePosition = raw(values, 'badgePosition') || 'bottom';
+  const cardWidth = qrSize + 64;
+  const cardHeight = qrSize + (subText ? 130 : 100);
+  const pillWidth = Math.max(
+    140,
+    Math.min(cardWidth - 64, frameText.length * 11 + 36),
+  );
+  const pillX = (cardWidth - pillWidth) / 2;
+
+  let qrY: number;
+  let pillY: number;
+  let subY: number;
+
+  if (badgePosition === 'top') {
+    pillY = 24;
+    qrY = 72;
+    subY = qrY + qrSize + 26;
+  } else {
+    qrY = 24;
+    pillY = qrY + qrSize + 16;
+    subY = pillY + 46;
+  }
+
+  const qrPlaced = nestedSvg(rawSvg, 32, qrY, qrSize);
+  const subElement = subText
+    ? `<text x="${cardWidth / 2}" y="${subY}" text-anchor="middle" fill="#444444" font-family="system-ui,-apple-system,sans-serif" font-size="12">${escapeXml(subText)}</text>`
+    : '';
+
+  return `<svg xmlns="${svgNamespace}" width="${cardWidth}" height="${cardHeight}" viewBox="0 0 ${cardWidth} ${cardHeight}"><rect width="100%" height="100%" rx="16" fill="#ffffff" stroke="#111111" stroke-width="2.5"/>${qrPlaced}<rect x="${pillX}" y="${pillY}" width="${pillWidth}" height="34" rx="17" fill="#111111"/><text x="${cardWidth / 2}" y="${pillY + 22}" text-anchor="middle" fill="#ffffff" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="700" letter-spacing="1.5">${escapeXml(frameText.toUpperCase())}</text>${subElement}</svg>`;
+}
+
 export async function runQrBarcodeOperation(
   operationId: string,
   values: Record<string, string>,
@@ -1034,6 +1227,9 @@ export async function runQrBarcodeOperation(
     values,
     operationId === 'qr-code-logo-embedder' ? 'H' : undefined,
   );
+  if (operationId === 'qr-code-frame-generator') {
+    return framedQrSvg(svg, values, qrStyle(values).size);
+  }
   return operationId === 'qr-code-logo-embedder'
     ? logoSvg(svg, required(values, 'logo', 'a logo image', 3_000_000))
     : svg;

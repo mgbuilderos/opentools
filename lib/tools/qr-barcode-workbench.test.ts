@@ -23,11 +23,11 @@ function defaults(operationId: string) {
 }
 
 describe('QR and barcode workbench', () => {
-  it('ships 24 unique executable SVG operations', async () => {
-    expect(QR_BARCODE_OPERATIONS).toHaveLength(24);
+  it('ships 28 unique executable SVG operations', async () => {
+    expect(QR_BARCODE_OPERATIONS).toHaveLength(28);
     expect(
       new Set(QR_BARCODE_OPERATIONS.map((operation) => operation.id)).size,
-    ).toBe(24);
+    ).toBe(28);
 
     for (const operation of QR_BARCODE_OPERATIONS) {
       const result = await runQrBarcodeOperation(
@@ -72,6 +72,45 @@ describe('QR and barcode workbench', () => {
       }),
     ).toBe(
       'upi://pay?pa=sample%40bank&pn=Sample+Payee&cu=INR&am=125.50&tn=Invoice+5',
+    );
+    expect(
+      buildQrPayload('mecard-qr-code', {
+        name: 'Lovelace, Ada',
+        phone: '+15550199',
+        email: 'ada@example.com',
+        note: 'Private Tools',
+      }),
+    ).toBe(
+      'MECARD:N:Lovelace\\, Ada;TEL:+15550199;EMAIL:ada@example.com;NOTE:Private Tools;;',
+    );
+    expect(
+      buildQrPayload('social-media-qr-code', {
+        platform: 'youtube',
+        handle: '@googledeepmind',
+      }),
+    ).toBe('https:' + '//youtube.com/@googledeepmind');
+    expect(
+      buildQrPayload('crypto-payment-qr-code', {
+        network: 'ethereum',
+        address: '0x000000000000000000000000000000000000dEaD',
+        amount: '1.5',
+      }),
+    ).toBe('ethereum:0x000000000000000000000000000000000000dEaD?value=1.5');
+    expect(
+      buildQrPayload('crypto-payment-qr-code', {
+        network: 'solana',
+        address: '11111111111111111111111111111111',
+        amount: '2',
+      }),
+    ).toBe('solana:11111111111111111111111111111111?amount=2');
+    expect(
+      buildQrPayload('crypto-payment-qr-code', {
+        network: 'usdt',
+        address: '0x000000000000000000000000000000000000dEaD',
+        amount: '100',
+      }),
+    ).toBe(
+      'ethereum:0x000000000000000000000000000000000000dEaD?token=USDT&amount=100',
     );
   });
 
@@ -141,5 +180,30 @@ describe('QR and barcode workbench', () => {
         error: 'M',
       }),
     ).rejects.toThrow(/at most 12/u);
+  });
+
+  it('generates print-ready framed QR cards with customizable banner placement', async () => {
+    const bottomCard = await runQrBarcodeOperation('qr-code-frame-generator', {
+      payload: 'https:' + '//example.com/menu',
+      frameText: 'SCAN FOR MENU',
+      subText: 'Point camera to view',
+      badgePosition: 'bottom',
+      error: 'M',
+      size: '300',
+    });
+    expect(bottomCard).toContain('SCAN FOR MENU');
+    expect(bottomCard).toContain('Point camera to view');
+    expect(bottomCard).toContain('<rect width="100%" height="100%" rx="16"');
+
+    const topCard = await runQrBarcodeOperation('qr-code-frame-generator', {
+      payload: 'https:' + '//example.com/wifi',
+      frameText: 'FREE WIFI',
+      subText: '',
+      badgePosition: 'top',
+      error: 'M',
+      size: '300',
+    });
+    expect(topCard).toContain('FREE WIFI');
+    expect(topCard).not.toContain('Point camera to view');
   });
 });
