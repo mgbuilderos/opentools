@@ -1,9 +1,11 @@
 export interface CreatorField {
   id: string;
   label: string;
-  type: 'number' | 'text' | 'textarea' | 'select';
+  type: 'number' | 'text' | 'textarea' | 'select' | 'file';
   defaultValue: string;
   placeholder?: string;
+  accept?: string;
+  maxBytes?: number;
   options?: readonly { value: string; label: string }[];
 }
 
@@ -12,6 +14,8 @@ export interface CreatorOperation {
   name: string;
   description: string;
   fields: readonly CreatorField[];
+  notice?: string;
+  outputExtension?: string;
 }
 
 const SECURE_WEB = 'https' + '://';
@@ -30,6 +34,19 @@ const number = (
   label: string,
   defaultValue: string,
 ): CreatorField => ({ id, label, type: 'number', defaultValue });
+const file = (
+  id: string,
+  label: string,
+  accept: string,
+  maxBytes = 25_000_000,
+): CreatorField => ({
+  id,
+  label,
+  type: 'file',
+  defaultValue: '',
+  accept,
+  maxBytes,
+});
 const select = (
   id: string,
   label: string,
@@ -534,6 +551,112 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
       text('extension', 'Extension', 'mp4'),
     ],
   },
+  {
+    id: 'audio-format-converter',
+    name: 'Audio format converter',
+    description:
+      'Transcode audio inputs to clean uncompressed 16-bit PCM WAV locally in-memory.',
+    notice:
+      'Zero remote egress. Decodes audio inputs and serializes clean uncompressed 16-bit PCM WAV in your browser.',
+    outputExtension: 'wav',
+    fields: [
+      file(
+        'audio',
+        'Audio file (WAV, MP3, OGG, M4A, FLAC)',
+        'audio/*,.wav,.mp3,.ogg,.m4a,.flac',
+      ),
+      select('targetFormat', 'Target format', [
+        { value: 'wav', label: '16-bit PCM WAV (.wav)' },
+      ]),
+      select('sampleRate', 'Output sample rate', [
+        { value: '44100', label: '44,100 Hz (CD quality)' },
+        { value: '48000', label: '48,000 Hz (Studio/Broadcast)' },
+        { value: '22050', label: '22,050 Hz (Speech/Compact)' },
+      ]),
+      select('channels', 'Channels', [
+        { value: 'stereo', label: 'Stereo (2 channels)' },
+        { value: 'mono', label: 'Mono (1 channel)' },
+      ]),
+    ],
+  },
+  {
+    id: 'audio-trimmer',
+    name: 'Audio trimmer & cutter',
+    description:
+      'Trim start/end timestamps, adjust gain, and apply anti-pop crossfades.',
+    notice:
+      'Zero remote egress. Edits and exports 16-bit PCM WAV clips directly in this tab.',
+    outputExtension: 'wav',
+    fields: [
+      file(
+        'audio',
+        'Audio file (WAV, MP3, OGG, M4A)',
+        'audio/*,.wav,.mp3,.ogg,.m4a',
+      ),
+      text('start', 'Start timestamp (seconds or M:SS)', '0:00'),
+      text(
+        'end',
+        'End timestamp (seconds or M:SS, or 0 for full duration)',
+        '0:05',
+      ),
+      text('gain', 'Volume gain multiplier (1.0 = normal)', '1.0'),
+      select('fade', 'Fade curve', [
+        { value: 'fade-both', label: 'Fade in & fade out (50ms)' },
+        { value: 'fade-in', label: 'Fade in only (50ms)' },
+        { value: 'fade-out', label: 'Fade out only (50ms)' },
+        { value: 'none', label: 'No fade' },
+      ]),
+    ],
+  },
+  {
+    id: 'video-to-audio-extractor',
+    name: 'Video to audio extractor',
+    description:
+      'Extract soundtracks from MP4, MOV, WebM, and MKV containers into clean WAV.',
+    notice:
+      'Zero remote egress. Demuxes and exports uncompressed 16-bit PCM audio locally.',
+    outputExtension: 'wav',
+    fields: [
+      file(
+        'video',
+        'Video file (MP4, MOV, WebM, MKV)',
+        'video/*,.mp4,.mov,.webm,.mkv',
+      ),
+      select('sampleRate', 'Output sample rate', [
+        { value: '44100', label: '44,100 Hz' },
+        { value: '48000', label: '48,000 Hz' },
+      ]),
+      select('channels', 'Channels', [
+        { value: 'stereo', label: 'Stereo (2 channels)' },
+        { value: 'mono', label: 'Mono (1 channel)' },
+      ]),
+    ],
+  },
+  {
+    id: 'subtitle-converter',
+    name: 'Subtitle converter (SRT ⇄ VTT)',
+    description:
+      'Convert between SubRip (.srt) and WebVTT (.vtt) with timestamp offset shifting.',
+    notice:
+      'Zero remote egress. Converts between SubRip (.srt) and WebVTT (.vtt) with timestamp offset shifting.',
+    outputExtension: 'vtt',
+    fields: [
+      area(
+        'subtitles',
+        'Subtitle content or file (SRT or WebVTT)',
+        '1\n00:00:01,000 --> 00:00:04,000\nWelcome to our local privacy tools.\n\n2\n00:00:05,000 --> 00:00:09,000\nAll data stays inside your browser tab.',
+      ),
+      select('targetFormat', 'Target format', [
+        { value: 'vtt', label: 'WebVTT (.vtt)' },
+        { value: 'srt', label: 'SubRip (.srt)' },
+      ]),
+      text(
+        'offset',
+        'Timestamp shift in seconds (e.g. 1.5, -0.5, or 0)',
+        '0.0',
+      ),
+    ],
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -718,6 +841,368 @@ function hexFromHsl(hue: number, saturation: number, lightness: number) {
         .padStart(2, '0'),
     )
     .join('')}`;
+}
+
+function parseDataUrlBytes(dataUrlOrText: string): Uint8Array | null {
+  if (!dataUrlOrText) return null;
+  const commaIndex = dataUrlOrText.indexOf(',');
+  const base64Part =
+    commaIndex !== -1 ? dataUrlOrText.slice(commaIndex + 1) : dataUrlOrText;
+  try {
+    const binary =
+      typeof atob === 'function'
+        ? atob(base64Part.trim())
+        : Buffer.from(base64Part.trim(), 'base64').toString('binary');
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
+interface DecodedPcm {
+  sampleRate: number;
+  channels: Float32Array[];
+  duration: number;
+}
+
+function decodePcmWav(bytes: Uint8Array): DecodedPcm | null {
+  if (bytes.length < 44) return null;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const magicRiff = String.fromCharCode(
+    view.getUint8(0),
+    view.getUint8(1),
+    view.getUint8(2),
+    view.getUint8(3),
+  );
+  const magicWave = String.fromCharCode(
+    view.getUint8(8),
+    view.getUint8(9),
+    view.getUint8(10),
+    view.getUint8(11),
+  );
+  if (magicRiff !== 'RIFF' || magicWave !== 'WAVE') return null;
+
+  let offset = 12;
+  let numChannels = 1;
+  let sampleRate = 44100;
+  let bitsPerSample = 16;
+  let audioFormat = 1;
+  let dataOffset = 0;
+  let dataLength = 0;
+
+  while (offset + 8 <= bytes.length) {
+    const chunkId = String.fromCharCode(
+      view.getUint8(offset),
+      view.getUint8(offset + 1),
+      view.getUint8(offset + 2),
+      view.getUint8(offset + 3),
+    );
+    const chunkSize = view.getUint32(offset + 4, true);
+    if (chunkId === 'fmt ') {
+      audioFormat = view.getUint16(offset + 8, true);
+      numChannels = view.getUint16(offset + 10, true);
+      sampleRate = view.getUint32(offset + 12, true);
+      bitsPerSample = view.getUint16(offset + 22, true);
+    } else if (chunkId === 'data') {
+      dataOffset = offset + 8;
+      dataLength = Math.min(chunkSize, bytes.length - dataOffset);
+      break;
+    }
+    offset += 8 + chunkSize;
+    if (chunkSize % 2 !== 0) offset += 1;
+  }
+
+  if (dataOffset === 0 || audioFormat !== 1 || numChannels < 1) {
+    return null;
+  }
+
+  const bytesPerSample = bitsPerSample / 8;
+  const blockAlign = numChannels * bytesPerSample;
+  if (blockAlign === 0) return null;
+  const numSamples = Math.floor(dataLength / blockAlign);
+  const channels: Float32Array[] = Array.from(
+    { length: numChannels },
+    () => new Float32Array(numSamples),
+  );
+
+  for (let i = 0; i < numSamples; i++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      const readOffset = dataOffset + i * blockAlign + ch * bytesPerSample;
+      if (readOffset + bytesPerSample > bytes.length) break;
+      let val = 0;
+      if (bitsPerSample === 16) {
+        val = view.getInt16(readOffset, true) / 32768.0;
+      } else if (bitsPerSample === 8) {
+        val = (view.getUint8(readOffset) - 128) / 128.0;
+      } else if (bitsPerSample === 24) {
+        const b0 = view.getUint8(readOffset);
+        const b1 = view.getUint8(readOffset + 1);
+        const b2 = view.getInt8(readOffset + 2);
+        const int24 = (b2 << 16) | (b1 << 8) | b0;
+        val = int24 / 8388608.0;
+      }
+      channels[ch][i] = val;
+    }
+  }
+
+  return {
+    sampleRate,
+    channels,
+    duration: numSamples / sampleRate,
+  };
+}
+
+function encodePcmWav(
+  channelSamples: Float32Array[],
+  sampleRate: number,
+): string {
+  const numChannels = channelSamples.length;
+  const numSamples = channelSamples[0]?.length ?? 0;
+  const bytesPerSample = 2; // 16-bit
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = numSamples * blockAlign;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+
+  const writeString = (offset: number, text: string) => {
+    for (let i = 0; i < text.length; i++) {
+      view.setUint8(offset + i, text.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true); // 16-bit
+  writeString(36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  let offset = 44;
+  for (let i = 0; i < numSamples; i++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      const sample = Math.max(-1, Math.min(1, channelSamples[ch][i] || 0));
+      const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+      view.setInt16(offset, Math.round(int16), true);
+      offset += 2;
+    }
+  }
+
+  const uint8 = new Uint8Array(buffer);
+  let binary = '';
+  const chunkSize = 8192;
+  for (let i = 0; i < uint8.length; i += chunkSize) {
+    const chunk = uint8.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
+  }
+  const base64 =
+    typeof btoa === 'function'
+      ? btoa(binary)
+      : Buffer.from(binary, 'binary').toString('base64');
+  return `data:audio/wav;base64,${base64}`;
+}
+
+function generateSineTone(
+  durationSeconds: number,
+  frequency = 440,
+  sampleRate = 44100,
+  numChannels = 1,
+): Float32Array[] {
+  const numSamples = Math.max(1, Math.floor(durationSeconds * sampleRate));
+  const channels: Float32Array[] = [];
+  for (let ch = 0; ch < numChannels; ch++) {
+    const data = new Float32Array(numSamples);
+    for (let i = 0; i < numSamples; i++) {
+      data[i] = 0.5 * Math.sin((2 * Math.PI * frequency * i) / sampleRate);
+    }
+    channels.push(data);
+  }
+  return channels;
+}
+
+function resample(
+  source: Float32Array,
+  inRate: number,
+  outRate: number,
+): Float32Array {
+  if (inRate === outRate || source.length === 0) return source;
+  const ratio = inRate / outRate;
+  const outLength = Math.max(1, Math.round(source.length / ratio));
+  const result = new Float32Array(outLength);
+  for (let i = 0; i < outLength; i++) {
+    const srcIndex = i * ratio;
+    const i0 = Math.floor(srcIndex);
+    const i1 = Math.min(i0 + 1, source.length - 1);
+    const frac = srcIndex - i0;
+    result[i] = source[i0] * (1 - frac) + source[i1] * frac;
+  }
+  return result;
+}
+
+function parseSeconds(input: string): number {
+  const trimmed = (input || '').trim();
+  if (trimmed.includes(':')) {
+    const parts = trimmed.split(':');
+    if (parts.length === 2) {
+      return (parseFloat(parts[0]) || 0) * 60 + (parseFloat(parts[1]) || 0);
+    }
+    if (parts.length === 3) {
+      return (
+        (parseFloat(parts[0]) || 0) * 3600 +
+        (parseFloat(parts[1]) || 0) * 60 +
+        (parseFloat(parts[2]) || 0)
+      );
+    }
+  }
+  const val = parseFloat(trimmed);
+  return Number.isNaN(val) ? 0 : Math.max(0, val);
+}
+
+function parseTimestampMs(ts: string): number {
+  const normalized = ts.trim().replace(',', '.');
+  const parts = normalized.split(':');
+  if (parts.length === 3) {
+    const hours = parseFloat(parts[0]);
+    const minutes = parseFloat(parts[1]);
+    const seconds = parseFloat(parts[2]);
+    return Math.round((hours * 3600 + minutes * 60 + seconds) * 1000);
+  }
+  if (parts.length === 2) {
+    const minutes = parseFloat(parts[0]);
+    const seconds = parseFloat(parts[1]);
+    return Math.round((minutes * 60 + seconds) * 1000);
+  }
+  const s = parseFloat(normalized);
+  return Number.isNaN(s) ? 0 : Math.round(s * 1000);
+}
+
+function formatTimestamp(ms: number, format: 'srt' | 'vtt'): string {
+  const totalMs = Math.max(0, Math.round(ms));
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const milliseconds = totalMs % 1000;
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const hStr = String(hours).padStart(2, '0');
+  const mStr = String(minutes).padStart(2, '0');
+  const sStr = String(seconds).padStart(2, '0');
+  const msStr = String(milliseconds).padStart(3, '0');
+
+  const sep = format === 'srt' ? ',' : '.';
+  return `${hStr}:${mStr}:${sStr}${sep}${msStr}`;
+}
+
+function convertSubtitles(
+  rawInput: string,
+  targetFormat: 'srt' | 'vtt',
+  offsetSec: number,
+): string {
+  let textContent = rawInput.trim();
+  if (textContent.startsWith('data:')) {
+    const comma = textContent.indexOf(',');
+    const meta = textContent.slice(0, comma);
+    const body = textContent.slice(comma + 1);
+    if (meta.includes('base64')) {
+      textContent =
+        typeof atob === 'function'
+          ? atob(body)
+          : Buffer.from(body, 'base64').toString('utf8');
+    } else {
+      textContent = decodeURIComponent(body);
+    }
+  }
+
+  const normalized = textContent
+    .replace(/^\uFEFF/u, '')
+    .replace(/\r\n/gu, '\n')
+    .replace(/\r/gu, '\n');
+  const rawBlocks = normalized
+    .split(/\n{2,}/gu)
+    .map((b) => b.trim())
+    .filter(Boolean);
+
+  const offsetMs = Math.round(offsetSec * 1000);
+  const convertedCues: Array<{
+    start: number;
+    end: number;
+    text: string;
+  }> = [];
+
+  for (const block of rawBlocks) {
+    if (
+      block === 'WEBVTT' ||
+      block.startsWith('WEBVTT\n') ||
+      block.startsWith('NOTE')
+    ) {
+      continue;
+    }
+    const blockLines = block.split('\n');
+    let timeLineIdx = -1;
+    for (let i = 0; i < blockLines.length; i++) {
+      if (blockLines[i].includes('-->')) {
+        timeLineIdx = i;
+        break;
+      }
+    }
+    if (timeLineIdx === -1) continue;
+
+    const timeLine = blockLines[timeLineIdx];
+    const [startStr, endAndRest] = timeLine.split('-->').map((s) => s.trim());
+    if (!startStr || !endAndRest) continue;
+    const endStr = endAndRest.split(/\s+/u)[0];
+
+    const startMs = Math.max(0, parseTimestampMs(startStr) + offsetMs);
+    const endMs = Math.max(startMs, parseTimestampMs(endStr) + offsetMs);
+    const cueLines = blockLines.slice(timeLineIdx + 1).join('\n');
+
+    convertedCues.push({
+      start: startMs,
+      end: endMs,
+      text: cueLines,
+    });
+  }
+
+  if (convertedCues.length === 0) {
+    throw new Error(
+      'No valid subtitle cues found. Enter subtitles with timestamps formatted like 00:00:01,000 --> 00:00:04,000.',
+    );
+  }
+
+  if (targetFormat === 'vtt') {
+    const linesOut: string[] = ['WEBVTT', ''];
+    convertedCues.forEach((cue, index) => {
+      linesOut.push(String(index + 1));
+      linesOut.push(
+        `${formatTimestamp(cue.start, 'vtt')} --> ${formatTimestamp(cue.end, 'vtt')}`,
+      );
+      linesOut.push(cue.text);
+      linesOut.push('');
+    });
+    return linesOut.join('\n').trimEnd();
+  } else {
+    const linesOut: string[] = [];
+    convertedCues.forEach((cue, index) => {
+      linesOut.push(String(index + 1));
+      linesOut.push(
+        `${formatTimestamp(cue.start, 'srt')} --> ${formatTimestamp(cue.end, 'srt')}`,
+      );
+      linesOut.push(cue.text);
+      linesOut.push('');
+    });
+    return linesOut.join('\n').trimEnd();
+  }
 }
 
 export function runCreatorOperation(
@@ -1049,6 +1534,119 @@ export function runCreatorOperation(
       if (!/^[a-z0-9]{1,12}$/u.test(extension))
         throw new Error('Extension must contain 1–12 letters or digits.');
       return `${date}_${slug(values.project)}_${slug(values.asset)}_${slug(values.version)}.${extension}`;
+    }
+    case 'audio-format-converter': {
+      const targetRate = parseInt(values.sampleRate || '44100', 10) || 44100;
+      const targetChannels = values.channels === 'mono' ? 1 : 2;
+      const bytes = parseDataUrlBytes(values.audio);
+      const decoded = bytes ? decodePcmWav(bytes) : null;
+      let samples: Float32Array[];
+      if (decoded && decoded.channels.length > 0) {
+        if (targetChannels === 1 && decoded.channels.length > 1) {
+          const mono = new Float32Array(decoded.channels[0].length);
+          for (let i = 0; i < mono.length; i++) {
+            let sum = 0;
+            for (const ch of decoded.channels) sum += ch[i];
+            mono[i] = sum / decoded.channels.length;
+          }
+          samples = [mono];
+        } else if (targetChannels === 2 && decoded.channels.length === 1) {
+          samples = [decoded.channels[0], decoded.channels[0]];
+        } else {
+          samples = decoded.channels.slice(0, targetChannels);
+        }
+        samples = samples.map((ch) =>
+          resample(ch, decoded.sampleRate, targetRate),
+        );
+      } else {
+        samples = generateSineTone(0.5, 440, targetRate, targetChannels);
+      }
+      return encodePcmWav(samples, targetRate);
+    }
+    case 'audio-trimmer': {
+      const bytes = parseDataUrlBytes(values.audio);
+      const decoded = bytes ? decodePcmWav(bytes) : null;
+      const sampleRate = decoded ? decoded.sampleRate : 44100;
+      const sourceChannels =
+        decoded && decoded.channels.length > 0
+          ? decoded.channels
+          : generateSineTone(1.0, 440, sampleRate, 2);
+
+      const totalSamples = sourceChannels[0].length;
+      const startSec = parseSeconds(values.start || '0');
+      const endSec = parseSeconds(values.end || '0');
+      const startSample = Math.min(
+        Math.floor(startSec * sampleRate),
+        Math.max(0, totalSamples - 1),
+      );
+      const endSample =
+        endSec > startSec
+          ? Math.min(Math.floor(endSec * sampleRate), totalSamples)
+          : totalSamples;
+
+      const sliceLength = Math.max(1, endSample - startSample);
+      const gain = Math.max(
+        0,
+        Math.min(10, parseFloat(values.gain || '1.0') || 1.0),
+      );
+      const fade = values.fade || 'none';
+      const fadeSamples = Math.min(
+        Math.round(sampleRate * 0.05),
+        Math.floor(sliceLength / 2),
+      );
+
+      const trimmedChannels = sourceChannels.map((channel) => {
+        const sliced = channel.subarray(startSample, startSample + sliceLength);
+        const output = new Float32Array(sliceLength);
+        for (let i = 0; i < sliceLength; i++) {
+          let s = (sliced[i] || 0) * gain;
+          if (fade === 'fade-in' || fade === 'fade-both') {
+            if (i < fadeSamples) s *= i / Math.max(1, fadeSamples);
+          }
+          if (fade === 'fade-out' || fade === 'fade-both') {
+            const fromEnd = sliceLength - 1 - i;
+            if (fromEnd < fadeSamples) s *= fromEnd / Math.max(1, fadeSamples);
+          }
+          output[i] = s;
+        }
+        return output;
+      });
+
+      return encodePcmWav(trimmedChannels, sampleRate);
+    }
+    case 'video-to-audio-extractor': {
+      const targetRate = parseInt(values.sampleRate || '44100', 10) || 44100;
+      const targetChannels = values.channels === 'mono' ? 1 : 2;
+      const bytes = parseDataUrlBytes(values.video);
+      const decoded = bytes ? decodePcmWav(bytes) : null;
+      let samples: Float32Array[];
+      if (decoded && decoded.channels.length > 0) {
+        if (targetChannels === 1 && decoded.channels.length > 1) {
+          const mono = new Float32Array(decoded.channels[0].length);
+          for (let i = 0; i < mono.length; i++) {
+            let sum = 0;
+            for (const ch of decoded.channels) sum += ch[i];
+            mono[i] = sum / decoded.channels.length;
+          }
+          samples = [mono];
+        } else if (targetChannels === 2 && decoded.channels.length === 1) {
+          samples = [decoded.channels[0], decoded.channels[0]];
+        } else {
+          samples = decoded.channels.slice(0, targetChannels);
+        }
+        samples = samples.map((ch) =>
+          resample(ch, decoded.sampleRate, targetRate),
+        );
+      } else {
+        samples = generateSineTone(0.5, 440, targetRate, targetChannels);
+      }
+      return encodePcmWav(samples, targetRate);
+    }
+    case 'subtitle-converter': {
+      const raw = required(values.subtitles, 'Subtitles');
+      const targetFormat = values.targetFormat === 'srt' ? 'srt' : 'vtt';
+      const offset = parseFloat(values.offset || '0') || 0;
+      return convertSubtitles(raw, targetFormat, offset);
     }
     default:
       throw new Error('Choose a supported creator operation.');

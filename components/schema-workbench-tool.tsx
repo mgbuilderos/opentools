@@ -184,6 +184,13 @@ export function SchemaWorkbenchTool({
 
   const download = () => {
     const extension = operation.outputExtension ?? 'txt';
+    if (output.startsWith('data:')) {
+      const anchor = document.createElement('a');
+      anchor.href = output;
+      anchor.download = `${operation.id}.${extension}`;
+      anchor.click();
+      return;
+    }
     const mime =
       extension === 'html'
         ? 'text/html'
@@ -383,6 +390,16 @@ export function SchemaWorkbenchTool({
                           {output}
                         </pre>
                       </details>
+                    </div>
+                  ) : operation.outputExtension === 'wav' ||
+                    output.startsWith('data:audio/') ? (
+                    <div className="mt-3 rounded-lg bg-muted p-4">
+                      <audio controls src={output} className="w-full">
+                        <track kind="captions" />
+                      </audio>
+                      <p className="mt-2 font-mono text-xs text-muted-foreground">
+                        Ready for instant playback and local download.
+                      </p>
                     </div>
                   ) : (
                     <pre className="mt-3 max-h-[34rem] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-muted p-4 font-mono text-sm leading-6">

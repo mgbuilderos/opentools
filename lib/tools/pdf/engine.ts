@@ -308,7 +308,13 @@ export async function transformPdfPages(
   if (subject) destination.setSubject(subject);
   if (keywords.length) destination.setKeywords(keywords);
   destination.setProducer('Browser Tools');
-  destination.setModificationDate(new Date());
+  if (options.flatten) {
+    try {
+      destination.getForm().flatten();
+    } catch {
+      // Document had no interactive form fields to flatten
+    }
+  }
 
   const bytes = await destination.save({
     addDefaultPage: false,

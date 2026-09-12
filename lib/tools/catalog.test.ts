@@ -215,19 +215,21 @@ describe('public canary catalog', () => {
       'PDF metadata editor',
       'Reverse PDF pages',
       'Split PDF ranges',
+      'Flatten PDF',
+      'PDF to images',
     ]);
-    expect(pdf).toHaveLength(11);
+    expect(pdf).toHaveLength(13);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(11);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(13);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(577);
+    expect(entries).toHaveLength(583);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

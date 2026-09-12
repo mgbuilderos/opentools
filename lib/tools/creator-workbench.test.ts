@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('creator and social workbench', () => {
-  it('publishes 38 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(38);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(38);
+  it('publishes 42 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(42);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(42);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
         runCreatorOperation(operation.id, defaults(operation.id)),
@@ -145,5 +145,53 @@ describe('creator and social workbench', () => {
         audience: '0',
       }),
     ).toThrow('audience must be positive');
+  });
+
+  it('converts, trims, and extracts clean 16-bit PCM WAV audio', () => {
+    const converted = runCreatorOperation('audio-format-converter', {
+      audio: '',
+      targetFormat: 'wav',
+      sampleRate: '44100',
+      channels: 'stereo',
+    });
+    expect(converted).toMatch(/^data:audio\/wav;base64,/);
+
+    const trimmed = runCreatorOperation('audio-trimmer', {
+      audio: converted,
+      start: '0:00',
+      end: '0:02',
+      gain: '1.2',
+      fade: 'fade-both',
+    });
+    expect(trimmed).toMatch(/^data:audio\/wav;base64,/);
+
+    const extracted = runCreatorOperation('video-to-audio-extractor', {
+      video: '',
+      sampleRate: '48000',
+      channels: 'mono',
+    });
+    expect(extracted).toMatch(/^data:audio\/wav;base64,/);
+  });
+
+  it('converts and shifts subtitles bidirectionally', () => {
+    const srtInput =
+      '1\n00:00:01,000 --> 00:00:04,000\nWelcome to local tools.\n\n2\n00:00:05,000 --> 00:00:09,000\nZero remote egress.';
+    const vttOutput = runCreatorOperation('subtitle-converter', {
+      subtitles: srtInput,
+      targetFormat: 'vtt',
+      offset: '1.5',
+    });
+    expect(vttOutput).toContain('WEBVTT');
+    expect(vttOutput).toContain('00:00:02.500 --> 00:00:05.500');
+    expect(vttOutput).toContain('00:00:06.500 --> 00:00:10.500');
+
+    const srtOutput = runCreatorOperation('subtitle-converter', {
+      subtitles: vttOutput,
+      targetFormat: 'srt',
+      offset: '-1.5',
+    });
+    expect(srtOutput).not.toContain('WEBVTT');
+    expect(srtOutput).toContain('00:00:01,000 --> 00:00:04,000');
+    expect(srtOutput).toContain('Welcome to local tools.');
   });
 });

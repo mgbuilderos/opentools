@@ -41,6 +41,7 @@ export type PdfPageTransformOptions = {
     subject: string;
     keywords: string;
   };
+  flatten?: boolean;
 };
 
 export type PdfTransformRequest = {

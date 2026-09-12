@@ -69,6 +69,18 @@ export const PDF_PAGE_OPERATIONS = [
     name: 'Split PDF ranges',
     description: 'Extract and assemble custom comma-separated page ranges.',
   },
+  {
+    id: 'flatten-pdf',
+    name: 'Flatten PDF',
+    description:
+      'Flatten interactive form fields and annotations into static pages.',
+  },
+  {
+    id: 'pdf-to-images',
+    name: 'PDF to images',
+    description:
+      'Extract or render PDF pages into high-resolution image files.',
+  },
 ] as const;
 
 export const IMAGE_EDITOR_OPERATIONS = [

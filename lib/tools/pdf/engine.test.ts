@@ -207,4 +207,18 @@ describe('PDF merge engine', () => {
       inputId: 'bad-image',
     });
   });
+
+  it('flattens PDF pages and preserves valid PDF output', async () => {
+    const input = await makePdf('to-flatten', [300]);
+    const result = await transformPdfPages(input, {
+      pageOrder: [1],
+      rotation: 0,
+      pageNumbers: false,
+      watermark: '',
+      metadata: { title: '', author: '', subject: '', keywords: '' },
+      flatten: true,
+    });
+    expect(result.pageCount).toBe(1);
+    expect(result.bytes.byteLength).toBeGreaterThan(100);
+  });
 });
