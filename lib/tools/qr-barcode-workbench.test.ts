@@ -81,7 +81,7 @@ describe('QR and barcode workbench', () => {
         note: 'Private Tools',
       }),
     ).toBe(
-      'MECARD:N:Lovelace\\, Ada;TEL:+15550199;EMAIL:ada@example.com;NOTE:Private Tools;;',
+      'MECARD:N:Lovelace, Ada;TEL:+15550199;EMAIL:ada@example.com;NOTE:Private Tools;;',
     );
     expect(
       buildQrPayload('social-media-qr-code', {

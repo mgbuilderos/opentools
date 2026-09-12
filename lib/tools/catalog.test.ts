@@ -162,6 +162,18 @@ describe('public canary catalog', () => {
     expect(searchTools('EAN 13 generator')[0]?.href).toBe(
       '/qr/workbench?tool=ean-13-generator',
     );
+    expect(searchTools('framed QR')[0]?.href).toBe(
+      '/qr/workbench?tool=qr-code-frame-generator',
+    );
+    expect(searchTools('MeCard')[0]?.href).toBe(
+      '/qr/workbench?tool=mecard-qr-code',
+    );
+    expect(searchTools('social media QR')[0]?.href).toBe(
+      '/qr/workbench?tool=social-media-qr-code',
+    );
+    expect(searchTools('crypto payment QR')[0]?.href).toBe(
+      '/qr/workbench?tool=crypto-payment-qr-code',
+    );
     expect(searchTools('JWT inspector')[0]?.href).toBe(
       '/developer/workbench?tool=jwt-inspector',
     );

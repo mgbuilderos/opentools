@@ -8,6 +8,7 @@ export interface QrBarcodeField {
   label: string;
   type: 'number' | 'text' | 'textarea' | 'select' | 'file';
   defaultValue: string;
+  placeholder?: string;
   accept?: string;
   maxBytes?: number;
   options?: readonly { value: string; label: string }[];
@@ -26,11 +27,13 @@ const text = (
   id: string,
   label: string,
   defaultValue: string,
+  placeholder?: string,
 ): QrBarcodeField => ({
   id,
   label,
   type: 'text',
   defaultValue,
+  placeholder,
 });
 const number = (
   id: string,
@@ -371,7 +374,12 @@ export const QR_BARCODE_OPERATIONS: readonly QrBarcodeOperation[] = [
       'Generate a print-ready vector QR card with custom CTA badge and border.',
     fields: [
       area('payload', 'Content or URL', `${secureWebPrefix}example.com/menu`),
-      text('frameText', 'Banner badge text', 'SCAN ME'),
+      text(
+        'frameText',
+        'Banner badge text',
+        'SCAN ME',
+        'e.g. SCAN ME, SCAN FOR MENU, CONNECT TO WI-FI, PAY HERE',
+      ),
       text('subText', 'Subtitle note', 'Point your camera to view'),
       select('badgePosition', 'Badge placement', 'bottom', [
         { value: 'bottom', label: 'Bottom banner' },
@@ -562,6 +570,10 @@ function safeUrl(value: string) {
 
 function escapePayload(value: string) {
   return value.replace(/([\\;,:"])/gu, '\\$1').replace(/\r?\n/gu, '\\n');
+}
+
+function escapeMeCard(value: string) {
+  return value.replace(/([\\;:"])/gu, '\\$1').replace(/\r?\n/gu, ' ');
 }
 
 function escapeXml(value: string) {
@@ -759,17 +771,17 @@ export function buildQrPayload(
       return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
     }
     case 'mecard-qr-code': {
-      const name = escapePayload(
+      const name = escapeMeCard(
         required(values, 'name', 'a contact name', 200),
       );
-      const phone = escapePayload(raw(values, 'phone').trim());
+      const phone = escapeMeCard(raw(values, 'phone').trim());
       const email = raw(values, 'email').trim();
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email))
         throw new Error('Enter a valid-looking email address.');
-      const note = escapePayload(raw(values, 'note').trim());
+      const note = escapeMeCard(raw(values, 'note').trim());
       let result = `MECARD:N:${name};`;
       if (phone) result += `TEL:${phone};`;
-      if (email) result += `EMAIL:${escapePayload(email)};`;
+      if (email) result += `EMAIL:${escapeMeCard(email)};`;
       if (note) result += `NOTE:${note};`;
       result += ';';
       return result;
