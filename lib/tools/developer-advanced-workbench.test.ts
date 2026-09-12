@@ -17,10 +17,10 @@ function defaults(id: string) {
 
 describe('advanced developer workbench', () => {
   it('publishes 40 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(40);
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(42);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(40);
+    ).toBe(42);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -299,6 +299,24 @@ describe('advanced developer workbench', () => {
         defaults('openapi-example-generator'),
       ),
     ).resolves.toContain('"name": "Ada"');
+  });
+
+  it('converts cURL to multi-language code and sanitizes SVG markup', async () => {
+    const code = await runAdvancedDeveloperOperation(
+      'curl-to-code',
+      defaults('curl-to-code'),
+    );
+    expect(code).toContain('// 1. JavaScript (Fetch)');
+    expect(code).toContain('requests.post');
+    expect(code).toContain('http.NewRequest');
+
+    const cleanSvg = await runAdvancedDeveloperOperation('svg-cleaner', {
+      svg: '<?xml version="1.0"?><!-- comment --><svg><rect fill="red"/></svg>',
+      removeComments: 'yes',
+    });
+    expect(cleanSvg).not.toContain('<?xml');
+    expect(cleanSvg).not.toContain('<!-- comment -->');
+    expect(cleanSvg).toContain('<svg><rect fill="red"/></svg>');
   });
 
   it('rejects malformed and unsafe boundary inputs', async () => {

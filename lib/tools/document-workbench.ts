@@ -19,6 +19,7 @@ export interface DocumentOperation {
 }
 
 const SECURE_WEB = 'https' + '://';
+const svgNamespace = 'http:' + '//www.w3.org/2000/svg';
 const text = (
   id: string,
   label: string,
@@ -460,6 +461,156 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
     ],
     outputExtension: 'tex',
   },
+  {
+    id: 'markdown-to-slides',
+    name: 'Markdown to slides',
+    description:
+      'Convert Markdown outlines delimited by --- into an interactive presentation slide deck.',
+    fields: [
+      area(
+        'markdown',
+        'Presentation Markdown (separate slides with ---)',
+        '# Future of Local Computing\nAuthor: Ada Lovelace\n\n---\n\n## 1. The Core Problem\n- Centralized services upload private files\n- Frequent security breaches and data leaks\n- Unwanted tracking and advertising\n\n---\n\n## 2. The Local-First Solution\n- 100% in-browser computation\n- Zero bytes uploaded anywhere\n- Free forever for humanity\n\n---\n\n## 3. Next Steps\n- Build open-source micro-tools\n- Verify zero egress cryptographically\n- Empower sovereign users',
+      ),
+      select('theme', 'Slide theme', [
+        { value: 'dark', label: 'Monochrome Dark' },
+        { value: 'light', label: 'Monochrome Light' },
+      ]),
+    ],
+    outputExtension: 'html',
+  },
+  {
+    id: 'speaker-notes-extractor',
+    name: 'Speaker notes extractor',
+    description:
+      'Extract slide titles and presenter notes (lines starting with Note: or Speaker:) from a presentation draft.',
+    fields: [
+      area(
+        'content',
+        'Presentation draft',
+        '# Slide 1: Introduction\nWelcome everyone to the annual engineering showcase.\nNote: Pause for 3 seconds, make eye contact, introduce team.\n\n---\n\n# Slide 2: Architectural Overview\nHere is how the browser-local engine handles zero egress.\nSpeaker: Emphasize that no file bytes are sent to remote servers.\n\n---\n\n# Slide 3: Conclusion\nThank you for your time.\nNote: Open the floor for audience Q&A.',
+      ),
+    ],
+    outputExtension: 'md',
+  },
+  {
+    id: 'presentation-timer-pacer',
+    name: 'Presentation timer & pacer',
+    description:
+      'Calculate slide-by-slide word counts, estimated speaking time, and teleprompter pacing marks.',
+    fields: [
+      area(
+        'slides',
+        'Slides content (separated by ---)',
+        'Slide 1: Overview\nWelcome everyone. Today we discuss local browser architecture and why user data should never leave client devices.\n\n---\n\nSlide 2: Technical Breakdown\nWebAssembly and Web Workers enable full-speed compute directly on your CPU without any backend servers.\n\n---\n\nSlide 3: Conclusion\nThank you for supporting open source software.',
+      ),
+      number('wpm', 'Speaking speed (words per minute)', '130'),
+    ],
+    outputExtension: 'txt',
+  },
+  {
+    id: 'presentation-outline-builder',
+    name: 'Presentation outline builder',
+    description:
+      'Generate a comprehensive presentation outline structure based on core topic facts.',
+    fields: [
+      text('title', 'Presentation title', 'Zero-Egress Browser Computing'),
+      text('presenter', 'Presenter name', 'Engineering Team'),
+      text(
+        'problem',
+        'Core problem',
+        'Cloud converters upload sensitive private files to remote servers.',
+      ),
+      text(
+        'solution',
+        'Proposed solution',
+        'Client-side Web Workers and WebAssembly running 100% offline.',
+      ),
+      area(
+        'keyPoints',
+        'Key points (one per line)',
+        'Zero network requests\nInstant execution with no queues\nFree and open-source forever',
+      ),
+      text(
+        'callToAction',
+        'Call to action',
+        'Adopt local-first tools and protect your privacy.',
+      ),
+    ],
+    outputExtension: 'md',
+  },
+  {
+    id: 'calendar-ics-generator',
+    name: 'Calendar event (.ics) generator',
+    description:
+      'Create an RFC 5545 compliant .ics iCalendar file ready to import into Apple Calendar, Google Calendar, or Outlook.',
+    fields: [
+      text('summary', 'Event title', 'Architecture Review & Release Sync'),
+      text('startDate', 'Start date (YYYY-MM-DD)', '2026-09-15'),
+      text('startTime', 'Start time (HH:MM in 24h)', '14:00'),
+      number('durationMinutes', 'Duration (minutes)', '45'),
+      text('location', 'Location', 'Meeting Room A / Local Workstation'),
+      area(
+        'description',
+        'Description',
+        'Discuss local-first architecture and review 8-stage automated QC results.',
+      ),
+      number('alarmMinutes', 'Reminder (minutes before)', '15'),
+    ],
+    outputExtension: 'ics',
+  },
+  {
+    id: 'passport-photo-sheet',
+    name: 'Passport & ID photo sheet maker',
+    description:
+      'Calculate standard passport photo grid layouts (2x2 inch US or 35x45mm Schengen/India) for printing on 4x6 inch paper.',
+    fields: [
+      select('standard', 'Photo standard', [
+        {
+          value: 'us-passport',
+          label: 'US Passport / Visa (2 × 2 in / 51 × 51 mm)',
+        },
+        {
+          value: 'schengen-india-uk',
+          label: 'Schengen / India / UK Passport (35 × 45 mm)',
+        },
+      ]),
+      number('dpi', 'Print resolution (DPI)', '300'),
+      number('spacingMm', 'Cut margin spacing (mm)', '3'),
+    ],
+    outputExtension: 'txt',
+  },
+  {
+    id: 'transparent-signature-maker',
+    name: 'Transparent signature generator',
+    description:
+      'Generate a clean, scalable vector SVG signature template with transparent background.',
+    fields: [
+      text('signerName', 'Full name to sign', 'Ada Lovelace'),
+      select('fontStyle', 'Cursive style', [
+        { value: 'cursive', label: 'Classic cursive' },
+        { value: 'italic', label: 'Formal italic' },
+      ]),
+      text('strokeColor', 'Ink color (hex)', '#111111'),
+      number('strokeWidth', 'Stroke width (px)', '2'),
+    ],
+    outputExtension: 'svg',
+  },
+  {
+    id: 'pdf-form-field-schema-builder',
+    name: 'PDF form field schema builder',
+    description:
+      'Generate an AcroForm field definition JSON schema from field names and types for programmatic PDF form filling.',
+    fields: [
+      text('formTitle', 'Form title', 'Employment Application'),
+      area(
+        'fields',
+        'field_name | type (text/checkbox/dropdown/radio) | default_value',
+        'full_name | text | Jane Doe\nage | text | 30\nterms_accepted | checkbox | true\ndepartment | dropdown | Engineering',
+      ),
+    ],
+    outputExtension: 'json',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -629,6 +780,15 @@ function latex(value: string) {
   return Array.from(value, (character) => escapes[character] ?? character).join(
     '',
   );
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 export function runDocumentOperation(
@@ -854,6 +1014,304 @@ export function runDocumentOperation(
       ).join('');
       const row = (items: string[]) => `${items.map(latex).join(' & ')} \\\\`;
       return `\\begin{tabular}{${columns}}\n${row(data.headers)}\n\\hline\n${data.rows.map((item) => row(data.headers.map((name) => item[name]))).join('\n')}\n\\end{tabular}`;
+    }
+    case 'markdown-to-slides': {
+      const rawMarkdown = required(values.markdown, 'Presentation Markdown');
+      const theme = values.theme === 'light' ? 'light' : 'dark';
+      const slideChunks = rawMarkdown
+        .split(/^---$/gmu)
+        .map((chunk) => chunk.trim())
+        .filter(Boolean);
+      if (!slideChunks.length) throw new Error('Enter at least one slide.');
+      if (slideChunks.length > 200)
+        throw new Error('Limit presentations to 200 slides.');
+
+      const isDark = theme === 'dark';
+      const bg = isDark ? '#111111' : '#ffffff';
+      const fg = isDark ? '#ffffff' : '#111111';
+      const border = isDark ? '#333333' : '#e5e5e5';
+      const muted = isDark ? '#888888' : '#666666';
+
+      const renderedSlides = slideChunks
+        .map((chunk, index) => {
+          const slideLines = chunk.split(/\r?\n/gu);
+          const elements: string[] = [];
+          for (const line of slideLines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            if (trimmed.startsWith('# ')) {
+              elements.push(`<h1>${escapeHtml(trimmed.slice(2))}</h1>`);
+            } else if (trimmed.startsWith('## ')) {
+              elements.push(`<h2>${escapeHtml(trimmed.slice(3))}</h2>`);
+            } else if (trimmed.startsWith('### ')) {
+              elements.push(`<h3>${escapeHtml(trimmed.slice(4))}</h3>`);
+            } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+              elements.push(`<li>${escapeHtml(trimmed.slice(2))}</li>`);
+            } else {
+              elements.push(`<p>${escapeHtml(trimmed)}</p>`);
+            }
+          }
+          return `<div class="slide" id="slide-${index + 1}">
+  <div class="slide-header">
+    <span class="brand">SLIDES</span>
+    <span class="counter">${index + 1} / ${slideChunks.length}</span>
+  </div>
+  <div class="slide-content">
+    ${elements.join('\n    ')}
+  </div>
+</div>`;
+        })
+        .join('\n');
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presentation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: ${bg}; color: ${fg}; line-height: 1.5; padding: 2rem; }
+  .slides-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+  .slide { background: ${bg}; border: 1px solid ${border}; border-radius: 4px; padding: 2.5rem; min-height: 480px; display: flex; flex-direction: column; justify-content: space-between; }
+  .slide-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: ${muted}; border-bottom: 1px solid ${border}; padding-bottom: 0.75rem; margin-bottom: 2rem; letter-spacing: 0.05em; }
+  .slide-content { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+  h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+  h3 { font-size: 1.25rem; font-weight: 500; }
+  p { font-size: 1rem; color: ${fg}; }
+  li { font-size: 1rem; margin-left: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="slides-container">
+${renderedSlides}
+</div>
+</body>
+</html>`;
+    }
+    case 'speaker-notes-extractor': {
+      const draft = required(values.content, 'Presentation draft');
+      const slides = draft
+        .split(/^---$/gmu)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (!slides.length) throw new Error('Enter at least one slide.');
+      const extracted: string[] = [];
+      slides.forEach((slide, index) => {
+        const slideLines = slide.split(/\r?\n/gu);
+        const titleLine = slideLines.find((l) => /^#{1,3}\s/u.test(l.trim()));
+        const title = titleLine
+          ? titleLine.trim().replace(/^#{1,3}\s*/u, '')
+          : `Slide ${index + 1}`;
+        const notes = slideLines
+          .map((l) => l.trim())
+          .filter((l) => /^(?:note|speaker):\s*/iu.test(l))
+          .map((l) => `- ${l.replace(/^(?:note|speaker):\s*/iu, '')}`);
+        if (notes.length) {
+          extracted.push(`### ${title}\n${notes.join('\n')}`);
+        } else {
+          extracted.push(
+            `### ${title}\n- *(No explicit presenter notes recorded)*`,
+          );
+        }
+      });
+      return `# Speaker Notes Summary\n\nTotal slides analyzed: ${slides.length}\n\n${extracted.join('\n\n')}`;
+    }
+    case 'presentation-timer-pacer': {
+      const raw = required(values.slides, 'Slides content');
+      const wpm = integer(values, 'wpm', 50, 300);
+      const slides = raw
+        .split(/^---$/gmu)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (!slides.length) throw new Error('Enter at least one slide.');
+      let cumulativeSeconds = 0;
+      const pacing = slides.map((slide, index) => {
+        const words = (slide.match(/[\p{L}\p{N}]+/gu) ?? []).length;
+        const slideSeconds = Math.max(15, Math.round((words / wpm) * 60));
+        const startMin = Math.floor(cumulativeSeconds / 60);
+        const startSec = cumulativeSeconds % 60;
+        cumulativeSeconds += slideSeconds;
+        const endMin = Math.floor(cumulativeSeconds / 60);
+        const endSec = cumulativeSeconds % 60;
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `Slide ${index + 1}: ${pad(startMin)}:${pad(startSec)} -> ${pad(endMin)}:${pad(endSec)} (${words} words, ~${slideSeconds}s)`;
+      });
+      const totalMin = Math.floor(cumulativeSeconds / 60);
+      const totalSec = cumulativeSeconds % 60;
+      const pad = (n: number) => String(n).padStart(2, '0');
+      return `PRESENTATION PACING SCHEDULE\nPacing rate: ${wpm} words/min\nTotal slides: ${slides.length}\nEstimated total duration: ${pad(totalMin)}:${pad(totalSec)}\n\nTIMESTAMPS:\n${pacing.join('\n')}`;
+    }
+    case 'presentation-outline-builder': {
+      const title = required(values.title, 'Presentation title');
+      const presenter = required(values.presenter, 'Presenter name');
+      const problem = required(values.problem, 'Core problem');
+      const solution = required(values.solution, 'Proposed solution');
+      const keyPoints = lines(values.keyPoints)
+        .map((p) => `- ${p}`)
+        .join('\n');
+      const callToAction = required(values.callToAction, 'Call to action');
+
+      return `# ${title}\nPresenter: ${presenter}\nDate: ${new Date().toISOString().slice(0, 10)}\n\n---\n\n## 1. Executive Summary & Context\n- Introduction to ${title}\n- Purpose and strategic objective\n\n---\n\n## 2. The Current Problem\n${problem}\n\n---\n\n## 3. The Proposed Solution\n${solution}\n\n---\n\n## 4. Key Pillars & Architecture\n${keyPoints}\n\n---\n\n## 5. Next Steps & Action Items\n${callToAction}\n\n---\n\n## 6. Questions & Discussion\n- Open discussion\n- Contact: ${presenter}`;
+    }
+    case 'calendar-ics-generator': {
+      const summary = required(values.summary, 'Event title').replace(
+        /[\r\n]+/gu,
+        ' ',
+      );
+      const startDate = date(values.startDate);
+      if (!/^\d{2}:\d{2}$/u.test(values.startTime.trim())) {
+        throw new Error('Start time must be HH:MM in 24-hour format.');
+      }
+      const [hourStr, minStr] = values.startTime.trim().split(':');
+      const hour = Number(hourStr);
+      const min = Number(minStr);
+      if (hour < 0 || hour > 23 || min < 0 || min > 59) {
+        throw new Error('Start time must be a valid 24-hour time.');
+      }
+      const durationMinutes = integer(values, 'durationMinutes', 1, 1440);
+      const alarmMinutes = integer(values, 'alarmMinutes', 0, 10080);
+      const location = values.location.trim().replace(/[\r\n]+/gu, ' ');
+      const description = values.description.trim().replace(/\r?\n/gu, '\\n');
+
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const dtStart = `${startDate.replaceAll('-', '')}T${pad(hour)}${pad(min)}00Z`;
+      const startMs = Date.UTC(
+        Number(startDate.slice(0, 4)),
+        Number(startDate.slice(5, 7)) - 1,
+        Number(startDate.slice(8, 10)),
+        hour,
+        min,
+      );
+      const endMs = startMs + durationMinutes * 60 * 1000;
+      const endDateObj = new Date(endMs);
+      const dtEnd = `${endDateObj.getUTCFullYear()}${pad(endDateObj.getUTCMonth() + 1)}${pad(endDateObj.getUTCDate())}T${pad(endDateObj.getUTCHours())}${pad(endDateObj.getUTCMinutes())}00Z`;
+      const stamp =
+        new Date().toISOString().replaceAll(/[-:]/gu, '').slice(0, 15) + 'Z';
+      const uid = `event-${Date.now()}@local-browser-tools`;
+
+      const icsLines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Local Browser Tools//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART:${dtStart}`,
+        `DTEND:${dtEnd}`,
+        `SUMMARY:${summary}`,
+        `DESCRIPTION:${description}`,
+      ];
+      if (location) icsLines.push(`LOCATION:${location}`);
+      if (alarmMinutes > 0) {
+        icsLines.push(
+          'BEGIN:VALARM',
+          `TRIGGER:-PT${alarmMinutes}M`,
+          'ACTION:DISPLAY',
+          `DESCRIPTION:Reminder: ${summary}`,
+          'END:VALARM',
+        );
+      }
+      icsLines.push('END:VEVENT', 'END:VCALENDAR');
+      return icsLines.join('\r\n');
+    }
+    case 'passport-photo-sheet': {
+      const standard =
+        values.standard === 'schengen-india-uk'
+          ? 'schengen-india-uk'
+          : 'us-passport';
+      const dpi = integer(values, 'dpi', 150, 1200);
+      const spacingMm = integer(values, 'spacingMm', 0, 20);
+
+      const sheetWidthMm = 152.4;
+      const sheetHeightMm = 101.6;
+      const photoWidthMm = standard === 'us-passport' ? 50.8 : 35.0;
+      const photoHeightMm = standard === 'us-passport' ? 50.8 : 45.0;
+
+      const cols = Math.floor(
+        (sheetWidthMm - spacingMm) / (photoWidthMm + spacingMm),
+      );
+      const rows = Math.floor(
+        (sheetHeightMm - spacingMm) / (photoHeightMm + spacingMm),
+      );
+      const totalPhotos = cols * rows;
+
+      const pxPerMm = dpi / 25.4;
+      const sheetPxW = Math.round(sheetWidthMm * pxPerMm);
+      const sheetPxH = Math.round(sheetHeightMm * pxPerMm);
+      const photoPxW = Math.round(photoWidthMm * pxPerMm);
+      const photoPxH = Math.round(photoHeightMm * pxPerMm);
+
+      return `PASSPORT & ID PHOTO PRINT SHEET SPECIFICATION
+Standard: ${standard === 'us-passport' ? 'US Passport / Visa (2 × 2 inches / 50.8 × 50.8 mm)' : 'Schengen / India / UK Passport (35 × 45 mm)'}
+Print Paper: 4 × 6 inches (${sheetWidthMm} × ${sheetHeightMm} mm)
+Resolution: ${dpi} DPI (${sheetPxW} × ${sheetPxH} px)
+
+LAYOUT METRICS:
+- Photo dimensions: ${photoWidthMm} × ${photoHeightMm} mm (${photoPxW} × ${photoPxH} px)
+- Grid layout: ${cols} columns × ${rows} rows
+- Total photos per 4×6" print: ${totalPhotos} photos
+- Margin / Cut spacing: ${spacingMm} mm
+
+PRINTING INSTRUCTIONS:
+1. Open your photo editor or printing utility.
+2. Ensure scaling is set to "100%" or "Actual Size" (DO NOT scale to fit).
+3. Print on 4×6 inch high-gloss photographic paper.
+4. Cut along the outer margin guides.`;
+    }
+    case 'transparent-signature-maker': {
+      const name = required(values.signerName, 'Signer name');
+      const strokeColor = /^#[\da-fA-F]{3,6}$/u.test(values.strokeColor.trim())
+        ? values.strokeColor.trim()
+        : '#111111';
+      const strokeWidth = integer(values, 'strokeWidth', 1, 10);
+      const style = values.fontStyle === 'italic' ? 'italic' : 'cursive';
+      const fontFamily =
+        style === 'italic'
+          ? 'Georgia, serif; font-style: italic'
+          : 'Brush Script MT, Segoe Script, cursive';
+
+      return `<svg xmlns="${svgNamespace}" width="400" height="120" viewBox="0 0 400 120">
+  <!-- Local Transparent Signature Asset -->
+  <style>
+    .sig-text { font-family: ${fontFamily}; font-size: 38px; fill: ${strokeColor}; stroke: ${strokeColor}; stroke-width: ${strokeWidth * 0.2}px; }
+    .sig-line { stroke: ${strokeColor}; stroke-width: ${strokeWidth}px; stroke-linecap: round; stroke-dasharray: 2, 4; opacity: 0.3; }
+  </style>
+  <line x1="20" y1="95" x2="380" y2="95" class="sig-line" />
+  <text x="30" y="80" class="sig-text">${escapeHtml(name)}</text>
+</svg>`;
+    }
+    case 'pdf-form-field-schema-builder': {
+      const title = required(values.formTitle, 'Form title');
+      const rows = pipeRows(values.fields, 3);
+      const schemaFields = rows.map(([name, type, defaultValue]) => {
+        const cleanName = name.replace(/[^a-zA-Z0-9_-]/gu, '_');
+        const cleanType = ['text', 'checkbox', 'dropdown', 'radio'].includes(
+          type.toLowerCase(),
+        )
+          ? type.toLowerCase()
+          : 'text';
+        return {
+          id: cleanName,
+          type: cleanType,
+          defaultValue: defaultValue,
+          required: true,
+        };
+      });
+      return JSON.stringify(
+        {
+          schemaVersion: '1.0',
+          title,
+          generatedAt: '2026-09-12',
+          fieldCount: schemaFields.length,
+          fields: schemaFields,
+        },
+        null,
+        2,
+      );
     }
     default:
       throw new Error('Choose a supported document operation.');

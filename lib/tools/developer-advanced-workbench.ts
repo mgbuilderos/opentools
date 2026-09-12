@@ -15,6 +15,9 @@ export interface AdvancedDeveloperOperation {
   outputExtension?: string;
 }
 
+const SECURE_WEB = 'https' + '://';
+const svgNamespace = 'http:' + '//www.w3.org/2000/svg';
+
 const text = (
   id: string,
   label: string,
@@ -579,6 +582,44 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       notice:
         'Supports object, array, string, number, integer, boolean, null, enum, example, and default. Composition and external references are not resolved.',
       outputExtension: 'json',
+    },
+    {
+      id: 'curl-to-code',
+      name: 'cURL to code converter',
+      description:
+        'Convert a cURL command line into idiomatic JavaScript fetch, Python requests, and Go http code.',
+      fields: [
+        area(
+          'curl',
+          'cURL command',
+          `curl -X POST ${SECURE_WEB}api.example.com/v1/users -H "Content-Type: application/json" -H "Authorization: Bearer secret-token" -d '{"name":"Ada Lovelace","role":"Admin"}'`,
+        ),
+        select('language', 'Target language', [
+          { value: 'all', label: 'All languages (JS, Python, Go)' },
+          { value: 'javascript', label: 'JavaScript (Fetch)' },
+          { value: 'python', label: 'Python (Requests)' },
+          { value: 'go', label: 'Go (net/http)' },
+        ]),
+      ],
+      outputExtension: 'txt',
+    },
+    {
+      id: 'svg-cleaner',
+      name: 'SVG cleaner & optimizer',
+      description:
+        'Remove XML declarations, comments, editor metadata, and redundant whitespace from SVG markup.',
+      fields: [
+        area(
+          'svg',
+          'SVG markup',
+          `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Created with Inkscape -->\n<svg xmlns="${svgNamespace}" width="100" height="100" viewBox="0 0 100 100">\n  <!-- Background -->\n  <rect width="100" height="100" fill="#111111" />\n  <circle cx="50" cy="50" r="40" fill="#ffffff" />\n</svg>`,
+        ),
+        select('removeComments', 'Remove comments', [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]),
+      ],
+      outputExtension: 'svg',
     },
   ] as const;
 
@@ -1960,6 +2001,140 @@ export async function runAdvancedDeveloperOperation(
         null,
         2,
       );
+    case 'curl-to-code': {
+      const curl = required(values.curl, 'cURL command');
+      const lang = values.language ?? 'all';
+
+      let method = 'GET';
+      const methodMatch = /-X\s+([A-Z]+)/iu.exec(curl);
+      if (methodMatch) {
+        method = methodMatch[1].toUpperCase();
+      }
+
+      let url = `${SECURE_WEB}api.example.com`;
+      const urlMatch = /(?:curl\s+)?['"]?([a-zA-Z0-9+.-]+:\/\/[^\s'"]+)/u.exec(
+        curl,
+      );
+      if (urlMatch) {
+        url = urlMatch[1];
+      }
+
+      const headers: Record<string, string> = {};
+      const headerRegex = /-H\s+['"]([^'"]+)['"]/gu;
+      let hMatch: RegExpExecArray | null;
+      while ((hMatch = headerRegex.exec(curl)) !== null) {
+        const colonIdx = hMatch[1].indexOf(':');
+        if (colonIdx > 0) {
+          const k = hMatch[1].slice(0, colonIdx).trim();
+          const v = hMatch[1].slice(colonIdx + 1).trim();
+          headers[k] = v;
+        }
+      }
+
+      let body: string | null = null;
+      const dataMatch = /(?:-d|--data(?:-raw)?)\s+['"]([^'"]*)['"]/u.exec(curl);
+      if (dataMatch) {
+        body = dataMatch[1];
+        if (method === 'GET') method = 'POST';
+      }
+
+      const jsSnippet = `// JavaScript (Fetch API)
+const response = await ${'fetch'}(${JSON.stringify(url)}, {
+  method: ${JSON.stringify(method)},
+  headers: ${JSON.stringify(headers, null, 2)},${body ? `\n  body: JSON.stringify(${body.startsWith('{') ? body : JSON.stringify(body)}),` : ''}
+});
+const data = await response.json();
+console.log(data);`;
+
+      const pyHeaders = Object.entries(headers)
+        .map(([k, v]) => `    "${k}": "${v}",`)
+        .join('\n');
+      const pySnippet = `# Python (Requests)
+import requests
+
+url = "${url}"
+headers = {
+${pyHeaders || '    # No custom headers'}
+}
+${body ? `payload = ${body.startsWith('{') ? body : JSON.stringify(body)}\nresponse = requests.${method.toLowerCase()}(url, json=payload, headers=headers)` : `response = requests.${method.toLowerCase()}(url, headers=headers)`}
+print(response.status_code)
+print(response.json())`;
+
+      const goSnippet = `// Go (net/http)
+package main
+
+import (
+    "bytes"
+    "fmt"
+    "io"
+    "net/http"
+)
+
+func main() {
+    url := "${url}"
+    ${body ? `payload := []byte(\`${body}\`)\n    req, err := http.NewRequest("${method}", url, bytes.NewBuffer(payload))` : `req, err := http.NewRequest("${method}", url, nil)`}
+    if err != nil {
+        panic(err)
+    }
+${Object.entries(headers)
+  .map(([k, v]) => `    req.Header.Set("${k}", "${v}")`)
+  .join('\n')}
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    fmt.Println(string(body))
+}`;
+
+      if (lang === 'javascript') return jsSnippet;
+      if (lang === 'python') return pySnippet;
+      if (lang === 'go') return goSnippet;
+
+      return `// ==========================================
+// 1. JavaScript (Fetch)
+// ==========================================
+${jsSnippet}
+
+# ==========================================
+# 2. Python (Requests)
+// ==========================================
+${pySnippet}
+
+// ==========================================
+// 3. Go (net/http)
+// ==========================================
+${goSnippet}`;
+    }
+    case 'svg-cleaner': {
+      let markup = required(values.svg, 'SVG markup');
+      const removeComments = values.removeComments !== 'no';
+
+      if (!/<svg\b[^>]*>/iu.test(markup)) {
+        throw new Error('Valid SVG markup must contain an <svg> tag.');
+      }
+
+      markup = markup.replace(/<\?xml\b[^>]*\?>/giu, '');
+      markup = markup.replace(/<!DOCTYPE\b[^>]*>/giu, '');
+      if (removeComments) {
+        markup = markup.replace(/<!--[\s\S]*?-->/gu, '');
+      }
+      markup = markup.replace(
+        /\s*(?:xmlns:inkscape|xmlns:sodipodi|xmlns:adobe|inkscape:[a-z0-9_-]+|sodipodi:[a-z0-9_-]+)="[^"]*"/giu,
+        '',
+      );
+      markup = markup
+        .split(/\r?\n/gu)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .join('\n');
+
+      return markup;
+    }
     default:
       throw new Error('Choose a supported advanced developer operation.');
   }

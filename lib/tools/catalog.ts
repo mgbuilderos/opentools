@@ -59,6 +59,16 @@ export const PDF_PAGE_OPERATIONS = [
     name: 'PDF metadata editor',
     description: 'Set PDF title, author, subject, and keywords.',
   },
+  {
+    id: 'reverse-pdf-pages',
+    name: 'Reverse PDF pages',
+    description: 'Save PDF pages in reverse order from last to first.',
+  },
+  {
+    id: 'split-pdf-ranges',
+    name: 'Split PDF ranges',
+    description: 'Extract and assemble custom comma-separated page ranges.',
+  },
 ] as const;
 
 export const IMAGE_EDITOR_OPERATIONS = [

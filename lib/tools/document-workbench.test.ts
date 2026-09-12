@@ -15,8 +15,8 @@ function defaults(id: string) {
 
 describe('documents and office workbench', () => {
   it('publishes 24 unique operations whose defaults all run', () => {
-    expect(DOCUMENT_OPERATIONS).toHaveLength(24);
-    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(24);
+    expect(DOCUMENT_OPERATIONS).toHaveLength(32);
+    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(32);
     for (const operation of DOCUMENT_OPERATIONS) {
       expect(
         runDocumentOperation(operation.id, defaults(operation.id)),
@@ -101,6 +101,71 @@ describe('documents and office workbench', () => {
     expect(
       runDocumentOperation('agenda-generator', defaults('agenda-generator')),
     ).toContain('**Planned duration:** 30 minutes');
+  });
+
+  it('builds presentations, speaker notes, and teleprompter schedules', () => {
+    const slidesHtml = runDocumentOperation(
+      'markdown-to-slides',
+      defaults('markdown-to-slides'),
+    );
+    expect(slidesHtml).toContain('<!DOCTYPE html>');
+    expect(slidesHtml).toContain('class="slide"');
+    expect(slidesHtml).toContain('Future of Local Computing');
+
+    const notes = runDocumentOperation(
+      'speaker-notes-extractor',
+      defaults('speaker-notes-extractor'),
+    );
+    expect(notes).toContain('# Speaker Notes Summary');
+    expect(notes).toContain('Pause for 3 seconds');
+
+    const pacer = runDocumentOperation(
+      'presentation-timer-pacer',
+      defaults('presentation-timer-pacer'),
+    );
+    expect(pacer).toContain('PRESENTATION PACING SCHEDULE');
+    expect(pacer).toContain('Slide 1:');
+
+    const outline = runDocumentOperation(
+      'presentation-outline-builder',
+      defaults('presentation-outline-builder'),
+    );
+    expect(outline).toContain('# Zero-Egress Browser Computing');
+    expect(outline).toContain('## 2. The Current Problem');
+  });
+
+  it('creates valid RFC 5545 iCalendar files, photo sheets, signatures, and form schemas', () => {
+    const ics = runDocumentOperation(
+      'calendar-ics-generator',
+      defaults('calendar-ics-generator'),
+    );
+    expect(ics).toContain('BEGIN:VCALENDAR');
+    expect(ics).toContain('BEGIN:VEVENT');
+    expect(ics).toContain('SUMMARY:Architecture Review & Release Sync');
+    expect(ics).toContain('END:VCALENDAR');
+
+    const photoSheet = runDocumentOperation(
+      'passport-photo-sheet',
+      defaults('passport-photo-sheet'),
+    );
+    expect(photoSheet).toContain(
+      'PASSPORT & ID PHOTO PRINT SHEET SPECIFICATION',
+    );
+    expect(photoSheet).toContain('300 DPI');
+
+    const signature = runDocumentOperation(
+      'transparent-signature-maker',
+      defaults('transparent-signature-maker'),
+    );
+    expect(signature).toContain('<svg xmlns="');
+    expect(signature).toContain('Ada Lovelace');
+
+    const schema = runDocumentOperation(
+      'pdf-form-field-schema-builder',
+      defaults('pdf-form-field-schema-builder'),
+    );
+    expect(schema).toContain('"title": "Employment Application"');
+    expect(schema).toContain('"id": "full_name"');
   });
 
   it('rejects impossible dates, missing merge keys, and malformed items', () => {
