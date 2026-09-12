@@ -1,23 +1,13 @@
-export interface MathFieldOption {
-  value: string;
-  label: string;
-}
+import {
+  number as numberField,
+  select as selectField,
+  text as textField,
+  type StandardField as MathField,
+  type StandardFieldOption as MathFieldOption,
+  type StandardOperation as MathOperation,
+} from './workbench-helpers';
 
-export interface MathField {
-  id: string;
-  label: string;
-  type: 'number' | 'text' | 'select';
-  defaultValue: string;
-  placeholder?: string;
-  options?: readonly MathFieldOption[];
-}
-
-export interface MathOperation {
-  id: string;
-  name: string;
-  description: string;
-  fields: readonly MathField[];
-}
+export type { MathField, MathFieldOption, MathOperation };
 
 type UnitSystem = {
   id: string;
@@ -25,42 +15,6 @@ type UnitSystem = {
   description: string;
   units: Record<string, { label: string; factor: number }>;
 };
-
-const numberField = (
-  id: string,
-  label: string,
-  defaultValue = '',
-): MathField => ({
-  id,
-  label,
-  type: 'number',
-  defaultValue,
-});
-
-const textField = (
-  id: string,
-  label: string,
-  defaultValue = '',
-  placeholder = defaultValue,
-): MathField => ({
-  id,
-  label,
-  type: 'text',
-  defaultValue,
-  placeholder,
-});
-
-const selectField = (
-  id: string,
-  label: string,
-  options: readonly MathFieldOption[],
-): MathField => ({
-  id,
-  label,
-  type: 'select',
-  defaultValue: options[0]?.value ?? '',
-  options,
-});
 
 const UNIT_SYSTEMS: readonly UnitSystem[] = [
   {

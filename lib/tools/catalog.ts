@@ -978,16 +978,65 @@ export function toolDestinationsForGroup(group: ToolGroup): ToolDestination[] {
   );
 }
 
+const normalizeToken = (token: string) =>
+  token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;
+
+const tokenize = (value: string) =>
+  value
+    .normalize('NFKD')
+    .toLocaleLowerCase()
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean)
+    .map(normalizeToken);
+
+interface PreindexedCandidate {
+  tool: ToolManifest;
+  resultId: string;
+  name: string;
+  shortDescription: string;
+  href: string;
+  normalizedName: string;
+  nameTokens: readonly string[];
+  documentTokens: readonly string[];
+}
+
+const PREINDEXED_CANDIDATES: readonly PreindexedCandidate[] =
+  publicTools.flatMap((tool) => {
+    const mainScoreText = [
+      tool.name,
+      tool.shortDescription,
+      ...tool.aliases,
+      ...tool.jobs,
+    ].join(' ');
+
+    const mainCandidate: PreindexedCandidate = {
+      tool,
+      resultId: tool.id,
+      name: tool.name,
+      shortDescription: tool.shortDescription,
+      href: tool.href,
+      normalizedName: tool.name.toLocaleLowerCase('en-US'),
+      nameTokens: tokenize(tool.name),
+      documentTokens: tokenize(mainScoreText),
+    };
+
+    const entryCandidates: PreindexedCandidate[] = (
+      tool.searchEntries ?? []
+    ).map((entry) => ({
+      tool,
+      resultId: `${tool.id}:${entry.id}`,
+      name: entry.name,
+      shortDescription: entry.description,
+      href: entry.href,
+      normalizedName: entry.name.toLocaleLowerCase('en-US'),
+      nameTokens: tokenize(entry.name),
+      documentTokens: tokenize(`${entry.name} ${entry.description}`),
+    }));
+
+    return [mainCandidate, ...entryCandidates];
+  });
+
 export function searchTools(query: string): ToolManifest[] {
-  const normalizeToken = (token: string) =>
-    token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;
-  const tokenize = (value: string) =>
-    value
-      .normalize('NFKD')
-      .toLocaleLowerCase()
-      .split(/[^\p{L}\p{N}]+/u)
-      .filter(Boolean)
-      .map(normalizeToken);
   const queryTokens = tokenize(query);
   if (!queryTokens.length)
     return publicTools.map((tool) => ({ ...tool, resultId: tool.id }));
@@ -1002,54 +1051,39 @@ export function searchTools(query: string): ToolManifest[] {
   };
 
   const normalizedQuery = query.trim().toLocaleLowerCase('en-US');
-  return publicTools
-    .flatMap((tool) => {
-      const candidates = [
-        {
-          ...tool,
-          resultId: tool.id,
-          scoreText: [
-            tool.name,
-            tool.shortDescription,
-            ...tool.aliases,
-            ...tool.jobs,
-          ].join(' '),
-        },
-        ...(tool.searchEntries ?? []).map((entry) => ({
-          ...tool,
-          resultId: `${tool.id}:${entry.id}`,
-          name: entry.name,
-          shortDescription: entry.description,
-          href: entry.href,
-          scoreText: `${entry.name} ${entry.description}`,
-        })),
-      ];
-      return candidates.flatMap((candidate) => {
-        const documentTokens = tokenize(candidate.scoreText);
-        if (
-          !queryTokens.every((queryToken) =>
-            documentTokens.some((documentToken) =>
-              tokenMatches(documentToken, queryToken),
-            ),
-          )
-        )
-          return [];
-        const normalizedName = candidate.name.toLocaleLowerCase('en-US');
-        const score =
-          normalizedName === normalizedQuery
-            ? 100
-            : normalizedName.startsWith(normalizedQuery)
-              ? 80
-              : queryTokens.every((token) =>
-                    tokenize(candidate.name).includes(token),
-                  )
-                ? 60
-                : candidate.resultId === tool.id
-                  ? 20
-                  : 40;
-        return [{ ...candidate, score }];
-      });
-    })
+  return PREINDEXED_CANDIDATES.flatMap((candidate) => {
+    if (
+      !queryTokens.every((queryToken) =>
+        candidate.documentTokens.some((documentToken) =>
+          tokenMatches(documentToken, queryToken),
+        ),
+      )
+    ) {
+      return [];
+    }
+
+    const score =
+      candidate.normalizedName === normalizedQuery
+        ? 100
+        : candidate.normalizedName.startsWith(normalizedQuery)
+          ? 80
+          : queryTokens.every((token) => candidate.nameTokens.includes(token))
+            ? 60
+            : candidate.resultId === candidate.tool.id
+              ? 20
+              : 40;
+
+    return [
+      {
+        ...candidate.tool,
+        resultId: candidate.resultId,
+        name: candidate.name,
+        shortDescription: candidate.shortDescription,
+        href: candidate.href,
+        score,
+      },
+    ];
+  })
     .sort(
       (left, right) =>
         right.score - left.score || left.name.localeCompare(right.name),

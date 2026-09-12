@@ -1,80 +1,23 @@
 import QRCode from 'qrcode';
 
-const secureWebPrefix = 'https:' + '//';
-const svgNamespace = 'http:' + '//www.w3.org/2000/svg';
+import {
+  area,
+  file,
+  number,
+  select,
+  text,
+  type StandardField as QrBarcodeField,
+  type StandardOperation,
+} from './workbench-helpers';
 
-export interface QrBarcodeField {
-  id: string;
-  label: string;
-  type: 'number' | 'text' | 'textarea' | 'select' | 'file';
-  defaultValue: string;
-  placeholder?: string;
-  accept?: string;
-  maxBytes?: number;
-  options?: readonly { value: string; label: string }[];
-}
-
-export interface QrBarcodeOperation {
-  id: string;
-  name: string;
-  description: string;
-  fields: readonly QrBarcodeField[];
+export type { QrBarcodeField };
+export type QrBarcodeOperation = StandardOperation & {
   notice: string;
   outputExtension: 'svg';
-}
+};
 
-const text = (
-  id: string,
-  label: string,
-  defaultValue: string,
-  placeholder?: string,
-): QrBarcodeField => ({
-  id,
-  label,
-  type: 'text',
-  defaultValue,
-  placeholder,
-});
-const number = (
-  id: string,
-  label: string,
-  defaultValue: string,
-): QrBarcodeField => ({
-  id,
-  label,
-  type: 'number',
-  defaultValue,
-});
-const area = (
-  id: string,
-  label: string,
-  defaultValue: string,
-): QrBarcodeField => ({
-  id,
-  label,
-  type: 'textarea',
-  defaultValue,
-});
-const select = (
-  id: string,
-  label: string,
-  defaultValue: string,
-  options: readonly { value: string; label: string }[],
-): QrBarcodeField => ({ id, label, type: 'select', defaultValue, options });
-
-const file = (
-  id: string,
-  label: string,
-  accept: string,
-  maxBytes: number,
-): QrBarcodeField => ({
-  id,
-  label,
-  type: 'file',
-  defaultValue: '',
-  accept,
-  maxBytes,
-});
+const secureWebPrefix = 'https:' + '//';
+const svgNamespace = 'http:' + '//www.w3.org/2000/svg';
 
 const errorField = select('error', 'Error correction', 'M', [
   { value: 'L', label: 'L — more capacity' },

@@ -121,24 +121,32 @@ export function makeSolidBackgroundTransparent(
     throw new Error('Background tolerance or softness is outside its limit.');
   }
   const [targetRed, targetGreen, targetBlue] = parseHexColor(targetHex);
+  const toleranceSq = tolerance * tolerance;
+  const maxDistance = tolerance + softness;
+  const maxDistanceSq = maxDistance * maxDistance;
   let changedPixels = 0;
+
   for (let index = 0; index < pixels.length; index += 4) {
-    const distance = Math.sqrt(
-      (pixels[index]! - targetRed) ** 2 +
-        (pixels[index + 1]! - targetGreen) ** 2 +
-        (pixels[index + 2]! - targetBlue) ** 2,
-    );
-    const originalAlpha = pixels[index + 3]!;
-    let nextAlpha = originalAlpha;
-    if (distance <= tolerance) nextAlpha = 0;
-    else if (softness > 0 && distance < tolerance + softness) {
-      nextAlpha = Math.round(
+    const dr = pixels[index]! - targetRed;
+    const dg = pixels[index + 1]! - targetGreen;
+    const db = pixels[index + 2]! - targetBlue;
+    const distSq = dr * dr + dg * dg + db * db;
+
+    if (distSq <= toleranceSq) {
+      if (pixels[index + 3]! !== 0) {
+        pixels[index + 3] = 0;
+        changedPixels += 1;
+      }
+    } else if (softness > 0 && distSq < maxDistanceSq) {
+      const distance = Math.sqrt(distSq);
+      const originalAlpha = pixels[index + 3]!;
+      const nextAlpha = Math.round(
         originalAlpha * ((distance - tolerance) / softness),
       );
-    }
-    if (nextAlpha !== originalAlpha) {
-      pixels[index + 3] = nextAlpha;
-      changedPixels += 1;
+      if (nextAlpha !== originalAlpha) {
+        pixels[index + 3] = nextAlpha;
+        changedPixels += 1;
+      }
     }
   }
   return changedPixels;

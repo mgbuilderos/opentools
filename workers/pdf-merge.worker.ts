@@ -15,6 +15,15 @@ import type {
 
 const workerScope = self as DedicatedWorkerGlobalScope;
 
+function toTransferableBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.byteOffset === 0 && bytes.byteLength === bytes.buffer.byteLength
+    ? (bytes.buffer as ArrayBuffer)
+    : (bytes.buffer.slice(
+        bytes.byteOffset,
+        bytes.byteOffset + bytes.byteLength,
+      ) as ArrayBuffer);
+}
+
 function send(message: PdfWorkerResponse, transfer: Transferable[] = []) {
   workerScope.postMessage(message, transfer);
 }
@@ -53,7 +62,7 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
       send({ type: 'progress', phase, completed, total });
     })
       .then((result) => {
-        const output = result.bytes.slice().buffer as ArrayBuffer;
+        const output = toTransferableBuffer(result.bytes);
         send(
           {
             type: 'result',
@@ -78,7 +87,7 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
       },
     )
       .then((result) => {
-        const output = result.bytes.slice().buffer as ArrayBuffer;
+        const output = toTransferableBuffer(result.bytes);
         send(
           {
             type: 'result',
@@ -99,7 +108,7 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
       send({ type: 'progress', phase, completed, total });
     })
       .then((result) => {
-        const output = result.bytes.slice().buffer as ArrayBuffer;
+        const output = toTransferableBuffer(result.bytes);
         send(
           {
             type: 'result',
@@ -119,7 +128,7 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
     send({ type: 'progress', phase, completed, total });
   })
     .then((result) => {
-      const output = result.bytes.slice().buffer as ArrayBuffer;
+      const output = toTransferableBuffer(result.bytes);
       send(
         {
           type: 'result',

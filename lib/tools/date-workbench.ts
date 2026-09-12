@@ -1,4 +1,5 @@
 import type { MathField, MathOperation } from './math-workbench';
+import { number as numberField, text as textField } from './workbench-helpers';
 
 const DAY_MS = 86_400_000;
 const MAX_DATE_SHIFT = 1_000_000;
@@ -8,37 +9,7 @@ const dateField = (
   id: string,
   label: string,
   defaultValue: string,
-): MathField => ({
-  id,
-  label,
-  type: 'text',
-  defaultValue,
-  placeholder: 'YYYY-MM-DD',
-});
-
-const numberField = (
-  id: string,
-  label: string,
-  defaultValue: string,
-): MathField => ({
-  id,
-  label,
-  type: 'number',
-  defaultValue,
-});
-
-const textField = (
-  id: string,
-  label: string,
-  defaultValue = '',
-  placeholder = '',
-): MathField => ({
-  id,
-  label,
-  type: 'text',
-  defaultValue,
-  placeholder,
-});
+): MathField => textField(id, label, defaultValue, 'YYYY-MM-DD');
 
 export const DATE_OPERATIONS: readonly MathOperation[] = [
   {

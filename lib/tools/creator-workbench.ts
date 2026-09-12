@@ -1,63 +1,16 @@
-export interface CreatorField {
-  id: string;
-  label: string;
-  type: 'number' | 'text' | 'textarea' | 'select' | 'file';
-  defaultValue: string;
-  placeholder?: string;
-  accept?: string;
-  maxBytes?: number;
-  options?: readonly { value: string; label: string }[];
-}
+import {
+  area,
+  file,
+  number,
+  select,
+  text,
+  type StandardField as CreatorField,
+  type StandardOperation as CreatorOperation,
+} from './workbench-helpers';
 
-export interface CreatorOperation {
-  id: string;
-  name: string;
-  description: string;
-  fields: readonly CreatorField[];
-  notice?: string;
-  outputExtension?: string;
-}
+export type { CreatorField, CreatorOperation };
 
 const SECURE_WEB = 'https' + '://';
-const text = (
-  id: string,
-  label: string,
-  defaultValue: string,
-): CreatorField => ({ id, label, type: 'text', defaultValue });
-const area = (
-  id: string,
-  label: string,
-  defaultValue: string,
-): CreatorField => ({ id, label, type: 'textarea', defaultValue });
-const number = (
-  id: string,
-  label: string,
-  defaultValue: string,
-): CreatorField => ({ id, label, type: 'number', defaultValue });
-const file = (
-  id: string,
-  label: string,
-  accept: string,
-  maxBytes = 25_000_000,
-): CreatorField => ({
-  id,
-  label,
-  type: 'file',
-  defaultValue: '',
-  accept,
-  maxBytes,
-});
-const select = (
-  id: string,
-  label: string,
-  options: readonly { value: string; label: string }[],
-): CreatorField => ({
-  id,
-  label,
-  type: 'select',
-  defaultValue: options[0]?.value ?? '',
-  options,
-});
 const content = () =>
   area(
     'content',
