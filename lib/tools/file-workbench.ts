@@ -359,6 +359,26 @@ export const FILE_WORKBENCH_OPERATIONS: readonly FileWorkbenchOperation[] = [
     ],
     requiresFiles: false,
   },
+  {
+    id: 'file-encrypt',
+    name: 'AES-GCM file encryptor',
+    description:
+      'Encrypt any file locally with authenticated 256-bit AES-GCM and PBKDF2 password derivation.',
+    fields: [text('password', 'Encryption password', 'vault-password')],
+    requiresFiles: true,
+    notice:
+      'Encryption runs 100% in your browser using the native Web Crypto API. No password or file data is ever transmitted.',
+  },
+  {
+    id: 'file-decrypt',
+    name: 'AES-GCM file decryptor',
+    description:
+      'Decrypt an .enc file back to its original bytes using your password.',
+    fields: [text('password', 'Decryption password', 'vault-password')],
+    requiresFiles: true,
+    notice:
+      'Decryption runs 100% in your browser using authenticated AES-GCM tag verification.',
+  },
 ] as const;
 
 const MAX_FILE = 256 * 1024 * 1024;
@@ -1045,6 +1065,129 @@ export async function runFileWorkbenchOperation(
         `Extracted ${bytes.length.toLocaleString()} bytes`,
         `${name}\t${match[1] || 'application/octet-stream'}`,
         [{ name, type: match[1] || 'application/octet-stream', bytes }],
+      );
+    }
+    case 'file-encrypt': {
+      validateFiles(files, 1, 1);
+      const password = (values.password || '').trim();
+      if (!password || password.length < 4)
+        throw new Error('Enter a password with at least 4 characters.');
+      const file = files[0];
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(password),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey'],
+      );
+      const key = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: salt as unknown as BufferSource,
+          iterations: 100_000,
+          hash: 'SHA-256',
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt'],
+      );
+      const encryptedBuffer = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv: iv as unknown as BufferSource },
+        key,
+        file.bytes as unknown as BufferSource,
+      );
+      const encryptedBytes = new Uint8Array(encryptedBuffer);
+      const output = new Uint8Array(4 + 16 + 12 + encryptedBytes.length);
+      output.set([0x45, 0x4e, 0x43, 0x31], 0); // 'ENC1'
+      output.set(salt, 4);
+      output.set(iv, 20);
+      output.set(encryptedBytes, 32);
+
+      return result(
+        `Encrypted ${file.name}`,
+        `Protected ${file.name} (${file.size.toLocaleString()} bytes) with authenticated 256-bit AES-GCM encryption.\nOutput: ${output.length.toLocaleString()} bytes with 16-byte salt and 12-byte IV.`,
+        [
+          {
+            name: `${file.name}.enc`,
+            type: 'application/octet-stream',
+            bytes: output,
+          },
+        ],
+      );
+    }
+    case 'file-decrypt': {
+      validateFiles(files, 1, 1);
+      const password = (values.password || '').trim();
+      if (!password) throw new Error('Enter the decryption password.');
+      const file = files[0];
+      if (file.bytes.length < 48)
+        throw new Error(
+          'File is too small to be a valid encrypted archive (minimum 48 bytes required).',
+        );
+      if (
+        file.bytes[0] !== 0x45 ||
+        file.bytes[1] !== 0x4e ||
+        file.bytes[2] !== 0x43 ||
+        file.bytes[3] !== 0x31
+      ) {
+        throw new Error(
+          'File header does not match ENC1. Make sure this file was encrypted with the AES-GCM file encryptor.',
+        );
+      }
+      const salt = file.bytes.subarray(4, 20);
+      const iv = file.bytes.subarray(20, 32);
+      const ciphertext = file.bytes.subarray(32);
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(password),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey'],
+      );
+      const key = await crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: salt as unknown as BufferSource,
+          iterations: 100_000,
+          hash: 'SHA-256',
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['decrypt'],
+      );
+      let decryptedBuffer: ArrayBuffer;
+      try {
+        decryptedBuffer = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: iv as unknown as BufferSource },
+          key,
+          ciphertext as unknown as BufferSource,
+        );
+      } catch {
+        throw new Error(
+          'Decryption failed: Incorrect password or corrupted encrypted file.',
+        );
+      }
+      const decryptedBytes = new Uint8Array(decryptedBuffer);
+      const outputName = file.name.endsWith('.enc')
+        ? file.name.slice(0, -4)
+        : `decrypted-${file.name}`;
+
+      return result(
+        `Decrypted ${file.name}`,
+        `Successfully decrypted ${decryptedBytes.length.toLocaleString()} bytes with verified AES-GCM authentication tag.`,
+        [
+          {
+            name: outputName,
+            type: 'application/octet-stream',
+            bytes: decryptedBytes,
+          },
+        ],
       );
     }
     default:

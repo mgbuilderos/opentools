@@ -30,7 +30,13 @@ const nextConfig: NextConfig = {
           { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
           { key: 'Referrer-Policy', value: 'no-referrer' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+          {
+            key: 'X-Robots-Tag',
+            value:
+              process.env.ALLOW_INDEXING === 'false'
+                ? 'noindex, nofollow, noarchive'
+                : 'index, follow',
+          },
           {
             key: 'Permissions-Policy',
             value:

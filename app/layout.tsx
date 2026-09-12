@@ -9,10 +9,9 @@ export const metadata: Metadata = {
   description:
     'A focused workspace of fast browser utilities for PDFs, images, text, and structured data.',
   robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: { index: false, follow: false, noimageindex: true },
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 

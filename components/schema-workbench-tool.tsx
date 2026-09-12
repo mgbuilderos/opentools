@@ -6,7 +6,9 @@ import {
   Clipboard,
   Download,
   Gauge,
+  HeartHandshake,
   LockKeyhole,
+  Share2,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -92,6 +94,7 @@ export function SchemaWorkbenchTool({
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [receiptCopied, setReceiptCopied] = useState(false);
   const [running, setRunning] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
 
@@ -208,6 +211,17 @@ export function SchemaWorkbenchTool({
     anchor.download = `${operation.id}.${extension}`;
     anchor.click();
     URL.revokeObjectURL(url);
+  };
+
+  const copySpeedReceipt = () => {
+    const text = `⚡ Processed ${operation.name} in ${elapsed(duration)} locally in this browser tab. 100% private in-browser compute via OpenTools (opentools.org).`;
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setReceiptCopied(true);
+        window.setTimeout(() => setReceiptCopied(false), 2000);
+      })
+      .catch(() => setReceiptCopied(false));
   };
 
   return (
@@ -459,6 +473,72 @@ export function SchemaWorkbenchTool({
                 <div className="p-4">
                   <p className="text-xs text-muted-foreground">Method</p>
                   <p className="mt-1 text-sm font-semibold">{methodLabel}</p>
+                </div>
+              </div>
+              <div className="border-t bg-muted/40 p-4 sm:p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                      100% Free & Zero Cloud Egress
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                      Done in{' '}
+                      <span className="tabular font-semibold text-foreground">
+                        {elapsed(duration)}
+                      </span>{' '}
+                      · Ran locally in this browser tab. If this saved you time
+                      today, consider supporting independent open-source
+                      development so we can keep adding more daily tools.
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <Button
+                      data-receipt-download
+                      onClick={download}
+                      className="h-10 min-w-32"
+                      aria-label={`Download ${operation.name} result`}
+                    >
+                      <Download aria-hidden="true" className="size-4" />
+                      Download Free
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={copySpeedReceipt}
+                      className="h-10 text-xs font-medium"
+                      aria-label="Copy speed receipt"
+                    >
+                      {receiptCopied ? (
+                        <>
+                          <Check
+                            aria-hidden="true"
+                            className="size-3.5 text-success"
+                          />
+                          Receipt Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Share2 aria-hidden="true" className="size-3.5" />
+                          Share Speed Receipt
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      nativeButton={false}
+                      className="h-10 text-xs text-muted-foreground hover:text-foreground"
+                      render={
+                        <a
+                          href="/support"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Support independent development (opens in a new tab)"
+                        />
+                      }
+                    >
+                      <HeartHandshake aria-hidden="true" className="size-3.5" />
+                      Support
+                    </Button>
+                  </div>
                 </div>
               </div>
             </section>

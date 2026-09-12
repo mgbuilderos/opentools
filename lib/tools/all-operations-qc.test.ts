@@ -162,10 +162,27 @@ const suites: readonly QcSuite[] = [
     name: 'file',
     route: '/file/workbench',
     operations: FILE_WORKBENCH_OPERATIONS,
-    run: (id, values) => {
+    run: async (id, values) => {
       const operation = FILE_WORKBENCH_OPERATIONS.find(
         (candidate) => candidate.id === id,
       );
+      if (id === 'file-decrypt') {
+        const enc = await runFileWorkbenchOperation(
+          'file-encrypt',
+          values,
+          fileFixtures.slice(0, 1),
+        );
+        return runFileWorkbenchOperation(id, values, [
+          {
+            name: 'alpha.txt.enc',
+            path: 'fixtures/alpha.txt.enc',
+            type: 'application/octet-stream',
+            size: enc.downloads[0].bytes.length,
+            lastModified: Date.UTC(2026, 8, 6),
+            bytes: enc.downloads[0].bytes,
+          },
+        ]);
+      }
       const files =
         operation?.multiple || operation?.directory
           ? fileFixtures
@@ -233,7 +250,7 @@ describe('exhaustive workbench input/output QC', () => {
   it('keeps every field contract complete and internally valid', () => {
     const allOperations = suites.flatMap((suite) => suite.operations);
 
-    expect(allOperations).toHaveLength(533);
+    expect(allOperations).toHaveLength(535);
     for (const suite of suites) {
       expect(new Set(suite.operations.map(({ id }) => id)).size).toBe(
         suite.operations.length,
@@ -358,7 +375,7 @@ describe('exhaustive workbench input/output QC', () => {
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(583);
+    expect(expectedDestinations).toHaveLength(585);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

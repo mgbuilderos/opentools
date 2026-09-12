@@ -8,14 +8,16 @@ import {
 
 function makeFile(
   name: string,
-  content: string | number[],
+  content: string | number[] | Uint8Array,
   type = 'application/octet-stream',
   path = name,
 ): LocalFileInput {
   const bytes =
     typeof content === 'string'
       ? new TextEncoder().encode(content)
-      : Uint8Array.from(content);
+      : content instanceof Uint8Array
+        ? content
+        : Uint8Array.from(content);
   return {
     name,
     path,
@@ -51,36 +53,83 @@ const png = makeFile(
 function defaults(id: string) {
   const operation = FILE_WORKBENCH_OPERATIONS.find((item) => item.id === id);
   if (!operation) throw new Error(`Missing operation ${id}`);
-  return Object.fromEntries(
+  const result = Object.fromEntries(
     operation.fields.map((field) => [field.id, field.defaultValue]),
   );
+  if (id === 'file-encrypt' || id === 'file-decrypt') {
+    result.password = 'testpassword';
+  }
+  return result;
 }
 
-function filesFor(id: string) {
+function filesFor(id: string, sampleEnc?: LocalFileInput) {
   if (id === 'base64-file-decoder' || id === 'data-uri-file-extractor')
     return [];
   if (id === 'file-chunk-joiner') return [hello, world];
   if (id === 'duplicate-file-finder') return [hello, helloCopy, world];
   if (id === 'hex-patch-generator') return [hello, changed];
+  if (id === 'file-decrypt') return [sampleEnc ?? hello];
   const operation = FILE_WORKBENCH_OPERATIONS.find((item) => item.id === id);
   return operation?.multiple ? [hello, png, empty] : [hello];
 }
 
 describe('file workbench', () => {
-  it('publishes 27 unique operations whose defaults all run', async () => {
-    expect(FILE_WORKBENCH_OPERATIONS).toHaveLength(27);
+  it('publishes 29 unique operations whose defaults all run', async () => {
+    expect(FILE_WORKBENCH_OPERATIONS).toHaveLength(29);
     expect(new Set(FILE_WORKBENCH_OPERATIONS.map((item) => item.id)).size).toBe(
-      27,
+      29,
     );
+    const encResult = await runFileWorkbenchOperation(
+      'file-encrypt',
+      { password: 'testpassword' },
+      [hello],
+    );
+    const sampleEnc = makeFile('test.txt.enc', encResult.downloads[0].bytes);
     for (const operation of FILE_WORKBENCH_OPERATIONS) {
       await expect(
         runFileWorkbenchOperation(
           operation.id,
           defaults(operation.id),
-          filesFor(operation.id),
+          filesFor(operation.id, sampleEnc),
         ),
       ).resolves.toMatchObject({ summary: expect.any(String) });
     }
+  });
+
+  it('encrypts and decrypts files with authenticated AES-GCM and PBKDF2', async () => {
+    const original = makeFile(
+      'secret.pdf',
+      'CONFIDENTIAL CONTRACT DATA',
+      'application/pdf',
+    );
+    const encrypted = await runFileWorkbenchOperation(
+      'file-encrypt',
+      { password: 'my-strong-password' },
+      [original],
+    );
+    expect(encrypted.downloads[0].name).toBe('secret.pdf.enc');
+    expect(encrypted.downloads[0].bytes.length).toBeGreaterThan(
+      original.size + 32,
+    );
+
+    const encFile = makeFile('secret.pdf.enc', encrypted.downloads[0].bytes);
+    const decrypted = await runFileWorkbenchOperation(
+      'file-decrypt',
+      { password: 'my-strong-password' },
+      [encFile],
+    );
+    expect(decrypted.downloads[0].name).toBe('secret.pdf');
+    expect(new TextDecoder().decode(decrypted.downloads[0].bytes)).toBe(
+      'CONFIDENTIAL CONTRACT DATA',
+    );
+
+    await expect(
+      runFileWorkbenchOperation(
+        'file-decrypt',
+        { password: 'wrong-password' },
+        [encFile],
+      ),
+    ).rejects.toThrow('Incorrect password');
   });
 
   it('gzip-compresses and restores exact bytes', async () => {

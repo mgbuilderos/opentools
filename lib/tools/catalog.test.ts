@@ -241,7 +241,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(583);
+    expect(entries).toHaveLength(585);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
