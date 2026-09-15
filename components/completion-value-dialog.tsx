@@ -210,32 +210,17 @@ export function CompletionValueDialog() {
           ) : (
             <>
               <a
-                href={SUPPORT_CONFIG.githubSponsorsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/50 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                aria-label="Sponsor $3 on GitHub"
-              >
-                ☕ $3 Coffee
-              </a>
-              <a
-                href={SUPPORT_CONFIG.githubSponsorsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/50 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                aria-label="Sponsor $10 on GitHub"
-              >
-                🍕 $10 Lunch
-              </a>
-              <a
-                href={SUPPORT_CONFIG.githubSponsorsUrl}
+                href={SUPPORT_CONFIG.githubRepoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-medium text-background transition-opacity hover:opacity-90"
-                aria-label="Sponsor $25 on GitHub"
+                aria-label="Star on GitHub"
               >
-                ⭐ $25 Backer
+                ⭐ Star on GitHub
               </a>
+              <span className="inline-flex h-9 items-center justify-center rounded-lg border bg-muted/40 px-3 text-xs font-medium text-muted-foreground">
+                Sponsors Coming Soon
+              </span>
             </>
           )}
         </div>

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import {
   Check,
+  Clock,
   Copy,
   ExternalLink,
   Globe,
@@ -12,6 +13,7 @@ import {
   QrCode,
   ShieldCheck,
   Sparkles,
+  Star,
   Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -281,16 +283,49 @@ export function SupportDualView() {
                   Global Support via GitHub
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Supports Apple Pay, Google Pay, Visa, MasterCard, Amex &
+                  Supports Apple Pay, Google Pay, Visa, MasterCard, Amex &amp;
                   PayPal worldwide.
                 </p>
               </div>
               <div className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold">
-                  <Sparkles className="size-3.5 text-success" />
-                  0% Platform Fee
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  <Clock className="size-3.5" />
+                  Approval in Progress
                 </span>
               </div>
+            </div>
+
+            {/* Status notice */}
+            <div className="mt-6 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-2.5">
+                <Clock className="size-4 shrink-0 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="font-semibold text-foreground">
+                    GitHub Sponsors Review Pending
+                  </p>
+                  <p className="mt-0.5 text-muted-foreground">
+                    Our official GitHub Sponsors profile is currently under
+                    review by GitHub and will activate shortly. In the meantime,
+                    starring our repository is the best free way to support
+                    OpenTools!
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                className="shrink-0 text-xs font-semibold"
+                render={
+                  <a
+                    href={SUPPORT_CONFIG.githubRepoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+              >
+                <Star className="mr-1.5 size-3.5 fill-current" />
+                Star on GitHub
+                <ExternalLink className="ml-1.5 size-3" />
+              </Button>
             </div>
 
             {/* Tiers Grid */}
@@ -300,7 +335,7 @@ export function SupportDualView() {
                   key={tier.name}
                   className={`flex flex-col justify-between rounded-xl border p-5 ${
                     tier.popular
-                      ? 'border-success bg-success/5 shadow-sm'
+                      ? 'border-border bg-muted/20 shadow-sm'
                       : 'bg-card'
                   }`}
                 >
@@ -308,7 +343,7 @@ export function SupportDualView() {
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-base">{tier.name}</h4>
                       {tier.popular && (
-                        <span className="rounded-full bg-success px-2 py-0.5 text-[10px] font-bold text-white">
+                        <span className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-bold text-background">
                           Popular
                         </span>
                       )}
@@ -336,22 +371,12 @@ export function SupportDualView() {
 
                   <div className="mt-6">
                     <Button
-                      className={`w-full text-xs font-semibold ${
-                        tier.popular
-                          ? 'bg-success hover:bg-success text-white'
-                          : ''
-                      }`}
-                      variant={tier.popular ? 'default' : 'outline'}
-                      render={
-                        <a
-                          href={SUPPORT_CONFIG.githubSponsorsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        />
-                      }
+                      disabled
+                      className="w-full text-xs font-semibold opacity-70 cursor-not-allowed"
+                      variant="outline"
                     >
-                      Sponsor {tier.amountUsd} on GitHub
-                      <ExternalLink className="ml-1.5 size-3" />
+                      <Clock className="mr-1.5 size-3.5" />
+                      Coming Soon ({tier.amountUsd})
                     </Button>
                   </div>
                 </div>
@@ -365,23 +390,17 @@ export function SupportDualView() {
                   Want to contribute a custom amount?
                 </h5>
                 <p className="text-xs text-muted-foreground">
-                  You can set any one-time or recurring sponsorship directly on
-                  GitHub.
+                  Custom recurring and one-time sponsorship tiers will be
+                  available as soon as GitHub completes review.
                 </p>
               </div>
               <Button
+                disabled
                 variant="outline"
-                className="shrink-0 text-xs font-semibold"
-                render={
-                  <a
-                    href={SUPPORT_CONFIG.githubSponsorsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  />
-                }
+                className="shrink-0 text-xs font-semibold opacity-70 cursor-not-allowed"
               >
-                Custom Sponsorship
-                <ExternalLink className="ml-1.5 size-3" />
+                <Clock className="mr-1.5 size-3.5" />
+                Coming Soon
               </Button>
             </div>
           </div>
