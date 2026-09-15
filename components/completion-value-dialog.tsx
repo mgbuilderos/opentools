@@ -187,14 +187,14 @@ export function CompletionValueDialog() {
             <>
               <a
                 href={getUpiPaymentUrl(50, 'Chai Support - OpenTools')}
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/50 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                 aria-label="Buy a Chai for ₹50 via UPI"
               >
                 ☕ Chai ₹50
               </a>
               <a
                 href={getUpiPaymentUrl(150, 'Lunch Support - OpenTools')}
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/50 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-colors hover:bg-success/25"
                 aria-label="Support with ₹150 lunch via UPI"
               >
                 🍕 Lunch ₹150
@@ -213,7 +213,7 @@ export function CompletionValueDialog() {
                 href={SUPPORT_CONFIG.githubRepoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-medium text-background transition-opacity hover:opacity-90"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-colors hover:bg-success/25"
                 aria-label="Star on GitHub"
               >
                 ⭐ Star on GitHub
@@ -243,20 +243,12 @@ export function CompletionValueDialog() {
                 aria-label="All support options (opens in a new tab)"
               />
             }
-            className="min-h-10 text-xs"
+            className="min-h-10 text-xs bg-success hover:bg-success text-white font-semibold"
           >
             <HeartHandshake aria-hidden="true" className="mr-1.5 size-4" />
             Support options
           </Button>
         </div>
-
-        <button
-          type="button"
-          onClick={() => dismiss(true)}
-          className="focus-ring mt-2 min-h-9 w-full rounded-lg text-xs text-muted-foreground hover:text-foreground"
-        >
-          Don’t ask again
-        </button>
       </div>
     </dialog>
   );
