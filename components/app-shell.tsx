@@ -260,8 +260,29 @@ export function AppShell({
             {[0, 1].map((copyIndex) => (
               <div key={copyIndex} className="flex items-center gap-6 shrink-0">
                 <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">🔒</span>
+                  <span>Your Files Never Leave Your Device</span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <span className="inline-flex items-center gap-1.5">
                   <span aria-hidden="true">🛡️</span>
-                  <span>100% In-Browser Execution</span>
+                  <span>100% Private &amp; Offline-Ready</span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">⚡</span>
+                  <span>Zero Server Uploads</span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">🚫</span>
+                  <span>No Signups · No Paywalls · No Ads</span>
                 </span>
                 <span className="opacity-40" aria-hidden="true">
                   ·
@@ -273,31 +294,8 @@ export function AppShell({
                   className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
                 >
                   <span aria-hidden="true">⚖️</span>
-                  <span>MIT Licensed & Open Source</span>
+                  <span>Free &amp; Open Source (MIT)</span>
                 </a>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">🔒</span>
-                  <span>
-                    Zero-Egress Guaranteed (connect-src &apos;none&apos;)
-                  </span>
-                </span>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">⚡</span>
-                  <span>Zero Cloud Uploads</span>
-                </span>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">🚫</span>
-                  <span>No Paywalls · No Signups · No Cookies</span>
-                </span>
                 <span className="opacity-40" aria-hidden="true">
                   ·
                 </span>
