@@ -284,10 +284,25 @@
 .category-mobile .category-link {
   width: 100%;
 }
+
+.app-main {
+  padding-left: 0;
+  transition: padding-left 220ms var(--motion-ease);
+}
+@media (min-width: 1024px) {
+  .app-main {
+    padding-left: 72px;
+  }
+  .app-main[data-expanded='true'] {
+    padding-left: 272px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .category-rail,
-  .category-rail .category-label {
-    transition: none;
+  .category-rail .category-label,
+  .app-main {
+    transition: none !important;
   }
 }
 

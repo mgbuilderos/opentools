@@ -534,7 +534,8 @@ export function AppShell({
       )}
 
       <main
-        className="mx-auto max-w-[1440px] lg:pl-[72px]"
+        className="app-main mx-auto max-w-[1440px]"
+        data-expanded={desktop && sidebarOpen}
         data-design-system="operator-v1"
       >
         {children}
