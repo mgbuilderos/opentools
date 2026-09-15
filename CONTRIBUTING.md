@@ -9,8 +9,10 @@ must keep the core promise: **user data never leaves the browser.**
    `WebSocket`, `sendBeacon`, remote scripts, or remote images in tool code.
    The local-source policy tests and the production CSP (`connect-src 'none'`)
    enforce this.
-2. **No analytics, telemetry, ads, session replay, or third-party embeds** —
-   anywhere in the app.
+2. **No client-side analytics, telemetry, ads, session replay, or third-party
+   embeds** — anywhere in the app. The only server-side log is the visit log in
+   `proxy.ts`, documented in [`.github/SECURITY.md`](.github/SECURITY.md#server-side-visit-log).
+   A PR that changes what it records must update that section and the README.
 3. **No silent remote fallback.** If a browser cannot run a tool, show a clear
    error.
 4. **Never gate a result** behind signup, payment, delay, or watermark. Support
