@@ -80,8 +80,11 @@ export function HomeWorkspace() {
                 {selectedGroup.shortDescription}
               </p>
             </div>
-            <span className="flex items-center gap-2 rounded-full border px-3 py-2 text-sm">
-              <LockKeyhole aria-hidden="true" className="size-4" />
+            <span className="flex items-center gap-2 rounded-full border bg-muted/30 px-3.5 py-2 text-sm text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:border-foreground/30 select-none">
+              <LockKeyhole
+                aria-hidden="true"
+                className="size-4 text-muted-foreground"
+              />
               On-device tools
             </span>
           </div>
@@ -93,7 +96,7 @@ export function HomeWorkspace() {
             <div className="relative w-full sm:w-72">
               <Search
                 aria-hidden="true"
-                className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted-foreground"
+                className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted-foreground transition-colors"
               />
               <input
                 type="search"
@@ -101,7 +104,7 @@ export function HomeWorkspace() {
                 placeholder="Find a tool in this category"
                 value={filter}
                 onChange={(event) => setFilter(event.target.value)}
-                className="focus-ring h-11 w-full rounded-lg border bg-background pl-9 pr-3 text-sm"
+                className="focus-ring h-11 w-full rounded-lg border bg-background pl-9 pr-3 text-sm transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30 focus:border-foreground/50"
               />
             </div>
           </div>

@@ -235,7 +235,7 @@ export function CompletionValueDialog() {
                   29,
                   'OpenTools Chai ☕ - Keep It Private & Ad-Free',
                 )}
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/60 px-3 text-xs font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-muted hover:border-foreground/25 active:translate-y-0 active:scale-[0.98]"
                 aria-label="Buy a Chai for ₹29 via UPI"
               >
                 ☕ Chai ₹29
@@ -245,7 +245,7 @@ export function CompletionValueDialog() {
                   149,
                   'OpenTools Lunch 🍕 - Keep It Private & Ad-Free',
                 )}
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-colors hover:bg-success/25"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-success/25 hover:border-success/60 active:translate-y-0 active:scale-[0.98]"
                 aria-label="Support with ₹149 lunch via UPI"
               >
                 🍕 Lunch ₹149
@@ -255,7 +255,7 @@ export function CompletionValueDialog() {
                   499,
                   'OpenTools Patron 🚀 - Keep It Private & Ad-Free',
                 )}
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-medium text-background transition-opacity hover:opacity-90"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-medium text-background transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 active:scale-[0.98]"
                 aria-label="Super Supporter ₹499 via UPI"
               >
                 🚀 ₹499
@@ -267,7 +267,7 @@ export function CompletionValueDialog() {
                 href={SUPPORT_CONFIG.githubRepoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-colors hover:bg-success/25"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-success/25 hover:border-success/60 active:translate-y-0 active:scale-[0.98]"
                 aria-label="Star on GitHub"
               >
                 ⭐ Star on GitHub

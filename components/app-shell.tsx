@@ -188,12 +188,15 @@ export function AppShell({
               }
               setSidebarOpen(false);
             }}
-            className="category-link focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground aria-[current=page]:bg-foreground aria-[current=page]:text-background"
+            className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98] aria-[current=page]:bg-foreground aria-[current=page]:text-background aria-[current=page]:hover:translate-x-0 motion-reduce:transform-none"
           >
-            <Icon aria-hidden="true" className="size-5 shrink-0" />
+            <Icon
+              aria-hidden="true"
+              className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-aria-[current=page]:scale-100 motion-reduce:transform-none"
+            />
             <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
               {group.name}
-              <span className="tabular text-xs opacity-60">
+              <span className="tabular text-xs opacity-60 transition-opacity duration-[var(--motion-standard)] group-hover:opacity-100">
                 {toolDestinationsForGroup(group).length}
               </span>
             </span>
@@ -350,9 +353,9 @@ export function AppShell({
           </Button>
           <a
             href="/"
-            className="focus-ring flex shrink-0 items-center gap-2 rounded-lg"
+            className="group focus-ring flex shrink-0 items-center gap-2 rounded-lg transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:scale-[1.02] active:scale-[0.98] motion-reduce:transform-none"
           >
-            <span className="grid size-8 place-items-center rounded-lg bg-foreground text-background">
+            <span className="grid size-8 place-items-center rounded-lg bg-foreground text-background transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:rotate-[-4deg] motion-reduce:transform-none">
               <Grid2X2 aria-hidden="true" className="size-4" />
             </span>
             <span className="hidden text-[15px] font-semibold tracking-[-0.02em] sm:inline">
@@ -385,7 +388,7 @@ export function AppShell({
                   ? `tool-search-result-${activeResult.resultId ?? activeResult.id}`
                   : undefined
               }
-              className="focus-ring h-10 w-full rounded-xl border bg-muted/70 pl-10 pr-16 text-sm placeholder:text-muted-foreground"
+              className="focus-ring h-10 w-full rounded-xl border bg-muted/70 pl-10 pr-16 text-sm placeholder:text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/90 hover:border-foreground/30 focus:bg-background focus:border-foreground/40"
             />
             <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border bg-background px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:block">
               ⌘K
@@ -407,17 +410,17 @@ export function AppShell({
                       aria-selected={activeResultIndex === index}
                       onFocus={() => setActiveResultIndex(index)}
                       onMouseEnter={() => setActiveResultIndex(index)}
-                      className="focus-ring flex w-full items-center justify-between rounded-lg px-3 py-3 text-left hover:bg-muted aria-selected:bg-muted"
+                      className="focus-ring group flex w-full items-center justify-between rounded-lg px-3 py-3 text-left transition-all duration-[var(--motion-fast)] ease-[var(--motion-ease)] hover:bg-muted hover:translate-x-1 aria-selected:bg-muted motion-reduce:transform-none"
                     >
                       <span>
-                        <span className="block text-sm font-semibold">
+                        <span className="block text-sm font-semibold transition-colors group-hover:text-foreground">
                           {tool.name}
                         </span>
-                        <span className="block text-xs text-muted-foreground">
+                        <span className="block text-xs text-muted-foreground transition-colors group-hover:text-foreground/80">
                           {tool.shortDescription}
                         </span>
                       </span>
-                      <span className="ml-4 rounded-full border px-2 py-1 text-[11px] font-medium">
+                      <span className="ml-4 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors group-hover:border-foreground/30">
                         On-device
                       </span>
                     </a>
@@ -445,26 +448,32 @@ export function AppShell({
             href={SUPPORT_CONFIG.githubRepoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="focus-ring hidden h-9 items-center gap-1.5 rounded-lg border bg-muted/50 px-3 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground md:inline-flex"
+            className="group focus-ring hidden h-9 items-center gap-1.5 rounded-lg border bg-muted/50 px-3 text-xs font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-px hover:border-foreground/30 hover:bg-muted hover:text-foreground active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none md:inline-flex"
             aria-label="Star on GitHub"
           >
-            <Star aria-hidden="true" className="size-3.5 fill-current" />
+            <Star
+              aria-hidden="true"
+              className="size-3.5 fill-current transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-hover:rotate-12 motion-reduce:transform-none"
+            />
             <span>Star on GitHub</span>
           </a>
 
           <Button
             variant="ghost"
-            className="hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
             render={<a href="/support" />}
           >
-            <span className="size-1.5 rounded-full bg-success" />
-            Support
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
+              <span className="relative inline-flex size-2 rounded-full bg-success" />
+            </span>
+            <span>Support</span>
           </Button>
 
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 shrink-0 rounded-lg"
+            className="h-10 w-10 shrink-0 rounded-lg transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted active:scale-[0.95] [&_svg]:transition-transform [&_svg]:duration-[var(--motion-standard)] [&_svg]:ease-[var(--motion-ease)] hover:[&_svg]:rotate-45 motion-reduce:[&_svg]:transform-none"
             onClick={toggleTheme}
             aria-label={isDark ? 'Use light theme' : 'Use dark theme'}
           >

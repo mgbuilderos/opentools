@@ -104,10 +104,10 @@ export function SupportDualView() {
         <button
           type="button"
           onClick={() => setActiveTab('upi')}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
             activeTab === 'upi'
-              ? 'bg-card text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-card text-foreground shadow-xs'
+              : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
           }`}
         >
           <span className="text-base">🇮🇳</span>
@@ -119,10 +119,10 @@ export function SupportDualView() {
         <button
           type="button"
           onClick={() => setActiveTab('international')}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
             activeTab === 'international'
-              ? 'bg-card text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-card text-foreground shadow-xs'
+              : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
           }`}
         >
           <Globe className="size-4" />
@@ -185,10 +185,10 @@ export function SupportDualView() {
                       setSelectedInrAmount(amt);
                       setCustomInrAmount('');
                     }}
-                    className={`rounded-xl border p-3 text-center transition-all ${
+                    className={`rounded-xl border p-3 text-center transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
                       isSelected
-                        ? 'border-success bg-success/10 text-foreground ring-2 ring-success/20 font-bold'
-                        : 'bg-card text-muted-foreground hover:border-foreground/30 hover:text-foreground'
+                        ? 'border-success bg-success/10 text-foreground ring-2 ring-success/20 font-bold shadow-xs'
+                        : 'bg-card text-muted-foreground hover:border-foreground/30 hover:bg-muted/40 hover:text-foreground'
                     }`}
                   >
                     <div className="text-lg">
