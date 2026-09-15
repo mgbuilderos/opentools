@@ -250,80 +250,84 @@ export function AppShell({
         Skip to tool
       </a>
 
-      {/* Trust & Privacy Announcement Ticker */}
-      <aside
-        aria-label="Trust and privacy guarantees"
-        className="relative z-[55] overflow-hidden border-b bg-muted/40 py-1.5 text-xs text-muted-foreground"
-      >
-        <div className="flex w-full overflow-hidden">
-          <div className="animate-ticker flex items-center gap-6 px-4 whitespace-nowrap select-none font-medium">
-            {[0, 1].map((copyIndex) => (
-              <div key={copyIndex} className="flex items-center gap-6 shrink-0">
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">🔒</span>
-                  <span>Your Files Never Leave Your Device</span>
-                </span>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">🛡️</span>
-                  <span>100% Private &amp; Offline-Ready</span>
-                </span>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">⚡</span>
-                  <span>Zero Server Uploads</span>
-                </span>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true">🚫</span>
-                  <span>No Signups · No Paywalls · No Ads</span>
-                </span>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <a
-                  href={SUPPORT_CONFIG.githubRepoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
-                >
-                  <span aria-hidden="true">⚖️</span>
-                  <span>Free &amp; Open Source (MIT)</span>
-                </a>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-                <a
-                  href={SUPPORT_CONFIG.githubRepoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-foreground hover:underline"
-                >
-                  <Star aria-hidden="true" className="size-3 fill-current" />
-                  <span>Star on GitHub</span>
-                </a>
-                <span className="opacity-40" aria-hidden="true">
-                  ·
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </aside>
-
       <header className="sticky top-0 z-[60] border-b bg-background/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
+        {/* Unified Trust & Privacy Ribbon */}
+        <aside
+          aria-label="Trust and privacy guarantees"
+          className="border-b bg-muted/40 text-[11px] text-muted-foreground"
+        >
+          <div className="mx-auto flex h-7 max-w-[1440px] items-center overflow-hidden px-3 sm:px-6 lg:px-8">
+            <div className="animate-ticker flex items-center gap-6 whitespace-nowrap select-none font-medium">
+              {[0, 1].map((copyIndex) => (
+                <div
+                  key={copyIndex}
+                  className="flex items-center gap-6 shrink-0"
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <span aria-hidden="true">🔒</span>
+                    <span>Your Files Never Leave Your Device</span>
+                  </span>
+                  <span className="opacity-40" aria-hidden="true">
+                    ·
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span aria-hidden="true">🛡️</span>
+                    <span>100% Private &amp; Offline-Ready</span>
+                  </span>
+                  <span className="opacity-40" aria-hidden="true">
+                    ·
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span aria-hidden="true">⚡</span>
+                    <span>Zero Server Uploads</span>
+                  </span>
+                  <span className="opacity-40" aria-hidden="true">
+                    ·
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span aria-hidden="true">🚫</span>
+                    <span>No Signups · No Paywalls · No Ads</span>
+                  </span>
+                  <span className="opacity-40" aria-hidden="true">
+                    ·
+                  </span>
+                  <a
+                    href={SUPPORT_CONFIG.githubRepoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+                  >
+                    <span aria-hidden="true">⚖️</span>
+                    <span>Free &amp; Open Source (MIT)</span>
+                  </a>
+                  <span className="opacity-40" aria-hidden="true">
+                    ·
+                  </span>
+                  <a
+                    href={SUPPORT_CONFIG.githubRepoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-foreground hover:underline"
+                  >
+                    <Star aria-hidden="true" className="size-3 fill-current" />
+                    <span>Star on GitHub</span>
+                  </a>
+                  <span className="opacity-40" aria-hidden="true">
+                    ·
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* Unified Main Navigation Bar */}
+        <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
           <Button
             ref={menuButtonRef}
             variant="ghost"
             size="icon"
-            className="h-11 w-11 shrink-0 rounded-lg border"
+            className="h-10 w-10 shrink-0 rounded-lg border"
             onClick={() => {
               if (sidebarOpen) closeSidebar();
               else {
@@ -381,7 +385,7 @@ export function AppShell({
                   ? `tool-search-result-${activeResult.resultId ?? activeResult.id}`
                   : undefined
               }
-              className="focus-ring h-11 w-full rounded-xl border bg-muted/70 pl-10 pr-16 text-sm placeholder:text-muted-foreground"
+              className="focus-ring h-10 w-full rounded-xl border bg-muted/70 pl-10 pr-16 text-sm placeholder:text-muted-foreground"
             />
             <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border bg-background px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:block">
               ⌘K
@@ -450,7 +454,7 @@ export function AppShell({
 
           <Button
             variant="ghost"
-            className="hidden h-11 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
             render={<a href="/support" />}
           >
             Support
@@ -459,7 +463,7 @@ export function AppShell({
           <Button
             variant="ghost"
             size="icon"
-            className="h-11 w-11 shrink-0 rounded-lg"
+            className="h-10 w-10 shrink-0 rounded-lg"
             onClick={toggleTheme}
             aria-label={isDark ? 'Use light theme' : 'Use dark theme'}
           >
@@ -486,15 +490,15 @@ export function AppShell({
             }
           }}
           data-expanded={sidebarOpen}
-          className="category-rail fixed bottom-0 left-0 top-16 z-50 overflow-x-hidden overflow-y-auto border-r bg-background"
+          className="category-rail fixed bottom-0 left-0 top-[84px] z-50 overflow-x-hidden overflow-y-auto border-r bg-background"
         >
-          <div className="flex h-16 items-center gap-4 overflow-hidden px-3">
+          <div className="flex h-14 items-center gap-4 overflow-hidden px-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={closeSidebar}
               aria-label="Collapse categories"
-              className="size-11 shrink-0"
+              className="size-10 shrink-0"
             >
               <PanelLeftClose aria-hidden="true" className="size-5" />
             </Button>
