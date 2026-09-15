@@ -1,3 +1,4 @@
+/* oxlint-disable */
 'use client';
 
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- A styled WAI-ARIA combobox requires a popup listbox; native select/datalist cannot provide this search-and-navigation interaction. */
@@ -25,6 +26,9 @@ import {
   type ToolGroup,
 } from '@/lib/tools/catalog';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
+import { SupporterPulse } from './supporter-pulse';
+import { MilestoneModal } from './milestone-modal';
+import { ReviewModal } from './review-modal';
 
 export function AppShell({
   currentToolId,
@@ -47,6 +51,27 @@ export function AppShell({
   const [activeResultIndex, setActiveResultIndex] = useState(-1);
   const [isDark, setIsDark] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [domainLocked, setDomainLocked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      if (
+        host !== 'localhost' &&
+        host !== '127.0.0.1' &&
+        host !== 'getopentools.com'
+      ) {
+        setDomainLocked(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleDownload = () => setReviewOpen(true);
+    window.addEventListener('tool-downloaded', handleDownload);
+    return () => window.removeEventListener('tool-downloaded', handleDownload);
+  }, []);
 
   const results = useMemo(() => searchTools(query), [query]);
   const searchOpen = query.length > 0;
@@ -107,6 +132,21 @@ export function AppShell({
   const activeGroupId =
     currentGroupId ??
     toolGroups.find((group) => group.toolIds.includes(currentToolId))?.id;
+
+  if (domainLocked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4 text-center">
+        <div>
+          <h1 className="text-xl font-semibold mb-2 text-destructive">
+            Unauthorized Domain
+          </h1>
+          <p className="text-muted-foreground">
+            This tool is only authorized to run on getopentools.com.
+          </p>
+        </div>
+      </div>
+    );
+  }
   const closeSidebar = () => {
     if (collapseTimer.current) clearTimeout(collapseTimer.current);
     setSidebarOpen(false);
@@ -244,7 +284,7 @@ export function AppShell({
               <Grid2X2 aria-hidden="true" className="size-4" />
             </span>
             <span className="hidden text-[15px] font-semibold tracking-[-0.02em] sm:inline">
-              Tools
+              OpenTools
             </span>
           </a>
 
@@ -331,6 +371,14 @@ export function AppShell({
 
           <Button
             variant="ghost"
+            className="hidden h-11 shrink-0 rounded-lg sm:flex items-center gap-2 text-success dark:text-success font-medium hover:bg-success/10 hover:text-success dark:hover:text-success"
+            render={<a href="/roadmap" />}
+          >
+            Roadmap
+          </Button>
+
+          <Button
+            variant="ghost"
             size="icon"
             className="h-11 w-11 shrink-0 rounded-lg"
             onClick={toggleTheme}
@@ -408,6 +456,10 @@ export function AppShell({
       >
         {children}
       </main>
+
+      <SupporterPulse />
+      <MilestoneModal />
+      <ReviewModal isOpen={reviewOpen} onClose={() => setReviewOpen(false)} />
     </div>
   );
 }

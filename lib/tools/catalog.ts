@@ -123,6 +123,45 @@ export const IMAGE_EDITOR_OPERATIONS = [
 
 export const publicTools: ToolManifest[] = [
   {
+    id: 'video-compress',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video compressor (Soon)',
+    shortDescription: 'Compress large MP4s and WebMs locally with FFmpeg.wasm.',
+    category: 'Video',
+    aliases: ['compress mp4', 'shrink video'],
+    jobs: ['compress video without uploading'],
+    href: '/video/compress',
+    execution: { mode: 'local-js', capabilities: [], offlineReady: false },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'image-ocr',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'On-Device OCR (Soon)',
+    shortDescription: 'Extract text from images locally using Tesseract.js.',
+    category: 'Image',
+    aliases: ['image to text', 'extract text from photo'],
+    jobs: ['read text from image'],
+    href: '/image/ocr',
+    execution: { mode: 'local-js', capabilities: [], offlineReady: false },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'sql-visualizer',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'SQL visualizer (Soon)',
+    shortDescription: 'Paste SQL tables and get an instant local ERD diagram.',
+    category: 'Developer',
+    aliases: ['sql to erd', 'database schema viewer'],
+    jobs: ['visualize sql schema'],
+    href: '/developer/sql-visualizer',
+    execution: { mode: 'local-js', capabilities: [], offlineReady: false },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'text-case-converter',
     version: '0.1.0-canary',
     status: 'canary',
@@ -389,6 +428,60 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['image.raster.crop', 'image.raster.transform'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'image-upscaler',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'AI Image Upscaler',
+    shortDescription:
+      'Enhance and upsize low-resolution images with AI directly in the browser.',
+    category: 'Image',
+    aliases: [
+      'super resolution',
+      'ai upscaler',
+      'upscale photo',
+      'topaz alternative',
+      'enhance image',
+    ],
+    jobs: [
+      'upscale image',
+      'increase image resolution',
+      'enhance photo quality',
+      'unblur image',
+    ],
+    searchEntries: [],
+    href: '/image/upscaler',
+    execution: {
+      mode: 'local-wasm',
+      capabilities: ['image.ai.upscale'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'audio-transcriber',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'AI Audio Transcriber',
+    shortDescription:
+      'Privately transcribe speech to text using an in-browser AI model.',
+    category: 'Audio',
+    aliases: [
+      'speech to text',
+      'whisper ai',
+      'transcribe mp3',
+      'extract text from audio',
+    ],
+    jobs: ['transcribe meeting', 'convert audio to text', 'speech recognition'],
+    searchEntries: [],
+    href: '/audio/transcribe',
+    execution: {
+      mode: 'local-wasm',
+      capabilities: ['audio.ai.transcribe'],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -831,12 +924,7 @@ export interface ToolGroup {
     | 'text-data'
     | 'developer-files'
     | 'calculators'
-    | 'documents-office'
-    | 'science-education'
-    | 'finance-business'
     | 'web-seo'
-    | 'creator-social'
-    | 'life-admin'
     | 'qr-barcode';
   name: string;
   shortDescription: string;
@@ -852,9 +940,9 @@ export const toolGroups: ToolGroup[] = [
   },
   {
     id: 'images',
-    name: 'Images',
-    shortDescription: 'Compress, resize, convert, and remove metadata.',
-    toolIds: ['image-optimize', 'image-editor'],
+    name: 'Video & images',
+    shortDescription: 'Compress, resize, OCR, convert, and edit media.',
+    toolIds: ['video-compress', 'image-ocr', 'image-optimize', 'image-editor'],
   },
   {
     id: 'text-data',
@@ -870,29 +958,11 @@ export const toolGroups: ToolGroup[] = [
     ],
   },
   {
-    id: 'qr-barcode',
-    name: 'QR & barcodes',
-    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
-    toolIds: ['qr-barcode-workbench'],
-  },
-  {
-    id: 'calculators',
-    name: 'Calculators',
-    shortDescription: 'Percentage, date difference, and age.',
-    toolIds: [
-      'percentage-calculator',
-      'math-workbench',
-      'date-difference',
-      'age-calculator',
-      'date-workbench',
-      'productivity-workbench',
-    ],
-  },
-  {
     id: 'developer-files',
     name: 'Developer & files',
-    shortDescription: 'Base64, UUID, timestamps, and file checksums.',
+    shortDescription: 'Base64, UUID, SQL visualization, hashes, and files.',
     toolIds: [
+      'sql-visualizer',
       'base64-encode',
       'base64-decode',
       'uuid-generator',
@@ -904,42 +974,28 @@ export const toolGroups: ToolGroup[] = [
     ],
   },
   {
-    id: 'documents-office',
-    name: 'Documents & office',
-    shortDescription:
-      'Drafts, templates, mail merge, citations, and comparison.',
-    toolIds: ['document-workbench'],
+    id: 'calculators',
+    name: 'Calculators',
+    shortDescription: 'Percentage, date difference, and math utilities.',
+    toolIds: [
+      'percentage-calculator',
+      'math-workbench',
+      'date-difference',
+      'age-calculator',
+      'date-workbench',
+    ],
+  },
+  {
+    id: 'qr-barcode',
+    name: 'QR & barcodes',
+    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
+    toolIds: ['qr-barcode-workbench'],
   },
   {
     id: 'web-seo',
     name: 'Web & SEO',
     shortDescription: 'Metadata, URLs, CSS, HTML, and accessibility checks.',
     toolIds: ['web-workbench'],
-  },
-  {
-    id: 'finance-business',
-    name: 'Finance & business',
-    shortDescription: 'Scenario math for money, pricing, budgets, and metrics.',
-    toolIds: ['finance-business-workbench'],
-  },
-  {
-    id: 'science-education',
-    name: 'Science & education',
-    shortDescription: 'Physics formulas, grades, study aids, logic, and sets.',
-    toolIds: ['science-education-workbench'],
-  },
-  {
-    id: 'creator-social',
-    name: 'Creator & social',
-    shortDescription: 'Content formatting, feeds, planning, and creator math.',
-    toolIds: ['creator-workbench'],
-  },
-  {
-    id: 'life-admin',
-    name: 'India & life admin',
-    shortDescription:
-      'Everyday privacy, household, travel, payment, and date helpers.',
-    toolIds: ['life-admin-workbench'],
   },
 ];
 

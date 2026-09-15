@@ -21,7 +21,7 @@ interface CategoryPageProps {
   params: Promise<{ category: string }>;
 }
 
-const httpsOrigin = ['https:', '//', 'opentools.org'].join('');
+const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 
 export async function generateStaticParams() {
   return getAllCategoryPillars().map((p) => ({ category: p.slug }));

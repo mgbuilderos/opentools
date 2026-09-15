@@ -156,9 +156,9 @@ describe('local tool source policy', () => {
     );
 
     expect(styles).not.toMatch(/#175cd3|#78a9ff|#16794b|#55d89b/iu);
-    expect(styles).toContain('--ring: #111111');
-    expect(styles).toContain('--success: #111111');
-    expect(styles).toContain('--ring: #f5f5f2');
-    expect(styles).toContain('--success: #f5f5f2');
+    expect(styles).toContain('--ring: #16a34a');
+    expect(styles).toContain('--success: #16a34a');
+    expect(styles).toContain('--ring: #22c55e');
+    expect(styles).toContain('--success: #22c55e');
   });
 });

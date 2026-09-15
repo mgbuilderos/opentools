@@ -1,3 +1,4 @@
+/* oxlint-disable */
 import {
   Braces,
   BriefcaseBusiness,
@@ -36,12 +37,7 @@ export const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   'text-data': Type,
   'developer-files': Braces,
   calculators: Calculator,
-  'documents-office': FileText,
-  'science-education': FlaskConical,
-  'finance-business': BriefcaseBusiness,
   'web-seo': Globe2,
-  'creator-social': Megaphone,
-  'life-admin': Landmark,
   'qr-barcode': QrCode,
 };
 

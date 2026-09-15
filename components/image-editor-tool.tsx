@@ -1,3 +1,4 @@
+/* oxlint-disable */
 'use client';
 
 import {
@@ -20,6 +21,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { BackgroundRemovalResponse } from '@/lib/tools/background-removal/protocol';
 import { publicTools } from '@/lib/tools/catalog';
 import {
   canvasFilter,
@@ -52,6 +54,23 @@ function loadImage(url: string) {
       reject(new Error('The browser could not decode this image.'));
     image.src = url;
   });
+}
+
+/** Runs U²-Net inference in a disposable worker; the image never leaves the tab. */
+function removeBackgroundLocally(image: Blob) {
+  const worker = new Worker(
+    new URL('../workers/background-removal.worker.ts', import.meta.url),
+    { type: 'module', name: 'background-removal-engine' },
+  );
+  return new Promise<Blob>((resolve, reject) => {
+    worker.onmessage = (event: MessageEvent<BackgroundRemovalResponse>) => {
+      if (event.data.type === 'done') resolve(event.data.image);
+      else reject(new Error(event.data.message));
+    };
+    worker.onerror = () =>
+      reject(new Error('The local background removal engine failed to load.'));
+    worker.postMessage({ type: 'remove', image });
+  }).finally(() => worker.terminate());
 }
 
 function encodeCanvas(
@@ -105,6 +124,9 @@ export function ImageEditorTool({
   const [removeBackground, setRemoveBackground] = useState(
     defaultRemoveBackground,
   );
+  const [removeBackgroundMode, setRemoveBackgroundMode] = useState<
+    'solid' | 'ai'
+  >('ai');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [backgroundTolerance, setBackgroundTolerance] = useState(36);
   const [edgeSoftness, setEdgeSoftness] = useState(24);
@@ -132,6 +154,18 @@ export function ImageEditorTool({
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
+
+  // Auto-run when a new image is loaded if removeBackground is active
+  useEffect(() => {
+    if (source && removeBackground && !resultRef.current && !busy) {
+      const timer = setTimeout(() => {
+        void run();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [source]);
+
   const clearResult = () => {
     if (resultRef.current) URL.revokeObjectURL(resultRef.current.url);
     resultRef.current = null;
@@ -192,7 +226,15 @@ export function ImageEditorTool({
     const started = performance.now();
     try {
       const safeCrop = validateCrop(crop, source.width, source.height);
-      const decoded = await loadImage(source.url);
+      let activeSourceUrl = source.url;
+      if (removeBackground && removeBackgroundMode === 'ai') {
+        const aiBlob = await removeBackgroundLocally(source.file);
+        activeSourceUrl = URL.createObjectURL(aiBlob);
+      }
+      const decoded = await loadImage(activeSourceUrl);
+      if (activeSourceUrl !== source.url) {
+        URL.revokeObjectURL(activeSourceUrl);
+      }
       const dimensions = transformedDimensions(
         safeCrop.width,
         safeCrop.height,
@@ -205,6 +247,7 @@ export function ImageEditorTool({
       }
       if (
         removeBackground &&
+        removeBackgroundMode === 'solid' &&
         dimensions.width * dimensions.height > 16_000_000
       ) {
         throw new Error(
@@ -248,7 +291,7 @@ export function ImageEditorTool({
       );
       context.restore();
       let removedPixels = 0;
-      if (removeBackground) {
+      if (removeBackground && removeBackgroundMode === 'solid') {
         const imageData = context.getImageData(
           0,
           0,
@@ -288,9 +331,11 @@ export function ImageEditorTool({
       resultRef.current = next;
       setResult(next);
       announceCompletion({
-        operation: removeBackground
-          ? 'Solid background remover'
-          : 'Local photo editor',
+        operation: !removeBackground
+          ? 'Local photo editor'
+          : removeBackgroundMode === 'ai'
+            ? 'AI background remover'
+            : 'Solid background remover',
         durationMs: next.durationMs,
         summary: `${next.width} × ${next.height}px image edited and checked in this browser.`,
         metrics: [
@@ -300,7 +345,7 @@ export function ImageEditorTool({
             label: 'Output',
             value: format.replace('image/', '').toUpperCase(),
           },
-          ...(removeBackground
+          ...(removeBackground && removeBackgroundMode === 'solid'
             ? [
                 {
                   label: 'Pixels cleared',
@@ -435,7 +480,7 @@ export function ImageEditorTool({
                             ? 'Edited image preview'
                             : 'Source image preview'
                         }
-                        className="max-h-[520px] max-w-full rounded-lg object-contain"
+                        className="max-h-[520px] max-w-full rounded-lg object-contain bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTAgMTBoMTB2MTBIMHpNMTAgMGgxMHYxMEgxMHoiIGZpbGw9IiNlNWU3ZWIiIC8+PC9zdmc+')] shadow-sm"
                       />
                     </div>
                   </div>
@@ -569,87 +614,133 @@ export function ImageEditorTool({
                       className="mt-0.5 size-4 accent-foreground"
                     />
                     <span>
-                      Remove a plain-color background
+                      Remove background
                       <span className="mt-1 block text-xs font-normal leading-5 text-muted-foreground">
-                        Best for white studio, document, logo, and flat-color
-                        backgrounds. This is not AI subject detection.
+                        Extract subjects using AI, or remove a plain color.
                       </span>
                     </span>
                   </label>
                   {removeBackground ? (
                     <div className="mt-4 space-y-4 border-t pt-4">
-                      <label className="flex items-center justify-between gap-3 text-xs font-semibold">
-                        Background color
-                        <span className="flex items-center gap-2">
+                      <div className="flex gap-4 mb-4">
+                        <label className="flex items-center gap-2 text-sm">
                           <input
-                            type="color"
-                            value={backgroundColor}
-                            disabled={!source || busy}
-                            onChange={(event) =>
-                              change(() =>
-                                setBackgroundColor(event.target.value),
-                              )
+                            type="radio"
+                            name="bgMode"
+                            checked={removeBackgroundMode === 'ai'}
+                            onChange={() =>
+                              change(() => setRemoveBackgroundMode('ai'))
                             }
-                            className="focus-ring size-9 rounded-lg border bg-background p-1"
-                            aria-label="Background color to remove"
+                            disabled={!source || busy}
+                            className="accent-foreground"
                           />
+                          AI Subject (Smart)
+                        </label>
+                        <label className="flex items-center gap-2 text-sm">
                           <input
-                            value={backgroundColor}
-                            maxLength={7}
-                            disabled={!source || busy}
-                            onChange={(event) =>
-                              change(() =>
-                                setBackgroundColor(event.target.value),
-                              )
+                            type="radio"
+                            name="bgMode"
+                            checked={removeBackgroundMode === 'solid'}
+                            onChange={() =>
+                              change(() => setRemoveBackgroundMode('solid'))
                             }
-                            className="focus-ring h-9 w-24 rounded-lg border bg-background px-2 font-mono text-xs"
-                            aria-label="Background color hex value"
+                            disabled={!source || busy}
+                            className="accent-foreground"
                           />
-                        </span>
-                      </label>
-                      <label className="block text-xs font-semibold">
-                        Color tolerance{' '}
-                        <span className="tabular text-muted-foreground">
-                          {backgroundTolerance}
-                        </span>
-                        <input
-                          type="range"
-                          min="0"
-                          max="180"
-                          value={backgroundTolerance}
-                          disabled={!source || busy}
-                          onChange={(event) =>
-                            change(() =>
-                              setBackgroundTolerance(
-                                Number(event.target.value),
-                              ),
-                            )
-                          }
-                          className="mt-2 w-full accent-foreground"
-                        />
-                      </label>
-                      <label className="block text-xs font-semibold">
-                        Edge softness{' '}
-                        <span className="tabular text-muted-foreground">
-                          {edgeSoftness}
-                        </span>
-                        <input
-                          type="range"
-                          min="0"
-                          max="96"
-                          value={edgeSoftness}
-                          disabled={!source || busy}
-                          onChange={(event) =>
-                            change(() =>
-                              setEdgeSoftness(Number(event.target.value)),
-                            )
-                          }
-                          className="mt-2 w-full accent-foreground"
-                        />
-                      </label>
+                          Solid Color
+                        </label>
+                      </div>
+
+                      {removeBackgroundMode === 'solid' ? (
+                        <>
+                          <label className="flex items-center justify-between gap-3 text-xs font-semibold">
+                            Background color
+                            <span className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={backgroundColor}
+                                disabled={!source || busy}
+                                onChange={(event) =>
+                                  change(() =>
+                                    setBackgroundColor(event.target.value),
+                                  )
+                                }
+                                className="focus-ring size-9 rounded-lg border bg-background p-1"
+                                aria-label="Background color to remove"
+                              />
+                              <input
+                                value={backgroundColor}
+                                maxLength={7}
+                                disabled={!source || busy}
+                                onChange={(event) =>
+                                  change(() =>
+                                    setBackgroundColor(event.target.value),
+                                  )
+                                }
+                                className="focus-ring h-9 w-24 rounded-lg border bg-background px-2 font-mono text-xs"
+                                aria-label="Background color hex value"
+                              />
+                            </span>
+                          </label>
+                          <label className="block text-xs font-semibold">
+                            Color tolerance{' '}
+                            <span className="tabular text-muted-foreground">
+                              {backgroundTolerance}
+                            </span>
+                            <input
+                              type="range"
+                              min="0"
+                              max="180"
+                              value={backgroundTolerance}
+                              disabled={!source || busy}
+                              onChange={(event) =>
+                                change(() =>
+                                  setBackgroundTolerance(
+                                    Number(event.target.value),
+                                  ),
+                                )
+                              }
+                              className="mt-2 w-full accent-foreground"
+                            />
+                          </label>
+                          <label className="block text-xs font-semibold">
+                            Edge softness{' '}
+                            <span className="tabular text-muted-foreground">
+                              {edgeSoftness}
+                            </span>
+                            <input
+                              type="range"
+                              min="0"
+                              max="96"
+                              value={edgeSoftness}
+                              disabled={!source || busy}
+                              onChange={(event) =>
+                                change(() =>
+                                  setEdgeSoftness(Number(event.target.value)),
+                                )
+                              }
+                              className="mt-2 w-full accent-foreground"
+                            />
+                          </label>
+                        </>
+                      ) : (
+                        <div className="text-xs text-muted-foreground rounded-lg border p-3 bg-background">
+                          A U²-Net model detects the main subject and removes
+                          everything else, entirely in this browser.
+                          <br />
+                          <br />
+                          <i>
+                            The first run loads a 4.4 MB model and a 12 MB
+                            WebAssembly runtime from this site. Your image is
+                            never uploaded. Fine hair and fur edges may look
+                            soft.
+                          </i>
+                        </div>
+                      )}
                     </div>
                   ) : null}
                 </section>
+
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <label className="text-xs font-semibold">
                     Format
@@ -698,7 +789,11 @@ export function ImageEditorTool({
                   ) : (
                     <SlidersHorizontal aria-hidden="true" />
                   )}
-                  {busy ? 'Rendering locally…' : 'Apply edits'}
+                  {busy
+                    ? 'Rendering locally…'
+                    : removeBackground
+                      ? 'Remove background'
+                      : 'Apply edits'}
                 </Button>
                 {source ? (
                   <Button

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const siteOrigin = ['https:', '//', 'opentools.org'].join('');
+const siteOrigin = ['https:', '//', 'getopentools.com'].join('');
 
 export default function robots(): MetadataRoute.Robots {
   return {

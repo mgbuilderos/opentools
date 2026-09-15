@@ -3,8 +3,8 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Tools — Fast, private browser utilities',
-    template: '%s · Tools',
+    default: 'OpenTools — Fast, private browser utilities',
+    template: '%s · OpenTools',
   },
   description:
     'A focused workspace of fast browser utilities for PDFs, images, text, and structured data.',

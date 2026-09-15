@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -47,13 +48,22 @@ const gates = [
     args: ['run', 'sbom', '--', '--check'],
     cwd: appRoot,
   },
-  {
+];
+
+// The blueprint package lives outside the public repository; standalone
+// checkouts (including CI) skip this gate.
+if (existsSync(path.join(blueprintRoot, 'scripts/verify_blueprint.mjs'))) {
+  gates.push({
     name: 'BLUEPRINT INTEGRITY',
     command: process.execPath,
     args: ['scripts/verify_blueprint.mjs'],
     cwd: blueprintRoot,
-  },
-];
+  });
+} else {
+  process.stdout.write(
+    '[QC] BLUEPRINT INTEGRITY skipped: blueprint package not present.\n',
+  );
+}
 
 if (releaseMode)
   gates.splice(5, 0, {

@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
 
-const baseUrl = ['https:', '//', 'opentools.org'].join('');
+const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

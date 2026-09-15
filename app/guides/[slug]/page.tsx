@@ -17,7 +17,7 @@ interface GuidePageProps {
   params: Promise<{ slug: string }>;
 }
 
-const httpsOrigin = ['https:', '//', 'opentools.org'].join('');
+const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 
 export async function generateStaticParams() {
   return TOOL_CATALOG.filter((t) => t.releaseWave === 'P0' || t.rank <= 5)

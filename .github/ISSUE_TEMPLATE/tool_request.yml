@@ -1,0 +1,32 @@
+name: Tool or feature request
+description: Suggest a new local tool or an improvement to an existing one.
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: What task are you trying to finish?
+      description: Describe the job, not only the tool name.
+      placeholder: I need to combine scanned receipts into one PDF before filing expenses.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: What do you use today, and what is wrong with it?
+  - type: dropdown
+    id: local
+    attributes:
+      label: Can this run entirely in the browser?
+      description: OpenTools only ships tools that process data locally. Tools that must fetch URLs or call remote APIs are out of scope.
+      options:
+        - "Yes — pure computation on local input"
+        - "Probably — needs a WebAssembly library or model"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: libraries
+    attributes:
+      label: Candidate libraries (with licenses)
+      description: Only permissive, MIT-compatible licenses can be bundled.

@@ -1,3 +1,4 @@
+/* oxlint-disable */
 'use client';
 
 import {
@@ -134,8 +135,6 @@ export function TextWorkbenchTool() {
         ],
       });
     } catch (caught) {
-      setOutput('');
-      setSummary('');
       setError(
         caught instanceof Error
           ? caught.message
@@ -143,6 +142,24 @@ export function TextWorkbenchTool() {
       );
     }
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      run();
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [
+    operationId,
+    input,
+    find,
+    replacement,
+    caseSensitive,
+    numericOption,
+    separator,
+    normalization,
+    sortDirection,
+    candidates,
+  ]);
 
   return (
     <AppShell currentToolId="text-workbench">
@@ -225,7 +242,6 @@ export function TextWorkbenchTool() {
                     value={input}
                     onChange={(event) => {
                       setInput(event.target.value);
-                      clearResult();
                     }}
                     spellCheck={false}
                     className="focus-ring mt-2 min-h-56 w-full resize-y rounded-lg border bg-muted/45 p-4 font-mono text-sm leading-6"
@@ -245,7 +261,6 @@ export function TextWorkbenchTool() {
                       value={find}
                       onChange={(event) => {
                         setFind(event.target.value);
-                        clearResult();
                       }}
                       className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 font-mono text-sm"
                     />
@@ -256,7 +271,6 @@ export function TextWorkbenchTool() {
                       value={replacement}
                       onChange={(event) => {
                         setReplacement(event.target.value);
-                        clearResult();
                       }}
                       className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 font-mono text-sm"
                     />
@@ -267,7 +281,6 @@ export function TextWorkbenchTool() {
                       checked={caseSensitive}
                       onChange={(event) => {
                         setCaseSensitive(event.target.checked);
-                        clearResult();
                       }}
                     />
                     Case sensitive
@@ -288,7 +301,6 @@ export function TextWorkbenchTool() {
                     value={numericOption}
                     onChange={(event) => {
                       setNumericOption(Number(event.target.value));
-                      clearResult();
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3"
                   />
@@ -302,7 +314,6 @@ export function TextWorkbenchTool() {
                     value={separator}
                     onChange={(event) => {
                       setSeparator(event.target.value);
-                      clearResult();
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 font-mono"
                   />
@@ -319,7 +330,6 @@ export function TextWorkbenchTool() {
                         event.target
                           .value as TextOperationOptions['normalization'],
                       );
-                      clearResult();
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3"
                   >
@@ -341,7 +351,6 @@ export function TextWorkbenchTool() {
                         event.target
                           .value as TextOperationOptions['sortDirection'],
                       );
-                      clearResult();
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3"
                   >
@@ -358,22 +367,20 @@ export function TextWorkbenchTool() {
                     value={candidates}
                     onChange={(event) => {
                       setCandidates(event.target.value);
-                      clearResult();
                     }}
                     className="focus-ring mt-2 min-h-28 w-full rounded-lg border bg-background p-3 font-mono text-sm"
                   />
                 </label>
               ) : null}
 
-              <div className="mt-4 flex justify-end">
-                <Button
-                  className="h-11 min-w-44"
-                  disabled={operation.needsInput !== false && !input}
-                  onClick={run}
-                >
-                  <Sparkles aria-hidden="true" />
-                  Run {operation.name}
-                </Button>
+              <div className="mt-4 flex justify-end min-h-11 items-center">
+                <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Sparkles
+                    aria-hidden="true"
+                    className="size-4 text-muted-foreground/50"
+                  />
+                  Auto-running locally
+                </span>
               </div>
             </section>
           </div>

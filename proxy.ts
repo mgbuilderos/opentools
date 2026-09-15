@@ -1,23 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  process.env.NODE_ENV === 'development'
-    ? "connect-src 'self' ws: wss:"
-    : "connect-src 'none'",
-  "font-src 'self'",
-  "form-action 'none'",
-  "frame-ancestors 'none'",
-  "img-src 'self' blob: data:",
-  "object-src 'none'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  "worker-src 'self' blob:",
-].join('; ');
+import {
+  contentSecurityPolicy,
+  loadsLocalModel,
+} from './lib/security/content-security-policy';
 
 const responseHeaders = {
-  'Content-Security-Policy': contentSecurityPolicy,
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Resource-Policy': 'same-origin',
   'Permissions-Policy':
@@ -27,9 +15,16 @@ const responseHeaders = {
   'X-Robots-Tag': 'noindex, nofollow, noarchive',
 } as const;
 
-export function proxy(_request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
+  response.headers.set(
+    'Content-Security-Policy',
+    contentSecurityPolicy({
+      development: process.env.NODE_ENV === 'development',
+      localModel: loadsLocalModel(request.nextUrl.pathname),
+    }),
+  );
   for (const [name, value] of Object.entries(responseHeaders)) {
     response.headers.set(name, value);
   }

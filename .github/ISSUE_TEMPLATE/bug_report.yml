@@ -1,0 +1,50 @@
+name: Bug report
+description: A tool produced a wrong result, crashed, or behaved unexpectedly.
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve OpenTools.
+        **Security or privacy issue (unexpected network request, telemetry)?** Do not file it here — follow [SECURITY.md](../blob/main/.github/SECURITY.md).
+        **Never attach real personal documents.** Use a synthetic file that reproduces the problem.
+  - type: input
+    id: route
+    attributes:
+      label: Tool route
+      placeholder: /pdf/merge
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open /pdf/merge
+        2. Add two PDFs (5 pages, 12 pages)
+        3. Click Merge
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs. actual result
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser, version, and OS
+      placeholder: Chrome 139 on macOS 26
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Input characteristics
+      description: File type, size, page count, dimensions, or a synthetic sample. No personal data.
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      render: text

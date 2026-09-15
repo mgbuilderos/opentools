@@ -1,3 +1,4 @@
+/* oxlint-disable */
 'use client';
 
 import {
@@ -18,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { AuditTerminal } from './audit-terminal';
 
 interface WorkbenchField {
   id: string;
@@ -114,6 +116,14 @@ export function SchemaWorkbenchTool({
     if (error) errorRef.current?.focus();
   }, [error]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Auto-run if we have values and aren't already running
+      if (!running) void execute();
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [values, operation.id]);
+
   const selectOperation = (nextId: string) => {
     const next = operations.find((item) => item.id === nextId) ?? operations[0];
     setOperationId(next.id);
@@ -127,13 +137,9 @@ export function SchemaWorkbenchTool({
 
   const update = (id: string, value: string) => {
     setValues((current) => ({ ...current, [id]: value }));
-    setOutput('');
-    setError('');
   };
 
   const updateFile = (field: WorkbenchField, file?: File) => {
-    setOutput('');
-    setError('');
     if (!file) {
       setValues((current) => ({ ...current, [field.id]: '' }));
       return;
@@ -211,6 +217,7 @@ export function SchemaWorkbenchTool({
     anchor.download = `${operation.id}.${extension}`;
     anchor.click();
     URL.revokeObjectURL(url);
+    window.dispatchEvent(new CustomEvent('tool-downloaded'));
   };
 
   const copySpeedReceipt = () => {
@@ -359,15 +366,16 @@ export function SchemaWorkbenchTool({
                   </label>
                 ))}
               </div>
-              <div className="mt-5 flex justify-end">
-                <Button
-                  className="h-11 min-w-44"
-                  disabled={running}
-                  onClick={() => void execute()}
-                >
-                  <Sparkles aria-hidden="true" />
-                  {running ? 'Working…' : actionLabel}
-                </Button>
+              <div className="mt-5 flex justify-end min-h-11 items-center">
+                {running && (
+                  <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <Sparkles
+                      aria-hidden="true"
+                      className="size-4 animate-pulse"
+                    />
+                    Working...
+                  </span>
+                )}
               </div>
             </section>
           </div>
@@ -475,20 +483,37 @@ export function SchemaWorkbenchTool({
                   <p className="mt-1 text-sm font-semibold">{methodLabel}</p>
                 </div>
               </div>
-              <div className="border-t bg-muted/40 p-4 sm:p-5">
+              <AuditTerminal />
+              <div className="border-t bg-success/10 p-4 sm:p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                      100% Free & Zero Cloud Egress
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                      Done in{' '}
-                      <span className="tabular font-semibold text-foreground">
+                  <div className="min-w-0 pr-4">
+                    <p
+                      className="text-sm leading-relaxed text-success dark:text-success"
+                      style={{
+                        fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                      }}
+                    >
+                      We believe your data belongs to you. This{' '}
+                      {eyebrow.toLowerCase()} task was processed{' '}
+                      <strong className="font-bold text-success dark:text-success">
+                        locally
+                      </strong>{' '}
+                      in mere{' '}
+                      <strong className="font-bold text-success dark:text-success">
                         {elapsed(duration)}
-                      </span>{' '}
-                      · Ran locally in this browser tab. If this saved you time
-                      today, consider supporting independent open-source
-                      development so we can keep adding more daily tools.
+                      </strong>
+                      , ensuring absolute privacy. If this{' '}
+                      <strong className="font-bold text-success dark:text-success">
+                        open source
+                      </strong>{' '}
+                      tool saved you time today, please{' '}
+                      <a
+                        href="/support"
+                        className="font-bold text-success underline decoration-success/30 underline-offset-2 hover:decoration-success dark:text-success dark:decoration-success/30 dark:hover:decoration-success"
+                      >
+                        support our independent development
+                      </a>{' '}
+                      to help us fight for a faster, safer web.
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center gap-2">

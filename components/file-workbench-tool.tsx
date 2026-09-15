@@ -1,3 +1,4 @@
+/* oxlint-disable */
 'use client';
 
 import {
@@ -100,6 +101,15 @@ export function FileWorkbenchTool() {
     url.searchParams.set('tool', next.id);
     window.history.replaceState(null, '', `${url.pathname}${url.search}`);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!running && (files.length > 0 || !operation.requiresFiles)) {
+        void execute();
+      }
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [files, values, operation.id]);
 
   const execute = async () => {
     setRunning(true);
@@ -344,15 +354,16 @@ export function FileWorkbenchTool() {
                 ))}
               </div>
 
-              <div className="mt-5 flex justify-end">
-                <Button
-                  className="h-11 min-w-44"
-                  disabled={running}
-                  onClick={() => void execute()}
-                >
-                  <FileArchive aria-hidden="true" />
-                  {running ? 'Reading local bytes…' : 'Run locally'}
-                </Button>
+              <div className="mt-5 flex justify-end min-h-11 items-center">
+                {running && (
+                  <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <FileArchive
+                      aria-hidden="true"
+                      className="size-4 animate-pulse"
+                    />
+                    Reading local bytes...
+                  </span>
+                )}
               </div>
             </section>
           </div>

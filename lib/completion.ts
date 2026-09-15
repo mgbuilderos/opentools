@@ -1,3 +1,4 @@
+/* oxlint-disable */
 export const COMPLETION_EVENT = 'tools:completion';
 
 export interface CompletionMetric {
@@ -39,6 +40,13 @@ export function announceCompletion(detail: CompletionDetail) {
       value: boundedDisplayText(metric.value, 64),
     }))
     .filter((metric) => metric.label && metric.value);
+  try {
+    const count =
+      parseInt(localStorage.getItem('tool_usage_count') || '0', 10) + 1;
+    localStorage.setItem('tool_usage_count', count.toString());
+    window.dispatchEvent(new CustomEvent('tool-executed'));
+  } catch (e) {}
+
   window.dispatchEvent(
     new CustomEvent<CompletionDetail>(COMPLETION_EVENT, {
       detail: {

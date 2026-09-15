@@ -54,8 +54,8 @@
   --destructive: #b42318;
   --border: #dadad5;
   --input: #dadad5;
-  --ring: #111111;
-  --success: #111111;
+  --ring: #16a34a;
+  --success: #16a34a;
   --radius: 0.5rem;
   --space-unit: 0.25rem;
   --control-height: 2.75rem;
@@ -64,7 +64,7 @@
   --motion-standard: 220ms;
   --motion-drawer: 360ms;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --chart-1: #111111;
+  --chart-1: #16a34a;
   --chart-2: #3d3d3a;
   --chart-3: #686864;
   --chart-4: #91918b;
@@ -91,9 +91,9 @@
   --destructive: #ff8a80;
   --border: #383834;
   --input: #383834;
-  --ring: #f5f5f2;
-  --success: #f5f5f2;
-  --chart-1: #f5f5f2;
+  --ring: #22c55e;
+  --success: #22c55e;
+  --chart-1: #22c55e;
   --chart-2: #d5d5cf;
   --chart-3: #adada7;
   --chart-4: #83837e;
@@ -170,6 +170,9 @@
   border-radius: calc(var(--radius) * 1.8);
   background: var(--card);
   color: var(--card-foreground);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.05),
+    0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 .ds-surface-header {
@@ -200,6 +203,9 @@
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) * 1.8);
   background: var(--card);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.05),
+    0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 .ds-chart {
