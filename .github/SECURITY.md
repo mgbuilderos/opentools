@@ -35,7 +35,7 @@ Only the latest commit on `main` and the live deployment at
 **Do not open a public issue for security reports.**
 
 1. Use GitHub's
-   [private vulnerability reporting](https://github.com/opentools/opentools/security/advisories/new)
+   [private vulnerability reporting](https://github.com/mgbuilderos/opentools/security/advisories/new)
    ("Report a vulnerability" on the Security tab).
 2. Include:
    - The affected route or tool (for example `/pdf/merge`).

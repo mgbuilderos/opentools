@@ -4,7 +4,7 @@
 
 **Everyday browser tools. Your files never leave your device.**
 
-[getopentools.com](https://getopentools.com) · [Report a bug](https://github.com/opentools/opentools/issues/new/choose) · [Security](.github/SECURITY.md) · [Sponsor](https://getopentools.com/support)
+[getopentools.com](https://getopentools.com) · [Report a bug](https://github.com/mgbuilderos/opentools/issues/new/choose) · [Security](.github/SECURITY.md) · [Sponsor](https://getopentools.com/support)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Zero Server Egress](https://img.shields.io/badge/Server%20Egress-0%20bytes-2ea44f.svg)](.github/SECURITY.md)
@@ -140,7 +140,7 @@ short:
 
 Unexpected network egress, telemetry, or tracking is treated as a
 **critical vulnerability**. Report it privately via GitHub's
-[private vulnerability reporting](https://github.com/opentools/opentools/security/advisories/new) — not a public
+[private vulnerability reporting](https://github.com/mgbuilderos/opentools/security/advisories/new) — not a public
 issue. Full policy: [`.github/SECURITY.md`](.github/SECURITY.md).
 
 ## License
