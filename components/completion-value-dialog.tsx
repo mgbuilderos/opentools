@@ -126,8 +126,8 @@ export function CompletionValueDialog() {
     >
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <span className="grid size-10 place-items-center rounded-full border bg-muted/40">
-            <Check aria-hidden="true" className="size-5 text-foreground" />
+          <span className="grid size-10 place-items-center rounded-full border border-success/30 bg-success/15 text-success">
+            <Check aria-hidden="true" className="size-5 text-success" />
           </span>
           <Button
             variant="ghost"
@@ -139,7 +139,7 @@ export function CompletionValueDialog() {
           </Button>
         </div>
 
-        <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-success">
           <Sparkles aria-hidden="true" className="size-3.5" />
           <span>Instant Private Result</span>
         </div>

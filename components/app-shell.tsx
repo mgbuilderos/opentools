@@ -454,9 +454,10 @@ export function AppShell({
 
           <Button
             variant="ghost"
-            className="hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
             render={<a href="/support" />}
           >
+            <span className="size-1.5 rounded-full bg-success" />
             Support
           </Button>
 
