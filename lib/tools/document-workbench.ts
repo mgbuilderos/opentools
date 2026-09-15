@@ -611,6 +611,92 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
     ],
     outputExtension: 'json',
   },
+  {
+    id: 'markdown-table-generator',
+    name: 'Markdown table generator & CSV converter',
+    description:
+      'Transform CSV, pipe-separated, or tab-delimited text into perfectly padded GitHub Flavored Markdown (GFM) tables.',
+    outputExtension: 'md',
+    fields: [
+      area(
+        'data',
+        'Table data (CSV or pipe-separated)',
+        'Feature | Local Tools | Cloud Tools\nZero Egress | Yes (100% Client-Side) | No (Uploaded to Cloud)\nPrivacy | Absolute | Variable\nCost | Free Forever | Monthly Subscription',
+      ),
+      select('alignment', 'Column alignment', [
+        { value: 'left', label: 'Left Aligned (:---)' },
+        { value: 'center', label: 'Centered (:---:)' },
+        { value: 'right', label: 'Right Aligned (---:)' },
+      ]),
+    ],
+  },
+  {
+    id: 'markdown-resume-builder',
+    name: 'Markdown resume builder (ATS-friendly)',
+    description:
+      'Generate a clean, structured, ATS-compliant Markdown developer resume ready for Markdown editors or PDF print.',
+    outputExtension: 'md',
+    fields: [
+      text('name', 'Full Name', 'Alex Morgan'),
+      text('title', 'Professional Title', 'Senior Full-Stack Engineer'),
+      text(
+        'contact',
+        'Contact info (Email · Location · GitHub · LinkedIn)',
+        'alex@example.com · San Francisco, CA · github.com/alex · linkedin.com/in/alex',
+      ),
+      area(
+        'summary',
+        'Professional Summary',
+        'Passionate full-stack developer with 7+ years of experience building high-performance, private-first web applications and modern React architectures.',
+      ),
+      area(
+        'experience',
+        'Experience (Role | Company | Period | Achievement)',
+        'Staff Software Engineer | Acme Corp | 2023 - Present | Architected zero-egress browser micro-tools serving 500k+ active developers.\nSenior Frontend Engineer | Global Tech | 2020 - 2023 | Reduced bundle size by 45% and improved Core Web Vitals to 99 percentile.',
+      ),
+      area(
+        'skills',
+        'Skills (Category | Comma-separated list)',
+        'Languages | TypeScript, JavaScript, Python, Go, SQL, HTML5/CSS3\nFrameworks | React, Next.js, Tailwind CSS, Node.js, Vite\nTools & DevOps | Git, Docker, Cloudflare Workers, Playwright, Vitest',
+      ),
+      area(
+        'education',
+        'Education (Degree | Institution | Period)',
+        'B.S. in Computer Science | University of California, Berkeley | 2016 - 2020',
+      ),
+    ],
+  },
+  {
+    id: 'html-email-templates',
+    name: 'Responsive HTML email template generator',
+    description:
+      'Generate bulletproof, responsive HTML email templates for welcome emails, password resets, newsletters, and receipts.',
+    outputExtension: 'html',
+    fields: [
+      select('templateType', 'Template type', [
+        { value: 'welcome', label: 'Welcome / Onboarding Email' },
+        {
+          value: 'password-reset',
+          label: 'Password Reset / Security Notice',
+        },
+        { value: 'newsletter', label: 'Newsletter / Product Digest' },
+        { value: 'receipt', label: 'Payment Receipt / Order Confirmation' },
+      ]),
+      text('brandName', 'Brand / App name', 'OpenTools'),
+      text('heading', 'Email heading', 'Welcome to OpenTools! 🚀'),
+      area(
+        'bodyContent',
+        'Email body message',
+        'Thank you for joining our community of privacy-conscious builders. Your local-first workspace is ready to use.',
+      ),
+      text('buttonText', 'Call-to-action button text', 'Get Started Now'),
+      text(
+        'buttonUrl',
+        'Button destination URL',
+        `${SECURE_WEB}example.com/start`,
+      ),
+    ],
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -1313,7 +1399,248 @@ PRINTING INSTRUCTIONS:
         2,
       );
     }
+    case 'markdown-table-generator': {
+      const data = required(values.data, 'Table data');
+      const alignment = values.alignment || 'left';
+      return generateMarkdownTable(data, alignment);
+    }
+    case 'markdown-resume-builder': {
+      const name = required(values.name, 'Full Name');
+      const title = required(values.title, 'Professional Title');
+      const contact = values.contact || '';
+      const summary = values.summary || '';
+      const experience = values.experience || '';
+      const skills = values.skills || '';
+      const education = values.education || '';
+      return generateMarkdownResume(
+        name,
+        title,
+        contact,
+        summary,
+        experience,
+        skills,
+        education,
+      );
+    }
+    case 'html-email-templates': {
+      const templateType = values.templateType || 'welcome';
+      const brandName = values.brandName || 'OpenTools';
+      const heading = values.heading || 'Welcome!';
+      const bodyContent = values.bodyContent || '';
+      const buttonText = values.buttonText || 'Click Here';
+      const buttonUrl = values.buttonUrl || `${SECURE_WEB}example.com`;
+      return generateResponsiveEmailHtml(
+        templateType,
+        brandName,
+        heading,
+        bodyContent,
+        buttonText,
+        buttonUrl,
+      );
+    }
     default:
       throw new Error('Choose a supported document operation.');
   }
+}
+
+function generateMarkdownTable(rawText: string, alignment: string): string {
+  const rawLines = rawText
+    .split(/\r?\n/gu)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (rawLines.length === 0) {
+    throw new Error('Please provide at least one line of table data.');
+  }
+
+  const matrix: string[][] = rawLines.map((line) => {
+    if (line.includes('|')) {
+      return line
+        .replace(/^\|/u, '')
+        .replace(/\|$/u, '')
+        .split('|')
+        .map((cell) => cell.trim());
+    }
+    if (line.includes('\t')) {
+      return line.split('\t').map((cell) => cell.trim());
+    }
+    return line.split(',').map((cell) => cell.trim());
+  });
+
+  const colCount = Math.max(...matrix.map((r) => r.length));
+  const normalized = matrix.map((r) => {
+    const row = [...r];
+    while (row.length < colCount) row.push('');
+    return row;
+  });
+
+  const colWidths = Array.from({ length: colCount }, (_, c) =>
+    Math.max(3, ...normalized.map((r) => r[c].length)),
+  );
+
+  const header = normalized[0];
+  const headerLine =
+    '| ' +
+    header.map((cell, c) => cell.padEnd(colWidths[c], ' ')).join(' | ') +
+    ' |';
+
+  let separatorCell = (len: number) => '-'.repeat(len);
+  if (alignment === 'center') {
+    separatorCell = (len: number) => `:${'-'.repeat(Math.max(1, len - 2))}:`;
+  } else if (alignment === 'right') {
+    separatorCell = (len: number) => `${'-'.repeat(Math.max(1, len - 1))}:`;
+  } else {
+    separatorCell = (len: number) => `:${'-'.repeat(Math.max(1, len - 1))}`;
+  }
+
+  const separatorLine =
+    '| ' + colWidths.map((w) => separatorCell(w)).join(' | ') + ' |';
+
+  const bodyLines = normalized.slice(1).map((row) => {
+    return (
+      '| ' +
+      row.map((cell, c) => cell.padEnd(colWidths[c], ' ')).join(' | ') +
+      ' |'
+    );
+  });
+
+  return [headerLine, separatorLine, ...bodyLines].join('\n');
+}
+
+function generateMarkdownResume(
+  name: string,
+  title: string,
+  contact: string,
+  summary: string,
+  experience: string,
+  skills: string,
+  education: string,
+): string {
+  const expSections = experience
+    .split(/\r?\n/gu)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split('|').map((p) => p.trim());
+      if (parts.length >= 4) {
+        return `### ${parts[0]} — **${parts[1]}**\n*${parts[2]}*\n- ${parts.slice(3).join(' | ')}`;
+      }
+      return `- ${line}`;
+    })
+    .join('\n\n');
+
+  const skillsSections = skills
+    .split(/\r?\n/gu)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split('|').map((p) => p.trim());
+      if (parts.length >= 2) {
+        return `- **${parts[0]}:** ${parts.slice(1).join(' | ')}`;
+      }
+      return `- ${line}`;
+    })
+    .join('\n');
+
+  const eduSections = education
+    .split(/\r?\n/gu)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split('|').map((p) => p.trim());
+      if (parts.length >= 2) {
+        return `- **${parts[0]}** — ${parts[1]}${parts[2] ? ` (*${parts[2]}*)` : ''}`;
+      }
+      return `- ${line}`;
+    })
+    .join('\n');
+
+  return `# ${name}
+**${title}**  
+${contact}
+
+---
+
+## Professional Summary
+${summary}
+
+---
+
+## Experience
+${expSections || 'Add your experience details above.'}
+
+---
+
+## Technical Skills
+${skillsSections || 'Add your technical skills above.'}
+
+---
+
+## Education & Certifications
+${eduSections || 'Add your educational background above.'}
+`;
+}
+
+function generateResponsiveEmailHtml(
+  templateType: string,
+  brandName: string,
+  heading: string,
+  bodyContent: string,
+  buttonText: string,
+  buttonUrl: string,
+): string {
+  const safeBrand = escapeHtml(brandName || 'OpenTools');
+  const safeHeading = escapeHtml(heading || 'Welcome');
+  const safeBody = escapeHtml(bodyContent || '').replace(/\n/gu, '<br/>');
+  const safeBtnText = escapeHtml(buttonText || 'Continue');
+  const safeBtnUrl = escapeHtml(buttonUrl || '#');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${safeHeading}</title>
+  <style>
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f5; color: #18181b; }
+    table { border-spacing: 0; }
+    td { padding: 0; }
+    img { border: 0; }
+    .wrapper { width: 100%; table-layout: fixed; background-color: #f4f4f5; padding-bottom: 40px; }
+    .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-spacing: 0; font-family: sans-serif; color: #18181b; border-radius: 8px; overflow: hidden; border: 1px solid #e4e4e7; }
+    .header { background-color: #18181b; padding: 24px; text-align: center; color: #ffffff; }
+    .content { padding: 32px 24px; line-height: 1.6; }
+    .button-container { text-align: center; padding: 24px 0; }
+    .button { background-color: #18181b; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-weight: 600; display: inline-block; }
+    .footer { background-color: #fafafa; padding: 20px; text-align: center; font-size: 12px; color: #71717a; border-top: 1px solid #f4f4f5; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <table class="main" align="center">
+      <tr>
+        <td class="header">
+          <h2 style="margin:0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">${safeBrand}</h2>
+        </td>
+      </tr>
+      <tr>
+        <td class="content">
+          <h1 style="font-size: 22px; font-weight: 700; margin-top: 0; color: #09090b;">${safeHeading}</h1>
+          <p style="font-size: 15px; color: #3f3f46; margin-bottom: 24px;">
+            ${safeBody}
+          </p>
+          <div class="button-container">
+            <a href="${safeBtnUrl}" class="button" target="_blank">${safeBtnText}</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="footer">
+          <p style="margin:0 0 8px 0;">© 2026 ${safeBrand}. 100% Private, Local-First Browser Tools.</p>
+          <p style="margin:0;"><a href="${safeBtnUrl}" style="color: #71717a; text-decoration: underline;">Manage Preferences</a></p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>`;
 }

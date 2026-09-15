@@ -17053,10 +17053,7 @@
     },
     {
       "ref": "@cloudflare/unenv-preset@2.16.1",
-      "dependsOn": [
-        "unenv@2.0.0-rc.24",
-        "workerd@1.20260831.1"
-      ]
+      "dependsOn": ["unenv@2.0.0-rc.24", "workerd@1.20260831.1"]
     },
     {
       "ref": "@cloudflare/vite-plugin@1.54.3",
@@ -17096,9 +17093,7 @@
     },
     {
       "ref": "@cspotcode/source-map-support@0.8.1",
-      "dependsOn": [
-        "@jridgewell/trace-mapping@0.3.9"
-      ]
+      "dependsOn": ["@jridgewell/trace-mapping@0.3.9"]
     },
     {
       "ref": "@jridgewell/trace-mapping@0.3.9",
@@ -17109,22 +17104,15 @@
     },
     {
       "ref": "@emnapi/core@1.10.0",
-      "dependsOn": [
-        "@emnapi/wasi-threads@1.2.1",
-        "tslib@2.8.1"
-      ]
+      "dependsOn": ["@emnapi/wasi-threads@1.2.1", "tslib@2.8.1"]
     },
     {
       "ref": "@emnapi/runtime@1.11.3",
-      "dependsOn": [
-        "tslib@2.8.1"
-      ]
+      "dependsOn": ["tslib@2.8.1"]
     },
     {
       "ref": "@emnapi/wasi-threads@1.2.1",
-      "dependsOn": [
-        "tslib@2.8.1"
-      ]
+      "dependsOn": ["tslib@2.8.1"]
     },
     {
       "ref": "@esbuild/aix-ppc64@0.28.1",
@@ -17232,16 +17220,11 @@
     },
     {
       "ref": "@floating-ui/core@1.8.0",
-      "dependsOn": [
-        "@floating-ui/utils@0.2.12"
-      ]
+      "dependsOn": ["@floating-ui/utils@0.2.12"]
     },
     {
       "ref": "@floating-ui/dom@1.8.0",
-      "dependsOn": [
-        "@floating-ui/core@1.8.0",
-        "@floating-ui/utils@0.2.12"
-      ]
+      "dependsOn": ["@floating-ui/core@1.8.0", "@floating-ui/utils@0.2.12"]
     },
     {
       "ref": "@floating-ui/react-dom@2.1.9",
@@ -17265,21 +17248,15 @@
     },
     {
       "ref": "@img/sharp-darwin-arm64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-darwin-arm64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-darwin-arm64@1.3.1"]
     },
     {
       "ref": "@img/sharp-darwin-x64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-darwin-x64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-darwin-x64@1.3.1"]
     },
     {
       "ref": "@img/sharp-freebsd-wasm32@0.35.2",
-      "dependsOn": [
-        "@img/sharp-wasm32@0.35.2"
-      ]
+      "dependsOn": ["@img/sharp-wasm32@0.35.2"]
     },
     {
       "ref": "@img/sharp-libvips-darwin-arm64@1.3.1",
@@ -17323,63 +17300,43 @@
     },
     {
       "ref": "@img/sharp-linux-arm@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linux-arm@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linux-arm@1.3.1"]
     },
     {
       "ref": "@img/sharp-linux-arm64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linux-arm64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linux-arm64@1.3.1"]
     },
     {
       "ref": "@img/sharp-linux-ppc64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linux-ppc64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linux-ppc64@1.3.1"]
     },
     {
       "ref": "@img/sharp-linux-riscv64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linux-riscv64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linux-riscv64@1.3.1"]
     },
     {
       "ref": "@img/sharp-linux-s390x@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linux-s390x@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linux-s390x@1.3.1"]
     },
     {
       "ref": "@img/sharp-linux-x64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linux-x64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linux-x64@1.3.1"]
     },
     {
       "ref": "@img/sharp-linuxmusl-arm64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linuxmusl-arm64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linuxmusl-arm64@1.3.1"]
     },
     {
       "ref": "@img/sharp-linuxmusl-x64@0.35.2",
-      "dependsOn": [
-        "@img/sharp-libvips-linuxmusl-x64@1.3.1"
-      ]
+      "dependsOn": ["@img/sharp-libvips-linuxmusl-x64@1.3.1"]
     },
     {
       "ref": "@img/sharp-wasm32@0.35.2",
-      "dependsOn": [
-        "@emnapi/runtime@1.11.3"
-      ]
+      "dependsOn": ["@emnapi/runtime@1.11.3"]
     },
     {
       "ref": "@img/sharp-webcontainers-wasm32@0.35.2",
-      "dependsOn": [
-        "@img/sharp-wasm32@0.35.2"
-      ]
+      "dependsOn": ["@img/sharp-wasm32@0.35.2"]
     },
     {
       "ref": "@img/sharp-win32-arm64@0.35.2",
@@ -17499,10 +17456,7 @@
     },
     {
       "ref": "@nodelib/fs.scandir@2.1.5",
-      "dependsOn": [
-        "@nodelib/fs.stat@2.0.5",
-        "run-parallel@1.2.0"
-      ]
+      "dependsOn": ["@nodelib/fs.stat@2.0.5", "run-parallel@1.2.0"]
     },
     {
       "ref": "@nodelib/fs.stat@2.0.5",
@@ -17510,16 +17464,11 @@
     },
     {
       "ref": "@nodelib/fs.walk@1.2.8",
-      "dependsOn": [
-        "@nodelib/fs.scandir@2.1.5",
-        "fastq@1.20.3"
-      ]
+      "dependsOn": ["@nodelib/fs.scandir@2.1.5", "fastq@1.20.3"]
     },
     {
       "ref": "@openai/sites-vite-plugin@0.2.0",
-      "dependsOn": [
-        "vite@8.2.2"
-      ]
+      "dependsOn": ["vite@8.2.2"]
     },
     {
       "ref": "@oxc-project/types@0.148.0",
@@ -17703,9 +17652,7 @@
     },
     {
       "ref": "@pdf-lib/standard-fonts@1.0.0",
-      "dependsOn": [
-        "pako@1.0.11"
-      ]
+      "dependsOn": ["pako@1.0.11"]
     },
     {
       "ref": "pako@1.0.11",
@@ -17713,21 +17660,15 @@
     },
     {
       "ref": "@pdf-lib/upng@1.0.1",
-      "dependsOn": [
-        "pako@1.0.11"
-      ]
+      "dependsOn": ["pako@1.0.11"]
     },
     {
       "ref": "@playwright/test@1.63.0",
-      "dependsOn": [
-        "playwright@1.63.0"
-      ]
+      "dependsOn": ["playwright@1.63.0"]
     },
     {
       "ref": "@poppinss/colors@4.1.6",
-      "dependsOn": [
-        "kleur@4.1.5"
-      ]
+      "dependsOn": ["kleur@4.1.5"]
     },
     {
       "ref": "@poppinss/dumper@0.6.5",
@@ -17763,9 +17704,7 @@
     },
     {
       "ref": "@protobufjs/fetch@1.1.1",
-      "dependsOn": [
-        "@protobufjs/aspromise@1.1.2"
-      ]
+      "dependsOn": ["@protobufjs/aspromise@1.1.2"]
     },
     {
       "ref": "@protobufjs/float@1.0.2",
@@ -17857,10 +17796,7 @@
     },
     {
       "ref": "@shuding/opentype.js@1.4.0-beta.0",
-      "dependsOn": [
-        "fflate@0.7.5",
-        "string.prototype.codepointat@0.2.1"
-      ]
+      "dependsOn": ["fflate@0.7.5", "string.prototype.codepointat@0.2.1"]
     },
     {
       "ref": "@sindresorhus/is@7.2.0",
@@ -18004,9 +17940,7 @@
     },
     {
       "ref": "@tensorflow/tfjs-converter@4.11.0",
-      "dependsOn": [
-        "@tensorflow/tfjs-core@4.11.0"
-      ]
+      "dependsOn": ["@tensorflow/tfjs-core@4.11.0"]
     },
     {
       "ref": "@tensorflow/tfjs-core@4.11.0",
@@ -18040,17 +17974,11 @@
     },
     {
       "ref": "@tensorflow/tfjs-layers@4.11.0",
-      "dependsOn": [
-        "@tensorflow/tfjs-core@4.11.0"
-      ]
+      "dependsOn": ["@tensorflow/tfjs-core@4.11.0"]
     },
     {
       "ref": "cliui@7.0.4",
-      "dependsOn": [
-        "string-width@4.2.3",
-        "strip-ansi@6.0.1",
-        "wrap-ansi@7.0.0"
-      ]
+      "dependsOn": ["string-width@4.2.3", "strip-ansi@6.0.1", "wrap-ansi@7.0.0"]
     },
     {
       "ref": "wrap-ansi@7.0.0",
@@ -18082,16 +18010,11 @@
     },
     {
       "ref": "@tybys/wasm-util@0.10.3",
-      "dependsOn": [
-        "tslib@2.8.1"
-      ]
+      "dependsOn": ["tslib@2.8.1"]
     },
     {
       "ref": "@types/chai@5.2.3",
-      "dependsOn": [
-        "@types/deep-eql@4.0.2",
-        "assertion-error@2.0.1"
-      ]
+      "dependsOn": ["@types/deep-eql@4.0.2", "assertion-error@2.0.1"]
     },
     {
       "ref": "@types/deep-eql@4.0.2",
@@ -18111,16 +18034,11 @@
     },
     {
       "ref": "@types/node@22.19.19",
-      "dependsOn": [
-        "undici-types@6.21.0"
-      ]
+      "dependsOn": ["undici-types@6.21.0"]
     },
     {
       "ref": "@types/node-fetch@2.6.13",
-      "dependsOn": [
-        "@types/node@22.19.19",
-        "form-data@4.0.6"
-      ]
+      "dependsOn": ["@types/node@22.19.19", "form-data@4.0.6"]
     },
     {
       "ref": "@types/offscreencanvas@2019.3.0",
@@ -18128,15 +18046,11 @@
     },
     {
       "ref": "@types/react@19.2.14",
-      "dependsOn": [
-        "csstype@3.2.3"
-      ]
+      "dependsOn": ["csstype@3.2.3"]
     },
     {
       "ref": "@types/react-dom@19.2.3",
-      "dependsOn": [
-        "@types/react@19.2.14"
-      ]
+      "dependsOn": ["@types/react@19.2.14"]
     },
     {
       "ref": "@types/seedrandom@2.4.34",
@@ -18144,30 +18058,19 @@
     },
     {
       "ref": "@unpic/core@1.0.3",
-      "dependsOn": [
-        "unpic@4.2.2"
-      ]
+      "dependsOn": ["unpic@4.2.2"]
     },
     {
       "ref": "@unpic/react@1.0.2",
-      "dependsOn": [
-        "react@19.2.8",
-        "react-dom@19.2.8",
-        "@unpic/core@1.0.3"
-      ]
+      "dependsOn": ["react@19.2.8", "react-dom@19.2.8", "@unpic/core@1.0.3"]
     },
     {
       "ref": "@upscalerjs/default-model@1.0.0",
-      "dependsOn": [
-        "@tensorflow/tfjs@4.11.0"
-      ]
+      "dependsOn": ["@tensorflow/tfjs@4.11.0"]
     },
     {
       "ref": "@vercel/og@0.8.6",
-      "dependsOn": [
-        "@resvg/resvg-wasm@2.4.0",
-        "satori@0.16.0"
-      ]
+      "dependsOn": ["@resvg/resvg-wasm@2.4.0", "satori@0.16.0"]
     },
     {
       "ref": "@vinext/types@1.0.0-beta.2",
@@ -18175,10 +18078,7 @@
     },
     {
       "ref": "@vitejs/plugin-react@6.0.2",
-      "dependsOn": [
-        "vite@8.2.2",
-        "@rolldown/pluginutils@1.0.1"
-      ]
+      "dependsOn": ["vite@8.2.2", "@rolldown/pluginutils@1.0.1"]
     },
     {
       "ref": "@vitejs/plugin-rsc@0.5.34",
@@ -18219,16 +18119,11 @@
     },
     {
       "ref": "@vitest/pretty-format@4.1.11",
-      "dependsOn": [
-        "tinyrainbow@3.1.1"
-      ]
+      "dependsOn": ["tinyrainbow@3.1.1"]
     },
     {
       "ref": "@vitest/runner@4.1.11",
-      "dependsOn": [
-        "@vitest/utils@4.1.11",
-        "pathe@2.0.3"
-      ]
+      "dependsOn": ["@vitest/utils@4.1.11", "pathe@2.0.3"]
     },
     {
       "ref": "@vitest/snapshot@4.1.11",
@@ -18293,15 +18188,11 @@
     },
     {
       "ref": "@webassemblyjs/ieee754@1.13.2",
-      "dependsOn": [
-        "@xtuc/ieee754@1.2.0"
-      ]
+      "dependsOn": ["@xtuc/ieee754@1.2.0"]
     },
     {
       "ref": "@webassemblyjs/leb128@1.13.2",
-      "dependsOn": [
-        "@xtuc/long@4.2.2"
-      ]
+      "dependsOn": ["@xtuc/long@4.2.2"]
     },
     {
       "ref": "@webassemblyjs/utf8@1.13.2",
@@ -18352,10 +18243,7 @@
     },
     {
       "ref": "@webassemblyjs/wast-printer@1.14.1",
-      "dependsOn": [
-        "@webassemblyjs/ast@1.14.1",
-        "@xtuc/long@4.2.2"
-      ]
+      "dependsOn": ["@webassemblyjs/ast@1.14.1", "@xtuc/long@4.2.2"]
     },
     {
       "ref": "@webgpu/types@0.1.30",
@@ -18416,9 +18304,7 @@
     },
     {
       "ref": "acorn-loose@8.5.2",
-      "dependsOn": [
-        "acorn@8.18.0"
-      ]
+      "dependsOn": ["acorn@8.18.0"]
     },
     {
       "ref": "ajv@8.20.0",
@@ -18431,10 +18317,7 @@
     },
     {
       "ref": "ajv-keywords@5.1.0",
-      "dependsOn": [
-        "ajv@8.20.0",
-        "fast-deep-equal@3.1.3"
-      ]
+      "dependsOn": ["ajv@8.20.0", "fast-deep-equal@3.1.3"]
     },
     {
       "ref": "ansi-regex@5.0.1",
@@ -18442,16 +18325,11 @@
     },
     {
       "ref": "ansi-styles@4.3.0",
-      "dependsOn": [
-        "color-convert@2.0.1"
-      ]
+      "dependsOn": ["color-convert@2.0.1"]
     },
     {
       "ref": "anymatch@3.1.3",
-      "dependsOn": [
-        "normalize-path@3.0.0",
-        "picomatch@2.3.2"
-      ]
+      "dependsOn": ["normalize-path@3.0.0", "picomatch@2.3.2"]
     },
     {
       "ref": "picomatch@2.3.2",
@@ -18459,9 +18337,7 @@
     },
     {
       "ref": "argparse@1.0.10",
-      "dependsOn": [
-        "sprintf-js@1.0.3"
-      ]
+      "dependsOn": ["sprintf-js@1.0.3"]
     },
     {
       "ref": "assertion-error@2.0.1",
@@ -18508,9 +18384,7 @@
     },
     {
       "ref": "bare-url@2.5.4",
-      "dependsOn": [
-        "bare-path@3.1.2"
-      ]
+      "dependsOn": ["bare-path@3.1.2"]
     },
     {
       "ref": "base64-js@0.0.8",
@@ -18526,11 +18400,7 @@
     },
     {
       "ref": "bl@4.1.0",
-      "dependsOn": [
-        "buffer@5.7.1",
-        "inherits@2.0.4",
-        "readable-stream@3.6.2"
-      ]
+      "dependsOn": ["buffer@5.7.1", "inherits@2.0.4", "readable-stream@3.6.2"]
     },
     {
       "ref": "blake3-wasm@2.1.5",
@@ -18538,15 +18408,11 @@
     },
     {
       "ref": "brace-expansion@5.0.9",
-      "dependsOn": [
-        "balanced-match@4.0.4"
-      ]
+      "dependsOn": ["balanced-match@4.0.4"]
     },
     {
       "ref": "braces@3.0.3",
-      "dependsOn": [
-        "fill-range@7.1.1"
-      ]
+      "dependsOn": ["fill-range@7.1.1"]
     },
     {
       "ref": "browserslist@4.28.8",
@@ -18560,10 +18426,7 @@
     },
     {
       "ref": "buffer@5.7.1",
-      "dependsOn": [
-        "base64-js@1.5.1",
-        "ieee754@1.2.1"
-      ]
+      "dependsOn": ["base64-js@1.5.1", "ieee754@1.2.1"]
     },
     {
       "ref": "buffer-from@1.1.2",
@@ -18575,10 +18438,7 @@
     },
     {
       "ref": "call-bind-apply-helpers@1.0.2",
-      "dependsOn": [
-        "es-errors@1.3.0",
-        "function-bind@1.1.2"
-      ]
+      "dependsOn": ["es-errors@1.3.0", "function-bind@1.1.2"]
     },
     {
       "ref": "camelcase@5.3.1",
@@ -18598,16 +18458,11 @@
     },
     {
       "ref": "chalk@4.1.2",
-      "dependsOn": [
-        "ansi-styles@4.3.0",
-        "supports-color@7.2.0"
-      ]
+      "dependsOn": ["ansi-styles@4.3.0", "supports-color@7.2.0"]
     },
     {
       "ref": "supports-color@7.2.0",
-      "dependsOn": [
-        "has-flag@4.0.0"
-      ]
+      "dependsOn": ["has-flag@4.0.0"]
     },
     {
       "ref": "chokidar@3.6.0",
@@ -18632,17 +18487,11 @@
     },
     {
       "ref": "class-variance-authority@0.7.1",
-      "dependsOn": [
-        "clsx@2.1.1"
-      ]
+      "dependsOn": ["clsx@2.1.1"]
     },
     {
       "ref": "cliui@6.0.0",
-      "dependsOn": [
-        "string-width@4.2.3",
-        "strip-ansi@6.0.1",
-        "wrap-ansi@6.2.0"
-      ]
+      "dependsOn": ["string-width@4.2.3", "strip-ansi@6.0.1", "wrap-ansi@6.2.0"]
     },
     {
       "ref": "clsx@2.1.1",
@@ -18650,16 +18499,11 @@
     },
     {
       "ref": "color@4.2.3",
-      "dependsOn": [
-        "color-convert@2.0.1",
-        "color-string@1.9.1"
-      ]
+      "dependsOn": ["color-convert@2.0.1", "color-string@1.9.1"]
     },
     {
       "ref": "color-convert@2.0.1",
-      "dependsOn": [
-        "color-name@1.1.4"
-      ]
+      "dependsOn": ["color-name@1.1.4"]
     },
     {
       "ref": "color-name@1.1.4",
@@ -18667,16 +18511,11 @@
     },
     {
       "ref": "color-string@1.9.1",
-      "dependsOn": [
-        "color-name@1.1.4",
-        "simple-swizzle@0.2.4"
-      ]
+      "dependsOn": ["color-name@1.1.4", "simple-swizzle@0.2.4"]
     },
     {
       "ref": "combined-stream@1.0.8",
-      "dependsOn": [
-        "delayed-stream@1.0.0"
-      ]
+      "dependsOn": ["delayed-stream@1.0.0"]
     },
     {
       "ref": "convert-source-map@2.0.0",
@@ -18720,9 +18559,7 @@
     },
     {
       "ref": "decompress-response@6.0.0",
-      "dependsOn": [
-        "mimic-response@3.1.0"
-      ]
+      "dependsOn": ["mimic-response@3.1.0"]
     },
     {
       "ref": "deep-extend@0.6.0",
@@ -18762,16 +18599,11 @@
     },
     {
       "ref": "end-of-stream@1.4.5",
-      "dependsOn": [
-        "once@1.4.0"
-      ]
+      "dependsOn": ["once@1.4.0"]
     },
     {
       "ref": "enhanced-resolve@5.24.5",
-      "dependsOn": [
-        "graceful-fs@4.2.11",
-        "tapable@2.3.3"
-      ]
+      "dependsOn": ["graceful-fs@4.2.11", "tapable@2.3.3"]
     },
     {
       "ref": "error-stack-parser-es@1.0.5",
@@ -18791,9 +18623,7 @@
     },
     {
       "ref": "es-object-atoms@1.1.2",
-      "dependsOn": [
-        "es-errors@1.3.0"
-      ]
+      "dependsOn": ["es-errors@1.3.0"]
     },
     {
       "ref": "es-set-tostringtag@2.1.0",
@@ -18845,9 +18675,7 @@
     },
     {
       "ref": "estree-walker@3.0.3",
-      "dependsOn": [
-        "@types/estree@1.0.9"
-      ]
+      "dependsOn": ["@types/estree@1.0.9"]
     },
     {
       "ref": "events@3.3.0",
@@ -18855,9 +18683,7 @@
     },
     {
       "ref": "events-universal@1.0.1",
-      "dependsOn": [
-        "bare-events@2.9.2"
-      ]
+      "dependsOn": ["bare-events@2.9.2"]
     },
     {
       "ref": "expand-template@2.0.3",
@@ -18891,15 +18717,11 @@
     },
     {
       "ref": "fastq@1.20.3",
-      "dependsOn": [
-        "reusify@1.1.0"
-      ]
+      "dependsOn": ["reusify@1.1.0"]
     },
     {
       "ref": "fdir@6.5.0",
-      "dependsOn": [
-        "picomatch@4.0.7"
-      ]
+      "dependsOn": ["picomatch@4.0.7"]
     },
     {
       "ref": "fflate@0.7.5",
@@ -18907,16 +18729,11 @@
     },
     {
       "ref": "fill-range@7.1.1",
-      "dependsOn": [
-        "to-regex-range@5.0.1"
-      ]
+      "dependsOn": ["to-regex-range@5.0.1"]
     },
     {
       "ref": "find-up@4.1.0",
-      "dependsOn": [
-        "locate-path@5.0.0",
-        "path-exists@4.0.0"
-      ]
+      "dependsOn": ["locate-path@5.0.0", "path-exists@4.0.0"]
     },
     {
       "ref": "flatbuffers@25.9.23",
@@ -18965,10 +18782,7 @@
     },
     {
       "ref": "get-proto@1.0.1",
-      "dependsOn": [
-        "dunder-proto@1.0.1",
-        "es-object-atoms@1.1.2"
-      ]
+      "dependsOn": ["dunder-proto@1.0.1", "es-object-atoms@1.1.2"]
     },
     {
       "ref": "github-from-package@0.0.0",
@@ -18976,9 +18790,7 @@
     },
     {
       "ref": "glob-parent@5.1.2",
-      "dependsOn": [
-        "is-glob@4.0.3"
-      ]
+      "dependsOn": ["is-glob@4.0.3"]
     },
     {
       "ref": "gopd@1.2.0",
@@ -19002,15 +18814,11 @@
     },
     {
       "ref": "has-tostringtag@1.0.2",
-      "dependsOn": [
-        "has-symbols@1.1.0"
-      ]
+      "dependsOn": ["has-symbols@1.1.0"]
     },
     {
       "ref": "hasown@2.0.4",
-      "dependsOn": [
-        "function-bind@1.1.2"
-      ]
+      "dependsOn": ["function-bind@1.1.2"]
     },
     {
       "ref": "hex-rgb@4.3.0",
@@ -19034,9 +18842,7 @@
     },
     {
       "ref": "is-binary-path@2.1.0",
-      "dependsOn": [
-        "binary-extensions@2.3.0"
-      ]
+      "dependsOn": ["binary-extensions@2.3.0"]
     },
     {
       "ref": "is-extglob@2.1.1",
@@ -19048,9 +18854,7 @@
     },
     {
       "ref": "is-glob@4.0.3",
-      "dependsOn": [
-        "is-extglob@2.1.1"
-      ]
+      "dependsOn": ["is-extglob@2.1.1"]
     },
     {
       "ref": "is-number@7.0.0",
@@ -19143,16 +18947,11 @@
     },
     {
       "ref": "linebreak@1.1.0",
-      "dependsOn": [
-        "base64-js@0.0.8",
-        "unicode-trie@2.0.0"
-      ]
+      "dependsOn": ["base64-js@0.0.8", "unicode-trie@2.0.0"]
     },
     {
       "ref": "locate-path@5.0.0",
-      "dependsOn": [
-        "p-locate@4.1.0"
-      ]
+      "dependsOn": ["p-locate@4.1.0"]
     },
     {
       "ref": "long@5.3.2",
@@ -19160,15 +18959,11 @@
     },
     {
       "ref": "lucide-react@1.31.0",
-      "dependsOn": [
-        "react@19.2.8"
-      ]
+      "dependsOn": ["react@19.2.8"]
     },
     {
       "ref": "magic-string@0.30.21",
-      "dependsOn": [
-        "@jridgewell/sourcemap-codec@1.6.0"
-      ]
+      "dependsOn": ["@jridgewell/sourcemap-codec@1.6.0"]
     },
     {
       "ref": "math-intrinsics@1.1.0",
@@ -19184,10 +18979,7 @@
     },
     {
       "ref": "micromatch@4.0.8",
-      "dependsOn": [
-        "braces@3.0.3",
-        "picomatch@2.3.2"
-      ]
+      "dependsOn": ["braces@3.0.3", "picomatch@2.3.2"]
     },
     {
       "ref": "mime-db@1.54.0",
@@ -19195,9 +18987,7 @@
     },
     {
       "ref": "mime-types@2.1.35",
-      "dependsOn": [
-        "mime-db@1.52.0"
-      ]
+      "dependsOn": ["mime-db@1.52.0"]
     },
     {
       "ref": "mime-db@1.52.0",
@@ -19250,9 +19040,7 @@
     },
     {
       "ref": "node-abi@3.96.0",
-      "dependsOn": [
-        "semver@7.8.5"
-      ]
+      "dependsOn": ["semver@7.8.5"]
     },
     {
       "ref": "node-addon-api@6.1.0",
@@ -19260,9 +19048,7 @@
     },
     {
       "ref": "node-fetch@2.6.13",
-      "dependsOn": [
-        "whatwg-url@5.0.0"
-      ]
+      "dependsOn": ["whatwg-url@5.0.0"]
     },
     {
       "ref": "node-releases@2.0.54",
@@ -19278,15 +19064,11 @@
     },
     {
       "ref": "once@1.4.0",
-      "dependsOn": [
-        "wrappy@1.0.2"
-      ]
+      "dependsOn": ["wrappy@1.0.2"]
     },
     {
       "ref": "onnx-proto@4.0.4",
-      "dependsOn": [
-        "protobufjs@6.11.6"
-      ]
+      "dependsOn": ["protobufjs@6.11.6"]
     },
     {
       "ref": "protobufjs@6.11.6",
@@ -19312,9 +19094,7 @@
     },
     {
       "ref": "onnxruntime-node@1.14.0",
-      "dependsOn": [
-        "onnxruntime-common@1.14.0"
-      ]
+      "dependsOn": ["onnxruntime-common@1.14.0"]
     },
     {
       "ref": "onnxruntime-web@1.21.0",
@@ -19390,15 +19170,11 @@
     },
     {
       "ref": "p-limit@2.3.0",
-      "dependsOn": [
-        "p-try@2.2.0"
-      ]
+      "dependsOn": ["p-try@2.2.0"]
     },
     {
       "ref": "p-locate@4.1.0",
-      "dependsOn": [
-        "p-limit@2.3.0"
-      ]
+      "dependsOn": ["p-limit@2.3.0"]
     },
     {
       "ref": "p-try@2.2.0",
@@ -19410,10 +19186,7 @@
     },
     {
       "ref": "parse-css-color@0.2.1",
-      "dependsOn": [
-        "color-name@1.1.4",
-        "hex-rgb@4.3.0"
-      ]
+      "dependsOn": ["color-name@1.1.4", "hex-rgb@4.3.0"]
     },
     {
       "ref": "path-exists@4.0.0",
@@ -19438,9 +19211,7 @@
     },
     {
       "ref": "pdfjs-dist@6.3.289",
-      "dependsOn": [
-        "@napi-rs/canvas@1.0.8"
-      ]
+      "dependsOn": ["@napi-rs/canvas@1.0.8"]
     },
     {
       "ref": "picocolors@1.1.1",
@@ -19456,9 +19227,7 @@
     },
     {
       "ref": "playwright@1.63.0",
-      "dependsOn": [
-        "playwright-core@1.63.0"
-      ]
+      "dependsOn": ["playwright-core@1.63.0"]
     },
     {
       "ref": "playwright-core@1.63.0",
@@ -19470,11 +19239,7 @@
     },
     {
       "ref": "postcss@8.5.27",
-      "dependsOn": [
-        "nanoid@3.3.18",
-        "picocolors@1.1.1",
-        "source-map-js@1.2.1"
-      ]
+      "dependsOn": ["nanoid@3.3.18", "picocolors@1.1.1", "source-map-js@1.2.1"]
     },
     {
       "ref": "postcss-value-parser@4.2.0",
@@ -19518,11 +19283,7 @@
     },
     {
       "ref": "proper-lockfile@4.1.2",
-      "dependsOn": [
-        "graceful-fs@4.2.11",
-        "retry@0.12.0",
-        "signal-exit@3.0.7"
-      ]
+      "dependsOn": ["graceful-fs@4.2.11", "retry@0.12.0", "signal-exit@3.0.7"]
     },
     {
       "ref": "protobufjs@7.6.6",
@@ -19542,18 +19303,11 @@
     },
     {
       "ref": "pump@3.0.4",
-      "dependsOn": [
-        "end-of-stream@1.4.5",
-        "once@1.4.0"
-      ]
+      "dependsOn": ["end-of-stream@1.4.5", "once@1.4.0"]
     },
     {
       "ref": "qrcode@1.5.4",
-      "dependsOn": [
-        "dijkstrajs@1.0.3",
-        "pngjs@5.0.0",
-        "yargs@15.4.1"
-      ]
+      "dependsOn": ["dijkstrajs@1.0.3", "pngjs@5.0.0", "yargs@15.4.1"]
     },
     {
       "ref": "queue-microtask@1.2.3",
@@ -19574,10 +19328,7 @@
     },
     {
       "ref": "react-dom@19.2.8",
-      "dependsOn": [
-        "react@19.2.8",
-        "scheduler@0.27.0"
-      ]
+      "dependsOn": ["react@19.2.8", "scheduler@0.27.0"]
     },
     {
       "ref": "react-server-dom-webpack@19.2.8",
@@ -19600,9 +19351,7 @@
     },
     {
       "ref": "readdirp@3.6.0",
-      "dependsOn": [
-        "picomatch@2.3.2"
-      ]
+      "dependsOn": ["picomatch@2.3.2"]
     },
     {
       "ref": "regenerator-runtime@0.13.11",
@@ -19656,9 +19405,7 @@
     },
     {
       "ref": "run-parallel@1.2.0",
-      "dependsOn": [
-        "queue-microtask@1.2.3"
-      ]
+      "dependsOn": ["queue-microtask@1.2.3"]
     },
     {
       "ref": "safe-buffer@5.2.1",
@@ -19695,9 +19442,7 @@
     },
     {
       "ref": "ajv-formats@2.1.1",
-      "dependsOn": [
-        "ajv@8.20.0"
-      ]
+      "dependsOn": ["ajv@8.20.0"]
     },
     {
       "ref": "seedrandom@3.0.5",
@@ -19766,9 +19511,7 @@
     },
     {
       "ref": "simple-swizzle@0.2.4",
-      "dependsOn": [
-        "is-arrayish@0.3.4"
-      ]
+      "dependsOn": ["is-arrayish@0.3.4"]
     },
     {
       "ref": "source-map@0.6.1",
@@ -19780,10 +19523,7 @@
     },
     {
       "ref": "source-map-support@0.5.21",
-      "dependsOn": [
-        "buffer-from@1.1.2",
-        "source-map@0.6.1"
-      ]
+      "dependsOn": ["buffer-from@1.1.2", "source-map@0.6.1"]
     },
     {
       "ref": "sprintf-js@1.0.3",
@@ -19811,9 +19551,7 @@
     },
     {
       "ref": "string_decoder@1.3.0",
-      "dependsOn": [
-        "safe-buffer@5.2.1"
-      ]
+      "dependsOn": ["safe-buffer@5.2.1"]
     },
     {
       "ref": "string-width@4.2.3",
@@ -19829,9 +19567,7 @@
     },
     {
       "ref": "strip-ansi@6.0.1",
-      "dependsOn": [
-        "ansi-regex@5.0.1"
-      ]
+      "dependsOn": ["ansi-regex@5.0.1"]
     },
     {
       "ref": "strip-json-comments@2.0.1",
@@ -19839,9 +19575,7 @@
     },
     {
       "ref": "strip-literal@3.1.0",
-      "dependsOn": [
-        "js-tokens@9.0.1"
-      ]
+      "dependsOn": ["js-tokens@9.0.1"]
     },
     {
       "ref": "js-tokens@9.0.1",
@@ -19849,9 +19583,7 @@
     },
     {
       "ref": "supports-color@8.1.1",
-      "dependsOn": [
-        "has-flag@4.0.0"
-      ]
+      "dependsOn": ["has-flag@4.0.0"]
     },
     {
       "ref": "tailwind-merge@3.6.0",
@@ -19885,9 +19617,7 @@
     },
     {
       "ref": "teex@1.0.1",
-      "dependsOn": [
-        "streamx@2.28.1"
-      ]
+      "dependsOn": ["streamx@2.28.1"]
     },
     {
       "ref": "terser@5.51.2",
@@ -19904,9 +19634,7 @@
     },
     {
       "ref": "text-decoder@1.2.7",
-      "dependsOn": [
-        "b4a@1.8.1"
-      ]
+      "dependsOn": ["b4a@1.8.1"]
     },
     {
       "ref": "tiny-inflate@1.0.3",
@@ -19922,10 +19650,7 @@
     },
     {
       "ref": "tinyglobby@0.2.17",
-      "dependsOn": [
-        "fdir@6.5.0",
-        "picomatch@4.0.7"
-      ]
+      "dependsOn": ["fdir@6.5.0", "picomatch@4.0.7"]
     },
     {
       "ref": "tinypool@2.1.0",
@@ -19937,9 +19662,7 @@
     },
     {
       "ref": "to-regex-range@5.0.1",
-      "dependsOn": [
-        "is-number@7.0.0"
-      ]
+      "dependsOn": ["is-number@7.0.0"]
     },
     {
       "ref": "tr46@0.0.3",
@@ -19951,9 +19674,7 @@
     },
     {
       "ref": "tunnel-agent@0.6.0",
-      "dependsOn": [
-        "safe-buffer@5.2.1"
-      ]
+      "dependsOn": ["safe-buffer@5.2.1"]
     },
     {
       "ref": "turbo-stream@3.2.1",
@@ -19973,16 +19694,11 @@
     },
     {
       "ref": "unenv@2.0.0-rc.24",
-      "dependsOn": [
-        "pathe@2.0.3"
-      ]
+      "dependsOn": ["pathe@2.0.3"]
     },
     {
       "ref": "unicode-trie@2.0.0",
-      "dependsOn": [
-        "pako@0.2.9",
-        "tiny-inflate@1.0.3"
-      ]
+      "dependsOn": ["pako@0.2.9", "tiny-inflate@1.0.3"]
     },
     {
       "ref": "unpic@4.2.2",
@@ -19990,11 +19706,7 @@
     },
     {
       "ref": "update-browserslist-db@1.3.2",
-      "dependsOn": [
-        "browserslist@4.28.8",
-        "escalade@3.2.0",
-        "picocolors@1.1.1"
-      ]
+      "dependsOn": ["browserslist@4.28.8", "escalade@3.2.0", "picocolors@1.1.1"]
     },
     {
       "ref": "upscaler@1.0.0",
@@ -20006,9 +19718,7 @@
     },
     {
       "ref": "use-sync-external-store@1.6.0",
-      "dependsOn": [
-        "react@19.2.8"
-      ]
+      "dependsOn": ["react@19.2.8"]
     },
     {
       "ref": "util-deprecate@1.0.2",
@@ -20135,9 +19845,7 @@
     },
     {
       "ref": "vitefu@1.1.3",
-      "dependsOn": [
-        "vite@8.2.2"
-      ]
+      "dependsOn": ["vite@8.2.2"]
     },
     {
       "ref": "vitest@4.1.11",
@@ -20167,9 +19875,7 @@
     },
     {
       "ref": "watchpack@2.5.2",
-      "dependsOn": [
-        "graceful-fs@4.2.11"
-      ]
+      "dependsOn": ["graceful-fs@4.2.11"]
     },
     {
       "ref": "web-vitals@4.2.4",
@@ -20209,10 +19915,7 @@
     },
     {
       "ref": "whatwg-url@5.0.0",
-      "dependsOn": [
-        "tr46@0.0.3",
-        "webidl-conversions@3.0.1"
-      ]
+      "dependsOn": ["tr46@0.0.3", "webidl-conversions@3.0.1"]
     },
     {
       "ref": "which-module@2.0.1",
@@ -20220,10 +19923,7 @@
     },
     {
       "ref": "why-is-node-running@2.3.0",
-      "dependsOn": [
-        "siginfo@2.0.0",
-        "stackback@0.0.2"
-      ]
+      "dependsOn": ["siginfo@2.0.0", "stackback@0.0.2"]
     },
     {
       "ref": "wireit@0.14.13",
@@ -20302,10 +20002,7 @@
     },
     {
       "ref": "yargs-parser@18.1.3",
-      "dependsOn": [
-        "camelcase@5.3.1",
-        "decamelize@1.2.0"
-      ]
+      "dependsOn": ["camelcase@5.3.1", "decamelize@1.2.0"]
     },
     {
       "ref": "yoga-layout@3.2.1",
@@ -20323,10 +20020,7 @@
     },
     {
       "ref": "youch-core@0.3.3",
-      "dependsOn": [
-        "@poppinss/exception@1.2.3",
-        "error-stack-parser-es@1.0.5"
-      ]
+      "dependsOn": ["@poppinss/exception@1.2.3", "error-stack-parser-es@1.0.5"]
     },
     {
       "ref": "cookie@1.1.1",

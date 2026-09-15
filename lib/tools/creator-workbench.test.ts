@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('creator and social workbench', () => {
-  it('publishes 43 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(43);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(43);
+  it('publishes 50 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(50);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(50);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
         runCreatorOperation(operation.id, defaults(operation.id)),
@@ -211,5 +211,93 @@ describe('creator and social workbench', () => {
     );
     const raw = Buffer.from(base64Data, 'base64').toString('ascii', 0, 6);
     expect(raw).toBe('GIF89a');
+  });
+
+  it('converts SVG markup to typed React TSX and JSX components', () => {
+    const tsxOutput = runCreatorOperation('svg-to-react', {
+      svg: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>',
+      componentName: 'ArrowRight',
+      format: 'tsx',
+    });
+    expect(tsxOutput).toContain("import type { SVGProps } from 'react';");
+    expect(tsxOutput).toContain(
+      'export function ArrowRight(props: SVGProps<SVGSVGElement>)',
+    );
+    expect(tsxOutput).toContain('strokeWidth="2"');
+    expect(tsxOutput).toContain('<svg {...props}');
+
+    const jsxOutput = runCreatorOperation('svg-to-react', {
+      svg: '<svg class="icon" fill-rule="evenodd"><circle cx="10" cy="10" r="5"/></svg>',
+      componentName: 'Dot',
+      format: 'jsx',
+    });
+    expect(jsxOutput).not.toContain('SVGProps');
+    expect(jsxOutput).toContain('className="icon"');
+    expect(jsxOutput).toContain('fillRule="evenodd"');
+  });
+
+  it('generates Glassmorphism CSS and Box Shadow declarations', () => {
+    const glass = runCreatorOperation('css-glassmorphism', {
+      blur: '20',
+      opacity: '50',
+      bgColor: '#ffffff',
+      borderOpacity: '30',
+      shadowBlur: '30',
+    });
+    expect(glass).toContain('backdrop-filter: blur(20px);');
+    expect(glass).toContain('background: rgba(255, 255, 255, 0.50);');
+    expect(glass).toContain('border: 1px solid rgba(255, 255, 255, 0.30);');
+
+    const shadow = runCreatorOperation('css-box-shadow', {
+      xOffset: '0',
+      yOffset: '8',
+      blur: '20',
+      spread: '-4',
+      color: '#000000',
+      opacity: '20',
+      type: 'outset',
+    });
+    expect(shadow).toContain('0px 8px 20px -4px rgba(0, 0, 0, 0.20)');
+  });
+
+  it('converts px to rem and generates favicon and flexbox/grid snippets', () => {
+    const remResult = runCreatorOperation('px-to-rem', {
+      pixels: '32',
+      baseSize: '16',
+    });
+    expect(remResult).toContain('REM:         2rem');
+
+    const faviconResult = runCreatorOperation('favicon-generator', {
+      appName: 'OpenTools',
+      themeColor: '#121212',
+      emoji: '⚡',
+    });
+    expect(faviconResult).toContain('<link rel="icon"');
+    expect(faviconResult).toContain('theme-color');
+    expect(faviconResult).toContain('OpenTools');
+
+    const flexResult = runCreatorOperation('css-flexbox-grid', {
+      layout: 'flex',
+      direction: 'column',
+      justify: 'center',
+      align: 'center',
+      gap: '12',
+    });
+    expect(flexResult).toContain('flex-direction: column;');
+    expect(flexResult).toContain('gap: 12px;');
+  });
+
+  it('calculates image compression budget for strict portal limits', () => {
+    const budget = runCreatorOperation('exact-kb-image-compressor', {
+      targetKb: '50',
+      originalKb: '500',
+      width: '1200',
+      height: '800',
+      format: 'image/jpeg',
+    });
+    expect(budget).toContain('Target File Size:        ≤ 50 KB');
+    expect(budget).toContain('Required Size Reduction: 90.0%');
+    expect(budget).toContain('Recommended Quality:');
+    expect(budget).toContain('canvas.toDataURL');
   });
 });

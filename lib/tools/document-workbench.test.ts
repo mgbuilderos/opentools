@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('documents and office workbench', () => {
-  it('publishes 24 unique operations whose defaults all run', () => {
-    expect(DOCUMENT_OPERATIONS).toHaveLength(32);
-    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(32);
+  it('publishes 35 unique operations whose defaults all run', () => {
+    expect(DOCUMENT_OPERATIONS).toHaveLength(35);
+    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(35);
     for (const operation of DOCUMENT_OPERATIONS) {
       expect(
         runDocumentOperation(operation.id, defaults(operation.id)),
@@ -166,6 +166,29 @@ describe('documents and office workbench', () => {
     );
     expect(schema).toContain('"title": "Employment Application"');
     expect(schema).toContain('"id": "full_name"');
+
+    const mdTable = runDocumentOperation(
+      'markdown-table-generator',
+      defaults('markdown-table-generator'),
+    );
+    expect(mdTable).toContain('| Feature');
+    expect(mdTable).toContain('| :---');
+
+    const resume = runDocumentOperation(
+      'markdown-resume-builder',
+      defaults('markdown-resume-builder'),
+    );
+    expect(resume).toContain('# Alex Morgan');
+    expect(resume).toContain('## Experience');
+    expect(resume).toContain('## Technical Skills');
+
+    const emailTemplate = runDocumentOperation(
+      'html-email-templates',
+      defaults('html-email-templates'),
+    );
+    expect(emailTemplate).toContain('<!DOCTYPE html>');
+    expect(emailTemplate).toContain('<table class="main"');
+    expect(emailTemplate).toContain('OpenTools');
   });
 
   it('rejects impossible dates, missing merge keys, and malformed items', () => {

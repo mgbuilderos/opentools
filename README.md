@@ -26,13 +26,13 @@ Most online converters upload your tax returns, invoices, photos, and source
 code to someone else's server. OpenTools does the opposite: every computation
 happens in-memory on your device.
 
-| Layer | How it stays local |
-| --- | --- |
-| **Input** | Files are read as in-memory `File` / `ArrayBuffer` objects. Nothing is written to a server or to persistent storage. |
-| **Compute** | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. AI tools (background removal, upscaling, transcription) run **WebAssembly / WebGL** inference in the tab. Hashing uses **WebCrypto**. |
-| **Output** | Results are handed back as temporary `blob:` URLs and revoked on clear, cancel, or unmount. |
-| **Enforcement** | Production responses ship `Content-Security-Policy: connect-src 'none'`, and the test suite rejects direct network primitives in local engine code. |
-| **No telemetry** | No analytics, session replay, advertising, or payment SDK is loaded on any tool route. |
+| Layer            | How it stays local                                                                                                                                                                                                                                  |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Input**        | Files are read as in-memory `File` / `ArrayBuffer` objects. Nothing is written to a server or to persistent storage.                                                                                                                                |
+| **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. AI tools (background removal, upscaling, transcription) run **WebAssembly / WebGL** inference in the tab. Hashing uses **WebCrypto**. |
+| **Output**       | Results are handed back as temporary `blob:` URLs and revoked on clear, cancel, or unmount.                                                                                                                                                         |
+| **Enforcement**  | Production responses ship `Content-Security-Policy: connect-src 'none'`, and the test suite rejects direct network primitives in local engine code.                                                                                                 |
+| **No telemetry** | No analytics, session replay, advertising, or payment SDK is loaded on any tool route.                                                                                                                                                              |
 
 **Model downloads.** AI tools fetch their model weights once before first use.
 These are app assets, like JavaScript or fonts — they never contain your data.
@@ -44,15 +44,15 @@ tool. See [SECURITY.md](.github/SECURITY.md#verifying-the-promise-yourself).
 
 ## Core Tool Suite
 
-| Suite | Tools | Routes |
-| --- | --- | --- |
-| 📄 **Document & PDF** | Merge, extract pages, rotate & page tools, images → PDF | `/pdf/merge`, `/pdf/extract-pages`, `/pdf/page-tools`, `/pdf/images-to-pdf` |
-| 🖼️ **Image & Media** | Background removal, optimizer (resize/compress/convert), AI upscaler, editor, audio transcription · *OCR and video compression in development* | `/image/*`, `/audio/transcribe` |
-| ⚡ **Developer Utilities** | JSON formatter, Base64 encoder/decoder, UNIX timestamp, UUID generator, file hash (SHA-256/384/512) · *SQL visualizer in development* | `/developer/*`, `/data/json`, `/file/hash-calculator` |
-| 📊 **Data & Spreadsheets** | CSV ↔ JSON transformer, delimiter conversion | `/data/csv-to-json`, `/data/workbench` |
-| 🔤 **Text & Writing** | Word count, case converter, regex find & replace | `/text/case-converter`, `/text/workbench` |
-| 🧮 **Math & Science** | Unit converter, percentage calculator, date difference, age calculator | `/math/*`, `/science/workbench`, `/date/*` |
-| 📱 **QR & Barcode** | Vector QR generator (URL, Wi-Fi, vCard, MeCard, social), barcode tools | `/qr/workbench` |
+| Suite                      | Tools                                                                                                                                          | Routes                                                                      |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 📄 **Document & PDF**      | Merge, extract pages, rotate & page tools, images → PDF                                                                                        | `/pdf/merge`, `/pdf/extract-pages`, `/pdf/page-tools`, `/pdf/images-to-pdf` |
+| 🖼️ **Image & Media**       | Background removal, optimizer (resize/compress/convert), AI upscaler, editor, audio transcription · _OCR and video compression in development_ | `/image/*`, `/audio/transcribe`                                             |
+| ⚡ **Developer Utilities** | JSON formatter, Base64 encoder/decoder, UNIX timestamp, UUID generator, file hash (SHA-256/384/512) · _SQL visualizer in development_          | `/developer/*`, `/data/json`, `/file/hash-calculator`                       |
+| 📊 **Data & Spreadsheets** | CSV ↔ JSON transformer, delimiter conversion                                                                                                   | `/data/csv-to-json`, `/data/workbench`                                      |
+| 🔤 **Text & Writing**      | Word count, case converter, regex find & replace                                                                                               | `/text/case-converter`, `/text/workbench`                                   |
+| 🧮 **Math & Science**      | Unit converter, percentage calculator, date difference, age calculator                                                                         | `/math/*`, `/science/workbench`, `/date/*`                                  |
+| 📱 **QR & Barcode**        | Vector QR generator (URL, Wi-Fi, vCard, MeCard, social), barcode tools                                                                         | `/qr/workbench`                                                             |
 
 Every tool shows a completion receipt with measured duration, output facts,
 and an explicit privacy boundary.
@@ -64,10 +64,10 @@ The project is sustained entirely by voluntary support from people who find it
 useful. Both channels charge **0% platform fees**, so the whole contribution
 funds development, security audits, and hosting.
 
-| Channel | For | Methods |
-| --- | --- | --- |
-| 🌍 **[GitHub Sponsors](https://github.com/sponsors/opentools)** | International supporters | Credit/debit card, Apple Pay, Google Pay, PayPal |
-| 🇮🇳 **UPI** | Supporters in India | Any UPI app via QR code or `upi://pay` deep link on mobile |
+| Channel                                                         | For                      | Methods                                                    |
+| --------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
+| 🌍 **[GitHub Sponsors](https://github.com/sponsors/opentools)** | International supporters | Credit/debit card, Apple Pay, Google Pay, PayPal           |
+| 🇮🇳 **UPI**                                                      | Supporters in India      | Any UPI app via QR code or `upi://pay` deep link on mobile |
 
 The [`/support`](https://getopentools.com/support) page picks the right
 channel automatically. Detection (`isLikelyIndiaVisitor()` in

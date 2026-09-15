@@ -20,9 +20,9 @@ body:
       label: Can this run entirely in the browser?
       description: OpenTools only ships tools that process data locally. Tools that must fetch URLs or call remote APIs are out of scope.
       options:
-        - "Yes — pure computation on local input"
-        - "Probably — needs a WebAssembly library or model"
-        - "Not sure"
+        - 'Yes — pure computation on local input'
+        - 'Probably — needs a WebAssembly library or model'
+        - 'Not sure'
     validations:
       required: true
   - type: textarea

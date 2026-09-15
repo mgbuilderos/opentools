@@ -21,6 +21,7 @@ ort.env.wasm.wasmPaths = {
   wasm: '/ort/ort-wasm-simd-threaded.wasm',
 };
 ort.env.wasm.numThreads = 1;
+ort.env.wasm.proxy = false;
 
 let session: Promise<ort.InferenceSession> | undefined;
 

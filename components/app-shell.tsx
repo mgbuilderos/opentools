@@ -26,7 +26,6 @@ import {
   type ToolGroup,
 } from '@/lib/tools/catalog';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
-import { SupporterPulse } from './supporter-pulse';
 import { MilestoneModal } from './milestone-modal';
 import { ReviewModal } from './review-modal';
 
@@ -371,10 +370,10 @@ export function AppShell({
 
           <Button
             variant="ghost"
-            className="hidden h-11 shrink-0 rounded-lg sm:flex items-center gap-2 text-success dark:text-success font-medium hover:bg-success/10 hover:text-success dark:hover:text-success"
-            render={<a href="/roadmap" />}
+            className="hidden h-11 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            render={<a href="/support" />}
           >
-            Roadmap
+            Support
           </Button>
 
           <Button
@@ -457,7 +456,6 @@ export function AppShell({
         {children}
       </main>
 
-      <SupporterPulse />
       <MilestoneModal />
       <ReviewModal isOpen={reviewOpen} onClose={() => setReviewOpen(false)} />
     </div>

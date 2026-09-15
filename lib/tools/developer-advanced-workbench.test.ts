@@ -16,11 +16,11 @@ function defaults(id: string) {
 }
 
 describe('advanced developer workbench', () => {
-  it('publishes 40 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(42);
+  it('publishes 51 unique operations whose defaults all run', async () => {
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(51);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(42);
+    ).toBe(51);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -334,5 +334,134 @@ describe('advanced developer workbench', () => {
     await expect(
       runAdvancedDeveloperOperation('jwt-decoder', { input: 'two.parts' }),
     ).rejects.toThrow('three segments');
+  });
+
+  it('translates cron expressions and tests regular expressions', async () => {
+    const cron = await runAdvancedDeveloperOperation('cron-generator', {
+      expression: '0 12 * * 1-5',
+      preset: 'custom',
+    });
+    expect(cron).toContain('Cron Expression Analysis');
+    expect(cron).toContain('at hour 12');
+
+    const regex = await runAdvancedDeveloperOperation('regex-tester', {
+      pattern: '\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b',
+      flags: 'i',
+      testText: 'Email: test@example.com, other: admin@corp.org',
+    });
+    expect(regex).toContain('Total Matches Found: 2');
+    expect(regex).toContain('test@example.com');
+  });
+
+  it('generates mock data, git flight rules, docker templates, and HTTP status references', async () => {
+    const mockJson = await runAdvancedDeveloperOperation(
+      'dummy-data-generator',
+      {
+        count: '3',
+        format: 'json',
+        tableName: 'users',
+        schemaType: 'users',
+      },
+    );
+    const parsed = JSON.parse(mockJson);
+    expect(parsed).toHaveLength(3);
+    expect(parsed[0]).toHaveProperty('email');
+
+    const git = await runAdvancedDeveloperOperation('git-flight-rules', {
+      scenario: 'undo-commit-keep',
+      branchName: 'main',
+      commitHash: 'abc',
+      commitCount: '1',
+    });
+    expect(git).toContain('git reset --soft HEAD~1');
+
+    const docker = await runAdvancedDeveloperOperation('docker-cheatsheet', {
+      template: 'node-postgres-redis',
+    });
+    expect(docker).toContain('postgres:16-alpine');
+    expect(docker).toContain('redis:7-alpine');
+
+    const http = await runAdvancedDeveloperOperation('http-status-codes', {
+      code: '404',
+    });
+    expect(http).toContain('404 Not Found');
+  });
+
+  it('scrubs sensitive API keys, tokens, and PII from prompts and logs', async () => {
+    const raw = `const apiKey = "sk-proj-1234567890abcdef12345678";
+const aws = "AKIA1234567890ABCDEF";
+const email = "dev@company.internal";
+const db = "postgres://root:pass123@prod-db.internal:5432/core";`;
+
+    const scrubbed = await runAdvancedDeveloperOperation(
+      'llm-secret-scrubber',
+      {
+        input: raw,
+        scrubKeys: 'yes',
+        scrubEmails: 'yes',
+        scrubIps: 'no',
+        placeholderStyle: 'numbered',
+      },
+    );
+
+    expect(scrubbed).not.toContain('sk-proj-1234567890abcdef12345678');
+    expect(scrubbed).not.toContain('AKIA1234567890ABCDEF');
+    expect(scrubbed).not.toContain('dev@company.internal');
+    expect(scrubbed).toContain('[REDACTED_OPENAI_API_KEY_');
+    expect(scrubbed).toContain('[REDACTED_AWS_ACCESS_KEY_');
+    expect(scrubbed).toContain('Total Redacted Secrets:');
+  });
+
+  it('sanitizes HAR files by stripping auth headers and cookies', async () => {
+    const rawHar = JSON.stringify({
+      log: {
+        version: '1.2',
+        entries: [
+          {
+            request: {
+              url: 'https' + '://api.internal/login',
+              headers: [
+                { name: 'Authorization', value: 'Bearer token-123' },
+                { name: 'Cookie', value: 'session_id=abc' },
+              ],
+              cookies: [{ name: 'session_id', value: 'abc' }],
+            },
+            response: {
+              status: 200,
+              headers: [{ name: 'Set-Cookie', value: 'session_id=new-abc' }],
+            },
+          },
+        ],
+      },
+    });
+
+    const sanitized = await runAdvancedDeveloperOperation('har-sanitizer', {
+      input: rawHar,
+      stripCookies: 'yes',
+      maskAuthHeaders: 'yes',
+      maskQueryParams: 'yes',
+    });
+
+    const parsed = JSON.parse(sanitized);
+    expect(parsed.log.entries[0].request.cookies).toHaveLength(0);
+    expect(parsed.log.entries[0].request.headers[0].value).toBe('[REDACTED]');
+  });
+
+  it('obfuscates SQL PII fields for safe reproduction', async () => {
+    const rawSql = `INSERT INTO users (email, phone, card) VALUES ('user@corp.com', '+1-555-456-7890', '4111-2222-3333-4444');`;
+    const obfuscated = await runAdvancedDeveloperOperation(
+      'sql-pii-obfuscator',
+      {
+        input: rawSql,
+        maskEmails: 'yes',
+        maskCards: 'yes',
+        maskPhones: 'yes',
+      },
+    );
+
+    expect(obfuscated).not.toContain('user@corp.com');
+    expect(obfuscated).not.toContain('4111-2222-3333-4444');
+    expect(obfuscated).toContain('4111-XXXX-XXXX-1111');
+    expect(obfuscated).toContain('@synthetic-test.local');
   });
 });

@@ -602,6 +602,58 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
     notice:
       'Arithmetic only. Contract terms, applicable law, notice, grace periods, compounding, taxes, caps, and enforceability determine whether any fee is valid.',
   },
+  {
+    id: 'payment-fee-calculator',
+    name: 'Payment fee & invoice calculator (Stripe / PayPal)',
+    description:
+      'Calculate merchant processing fees and the reverse invoice amount needed to receive exact net funds.',
+    fields: [
+      number('amount', 'Invoice / Transaction amount', '1000'),
+      number('percentFee', 'Percentage fee (%)', '2.9'),
+      number('fixedFee', 'Fixed fee per transaction ($)', '0.30'),
+    ],
+    notice: scenarioNotice,
+  },
+  {
+    id: 'salary-hourly-converter',
+    name: 'Salary to hourly & take-home converter',
+    description:
+      'Convert annual salary into monthly, bi-weekly, weekly, daily, and hourly gross & net take-home rates.',
+    fields: [
+      number('salary', 'Annual gross salary', '75000'),
+      number('hoursPerWeek', 'Hours worked per week', '40'),
+      number('weeksPerYear', 'Working weeks per year', '52'),
+      number('taxRate', 'Estimated tax & deductions (%)', '22'),
+    ],
+    notice: scenarioNotice,
+  },
+  {
+    id: 'mortgage-extra-payment',
+    name: 'Mortgage extra payment & savings calculator',
+    description:
+      'Calculate total interest savings and years saved by making extra monthly principal payments.',
+    fields: [
+      number('principal', 'Mortgage loan balance', '300000'),
+      number('rate', 'Annual interest rate (%)', '6.5'),
+      number('years', 'Original term (years)', '30'),
+      number('extraMonthly', 'Extra monthly principal payment', '150'),
+    ],
+    notice: scenarioNotice,
+  },
+  {
+    id: 'saas-mrr-calculator',
+    name: 'SaaS MRR growth & churn projection',
+    description:
+      'Project recurring revenue trajectory over 12 months factoring in new growth, expansion, and churn.',
+    fields: [
+      number('startingMrr', 'Starting monthly recurring revenue', '10000'),
+      number('monthlyGrowthRate', 'New customer MRR growth rate (%)', '8'),
+      number('churnRate', 'Monthly customer churn rate (%)', '3'),
+      number('expansionRate', 'Monthly expansion revenue rate (%)', '2'),
+      number('months', 'Projection months (1 to 36)', '12'),
+    ],
+    notice: businessNotice,
+  },
 ] as const;
 
 function finite(
@@ -624,8 +676,9 @@ function percent(
   values: Record<string, string>,
   key: string,
   minimum = -99.999999,
+  maximum = 1_000_000,
 ) {
-  return finite(values, key, minimum, 1_000_000) / 100;
+  return finite(values, key, minimum, maximum) / 100;
 }
 function format(value: number) {
   if (!Number.isFinite(value))
@@ -1108,6 +1161,132 @@ export function runFinanceOperation(
         percent(values, 'monthlyRate', 0) *
         finite(values, 'months', 0);
       return `Simple late-fee arithmetic: ${currency(fee)}\nOutstanding plus fee: ${currency(invoice + fee)}`;
+    }
+    case 'payment-fee-calculator': {
+      const amount = finite(values, 'amount', 0);
+      const percentRate = percent(values, 'percentFee', 0);
+      const fixedFee = finite(values, 'fixedFee', 0);
+      const totalFee = amount * percentRate + fixedFee;
+      const netReceived = Math.max(0, amount - totalFee);
+      const reverseInvoice =
+        percentRate >= 1 ? amount : (amount + fixedFee) / (1 - percentRate);
+      return `/* Transaction Fee Summary */
+Invoice Amount:     ${currency(amount)}
+Processing Fee:     ${currency(totalFee)} (${(percentRate * 100).toFixed(2)}% + ${currency(fixedFee)})
+Net Funds Received: ${currency(netReceived)}
+
+/* Reverse Calculation */
+To receive exact ${currency(amount)} after fees, invoice: ${currency(reverseInvoice)}`;
+    }
+    case 'salary-hourly-converter': {
+      const salary = finite(values, 'salary', 0);
+      const hoursPerWeek = Math.max(1, finite(values, 'hoursPerWeek', 1, 168));
+      const weeksPerYear = Math.max(1, finite(values, 'weeksPerYear', 1, 52));
+      const taxRate = percent(values, 'taxRate', 0, 100);
+
+      const totalHours = hoursPerWeek * weeksPerYear;
+      const hourlyGross = salary / totalHours;
+      const dailyGross = hourlyGross * (hoursPerWeek / 5);
+      const weeklyGross = salary / weeksPerYear;
+      const biweeklyGross = weeklyGross * 2;
+      const monthlyGross = salary / 12;
+
+      const netFactor = 1 - taxRate;
+      return `/* Salary to Hourly Breakdown */
+Gross Annual Salary:     ${currency(salary)}
+Estimated Tax Rate:      ${(taxRate * 100).toFixed(1)}%
+
+Monthly:                  ${currency(monthlyGross)} (Gross) | ${currency(monthlyGross * netFactor)} (Net)
+Bi-Weekly:                ${currency(biweeklyGross)} (Gross) | ${currency(biweeklyGross * netFactor)} (Net)
+Weekly:                   ${currency(weeklyGross)} (Gross) | ${currency(weeklyGross * netFactor)} (Net)
+Daily (8h day):           ${currency(dailyGross)} (Gross) | ${currency(dailyGross * netFactor)} (Net)
+Hourly Rate:              ${currency(hourlyGross)} (Gross) | ${currency(hourlyGross * netFactor)} (Net)
+
+Total working hours: ${totalHours} hrs/year`;
+    }
+    case 'mortgage-extra-payment': {
+      const principal = finite(values, 'principal', 1);
+      const annualRate = percent(values, 'rate', 0);
+      const years = finite(values, 'years', 1, 50);
+      const extraMonthly = finite(values, 'extraMonthly', 0);
+
+      const monthlyRate = annualRate / 12;
+      const totalMonths = years * 12;
+
+      const standardMonthly =
+        monthlyRate === 0
+          ? principal / totalMonths
+          : (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
+            (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+      let balance = principal;
+      let acceleratedMonths = 0;
+      let totalInterestPaidAccelerated = 0;
+      const acceleratedPayment = standardMonthly + extraMonthly;
+
+      while (balance > 0 && acceleratedMonths < totalMonths * 2) {
+        acceleratedMonths++;
+        const interest = balance * monthlyRate;
+        totalInterestPaidAccelerated += interest;
+        const principalPaid = Math.min(balance, acceleratedPayment - interest);
+        balance -= principalPaid;
+        if (balance <= 0.01) break;
+      }
+
+      const standardTotalInterest = standardMonthly * totalMonths - principal;
+      const totalSavings = Math.max(
+        0,
+        standardTotalInterest - totalInterestPaidAccelerated,
+      );
+      const monthsSaved = Math.max(0, totalMonths - acceleratedMonths);
+      const yearsSaved = (monthsSaved / 12).toFixed(1);
+
+      return `/* Mortgage Extra Payment Analysis */
+Standard Monthly Payment:     ${currency(standardMonthly)}
+Accelerated Monthly Payment:  ${currency(acceleratedPayment)} (+${currency(extraMonthly)}/mo)
+
+Total Interest Saved:         ${currency(totalSavings)}
+Payoff Time Shortened By:     ${monthsSaved} months (~${yearsSaved} years)
+Original Payoff Term:         ${years} years (${totalMonths} months)
+New Accelerated Payoff Term:  ${(acceleratedMonths / 12).toFixed(1)} years (${acceleratedMonths} months)`;
+    }
+    case 'saas-mrr-calculator': {
+      const starting = finite(values, 'startingMrr', 0);
+      const growthRate = percent(values, 'monthlyGrowthRate', -100);
+      const churnRate = percent(values, 'churnRate', 0, 100);
+      const expansionRate = percent(values, 'expansionRate', 0);
+      const months = Math.max(
+        1,
+        Math.min(36, parseInt(values.months || '12', 10) || 12),
+      );
+
+      let currentMrr = starting;
+      const linesOut: string[] = [
+        `Starting MRR: ${currency(starting)}`,
+        `Net Monthly Growth: ${((growthRate + expansionRate - churnRate) * 100).toFixed(2)}%`,
+        '',
+        'Month       Projected MRR       New MRR        Churned MRR     Expansion MRR',
+      ];
+
+      for (let m = 1; m <= months; m++) {
+        const newMrr = currentMrr * growthRate;
+        const expMrr = currentMrr * expansionRate;
+        const churnMrr = currentMrr * churnRate;
+        currentMrr = currentMrr + newMrr + expMrr - churnMrr;
+        linesOut.push(
+          `Month ${m.toString().padEnd(5)} ${currency(currentMrr).padEnd(19)} +${currency(newMrr).padEnd(14)} -${currency(churnMrr).padEnd(15)} +${currency(expMrr)}`,
+        );
+      }
+
+      linesOut.push('');
+      linesOut.push(
+        `Ending Projected MRR (Month ${months}): ${currency(currentMrr)}`,
+      );
+      linesOut.push(
+        `Ending Projected ARR:                 ${currency(currentMrr * 12)}`,
+      );
+
+      return linesOut.join('\n');
     }
     default:
       throw new Error('Choose a supported finance or business operation.');

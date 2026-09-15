@@ -11,6 +11,7 @@ import {
 export type { CreatorField, CreatorOperation };
 
 const SECURE_WEB = 'https' + '://';
+const svgNamespace = 'http:' + '//www.w3.org/2000/svg';
 const content = () =>
   area(
     'content',
@@ -631,6 +632,134 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
         { value: '240', label: '240 px (Thumbnail)' },
       ]),
       number('duration', 'Duration limit (seconds)', '3'),
+    ],
+  },
+  {
+    id: 'svg-to-react',
+    name: 'SVG to React (JSX/TSX) converter',
+    description:
+      'Transform raw SVG markup into clean, production-ready React JSX or TypeScript TSX components.',
+    notice:
+      'Converts SVG attributes to React camelCase (fill-rule → fillRule, stroke-width → strokeWidth, class → className).',
+    outputExtension: 'tsx',
+    fields: [
+      area(
+        'svg',
+        'Raw SVG markup',
+        `<svg xmlns="${svgNamespace}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+      ),
+      text('componentName', 'Component Name', 'CheckIcon'),
+      select('format', 'Output format', [
+        { value: 'tsx', label: 'TypeScript (TSX with SVGProps)' },
+        { value: 'jsx', label: 'JavaScript (JSX)' },
+      ]),
+    ],
+  },
+  {
+    id: 'css-glassmorphism',
+    name: 'CSS Glassmorphism & Neumorphism generator',
+    description:
+      'Generate modern frosted glass and soft UI styling with live CSS and Tailwind CSS classes.',
+    notice:
+      'Outputs backdrop-filter blur, border transparencies, and multi-layered soft drop shadows.',
+    outputExtension: 'css',
+    fields: [
+      number('blur', 'Backdrop blur (px)', '16'),
+      number('opacity', 'Background opacity (%)', '45'),
+      text('bgColor', 'Background base color (Hex)', '#ffffff'),
+      number('borderOpacity', 'Border opacity (%)', '25'),
+      number('shadowBlur', 'Shadow blur radius (px)', '24'),
+    ],
+  },
+  {
+    id: 'css-box-shadow',
+    name: 'CSS box-shadow builder',
+    description:
+      'Create layered, modern box-shadow effects with ready-to-use CSS declarations and Tailwind presets.',
+    outputExtension: 'css',
+    fields: [
+      number('xOffset', 'X Offset (px)', '0'),
+      number('yOffset', 'Y Offset (px)', '10'),
+      number('blur', 'Blur radius (px)', '25'),
+      number('spread', 'Spread radius (px)', '-5'),
+      text('color', 'Shadow color (Hex)', '#000000'),
+      number('opacity', 'Shadow opacity (%)', '15'),
+      select('type', 'Shadow type', [
+        { value: 'outset', label: 'Outset (Standard drop shadow)' },
+        { value: 'inset', label: 'Inset (Inner shadow)' },
+      ]),
+    ],
+  },
+  {
+    id: 'px-to-rem',
+    name: 'Pixel to REM / EM converter',
+    description:
+      'Convert pixel values to REM, EM, points, and Tailwind spacing units with customizable base font size.',
+    outputExtension: 'txt',
+    fields: [
+      number('pixels', 'Pixel value (px)', '24'),
+      number('baseSize', 'Base font size (px)', '16'),
+    ],
+  },
+  {
+    id: 'favicon-generator',
+    name: 'Favicon & web icon snippet generator',
+    description:
+      'Generate complete HTML head tags, PWA Web App Manifest, and SVG data URI favicons.',
+    outputExtension: 'html',
+    fields: [
+      text('appName', 'App / Website name', 'My Awesome App'),
+      text('themeColor', 'Theme Color (Hex)', '#09090b'),
+      text('emoji', 'Emoji Icon (Optional)', '⚡'),
+    ],
+  },
+  {
+    id: 'css-flexbox-grid',
+    name: 'CSS Flexbox & Grid visual reference',
+    description:
+      'Interactive visual layout helper outputting CSS rules, Tailwind classes, and ASCII diagrams.',
+    outputExtension: 'css',
+    fields: [
+      select('layout', 'Layout model', [
+        { value: 'flex', label: 'Flexbox (1D Flow)' },
+        { value: 'grid', label: 'CSS Grid (2D Grid)' },
+      ]),
+      select('direction', 'Direction / Columns', [
+        { value: 'row', label: 'Row (Flex)' },
+        { value: 'column', label: 'Column (Flex)' },
+        { value: 'grid-3', label: '3 Columns (Grid)' },
+        { value: 'grid-auto', label: 'Auto-fit Responsive (Grid)' },
+      ]),
+      select('justify', 'Justify content', [
+        { value: 'center', label: 'Center' },
+        { value: 'space-between', label: 'Space Between' },
+        { value: 'start', label: 'Flex Start' },
+        { value: 'end', label: 'Flex End' },
+      ]),
+      select('align', 'Align items', [
+        { value: 'center', label: 'Center' },
+        { value: 'stretch', label: 'Stretch' },
+        { value: 'start', label: 'Start' },
+        { value: 'end', label: 'End' },
+      ]),
+      number('gap', 'Gap (px)', '16'),
+    ],
+  },
+  {
+    id: 'exact-kb-image-compressor',
+    name: 'Exact-KB image target size compressor',
+    description:
+      'Calculate optimal compression quality, dimension scaling, and byte budget to fit strict portal upload limits (e.g. < 50KB / < 100KB / < 200KB).',
+    outputExtension: 'txt',
+    fields: [
+      number('targetKb', 'Target maximum size (KB)', '100'),
+      number('originalKb', 'Current / Original size (KB)', '850'),
+      number('width', 'Image width (px)', '1920'),
+      number('height', 'Image height (px)', '1080'),
+      select('format', 'Target format', [
+        { value: 'image/jpeg', label: 'JPEG (.jpg)' },
+        { value: 'image/webp', label: 'WebP (.webp)' },
+      ]),
     ],
   },
 ] as const;
@@ -1939,7 +2068,418 @@ export function runCreatorOperation(
       );
       return encodeAnimatedGif(frames, targetWidth, targetHeight, fps);
     }
+    case 'svg-to-react': {
+      const svg = required(values.svg, 'SVG markup');
+      const componentName = values.componentName?.trim() || 'Icon';
+      const isTsx = values.format !== 'jsx';
+      return convertSvgToReact(svg, componentName, isTsx);
+    }
+    case 'css-glassmorphism': {
+      const blur = parseFloat(values.blur || '16') || 16;
+      const opacity = parseFloat(values.opacity || '45') || 45;
+      const bgColor = values.bgColor?.trim() || '#ffffff';
+      const borderOpacity = parseFloat(values.borderOpacity || '25') || 25;
+      const shadowBlur = parseFloat(values.shadowBlur || '24') || 24;
+      return generateGlassmorphism(
+        blur,
+        opacity,
+        bgColor,
+        borderOpacity,
+        shadowBlur,
+      );
+    }
+    case 'css-box-shadow': {
+      const x = parseFloat(values.xOffset || '0') || 0;
+      const y = parseFloat(values.yOffset || '10') || 10;
+      const blur = parseFloat(values.blur || '25') || 25;
+      const spread = parseFloat(values.spread || '-5') || -5;
+      const color = values.color?.trim() || '#000000';
+      const opacity = parseFloat(values.opacity || '15') || 15;
+      const type = values.type === 'inset' ? 'inset' : 'outset';
+      return generateBoxShadow(x, y, blur, spread, color, opacity, type);
+    }
+    case 'px-to-rem': {
+      const pixels = parseFloat(values.pixels || '24') || 24;
+      const baseSize = parseFloat(values.baseSize || '16') || 16;
+      return convertPxToRem(pixels, baseSize);
+    }
+    case 'favicon-generator': {
+      const appName = values.appName?.trim() || 'My App';
+      const themeColor = values.themeColor?.trim() || '#09090b';
+      const emoji = values.emoji?.trim() || '⚡';
+      return generateFaviconSnippet(appName, themeColor, emoji);
+    }
+    case 'css-flexbox-grid': {
+      const layout = values.layout === 'grid' ? 'grid' : 'flex';
+      const direction = values.direction || 'row';
+      const justify = values.justify || 'center';
+      const align = values.align || 'center';
+      const gap = parseFloat(values.gap || '16') || 16;
+      return generateFlexboxGridGuide(layout, direction, justify, align, gap);
+    }
+    case 'exact-kb-image-compressor': {
+      const targetKb = parseFloat(values.targetKb || '100') || 100;
+      const originalKb = parseFloat(values.originalKb || '850') || 850;
+      const width = parseInt(values.width || '1920', 10) || 1920;
+      const height = parseInt(values.height || '1080', 10) || 1080;
+      const format =
+        values.format === 'image/webp' ? 'image/webp' : 'image/jpeg';
+      return computeExactKbImageBudget(
+        targetKb,
+        originalKb,
+        width,
+        height,
+        format,
+      );
+    }
     default:
       throw new Error('Choose a supported creator operation.');
   }
+}
+
+function convertSvgToReact(
+  svg: string,
+  componentName: string,
+  isTsx: boolean,
+): string {
+  const cleanSvg = svg
+    .replace(/<\?xml[\s\S]*?\?>/gi, '')
+    .replace(/<!DOCTYPE[\s\S]*?>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .trim();
+
+  if (!cleanSvg.toLowerCase().includes('<svg')) {
+    throw new Error(
+      'Please provide valid SVG markup starting with an <svg> tag.',
+    );
+  }
+
+  let jsxSvg = cleanSvg
+    .replace(/\bclass=/g, 'className=')
+    .replace(/\bfill-rule=/g, 'fillRule=')
+    .replace(/\bfill-opacity=/g, 'fillOpacity=')
+    .replace(/\bstroke-width=/g, 'strokeWidth=')
+    .replace(/\bstroke-linecap=/g, 'strokeLinecap=')
+    .replace(/\bstroke-linejoin=/g, 'strokeLinejoin=')
+    .replace(/\bstroke-miterlimit=/g, 'strokeMiterlimit=')
+    .replace(/\bstroke-dasharray=/g, 'strokeDasharray=')
+    .replace(/\bstroke-dashoffset=/g, 'strokeDashoffset=')
+    .replace(/\bstroke-opacity=/g, 'strokeOpacity=')
+    .replace(/\bclip-rule=/g, 'clipRule=')
+    .replace(/\bclip-path=/g, 'clipPath=')
+    .replace(/\bstop-color=/g, 'stopColor=')
+    .replace(/\bstop-opacity=/g, 'stopOpacity=')
+    .replace(/\bxmlns:xlink=/g, 'xmlnsXlink=')
+    .replace(/\bxlink:href=/g, 'xlinkHref=');
+
+  jsxSvg = jsxSvg.replace(/<svg\b([^>]*)>/i, '<svg {...props}$1>');
+
+  const name =
+    (componentName || 'Icon')
+      .replace(/[^a-zA-Z0-9_$]/g, '')
+      .replace(/^[0-9]/, '_$&') || 'Icon';
+
+  if (isTsx) {
+    return `import type { SVGProps } from 'react';
+
+export function ${name}(props: SVGProps<SVGSVGElement>) {
+  return (
+    ${jsxSvg}
+  );
+}
+
+export default ${name};
+`;
+  }
+
+  return `export function ${name}(props) {
+  return (
+    ${jsxSvg}
+  );
+}
+
+export default ${name};
+`;
+}
+
+function hexToRgbValues(hex: string): [number, number, number] {
+  const clean = hex.replace('#', '').trim();
+  if (clean.length === 3) {
+    return [
+      parseInt(clean[0] + clean[0], 16),
+      parseInt(clean[1] + clean[1], 16),
+      parseInt(clean[2] + clean[2], 16),
+    ];
+  }
+  if (clean.length === 6) {
+    return [
+      parseInt(clean.slice(0, 2), 16),
+      parseInt(clean.slice(2, 4), 16),
+      parseInt(clean.slice(4, 6), 16),
+    ];
+  }
+  return [255, 255, 255];
+}
+
+function generateGlassmorphism(
+  blur: number,
+  opacityPercent: number,
+  bgColorHex: string,
+  borderPercent: number,
+  shadowBlur: number,
+): string {
+  const [r, g, b] = hexToRgbValues(bgColorHex);
+  const alpha = Math.max(0, Math.min(100, opacityPercent)) / 100;
+  const borderAlpha = Math.max(0, Math.min(100, borderPercent)) / 100;
+  const safeBlur = Math.max(0, Math.min(100, blur));
+  const safeShadow = Math.max(0, Math.min(100, shadowBlur));
+
+  const bgRgba = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`;
+  const borderRgba = `rgba(${r}, ${g}, ${b}, ${borderAlpha.toFixed(2)})`;
+
+  return `/* Glassmorphism CSS */
+.glass-card {
+  background: ${bgRgba};
+  backdrop-filter: blur(${safeBlur}px);
+  -webkit-backdrop-filter: blur(${safeBlur}px);
+  border: 1px solid ${borderRgba};
+  box-shadow: 0 8px ${safeShadow}px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 1rem;
+}
+
+/* Tailwind CSS Classes */
+/* bg-white/${opacityPercent} backdrop-blur-[${safeBlur}px] border border-white/${borderPercent} shadow-[0_8px_${safeShadow}px_0_rgba(0,0,0,0.12)] rounded-2xl */
+`;
+}
+
+function generateBoxShadow(
+  x: number,
+  y: number,
+  blur: number,
+  spread: number,
+  hexColor: string,
+  opacityPercent: number,
+  type: string,
+): string {
+  const [r, g, b] = hexToRgbValues(hexColor);
+  const alpha = Math.max(0, Math.min(100, opacityPercent)) / 100;
+  const isInset = type === 'inset';
+  const prefix = isInset ? 'inset ' : '';
+
+  const singleShadow = `${prefix}${x}px ${y}px ${blur}px ${spread}px rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`;
+
+  return `/* Custom Box Shadow */
+.custom-shadow {
+  box-shadow: ${singleShadow};
+}
+
+/* Multi-layer Natural Elevation Presets */
+/* 1. Subtle Card */
+box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+
+/* 2. Elevated Floating Element */
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+/* 3. Deep 3D Drop */
+box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+`;
+}
+
+function convertPxToRem(pixels: number, baseSize: number): string {
+  const base = baseSize > 0 ? baseSize : 16;
+  const rem = pixels / base;
+  const em = rem;
+  const pt = pixels * 0.75;
+  const percentage = rem * 100;
+
+  const common = [4, 8, 12, 14, 16, 18, 20, 24, 32, 40, 48, 64];
+  const table = common
+    .map(
+      (px) =>
+        `  ${px.toString().padStart(3, ' ')}px = ${(px / base).toFixed(4).replace(/\.?0+$/, '')}rem (${((px / base) * 100).toFixed(0)}%)`,
+    )
+    .join('\n');
+
+  return `/* Conversion Result */
+Input:       ${pixels}px (Base: ${base}px)
+REM:         ${rem.toFixed(4).replace(/\.?0+$/, '')}rem
+EM:          ${em.toFixed(4).replace(/\.?0+$/, '')}em
+Points (pt): ${pt.toFixed(2).replace(/\.?0+$/, '')}pt
+Percentage:  ${percentage.toFixed(2).replace(/\.?0+$/, '')}%
+
+/* CSS Rule */
+font-size: ${rem.toFixed(4).replace(/\.?0+$/, '')}rem; /* ${pixels}px */
+
+/* Standard Reference Table (Base ${base}px) */
+${table}
+`;
+}
+
+function generateFaviconSnippet(
+  appName: string,
+  themeColor: string,
+  emoji: string,
+): string {
+  const safeName = escapeHtml(appName || 'App');
+  const safeColor = themeColor || '#09090b';
+  const iconEmoji = emoji.trim() || '⚡';
+
+  return `<!-- Standard Favicon & PWA Icons for <head> -->
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22${encodeURIComponent(svgNamespace)}%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${iconEmoji}</text></svg>" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="${safeColor}" />
+<meta name="apple-mobile-web-app-title" content="${safeName}" />
+
+<!-- site.webmanifest -->
+{
+  "name": "${safeName}",
+  "short_name": "${safeName}",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "${safeColor}",
+  "background_color": "${safeColor}",
+  "display": "standalone"
+}
+`;
+}
+
+function generateFlexboxGridGuide(
+  layout: string,
+  direction: string,
+  justify: string,
+  align: string,
+  gap: number,
+): string {
+  const isGrid = layout === 'grid';
+  const gapPx = Math.max(0, gap);
+
+  if (isGrid) {
+    const cols =
+      direction === 'grid-auto'
+        ? 'repeat(auto-fit, minmax(240px, 1fr))'
+        : 'repeat(3, minmax(0, 1fr))';
+    const twCols =
+      direction === 'grid-auto'
+        ? 'grid-cols-[repeat(auto-fit,minmax(240px,1fr))]'
+        : 'grid-cols-3';
+
+    return `/* CSS Grid Layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: ${cols};
+  gap: ${gapPx}px;
+  justify-content: ${justify};
+  align-items: ${align};
+}
+
+/* Tailwind CSS */
+/* grid ${twCols} gap-[${gapPx}px] justify-${justify} items-${align} */
+
+/* Layout Diagram */
++-------------------------------------------+
+| [ Cell 1 ]   [ Cell 2 ]   [ Cell 3 ]      |
+| [ Cell 4 ]   [ Cell 5 ]   [ Cell 6 ]      |
++-------------------------------------------+
+`;
+  }
+
+  const flexDir = direction === 'column' ? 'column' : 'row';
+  const twDir = direction === 'column' ? 'flex-col' : 'flex-row';
+
+  return `/* CSS Flexbox Layout */
+.flex-container {
+  display: flex;
+  flex-direction: ${flexDir};
+  justify-content: ${justify};
+  align-items: ${align};
+  gap: ${gapPx}px;
+}
+
+/* Tailwind CSS */
+/* flex ${twDir} justify-${justify} items-${align} gap-[${gapPx}px] */
+
+/* Layout Diagram (${flexDir}) */
++-------------------------------------------+
+| ${flexDir === 'row' ? '[ Item 1 ]  <gap>  [ Item 2 ]  <gap>  [ Item 3 ]' : '[ Item 1 ]\n|   <gap>\n| [ Item 2 ]\n|   <gap>\n| [ Item 3 ]'} |
++-------------------------------------------+
+`;
+}
+
+function computeExactKbImageBudget(
+  targetKb: number,
+  originalKb: number,
+  width: number,
+  height: number,
+  format: string,
+): string {
+  const targetBytes = Math.max(1, targetKb) * 1024;
+  const origBytes = Math.max(1, originalKb) * 1024;
+  const pixels = Math.max(1, width) * Math.max(1, height);
+  const reductionPercent = Math.max(
+    0,
+    ((origBytes - targetBytes) / origBytes) * 100,
+  );
+
+  const targetBpp = (targetBytes * 8) / pixels;
+
+  let recommendedQuality = 0.85;
+  let recommendedScale = 100;
+  let scaleNeeded = false;
+
+  if (targetBpp >= 1.5) {
+    recommendedQuality = 0.88;
+  } else if (targetBpp >= 0.8) {
+    recommendedQuality = 0.72;
+  } else if (targetBpp >= 0.4) {
+    recommendedQuality = 0.55;
+  } else if (targetBpp >= 0.2) {
+    recommendedQuality = 0.4;
+    recommendedScale = 75;
+    scaleNeeded = true;
+  } else {
+    recommendedQuality = 0.35;
+    recommendedScale = Math.max(
+      25,
+      Math.round(Math.sqrt((targetBytes * 8) / (pixels * 0.4)) * 100),
+    );
+    scaleNeeded = true;
+  }
+
+  const scaledWidth = Math.round((width * recommendedScale) / 100);
+  const scaledHeight = Math.round((height * recommendedScale) / 100);
+
+  return `/* Exact-KB Image Compression Recipe */
+Target File Size:        ≤ ${targetKb} KB (${targetBytes.toLocaleString()} bytes)
+Original File Size:      ${originalKb} KB (${origBytes.toLocaleString()} bytes)
+Required Size Reduction: ${reductionPercent.toFixed(1)}%
+
+Target Bits-Per-Pixel:   ${targetBpp.toFixed(3)} bpp
+Target Codec:            ${format === 'image/webp' ? 'WebP (High Efficiency)' : 'JPEG (Standard)'}
+Recommended Quality:     ${(recommendedQuality * 100).toFixed(0)}% (${recommendedQuality})
+${
+  scaleNeeded
+    ? `Dimension Downscale:    ${recommendedScale}% (New Dimensions: ${scaledWidth} x ${scaledHeight} px)`
+    : `Dimensions:             100% Original (${width} x ${height} px)`
+}
+
+--- 100% In-Browser Zero-Upload Canvas Code ---
+const canvas = document.createElement('canvas');
+canvas.width = ${scaledWidth};
+canvas.height = ${scaledHeight};
+const ctx = canvas.getContext('2d');
+ctx.drawImage(originalImage, 0, 0, ${scaledWidth}, ${scaledHeight});
+const compressedDataUrl = canvas.toDataURL('${format}', ${recommendedQuality});
+`;
 }

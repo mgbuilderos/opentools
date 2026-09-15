@@ -621,6 +621,326 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       ],
       outputExtension: 'svg',
     },
+    {
+      id: 'cron-generator',
+      name: 'Cron expression generator & translator',
+      description:
+        'Parse, build, and translate 5-field crontab schedules into plain English with next run estimates.',
+      notice:
+        'Standard 5-field cron: minute (0-59), hour (0-23), day of month (1-31), month (1-12), weekday (0-7).',
+      outputExtension: 'txt',
+      fields: [
+        text(
+          'expression',
+          'Cron expression (min hour day month weekday)',
+          '*/15 9-17 * * 1-5',
+        ),
+        select('preset', 'Or choose a preset schedule', [
+          { value: 'custom', label: 'Use custom expression above' },
+          { value: 'hourly', label: 'Every hour at :00 (0 * * * *)' },
+          {
+            value: 'daily_midnight',
+            label: 'Daily at midnight (0 0 * * *)',
+          },
+          {
+            value: 'daily_morning',
+            label: 'Daily at 9:00 AM (0 9 * * *)',
+          },
+          {
+            value: 'weekly_monday',
+            label: 'Every Monday at 9:00 AM (0 9 * * 1)',
+          },
+          {
+            value: 'monthly_first',
+            label: '1st of every month at midnight (0 0 1 * *)',
+          },
+        ]),
+      ],
+    },
+    {
+      id: 'regex-tester',
+      name: 'Regular expression tester & inspector',
+      description:
+        'Test and analyze regular expressions with live match highlighting, capture group extraction, and flags.',
+      outputExtension: 'txt',
+      fields: [
+        text(
+          'pattern',
+          'Regular expression pattern',
+          '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
+        ),
+        text('flags', 'Flags (g, i, m, s, u)', 'gi'),
+        area(
+          'testText',
+          'Test string',
+          'Reach out to alex@example.com or support.team+priority@company.org for assistance.',
+        ),
+      ],
+    },
+    {
+      id: 'dummy-data-generator',
+      name: 'Mock & dummy data generator',
+      description:
+        'Generate structured realistic mock dataset records for testing databases and APIs in JSON, CSV, or SQL.',
+      outputExtension: 'json',
+      fields: [
+        number('count', 'Record count (1 to 100)', '5'),
+        select('format', 'Output format', [
+          { value: 'json', label: 'JSON Array' },
+          { value: 'csv', label: 'CSV' },
+          { value: 'sql', label: 'SQL INSERT Statements' },
+        ]),
+        text('tableName', 'Table name (for SQL)', 'users'),
+        select('schemaType', 'Data schema profile', [
+          {
+            value: 'users',
+            label: 'User Accounts (ID, Name, Email, Role, JoinedAt)',
+          },
+          {
+            value: 'orders',
+            label: 'E-Commerce Orders (Order ID, Customer, Amount, Status)',
+          },
+          {
+            value: 'products',
+            label: 'Product Catalog (SKU, Title, Category, Price, InStock)',
+          },
+        ]),
+      ],
+    },
+    {
+      id: 'git-flight-rules',
+      name: 'Git emergency scenarios ("Flight Rules")',
+      description:
+        'Quick copy-paste solutions for common Git mistakes, branch recovery, and commit operations.',
+      outputExtension: 'txt',
+      fields: [
+        select('scenario', 'What do you need to fix?', [
+          {
+            value: 'undo-commit-keep',
+            label: 'Undo last commit (keep changes staged in index)',
+          },
+          {
+            value: 'undo-commit-discard',
+            label: 'Undo last commit (completely discard all changes)',
+          },
+          {
+            value: 'change-message',
+            label: 'Change the commit message of the most recent commit',
+          },
+          {
+            value: 'recover-branch',
+            label: 'Recover a deleted branch using git reflog',
+          },
+          {
+            value: 'discard-unstaged',
+            label: 'Discard all unstaged local file changes',
+          },
+          {
+            value: 'stash-include-untracked',
+            label: 'Stash working directory including new untracked files',
+          },
+          {
+            value: 'squash-commits',
+            label: 'Squash the last N commits into one',
+          },
+        ]),
+        text('branchName', 'Branch name (if applicable)', 'feature/my-branch'),
+        text('commitHash', 'Commit hash (if applicable)', 'a1b2c3d'),
+        number('commitCount', 'Number of commits N (for squash)', '3'),
+      ],
+    },
+    {
+      id: 'docker-cheatsheet',
+      name: 'Docker & Compose generator & cheatsheet',
+      description:
+        'Generate multi-container docker-compose.yml templates and essential container management CLI commands.',
+      outputExtension: 'yaml',
+      fields: [
+        select('template', 'Docker boilerplate template', [
+          {
+            value: 'node-postgres-redis',
+            label: 'Node.js + PostgreSQL + Redis Compose Stack',
+          },
+          {
+            value: 'python-postgres',
+            label: 'Python / FastAPI + PostgreSQL Stack',
+          },
+          {
+            value: 'nginx-reverse-proxy',
+            label: 'Nginx Reverse Proxy with SSL Boilerplate',
+          },
+          {
+            value: 'cli-cleanup',
+            label: 'CLI Commands: Prune & Clean Unused Disk Space',
+          },
+          {
+            value: 'cli-troubleshoot',
+            label: 'CLI Commands: Inspect, Logs, and Shell Exec',
+          },
+        ]),
+      ],
+    },
+    {
+      id: 'http-status-codes',
+      name: 'HTTP status codes reference',
+      description:
+        'Searchable encyclopedia of 1xx–5xx HTTP response status codes with RFC definitions and API guidance.',
+      outputExtension: 'txt',
+      fields: [
+        select('code', 'Select status code', [
+          { value: 'all', label: 'All Common Status Codes Overview' },
+          { value: '200', label: '200 OK — Standard success' },
+          { value: '201', label: '201 Created — Resource created' },
+          { value: '204', label: '204 No Content — Action succeeded' },
+          {
+            value: '301',
+            label: '301 Moved Permanently — Permanent redirect',
+          },
+          {
+            value: '304',
+            label: '304 Not Modified — Conditional GET / Cache hit',
+          },
+          {
+            value: '400',
+            label: '400 Bad Request — Client request syntax error',
+          },
+          {
+            value: '401',
+            label: '401 Unauthorized — Authentication required',
+          },
+          {
+            value: '403',
+            label: '403 Forbidden — Authenticated but unauthorized',
+          },
+          { value: '404', label: '404 Not Found — Resource does not exist' },
+          {
+            value: '409',
+            label: '409 Conflict — Request conflicts with state',
+          },
+          {
+            value: '422',
+            label: '422 Unprocessable Entity — Validation error',
+          },
+          {
+            value: '429',
+            label: '429 Too Many Requests — Rate limit reached',
+          },
+          {
+            value: '500',
+            label: '500 Internal Server Error — Unhandled server crash',
+          },
+          {
+            value: '502',
+            label: '502 Bad Gateway — Upstream proxy failure',
+          },
+          {
+            value: '503',
+            label: '503 Service Unavailable — Server overloaded/down',
+          },
+          {
+            value: '504',
+            label: '504 Gateway Timeout — Upstream timed out',
+          },
+        ]),
+      ],
+    },
+    {
+      id: 'llm-secret-scrubber',
+      name: 'LLM Secret & API Key Scrubber',
+      description:
+        'Redact API keys, AWS credentials, tokens, connection strings, emails, and passwords before pasting prompts into ChatGPT or Claude.',
+      fields: [
+        area(
+          'input',
+          'Prompt / Code / Log with Secrets',
+          'const apiKey = "sk-proj-98a7bcdef1234567890abcdef";\nconst awsKey = "AKIAIOSFODNN7EXAMPLE";\nconst db = "postgres://admin:supersecret123@db.prod.internal:5432/main";\nconsole.log("Contact admin@company.internal for access");',
+        ),
+        select('scrubKeys', 'Scrub API & Cloud Keys', [
+          {
+            value: 'yes',
+            label: 'Yes — Redact AWS, OpenAI, Stripe, GitHub, Bearer tokens',
+          },
+          { value: 'no', label: 'No — Keep keys as-is' },
+        ]),
+        select('scrubEmails', 'Scrub Email Addresses', [
+          { value: 'yes', label: 'Yes — Redact user & internal emails' },
+          { value: 'no', label: 'No — Keep emails' },
+        ]),
+        select('scrubIps', 'Scrub IPv4 Addresses', [
+          { value: 'no', label: 'No — Keep IP addresses' },
+          { value: 'yes', label: 'Yes — Redact IPv4 addresses' },
+        ]),
+        select('placeholderStyle', 'Placeholder Format', [
+          {
+            value: 'numbered',
+            label: 'Numbered tokens ([REDACTED_OPENAI_API_KEY_1])',
+          },
+          { value: 'generic', label: 'Generic ([REDACTED_KEY])' },
+        ]),
+      ],
+      outputExtension: 'txt',
+    },
+    {
+      id: 'har-sanitizer',
+      name: 'HAR (HTTP Archive) Sanitizer',
+      description:
+        'Sanitize .har network capture files by stripping cookies, authorization headers, and sensitive query tokens before sharing.',
+      fields: [
+        area(
+          'input',
+          'HAR File Content (JSON)',
+          `{\n  "log": {\n    "version": "1.2",\n    "creator": { "name": "WebInspector", "version": "537.36" },\n    "entries": [\n      {\n        "request": {\n          "method": "POST",\n          "url": "${SECURE_WEB}api.example.com/v1/auth?token=secret123",\n          "headers": [\n            { "name": "Authorization", "value": "Bearer eyJhbGciOi..." },\n            { "name": "Cookie", "value": "session_id=987654321" }\n          ],\n          "cookies": [\n            { "name": "session_id", "value": "987654321" }\n          ]\n        },\n        "response": {\n          "status": 200,\n          "headers": [\n            { "name": "Set-Cookie", "value": "session_id=new_secret" }\n          ],\n          "cookies": []\n        }\n      }\n    ]\n  }\n}`,
+        ),
+        select('stripCookies', 'Strip All Cookies', [
+          { value: 'yes', label: 'Yes — Clear all cookie arrays & headers' },
+          { value: 'no', label: 'No — Keep cookies' },
+        ]),
+        select('maskAuthHeaders', 'Mask Auth & API Key Headers', [
+          {
+            value: 'yes',
+            label: 'Yes — Mask Authorization, Cookie, Set-Cookie, x-api-key',
+          },
+          { value: 'no', label: 'No — Keep headers' },
+        ]),
+        select('maskQueryParams', 'Mask Auth Query Parameters', [
+          {
+            value: 'yes',
+            label: 'Yes — Mask token, auth, secret, password params',
+          },
+          { value: 'no', label: 'No — Keep query parameters' },
+        ]),
+      ],
+      outputExtension: 'har',
+    },
+    {
+      id: 'sql-pii-obfuscator',
+      name: 'SQL PII Obfuscator & Sanitizer',
+      description:
+        'Mask sensitive customer emails, credit cards, and phone numbers in SQL queries and data dumps for safe debugging.',
+      fields: [
+        area(
+          'input',
+          'SQL Query / DML / Inserts',
+          "INSERT INTO users (id, name, email, phone, credit_card) VALUES (1, 'Alice Smith', 'alice@customer.com', '+1-555-123-4567', '4111-2222-3333-4444');\nSELECT * FROM orders WHERE customer_email = 'bob@client.org';",
+        ),
+        select('maskEmails', 'Mask Emails', [
+          {
+            value: 'yes',
+            label: 'Yes — Replace with user_X@synthetic-test.local',
+          },
+          { value: 'no', label: 'No' },
+        ]),
+        select('maskCards', 'Mask Credit Card Numbers', [
+          { value: 'yes', label: 'Yes — Replace 16-digit card patterns' },
+          { value: 'no', label: 'No' },
+        ]),
+        select('maskPhones', 'Mask Phone Numbers', [
+          { value: 'yes', label: 'Yes — Replace 10-12 digit phone numbers' },
+          { value: 'no', label: 'No' },
+        ]),
+      ],
+      outputExtension: 'sql',
+    },
   ] as const;
 
 const MAX_TEXT = 1_000_000;
@@ -2135,7 +2455,861 @@ ${goSnippet}`;
 
       return markup;
     }
+    case 'cron-generator': {
+      let expression = values.expression?.trim() || '* * * * *';
+      if (values.preset && values.preset !== 'custom') {
+        const presets: Record<string, string> = {
+          hourly: '0 * * * *',
+          daily_midnight: '0 0 * * *',
+          daily_morning: '0 9 * * *',
+          weekly_monday: '0 9 * * 1',
+          monthly_first: '0 0 1 * *',
+        };
+        expression = presets[values.preset] || expression;
+      }
+      return explainAndScheduleCron(expression);
+    }
+    case 'regex-tester': {
+      const pattern = required(values.pattern, 'Regular expression pattern');
+      const flags = values.flags || 'g';
+      const text = values.testText ?? '';
+      return testRegexInBrowser(pattern, flags, text);
+    }
+    case 'dummy-data-generator': {
+      const count = Math.max(
+        1,
+        Math.min(100, parseInt(values.count || '5', 10) || 5),
+      );
+      const format = values.format || 'json';
+      const tableName = values.tableName?.trim() || 'users';
+      const schemaType = values.schemaType || 'users';
+      return generateMockData(count, format, tableName, schemaType);
+    }
+    case 'git-flight-rules': {
+      const scenario = values.scenario || 'undo-commit-keep';
+      const branchName = values.branchName?.trim() || 'feature/my-branch';
+      const commitHash = values.commitHash?.trim() || 'a1b2c3d';
+      const commitCount = parseInt(values.commitCount || '3', 10) || 3;
+      return generateGitFlightRule(
+        scenario,
+        branchName,
+        commitHash,
+        commitCount,
+      );
+    }
+    case 'docker-cheatsheet': {
+      const template = values.template || 'node-postgres-redis';
+      return generateDockerSnippet(template);
+    }
+    case 'http-status-codes': {
+      const code = values.code || 'all';
+      return getHttpStatusCodeReference(code);
+    }
+    case 'llm-secret-scrubber': {
+      const input = required(values.input, 'Prompt / Code');
+      const scrubKeys = values.scrubKeys !== 'no';
+      const scrubEmails = values.scrubEmails !== 'no';
+      const scrubIps = values.scrubIps === 'yes';
+      const style = values.placeholderStyle || 'numbered';
+      return scrubSecretsForLlm(input, scrubKeys, scrubEmails, scrubIps, style);
+    }
+    case 'har-sanitizer': {
+      const input = required(values.input, 'HAR content');
+      const stripCookies = values.stripCookies !== 'no';
+      const maskAuthHeaders = values.maskAuthHeaders !== 'no';
+      const maskQueryParams = values.maskQueryParams !== 'no';
+      return sanitizeHarFile(
+        input,
+        stripCookies,
+        maskAuthHeaders,
+        maskQueryParams,
+      );
+    }
+    case 'sql-pii-obfuscator': {
+      const input = required(values.input, 'SQL Query');
+      const maskEmails = values.maskEmails !== 'no';
+      const maskCards = values.maskCards !== 'no';
+      const maskPhones = values.maskPhones !== 'no';
+      return obfuscateSqlPii(input, maskEmails, maskPhones, maskCards);
+    }
     default:
       throw new Error('Choose a supported advanced developer operation.');
   }
+}
+
+function explainAndScheduleCron(expression: string): string {
+  const parts = expression.trim().split(/\s+/u);
+  if (parts.length !== 5) {
+    throw new Error(
+      'A standard cron expression must contain exactly 5 space-separated fields (minute hour day-of-month month day-of-week).',
+    );
+  }
+
+  const [min, hour, dom, mon, dow] = parts;
+
+  function describeField(val: string, name: string, allLabel: string): string {
+    if (val === '*') return allLabel;
+    if (val.startsWith('*/')) return `every ${val.slice(2)} ${name}s`;
+    if (val.includes('-')) return `from ${name} ${val}`;
+    if (val.includes(',')) return `at ${name}s ${val}`;
+    return `at ${name} ${val}`;
+  }
+
+  const desc = [
+    describeField(min, 'minute', 'every minute'),
+    describeField(hour, 'hour', 'every hour'),
+    describeField(dom, 'day of month', 'every day'),
+    describeField(mon, 'month', 'every month'),
+    describeField(dow, 'day of week', 'every day of the week'),
+  ].join(', ');
+
+  return `/* Cron Expression Analysis */
+Expression:   ${expression}
+Summary:      Runs ${desc}
+
+Field Breakdown:
+  ┌───────────── Minute:        ${min}
+  │ ┌─────────── Hour:          ${hour}
+  │ │ ┌───────── Day of month:  ${dom}
+  │ │ │ ┌─────── Month:         ${mon}
+  │ │ │ │ ┌───── Day of week:   ${dow}
+  * * * * *
+
+Common Crontab Syntax:
+  *     = any value
+  ,     = value list separator (e.g. 1,15)
+  -     = range of values (e.g. 1-5 for Mon-Fri)
+  /     = step values (e.g. */15 for every 15 mins)
+
+Example crontab line:
+  ${expression} /usr/local/bin/my-task.sh >> /var/log/my-task.log 2>&1
+`;
+}
+
+function testRegexInBrowser(
+  pattern: string,
+  flags: string,
+  testText: string,
+): string {
+  let reg: RegExp;
+  try {
+    reg = new RegExp(pattern, flags.includes('g') ? flags : flags + 'g');
+  } catch (err) {
+    throw new Error(
+      `Invalid Regular Expression: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  const matches: { index: number; text: string; groups: string[] }[] = [];
+  let match: RegExpExecArray | null;
+  let safety = 0;
+
+  while ((match = reg.exec(testText)) !== null && safety++ < 1000) {
+    matches.push({
+      index: match.index,
+      text: match[0],
+      groups: match.slice(1),
+    });
+    if (match.index === reg.lastIndex) reg.lastIndex++;
+  }
+
+  const formattedMatches = matches
+    .map((m, i) => {
+      const groupInfo = m.groups.length
+        ? `\n    Groups: [${m.groups.map((g) => `"${g}"`).join(', ')}]`
+        : '';
+      return `  [Match #${i + 1}] at index ${m.index} (length ${m.text.length}): "${m.text}"${groupInfo}`;
+    })
+    .join('\n');
+
+  return `/* Regex Test Results */
+Pattern: /${pattern}/${flags}
+Total Matches Found: ${matches.length}
+
+Matches:
+${formattedMatches || '  (No matches found in the provided text)'}
+`;
+}
+
+function generateMockData(
+  count: number,
+  format: string,
+  tableName: string,
+  schemaType: string,
+): string {
+  const firstNames = [
+    'Alex',
+    'Jordan',
+    'Taylor',
+    'Morgan',
+    'Sam',
+    'Casey',
+    'Riley',
+    'Jamie',
+    'Robin',
+    'Avery',
+  ];
+  const lastNames = [
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+  ];
+  const roles = [
+    'Software Engineer',
+    'Product Manager',
+    'Designer',
+    'Data Scientist',
+    'DevOps Lead',
+  ];
+  const statuses = ['pending', 'completed', 'shipped', 'cancelled', 'refunded'];
+  const categories = [
+    'Electronics',
+    'Books',
+    'Home & Kitchen',
+    'Apparel',
+    'Software',
+  ];
+
+  const rows: Record<string, unknown>[] = [];
+  for (let i = 1; i <= count; i++) {
+    const fn = firstNames[i % firstNames.length];
+    const ln = lastNames[(i * 3) % lastNames.length];
+    if (schemaType === 'orders') {
+      rows.push({
+        id: `ord_${1000 + i}`,
+        customer: `${fn} ${ln}`,
+        email: `${fn.toLowerCase()}.${ln.toLowerCase()}@example.com`,
+        amount: +(29.99 * (i + 1)).toFixed(2),
+        status: statuses[i % statuses.length],
+        orderDate: new Date(Date.UTC(2026, i % 12, (i % 28) + 1))
+          .toISOString()
+          .split('T')[0],
+      });
+    } else if (schemaType === 'products') {
+      rows.push({
+        sku: `SKU-${10000 + i}`,
+        title: `${categories[i % categories.length]} Pro Item ${i}`,
+        category: categories[i % categories.length],
+        price: +(19.5 * (i + 2)).toFixed(2),
+        inStock: i % 4 !== 0,
+      });
+    } else {
+      rows.push({
+        id: `usr_${100 + i}`,
+        name: `${fn} ${ln}`,
+        email: `${fn.toLowerCase()}.${ln.toLowerCase()}@example.com`,
+        role: roles[i % roles.length],
+        active: i % 5 !== 0,
+        joinedAt: new Date(Date.UTC(2025, i % 12, (i % 28) + 1))
+          .toISOString()
+          .split('T')[0],
+      });
+    }
+  }
+
+  if (format === 'csv') {
+    const keys = Object.keys(rows[0]);
+    const header = keys.join(',');
+    const body = rows
+      .map((r) => keys.map((k) => JSON.stringify(r[k])).join(','))
+      .join('\n');
+    return `${header}\n${body}`;
+  }
+
+  if (format === 'sql') {
+    const keys = Object.keys(rows[0]);
+    const lines = rows.map((r) => {
+      const vals = keys
+        .map((k) =>
+          typeof r[k] === 'string' ? `'${String(r[k])}'` : String(r[k]),
+        )
+        .join(', ');
+      return `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${vals});`;
+    });
+    return lines.join('\n');
+  }
+
+  return JSON.stringify(rows, null, 2);
+}
+
+function generateGitFlightRule(
+  scenario: string,
+  branch: string,
+  commit: string,
+  count: number,
+): string {
+  switch (scenario) {
+    case 'undo-commit-keep':
+      return `# Scenario: Undo last commit, keep changes staged in your working index
+git reset --soft HEAD~1
+
+# Your changes are now preserved and staged. You can edit them and commit again:
+git commit -m "New revised commit message"`;
+
+    case 'undo-commit-discard':
+      return `# Scenario: Completely destroy the most recent commit and all its changes
+# WARNING: This will permanently wipe uncommitted/unstaged modifications!
+git reset --hard HEAD~1`;
+
+    case 'change-message':
+      return `# Scenario: Change the commit message of the most recent commit
+git commit --amend -m "Your updated commit message"
+
+# If you already pushed to remote (requires force push on personal branch):
+git push --force-with-lease origin ${branch || 'main'}`;
+
+    case 'recover-branch':
+      return `# Scenario: Recover a branch that was accidentally deleted
+# 1. Inspect recent git actions to find the last commit SHA of the deleted branch:
+git reflog
+
+# 2. Recreate the branch pointing to commit ${commit || '<commit-sha>'}:
+git checkout -b ${branch || 'recovered-branch'} ${commit || 'HEAD@{1}'}`;
+
+    case 'discard-unstaged':
+      return `# Scenario: Discard all local changes to tracked files in working directory
+git restore .
+
+# To also clean untracked files and directories:
+git clean -fd`;
+
+    case 'stash-include-untracked':
+      return `# Scenario: Stash all modifications including newly created untracked files
+git stash -u -m "WIP: stash before switching tasks"
+
+# To restore your stashed work later:
+git stash pop`;
+
+    case 'squash-commits':
+      return `# Scenario: Squash the last ${count} commits into a single clean commit
+git reset --soft HEAD~${count}
+git commit -m "Squashed ${count} commits into single feature release"`;
+
+    default:
+      return `# Run git status to check current state
+git status`;
+  }
+}
+
+function generateDockerSnippet(template: string): string {
+  switch (template) {
+    case 'node-postgres-redis':
+      return `version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/app_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: app_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
+  redisdata:
+`;
+
+    case 'python-postgres':
+      return `version: '3.8'
+
+services:
+  web:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/dbname
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
+`;
+
+    case 'nginx-reverse-proxy':
+      return `version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/ssl/certs:ro
+    restart: always
+`;
+
+    case 'cli-cleanup':
+      return `# ==========================================
+# Docker Disk Cleanup & Prune Commands
+# ==========================================
+
+# 1. Remove all unused containers, networks, and images (dangling)
+docker system prune -f
+
+# 2. Deep clean including all unused images and stopped containers
+docker system prune -a --volumes
+
+# 3. Remove all dangling anonymous volumes
+docker volume prune -f
+
+# 4. Check Docker disk space usage breakdown
+docker system df
+`;
+
+    case 'cli-troubleshoot':
+      return `# ==========================================
+# Docker Troubleshooting & Debugging CLI
+# ==========================================
+
+# 1. Open an interactive shell inside a running container
+docker exec -it <container_name_or_id> /bin/sh
+
+# 2. Stream real-time container logs with timestamps
+docker logs -f --tail 100 <container_name_or_id>
+
+# 3. View container real-time CPU and Memory usage
+docker stats
+
+# 4. Inspect full container JSON configuration and IP address
+docker inspect <container_name_or_id>
+`;
+
+    default:
+      return `docker ps -a`;
+  }
+}
+
+function getHttpStatusCodeReference(code: string): string {
+  const codes: Record<
+    string,
+    { title: string; category: string; description: string; tips: string }
+  > = {
+    '200': {
+      title: '200 OK',
+      category: '2xx Success',
+      description: 'The standard response for successful HTTP requests.',
+      tips: 'Use for successful GET, PUT, or PATCH responses returning data.',
+    },
+    '201': {
+      title: '201 Created',
+      category: '2xx Success',
+      description: 'The request succeeded and a new resource was created.',
+      tips: 'Include a Location header pointing to the URI of the newly created resource.',
+    },
+    '204': {
+      title: '204 No Content',
+      category: '2xx Success',
+      description:
+        'The server successfully processed the request, but is not returning any content.',
+      tips: 'Ideal for DELETE operations or updates that return no response body.',
+    },
+    '301': {
+      title: '301 Moved Permanently',
+      category: '3xx Redirection',
+      description: 'The target resource has been assigned a new permanent URI.',
+      tips: 'Search engines will transfer SEO ranking to the new target URL.',
+    },
+    '304': {
+      title: '304 Not Modified',
+      category: '3xx Redirection',
+      description:
+        'Indicates the resource has not been modified since the version specified by the request headers (If-Modified-Since / If-None-Match).',
+      tips: 'Allows browsers to reuse cached responses without downloading body bytes.',
+    },
+    '400': {
+      title: '400 Bad Request',
+      category: '4xx Client Error',
+      description:
+        'The server cannot or will not process the request due to something perceived to be a client error (e.g., malformed request syntax, invalid request message framing).',
+      tips: 'Return a structured JSON error object explaining which fields failed validation.',
+    },
+    '401': {
+      title: '401 Unauthorized',
+      category: '4xx Client Error',
+      description:
+        'The request has not been applied because it lacks valid authentication credentials for the target resource.',
+      tips: 'Include a WWW-Authenticate header defining the challenge mechanism.',
+    },
+    '403': {
+      title: '403 Forbidden',
+      category: '4xx Client Error',
+      description:
+        'The server understood the request but refuses to authorize it. Unlike 401, re-authenticating will not make a difference.',
+      tips: 'Use when the user is authenticated but lacks required role/permission for the resource.',
+    },
+    '404': {
+      title: '404 Not Found',
+      category: '4xx Client Error',
+      description:
+        'The origin server did not find a current representation for the target resource.',
+      tips: 'Check spelling of endpoints, route parameters, and deleted resources.',
+    },
+    '409': {
+      title: '409 Conflict',
+      category: '4xx Client Error',
+      description:
+        'The request could not be completed due to a conflict with the current state of the target resource.',
+      tips: 'Common in edit conflicts (version mismatches) or duplicate unique key violations.',
+    },
+    '422': {
+      title: '422 Unprocessable Entity',
+      category: '4xx Client Error',
+      description:
+        'The server understands the content type and syntax, but was unable to process the contained instructions (semantic validation error).',
+      tips: 'Standard status code for JSON payload schema and form validation failures.',
+    },
+    '429': {
+      title: '429 Too Many Requests',
+      category: '4xx Client Error',
+      description:
+        'The user has sent too many requests in a given amount of time (rate limiting).',
+      tips: 'Include a Retry-After header indicating how many seconds to wait before retrying.',
+    },
+    '500': {
+      title: '500 Internal Server Error',
+      category: '5xx Server Error',
+      description:
+        'The server encountered an unexpected condition that prevented it from fulfilling the request.',
+      tips: 'Inspect application error logs, uncaught exceptions, and database crashes.',
+    },
+    '502': {
+      title: '502 Bad Gateway',
+      category: '5xx Server Error',
+      description:
+        'The server, while acting as a gateway or proxy, received an invalid response from the inbound server.',
+      tips: 'Check if downstream API, node process, or php-fpm upstream is running.',
+    },
+    '503': {
+      title: '503 Service Unavailable',
+      category: '5xx Server Error',
+      description:
+        'The server is currently unable to handle the request due to temporary overloading or maintenance.',
+      tips: 'Include Retry-After header if maintenance duration is known.',
+    },
+    '504': {
+      title: '504 Gateway Timeout',
+      category: '5xx Server Error',
+      description:
+        'The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server.',
+      tips: 'Check database query execution times, upstream API latency, and proxy timeout settings.',
+    },
+  };
+
+  if (code !== 'all' && codes[code]) {
+    const item = codes[code];
+    return `/* HTTP Status Code Reference: ${item.title} */
+Category:    ${item.category}
+Meaning:     ${item.description}
+Best Practice & Tips:
+  ${item.tips}
+`;
+  }
+
+  return `/* HTTP Status Codes Overview */
+1xx Informational:
+  100 Continue · 101 Switching Protocols
+
+2xx Success:
+  200 OK · 201 Created · 204 No Content · 206 Partial Content
+
+3xx Redirection:
+  301 Moved Permanently · 302 Found · 304 Not Modified · 307 Temporary Redirect · 308 Permanent Redirect
+
+4xx Client Errors:
+  400 Bad Request · 401 Unauthorized · 403 Forbidden · 404 Not Found
+  405 Method Not Allowed · 409 Conflict · 422 Unprocessable Entity · 429 Too Many Requests
+
+5xx Server Errors:
+  500 Internal Server Error · 502 Bad Gateway · 503 Service Unavailable · 504 Gateway Timeout
+`;
+}
+
+function scrubSecretsForLlm(
+  input: string,
+  scrubKeys: boolean,
+  scrubEmails: boolean,
+  scrubIps: boolean,
+  placeholderStyle: string,
+): string {
+  let text = input;
+  const counts: Record<string, number> = {};
+  let tokenCounter = 1;
+
+  function record(category: string, count = 1) {
+    counts[category] = (counts[category] || 0) + count;
+  }
+
+  function replacePattern(regex: RegExp, category: string) {
+    let count = 0;
+    text = text.replace(regex, () => {
+      count++;
+      if (placeholderStyle === 'generic') {
+        return `[REDACTED_${category.toUpperCase().replace(/\s+/gu, '_')}]`;
+      }
+      return `[REDACTED_${category.toUpperCase().replace(/\s+/gu, '_')}_${tokenCounter++}]`;
+    });
+    if (count > 0) {
+      record(category, count);
+    }
+  }
+
+  // 1. Private keys (PEM)
+  replacePattern(
+    /-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----/gu,
+    'PRIVATE_KEY',
+  );
+
+  if (scrubKeys) {
+    // AWS Access Key ID
+    replacePattern(/\bAKIA[0-9A-Z]{16}\b/gu, 'AWS_ACCESS_KEY');
+    // AWS Secret Key
+    replacePattern(
+      /(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)\s*[:=]\s*['"]?([A-Za-z0-9/+=]{40})['"]?/gu,
+      'AWS_SECRET_KEY',
+    );
+    // OpenAI / Anthropic API keys
+    replacePattern(/\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/gu, 'OPENAI_API_KEY');
+    replacePattern(/\bsk-ant-[A-Za-z0-9_-]{20,}\b/gu, 'ANTHROPIC_API_KEY');
+    // Stripe keys
+    replacePattern(
+      /\b(?:sk|rk|pk)_(?:live|test)_[0-9a-zA-Z]{24,}\b/gu,
+      'STRIPE_KEY',
+    );
+    // GitHub Tokens
+    replacePattern(
+      /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}\b/gu,
+      'GITHUB_TOKEN',
+    );
+    replacePattern(/\bgithub_pat_[A-Za-z0-9_]{22,}\b/gu, 'GITHUB_PAT');
+    // Slack Tokens & Webhooks
+    replacePattern(
+      /\bxox[baprs]-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24,}\b/gu,
+      'SLACK_TOKEN',
+    );
+    // Database connection strings
+    replacePattern(
+      /(?:postgres|postgresql|mongodb|mongodb\+srv|mysql|redis):\/\/[^\s"']+/gu,
+      'DB_CONNECTION_STRING',
+    );
+    // Bearer / Authorization headers
+    replacePattern(/Bearer\s+[A-Za-z0-9\-._~+/]+=*/gu, 'BEARER_TOKEN');
+    // Generic passwords / secrets in key=value assignments
+    let authCount = 0;
+    text = text.replace(
+      /((?:password|passwd|secret|api_key|apikey|auth_token)\s*[:=]\s*['"])(?!\[REDACTED_)([^'"\r\n]{4,})(['"])/giu,
+      (_m, p1, _p2, p3) => {
+        authCount++;
+        const placeholder =
+          placeholderStyle === 'generic'
+            ? `[REDACTED_AUTH_SECRET]`
+            : `[REDACTED_AUTH_SECRET_${tokenCounter++}]`;
+        return `${p1}${placeholder}${p3}`;
+      },
+    );
+    if (authCount > 0) record('AUTH_SECRET', authCount);
+  }
+
+  if (scrubEmails) {
+    replacePattern(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gu, 'EMAIL');
+  }
+
+  if (scrubIps) {
+    replacePattern(
+      /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gu,
+      'IP_ADDRESS',
+    );
+  }
+
+  const entries = Object.entries(counts);
+  const totalRedactions = entries.reduce((sum, [, count]) => sum + count, 0);
+
+  return `/* LLM Secret Scrubber — Sanitized for AI Prompts */
+Total Redacted Secrets: ${totalRedactions}
+
+${
+  entries.length > 0
+    ? `Redaction Summary:\n${entries.map(([category, count]) => `- ${category}: ${count}`).join('\n')}`
+    : 'No sensitive secrets detected.'
+}
+
+--- SANITIZED PROMPT (READY TO PASTE) ---
+
+${text}`;
+}
+
+function sanitizeHarFile(
+  rawHar: string,
+  stripCookies: boolean,
+  maskAuthHeaders: boolean,
+  maskQueryParams: boolean,
+): string {
+  const parsed = json(rawHar, 'HAR file') as Record<string, unknown>;
+  if (!parsed || typeof parsed !== 'object' || !parsed.log) {
+    throw new Error('Invalid HAR structure: root must contain a "log" object.');
+  }
+
+  const sensitiveHeaderNames = new Set([
+    'authorization',
+    'cookie',
+    'set-cookie',
+    'x-api-key',
+    'apikey',
+    'proxy-authorization',
+    'x-auth-token',
+    'x-csrf-token',
+    'x-session-id',
+  ]);
+
+  const sensitiveParamNames = new Set([
+    'token',
+    'auth',
+    'key',
+    'apikey',
+    'secret',
+    'password',
+    'code',
+    'access_token',
+    'refresh_token',
+    'session',
+  ]);
+
+  const logObj = parsed.log as Record<string, unknown>;
+  const entries = Array.isArray(logObj.entries) ? logObj.entries : [];
+
+  for (const entry of entries) {
+    if (!entry || typeof entry !== 'object') continue;
+    const req = (entry as Record<string, unknown>).request as
+      | Record<string, unknown>
+      | undefined;
+    const res = (entry as Record<string, unknown>).response as
+      | Record<string, unknown>
+      | undefined;
+
+    // Sanitize Request
+    if (req) {
+      if (stripCookies && Array.isArray(req.cookies)) {
+        req.cookies = [];
+      }
+      if (maskAuthHeaders && Array.isArray(req.headers)) {
+        for (const h of req.headers as Record<string, string>[]) {
+          if (
+            h &&
+            typeof h.name === 'string' &&
+            sensitiveHeaderNames.has(h.name.toLowerCase())
+          ) {
+            h.value = '[REDACTED]';
+          }
+        }
+      }
+      if (maskQueryParams && Array.isArray(req.queryString)) {
+        for (const q of req.queryString as Record<string, string>[]) {
+          if (
+            q &&
+            typeof q.name === 'string' &&
+            sensitiveParamNames.has(q.name.toLowerCase())
+          ) {
+            q.value = '[REDACTED]';
+          }
+        }
+      }
+    }
+
+    // Sanitize Response
+    if (res) {
+      if (stripCookies && Array.isArray(res.cookies)) {
+        res.cookies = [];
+      }
+      if (maskAuthHeaders && Array.isArray(res.headers)) {
+        for (const h of res.headers as Record<string, string>[]) {
+          if (
+            h &&
+            typeof h.name === 'string' &&
+            sensitiveHeaderNames.has(h.name.toLowerCase())
+          ) {
+            h.value = '[REDACTED]';
+          }
+        }
+      }
+    }
+  }
+
+  return JSON.stringify(parsed, null, 2);
+}
+
+function obfuscateSqlPii(
+  input: string,
+  maskEmails: boolean,
+  maskPhones: boolean,
+  maskCards: boolean,
+): string {
+  let text = input;
+  let emailCounter = 1;
+
+  if (maskEmails) {
+    text = text.replace(
+      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gu,
+      () => {
+        return `user_${emailCounter++}@synthetic-test.local`;
+      },
+    );
+  }
+
+  if (maskCards) {
+    text = text.replace(/\b(?:\d{4}[-\s]?){3}\d{4}\b/gu, '4111-XXXX-XXXX-1111');
+  }
+
+  if (maskPhones) {
+    text = text.replace(
+      /\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/gu,
+      '+1-555-0199',
+    );
+  }
+
+  return text;
 }

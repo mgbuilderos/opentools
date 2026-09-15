@@ -7,6 +7,7 @@ import {
 
 const responseHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Embedder-Policy': 'credentialless',
   'Cross-Origin-Resource-Policy': 'same-origin',
   'Permissions-Policy':
     'camera=(), microphone=(), geolocation=(), payment=(), usb=()',

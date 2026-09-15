@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('finance and business workbench', () => {
-  it('publishes 49 unique operations whose defaults all run', () => {
-    expect(FINANCE_OPERATIONS).toHaveLength(49);
-    expect(new Set(FINANCE_OPERATIONS.map((item) => item.id)).size).toBe(49);
+  it('publishes 53 unique operations whose defaults all run', () => {
+    expect(FINANCE_OPERATIONS).toHaveLength(53);
+    expect(new Set(FINANCE_OPERATIONS.map((item) => item.id)).size).toBe(53);
     for (const operation of FINANCE_OPERATIONS) {
       expect(
         runFinanceOperation(operation.id, defaults(operation.id)),
@@ -211,6 +211,48 @@ describe('finance and business workbench', () => {
         monthlyBurn: '100',
       }),
     ).toContain('10 months');
+  });
+
+  it('calculates payment fees, salary breakdowns, mortgage savings, and SaaS MRR', () => {
+    const fees = runFinanceOperation('payment-fee-calculator', {
+      amount: '1000',
+      percentFee: '2.9',
+      fixedFee: '0.30',
+    });
+    expect(fees).toContain('Processing Fee:     29.3');
+    expect(fees).toContain('Net Funds Received: 970.7');
+    expect(fees).toContain('To receive exact 1000 after fees, invoice:');
+
+    const salary = runFinanceOperation('salary-hourly-converter', {
+      salary: '75000',
+      hoursPerWeek: '40',
+      weeksPerYear: '52',
+      taxRate: '20',
+    });
+    expect(salary).toContain('Gross Annual Salary:     75000');
+    expect(salary).toContain('Hourly Rate:');
+    expect(salary).toContain('Monthly:');
+
+    const mortgageExtra = runFinanceOperation('mortgage-extra-payment', {
+      principal: '300000',
+      rate: '6',
+      years: '30',
+      extraMonthly: '200',
+    });
+    expect(mortgageExtra).toContain('Accelerated Monthly Payment:');
+    expect(mortgageExtra).toContain('Total Interest Saved:');
+    expect(mortgageExtra).toContain('Payoff Time Shortened By:');
+
+    const saas = runFinanceOperation('saas-mrr-calculator', {
+      startingMrr: '10000',
+      monthlyGrowthRate: '10',
+      churnRate: '2',
+      expansionRate: '2',
+      months: '6',
+    });
+    expect(saas).toContain('Starting MRR: 10000');
+    expect(saas).toContain('Ending Projected MRR');
+    expect(saas).toContain('Ending Projected ARR');
   });
 
   it('rejects invalid roots, periods, and contribution margins', () => {
