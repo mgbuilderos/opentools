@@ -25,6 +25,10 @@ jobs:
           node-version: 22.x
           cache: npm
 
+      # The checked-in SBOM is npm-version specific; match the version that generated it.
+      - name: Use npm 11.12.1
+        run: npm install --global npm@11.12.1
+
       - name: Install dependencies
         run: npm ci
 

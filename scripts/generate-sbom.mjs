@@ -27,9 +27,16 @@ const sbom = JSON.parse(result.stdout);
 function stableInventory(value) {
   const inventory = structuredClone(value);
   delete inventory.serialNumber;
-  if (inventory.metadata) delete inventory.metadata.timestamp;
+  if (inventory.metadata) {
+    delete inventory.metadata.timestamp;
+    // npm names the root component after the checkout directory, not the package.
+    if (inventory.metadata.component) delete inventory.metadata.component.name;
+  }
   return JSON.stringify(inventory);
 }
+
+const npmVersion = (inventory) =>
+  inventory.metadata?.tools?.find((tool) => tool.vendor === 'npm')?.version;
 
 if (checkOnly) {
   if (!existsSync(outputPath)) {
@@ -38,8 +45,12 @@ if (checkOnly) {
   }
   const checkedIn = JSON.parse(readFileSync(outputPath, 'utf8'));
   if (stableInventory(checkedIn) !== stableInventory(sbom)) {
+    const expected = npmVersion(checkedIn);
+    const actual = npmVersion(sbom);
     process.stderr.write(
-      'Checked-in SBOM does not match package-lock.json. Run npm run sbom and review the diff.\n',
+      expected && actual && expected !== actual
+        ? `Checked-in SBOM was generated with npm ${expected}, but this is npm ${actual}; npm versions produce different SBOM content. Use npm ${expected}, or regenerate with npm run sbom and review the diff.\n`
+        : 'Checked-in SBOM does not match package-lock.json. Run npm run sbom and review the diff.\n',
     );
     process.exit(1);
   }
