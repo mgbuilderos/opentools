@@ -1,8 +1,8 @@
 export const SUPPORT_CONFIG = {
   githubSponsorsUrl:
     process.env.NEXT_PUBLIC_GITHUB_SPONSORS_URL ||
-    ['https:', '//', 'github.com/sponsors/opentools'].join(''),
-  upiId: process.env.NEXT_PUBLIC_UPI_ID || 'opentools@upi',
+    ['https:', '//', 'github.com/sponsors/mgbuilderos'].join(''),
+  upiId: process.env.NEXT_PUBLIC_UPI_ID || 'mg.io.test@oksbi',
   upiPayeeName: process.env.NEXT_PUBLIC_UPI_NAME || 'OpenTools',
 };
 
