@@ -92,6 +92,35 @@ describe('local tool source policy', () => {
     expect(violations).toEqual([]);
   });
 
+  it('contains no forbidden competitor names in user-facing UI copy', () => {
+    const interfaceFiles = [
+      path.join(projectRoot, 'components'),
+      path.join(projectRoot, 'app'),
+    ].flatMap(sourceFiles);
+    const forbiddenCompetitors = [
+      /\bAdobe\b/iu,
+      /\bAcrobat\b/iu,
+      /\biLovePDF\b/iu,
+      /\bSmallpdf\b/iu,
+      /\biLoveIMG\b/iu,
+      /\bCanva\b/iu,
+      /\bSejda\b/iu,
+      /\bPDF24\b/iu,
+      /\bTinyPNG\b/iu,
+    ];
+    const violations = interfaceFiles.flatMap((file) => {
+      const source = readFileSync(file, 'utf8');
+      return forbiddenCompetitors
+        .filter((pattern) => pattern.test(source))
+        .map(
+          (pattern) =>
+            `${path.relative(projectRoot, file)} matched competitor name ${pattern.source}`,
+        );
+    });
+
+    expect(violations).toEqual([]);
+  });
+
   it('marks every current result-download surface for the value receipt', () => {
     const downloadSurfaces = [
       'components/text-workbench-tool.tsx',

@@ -255,7 +255,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                       OpenTools (Local)
                     </th>
                     <th scope="col" className="px-5 py-3 font-semibold">
-                      Cloud Converters (Zamzar / Smallpdf)
+                      Standard Cloud Converters
                     </th>
                   </tr>
                 </thead>

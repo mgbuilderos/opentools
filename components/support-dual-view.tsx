@@ -29,7 +29,7 @@ export function SupportDualView() {
     'international',
   );
   const [detectedRegion, setDetectedRegion] = useState<string | null>(null);
-  const [selectedInrAmount, setSelectedInrAmount] = useState<number>(500);
+  const [selectedInrAmount, setSelectedInrAmount] = useState<number>(150);
   const [customInrAmount, setCustomInrAmount] = useState<string>('');
   const [qrSvg, setQrSvg] = useState<string>('');
   const [copiedUpi, setCopiedUpi] = useState<boolean>(false);
@@ -174,7 +174,7 @@ export function SupportDualView() {
               Select Support Amount
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {[150, 500, 1500, 3000].map((amt) => {
+              {[50, 150, 500, 1500].map((amt) => {
                 const isSelected =
                   currentAmount === amt && customInrAmount === '';
                 return (
@@ -195,11 +195,11 @@ export function SupportDualView() {
                       ₹{amt.toLocaleString('en-IN')}
                     </div>
                     <div className="text-[11px] text-muted-foreground mt-0.5">
-                      {amt === 150
-                        ? 'Quick Chai'
-                        : amt === 500
-                          ? 'Feature Boost'
-                          : amt === 1500
+                      {amt === 50
+                        ? 'Chai'
+                        : amt === 150
+                          ? 'Lunch (Popular)'
+                          : amt === 500
                             ? 'Patron'
                             : 'Sponsor'}
                     </div>

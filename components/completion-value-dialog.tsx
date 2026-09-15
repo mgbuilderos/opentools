@@ -26,12 +26,54 @@ import {
   SUPPORT_PREFERENCE_KEY,
 } from '@/lib/support-preference';
 
+function getReliefHeadline(operation?: string): string {
+  if (!operation)
+    return 'Kept your files 100% on your device with zero cloud uploads.';
+  const op = operation.toLowerCase();
+  if (
+    op.includes('secret') ||
+    op.includes('scrub') ||
+    op.includes('har') ||
+    op.includes('pii') ||
+    op.includes('sanitize') ||
+    op.includes('mask')
+  ) {
+    return 'Prevented accidental data leaks and protected sensitive credentials.';
+  }
+  if (
+    op.includes('compress') ||
+    op.includes('size') ||
+    op.includes('exact-kb') ||
+    op.includes('optimize')
+  ) {
+    return 'Target size achieved. Ready for upload portals with zero data leaks.';
+  }
+  if (
+    op.includes('pdf') ||
+    op.includes('extract') ||
+    op.includes('merge') ||
+    op.includes('split')
+  ) {
+    return 'Saved you paid software subscriptions and kept documents 100% private.';
+  }
+  if (
+    op.includes('ocr') ||
+    op.includes('transcribe') ||
+    op.includes('audio') ||
+    op.includes('speech')
+  ) {
+    return 'Fast offline AI processing with zero third-party cloud uploads.';
+  }
+  return 'Saved you paid software subscriptions and kept data 100% on your device.';
+}
+
 /** A non-modal receipt after download/copy intent; the original action is never blocked or delayed. */
 export function CompletionValueDialog() {
   const latest = useRef<CompletionDetail | null>(null);
   const offeredThisPage = useRef(false);
   const trigger = useRef<HTMLElement | null>(null);
   const panel = useRef<HTMLDialogElement>(null);
+  const delayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [receipt, setReceipt] = useState<CompletionDetail | null>(null);
   const [isIndia] = useState(() => isLikelyIndiaVisitor());
 
@@ -48,13 +90,13 @@ export function CompletionValueDialog() {
   };
   const dismiss = (never = false) => {
     remember(never);
+    if (delayTimer.current) clearTimeout(delayTimer.current);
     const shouldRestoreFocus = panel.current?.contains(document.activeElement);
     setReceipt(null);
     if (shouldRestoreFocus) trigger.current?.focus();
   };
 
   useEffect(() => {
-    let frame = 0;
     const receive = (event: Event) => {
       latest.current = (event as CustomEvent<CompletionDetail>).detail;
       setReceipt(null);
@@ -92,13 +134,16 @@ export function CompletionValueDialog() {
       }
       trigger.current = target;
       remember();
-      // The existing anchor/button action runs first, without interception or replay.
-      frame = requestAnimationFrame(() => setReceipt(result));
+      // 400ms relief delay: allows user to confirm their download started before presenting the value card
+      if (delayTimer.current) clearTimeout(delayTimer.current);
+      delayTimer.current = setTimeout(() => {
+        setReceipt(result);
+      }, 400);
     };
     window.addEventListener(COMPLETION_EVENT, receive);
     document.addEventListener('click', observeDownload);
     return () => {
-      cancelAnimationFrame(frame);
+      if (delayTimer.current) clearTimeout(delayTimer.current);
       window.removeEventListener(COMPLETION_EVENT, receive);
       document.removeEventListener('click', observeDownload);
     };
@@ -148,7 +193,7 @@ export function CompletionValueDialog() {
           id="completion-title"
           className="mt-1 text-lg font-semibold leading-snug tracking-[-0.02em]"
         >
-          Saved you $20/mo and kept your data 100% on your device.
+          {getReliefHeadline(receipt.operation)}
         </h2>
         <p
           id="completion-description"
@@ -177,8 +222,8 @@ export function CompletionValueDialog() {
         </dl>
 
         <p className="text-xs leading-5 text-muted-foreground">
-          Your download is free and private forever. Consider fueling this
-          independent project:
+          Built by an independent developer. 100% ad-free &amp; private forever.
+          Fuel a quick coffee or chai to keep this running:
         </p>
 
         {/* Dynamic Context-Aware Preset Chips */}
@@ -186,25 +231,34 @@ export function CompletionValueDialog() {
           {isIndia ? (
             <>
               <a
-                href={getUpiPaymentUrl(50, 'Chai Support - OpenTools')}
+                href={getUpiPaymentUrl(
+                  29,
+                  'OpenTools Chai ☕ - Keep It Private & Ad-Free',
+                )}
                 className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/60 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                aria-label="Buy a Chai for ₹50 via UPI"
+                aria-label="Buy a Chai for ₹29 via UPI"
               >
-                ☕ Chai ₹50
+                ☕ Chai ₹29
               </a>
               <a
-                href={getUpiPaymentUrl(150, 'Lunch Support - OpenTools')}
+                href={getUpiPaymentUrl(
+                  149,
+                  'OpenTools Lunch 🍕 - Keep It Private & Ad-Free',
+                )}
                 className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-colors hover:bg-success/25"
-                aria-label="Support with ₹150 lunch via UPI"
+                aria-label="Support with ₹149 lunch via UPI"
               >
-                🍕 Lunch ₹150
+                🍕 Lunch ₹149
               </a>
               <a
-                href={getUpiPaymentUrl(500, 'Super Supporter - OpenTools')}
+                href={getUpiPaymentUrl(
+                  499,
+                  'OpenTools Patron 🚀 - Keep It Private & Ad-Free',
+                )}
                 className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-medium text-background transition-opacity hover:opacity-90"
-                aria-label="Super Supporter ₹500 via UPI"
+                aria-label="Super Supporter ₹499 via UPI"
               >
-                🚀 ₹500
+                🚀 ₹499
               </a>
             </>
           ) : (

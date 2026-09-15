@@ -74,7 +74,7 @@ export function getUpiPaymentUrl(amountInr?: number, note?: string): string {
   if (note) {
     params.set('tn', note);
   } else {
-    params.set('tn', 'OpenTools Support');
+    params.set('tn', 'OpenTools Fuel ☕ - Keep It 100% Private & Ad-Free');
   }
   return `upi://pay?${params.toString()}`;
 }
