@@ -10,8 +10,10 @@ The following are treated as security vulnerabilities, not feature requests:
 
 - Any network request that carries user file bytes, file names, pasted text,
   outputs, or data derived from them.
-- Any analytics, telemetry, session replay, advertising, fingerprinting, or
-  third-party tracking script.
+- Any client-side analytics, telemetry, session replay, advertising,
+  fingerprinting, or third-party tracking script.
+- Any server-side logging beyond the visit log documented below, or a visit log
+  that records more than documented.
 - Any silent fallback from local processing to a remote service.
 - A payment or support flow that receives file, job, or result data, or that
   blocks access to a local result.
@@ -24,6 +26,27 @@ Model and asset downloads needed by some tools (for example, an AI model
 fetched once before processing) are app assets, not user data. They must be
 disclosed in the UI and must never include user content. Report any case where
 they do.
+
+## Server-Side Visit Log
+
+Tools never send your data to the server, but the site does log page visits.
+For each page request (not static assets), the edge handler in `proxy.ts` writes
+one `tool_impression` event to Cloudflare Workers Logs containing:
+
+- Country, region, and city, from Cloudflare's IP geolocation headers.
+- The page path, and the `tool` query parameter if present.
+- Device type (mobile, tablet, or desktop), derived from the user agent; the
+  user agent itself is not stored.
+- Primary browser language.
+- The referring site's category and the first 120 characters of the referrer
+  URL, when another site sends one.
+- A timestamp.
+
+The event does not include IP addresses, cookies, files, file names, pasted
+text, or results. Logs are retained under Cloudflare's Workers Logs retention,
+and Cloudflare may also record standard request metadata for its platform logs.
+Any change to what is logged must update this section and the README in the
+same pull request.
 
 ## Supported Versions
 
@@ -47,7 +70,7 @@ Only the latest commit on `main` and the live deployment at
 3. You will receive an acknowledgement within **72 hours** and a triage
    decision within **7 days**.
 
-Confirmed egress or telemetry findings are treated as **critical**: the
+Confirmed egress or undisclosed telemetry findings are treated as **critical**: the
 affected tool is disabled or patched before any other work, a regression test
 is added to the zero-egress suite, and the fix is disclosed in a published
 security advisory with credit to the reporter (unless you prefer anonymity).

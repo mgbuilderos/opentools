@@ -8,7 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Zero Server Egress](https://img.shields.io/badge/Server%20Egress-0%20bytes-2ea44f.svg)](.github/SECURITY.md)
-[![Tests](https://img.shields.io/badge/Tests-282%20passing-2ea44f.svg)](#local-development--quality-control)
+[![Tests](https://img.shields.io/badge/Tests-292%20passing-2ea44f.svg)](#local-development--quality-control)
 [![Client-Side WebAssembly](https://img.shields.io/badge/Runtime-Client--Side%20WASM-654ff0.svg)](#the-zero-egress-privacy-promise)
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/opentools)
 
@@ -18,7 +18,8 @@
 
 OpenTools is a free, open-source collection of PDF, image, developer, data,
 text, math, and QR utilities that run **entirely inside your browser**. No
-account, no upload, no watermark, no ads, no tracking.
+account, no upload, no watermark, no ads, no third-party tracking. The server
+keeps one visit log per page view — see [What the server logs](#what-the-server-logs).
 
 ## The Zero-Egress Privacy Promise
 
@@ -32,7 +33,7 @@ happens in-memory on your device.
 | **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. AI tools (background removal, upscaling, transcription) run **WebAssembly / WebGL** inference in the tab. Hashing uses **WebCrypto**. |
 | **Output**       | Results are handed back as temporary `blob:` URLs and revoked on clear, cancel, or unmount.                                                                                                                                                         |
 | **Enforcement**  | Production responses ship `Content-Security-Policy: connect-src 'none'`, and the test suite rejects direct network primitives in local engine code.                                                                                                 |
-| **No telemetry** | No analytics, session replay, advertising, or payment SDK is loaded on any tool route.                                                                                                                                                              |
+| **Visit log**    | No analytics, session replay, advertising, or payment SDK is loaded in the browser. The server logs one metadata event per page visit, never your files or inputs — see [What the server logs](#what-the-server-logs). |
 
 **Model downloads.** AI tools fetch their model weights once before first use.
 These are app assets, like JavaScript or fonts — they never contain your data.
@@ -41,6 +42,26 @@ from this site only (`/models/`, `/ort/`).
 
 You don't have to trust us: open DevTools → Network, go offline, and run a
 tool. See [SECURITY.md](.github/SECURITY.md#verifying-the-promise-yourself).
+
+### What the server logs
+
+When a page (not a static asset) is requested, the edge handler in
+[`proxy.ts`](proxy.ts) writes one `tool_impression` event to Cloudflare Workers
+Logs. It records:
+
+- Country, region, and city, from Cloudflare's IP geolocation headers.
+- The page path, and the `tool` query parameter if present.
+- Device type (mobile, tablet, or desktop), derived from the user agent. The
+  user agent itself is not stored.
+- Primary browser language.
+- The referring site's category (for example Google, GitHub, Reddit) and the
+  first 120 characters of the referrer URL, when another site sends one.
+- A timestamp.
+
+This event does not include your IP address, cookies, files, file names,
+pasted text, or results — tools run in the browser, so the server never
+receives them. Logs are retained under Cloudflare's Workers Logs retention.
+Cloudflare may also record standard request metadata for its platform logs.
 
 ## Core Tool Suite
 
@@ -97,7 +118,7 @@ npm run build      # production build (Cloudflare Workers output in dist/)
 `npm run qc` runs the fail-fast gates in order:
 
 1. **Format** — `oxfmt --check`
-2. **Unit + all-operation I/O** — 282 Vitest tests, including local-source zero-egress policy checks
+2. **Unit + all-operation I/O** — 292 Vitest tests, including local-source zero-egress policy checks
 3. **Type check** — `tsc --noEmit`
 4. **Lint** — OxLint with warnings denied
 5. **Design system contract** — semantic Tailwind tokens only
@@ -130,7 +151,9 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. In
 short:
 
 - Tools must never make network requests with user data, and must never add
-  analytics or tracking.
+  client-side analytics or tracking. The only server-side log is the
+  [documented visit log](#what-the-server-logs); changes to it must update the
+  docs in the same PR.
 - Dependencies must be MIT-compatible and recorded in
   [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 - Use semantic design tokens (`bg-success`, `text-foreground`, `border-border`).
@@ -138,7 +161,8 @@ short:
 
 ## Security Policy
 
-Unexpected network egress, telemetry, or tracking is treated as a
+Unexpected network egress, tracking, or telemetry beyond the documented visit
+log is treated as a
 **critical vulnerability**. Report it privately via GitHub's
 [private vulnerability reporting](https://github.com/mgbuilderos/opentools/security/advisories/new) — not a public
 issue. Full policy: [`.github/SECURITY.md`](.github/SECURITY.md).
