@@ -9,6 +9,7 @@ import {
   Menu,
   Moon,
   Search,
+  Star,
   Sun,
   X,
   PanelLeftClose,
@@ -19,6 +20,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { groupIcons } from '@/components/category-icons';
 import { CompletionValueDialog } from '@/components/completion-value-dialog';
+import { SUPPORT_CONFIG } from '@/lib/support-config';
 import {
   searchTools,
   toolDestinationsForGroup,
@@ -248,6 +250,75 @@ export function AppShell({
         Skip to tool
       </a>
 
+      {/* Trust & Privacy Announcement Ticker */}
+      <aside
+        aria-label="Trust and privacy guarantees"
+        className="relative z-[55] overflow-hidden border-b bg-muted/40 py-1.5 text-xs text-muted-foreground"
+      >
+        <div className="flex w-full overflow-hidden">
+          <div className="animate-ticker flex items-center gap-6 px-4 whitespace-nowrap select-none font-medium">
+            {[0, 1].map((copyIndex) => (
+              <div key={copyIndex} className="flex items-center gap-6 shrink-0">
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">🛡️</span>
+                  <span>100% In-Browser Execution</span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <a
+                  href={SUPPORT_CONFIG.githubRepoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+                >
+                  <span aria-hidden="true">⚖️</span>
+                  <span>MIT Licensed & Open Source</span>
+                </a>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">🔒</span>
+                  <span>
+                    Zero-Egress Guaranteed (connect-src &apos;none&apos;)
+                  </span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">⚡</span>
+                  <span>Zero Cloud Uploads</span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true">🚫</span>
+                  <span>No Paywalls · No Signups · No Cookies</span>
+                </span>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+                <a
+                  href={SUPPORT_CONFIG.githubRepoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-foreground hover:underline"
+                >
+                  <Star aria-hidden="true" className="size-3 fill-current" />
+                  <span>Star on GitHub</span>
+                </a>
+                <span className="opacity-40" aria-hidden="true">
+                  ·
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+
       <header className="sticky top-0 z-[60] border-b bg-background/95 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
           <Button
@@ -367,6 +438,17 @@ export function AppShell({
                 : ''}
             </p>
           </div>
+
+          <a
+            href={SUPPORT_CONFIG.githubRepoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-ring hidden h-9 items-center gap-1.5 rounded-lg border bg-muted/50 px-3 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground md:inline-flex"
+            aria-label="Star on GitHub"
+          >
+            <Star aria-hidden="true" className="size-3.5 fill-current" />
+            <span>Star on GitHub</span>
+          </a>
 
           <Button
             variant="ghost"

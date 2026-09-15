@@ -1,4 +1,5 @@
 export const SUPPORT_CONFIG = {
+  githubRepoUrl: ['https:', '//', 'github.com/mgbuilderos/opentools'].join(''),
   githubSponsorsUrl:
     process.env.NEXT_PUBLIC_GITHUB_SPONSORS_URL ||
     ['https:', '//', 'github.com/sponsors/mgbuilderos'].join(''),
