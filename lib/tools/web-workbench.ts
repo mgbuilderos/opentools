@@ -660,6 +660,64 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
     ],
     outputExtension: 'css',
   },
+  {
+    id: 'css-animation-generator',
+    name: 'CSS keyframe animation & physics generator',
+    description:
+      'Generate optimized pure CSS keyframe animations (pulse, shake, float, bounce, spin, fade-slide, shimmer) with custom easing curves and GPU acceleration.',
+    fields: [
+      select('animationType', 'Animation preset', [
+        { value: 'float', label: 'Floating / Hover (smooth sine wave)' },
+        { value: 'pulse-glow', label: 'Pulse & Glow (scale + box-shadow)' },
+        { value: 'shake', label: 'Shake / Error Wiggle' },
+        { value: 'bounce', label: 'Bounce / Drop Impact' },
+        { value: 'spin-3d', label: 'Spin & Flip 3D' },
+        { value: 'slide-fade-in', label: 'Slide Up & Fade In (entrance)' },
+        { value: 'heartbeat', label: 'Heartbeat (subtle throb)' },
+        { value: 'shimmer', label: 'Shimmer / Skeleton Loading' },
+      ]),
+      number('duration', 'Duration (seconds)', '2.0'),
+      select('timingFunction', 'Timing / Easing Function', [
+        { value: 'ease-in-out', label: 'Ease In Out (standard smooth)' },
+        { value: 'ease', label: 'Ease (natural deceleration)' },
+        { value: 'linear', label: 'Linear (constant speed / rotation)' },
+        {
+          value: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          label: 'Spring / Bounce (overshoot)',
+        },
+        {
+          value: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          label: 'Material Design Standard',
+        },
+      ]),
+      select('iterationCount', 'Iteration Count', [
+        { value: 'infinite', label: 'Infinite (looping)' },
+        { value: '1', label: '1 (single run)' },
+        { value: '2', label: '2' },
+        { value: '3', label: '3' },
+      ]),
+      select('direction', 'Direction', [
+        { value: 'normal', label: 'Normal' },
+        { value: 'reverse', label: 'Reverse' },
+        { value: 'alternate', label: 'Alternate (back & forth)' },
+        { value: 'alternate-reverse', label: 'Alternate Reverse' },
+      ]),
+      select('fillMode', 'Fill Mode', [
+        { value: 'both', label: 'Both (retain keyframe states)' },
+        { value: 'forwards', label: 'Forwards (keep final state)' },
+        { value: 'backwards', label: 'Backwards' },
+        { value: 'none', label: 'None' },
+      ]),
+      select('gpuAcceleration', 'GPU Hardware Acceleration', [
+        {
+          value: 'yes',
+          label: 'Enabled (will-change: transform / translate3d)',
+        },
+        { value: 'no', label: 'Disabled' },
+      ]),
+    ],
+    outputExtension: 'css',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -1357,6 +1415,9 @@ export function runWebOperation(
     case 'css-neumorphism-generator': {
       return generateNeumorphismCss(values);
     }
+    case 'css-animation-generator': {
+      return generateAnimationCss(values);
+    }
     default:
       throw new Error('Choose a supported web or SEO operation.');
   }
@@ -1671,5 +1732,139 @@ function generateNeumorphismCss(values: Record<string, string>): string {
 /* HTML Button / Container Template */
 <div class="neumorphic-element" style="padding: 24px; max-width: 320px; text-align: center;">
   <span style="font-weight: 600; color: #334155;">Soft UI Surface</span>
+</div>`;
+}
+
+function generateAnimationCss(values: Record<string, string>): string {
+  const animType = values.animationType || 'float';
+  const duration = Math.max(
+    0.1,
+    Math.min(60, parseFloat(values.duration || '2.0') || 2.0),
+  );
+  const timing = values.timingFunction || 'ease-in-out';
+  const iteration = values.iterationCount || 'infinite';
+  const direction = values.direction || 'normal';
+  const fillMode = values.fillMode || 'both';
+  const gpu = values.gpuAcceleration !== 'no';
+
+  let keyframeName = animType;
+  let keyframeBody = '';
+
+  switch (animType) {
+    case 'float':
+      keyframeBody = `  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-14px);
+  }`;
+      break;
+    case 'pulse-glow':
+      keyframeBody = `  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 24px 8px rgba(99, 102, 241, 0.25);
+  }`;
+      break;
+    case 'shake':
+      keyframeBody = `  0%, 100% {
+    transform: translateX(0);
+  }
+  15%, 45%, 75% {
+    transform: translateX(-8px) rotate(-1.5deg);
+  }
+  30%, 60%, 90% {
+    transform: translateX(8px) rotate(1.5deg);
+  }`;
+      break;
+    case 'bounce':
+      keyframeBody = `  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-26px);
+  }
+  60% {
+    transform: translateY(-12px);
+  }`;
+      break;
+    case 'spin-3d':
+      keyframeBody = `  0% {
+    transform: perspective(600px) rotateY(0deg) rotateX(0deg);
+  }
+  50% {
+    transform: perspective(600px) rotateY(180deg) rotateX(15deg);
+  }
+  100% {
+    transform: perspective(600px) rotateY(360deg) rotateX(0deg);
+  }`;
+      break;
+    case 'slide-fade-in':
+      keyframeBody = `  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }`;
+      break;
+    case 'heartbeat':
+      keyframeBody = `  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.18);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.18);
+  }
+  70% {
+    transform: scale(1);
+  }`;
+      break;
+    case 'shimmer':
+      keyframeBody = `  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }`;
+      break;
+    default:
+      keyframeName = 'custom-anim';
+      keyframeBody = `  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }`;
+  }
+
+  const gpuCss = gpu
+    ? `\n  will-change: transform, opacity;\n  transform: translateZ(0);\n  backface-visibility: hidden;`
+    : '';
+
+  return `/* 1. CSS Keyframe Definition */
+@keyframes ${keyframeName} {
+${keyframeBody}
+}
+
+/* 2. Target Animation Class */
+.animated-element {
+  animation-name: ${keyframeName};
+  animation-duration: ${duration}s;
+  animation-timing-function: ${timing};
+  animation-delay: 0s;
+  animation-iteration-count: ${iteration};
+  animation-direction: ${direction};
+  animation-fill-mode: ${fillMode};${gpuCss}
+}
+
+/* 3. HTML Integration Example */
+<div class="animated-element" style="display: inline-block; padding: 16px 24px; background: #18181b; color: #ffffff; border-radius: 8px; font-weight: 600;">
+  Animated Content
 </div>`;
 }

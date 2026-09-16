@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('documents and office workbench', () => {
-  it('publishes 35 unique operations whose defaults all run', () => {
-    expect(DOCUMENT_OPERATIONS).toHaveLength(35);
-    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(35);
+  it('publishes 36 unique operations whose defaults all run', () => {
+    expect(DOCUMENT_OPERATIONS).toHaveLength(36);
+    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(36);
     for (const operation of DOCUMENT_OPERATIONS) {
       expect(
         runDocumentOperation(operation.id, defaults(operation.id)),
@@ -189,6 +189,15 @@ describe('documents and office workbench', () => {
     expect(emailTemplate).toContain('<!DOCTYPE html>');
     expect(emailTemplate).toContain('<table class="main"');
     expect(emailTemplate).toContain('OpenTools');
+
+    const nda = runDocumentOperation(
+      'legal-nda-generator',
+      defaults('legal-nda-generator'),
+    );
+    expect(nda).toContain('MUTUAL NON-DISCLOSURE AGREEMENT');
+    expect(nda).toContain('Acme Technologies Inc.');
+    expect(nda).toContain('2 years');
+    expect(nda).toContain('Confidential Information');
   });
 
   it('rejects impossible dates, missing merge keys, and malformed items', () => {

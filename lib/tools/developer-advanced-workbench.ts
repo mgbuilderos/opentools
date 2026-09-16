@@ -980,6 +980,25 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       ],
       outputExtension: 'ts',
     },
+    {
+      id: 'sql-to-er-diagram',
+      name: 'SQL Schema to Visual ER Diagram',
+      description:
+        'Parse SQL DDL CREATE TABLE statements into an interactive, publication-grade SVG Entity-Relationship diagram with table nodes and foreign key links.',
+      fields: [
+        area(
+          'sql',
+          'SQL DDL (CREATE TABLE statements)',
+          'CREATE TABLE users (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE,\n  created_at TIMESTAMP\n);\n\nCREATE TABLE orders (\n  id INTEGER PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id),\n  total_amount DECIMAL(10, 2),\n  status VARCHAR(50)\n);\n\nCREATE TABLE order_items (\n  id INTEGER PRIMARY KEY,\n  order_id INTEGER NOT NULL REFERENCES orders(id),\n  product_name VARCHAR(100),\n  price DECIMAL(10, 2)\n);',
+        ),
+        select('theme', 'Diagram theme', [
+          { value: 'dark', label: 'Dark Operator (Zinc / Emerald)' },
+          { value: 'light', label: 'Light Clean (White / Slate)' },
+          { value: 'blueprint', label: 'Blueprint (Navy / Cyan)' },
+        ]),
+      ],
+      outputExtension: 'svg',
+    },
   ] as const;
 
 const MAX_TEXT = 1_000_000;
@@ -2358,6 +2377,11 @@ export async function runAdvancedDeveloperOperation(
       const prefix =
         (values.exportPrefix as 'export' | 'declare' | 'none') || 'export';
       return convertJsonToTypeScript(raw, rootName, format, prefix);
+    }
+    case 'sql-to-er-diagram': {
+      const sql = required(values.sql, 'SQL DDL');
+      const theme = values.theme || 'dark';
+      return generateSqlErDiagramSvg(sql, theme);
     }
     case 'svg-cleaner': {
       let markup = required(values.svg, 'SVG markup');
@@ -3774,4 +3798,230 @@ export function convertJsonToTypeScript(
   }
 
   return generatedTypes.map((t) => t.content).join('\n\n');
+}
+
+interface SqlColumn {
+  name: string;
+  type: string;
+  isPk: boolean;
+  isFk: boolean;
+  referencesTable?: string;
+  referencesCol?: string;
+  isNullable: boolean;
+}
+
+interface SqlTable {
+  name: string;
+  columns: SqlColumn[];
+}
+
+export function generateSqlErDiagramSvg(
+  sqlInput: string,
+  theme = 'dark',
+): string {
+  const tableRegex =
+    /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?(\w+)["`]?\s*\(([\s\S]*?)\);/giu;
+  const tables: SqlTable[] = [];
+
+  let match: RegExpExecArray | null;
+  while ((match = tableRegex.exec(sqlInput)) !== null) {
+    const tableName = match[1];
+    const body = match[2];
+    const columns: SqlColumn[] = [];
+
+    const lines = body
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const tablePks = new Set<string>();
+    const tableFks = new Map<string, { table: string; col: string }>();
+
+    for (const line of lines) {
+      const cleanLine = line.replace(/,\s*$/u, '');
+      const pkMatch = /^PRIMARY\s+KEY\s*\(([^)]+)\)/iu.exec(cleanLine);
+      if (pkMatch) {
+        pkMatch[1]
+          .split(',')
+          .forEach((c) => tablePks.add(c.trim().replace(/["`]/gu, '')));
+        continue;
+      }
+      const fkMatch =
+        /^FOREIGN\s+KEY\s*\(([^)]+)\)\s*REFERENCES\s+["`]?(\w+)["`]?\s*\(([^)]+)\)/iu.exec(
+          cleanLine,
+        );
+      if (fkMatch) {
+        const col = fkMatch[1].trim().replace(/["`]/gu, '');
+        const refTable = fkMatch[2].trim();
+        const refCol = fkMatch[3].trim().replace(/["`]/gu, '');
+        tableFks.set(col, { table: refTable, col: refCol });
+        continue;
+      }
+
+      const colMatch = /^["`]?(\w+)["`]?\s+([A-Za-z0-9_()]+)([\s\S]*)$/u.exec(
+        cleanLine,
+      );
+      if (colMatch) {
+        const colName = colMatch[1];
+        const colType = colMatch[2].toUpperCase();
+        const rest = colMatch[3] || '';
+        const isInlinePk = /PRIMARY\s+KEY/iu.test(rest);
+        const isNotNull = /NOT\s+NULL/iu.test(rest);
+        const inlineRef =
+          /REFERENCES\s+["`]?(\w+)["`]?\s*(?:\(([^)]+)\))?/iu.exec(rest);
+
+        if (isInlinePk) tablePks.add(colName);
+        if (inlineRef) {
+          tableFks.set(colName, {
+            table: inlineRef[1],
+            col: inlineRef[2]?.trim() || 'id',
+          });
+        }
+
+        columns.push({
+          name: colName,
+          type: colType,
+          isPk: isInlinePk,
+          isFk: Boolean(inlineRef),
+          referencesTable: inlineRef?.[1],
+          referencesCol:
+            inlineRef?.[2]?.trim() || (inlineRef ? 'id' : undefined),
+          isNullable: !isNotNull && !isInlinePk,
+        });
+      }
+    }
+
+    for (const col of columns) {
+      if (tablePks.has(col.name)) col.isPk = true;
+      if (tableFks.has(col.name)) {
+        const fkInfo = tableFks.get(col.name)!;
+        col.isFk = true;
+        col.referencesTable = fkInfo.table;
+        col.referencesCol = fkInfo.col;
+      }
+    }
+
+    if (columns.length > 0) {
+      tables.push({ name: tableName, columns });
+    }
+  }
+
+  if (tables.length === 0) {
+    throw new Error('No valid CREATE TABLE statements found in SQL input.');
+  }
+
+  const cardWidth = 280;
+  const cardGapX = 60;
+  const cardGapY = 50;
+  const rowHeight = 28;
+  const headerHeight = 44;
+
+  const colsCount = Math.min(
+    3,
+    Math.max(1, Math.ceil(Math.sqrt(tables.length))),
+  );
+  const tablePositions = new Map<
+    string,
+    { x: number; y: number; width: number; height: number }
+  >();
+
+  let maxCanvasX = 0;
+  let maxCanvasY = 0;
+
+  const colHeights = Array(colsCount).fill(40);
+
+  tables.forEach((table, index) => {
+    const colIndex = index % colsCount;
+    const x = 40 + colIndex * (cardWidth + cardGapX);
+    const y = colHeights[colIndex];
+    const height = headerHeight + table.columns.length * rowHeight + 12;
+
+    colHeights[colIndex] += height + cardGapY;
+    tablePositions.set(table.name.toLowerCase(), {
+      x,
+      y,
+      width: cardWidth,
+      height,
+    });
+
+    maxCanvasX = Math.max(maxCanvasX, x + cardWidth + 40);
+    maxCanvasY = Math.max(maxCanvasY, y + height + 40);
+  });
+
+  const isDark = theme !== 'light';
+  const bg = isDark ? '#09090b' : '#f8fafc';
+  const cardBg = isDark ? '#18181b' : '#ffffff';
+  const cardBorder = isDark ? '#27272a' : '#e2e8f0';
+  const headerBg = isDark ? '#27272a' : '#f1f5f9';
+  const textPrimary = isDark ? '#f4f4f5' : '#0f172a';
+  const textSecondary = isDark ? '#a1a1aa' : '#64748b';
+  const pkBadgeBg = isDark ? '#f59e0b' : '#d97706';
+  const fkBadgeBg = isDark ? '#06b6d4' : '#0284c7';
+  const linkColor = isDark ? '#10b981' : '#059669';
+
+  const tableElements = tables
+    .map((table) => {
+      const pos = tablePositions.get(table.name.toLowerCase())!;
+      const columnRows = table.columns
+        .map((c, i) => {
+          const rowY = pos.y + headerHeight + i * rowHeight + 18;
+          const pkBadge = c.isPk
+            ? `<rect x="${pos.x + 12}" y="${rowY - 12}" width="24" height="15" rx="3" fill="${pkBadgeBg}"/><text x="${pos.x + 24}" y="${rowY - 1}" font-size="9" font-weight="700" fill="#ffffff" text-anchor="middle">PK</text>`
+            : '';
+          const fkBadge = c.isFk
+            ? `<rect x="${pos.x + (c.isPk ? 40 : 12)}" y="${rowY - 12}" width="24" height="15" rx="3" fill="${fkBadgeBg}"/><text x="${pos.x + (c.isPk ? 52 : 24)}" y="${rowY - 1}" font-size="9" font-weight="700" fill="#ffffff" text-anchor="middle">FK</text>`
+            : '';
+          const textOffset = c.isPk && c.isFk ? 70 : c.isPk || c.isFk ? 42 : 16;
+
+          return `
+        <line x1="${pos.x}" y1="${pos.y + headerHeight + i * rowHeight}" x2="${pos.x + pos.width}" y2="${pos.y + headerHeight + i * rowHeight}" stroke="${cardBorder}" stroke-width="1"/>
+        ${pkBadge}
+        ${fkBadge}
+        <text x="${pos.x + textOffset}" y="${rowY - 1}" font-size="12" font-weight="600" fill="${textPrimary}">${c.name}</text>
+        <text x="${pos.x + pos.width - 12}" y="${rowY - 1}" font-size="11" fill="${textSecondary}" text-anchor="end" font-family="monospace">${c.type}</text>`;
+        })
+        .join('');
+
+      return `
+      <g id="table-${table.name}">
+        <rect x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" rx="8" fill="${cardBg}" stroke="${cardBorder}" stroke-width="1.5"/>
+        <path d="M ${pos.x} ${pos.y + 8} A 8 8 0 0 1 ${pos.x + 8} ${pos.y} L ${pos.x + pos.width - 8} ${pos.y} A 8 8 0 0 1 ${pos.x + pos.width} ${pos.y + 8} L ${pos.x + pos.width} ${pos.y + headerHeight} L ${pos.x} ${pos.y + headerHeight} Z" fill="${headerBg}"/>
+        <text x="${pos.x + 16}" y="${pos.y + 27}" font-size="14" font-weight="700" fill="${textPrimary}">${table.name}</text>
+        ${columnRows}
+      </g>`;
+    })
+    .join('');
+
+  const links: string[] = [];
+  for (const table of tables) {
+    const fromPos = tablePositions.get(table.name.toLowerCase())!;
+    for (let i = 0; i < table.columns.length; i++) {
+      const col = table.columns[i];
+      if (col.isFk && col.referencesTable) {
+        const toPos = tablePositions.get(col.referencesTable.toLowerCase());
+        if (toPos) {
+          const startX = fromPos.x + fromPos.width;
+          const startY = fromPos.y + headerHeight + i * rowHeight + 14;
+          const endX = toPos.x;
+          const endY = toPos.y + 24;
+          const dx = Math.abs(endX - startX) * 0.5;
+          const pathD = `M ${startX} ${startY} C ${startX + dx} ${startY}, ${endX - dx} ${endY}, ${endX} ${endY}`;
+          links.push(`
+            <path d="${pathD}" fill="none" stroke="${linkColor}" stroke-width="2" stroke-dasharray="4,4" opacity="0.8"/>
+            <circle cx="${startX}" cy="${startY}" r="3" fill="${linkColor}"/>
+            <circle cx="${endX}" cy="${endY}" r="3" fill="${linkColor}"/>`);
+        }
+      }
+    }
+  }
+
+  return `<svg xmlns="${svgNamespace}" viewBox="0 0 ${maxCanvasX} ${maxCanvasY}" width="100%" height="100%" style="background-color: ${bg}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <defs>
+      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="${isDark ? '#27272a' : '#f1f5f9'}" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="${maxCanvasX}" height="${maxCanvasY}" fill="url(#grid)"/>
+    ${links.join('')}
+    ${tableElements}
+  </svg>`;
 }

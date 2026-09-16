@@ -16,11 +16,11 @@ function defaults(id: string) {
 }
 
 describe('advanced developer workbench', () => {
-  it('publishes 52 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(52);
+  it('publishes 53 unique operations whose defaults all run', async () => {
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(53);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(52);
+    ).toBe(53);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -562,5 +562,32 @@ const db = "postgres://root:pass123@prod-db.internal:5432/core";`;
     expect(jsonSchema).toContain('http://json-schema.org/draft-07/schema#');
     expect(jsonSchema).toContain('"title": "UserProfile"');
     expect(jsonSchema).toContain('"type": "object"');
+  });
+
+  it('generates interactive SVG ER diagrams from SQL schemas', async () => {
+    const sql = `CREATE TABLE users (
+  id INT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP
+);
+
+CREATE TABLE orders (
+  id INT PRIMARY KEY,
+  user_id INT REFERENCES users(id),
+  total_cents INT NOT NULL
+);`;
+
+    const svg = await runAdvancedDeveloperOperation('sql-to-er-diagram', {
+      sql,
+      theme: 'zinc-dark',
+      curveStyle: 'bezier',
+    });
+
+    expect(svg).toContain('<svg');
+    expect(svg).toContain('users');
+    expect(svg).toContain('orders');
+    expect(svg).toContain('PK');
+    expect(svg).toContain('FK');
+    expect(svg).toContain('stroke-dasharray="4,4"');
   });
 });

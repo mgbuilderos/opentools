@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('creator and social workbench', () => {
-  it('publishes 50 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(50);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(50);
+  it('publishes 51 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(51);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(51);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
         runCreatorOperation(operation.id, defaults(operation.id)),
@@ -299,5 +299,19 @@ describe('creator and social workbench', () => {
     expect(budget).toContain('Required Size Reduction: 90.0%');
     expect(budget).toContain('Recommended Quality:');
     expect(budget).toContain('canvas.toDataURL');
+
+    const mockup = runCreatorOperation('app-store-mockup-generator', {
+      appName: 'OpenTools Mobile',
+      tagline: 'Private Offline Utilities',
+      subheadline: '100% Client-Side',
+      deviceFrame: 'modern-phone-notch',
+      themeColor: 'midnight-blue',
+      screenPlaceholder: 'analytics-dashboard',
+    });
+    expect(mockup).toContain('<svg');
+    expect(mockup).toContain('OPENTOOLS MOBILE');
+    expect(mockup).toContain('Private Offline Utilities');
+    expect(mockup).toContain('Security Dashboard');
+    expect(mockup).toContain('1,248,920');
   });
 });

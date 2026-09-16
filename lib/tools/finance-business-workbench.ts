@@ -753,6 +753,48 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
       '100% private. All receipt formatting and print layouts are generated client-side.',
     outputExtension: 'html',
   },
+  {
+    id: 'timesheet-calculator',
+    name: 'Weekly timesheet & billable overtime calculator',
+    description:
+      'Calculate daily work hours, 1.5x overtime, meal breaks, hourly pay, and generate a print-ready signed weekly timesheet.',
+    fields: [
+      text('employeeName', 'Employee / Contractor Name', 'Alex Morgan'),
+      text(
+        'clientProject',
+        'Client / Project Name',
+        'Acme Corp — Web Platform v2',
+      ),
+      text('weekEnding', 'Week Ending Date (YYYY-MM-DD)', '2026-09-20'),
+      number('hourlyRate', 'Regular Hourly Rate', '50'),
+      number(
+        'overtimeRateMultiplier',
+        'Overtime Rate Multiplier (e.g. 1.5)',
+        '1.5',
+      ),
+      number(
+        'standardWeeklyLimit',
+        'Standard Overtime Threshold (hours/week)',
+        '40',
+      ),
+      area(
+        'dailyEntries',
+        'Daily hours log (Day | Start Time | End Time | Break (min) | Task Note)',
+        'Mon | 09:00 | 17:30 | 30 | Frontend engineering & API integration\nTue | 09:00 | 18:00 | 30 | Component architecture & unit test suites\nWed | 09:00 | 18:00 | 30 | Code review & client sync call\nThu | 09:00 | 19:00 | 45 | Database indexing & performance optimization\nFri | 09:00 | 17:00 | 30 | QA validation, documentation & weekly wrap',
+      ),
+      select('currency', 'Currency', [
+        { value: 'USD', label: 'USD ($)' },
+        { value: 'EUR', label: 'EUR (€)' },
+        { value: 'GBP', label: 'GBP (£)' },
+        { value: 'INR', label: 'INR (₹)' },
+        { value: 'CAD', label: 'CAD ($)' },
+        { value: 'AUD', label: 'AUD ($)' },
+      ]),
+    ],
+    notice:
+      '100% private. All hours arithmetic, rate calculations, and print layouts execute locally in browser memory.',
+    outputExtension: 'html',
+  },
 ] as const;
 
 function finite(
@@ -1472,6 +1514,76 @@ New Accelerated Payoff Term:  ${(acceleratedMonths / 12).toFixed(1)} years (${ac
         description: desc,
       });
     }
+    case 'timesheet-calculator': {
+      const employeeName = values.employeeName?.trim() || 'Employee Name';
+      const clientProject = values.clientProject?.trim() || 'Client / Project';
+      const weekEnding =
+        values.weekEnding?.trim() || new Date().toISOString().slice(0, 10);
+      const hourlyRate = Math.max(0, parseFloat(values.hourlyRate || '0') || 0);
+      const overtimeRateMultiplier = Math.max(
+        1,
+        parseFloat(values.overtimeRateMultiplier || '1.5') || 1.5,
+      );
+      const standardWeeklyLimit = Math.max(
+        0,
+        parseFloat(values.standardWeeklyLimit || '40') || 40,
+      );
+      const curCode = values.currency || 'USD';
+      const curSym = CURRENCY_SYMBOLS[curCode] || '$';
+      const rawEntries = values.dailyEntries || '';
+
+      const lines = rawEntries
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const entries: TimesheetDayEntry[] = [];
+
+      for (const line of lines) {
+        const parts = line.split('|').map((p) => p.trim());
+        if (parts.length < 3) continue;
+        const day = parts[0] || 'Day';
+        const start = parts[1] || '09:00';
+        const end = parts[2] || '17:00';
+        const breakMin = parts[3] ? Math.max(0, parseFloat(parts[3]) || 0) : 0;
+        const task = parts[4] || '';
+
+        const startParts = start.split(':').map((s) => parseInt(s, 10) || 0);
+        const endParts = end.split(':').map((s) => parseInt(s, 10) || 0);
+        const startMin = (startParts[0] || 0) * 60 + (startParts[1] || 0);
+        let endMin = (endParts[0] || 0) * 60 + (endParts[1] || 0);
+        if (endMin < startMin) endMin += 24 * 60;
+        const netMinutes = Math.max(0, endMin - startMin - breakMin);
+        const hours = Math.round((netMinutes / 60) * 100) / 100;
+
+        entries.push({ day, start, end, breakMin, hours, task });
+      }
+
+      const totalHours = entries.reduce((sum, e) => sum + e.hours, 0);
+      const regularHours = Math.min(totalHours, standardWeeklyLimit);
+      const overtimeHours = Math.max(0, totalHours - standardWeeklyLimit);
+      const regularPay = regularHours * hourlyRate;
+      const overtimeRate = hourlyRate * overtimeRateMultiplier;
+      const overtimePay = overtimeHours * overtimeRate;
+      const grossPay = regularPay + overtimePay;
+
+      return generateTimesheetHtml({
+        employeeName,
+        clientProject,
+        weekEnding,
+        hourlyRate,
+        overtimeRateMultiplier,
+        standardWeeklyLimit,
+        currency: curSym,
+        currencyCode: curCode,
+        entries,
+        totalHours,
+        regularHours,
+        overtimeHours,
+        regularPay,
+        overtimePay,
+        grossPay,
+      });
+    }
     default:
       throw new Error('Choose a supported finance or business operation.');
   }
@@ -1804,6 +1916,192 @@ function generateReceiptHtml(d: ReceiptData): string {
     <div class="memo">
       <div style="font-weight: 700; margin-bottom: 4px; color: #0f172a; font-size: 12px; text-transform: uppercase;">Payment For</div>
       ${escapeHtmlStr(d.description)}
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+interface TimesheetDayEntry {
+  day: string;
+  start: string;
+  end: string;
+  breakMin: number;
+  hours: number;
+  task: string;
+}
+
+interface TimesheetData {
+  employeeName: string;
+  clientProject: string;
+  weekEnding: string;
+  hourlyRate: number;
+  overtimeRateMultiplier: number;
+  standardWeeklyLimit: number;
+  currency: string;
+  currencyCode: string;
+  entries: TimesheetDayEntry[];
+  totalHours: number;
+  regularHours: number;
+  overtimeHours: number;
+  regularPay: number;
+  overtimePay: number;
+  grossPay: number;
+}
+
+function generateTimesheetHtml(d: TimesheetData): string {
+  const formatMoney = (n: number) =>
+    `${d.currency}${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const rows = d.entries
+    .map(
+      (entry) => `
+      <tr>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-weight: 600;">${escapeHtmlStr(entry.day)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-family: monospace;">${escapeHtmlStr(entry.start)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-family: monospace;">${escapeHtmlStr(entry.end)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; text-align: center;">${entry.breakMin > 0 ? `${entry.breakMin} m` : '—'}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; text-align: right; font-weight: 700;">${entry.hours.toFixed(2)} hrs</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-size: 13px; color: #52525b;">${escapeHtmlStr(entry.task)}</td>
+      </tr>`,
+    )
+    .join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Timesheet — ${escapeHtmlStr(d.employeeName)} (${escapeHtmlStr(d.weekEnding)})</title>
+  <style>
+    @media print {
+      body { background: #fff !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .timesheet-card { box-shadow: none !important; border: none !important; }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f4f4f5;
+      color: #18181b;
+      margin: 0;
+      padding: 32px 16px;
+      line-height: 1.5;
+    }
+    .timesheet-card {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #18181b;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .title { font-size: 24px; font-weight: 800; margin: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .info-card { background: #fafafa; border: 1px solid #e4e4e7; border-radius: 6px; padding: 14px 18px; }
+    .info-label { font-size: 11px; text-transform: uppercase; color: #71717a; font-weight: 700; margin-bottom: 4px; }
+    .info-val { font-size: 15px; font-weight: 600; color: #18181b; }
+    .table-container { overflow-x: auto; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #f8fafc; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+    .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; text-align: center; }
+    .stat-card.highlight { background: #18181b; color: #ffffff; border-color: #18181b; }
+    .stat-card.highlight .stat-lbl { color: #a1a1aa; }
+    .stat-lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b; margin-bottom: 4px; }
+    .stat-val { font-size: 20px; font-weight: 800; }
+    .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding-top: 24px; border-top: 1px solid #e4e4e7; margin-top: 24px; }
+    .sig-line { border-bottom: 1px solid #18181b; height: 40px; margin-bottom: 8px; }
+    .sig-label { font-size: 12px; color: #71717a; font-weight: 600; }
+    .print-bar { text-align: center; margin-bottom: 24px; }
+    .btn { background: #18181b; color: #fff; border: none; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; }
+    .btn:hover { background: #27272a; }
+  </style>
+</head>
+<body>
+  <div class="print-bar no-print">
+    <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+  <div class="timesheet-card">
+    <div class="header">
+      <div>
+        <h1 class="title">WEEKLY TIMESHEET</h1>
+        <div style="font-size: 13px; color: #71717a; margin-top: 4px;">Standard Hours & Overtime Accounting</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 12px; color: #71717a; font-weight: 600; text-transform: uppercase;">Week Ending</div>
+        <div style="font-size: 16px; font-weight: 800;">${escapeHtmlStr(d.weekEnding)}</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="info-card">
+        <div class="info-label">Employee / Contractor</div>
+        <div class="info-val">${escapeHtmlStr(d.employeeName)}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">Client / Project</div>
+        <div class="info-val">${escapeHtmlStr(d.clientProject)}</div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Start</th>
+            <th>End</th>
+            <th style="text-align: center;">Break</th>
+            <th style="text-align: right;">Hours</th>
+            <th>Task / Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="summary-grid">
+      <div class="stat-card">
+        <div class="stat-lbl">Regular Hours</div>
+        <div class="stat-val">${d.regularHours.toFixed(2)} hrs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Overtime Hours</div>
+        <div class="stat-val" style="color: ${d.overtimeHours > 0 ? '#b91c1c' : '#18181b'};">${d.overtimeHours.toFixed(2)} hrs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Total Hours</div>
+        <div class="stat-val">${d.totalHours.toFixed(2)} hrs</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-lbl">Gross Pay</div>
+        <div class="stat-val">${formatMoney(d.grossPay)}</div>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; color: #71717a; margin-bottom: 24px; padding: 10px 14px; background: #fafafa; border-radius: 6px;">
+      <strong>Rate Details:</strong> Regular Rate: ${formatMoney(d.hourlyRate)}/hr | Overtime Rate (${d.overtimeRateMultiplier}x): ${formatMoney(d.hourlyRate * d.overtimeRateMultiplier)}/hr | Standard Weekly Limit: ${d.standardWeeklyLimit} hrs
+    </div>
+
+    <div class="signature-grid">
+      <div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Employee Signature & Date</div>
+      </div>
+      <div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Supervisor / Approver Signature & Date</div>
+      </div>
     </div>
   </div>
 </body>

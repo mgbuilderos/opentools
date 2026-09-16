@@ -762,6 +762,52 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
       ]),
     ],
   },
+  {
+    id: 'app-store-mockup-generator',
+    name: 'App Store & Play Store screenshot mockup generator',
+    description:
+      'Generate clean marketing screenshot frames with smartphone hardware bezels, gradient backgrounds, and high-impact marketing header taglines in SVG format.',
+    outputExtension: 'svg',
+    fields: [
+      text('appName', 'App / Product Name', 'OpenTools Mobile'),
+      text(
+        'tagline',
+        'Headline / Benefit Tagline',
+        'Private Offline Utilities in Your Pocket',
+      ),
+      text(
+        'subheadline',
+        'Sub-headline / Detail',
+        '100% Client-Side • Zero Data Collection • Lightning Fast',
+      ),
+      select('deviceFrame', 'Device Frame & Bezel', [
+        {
+          value: 'modern-phone-notch',
+          label: 'Modern Smartphone (Dynamic Island / Notch)',
+        },
+        {
+          value: 'minimal-bezel',
+          label: 'Minimalist Bezel (Clean Wireframe)',
+        },
+        { value: 'tablet', label: 'Tablet Screen Frame' },
+      ]),
+      select('themeColor', 'Background Gradient Theme', [
+        { value: 'slate-zinc', label: 'Slate & Zinc (Monochrome)' },
+        { value: 'midnight-blue', label: 'Midnight Blue & Indigo' },
+        { value: 'emerald-teal', label: 'Emerald & Teal' },
+        { value: 'sunset-orange', label: 'Sunset & Amber' },
+        { value: 'violet-purple', label: 'Violet & Purple Glow' },
+      ]),
+      select('screenPlaceholder', 'Mockup Screen Content', [
+        {
+          value: 'analytics-dashboard',
+          label: 'Analytics & Metric Cards',
+        },
+        { value: 'chat-feed', label: 'Chat & Message Thread' },
+        { value: 'task-kanban', label: 'Tasks & Productivity List' },
+      ]),
+    ],
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -2132,6 +2178,9 @@ export function runCreatorOperation(
         format,
       );
     }
+    case 'app-store-mockup-generator': {
+      return generateAppStoreMockupSvg(values);
+    }
     default:
       throw new Error('Choose a supported creator operation.');
   }
@@ -2482,4 +2531,148 @@ const ctx = canvas.getContext('2d');
 ctx.drawImage(originalImage, 0, 0, ${scaledWidth}, ${scaledHeight});
 const compressedDataUrl = canvas.toDataURL('${format}', ${recommendedQuality});
 `;
+}
+
+function generateAppStoreMockupSvg(values: Record<string, string>): string {
+  const appName = escapeXml(values.appName?.trim() || 'App Name');
+  const tagline = escapeXml(
+    values.tagline?.trim() || 'Headline / Benefit Tagline',
+  );
+  const subheadline = escapeXml(
+    values.subheadline?.trim() || 'Sub-headline / Detail',
+  );
+  const frame = values.deviceFrame || 'modern-phone-notch';
+  const theme = values.themeColor || 'slate-zinc';
+  const screenContent = values.screenPlaceholder || 'analytics-dashboard';
+
+  let gradStart = '#09090b';
+  let gradEnd = '#27272a';
+  let accentColor = '#3b82f6';
+
+  if (theme === 'midnight-blue') {
+    gradStart = '#030712';
+    gradEnd = '#1e1b4b';
+    accentColor = '#6366f1';
+  } else if (theme === 'emerald-teal') {
+    gradStart = '#022c22';
+    gradEnd = '#064e3b';
+    accentColor = '#10b981';
+  } else if (theme === 'sunset-orange') {
+    gradStart = '#431407';
+    gradEnd = '#7c2d12';
+    accentColor = '#f97316';
+  } else if (theme === 'violet-purple') {
+    gradStart = '#1e1b4b';
+    gradEnd = '#4c1d95';
+    accentColor = '#a855f7';
+  }
+
+  const isTablet = frame === 'tablet';
+  const phoneWidth = isTablet ? 780 : 540;
+  const phoneHeight = isTablet ? 1040 : 1080;
+  const phoneX = (1200 - phoneWidth) / 2;
+  const phoneY = 340;
+  const bezelRadius = isTablet ? 36 : 54;
+  const screenX = phoneX + 16;
+  const screenY = phoneY + 16;
+  const screenW = phoneWidth - 32;
+  const screenH = phoneHeight - 32;
+  const screenRadius = bezelRadius - 12;
+
+  let innerScreenSvg = '';
+  if (screenContent === 'analytics-dashboard') {
+    innerScreenSvg = `
+      <rect x="${screenX + 24}" y="${screenY + 36}" width="${screenW - 48}" height="48" rx="8" fill="#18181b" />
+      <circle cx="${screenX + 48}" cy="${screenY + 60}" r="12" fill="${accentColor}" />
+      <text x="${screenX + 72}" y="${screenY + 66}" fill="#f4f4f5" font-size="16" font-weight="700" font-family="system-ui, sans-serif">Security Dashboard</text>
+      
+      <rect x="${screenX + 24}" y="${screenY + 104}" width="${screenW - 48}" height="108" rx="12" fill="#18181b" stroke="#27272a" stroke-width="1" />
+      <text x="${screenX + 44}" y="${screenY + 134}" fill="#a1a1aa" font-size="13" font-weight="600" font-family="system-ui, sans-serif">LOCAL OPERATIONS</text>
+      <text x="${screenX + 44}" y="${screenY + 172}" fill="#ffffff" font-size="28" font-weight="800" font-family="system-ui, sans-serif">1,248,920</text>
+      <rect x="${screenX + screenW - 140}" y="${screenY + 124}" width="72" height="26" rx="6" fill="#064e3b" />
+      <text x="${screenX + screenW - 104}" y="${screenY + 142}" fill="#34d399" font-size="12" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif">+100% 🔒</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 228}" width="${screenW - 48}" height="108" rx="12" fill="#18181b" stroke="#27272a" stroke-width="1" />
+      <text x="${screenX + 44}" y="${screenY + 258}" fill="#a1a1aa" font-size="13" font-weight="600" font-family="system-ui, sans-serif">NETWORK EGRESS</text>
+      <text x="${screenX + 44}" y="${screenY + 296}" fill="${accentColor}" font-size="28" font-weight="800" font-family="system-ui, sans-serif">0 Bytes</text>
+      <rect x="${screenX + screenW - 140}" y="${screenY + 248}" width="72" height="26" rx="6" fill="#1e1b4b" />
+      <text x="${screenX + screenW - 104}" y="${screenY + 266}" fill="#818cf8" font-size="12" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif">OFFLINE</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 352}" width="${screenW - 48}" height="160" rx="12" fill="#18181b" stroke="#27272a" stroke-width="1" />
+      <text x="${screenX + 44}" y="${screenY + 382}" fill="#a1a1aa" font-size="13" font-weight="600" font-family="system-ui, sans-serif">THROUGHPUT SPEED (MB/s)</text>
+      <path d="M ${screenX + 44} ${screenY + 470} Q ${screenX + 120} ${screenY + 410}, ${screenX + 200} ${screenY + 440} T ${screenX + 340} ${screenY + 395} T ${screenX + screenW - 48} ${screenY + 410}" fill="none" stroke="${accentColor}" stroke-width="4" stroke-linecap="round" />
+
+      <rect x="${screenX + 24}" y="${screenY + 532}" width="${screenW - 48}" height="52" rx="10" fill="${accentColor}" />
+      <text x="${screenX + screenW / 2}" y="${screenY + 564}" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif">Execute Local Task</text>
+    `;
+  } else if (screenContent === 'chat-feed') {
+    innerScreenSvg = `
+      <rect x="${screenX + 24}" y="${screenY + 36}" width="${screenW - 48}" height="48" rx="8" fill="#18181b" />
+      <text x="${screenX + screenW / 2}" y="${screenY + 66}" fill="#f4f4f5" font-size="16" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif">Offline AI Terminal</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 110}" width="${screenW - 120}" height="76" rx="12" fill="#27272a" />
+      <text x="${screenX + 44}" y="${screenY + 140}" fill="#f4f4f5" font-size="14" font-weight="500" font-family="system-ui, sans-serif">Does any data leave my device?</text>
+      <text x="${screenX + 44}" y="${screenY + 164}" fill="#a1a1aa" font-size="11" font-family="system-ui, sans-serif">10:42 AM</text>
+
+      <rect x="${screenX + 100}" y="${screenY + 204}" width="${screenW - 124}" height="96" rx="12" fill="${accentColor}" />
+      <text x="${screenX + 120}" y="${screenY + 234}" fill="#ffffff" font-size="14" font-weight="500" font-family="system-ui, sans-serif">Zero bytes. Everything runs</text>
+      <text x="${screenX + 120}" y="${screenY + 258}" fill="#ffffff" font-size="14" font-weight="500" font-family="system-ui, sans-serif">in WebAssembly client-side.</text>
+      <text x="${screenX + screenW - 44}" y="${screenY + 282}" fill="rgba(255,255,255,0.8)" font-size="11" text-anchor="end" font-family="system-ui, sans-serif">10:43 AM ✓✓</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 318}" width="${screenW - 100}" height="76" rx="12" fill="#27272a" />
+      <text x="${screenX + 44}" y="${screenY + 348}" fill="#f4f4f5" font-size="14" font-weight="500" font-family="system-ui, sans-serif">Are all tools 100% free?</text>
+      <text x="${screenX + 44}" y="${screenY + 372}" fill="#a1a1aa" font-size="11" font-family="system-ui, sans-serif">10:44 AM</text>
+    `;
+  } else {
+    innerScreenSvg = `
+      <rect x="${screenX + 24}" y="${screenY + 36}" width="${screenW - 48}" height="48" rx="8" fill="#18181b" />
+      <text x="${screenX + screenW / 2}" y="${screenY + 66}" fill="#f4f4f5" font-size="16" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif">Workflow Queue</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 104}" width="${screenW - 48}" height="84" rx="10" fill="#18181b" stroke="#059669" stroke-width="2" />
+      <text x="${screenX + 44}" y="${screenY + 138}" fill="#34d399" font-size="15" font-weight="700" font-family="system-ui, sans-serif">✓ Client Parser Pipeline</text>
+      <text x="${screenX + 44}" y="${screenY + 164}" fill="#a1a1aa" font-size="12" font-family="system-ui, sans-serif">Completed • 0.4ms</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 204}" width="${screenW - 48}" height="84" rx="10" fill="#18181b" stroke="${accentColor}" stroke-width="2" />
+      <text x="${screenX + 44}" y="${screenY + 238}" fill="${accentColor}" font-size="15" font-weight="700" font-family="system-ui, sans-serif">⚡ In-Memory Vector Engine</text>
+      <text x="${screenX + 44}" y="${screenY + 264}" fill="#a1a1aa" font-size="12" font-family="system-ui, sans-serif">Active • Processing 5,000 nodes</text>
+
+      <rect x="${screenX + 24}" y="${screenY + 304}" width="${screenW - 48}" height="84" rx="10" fill="#18181b" stroke="#3f3f46" stroke-width="1" />
+      <text x="${screenX + 44}" y="${screenY + 338}" fill="#f4f4f5" font-size="15" font-weight="600" font-family="system-ui, sans-serif">🔒 Zero-Egress Assertion Gate</text>
+      <text x="${screenX + 44}" y="${screenY + 364}" fill="#71717a" font-size="12" font-family="system-ui, sans-serif">Queued</text>
+    `;
+  }
+
+  const notchSvg =
+    frame === 'modern-phone-notch'
+      ? `<rect x="${600 - 80}" y="${phoneY + 24}" width="160" height="32" rx="16" fill="#000000" />`
+      : '';
+
+  return `<svg xmlns="${svgNamespace}" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${gradStart}" />
+      <stop offset="100%" stop-color="${gradEnd}" />
+    </linearGradient>
+    <filter id="shadowGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="32" flood-color="rgba(0,0,0,0.6)" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="1600" fill="url(#bgGrad)" />
+
+  <g text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <rect x="${600 - 100}" y="76" width="200" height="36" rx="18" fill="rgba(255,255,255,0.12)" />
+    <text x="600" y="100" fill="#ffffff" font-size="15" font-weight="700" letter-spacing="1">${appName.toUpperCase()}</text>
+    <text x="600" y="180" fill="#ffffff" font-size="44" font-weight="800">${tagline}</text>
+    <text x="600" y="235" fill="#d4d4d8" font-size="20" font-weight="500">${subheadline}</text>
+  </g>
+
+  <g filter="url(#shadowGlow)">
+    <rect x="${phoneX}" y="${phoneY}" width="${phoneWidth}" height="${phoneHeight}" rx="${bezelRadius}" fill="#09090b" stroke="#3f3f46" stroke-width="4" />
+    <rect x="${screenX}" y="${screenY}" width="${screenW}" height="${screenH}" rx="${screenRadius}" fill="#0a0a0c" />
+    ${innerScreenSvg}
+    ${notchSvg}
+    <rect x="${600 - 70}" y="${phoneY + phoneHeight - 24}" width="140" height="5" rx="3" fill="#52525b" />
+  </g>
+</svg>`;
 }

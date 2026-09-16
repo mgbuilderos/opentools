@@ -697,6 +697,63 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
       ),
     ],
   },
+  {
+    id: 'legal-nda-generator',
+    name: 'Mutual Non-Disclosure Agreement (NDA) maker',
+    description:
+      'Generate standard, legally formatted 2-page Mutual Non-Disclosure Agreements with customizable parties, terms, and governing laws.',
+    outputExtension: 'html',
+    fields: [
+      text(
+        'party1Name',
+        'First Party (Disclosing / Receiving)',
+        'Acme Technologies Inc.',
+      ),
+      text(
+        'party1Jurisdiction',
+        'First Party State/Country of Incorporation',
+        'Delaware, USA',
+      ),
+      text(
+        'party2Name',
+        'Second Party (Disclosing / Receiving)',
+        'Nexus Creative Labs LLC',
+      ),
+      text(
+        'party2Jurisdiction',
+        'Second Party State/Country of Incorporation',
+        'California, USA',
+      ),
+      text('effectiveDate', 'Effective Date (YYYY-MM-DD)', '2026-09-16'),
+      area(
+        'purpose',
+        'Purpose of discussion / disclosure',
+        'Evaluating a potential business partnership, technical collaboration, and software licensing agreement.',
+      ),
+      select('duration', 'Confidentiality duration', [
+        { value: '2', label: '2 Years from Effective Date' },
+        { value: '1', label: '1 Year from Effective Date' },
+        { value: '3', label: '3 Years from Effective Date' },
+        { value: '5', label: '5 Years from Effective Date' },
+      ]),
+      select('governingLaw', 'Governing Law & Jurisdiction', [
+        { value: 'State of Delaware, United States', label: 'Delaware, USA' },
+        {
+          value: 'State of California, United States',
+          label: 'California, USA',
+        },
+        { value: 'State of New York, United States', label: 'New York, USA' },
+        { value: 'Laws of England and Wales', label: 'England and Wales (UK)' },
+        {
+          value: 'Laws of India (New Delhi jurisdiction)',
+          label: 'India (New Delhi)',
+        },
+        { value: 'Province of Ontario, Canada', label: 'Ontario, Canada' },
+      ]),
+    ],
+    notice:
+      'Self-help legal drafting aid only. Not formal legal advice. Consult licensed counsel before executing binding agreements.',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -1438,6 +1495,9 @@ PRINTING INSTRUCTIONS:
         buttonUrl,
       );
     }
+    case 'legal-nda-generator': {
+      return generateMutualNdaHtml(values);
+    }
     default:
       throw new Error('Choose a supported document operation.');
   }
@@ -1640,6 +1700,156 @@ function generateResponsiveEmailHtml(
         </td>
       </tr>
     </table>
+  </div>
+</body>
+</html>`;
+}
+
+function generateMutualNdaHtml(values: Record<string, string>): string {
+  const p1Name = values.party1Name?.trim() || 'First Party';
+  const p1Jur = values.party1Jurisdiction?.trim() || 'Delaware, USA';
+  const p2Name = values.party2Name?.trim() || 'Second Party';
+  const p2Jur = values.party2Jurisdiction?.trim() || 'California, USA';
+  const effDate = values.effectiveDate?.trim() || '2026-09-16';
+  const purpose =
+    values.purpose?.trim() || 'evaluating a mutual business opportunity';
+  const durationYears = values.duration || '2';
+  const govLaw = values.governingLaw || 'State of Delaware, United States';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mutual Non-Disclosure Agreement</title>
+  <style>
+    @media print {
+      body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .nda-card { box-shadow: none !important; border: none !important; max-width: 100% !important; padding: 0 !important; }
+      .page-break { page-break-before: always; }
+    }
+    body {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      background: #f4f4f5;
+      color: #111827;
+      margin: 0;
+      padding: 32px 16px;
+      line-height: 1.6;
+    }
+    .nda-card {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 48px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h1 {
+      font-size: 20pt;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.5px;
+      margin-top: 0;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    h2 {
+      font-size: 13pt;
+      font-weight: 700;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 4px;
+    }
+    p, li {
+      font-size: 11pt;
+      text-align: justify;
+      margin-bottom: 12px;
+    }
+    ol {
+      padding-left: 24px;
+    }
+    .parties-box {
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      font-size: 11pt;
+    }
+    .signature-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      margin-top: 40px;
+    }
+    .signature-col {
+      flex: 1;
+      border-top: 1px solid #111827;
+      padding-top: 12px;
+      font-size: 11pt;
+    }
+    .print-bar {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .btn {
+      background: #18181b;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="print-bar no-print">
+    <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+  <div class="nda-card">
+    <h1>MUTUAL NON-DISCLOSURE AGREEMENT</h1>
+    
+    <p>This Mutual Non-Disclosure Agreement (the "<strong>Agreement</strong>") is entered into as of <strong>${escapeHtml(effDate)}</strong> (the "<strong>Effective Date</strong>"), by and between:</p>
+
+    <div class="parties-box">
+      <p style="margin:0 0 8px 0;"><strong>Party A:</strong> ${escapeHtml(p1Name)}, incorporated/organized under the laws of ${escapeHtml(p1Jur)}.</p>
+      <p style="margin:0;"><strong>Party B:</strong> ${escapeHtml(p2Name)}, incorporated/organized under the laws of ${escapeHtml(p2Jur)}.</p>
+    </div>
+
+    <p>Each of Party A and Party B may be referred to individually as a "<strong>Party</strong>" or collectively as the "<strong>Parties</strong>." In connection with discussions concerning <strong>${escapeHtml(purpose)}</strong> (the "<strong>Purpose</strong>"), each Party may disclose to the other Party certain confidential and proprietary information.</p>
+
+    <h2>1. Definition of Confidential Information</h2>
+    <p>"<strong>Confidential Information</strong>" means any non-public technical, business, financial, operational, or design information disclosed by either Party to the other, whether orally, in writing, electronically, or by inspection of tangible objects, that is identified as confidential or that reasonably should be understood to be confidential given the nature of the information and the circumstances of disclosure.</p>
+
+    <h2>2. Non-Disclosure and Use Obligations</h2>
+    <p>Each Party agrees to: (a) hold the other Party's Confidential Information in strict confidence; (b) protect such Confidential Information with at least the same degree of care it uses for its own confidential information of like importance, but in no event less than reasonable care; and (c) not use any Confidential Information for any purpose other than the Purpose.</p>
+
+    <h2>3. Term and Termination</h2>
+    <p>This Agreement and the obligations of confidentiality hereunder shall remain in effect for a period of <strong>${escapeHtml(durationYears)} years</strong> from the Effective Date, after which the Receiving Party's obligations with respect to Confidential Information disclosed prior to termination shall expire.</p>
+
+    <h2>4. Governing Law and Dispute Resolution</h2>
+    <p>This Agreement shall be governed by and construed in accordance with the laws of the <strong>${escapeHtml(govLaw)}</strong>, without regard to its conflict of law principles.</p>
+
+    <div class="signature-grid">
+      <div class="signature-col">
+        <div style="font-weight: 700; margin-bottom: 24px;">For ${escapeHtml(p1Name)}</div>
+        <div>By: ___________________________</div>
+        <div style="margin-top: 8px;">Name: _________________________</div>
+        <div style="margin-top: 8px;">Title: __________________________</div>
+        <div style="margin-top: 8px;">Date: __________________________</div>
+      </div>
+      <div class="signature-col">
+        <div style="font-weight: 700; margin-bottom: 24px;">For ${escapeHtml(p2Name)}</div>
+        <div>By: ___________________________</div>
+        <div style="margin-top: 8px;">Name: _________________________</div>
+        <div style="margin-top: 8px;">Title: __________________________</div>
+        <div style="margin-top: 8px;">Date: __________________________</div>
+      </div>
+    </div>
   </div>
 </body>
 </html>`;

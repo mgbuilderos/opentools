@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('finance and business workbench', () => {
-  it('publishes 55 unique operations whose defaults all run', () => {
-    expect(FINANCE_OPERATIONS).toHaveLength(55);
-    expect(new Set(FINANCE_OPERATIONS.map((item) => item.id)).size).toBe(55);
+  it('publishes 56 unique operations whose defaults all run', () => {
+    expect(FINANCE_OPERATIONS).toHaveLength(56);
+    expect(new Set(FINANCE_OPERATIONS.map((item) => item.id)).size).toBe(56);
     for (const operation of FINANCE_OPERATIONS) {
       expect(
         runFinanceOperation(operation.id, defaults(operation.id)),
@@ -313,5 +313,22 @@ describe('finance and business workbench', () => {
     expect(receipt).toContain('PAID IN FULL');
     expect(receipt).toContain('₹750.00');
     expect(receipt).toContain('TXN-998811');
+
+    const timesheet = runFinanceOperation('timesheet-calculator', {
+      employeeName: 'Alex Morgan',
+      clientProject: 'Acme Corp',
+      weekEnding: '2026-09-20',
+      hourlyRate: '50',
+      overtimeRateMultiplier: '1.5',
+      standardWeeklyLimit: '40',
+      dailyEntries:
+        'Mon | 09:00 | 17:00 | 30 | Design\nTue | 09:00 | 17:00 | 30 | Code',
+      currency: 'USD',
+    });
+    expect(timesheet).toContain('WEEKLY TIMESHEET');
+    expect(timesheet).toContain('Alex Morgan');
+    expect(timesheet).toContain('Acme Corp');
+    expect(timesheet).toContain('7.50 hrs');
+    expect(timesheet).toContain('$750.00');
   });
 });

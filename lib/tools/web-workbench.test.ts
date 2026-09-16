@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('web and SEO workbench', () => {
-  it('publishes 45 unique real operations whose defaults all run', () => {
-    expect(WEB_OPERATIONS).toHaveLength(45);
-    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(45);
+  it('publishes 46 unique real operations whose defaults all run', () => {
+    expect(WEB_OPERATIONS).toHaveLength(46);
+    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(46);
     for (const operation of WEB_OPERATIONS) {
       expect(runWebOperation(operation.id, defaults(operation.id))).not.toBe(
         '',
@@ -201,5 +201,20 @@ describe('web and SEO workbench', () => {
     expect(neumorph).toContain('.neumorphic-element');
     expect(neumorph).toContain('border-radius: 20px;');
     expect(neumorph).toContain('box-shadow:');
+
+    const anim = runWebOperation('css-animation-generator', {
+      animationType: 'float',
+      duration: '2.5',
+      timingFunction: 'ease-in-out',
+      iterationCount: 'infinite',
+      direction: 'normal',
+      fillMode: 'both',
+      gpuAcceleration: 'yes',
+    });
+    expect(anim).toContain('@keyframes float');
+    expect(anim).toContain('transform: translateY(-14px);');
+    expect(anim).toContain('.animated-element');
+    expect(anim).toContain('animation-duration: 2.5s;');
+    expect(anim).toContain('will-change: transform');
   });
 });
