@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { ArrowRight, BookOpen, Calendar, Clock } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { getAllBlogCategories, getAllBlogPosts } from '@/lib/seo/blog-data';
 
 const httpsScheme = ['https:', '//'].join('');
@@ -114,41 +115,27 @@ export default function BlogDirectoryPage() {
                 {featuredPost.summary}
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Button
-                  nativeButton={false}
-                  size="sm"
-                  render={
-                    <a
-                      href={`/blog/${featuredPost.slug}`}
-                      aria-label={`Read ${featuredPost.title}`}
-                      className="inline-flex items-center gap-1.5"
-                    >
-                      Read Full Article
-                      <ArrowRight className="size-3.5" />
-                    </a>
-                  }
-                  className="h-10 px-4 text-xs font-semibold"
+                <a
+                  href={`/blog/${featuredPost.slug}`}
+                  aria-label={`Read ${featuredPost.title}`}
+                  className={cn(
+                    buttonVariants({ variant: 'default', size: 'sm' }),
+                    'h-10 px-4 text-xs font-semibold gap-1.5',
+                  )}
                 >
                   Read Full Article
                   <ArrowRight className="size-3.5" />
-                </Button>
-                <Button
-                  nativeButton={false}
-                  variant="outline"
-                  size="sm"
-                  render={
-                    <a
-                      href={featuredPost.toolDestination}
-                      aria-label={`Open ${featuredPost.toolName}`}
-                      className="inline-flex items-center gap-1.5"
-                    >
-                      Try Interactive Tool
-                    </a>
-                  }
-                  className="h-10 px-4 text-xs"
+                </a>
+                <a
+                  href={featuredPost.toolDestination}
+                  aria-label={`Open ${featuredPost.toolName}`}
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                    'h-10 px-4 text-xs',
+                  )}
                 >
                   Try Interactive Tool
-                </Button>
+                </a>
               </div>
             </div>
           ) : null}

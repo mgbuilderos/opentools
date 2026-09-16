@@ -12,7 +12,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/seo/blog-data';
 
 interface BlogPostPageProps {
@@ -399,24 +400,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   results, free forever.
                 </p>
               </div>
-              <Button
-                nativeButton={false}
-                size="sm"
-                render={
-                  <a
-                    href={post.toolDestination}
-                    aria-label={`Open interactive ${post.toolName}`}
-                    className="inline-flex items-center gap-2 whitespace-nowrap"
-                  >
-                    Open Workbench
-                    <ArrowRight className="size-4" />
-                  </a>
-                }
-                className="h-10 px-5 text-xs font-semibold shrink-0"
+              <a
+                href={post.toolDestination}
+                aria-label={`Open interactive ${post.toolName}`}
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'sm' }),
+                  'h-10 px-5 text-xs font-semibold shrink-0 gap-2',
+                )}
               >
                 Open Workbench
                 <ArrowRight className="size-4" />
-              </Button>
+              </a>
             </div>
           </div>
 
@@ -545,24 +539,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               creating an account or paying for cloud API credits.
             </p>
             <div>
-              <Button
-                nativeButton={false}
-                size="sm"
-                render={
-                  <a
-                    href={post.toolDestination}
-                    aria-label={`Launch ${post.toolName}`}
-                    className="inline-flex items-center gap-2"
-                  >
-                    Launch {post.toolName}
-                    <ArrowRight className="size-4" />
-                  </a>
-                }
-                className="h-11 px-6 text-sm font-semibold"
+              <a
+                href={post.toolDestination}
+                aria-label={`Launch ${post.toolName}`}
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'lg' }),
+                  'h-11 px-6 text-sm font-semibold gap-2',
+                )}
               >
                 Launch {post.toolName}
                 <ArrowRight className="size-4" />
-              </Button>
+              </a>
             </div>
           </div>
         </div>

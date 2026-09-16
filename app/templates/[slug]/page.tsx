@@ -10,7 +10,8 @@ import {
   Users,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { TemplateClientCustomizer } from '@/components/templates/template-client-customizer';
 import {
   getAllTemplates,
@@ -198,24 +199,16 @@ export default async function TemplateDetailPage({
                 <span className="text-xs text-muted-foreground">
                   {template.relatedToolName}
                 </span>
-                <Button
-                  nativeButton={false}
-                  size="sm"
-                  variant="outline"
-                  render={
-                    <a
-                      href={template.relatedToolHref}
-                      className="inline-flex items-center gap-1 text-xs"
-                    >
-                      Open Tool
-                      <ArrowRight className="size-3" />
-                    </a>
-                  }
-                  className="h-8 px-3 text-xs"
+                <a
+                  href={template.relatedToolHref}
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                    'h-8 px-3 text-xs gap-1',
+                  )}
                 >
                   Open Tool
                   <ArrowRight className="size-3" />
-                </Button>
+                </a>
               </div>
             </div>
           </div>

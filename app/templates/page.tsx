@@ -9,7 +9,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   getAllTemplates,
   type TemplateCategory,
@@ -169,24 +170,17 @@ export default function TemplatesCatalogPage() {
 
                 <div className="mt-6 space-y-3 border-t pt-4">
                   <div className="flex items-center justify-between gap-2">
-                    <Button
-                      nativeButton={false}
-                      size="sm"
-                      render={
-                        <a
-                          href={`/templates/${template.slug}`}
-                          aria-label={`Open ${template.title}`}
-                          className="inline-flex items-center gap-1.5"
-                        >
-                          View Details
-                          <ArrowRight className="size-3.5" />
-                        </a>
-                      }
-                      className="h-9 px-4 text-xs font-semibold"
+                    <a
+                      href={`/templates/${template.slug}`}
+                      aria-label={`Open ${template.title}`}
+                      className={cn(
+                        buttonVariants({ variant: 'default', size: 'sm' }),
+                        'h-9 px-4 text-xs font-semibold gap-1.5',
+                      )}
                     >
                       View Details
                       <ArrowRight className="size-3.5" />
-                    </Button>
+                    </a>
 
                     {template.duplicateUrl ? (
                       <a
@@ -245,23 +239,24 @@ export default function TemplatesCatalogPage() {
               and code visualizers with 100% local execution and zero uploads.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button
-                nativeButton={false}
-                size="sm"
-                render={<a href="/pdf/merge">PDF Suite</a>}
-                className="h-10 px-5 text-xs font-semibold"
+              <a
+                href="/pdf/merge"
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'sm' }),
+                  'h-10 px-5 text-xs font-semibold',
+                )}
               >
                 PDF Suite
-              </Button>
-              <Button
-                nativeButton={false}
-                variant="outline"
-                size="sm"
-                render={<a href="/developer/advanced">Developer Workbenches</a>}
-                className="h-10 px-5 text-xs font-semibold"
+              </a>
+              <a
+                href="/developer/advanced"
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'sm' }),
+                  'h-10 px-5 text-xs font-semibold',
+                )}
               >
                 Developer Workbenches
-              </Button>
+              </a>
             </div>
           </div>
         </div>

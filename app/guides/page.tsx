@@ -7,7 +7,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
 
@@ -219,42 +220,28 @@ export default function GuidesDirectoryPage() {
                     </p>
                   </div>
 
-                  <div className="mt-5 flex items-center gap-2 border-t pt-4">
-                    <Button
-                      nativeButton={false}
-                      variant="outline"
-                      size="sm"
-                      render={
-                        <a
-                          href={`/guides/${tool.slug}`}
-                          aria-label={`Read ${tool.name} technical guide`}
-                          className="w-full text-xs text-center inline-flex items-center justify-center"
-                        >
-                          Read Guide
-                        </a>
-                      }
-                      className="h-9 w-full text-xs"
+                  <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
+                    <a
+                      href={`/guides/${tool.slug}`}
+                      aria-label={`Read ${tool.name} technical guide`}
+                      className={cn(
+                        buttonVariants({ variant: 'outline', size: 'sm' }),
+                        'h-9 w-full text-xs font-medium',
+                      )}
                     >
                       Read Guide
-                    </Button>
-                    <Button
-                      nativeButton={false}
-                      size="sm"
-                      render={
-                        <a
-                          href={tool.destinationUrl}
-                          aria-label={`Open interactive ${tool.name} tool`}
-                          className="w-full text-xs text-center inline-flex items-center justify-center gap-1"
-                        >
-                          Open Tool
-                          <ArrowRight className="h-3 w-3" />
-                        </a>
-                      }
-                      className="h-9 w-full text-xs"
+                    </a>
+                    <a
+                      href={tool.destinationUrl}
+                      aria-label={`Open interactive ${tool.name} tool`}
+                      className={cn(
+                        buttonVariants({ variant: 'default', size: 'sm' }),
+                        'h-9 w-full text-xs font-medium gap-1',
+                      )}
                     >
                       Open Tool
                       <ArrowRight className="h-3 w-3" />
-                    </Button>
+                    </a>
                   </div>
                 </div>
               ))}

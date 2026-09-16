@@ -10,7 +10,8 @@ import {
   Printer,
   Sparkles,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { TemplateItem } from '@/lib/templates/templates-data';
 
 interface TemplateClientCustomizerProps {
@@ -76,29 +77,21 @@ export function TemplateClientCustomizer({
       {/* Primary Action Buttons */}
       <div className="flex flex-wrap items-center gap-3">
         {template.duplicateUrl ? (
-          <Button
-            nativeButton={false}
-            render={
-              <a
-                href={template.duplicateUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Duplicate ${template.title}`}
-                className="inline-flex items-center gap-2"
-              >
-                {template.format === 'Notion'
-                  ? 'Duplicate Notion Template'
-                  : 'Make a Copy in Google Sheets'}
-                <ExternalLink className="size-4" />
-              </a>
-            }
-            className="h-11 px-5 text-sm font-semibold"
+          <a
+            href={template.duplicateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Duplicate ${template.title}`}
+            className={cn(
+              buttonVariants({ variant: 'default', size: 'lg' }),
+              'h-11 px-5 text-sm font-semibold gap-2',
+            )}
           >
             {template.format === 'Notion'
               ? 'Duplicate Notion Template'
               : 'Make a Copy in Google Sheets'}
             <ExternalLink className="size-4" />
-          </Button>
+          </a>
         ) : null}
 
         <Button

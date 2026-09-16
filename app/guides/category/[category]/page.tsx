@@ -9,7 +9,8 @@ import {
   Zap,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   getAllCategoryPillars,
   getCategoryBySlug,
@@ -265,36 +266,29 @@ export default async function CategoryPillarPage({
                     </p>
                   </div>
 
-                  <div className="mt-5 flex items-center gap-2 border-t pt-4">
-                    <Button
-                      nativeButton={false}
-                      variant="outline"
-                      render={
-                        <a
-                          href={`/guides/${tool.slug}`}
-                          className="inline-flex items-center gap-1.5"
-                          aria-label={`Read ${tool.name} guide`}
-                        />
-                      }
-                      className="h-9 text-xs"
+                  <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
+                    <a
+                      href={`/guides/${tool.slug}`}
+                      aria-label={`Read ${tool.name} guide`}
+                      className={cn(
+                        buttonVariants({ variant: 'outline', size: 'sm' }),
+                        'h-9 w-full text-xs font-medium gap-1.5',
+                      )}
                     >
                       <BookOpen aria-hidden="true" className="size-3.5" />
                       Read Guide
-                    </Button>
-                    <Button
-                      nativeButton={false}
-                      render={
-                        <a
-                          href={tool.destinationUrl}
-                          className="inline-flex items-center gap-1.5"
-                          aria-label={`Launch ${tool.name} workbench`}
-                        />
-                      }
-                      className="h-9 text-xs font-semibold"
+                    </a>
+                    <a
+                      href={tool.destinationUrl}
+                      aria-label={`Launch ${tool.name} workbench`}
+                      className={cn(
+                        buttonVariants({ variant: 'default', size: 'sm' }),
+                        'h-9 w-full text-xs font-semibold gap-1.5',
+                      )}
                     >
                       Launch Tool
                       <ArrowRight aria-hidden="true" className="size-3.5" />
-                    </Button>
+                    </a>
                   </div>
                 </div>
               ))}

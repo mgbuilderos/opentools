@@ -9,7 +9,8 @@ import {
   Zap,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { getGuideBySlug } from '@/lib/seo/guide-content';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
 
@@ -131,34 +132,27 @@ export default async function GuidePage({ params }: GuidePageProps) {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Button
-                nativeButton={false}
-                render={
-                  <a
-                    href={guide.tool.destinationUrl}
-                    className="inline-flex items-center gap-2"
-                    aria-label={`Launch ${guide.tool.name} workbench`}
-                  />
-                }
-                className="h-11 px-5 text-sm font-semibold"
+              <a
+                href={guide.tool.destinationUrl}
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'lg' }),
+                  'h-11 px-5 text-sm font-semibold gap-2',
+                )}
+                aria-label={`Launch ${guide.tool.name} workbench`}
               >
                 Launch {guide.tool.name} Workbench
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </Button>
-              <Button
-                nativeButton={false}
-                variant="outline"
-                render={
-                  <a
-                    href="#how-it-works"
-                    className="inline-flex items-center gap-2"
-                    aria-label="Read 3-step operator guide"
-                  />
-                }
-                className="h-11 px-4 text-sm"
+              </a>
+              <a
+                href="#how-it-works"
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'lg' }),
+                  'h-11 px-4 text-sm gap-2',
+                )}
+                aria-label="Read 3-step operator guide"
               >
                 Read 3-Step Guide
-              </Button>
+              </a>
             </div>
           </header>
 
@@ -396,20 +390,17 @@ export default async function GuidePage({ params }: GuidePageProps) {
               forever, no registration, 100% private.
             </p>
             <div className="mt-5 flex justify-center">
-              <Button
-                nativeButton={false}
-                render={
-                  <a
-                    href={guide.tool.destinationUrl}
-                    className="inline-flex items-center gap-2"
-                    aria-label={`Start using ${guide.tool.name} free`}
-                  />
-                }
-                className="h-11 px-6 text-sm font-semibold"
+              <a
+                href={guide.tool.destinationUrl}
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'lg' }),
+                  'h-11 px-6 text-sm font-semibold gap-2',
+                )}
+                aria-label={`Start using ${guide.tool.name} free`}
               >
                 Start Using {guide.tool.name} Free
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </Button>
+              </a>
             </div>
           </div>
         </div>
