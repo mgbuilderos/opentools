@@ -200,10 +200,13 @@ export function ImageOptimizeTool() {
         targetFormat,
         targetQuality / 100,
       );
-      if (blob.type !== targetFormat)
-        throw new Error(
-          `This browser did not produce ${targetFormat.replace('image/', '').toUpperCase()} output.`,
-        );
+      // WebKit answers a WebP request with a PNG rather than failing. Refusing
+      // would leave the tool dead on that browser, so keep what the browser
+      // produced and name the file for the format it actually is.
+      const encodedFormat = blob.type as RasterFormat;
+      if (!supportedRasterTypes.has(encodedFormat)) {
+        throw new Error('This browser did not produce a usable image format.');
+      }
       const validationUrl = URL.createObjectURL(blob);
       const validationImage = await loadImage(validationUrl);
       if (
@@ -216,7 +219,7 @@ export function ImageOptimizeTool() {
       const next = {
         url: validationUrl,
         blob,
-        format: targetFormat,
+        format: encodedFormat,
         ...dimensions,
         durationMs: performance.now() - started,
       };
@@ -225,7 +228,7 @@ export function ImageOptimizeTool() {
       announceCompletion({
         operation: 'Image optimizer',
         durationMs: next.durationMs,
-        summary: `Image converted to ${targetFormat.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
+        summary: `Image converted to ${encodedFormat.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
         metrics: [
           { label: 'Before', value: formatBytes(source.file.size) },
           { label: 'After', value: formatBytes(blob.size) },

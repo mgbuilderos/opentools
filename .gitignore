@@ -41,3 +41,6 @@ next-env.d.ts
 /output/
 /work/
 /.playwright-cli/
+/tmp/
+/playwright-report/
+/test-results/

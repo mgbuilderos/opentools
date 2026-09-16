@@ -1,29 +1,26 @@
 import { test, expect } from '@playwright/test';
 
+import { testPng } from './fixtures';
+
 test('AI background removal test', async ({ page }) => {
+  // The first run fetches a 4.4 MB model and a 12 MB WebAssembly runtime from
+  // this site before it can infer anything, which is well past the 30s default.
+  test.setTimeout(180_000);
   await page.goto('/image/background-remover');
 
   // Wait for React to hydrate
   await page.waitForTimeout(1000);
 
-  // Verify UI has AI mode selected
-  const aiRadio = page.locator(
-    'input[type="radio"][value="ai"], input[name="bgMode"]:first-of-type',
-  );
+  // Verify UI has AI mode selected. Match by accessible name: the old CSS
+  // selector matched both radios and failed strict mode.
+  const aiRadio = page.getByRole('radio', { name: 'AI Subject (Smart)' });
   await expect(aiRadio).toBeVisible();
+  await expect(aiRadio).toBeChecked();
 
-  // generate a fake 100x100 image
-  const base64Image = await page.evaluate(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 100;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = '#ff0000';
-    ctx.fillRect(0, 0, 100, 100);
-    return canvas.toDataURL('image/png').split(',')[1];
-  });
-
-  const imageBuffer = Buffer.from(base64Image, 'base64');
+  // A subject on a plain field. A flat single-colour square has no subject at
+  // all, and the model correctly refuses it — which is not what this test is
+  // trying to prove.
+  const imageBuffer = testPng(100);
 
   const fileChooserPromise = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Choose an image' }).click();

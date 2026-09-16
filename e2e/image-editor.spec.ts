@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+import { testPng } from './fixtures';
+
 test.describe('Image Editor Tool', () => {
   test('should load the background remover and apply changes', async ({
     page,
   }) => {
+    // First run fetches the model and WebAssembly runtime from this site.
+    test.setTimeout(180_000);
     await page.goto('/image/background-remover');
 
     // Check if the page title is correct
@@ -14,10 +18,9 @@ test.describe('Image Editor Tool', () => {
     // It might not exist until an image is loaded, let's load a mock image.
 
     // We can intercept the file chooser or just upload directly
-    // Create a simple blank white 10x10 image buffer for testing
-    const base64WhiteImage =
-      'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAXSURBVChTY/z//z8DNgBDGBWjYhSMMwAAvzMRf30T+k0AAAAASUVORK5CYII=';
-    const imageBuffer = Buffer.from(base64WhiteImage, 'base64');
+    // A subject on a plain field: the AI mode this route defaults to needs
+    // something to actually find.
+    const imageBuffer = testPng(64);
 
     // Choose file
     const fileChooserPromise = page.waitForEvent('filechooser');
@@ -33,9 +36,10 @@ test.describe('Image Editor Tool', () => {
     // Verify image is loaded in preview
     await expect(page.locator('p.truncate')).toHaveText('test-image.png');
 
-    // Check the 'Remove a plain-color background' checkbox is checked (should be by default in this route)
+    // The background-remover route turns this on by default. Match on a
+    // substring: the control's accessible name carries its help text too.
     const removeBgCheckbox = page.getByRole('checkbox', {
-      name: 'Remove a plain-color background',
+      name: /Remove background/u,
     });
     await expect(removeBgCheckbox).toBeChecked();
 
@@ -43,7 +47,9 @@ test.describe('Image Editor Tool', () => {
     await page.getByRole('button', { name: 'Remove background' }).click();
 
     // Verify completion
-    await expect(page.getByText('Done — 10 × 10px')).toBeVisible();
+    await expect(page.getByText('Done — 64 × 64px')).toBeVisible({
+      timeout: 120_000,
+    });
     await expect(
       page.getByRole('button', { name: 'Save image' }),
     ).toBeVisible();

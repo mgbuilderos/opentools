@@ -307,10 +307,15 @@ export function ImageEditorTool({
         context.putImageData(imageData, 0, 0);
       }
       const blob = await encodeCanvas(canvas, format, quality / 100);
-      if (blob.type !== format)
-        throw new Error(
-          'This browser did not produce the selected output format.',
-        );
+      // Not every engine encodes every format: WebKit answers a WebP request
+      // with a PNG instead of failing. Refusing the edit would leave the tool
+      // dead on that browser, so take what the browser produced and report the
+      // format it really is — the file must never be named for a format it is
+      // not.
+      const encodedFormat = blob.type as RasterFormat;
+      if (!supportedRasterTypes.has(encodedFormat)) {
+        throw new Error('This browser did not produce a usable image format.');
+      }
       const url = URL.createObjectURL(blob);
       const checked = await loadImage(url);
       if (
@@ -325,7 +330,7 @@ export function ImageEditorTool({
         blob,
         ...dimensions,
         durationMs: performance.now() - started,
-        format,
+        format: encodedFormat,
         removedPixels,
       };
       resultRef.current = next;
@@ -343,7 +348,7 @@ export function ImageEditorTool({
           { label: 'After', value: formatBytes(blob.size) },
           {
             label: 'Output',
-            value: format.replace('image/', '').toUpperCase(),
+            value: encodedFormat.replace('image/', '').toUpperCase(),
           },
           ...(removeBackground && removeBackgroundMode === 'solid'
             ? [
@@ -840,9 +845,14 @@ export function ImageEditorTool({
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">
-                  <p className="text-xs text-muted-foreground">Output check</p>
+                  <p className="text-xs text-muted-foreground">Output format</p>
                   <p className="mt-1 text-sm font-semibold">
-                    Decoded dimensions match
+                    {result.format.replace('image/', '').toUpperCase()}
+                    {result.format === format
+                      ? ' · dimensions match'
+                      : ` · this browser cannot write ${format
+                          .replace('image/', '')
+                          .toUpperCase()}`}
                   </p>
                 </div>
                 <div className="p-4">
