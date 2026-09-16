@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllBlogPosts } from '@/lib/seo/blog-data';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
+import { getAllTemplates } from '@/lib/templates/templates-data';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 
@@ -53,6 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/support',
     '/guides',
     '/blog',
+    '/templates',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: now,
@@ -83,5 +85,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  return [...coreRoutes, ...pillarRoutes, ...guideRoutes, ...blogRoutes];
+  const templateRoutes: MetadataRoute.Sitemap = getAllTemplates().map(
+    (template) => ({
+      url: `${baseUrl}/templates/${template.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+    }),
+  );
+
+  return [
+    ...coreRoutes,
+    ...pillarRoutes,
+    ...guideRoutes,
+    ...blogRoutes,
+    ...templateRoutes,
+  ];
 }

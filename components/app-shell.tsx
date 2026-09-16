@@ -16,6 +16,7 @@ import {
   BookOpen,
   Newspaper,
   HeartHandshake,
+  FolderGit2,
 } from 'lucide-react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -226,6 +227,22 @@ export function AppShell({
         <div className="category-label px-3 pt-1 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
           Resources
         </div>
+        <a
+          href="/templates"
+          title="Templates & OS Vault"
+          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+        >
+          <FolderGit2
+            aria-hidden="true"
+            className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+          />
+          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            Templates &amp; OS Vault
+            <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
+              Free Vault
+            </span>
+          </span>
+        </a>
         <a
           href="/guides"
           title="Guides & Solutions"
@@ -530,6 +547,16 @@ export function AppShell({
             />
             <span>Star on GitHub</span>
           </a>
+
+          <Button
+            variant="ghost"
+            className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
+            render={
+              <a href="/templates" aria-label="Free Templates and OS Vault" />
+            }
+          >
+            <span>Templates</span>
+          </Button>
 
           <Button
             variant="ghost"
