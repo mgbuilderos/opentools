@@ -22,8 +22,6 @@ export function proxy(request: NextRequest) {
   // Edge Telemetry Logging for non-static tool & page requests
   if (!pathname.startsWith('/_next/') && !pathname.includes('.')) {
     const country = request.headers.get('cf-ipcountry') || 'XX';
-    const region = request.headers.get('cf-region') || '';
-    const city = request.headers.get('cf-ipcity') || '';
     const referer = request.headers.get('referer') || 'direct';
     const userAgent = request.headers.get('user-agent') || '';
     const acceptLang =
@@ -55,13 +53,10 @@ export function proxy(request: NextRequest) {
       JSON.stringify({
         event: 'tool_impression',
         country,
-        region,
-        city,
-        tool,
-        path: pathname,
         device,
         referer_source: refererSource,
-        referer: referer.slice(0, 120),
+        path: pathname,
+        tool,
         lang: acceptLang.slice(0, 10),
         time: Date.now(),
       }),

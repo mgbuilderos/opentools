@@ -33,16 +33,15 @@ Tools never send your data to the server, but the site does log page visits.
 For each page request (not static assets), the edge handler in `proxy.ts` writes
 one `tool_impression` event to Cloudflare Workers Logs containing:
 
-- Country, region, and city, from Cloudflare's IP geolocation headers.
-- The page path, and the `tool` query parameter if present.
+- Country, from Cloudflare's `cf-ipcountry` header (coarse geographic level only; region and city are not logged).
 - Device type (mobile, tablet, or desktop), derived from the user agent; the
   user agent itself is not stored.
+- The referring site's category (`referer_source`, e.g. search engine, social platform, or direct; the raw referrer URL is not stored).
+- The page path, and the `tool` query parameter if present.
 - Primary browser language.
-- The referring site's category and the first 120 characters of the referrer
-  URL, when another site sends one.
 - A timestamp.
 
-The event does not include IP addresses, cookies, files, file names, pasted
+The event does not include IP addresses, cities, regions, raw referrers, cookies, files, file names, pasted
 text, or results. Logs are retained under Cloudflare's Workers Logs retention,
 and Cloudflare may also record standard request metadata for its platform logs.
 Any change to what is logged must update this section and the README in the
