@@ -2,8 +2,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   ArrowRight,
+  BookOpen,
   Calendar,
   Clock,
+  HelpCircle,
+  ListTree,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -47,6 +50,96 @@ export async function generateMetadata({
       authors: [post.author],
     },
   };
+}
+
+function renderFormattedContent(text: string) {
+  const paragraphs = text.split(/\n\n+/);
+
+  return paragraphs.map((para, pIdx) => {
+    const trimmed = para.trim();
+
+    // Check for code blocks
+    if (trimmed.startsWith('```') && trimmed.endsWith('```')) {
+      const firstLineEnd = trimmed.indexOf('\n');
+      const lang = trimmed.slice(3, firstLineEnd).trim();
+      const code = trimmed.slice(firstLineEnd + 1, -3);
+
+      return (
+        <div
+          key={pIdx}
+          className="my-4 overflow-hidden rounded-xl border bg-muted/60 font-mono text-xs"
+        >
+          {lang ? (
+            <div className="flex items-center justify-between border-b bg-muted px-4 py-1.5 text-[11px] text-muted-foreground">
+              <span>{lang}</span>
+              <span>copy</span>
+            </div>
+          ) : null}
+          <pre className="overflow-x-auto p-4 leading-5 text-foreground">
+            <code>{code}</code>
+          </pre>
+        </div>
+      );
+    }
+
+    // Check for markdown tables
+    if (trimmed.includes('|') && trimmed.includes('\n|')) {
+      const rows = trimmed
+        .split('\n')
+        .map((r) => r.trim())
+        .filter((r) => r.startsWith('|') && r.endsWith('|'));
+
+      if (rows.length >= 2) {
+        const headerCells = rows[0]
+          .split('|')
+          .slice(1, -1)
+          .map((c) => c.trim());
+        const dataRows = rows.slice(2).map((row) =>
+          row
+            .split('|')
+            .slice(1, -1)
+            .map((c) => c.trim()),
+        );
+
+        return (
+          <div
+            key={pIdx}
+            className="my-4 overflow-x-auto rounded-xl border bg-card"
+          >
+            <table className="w-full text-left text-xs">
+              <thead className="border-b bg-muted/50 font-semibold text-foreground">
+                <tr>
+                  {headerCells.map((h, hIdx) => (
+                    <th key={hIdx} className="px-4 py-2.5">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y text-muted-foreground">
+                {dataRows.map((dRow, rIdx) => (
+                  <tr key={rIdx} className="hover:bg-muted/30">
+                    {dRow.map((cell, cIdx) => (
+                      <td key={cIdx} className="px-4 py-2.5">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+    }
+
+    // Regular paragraph
+    return (
+      <p key={pIdx} className="text-base leading-7 text-muted-foreground">
+        {trimmed}
+      </p>
+    );
+  });
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -223,15 +316,45 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
           </div>
 
+          {/* Table of Contents */}
+          <div className="rounded-xl border bg-muted/30 p-5">
+            <div className="flex items-center gap-2 mb-3 font-semibold text-sm">
+              <ListTree className="size-4" />
+              <span>Table of Contents</span>
+            </div>
+            <ul className="space-y-1.5 text-xs">
+              {post.sections.map((section, sIdx) => (
+                <li key={section.id}>
+                  <a
+                    href={`#${section.id}`}
+                    className="text-muted-foreground hover:text-foreground hover:underline"
+                  >
+                    {sIdx + 1}. {section.heading}
+                  </a>
+                </li>
+              ))}
+              {post.faqs.length ? (
+                <li>
+                  <a
+                    href="#faqs"
+                    className="text-muted-foreground hover:text-foreground hover:underline"
+                  >
+                    {post.sections.length + 1}. Frequently Asked Questions (FAQ)
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </div>
+
           {/* Article Sections */}
-          <div className="space-y-8 prose dark:prose-invert max-w-none">
+          <div className="space-y-10">
             {post.sections.map((section) => (
               <section key={section.id} id={section.id} className="space-y-4">
                 <h2 className="text-2xl font-bold tracking-tight text-foreground border-b pb-2">
                   {section.heading}
                 </h2>
-                <div className="text-base leading-7 text-muted-foreground whitespace-pre-line">
-                  {section.content}
+                <div className="space-y-4">
+                  {renderFormattedContent(section.content)}
                 </div>
               </section>
             ))}
@@ -239,10 +362,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Frequently Asked Questions */}
           {post.faqs.length ? (
-            <section className="space-y-6 border-t pt-8">
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                Frequently Asked Questions
-              </h2>
+            <section id="faqs" className="space-y-6 border-t pt-8">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="size-5" />
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                  Frequently Asked Questions (FAQ)
+                </h2>
+              </div>
               <div className="space-y-4">
                 {post.faqs.map((faq, index) => (
                   <div key={index} className="rounded-xl border bg-card p-5">
@@ -261,9 +387,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Related Articles & Companion Tools */}
           {relatedPosts.length ? (
             <section className="space-y-6 border-t pt-8">
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                Related Articles &amp; Playbooks
-              </h2>
+              <div className="flex items-center gap-2">
+                <BookOpen className="size-5" />
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                  Related Guides &amp; Solutions
+                </h2>
+              </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {relatedPosts.map((rPost) => (
                   <div
