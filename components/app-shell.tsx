@@ -176,15 +176,21 @@ export function AppShell({
     }, 450);
   };
   const categoryNavigation = (
-    <nav aria-label="Tool categories" className="space-y-4 p-3">
-      {NAVIGATION_MAJOR_SECTIONS.map((section) => {
+    <nav aria-label="Tool categories" className="space-y-2 p-2">
+      {NAVIGATION_MAJOR_SECTIONS.map((section, sectionIdx) => {
         const groups = section.groupCategoryIds
           .map((id) => toolGroups.find((g) => g.id === id))
           .filter((g): g is ToolGroup => Boolean(g));
 
         return (
-          <div key={section.id} className="space-y-1">
-            <div className="category-label px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
+          <div key={section.id} className="space-y-0.5">
+            {sectionIdx > 0 && (
+              <div
+                className="category-section-divider my-1.5 h-px bg-border/60 mx-1"
+                aria-hidden="true"
+              />
+            )}
+            <div className="category-section-header px-2.5 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
               {section.title}
             </div>
             {groups.map((group) => {
@@ -194,7 +200,7 @@ export function AppShell({
                 <a
                   key={group.id}
                   href={`/?category=${group.id}`}
-                  title={group.name}
+                  title={`${group.name} (${count} tools)`}
                   aria-current={group.id === activeGroupId ? 'page' : undefined}
                   onClick={(event) => {
                     if (
@@ -210,14 +216,14 @@ export function AppShell({
                     }
                     setSidebarOpen(false);
                   }}
-                  className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98] aria-[current=page]:bg-foreground aria-[current=page]:text-background aria-[current=page]:hover:translate-x-0 motion-reduce:transform-none"
+                  className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98] aria-[current=page]:bg-foreground aria-[current=page]:text-background"
                 >
                   <Icon
                     aria-hidden="true"
-                    className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-aria-[current=page]:scale-100 motion-reduce:transform-none"
+                    className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-aria-[current=page]:scale-100"
                   />
-                  <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-                    {group.name}
+                  <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+                    <span className="truncate">{group.name}</span>
                     <span className="tabular rounded bg-muted/70 px-1.5 py-0.5 text-[11px] font-mono opacity-70 transition-opacity duration-[var(--motion-standard)] group-hover:opacity-100 group-aria-[current=page]:bg-background/20 group-aria-[current=page]:text-background">
                       {count}
                     </span>
@@ -229,21 +235,25 @@ export function AppShell({
         );
       })}
 
-      <div className="space-y-1 border-t pt-3">
-        <div className="category-label px-3 pt-1 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
+      <div className="space-y-0.5 pt-1.5">
+        <div
+          className="category-section-divider my-1.5 h-px bg-border/60 mx-1"
+          aria-hidden="true"
+        />
+        <div className="category-section-header px-2.5 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
           Resources
         </div>
         <a
           href="/templates"
-          title="Templates & OS Vault"
-          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+          title="Templates & OS Vault (Free Vault)"
+          className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <FolderGit2
             aria-hidden="true"
-            className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+            className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
-          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            Templates &amp; OS Vault
+          <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            <span className="truncate">Templates &amp; Vault</span>
             <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
               Free Vault
             </span>
@@ -251,15 +261,15 @@ export function AppShell({
         </a>
         <a
           href="/guides"
-          title="Guides & Solutions"
-          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+          title="Guides & Solutions (Interactive)"
+          className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <BookOpen
             aria-hidden="true"
-            className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+            className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
-          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            Guides &amp; Solutions
+          <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            <span className="truncate">Guides &amp; Solutions</span>
             <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
               Interactive
             </span>
@@ -267,31 +277,31 @@ export function AppShell({
         </a>
         <a
           href="/blog"
-          title="Engineering Blog"
-          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+          title="Engineering Blog (20 Playbooks)"
+          className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <Newspaper
             aria-hidden="true"
-            className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+            className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
-          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            Engineering Blog
+          <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            <span className="truncate">Engineering Blog</span>
             <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
-              20 Playbooks
+              Playbooks
             </span>
           </span>
         </a>
         <a
           href="/support"
-          title="Support OpenTools"
-          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+          title="Support OpenTools (Free & Open Source)"
+          className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <HeartHandshake
             aria-hidden="true"
-            className="size-5 shrink-0 text-success transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+            className="size-4 shrink-0 text-success transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
-          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            Support OpenTools
+          <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            <span className="truncate">Support OpenTools</span>
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
               <span className="relative inline-flex size-2 rounded-full bg-success" />
@@ -626,17 +636,17 @@ export function AppShell({
           data-expanded={sidebarOpen}
           className="category-rail fixed bottom-0 left-0 top-[84px] z-50 overflow-x-hidden overflow-y-auto border-r bg-background"
         >
-          <div className="flex h-14 items-center gap-4 overflow-hidden px-3">
+          <div className="flex h-11 items-center gap-3 overflow-hidden px-2 border-b border-border/40">
             <Button
               variant="ghost"
               size="icon"
               onClick={closeSidebar}
               aria-label="Collapse categories"
-              className="size-10 shrink-0"
+              className="size-8 shrink-0 mx-auto"
             >
-              <PanelLeftClose aria-hidden="true" className="size-5" />
+              <PanelLeftClose aria-hidden="true" className="size-4" />
             </Button>
-            <span className="category-label whitespace-nowrap text-sm font-semibold">
+            <span className="category-label whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
               Categories
             </span>
           </div>

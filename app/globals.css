@@ -259,42 +259,65 @@
 
 /* Category rail reserves a constant footprint, so expansion does not move cards. */
 .category-rail {
-  width: 72px;
+  width: 58px;
   transition:
-    width 220ms var(--motion-ease),
-    box-shadow 220ms var(--motion-ease);
+    width 200ms var(--motion-ease),
+    box-shadow 200ms var(--motion-ease);
 }
 .category-rail[data-expanded='true'] {
-  width: 272px;
-  box-shadow: 14px 0 32px rgb(0 0 0 / 6%);
+  width: 256px;
+  box-shadow: 14px 0 32px rgb(0 0 0 / 8%);
 }
 .category-rail .category-label {
-  opacity: 0;
-  transition: opacity 140ms ease-out;
+  display: none;
 }
 .category-rail[data-expanded='true'] .category-label {
-  opacity: 1;
+  display: flex;
+}
+.category-rail .category-section-header {
+  display: none;
+}
+.category-rail[data-expanded='true'] .category-section-header {
+  display: block;
+}
+.category-rail[data-expanded='false'] .category-section-divider {
+  display: block;
+}
+.category-rail[data-expanded='true'] .category-section-divider {
+  display: none;
 }
 .category-link {
-  width: 248px;
+  width: 236px;
 }
 .category-rail[data-expanded='false'] .category-link {
-  width: 48px;
+  width: 40px;
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
 }
 .category-mobile .category-link {
   width: 100%;
 }
+.category-mobile .category-label {
+  display: flex;
+}
+.category-mobile .category-section-header {
+  display: block;
+}
+.category-mobile .category-section-divider {
+  display: none;
+}
 
 .app-main {
   padding-left: 0;
-  transition: padding-left 220ms var(--motion-ease);
+  transition: padding-left 200ms var(--motion-ease);
 }
 @media (min-width: 1024px) {
   .app-main {
-    padding-left: 72px;
+    padding-left: 58px;
   }
   .app-main[data-expanded='true'] {
-    padding-left: 272px;
+    padding-left: 256px;
   }
 }
 
