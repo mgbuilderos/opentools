@@ -1,84 +1,48 @@
 import type { MetadataRoute } from 'next';
 import { getAllBlogPosts } from '@/lib/seo/blog-data';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
-import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
+import { LIVE_TOOL_CATALOG, LIVE_TOOL_ROUTES } from '@/lib/seo/live-tools';
 import { getAllTemplates } from '@/lib/templates/templates-data';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 
+// Only pages for tools that work are listed. Tools that are not built yet,
+// placeholder pages and the roadmap stay out until they ship. No lastModified
+// is set where the content has no real edit date.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-
   const coreRoutes: MetadataRoute.Sitemap = [
     '',
-    '/pdf/merge',
-    '/pdf/extract-pages',
-    '/pdf/images-to-pdf',
-    '/pdf/page-tools',
-    '/image/editor',
-    '/image/background-remover',
-    '/image/optimize',
-    '/image/ocr',
-    '/video/compress',
-    '/creator/workbench',
-    '/documents/workbench',
-    '/data/workbench',
-    '/data/csv-to-json',
-    '/data/json',
-    '/file/workbench',
-    '/file/hash-calculator',
-    '/text/workbench',
-    '/text/writing',
-    '/text/case-converter',
-    '/developer/workbench',
-    '/developer/advanced',
-    '/developer/base64-decoder',
-    '/developer/base64-encoder',
-    '/developer/sql-visualizer',
-    '/developer/unix-timestamp',
-    '/developer/uuid-generator',
-    '/web/workbench',
-    '/qr/workbench',
-    '/math/workbench',
-    '/math/percentage-calculator',
-    '/finance/workbench',
-    '/date/workbench',
-    '/date/age-calculator',
-    '/date/date-difference',
-    '/productivity/workbench',
-    '/science/workbench',
-    '/life-admin/workbench',
-    '/roadmap',
+    ...LIVE_TOOL_ROUTES,
     '/support',
     '/guides',
     '/blog',
     '/templates',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: now,
     changeFrequency: route === '' ? ('daily' as const) : ('weekly' as const),
     priority: route === '' ? 1.0 : 0.9,
   }));
 
-  const pillarRoutes: MetadataRoute.Sitemap = getAllCategoryPillars().map(
-    (pillar) => ({
+  const liveCategories = new Set(
+    LIVE_TOOL_CATALOG.map((tool) => tool.category),
+  );
+  const pillarRoutes: MetadataRoute.Sitemap = getAllCategoryPillars()
+    .filter((pillar) => liveCategories.has(pillar.name))
+    .map((pillar) => ({
       url: `${baseUrl}${pillar.href}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.9,
-    }),
-  );
+    }));
 
-  const guideRoutes: MetadataRoute.Sitemap = TOOL_CATALOG.map((tool) => ({
+  const guideRoutes: MetadataRoute.Sitemap = LIVE_TOOL_CATALOG.map((tool) => ({
     url: `${baseUrl}/guides/${tool.slug}`,
-    lastModified: now,
     changeFrequency: 'weekly' as const,
     priority: tool.releaseWave === 'P0' ? 0.85 : 0.75,
   }));
 
   const blogRoutes: MetadataRoute.Sitemap = getAllBlogPosts().map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: now,
+    lastModified: post.publishedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.85,
   }));
@@ -86,7 +50,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const templateRoutes: MetadataRoute.Sitemap = getAllTemplates().map(
     (template) => ({
       url: `${baseUrl}/templates/${template.slug}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.85,
     }),
