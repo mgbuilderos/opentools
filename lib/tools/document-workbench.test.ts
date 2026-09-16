@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('documents and office workbench', () => {
-  it('publishes 36 unique operations whose defaults all run', () => {
-    expect(DOCUMENT_OPERATIONS).toHaveLength(36);
-    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(36);
+  it('publishes 38 unique operations whose defaults all run', () => {
+    expect(DOCUMENT_OPERATIONS).toHaveLength(38);
+    expect(new Set(DOCUMENT_OPERATIONS.map((item) => item.id)).size).toBe(38);
     for (const operation of DOCUMENT_OPERATIONS) {
       expect(
         runDocumentOperation(operation.id, defaults(operation.id)),
@@ -219,5 +219,42 @@ describe('documents and office workbench', () => {
         items: 'Broken | two | 10',
       }),
     ).toThrow('positive quantity');
+  });
+
+  it('generates institutional SOP playbooks and agile BDD user stories', () => {
+    const sopMd = runDocumentOperation(
+      'sop-generator',
+      defaults('sop-generator'),
+    );
+    expect(sopMd).toContain(
+      '# Standard Operating Procedure: Incident Response & Hotfix Deployment',
+    );
+    expect(sopMd).toContain('SOP-ENG-042');
+    expect(sopMd).toContain('| Step | Action / Procedure | Responsible Role |');
+    expect(sopMd).toContain('Deploy to Cloudflare Workers');
+
+    const sopHtml = runDocumentOperation('sop-generator', {
+      ...defaults('sop-generator'),
+      format: 'html',
+    });
+    expect(sopHtml).toContain('<!DOCTYPE html>');
+    expect(sopHtml).toContain(
+      '<title>SOP: Incident Response &amp; Hotfix Deployment</title>',
+    );
+    expect(sopHtml).toContain('Authorized by Quality Lead');
+
+    const story = runDocumentOperation(
+      'user-story-acceptance-criteria-builder',
+      defaults('user-story-acceptance-criteria-builder'),
+    );
+    expect(story).toContain('# User Story: Security-conscious Developer');
+    expect(story).toContain('## User Story Narrative');
+    expect(story).toContain('> **As a** Security-conscious Developer');
+    expect(story).toContain('### Scenario: Valid cURL to Fetch');
+    expect(story).toContain(
+      '- **Given** I paste a valid cURL POST with headers',
+    );
+    expect(story).toContain('## Definition of Done (DoD)');
+    expect(story).toContain('- [ ] All 8 automated QC gates pass cleanly');
   });
 });

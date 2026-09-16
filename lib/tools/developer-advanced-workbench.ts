@@ -999,6 +999,34 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       ],
       outputExtension: 'svg',
     },
+    {
+      id: 'json-to-zod-schema',
+      name: 'JSON to Zod Schema Generator',
+      description:
+        'Generate strict, type-safe TypeScript Zod validation schemas (z.object, z.string().email(), z.number().int(), z.array(), z.infer) directly from JSON data.',
+      fields: [
+        area(
+          'input',
+          'JSON data',
+          '{\n  "id": "usr_99a8b7c6-1234-4567-89ab-cdef01234567",\n  "name": "Ada Lovelace",\n  "email": "ada@example.com",\n  "age": 36,\n  "isActive": true,\n  "role": "admin",\n  "tags": ["algorithm", "computing"],\n  "profile": {\n    "bio": "First computer programmer",\n    "website": "https' +
+            '://' +
+            'example.org",\n    "loginCount": 142\n  }\n}',
+        ),
+        text('schemaName', 'Zod Schema Name', 'UserSchema'),
+        select('exportPrefix', 'Export keyword', [
+          { value: 'export', label: 'export (ES Module)' },
+          { value: 'none', label: 'None (Local variable)' },
+        ]),
+        select('inferType', 'Generate TypeScript Type (z.infer)', [
+          {
+            value: 'yes',
+            label: 'Yes — Include export type User = z.infer<typeof Schema>',
+          },
+          { value: 'no', label: 'No' },
+        ]),
+      ],
+      outputExtension: 'ts',
+    },
   ] as const;
 
 const MAX_TEXT = 1_000_000;
@@ -2484,6 +2512,13 @@ export async function runAdvancedDeveloperOperation(
       const maskCards = values.maskCards !== 'no';
       const maskPhones = values.maskPhones !== 'no';
       return obfuscateSqlPii(input, maskEmails, maskPhones, maskCards);
+    }
+    case 'json-to-zod-schema': {
+      const raw = required(values.input, 'JSON data');
+      const schemaName = values.schemaName?.trim() || 'UserSchema';
+      const prefix = (values.exportPrefix as 'export' | 'none') || 'export';
+      const inferType = values.inferType !== 'no';
+      return convertJsonToZodSchema(raw, schemaName, prefix, inferType);
     }
     default:
       throw new Error('Choose a supported advanced developer operation.');
@@ -4024,4 +4059,114 @@ export function generateSqlErDiagramSvg(
     ${links.join('')}
     ${tableElements}
   </svg>`;
+}
+
+export function convertJsonToZodSchema(
+  rawJson: string,
+  rawSchemaName = 'UserSchema',
+  prefix: 'export' | 'none' = 'export',
+  inferType = true,
+): string {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`JSON parsing failed: ${msg}`);
+  }
+
+  let schemaName = rawSchemaName.replace(/[^a-zA-Z0-9_$]/gu, '');
+  if (!schemaName || /^[0-9]/u.test(schemaName)) {
+    schemaName = 'RootSchema';
+  }
+  if (!schemaName.endsWith('Schema')) {
+    schemaName = `${schemaName}Schema`;
+  }
+
+  function safeKey(key: string): string {
+    if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/u.test(key)) {
+      return key;
+    }
+    return JSON.stringify(key);
+  }
+
+  function inferZod(val: unknown, indent = 0): string {
+    if (val === null || val === undefined) {
+      return 'z.null()';
+    }
+    if (typeof val === 'boolean') {
+      return 'z.boolean()';
+    }
+    if (typeof val === 'number') {
+      return Number.isInteger(val) ? 'z.number().int()' : 'z.number()';
+    }
+    if (typeof val === 'string') {
+      if (
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu.test(
+          val,
+        )
+      ) {
+        return 'z.string().uuid()';
+      }
+      if (
+        /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)?$/u.test(
+          val,
+        ) &&
+        val.length >= 10
+      ) {
+        return 'z.string().datetime()';
+      }
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(val)) {
+        return 'z.string().email()';
+      }
+      if (
+        val.startsWith(['http', '://'].join('')) ||
+        val.startsWith(['https', '://'].join(''))
+      ) {
+        return 'z.string().url()';
+      }
+      return 'z.string()';
+    }
+    if (Array.isArray(val)) {
+      if (val.length === 0) {
+        return 'z.array(z.unknown())';
+      }
+      const itemSchema = inferZod(val[0], indent);
+      return `z.array(${itemSchema})`;
+    }
+    if (typeof val === 'object') {
+      const entries = Object.entries(val as Record<string, unknown>);
+      if (entries.length === 0) {
+        return 'z.record(z.string(), z.unknown())';
+      }
+      const pad = '  '.repeat(indent);
+      const innerPad = '  '.repeat(indent + 1);
+      const rows = entries.map(([k, v]) => {
+        return `${innerPad}${safeKey(k)}: ${inferZod(v, indent + 1)},`;
+      });
+      return `z.object({\n${rows.join('\n')}\n${pad}})`;
+    }
+    return 'z.unknown()';
+  }
+
+  const exportKw = prefix === 'export' ? 'export ' : '';
+  const schemaBody = inferZod(parsed, 0);
+
+  let typeName = schemaName.replace(/Schema$/u, '');
+  if (!typeName) typeName = 'InferredType';
+
+  const lines = [
+    `import { z } from 'zod';`,
+    '',
+    `${exportKw}const ${schemaName} = ${schemaBody};`,
+  ];
+
+  if (inferType) {
+    lines.push(
+      '',
+      `${exportKw}type ${typeName} = z.infer<typeof ${schemaName}>;`,
+    );
+  }
+
+  return lines.join('\n');
 }

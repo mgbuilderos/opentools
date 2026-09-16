@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('web and SEO workbench', () => {
-  it('publishes 46 unique real operations whose defaults all run', () => {
-    expect(WEB_OPERATIONS).toHaveLength(46);
-    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(46);
+  it('publishes 47 unique real operations whose defaults all run', () => {
+    expect(WEB_OPERATIONS).toHaveLength(47);
+    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(47);
     for (const operation of WEB_OPERATIONS) {
       expect(runWebOperation(operation.id, defaults(operation.id))).not.toBe(
         '',
@@ -216,5 +216,22 @@ describe('web and SEO workbench', () => {
     expect(anim).toContain('.animated-element');
     expect(anim).toContain('animation-duration: 2.5s;');
     expect(anim).toContain('will-change: transform');
+  });
+
+  it('generates multi-stop CSS gradients, Tailwind classes, and SVG defs', () => {
+    const gradient = runWebOperation('css-gradient-studio', {
+      type: 'linear',
+      direction: '135deg',
+      colorStops: '#3b82f6 0%\n#8b5cf6 50%\n#ec4899 100%',
+      format: 'all',
+    });
+
+    expect(gradient).toContain('background-image: linear-gradient(135deg');
+    expect(gradient).toContain('#3b82f6 0%');
+    expect(gradient).toContain('#8b5cf6 50%');
+    expect(gradient).toContain('#ec4899 100%');
+    expect(gradient).toContain('bg-[linear-gradient(135deg');
+    expect(gradient).toContain('<linearGradient id="gradient"');
+    expect(gradient).toContain('<stop offset="100%" stop-color="#ec4899"/>');
   });
 });

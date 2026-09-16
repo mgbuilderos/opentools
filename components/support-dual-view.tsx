@@ -29,7 +29,7 @@ export function SupportDualView() {
     'international',
   );
   const [detectedRegion, setDetectedRegion] = useState<string | null>(null);
-  const [selectedInrAmount, setSelectedInrAmount] = useState<number>(150);
+  const [selectedInrAmount, setSelectedInrAmount] = useState<number>(59);
   const [customInrAmount, setCustomInrAmount] = useState<string>('');
   const [qrSvg, setQrSvg] = useState<string>('');
   const [copiedUpi, setCopiedUpi] = useState<boolean>(false);
@@ -173,8 +173,14 @@ export function SupportDualView() {
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Select Support Amount
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {[50, 150, 500, 1500].map((amt) => {
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {[
+                { amt: 29, label: '☕ Chai', popular: false },
+                { amt: 59, label: '⚡ Coffee (Popular)', popular: true },
+                { amt: 99, label: '🍕 Lunch', popular: false },
+                { amt: 299, label: '💖 Patron', popular: false },
+                { amt: 999, label: '🚀 Sponsor', popular: false },
+              ].map(({ amt, label }) => {
                 const isSelected =
                   currentAmount === amt && customInrAmount === '';
                 return (
@@ -185,23 +191,17 @@ export function SupportDualView() {
                       setSelectedInrAmount(amt);
                       setCustomInrAmount('');
                     }}
-                    className={`rounded-xl border p-3 text-center transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
+                    className={`rounded-xl border p-2.5 sm:p-3 text-center transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
                       isSelected
                         ? 'border-success bg-success/10 text-foreground ring-2 ring-success/20 font-bold shadow-xs'
                         : 'bg-card text-muted-foreground hover:border-foreground/30 hover:bg-muted/40 hover:text-foreground'
                     }`}
                   >
-                    <div className="text-lg">
+                    <div className="text-base sm:text-lg">
                       ₹{amt.toLocaleString('en-IN')}
                     </div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5">
-                      {amt === 50
-                        ? '☕ Chai'
-                        : amt === 150
-                          ? '🍕 Lunch (Popular)'
-                          : amt === 500
-                            ? '💖 Patron'
-                            : '🚀 Sponsor'}
+                    <div className="text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {label}
                     </div>
                   </button>
                 );

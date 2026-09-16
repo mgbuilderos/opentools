@@ -16,11 +16,11 @@ function defaults(id: string) {
 }
 
 describe('advanced developer workbench', () => {
-  it('publishes 53 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(53);
+  it('publishes 54 unique operations whose defaults all run', async () => {
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(54);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(53);
+    ).toBe(54);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -589,5 +589,42 @@ CREATE TABLE orders (
     expect(svg).toContain('PK');
     expect(svg).toContain('FK');
     expect(svg).toContain('stroke-dasharray="4,4"');
+  });
+
+  it('converts JSON structures to type-safe Zod validation schemas', async () => {
+    const jsonInput = JSON.stringify({
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      name: 'Ada Lovelace',
+      email: 'ada@example.com',
+      age: 36,
+      isActive: true,
+      tags: ['math', 'code'],
+      meta: {
+        lastLogin: '2026-09-16T10:00:00Z',
+      },
+    });
+
+    const zodOutput = await runAdvancedDeveloperOperation(
+      'json-to-zod-schema',
+      {
+        input: jsonInput,
+        schemaName: 'UserAccountSchema',
+        exportPrefix: 'export',
+        inferType: 'yes',
+      },
+    );
+
+    expect(zodOutput).toContain("import { z } from 'zod';");
+    expect(zodOutput).toContain('export const UserAccountSchema = z.object({');
+    expect(zodOutput).toContain('id: z.string().uuid(),');
+    expect(zodOutput).toContain('name: z.string(),');
+    expect(zodOutput).toContain('email: z.string().email(),');
+    expect(zodOutput).toContain('age: z.number().int(),');
+    expect(zodOutput).toContain('isActive: z.boolean(),');
+    expect(zodOutput).toContain('tags: z.array(z.string()),');
+    expect(zodOutput).toContain('lastLogin: z.string().datetime(),');
+    expect(zodOutput).toContain(
+      'export type UserAccount = z.infer<typeof UserAccountSchema>;',
+    );
   });
 });

@@ -754,6 +754,83 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
     notice:
       'Self-help legal drafting aid only. Not formal legal advice. Consult licensed counsel before executing binding agreements.',
   },
+  {
+    id: 'sop-generator',
+    name: 'Standard Operating Procedure (SOP) builder',
+    description:
+      'Generate institutional Standard Operating Procedure (SOP) playbooks with numbered procedural steps, responsible roles, scope, and verification checklists.',
+    fields: [
+      text('title', 'SOP Title', 'Incident Response & Hotfix Deployment'),
+      text('sopNumber', 'SOP Identifier', 'SOP-ENG-042'),
+      text('department', 'Department / Team', 'DevOps & Platform Engineering'),
+      text('effectiveDate', 'Effective Date (YYYY-MM-DD)', '2026-09-16'),
+      text('version', 'Version', 'v1.0'),
+      text('author', 'Author / Owner', 'Ada Lovelace'),
+      area(
+        'purpose',
+        'Purpose & Objective',
+        'Establish a fast, reliable, zero-downtime workflow for deploying emergency software patches while maintaining 100% test pass rates and client-side data privacy.',
+      ),
+      area(
+        'scope',
+        'Applicability & Scope',
+        'Applies to all core maintainers, code reviewers, and automated CI/CD deployment pipelines across the OpenTools repository.',
+      ),
+      area(
+        'procedureSteps',
+        'Procedure Steps (Step # | Action / Task | Responsible Role | Verification Outcome)',
+        '1 | Triage & Issue Verification | Lead Engineer | Issue reproduced in local sandboxed environment\n2 | Develop Patch & Unit Tests | Software Engineer | New regression test added and passing\n3 | Run Master QC Pipeline | Release Engineer | npm run qc passes 8/8 gates cleanly\n4 | Deploy to Cloudflare Workers | Maintainer | Live deployment verified at production URL',
+      ),
+      area(
+        'contingency',
+        'Contingency & Rollback Plan',
+        'If any test fails or runtime exceptions are encountered after deployment, immediately revert to the previous immutable git commit and alert the core team.',
+      ),
+      select('format', 'Output Document Format', [
+        { value: 'markdown', label: 'GitHub Flavored Markdown (.md)' },
+        { value: 'html', label: 'Print-Ready Styled HTML (.html)' },
+      ]),
+    ],
+    outputExtension: 'md',
+  },
+  {
+    id: 'user-story-acceptance-criteria-builder',
+    name: 'Agile user story & BDD acceptance criteria builder',
+    description:
+      'Generate structured agile user stories with Gherkin BDD Given/When/Then acceptance scenarios and Definition of Done (DoD) checklists.',
+    fields: [
+      text('role', 'User Role ("As a...")', 'Security-conscious Developer'),
+      text(
+        'action',
+        'Action / Capability ("I want to...")',
+        'convert cURL commands and validate JSON payloads entirely in my local browser',
+      ),
+      text(
+        'outcome',
+        'Business Value / Outcome ("So that...")',
+        'sensitive auth tokens, API keys, and customer records never get uploaded to third-party cloud servers',
+      ),
+      area(
+        'scenarios',
+        'BDD Scenarios (Scenario Title | Given | When | Then)',
+        'Valid cURL to Fetch | I paste a valid cURL POST with headers | I select JavaScript Fetch | Idiomatic async/await fetch code is generated without remote egress\nInvalid JSON in payload | I input malformed JSON into the schema tester | I trigger parsing | A clear syntax error with line location is displayed gracefully\nMicro-tip UPI QR generation | I select the ₹29 quick support preset | The QR code re-renders | The exact amount is encoded in the upi URI',
+      ),
+      area(
+        'definitionOfDone',
+        'Definition of Done (DoD) Checklist (one per line)',
+        'All 8 automated QC gates pass cleanly (npm run qc)\nZero network egress verified by local-source-policy\n100% responsive across mobile and desktop viewports\nClean TypeScript types with 0 compiler errors',
+      ),
+      select('priority', 'Story Priority', [
+        { value: 'High (P1)', label: 'High Priority (P1 - Core MVP)' },
+        {
+          value: 'Medium (P2)',
+          label: 'Medium Priority (P2 - Fast Follow)',
+        },
+        { value: 'Low (P3)', label: 'Low Priority (P3 - Nice to Have)' },
+      ]),
+    ],
+    outputExtension: 'md',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -1498,6 +1575,12 @@ PRINTING INSTRUCTIONS:
     case 'legal-nda-generator': {
       return generateMutualNdaHtml(values);
     }
+    case 'sop-generator': {
+      return generateSopDocument(values);
+    }
+    case 'user-story-acceptance-criteria-builder': {
+      return generateUserStoryBdd(values);
+    }
     default:
       throw new Error('Choose a supported document operation.');
   }
@@ -1853,4 +1936,187 @@ function generateMutualNdaHtml(values: Record<string, string>): string {
   </div>
 </body>
 </html>`;
+}
+
+function generateSopDocument(values: Record<string, string>): string {
+  const title = required(values.title, 'SOP Title');
+  const sopNumber = values.sopNumber?.trim() || 'SOP-001';
+  const department = values.department?.trim() || 'Operations';
+  const effectiveDate = values.effectiveDate?.trim() || '2026-09-16';
+  const version = values.version?.trim() || 'v1.0';
+  const author = values.author?.trim() || 'Author';
+  const purpose = required(values.purpose, 'Purpose & Objective');
+  const scope = required(values.scope, 'Applicability & Scope');
+  const procedureStepsRaw = values.procedureSteps?.trim() || '';
+  const contingency = values.contingency?.trim() || '';
+  const format = values.format || 'markdown';
+
+  const stepRows = procedureStepsRaw
+    ? procedureStepsRaw
+        .split(/\r?\n/gu)
+        .map((line) => {
+          const parts = line.split('|').map((p) => p.trim());
+          return {
+            step: parts[0] || '',
+            action: parts[1] || '',
+            role: parts[2] || 'Assigned Staff',
+            outcome: parts[3] || 'Task complete',
+          };
+        })
+        .filter((item) => Boolean(item.step && item.action))
+    : [];
+
+  if (format === 'html') {
+    const stepRowsHtml = stepRows
+      .map(
+        (s) => `
+      <tr>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-weight: 700; text-align: center;">${escapeHtml(s.step)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7;">${escapeHtml(s.action)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-weight: 500;">${escapeHtml(s.role)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e4e4e7; color: #52525b;">${escapeHtml(s.outcome)}</td>
+      </tr>`,
+      )
+      .join('');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SOP: ${escapeHtml(title)}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #18181b; }
+    .header { border-bottom: 2px solid #18181b; padding-bottom: 16px; margin-bottom: 24px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; background: #f4f4f5; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    th { text-align: left; padding: 10px 12px; background: #f4f4f5; border-bottom: 2px solid #e4e4e7; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #71717a; letter-spacing: 0.5px;">Standard Operating Procedure · ${escapeHtml(department)}</div>
+    <h1 style="margin: 4px 0 0; font-size: 24px; font-weight: 800;">${escapeHtml(title)}</h1>
+  </div>
+  <div class="meta-grid">
+    <div><strong>SOP Number:</strong> ${escapeHtml(sopNumber)}</div>
+    <div><strong>Version:</strong> ${escapeHtml(version)}</div>
+    <div><strong>Effective Date:</strong> ${escapeHtml(effectiveDate)}</div>
+    <div style="grid-column: span 3;"><strong>Author / Owner:</strong> ${escapeHtml(author)}</div>
+  </div>
+  <h2 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid #e4e4e7; padding-bottom: 6px;">1. Purpose & Objective</h2>
+  <p style="line-height: 1.6; margin-bottom: 20px;">${escapeHtml(purpose)}</p>
+  <h2 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid #e4e4e7; padding-bottom: 6px;">2. Applicability & Scope</h2>
+  <p style="line-height: 1.6; margin-bottom: 20px;">${escapeHtml(scope)}</p>
+  <h2 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid #e4e4e7; padding-bottom: 6px;">3. Procedural Execution Steps</h2>
+  <table>
+    <thead><tr><th style="width: 60px; text-align: center;">Step</th><th>Action / Task</th><th>Responsible Role</th><th>Expected Outcome</th></tr></thead>
+    <tbody>${stepRowsHtml}</tbody>
+  </table>
+  ${contingency ? `<h2 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid #e4e4e7; padding-bottom: 6px; margin-top: 24px;">4. Contingency & Rollback Plan</h2><p style="line-height: 1.6;">${escapeHtml(contingency)}</p>` : ''}
+  <div style="margin-top: 40px; padding-top: 16px; border-top: 1px solid #e4e4e7; font-size: 12px; color: #71717a; display: flex; justify-content: space-between;">
+    <div>Authorized by Quality Lead: ________________________</div>
+    <div>Approved Date: ________________________</div>
+  </div>
+</body>
+</html>`;
+  }
+
+  const stepRowsMd = stepRows
+    .map((s) => `| ${s.step} | ${s.action} | ${s.role} | ${s.outcome} |`)
+    .join('\n');
+  const stepTableMd =
+    stepRows.length > 0
+      ? `| Step | Action / Procedure | Responsible Role | Verification Outcome |\n| :---: | :--- | :--- | :--- |\n${stepRowsMd}`
+      : '_No procedural steps defined._';
+
+  return `# Standard Operating Procedure: ${title}
+
+**SOP Identifier:** ${sopNumber}  
+**Version:** ${version}  
+**Department:** ${department}  
+**Effective Date:** ${effectiveDate}  
+**Author / Owner:** ${author}  
+
+---
+
+## 1. Purpose & Objective
+${purpose}
+
+---
+
+## 2. Applicability & Scope
+${scope}
+
+---
+
+## 3. Procedural Execution Steps
+${stepTableMd}
+
+${
+  contingency
+    ? `---
+
+## 4. Contingency & Rollback Plan
+${contingency}`
+    : ''
+}
+`;
+}
+
+function generateUserStoryBdd(values: Record<string, string>): string {
+  const role = required(values.role, 'User Role');
+  const action = required(values.action, 'Action');
+  const outcome = required(values.outcome, 'Outcome');
+  const scenariosRaw = values.scenarios?.trim() || '';
+  const dodRaw = values.definitionOfDone?.trim() || '';
+  const priority = values.priority || 'High (P1)';
+
+  const scenarioBlocks = scenariosRaw
+    ? scenariosRaw
+        .split(/\r?\n/gu)
+        .map((line) => {
+          const parts = line.split('|').map((p) => p.trim());
+          if (parts.length >= 4) {
+            return `### Scenario: ${parts[0]}\n- **Given** ${parts[1]}\n- **When** ${parts[2]}\n- **Then** ${parts[3]}`;
+          }
+          if (parts.length > 0 && parts[0]) {
+            return `### Scenario: ${parts[0]}\n- **Given** [precondition]\n- **When** [trigger event]\n- **Then** [expected outcome]`;
+          }
+          return '';
+        })
+        .filter(Boolean)
+        .join('\n\n')
+    : '### Scenario: Standard Happy Path\n- **Given** [precondition]\n- **When** [trigger event]\n- **Then** [expected outcome]';
+
+  const dodItems = dodRaw
+    ? dodRaw
+        .split(/\r?\n/gu)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => `- [ ] ${line.replace(/^-\s*\[\s*\]\s*/u, '')}`)
+        .join('\n')
+    : '- [ ] Automated unit and regression tests pass\n- [ ] Zero egress privacy policy verified\n- [ ] Code reviewed and merged into main branch';
+
+  return `# User Story: ${role} — ${action}
+
+**Priority:** ${priority}  
+**Status:** Ready for Sprint  
+
+---
+
+## User Story Narrative
+> **As a** ${role}  
+> **I want to** ${action}  
+> **So that** ${outcome}  
+
+---
+
+## Acceptance Criteria (Gherkin BDD Scenarios)
+${scenarioBlocks}
+
+---
+
+## Definition of Done (DoD)
+${dodItems}
+`;
 }

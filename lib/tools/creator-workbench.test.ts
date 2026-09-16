@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('creator and social workbench', () => {
-  it('publishes 51 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(51);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(51);
+  it('publishes 52 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(52);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(52);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
         runCreatorOperation(operation.id, defaults(operation.id)),
@@ -313,5 +313,24 @@ describe('creator and social workbench', () => {
     expect(mockup).toContain('Private Offline Utilities');
     expect(mockup).toContain('Security Dashboard');
     expect(mockup).toContain('1,248,920');
+  });
+
+  it('formats plain text into mathematical Unicode styles and bulleted lists', () => {
+    const boldSans = runCreatorOperation('social-media-post-formatter', {
+      text: 'Hello World 123',
+      style: 'bold-sans',
+      bulletStyle: 'none',
+    });
+    // 'Hello World 123' in bold sans: 𝗛𝗲𝗹𝗹𝗼 𝗪𝗼𝗿𝗹𝗱 𝟭𝟮𝟯
+    expect(boldSans).toContain('𝗛𝗲𝗹𝗹𝗼');
+    expect(boldSans).toContain('𝗪𝗼𝗿𝗹𝗱');
+
+    const bullets = runCreatorOperation('social-media-post-formatter', {
+      text: '1. Fast\n2. Private\n3. Free',
+      style: 'bold-sans',
+      bulletStyle: 'bullet-arrow',
+    });
+    expect(bullets).toContain('➤');
+    expect(bullets).toContain('𝗙𝗮𝘀𝘁');
   });
 });

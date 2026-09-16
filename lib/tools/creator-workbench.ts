@@ -808,6 +808,41 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
       ]),
     ],
   },
+  {
+    id: 'social-media-post-formatter',
+    name: 'Social media Unicode text formatter (LinkedIn, X, Instagram)',
+    description:
+      'Transform plain text into Unicode bold, italic, monospace, script, circled, and bulleted lists for social posts without formatting tools.',
+    fields: [
+      area(
+        'text',
+        'Post text to format',
+        '🚀 Building in Public:\n\n1. 100% client-side privacy\n2. Zero file uploads to servers\n3. Free forever for developers\n\nCheck out OpenTools today!',
+      ),
+      select('style', 'Typography Style', [
+        { value: 'bold-sans', label: 'Bold Sans-Serif (𝗛𝗲𝗹𝗹𝗼 𝗪𝗼𝗿𝗹𝗱)' },
+        { value: 'bold-serif', label: 'Bold Serif (𝐇𝐞𝐥𝐥𝐨 𝐖𝐨𝐫𝐥𝐝)' },
+        { value: 'italic-sans', label: 'Italic Sans-Serif (𝘏𝘦𝘭𝘭𝘰 𝘞𝘰𝘳𝘭𝘥)' },
+        { value: 'italic-serif', label: 'Italic Serif (𝐻𝑒𝓁𝓁𝑜 𝒲𝑜𝓇𝓁𝒹)' },
+        { value: 'bold-italic-sans', label: 'Bold Italic Sans (𝙃𝙚𝙡𝙡𝙤 𝙒𝙤𝙧𝙡𝙙)' },
+        { value: 'monospace', label: 'Monospace (𝙷𝚎𝚕𝚕𝚘 𝚆𝚘𝚛𝚕𝚍)' },
+        { value: 'script-bold', label: 'Script Bold / Cursive ( Hello 𝓦orld)' },
+        { value: 'circled', label: 'Circled / Bubble (Ⓗⓔⓛⓛⓞ Ⓦⓞⓡⓛⓓ)' },
+        { value: 'squared', label: 'Squared / Boxed (🄷🄴🄻🄻🄾 🅆🄾🅁🄻🄳)' },
+        { value: 'strikethrough', label: 'Strikethrough (H̶e̶l̶l̶o̶)' },
+        { value: 'underline', label: 'Underline (H̲e̲l̲l̲o̲)' },
+      ]),
+      select('bulletStyle', 'List Bullet Style', [
+        { value: 'none', label: 'Keep original bullets / numbers' },
+        { value: 'bullet-disc', label: 'Solid Disc (•)' },
+        { value: 'bullet-arrow', label: 'Arrow (➤)' },
+        { value: 'bullet-check', label: 'Checkmark (✓)' },
+        { value: 'bullet-star', label: 'Star (★)' },
+        { value: 'numbered-circled', label: 'Circled Numbers (① ② ③)' },
+      ]),
+    ],
+    outputExtension: 'txt',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -2181,6 +2216,9 @@ export function runCreatorOperation(
     case 'app-store-mockup-generator': {
       return generateAppStoreMockupSvg(values);
     }
+    case 'social-media-post-formatter': {
+      return formatSocialMediaPost(values);
+    }
     default:
       throw new Error('Choose a supported creator operation.');
   }
@@ -2675,4 +2713,131 @@ function generateAppStoreMockupSvg(values: Record<string, string>): string {
     <rect x="${600 - 70}" y="${phoneY + phoneHeight - 24}" width="140" height="5" rx="3" fill="#52525b" />
   </g>
 </svg>`;
+}
+
+function formatSocialMediaPost(values: Record<string, string>): string {
+  const text = required(values.text, 'Post text');
+  const style = values.style || 'bold-sans';
+  const bulletStyle = values.bulletStyle || 'none';
+
+  function transformChar(ch: string, s: string): string {
+    const code = ch.charCodeAt(0);
+
+    if (s === 'bold-sans') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d5d4 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1d5ee + (code - 97));
+      if (code >= 48 && code <= 57)
+        return String.fromCodePoint(0x1d7ec + (code - 48));
+    } else if (s === 'bold-serif') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d400 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1d41a + (code - 97));
+      if (code >= 48 && code <= 57)
+        return String.fromCodePoint(0x1d7ce + (code - 48));
+    } else if (s === 'italic-sans') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d608 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1d622 + (code - 97));
+    } else if (s === 'italic-serif') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d434 + (code - 65));
+      if (code >= 97 && code <= 122) {
+        if (ch === 'h') return 'ℎ';
+        return String.fromCodePoint(0x1d44e + (code - 97));
+      }
+    } else if (s === 'bold-italic-sans') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d63c + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1d656 + (code - 97));
+    } else if (s === 'monospace') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d670 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1d68a + (code - 97));
+      if (code >= 48 && code <= 57)
+        return String.fromCodePoint(0x1d7f6 + (code - 48));
+    } else if (s === 'script-bold') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1d4d0 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1d4ea + (code - 97));
+    } else if (s === 'circled') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x24b6 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x24d0 + (code - 97));
+      if (code >= 49 && code <= 57)
+        return String.fromCodePoint(0x2460 + (code - 49));
+      if (code === 48) return '⓪';
+    } else if (s === 'squared') {
+      if (code >= 65 && code <= 90)
+        return String.fromCodePoint(0x1f130 + (code - 65));
+      if (code >= 97 && code <= 122)
+        return String.fromCodePoint(0x1f130 + (code - 97));
+    } else if (s === 'strikethrough') {
+      return `${ch}\u0336`;
+    } else if (s === 'underline') {
+      return `${ch}\u0332`;
+    }
+    return ch;
+  }
+
+  const circledNumbers = [
+    '①',
+    '②',
+    '③',
+    '④',
+    '⑤',
+    '⑥',
+    '⑦',
+    '⑧',
+    '⑨',
+    '⑩',
+    '⑪',
+    '⑫',
+    '⑬',
+    '⑭',
+    '⑮',
+    '⑯',
+    '⑰',
+    '⑱',
+    '⑲',
+    '⑳',
+  ];
+
+  let listIndex = 0;
+  const lines = text.split(/\r?\n/gu).map((line) => {
+    let processedLine = line;
+
+    if (bulletStyle !== 'none') {
+      const match = /^(\s*)(?:\d+[.)]|[-*+])\s+(.*)$/u.exec(line);
+      if (match) {
+        const indent = match[1];
+        const content = match[2];
+        let bulletSymbol = '• ';
+        if (bulletStyle === 'bullet-disc') bulletSymbol = '• ';
+        else if (bulletStyle === 'bullet-arrow') bulletSymbol = '➤ ';
+        else if (bulletStyle === 'bullet-check') bulletSymbol = '✓ ';
+        else if (bulletStyle === 'bullet-star') bulletSymbol = '★ ';
+        else if (bulletStyle === 'numbered-circled') {
+          bulletSymbol = `${circledNumbers[listIndex % circledNumbers.length]} `;
+          listIndex++;
+        }
+        processedLine = `${indent}${bulletSymbol}${content}`;
+      }
+    }
+
+    let out = '';
+    for (const char of processedLine) {
+      out += transformChar(char, style);
+    }
+    return out;
+  });
+
+  return lines.join('\n');
 }

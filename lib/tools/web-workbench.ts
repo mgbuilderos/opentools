@@ -718,6 +718,55 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
     ],
     outputExtension: 'css',
   },
+  {
+    id: 'css-gradient-studio',
+    name: 'CSS Gradient Studio & SVG generator',
+    description:
+      'Generate modern linear, radial, and conic CSS gradients with multi-color stops, angle controls, Tailwind CSS classes, and SVG defs.',
+    fields: [
+      select('type', 'Gradient Type', [
+        { value: 'linear', label: 'Linear Gradient (Directional flow)' },
+        {
+          value: 'radial',
+          label: 'Radial Gradient (Circular / Elliptical glow)',
+        },
+        {
+          value: 'conic',
+          label: 'Conic Gradient (Angle / Color wheel sweep)',
+        },
+        {
+          value: 'repeating-linear',
+          label: 'Repeating Linear (Stripes / Patterns)',
+        },
+        {
+          value: 'repeating-radial',
+          label: 'Repeating Radial (Rings / Halos)',
+        },
+      ]),
+      select('direction', 'Angle / Position', [
+        { value: '135deg', label: '135° (Standard diagonal)' },
+        { value: '90deg', label: '90° (Left to right)' },
+        { value: '180deg', label: '180° (Top to bottom)' },
+        { value: '45deg', label: '45° (Bottom-left to top-right)' },
+        { value: '0deg', label: '0° (Bottom to top)' },
+        { value: 'circle at center', label: 'Circle at Center (Radial)' },
+        { value: 'ellipse at top', label: 'Ellipse at Top (Radial Header)' },
+        { value: 'from 0deg at 50% 50%', label: 'From 0° at Center (Conic)' },
+      ]),
+      area(
+        'colorStops',
+        'Color stops (color position, one per line)',
+        '#6366f1 0%\n#a855f7 50%\n#ec4899 100%',
+      ),
+      select('format', 'Output Format', [
+        { value: 'all', label: 'All formats (CSS, Tailwind, SVG & Preview)' },
+        { value: 'css', label: 'Pure CSS (background-image rules)' },
+        { value: 'tailwind', label: 'Tailwind CSS Classes' },
+        { value: 'svg', label: 'SVG <defs> Gradient Tag' },
+      ]),
+    ],
+    outputExtension: 'css',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -1418,6 +1467,9 @@ export function runWebOperation(
     case 'css-animation-generator': {
       return generateAnimationCss(values);
     }
+    case 'css-gradient-studio': {
+      return generateGradientStudioCss(values);
+    }
     default:
       throw new Error('Choose a supported web or SEO operation.');
   }
@@ -1867,4 +1919,92 @@ ${keyframeBody}
 <div class="animated-element" style="display: inline-block; padding: 16px 24px; background: #18181b; color: #ffffff; border-radius: 8px; font-weight: 600;">
   Animated Content
 </div>`;
+}
+
+function generateGradientStudioCss(values: Record<string, string>): string {
+  const type = values.type || 'linear';
+  const direction = values.direction || '135deg';
+  const rawStops = required(values.colorStops, 'Color stops');
+  const format = values.format || 'all';
+
+  const stopLines = rawStops
+    .split(/\r?\n/gu)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (!stopLines.length) {
+    throw new Error('Enter at least one color stop.');
+  }
+
+  const parsedStops = stopLines.map((line, idx) => {
+    const parts = line.split(/\s+/u);
+    if (parts.length === 1) {
+      const defaultPos = Math.round(
+        (idx / Math.max(1, stopLines.length - 1)) * 100,
+      );
+      return { color: parts[0], pos: `${defaultPos}%` };
+    }
+    return { color: parts[0], pos: parts.slice(1).join(' ') };
+  });
+
+  const stopsCss = parsedStops.map((s) => `${s.color} ${s.pos}`).join(', ');
+
+  let cssFunc = '';
+  if (type === 'radial') {
+    const dir =
+      direction.includes('at') ||
+      direction.includes('circle') ||
+      direction.includes('ellipse')
+        ? direction
+        : 'circle at center';
+    cssFunc = `radial-gradient(${dir}, ${stopsCss})`;
+  } else if (type === 'conic') {
+    const dir =
+      direction.includes('from') || direction.includes('at')
+        ? direction
+        : 'from 0deg at center';
+    cssFunc = `conic-gradient(${dir}, ${stopsCss})`;
+  } else if (type === 'repeating-linear') {
+    cssFunc = `repeating-linear-gradient(${direction}, ${stopsCss})`;
+  } else if (type === 'repeating-radial') {
+    const dir =
+      direction.includes('at') ||
+      direction.includes('circle') ||
+      direction.includes('ellipse')
+        ? direction
+        : 'circle at center';
+    cssFunc = `repeating-radial-gradient(${dir}, ${stopsCss})`;
+  } else {
+    cssFunc = `linear-gradient(${direction}, ${stopsCss})`;
+  }
+
+  const twClass = `bg-[${cssFunc.replaceAll(' ', '_')}]`;
+
+  const svgStops = parsedStops
+    .map((s) => {
+      const offset = s.pos.endsWith('%')
+        ? s.pos
+        : `${parseInt(s.pos, 10) || 0}%`;
+      return `    <stop offset="${offset}" stop-color="${s.color}"/>`;
+    })
+    .join('\n');
+
+  const svgGrad =
+    type === 'radial' || type === 'repeating-radial'
+      ? `<radialGradient id="gradient" cx="50%" cy="50%" r="50%">\n${svgStops}\n  </radialGradient>`
+      : `<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">\n${svgStops}\n  </linearGradient>`;
+
+  const pureCss = `/* Standard CSS */\n.gradient-surface {\n  background-image: ${cssFunc};\n}`;
+
+  if (format === 'css') {
+    return pureCss;
+  }
+  if (format === 'tailwind') {
+    return `<!-- Tailwind CSS Arbitrary Value -->\n<div class="${twClass}"></div>`;
+  }
+  if (format === 'svg') {
+    return `<!-- SVG Gradient Definition -->\n<defs>\n  ${svgGrad}\n</defs>`;
+  }
+
+  return `/* 1. Pure CSS Declarations */\n.gradient-surface {\n  background-image: ${cssFunc};\n}\n\n/* 2. Tailwind CSS Utility */\n${twClass}\n\n/* 3. SVG <defs> Tag */\n<defs>\n  ${svgGrad}\n</defs>\n\n/* 4. HTML Preview Container */\n<div style="width: 100%; height: 240px; border-radius: 16px; background-image: ${cssFunc};"></div>`;
 }
