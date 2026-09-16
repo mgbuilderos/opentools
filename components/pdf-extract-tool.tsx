@@ -16,7 +16,6 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { AuditTerminal } from './audit-terminal';
 import { publicTools } from '@/lib/tools/catalog';
 import { parsePageSelection } from '@/lib/tools/pdf/page-selection';
 import type {
@@ -536,7 +535,6 @@ export function PdfExtractTool() {
                   </p>
                 </div>
               </div>
-              <AuditTerminal />
               <div className="border-t bg-success/10 p-4 sm:px-6">
                 <p
                   className="text-sm leading-relaxed text-success dark:text-success"

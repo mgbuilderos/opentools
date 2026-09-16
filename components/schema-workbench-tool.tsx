@@ -19,7 +19,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { AuditTerminal } from './audit-terminal';
 
 interface WorkbenchField {
   id: string;
@@ -488,7 +487,6 @@ export function SchemaWorkbenchTool({
                   <p className="mt-1 text-sm font-semibold">{methodLabel}</p>
                 </div>
               </div>
-              <AuditTerminal />
               <div className="border-t bg-success/10 p-4 sm:p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0 pr-4">

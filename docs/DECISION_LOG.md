@@ -60,7 +60,15 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
 - A tool may be re-added only when it genuinely processes the user's input
   locally, loads every asset from this site, and has tests proving it.
 
-### 5. In-app privacy wording matches the server visit log
+### 5. No simulated "Network Audit Log"
+
+- The "Network Audit Log" panel shown after a tool ran was removed
+  (`components/audit-terminal.tsx`). It printed fixed text such as
+  "[SUCCESS] Zero network egress detected." without measuring any network
+  activity. Do not show egress results, logs or badges unless they come from a
+  real measurement.
+
+### 6. In-app privacy wording matches the server visit log
 
 - The site logs one metadata event per page visit (see `.github/SECURITY.md`,
   "Server-Side Visit Log"). In-app copy therefore says "no third-party
