@@ -264,6 +264,15 @@ export function CompletionValueDialog() {
           ) : (
             <>
               <a
+                href={SUPPORT_CONFIG.githubSponsorsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/60 px-3 text-xs font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-muted hover:border-foreground/25 active:translate-y-0 active:scale-[0.98]"
+                aria-label="Buy a $3 Coffee on GitHub Sponsors"
+              >
+                ☕ $3 Coffee
+              </a>
+              <a
                 href={SUPPORT_CONFIG.githubRepoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -272,9 +281,15 @@ export function CompletionValueDialog() {
               >
                 ⭐ Star on GitHub
               </a>
-              <span className="inline-flex h-9 items-center justify-center rounded-lg border bg-muted/40 px-3 text-xs font-medium text-muted-foreground">
-                Sponsors Coming Soon
-              </span>
+              <a
+                href="/support"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-medium text-background transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 active:scale-[0.98]"
+                aria-label="View all Backer Tiers"
+              >
+                🚀 Backer Tiers
+              </a>
             </>
           )}
         </div>
