@@ -5,6 +5,9 @@ import fs from 'fs';
 
 test.describe('Background Remover Pixel Test', () => {
   test('should actually remove white pixels', async ({ page }) => {
+    // This route auto-runs AI removal on the chosen image, and the first run in
+    // a fresh browser fetches a 4.4 MB model and a 12 MB WebAssembly runtime.
+    test.setTimeout(180_000);
     await page.goto('/image/background-remover');
 
     // Create a 10x10 image with a white background and a red dot in the middle
@@ -38,7 +41,9 @@ test.describe('Background Remover Pixel Test', () => {
     await page.getByRole('button', { name: 'Remove background' }).click();
 
     // Verify completion
-    await expect(page.getByText('Done — 10 × 10px')).toBeVisible();
+    await expect(page.getByText('Done — 10 × 10px')).toBeVisible({
+      timeout: 120_000,
+    });
 
     // Wait for the resulting image to be rendered
     const imgLocator = page.locator('img[alt="Edited image preview"]');

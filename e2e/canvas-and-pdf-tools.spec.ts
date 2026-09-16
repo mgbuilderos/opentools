@@ -132,8 +132,16 @@ test.describe('Image editor', () => {
     });
 
     // solid-background-remover is the operation the catalog calls live; the AI
-    // mode is a separate offer and is covered by its own spec.
-    await page.getByRole('radio', { name: /solid colou?r/iu }).check();
+    // mode is a separate offer with its own spec. Choosing an image on this
+    // route auto-starts an AI run, which disables the mode radios while it
+    // works — so retry until the switch actually takes rather than clicking
+    // into a control that is briefly disabled again.
+    const solidMode = page.getByRole('radio', { name: /solid colou?r/iu });
+    await expect(async () => {
+      await expect(solidMode).toBeEnabled();
+      await solidMode.check();
+      await expect(solidMode).toBeChecked();
+    }).toPass({ timeout: 150_000 });
 
     const remove = page.getByRole('button', { name: 'Remove background' });
     await expect(remove).toBeEnabled({ timeout: 30_000 });
