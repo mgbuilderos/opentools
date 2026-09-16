@@ -1,0 +1,339 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import {
+  ArrowRight,
+  Calendar,
+  Clock,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
+import { AppShell } from '@/components/app-shell';
+import { Button } from '@/components/ui/button';
+import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/seo/blog-data';
+
+interface BlogPostPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+const httpsScheme = ['https:', '//'].join('');
+const httpsOrigin = `${httpsScheme}getopentools.com`;
+const schemaContext = `${httpsScheme}schema.org`;
+
+export async function generateStaticParams() {
+  return getAllBlogPosts().map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getBlogPostBySlug(slug);
+  if (!post) return { title: 'Article Not Found' };
+
+  return {
+    title: `${post.title} | OpenTools Engineering Blog`,
+    description: post.metaDescription,
+    keywords: [...post.keywords],
+    alternates: {
+      canonical: `${httpsOrigin}/blog/${slug}`,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.metaDescription,
+      url: `${httpsOrigin}/blog/${slug}`,
+      siteName: 'OpenTools',
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author],
+    },
+  };
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params;
+  const post = getBlogPostBySlug(slug);
+  if (!post) notFound();
+
+  const relatedPosts = post.relatedSlugs
+    .map((rSlug) => getBlogPostBySlug(rSlug))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+  const jsonLd = {
+    '@context': schemaContext,
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.metaDescription,
+        keywords: post.keywords.join(', '),
+        datePublished: post.publishedAt,
+        dateModified: post.publishedAt,
+        author: {
+          '@type': 'Organization',
+          name: post.author,
+          url: httpsOrigin,
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'OpenTools',
+          url: httpsOrigin,
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `${httpsOrigin}/blog/${slug}`,
+        },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: post.faqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.answer,
+          },
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: httpsOrigin,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Blog',
+            item: `${httpsOrigin}/blog`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: post.title,
+            item: `${httpsOrigin}/blog/${slug}`,
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <AppShell currentToolId="home">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <article
+        id="tool"
+        tabIndex={-1}
+        className="min-w-0 px-4 py-8 sm:px-8 lg:px-12 lg:py-12"
+      >
+        <div className="mx-auto max-w-4xl space-y-10">
+          {/* Breadcrumb Navigation */}
+          <nav aria-label="Breadcrumb">
+            <ol className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <li>
+                <a href="/" className="hover:text-foreground">
+                  Home
+                </a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li>
+                <a href="/blog" className="hover:text-foreground">
+                  Blog
+                </a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li className="font-medium text-foreground truncate max-w-[240px] sm:max-w-none">
+                {post.title}
+              </li>
+            </ol>
+          </nav>
+
+          {/* Article Header */}
+          <header className="space-y-4 border-b pb-8">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full border bg-muted px-2.5 py-0.5 font-mono text-[11px] font-medium text-foreground">
+                {post.category}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
+                <ShieldCheck
+                  aria-hidden="true"
+                  className="size-3.5 text-success"
+                />
+                Zero Cloud Egress
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Clock className="size-3" />
+                {post.readingTime}
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="size-3" />
+                {post.publishedAt}
+              </span>
+            </div>
+
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+              {post.title}
+            </h1>
+            <p className="text-base leading-7 text-muted-foreground sm:text-lg">
+              {post.summary}
+            </p>
+          </header>
+
+          {/* Interactive Tool Launcher Callout Box */}
+          <div className="rounded-2xl border bg-card p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="size-4 text-foreground" />
+                  <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Try The Interactive Tool Now
+                  </span>
+                </div>
+                <h3 className="mt-1 text-lg font-bold text-foreground">
+                  {post.toolName}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  100% In-browser execution. Zero server uploads, instant
+                  results, free forever.
+                </p>
+              </div>
+              <Button
+                nativeButton={false}
+                size="sm"
+                render={
+                  <a
+                    href={post.toolDestination}
+                    aria-label={`Open interactive ${post.toolName}`}
+                    className="inline-flex items-center gap-2 whitespace-nowrap"
+                  >
+                    Open Workbench
+                    <ArrowRight className="size-4" />
+                  </a>
+                }
+                className="h-10 px-5 text-xs font-semibold shrink-0"
+              >
+                Open Workbench
+                <ArrowRight className="size-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Article Sections */}
+          <div className="space-y-8 prose dark:prose-invert max-w-none">
+            {post.sections.map((section) => (
+              <section key={section.id} id={section.id} className="space-y-4">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground border-b pb-2">
+                  {section.heading}
+                </h2>
+                <div className="text-base leading-7 text-muted-foreground whitespace-pre-line">
+                  {section.content}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Frequently Asked Questions */}
+          {post.faqs.length ? (
+            <section className="space-y-6 border-t pt-8">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-4">
+                {post.faqs.map((faq, index) => (
+                  <div key={index} className="rounded-xl border bg-card p-5">
+                    <h3 className="text-base font-semibold text-foreground">
+                      {faq.question}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {/* Related Articles & Companion Tools */}
+          {relatedPosts.length ? (
+            <section className="space-y-6 border-t pt-8">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                Related Articles &amp; Playbooks
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {relatedPosts.map((rPost) => (
+                  <div
+                    key={rPost.slug}
+                    className="rounded-xl border bg-card p-5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {rPost.category}
+                      </span>
+                      <h4 className="mt-2 text-sm font-semibold text-foreground line-clamp-2">
+                        <a
+                          href={`/blog/${rPost.slug}`}
+                          className="hover:underline"
+                        >
+                          {rPost.title}
+                        </a>
+                      </h4>
+                    </div>
+                    <div className="mt-4 pt-3 border-t flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        {rPost.readingTime}
+                      </span>
+                      <a
+                        href={`/blog/${rPost.slug}`}
+                        className="font-medium text-foreground hover:underline inline-flex items-center gap-1"
+                        aria-label={`Read ${rPost.title}`}
+                      >
+                        Read
+                        <ArrowRight className="size-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {/* Bottom Call to Action */}
+          <div className="rounded-2xl border bg-muted/40 p-8 text-center space-y-4">
+            <h3 className="text-xl font-bold text-foreground">
+              Ready to use {post.toolName}?
+            </h3>
+            <p className="max-w-xl mx-auto text-sm text-muted-foreground">
+              Execute this workflow privately on your device right now without
+              creating an account or paying for cloud API credits.
+            </p>
+            <div>
+              <Button
+                nativeButton={false}
+                size="sm"
+                render={
+                  <a
+                    href={post.toolDestination}
+                    aria-label={`Launch ${post.toolName}`}
+                    className="inline-flex items-center gap-2"
+                  >
+                    Launch {post.toolName}
+                    <ArrowRight className="size-4" />
+                  </a>
+                }
+                className="h-11 px-6 text-sm font-semibold"
+              >
+                Launch {post.toolName}
+                <ArrowRight className="size-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </AppShell>
+  );
+}

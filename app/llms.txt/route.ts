@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAllBlogPosts } from '@/lib/seo/blog-data';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
 
@@ -11,6 +12,7 @@ export async function GET() {
   const topTools = TOOL_CATALOG.filter(
     (t) => t.releaseWave === 'P0' || t.rank <= 3,
   ).slice(0, 30);
+  const blogPosts = getAllBlogPosts().slice(0, 20);
 
   const lines = [
     `# OpenTools — 100% In-Browser Privacy Tools`,
@@ -26,6 +28,11 @@ export async function GET() {
     `## Tool Categories & Hubs`,
     ...pillars.map(
       (p) => `- [${p.name}](${baseUrl}${p.href}): ${p.description}`,
+    ),
+    ``,
+    `## Engineering Playbooks & Blog Articles`,
+    ...blogPosts.map(
+      (b) => `- [${b.title}](${baseUrl}/blog/${b.slug}): ${b.summary}`,
     ),
     ``,
     `## Featured Evergreen Tools & Workbenches`,

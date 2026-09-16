@@ -461,6 +461,24 @@ export function AppShell({
           <Button
             variant="ghost"
             className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
+            render={<a href="/guides" aria-label="Tool Guides and Solutions" />}
+          >
+            <span>Guides</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
+            render={
+              <a href="/blog" aria-label="Engineering Blog and Playbooks" />
+            }
+          >
+            <span>Blog</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
             render={<a href="/support" />}
           >
             <span className="relative flex size-2">

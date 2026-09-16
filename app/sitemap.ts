@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getAllBlogPosts } from '@/lib/seo/blog-data';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
 
@@ -51,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/roadmap',
     '/support',
     '/guides',
+    '/blog',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: now,
@@ -74,5 +76,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: tool.releaseWave === 'P0' ? 0.85 : 0.75,
   }));
 
-  return [...coreRoutes, ...pillarRoutes, ...guideRoutes];
+  const blogRoutes: MetadataRoute.Sitemap = getAllBlogPosts().map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
+  }));
+
+  return [...coreRoutes, ...pillarRoutes, ...guideRoutes, ...blogRoutes];
 }
