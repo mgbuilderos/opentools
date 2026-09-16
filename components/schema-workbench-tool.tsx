@@ -102,6 +102,7 @@ export function SchemaWorkbenchTool({
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get('tool');
+    if (!requested) return;
     const selected = operations.find((item) => item.id === requested);
     if (selected) {
       const frame = requestAnimationFrame(() => {
@@ -109,8 +110,12 @@ export function SchemaWorkbenchTool({
         setValues(defaults(selected));
       });
       return () => cancelAnimationFrame(frame);
+    } else {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tool', initial.id);
+      window.history.replaceState(null, '', `${url.pathname}${url.search}`);
     }
-  }, [operations]);
+  }, [operations, initial.id]);
 
   useEffect(() => {
     if (error) errorRef.current?.focus();

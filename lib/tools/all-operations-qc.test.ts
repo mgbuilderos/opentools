@@ -250,7 +250,7 @@ describe('exhaustive workbench input/output QC', () => {
   it('keeps every field contract complete and internally valid', () => {
     const allOperations = suites.flatMap((suite) => suite.operations);
 
-    expect(allOperations).toHaveLength(579);
+    expect(allOperations).toHaveLength(595);
     for (const suite of suites) {
       expect(new Set(suite.operations.map(({ id }) => id)).size).toBe(
         suite.operations.length,
@@ -375,7 +375,7 @@ describe('exhaustive workbench input/output QC', () => {
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(629);
+    expect(expectedDestinations).toHaveLength(645);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

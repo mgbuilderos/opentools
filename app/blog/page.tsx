@@ -190,17 +190,27 @@ export default function BlogDirectoryPage() {
                     </p>
                   </div>
 
-                  <div className="mt-5 flex items-center justify-between border-t pt-4 text-xs">
-                    <span className="text-muted-foreground font-mono text-[11px]">
-                      {post.publishedAt}
-                    </span>
+                  <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
                     <a
                       href={`/blog/${post.slug}`}
-                      className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
                       aria-label={`Read ${post.title}`}
+                      className={cn(
+                        buttonVariants({ variant: 'default', size: 'sm' }),
+                        'h-9 w-full text-xs font-semibold gap-1',
+                      )}
                     >
                       Read Article
                       <ArrowRight className="size-3" />
+                    </a>
+                    <a
+                      href={post.toolDestination}
+                      aria-label={`Open interactive ${post.toolName} tool`}
+                      className={cn(
+                        buttonVariants({ variant: 'outline', size: 'sm' }),
+                        'h-9 w-full text-xs font-medium',
+                      )}
+                    >
+                      Open Tool
                     </a>
                   </div>
                 </article>

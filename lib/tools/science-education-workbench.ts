@@ -652,6 +652,109 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
     notice:
       'Uses linear-interpolated quartiles and population variance/deviation; confirm the convention required by your course.',
   },
+  {
+    id: 'bmi-calculator',
+    name: 'BMI calculator',
+    description:
+      'Calculate Body Mass Index, WHO classification, healthy weight range, and Ponderal Index.',
+    fields: [
+      number('weight', 'Weight (kg)', '70'),
+      number('height', 'Height (cm)', '175'),
+    ],
+    notice:
+      'Standard WHO BMI reference formula. BMI is a screening metric and does not differentiate muscle mass from body fat.',
+  },
+  {
+    id: 'bmr-calculator',
+    name: 'BMR calculator',
+    description:
+      'Calculate Basal Metabolic Rate using Mifflin-St Jeor and Revised Harris-Benedict formulas.',
+    fields: [
+      select('gender', 'Biological sex', [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+      ]),
+      number('age', 'Age (years)', '30'),
+      number('weight', 'Weight (kg)', '70'),
+      number('height', 'Height (cm)', '175'),
+    ],
+    notice:
+      'Deterministic metabolic formulas computed entirely in browser memory. Individual hormonal, metabolic, and body composition factors may vary.',
+  },
+  {
+    id: 'tdee-calculator',
+    name: 'TDEE calculator',
+    description:
+      'Calculate Total Daily Energy Expenditure and calorie targets for fat loss, maintenance, or muscle gain.',
+    fields: [
+      select('gender', 'Biological sex', [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+      ]),
+      number('age', 'Age (years)', '30'),
+      number('weight', 'Weight (kg)', '70'),
+      number('height', 'Height (cm)', '175'),
+      select('activity', 'Activity level', [
+        {
+          value: 'sedentary',
+          label: 'Sedentary (office job, little/no exercise - 1.2x)',
+        },
+        {
+          value: 'light',
+          label: 'Light (exercise 1-3 days/week - 1.375x)',
+        },
+        {
+          value: 'moderate',
+          label: 'Moderate (exercise 3-5 days/week - 1.55x)',
+        },
+        {
+          value: 'active',
+          label: 'Active (heavy exercise 6-7 days/week - 1.725x)',
+        },
+        {
+          value: 'extra',
+          label: 'Very active (physical job / 2x training - 1.9x)',
+        },
+      ]),
+    ],
+    notice:
+      'Caloric expenditure estimation calculated client-side without transmitting personal biological attributes.',
+  },
+  {
+    id: 'water-intake-calculator',
+    name: 'Daily water intake calculator',
+    description:
+      'Estimate optimal daily hydration based on body weight, exercise duration, and climate.',
+    fields: [
+      number('weight', 'Weight (kg)', '70'),
+      number('exerciseMinutes', 'Daily exercise (minutes)', '45'),
+      select('climate', 'Climate / environment', [
+        { value: 'temperate', label: 'Temperate / normal indoor' },
+        { value: 'hot', label: 'Hot / humid / high altitude (+500 mL)' },
+        {
+          value: 'very-hot',
+          label: 'Very hot / intense outdoor sun (+1,000 mL)',
+        },
+      ]),
+    ],
+    notice:
+      'Fluid intake baseline guidance. Consult medical professionals if you have renal, cardiac, or fluid-restriction conditions.',
+  },
+  {
+    id: 'ideal-weight-calculator',
+    name: 'Ideal body weight calculator',
+    description:
+      'Calculate clinical ideal body weight using Devine, Robinson, Miller, and Hamwi equations.',
+    fields: [
+      select('gender', 'Biological sex', [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+      ]),
+      number('height', 'Height (cm)', '175'),
+    ],
+    notice:
+      'Standard historical clinical ideal weight formulas (Devine 1974, Robinson 1983, Miller 1983, Hamwi 1964) with WHO BMI reference intervals.',
+  },
 ] as const;
 
 function finite(
@@ -1231,6 +1334,103 @@ export function runScienceOperation(
         numbers.reduce((sum, item) => sum + (item - mean) ** 2, 0) /
         numbers.length;
       return `Count: ${numbers.length}\nMinimum: ${format(sorted[0])}\nQ1: ${format(percentile(sorted, 0.25))}\nMedian: ${format(percentile(sorted, 0.5))}\nQ3: ${format(percentile(sorted, 0.75))}\nMaximum: ${format(sorted.at(-1)!)}\nMean: ${format(mean)}\nPopulation variance: ${format(variance)}\nPopulation standard deviation: ${format(Math.sqrt(variance))}`;
+    }
+    case 'bmi-calculator': {
+      const weight = positive(values, 'weight');
+      const height = positive(values, 'height');
+      const heightM = height / 100;
+      const bmi = weight / (heightM * heightM);
+      let classification = 'Normal weight';
+      if (bmi < 18.5) classification = 'Underweight';
+      else if (bmi >= 25 && bmi < 30) classification = 'Overweight';
+      else if (bmi >= 30 && bmi < 35) classification = 'Obesity Class I';
+      else if (bmi >= 35 && bmi < 40) classification = 'Obesity Class II';
+      else if (bmi >= 40) classification = 'Obesity Class III (Severe)';
+
+      const minHealthy = 18.5 * heightM * heightM;
+      const maxHealthy = 24.9 * heightM * heightM;
+      const ponderal = weight / heightM ** 3;
+
+      return `BMI: ${bmi.toFixed(2)} kg/m²\nClassification: ${classification}\nHealthy weight range: ${minHealthy.toFixed(1)} kg – ${maxHealthy.toFixed(1)} kg\nPonderal index: ${ponderal.toFixed(2)} kg/m³\nPrime index: ${(bmi / 25).toFixed(2)}`;
+    }
+    case 'bmr-calculator': {
+      const gender = values.gender || 'male';
+      const age = positive(values, 'age');
+      const weight = positive(values, 'weight');
+      const height = positive(values, 'height');
+
+      const mifflin =
+        gender === 'female'
+          ? 10 * weight + 6.25 * height - 5 * age - 161
+          : 10 * weight + 6.25 * height - 5 * age + 5;
+
+      const harris =
+        gender === 'female'
+          ? 447.593 + 9.247 * weight + 3.098 * height - 4.33 * age
+          : 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
+
+      return `BMR (Mifflin-St Jeor): ${mifflin.toFixed(1)} kcal/day\nBMR (Revised Harris-Benedict): ${harris.toFixed(1)} kcal/day\nHourly basal burn: ${(mifflin / 24).toFixed(1)} kcal/hour\nKcal per kg body weight: ${(mifflin / weight).toFixed(1)} kcal/kg`;
+    }
+    case 'tdee-calculator': {
+      const gender = values.gender || 'male';
+      const age = positive(values, 'age');
+      const weight = positive(values, 'weight');
+      const height = positive(values, 'height');
+      const activity = values.activity || 'sedentary';
+
+      const bmr =
+        gender === 'female'
+          ? 10 * weight + 6.25 * height - 5 * age - 161
+          : 10 * weight + 6.25 * height - 5 * age + 5;
+
+      const multipliers: Record<string, number> = {
+        sedentary: 1.2,
+        light: 1.375,
+        moderate: 1.55,
+        active: 1.725,
+        extra: 1.9,
+      };
+      const multiplier = multipliers[activity] ?? 1.2;
+      const tdee = bmr * multiplier;
+
+      return `Maintenance (TDEE): ${tdee.toFixed(0)} kcal/day\nMild fat loss (-250 kcal/day): ${(tdee - 250).toFixed(0)} kcal/day\nStandard fat loss (-500 kcal/day): ${(tdee - 500).toFixed(0)} kcal/day\nAggressive fat loss (-750 kcal/day): ${(tdee - 750).toFixed(0)} kcal/day\nLean muscle bulk (+250 kcal/day): ${(tdee + 250).toFixed(0)} kcal/day\nBulking surplus (+500 kcal/day): ${(tdee + 500).toFixed(0)} kcal/day`;
+    }
+    case 'water-intake-calculator': {
+      const weight = positive(values, 'weight');
+      const exercise = finite(values, 'exerciseMinutes', 0);
+      const climate = values.climate || 'temperate';
+
+      const baseLitres = weight * 0.035;
+      const exerciseLitres = (exercise / 30) * 0.35;
+      const climateExtra =
+        climate === 'very-hot' ? 1.0 : climate === 'hot' ? 0.5 : 0;
+      const totalLitres = baseLitres + exerciseLitres + climateExtra;
+      const totalMl = Math.round(totalLitres * 1000);
+      const glasses = Math.round(totalMl / 250);
+      const ounces = (totalMl * 0.033814).toFixed(1);
+
+      return `Daily hydration recommendation: ${totalLitres.toFixed(2)} L (${totalMl.toLocaleString()} mL)\nStandard 250 mL glasses: ~${glasses} glasses\nUS Fluid Ounces: ${ounces} fl oz\nBase requirement: ${baseLitres.toFixed(2)} L\nExercise adjustment: +${exerciseLitres.toFixed(2)} L\nClimate adjustment: +${climateExtra.toFixed(2)} L`;
+    }
+    case 'ideal-weight-calculator': {
+      const gender = values.gender || 'male';
+      const height = positive(values, 'height');
+      const heightInches = height / 2.54;
+      const over60 = Math.max(0, heightInches - 60);
+
+      const devine =
+        gender === 'female' ? 45.5 + 2.3 * over60 : 50 + 2.3 * over60;
+      const robinson =
+        gender === 'female' ? 49 + 1.7 * over60 : 52 + 1.9 * over60;
+      const miller =
+        gender === 'female' ? 53.1 + 1.36 * over60 : 56.2 + 1.41 * over60;
+      const hamwi =
+        gender === 'female' ? 45.5 + 2.2 * over60 : 48 + 2.7 * over60;
+
+      const heightM = height / 100;
+      const minBmi = 18.5 * heightM * heightM;
+      const maxBmi = 24.9 * heightM * heightM;
+
+      return `Devine formula (1974): ${devine.toFixed(1)} kg\nRobinson formula (1983): ${robinson.toFixed(1)} kg\nMiller formula (1983): ${miller.toFixed(1)} kg\nHamwi formula (1964): ${hamwi.toFixed(1)} kg\nWHO healthy weight range (BMI 18.5 - 24.9): ${minBmi.toFixed(1)} kg – ${maxBmi.toFixed(1)} kg`;
     }
     default:
       throw new Error('Choose a supported science or education operation.');

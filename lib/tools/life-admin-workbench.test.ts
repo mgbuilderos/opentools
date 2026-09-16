@@ -16,11 +16,11 @@ function defaults(operationId: string) {
 }
 
 describe('life-admin workbench', () => {
-  it('ships 23 unique operations whose defaults execute', () => {
-    expect(LIFE_ADMIN_OPERATIONS).toHaveLength(23);
+  it('ships 34 unique operations whose defaults execute', () => {
+    expect(LIFE_ADMIN_OPERATIONS).toHaveLength(34);
     expect(
       new Set(LIFE_ADMIN_OPERATIONS.map((operation) => operation.id)).size,
-    ).toBe(23);
+    ).toBe(34);
 
     for (const operation of LIFE_ADMIN_OPERATIONS) {
       expect(
@@ -28,6 +28,32 @@ describe('life-admin workbench', () => {
       ).toBeGreaterThan(0);
       expect(operation.notice.length).toBeGreaterThan(20);
     }
+  });
+
+  it('computes Vedic Sidereal Lagna and Panchang accurately without cloud egress', () => {
+    const lagna = runLifeAdminOperation('lagna-calculator', {
+      date: '1995-05-15',
+      time: '14:30',
+      latitude: '28.61',
+      longitude: '77.20',
+    });
+    expect(lagna).toContain('VEDIC SIDEREAL LAGNA');
+    expect(lagna).toContain('Ascendant (Lagna) Rashi');
+
+    const kundali = runLifeAdminOperation('kundali-chart-maker', {
+      name: 'Aditi',
+      date: '1995-05-15',
+      time: '14:30',
+    });
+    expect(kundali).toContain('12-BHAVA KUNDALI RASHI CHART');
+    expect(kundali).toContain('1st House (Tanu)');
+
+    const panchang = runLifeAdminOperation('panchang-viewer', {
+      date: '2026-09-17',
+    });
+    expect(panchang).toContain('DAILY VEDIC PANCHANG FOR 2026-09-17');
+    expect(panchang).toContain('Tithi');
+    expect(panchang).toContain('Nakshatra');
   });
 
   it('masks identifiers without validating ownership', () => {
