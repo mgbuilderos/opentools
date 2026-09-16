@@ -74,3 +74,20 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   "Server-Side Visit Log"). In-app copy therefore says "no third-party
   trackers" and "no client-side analytics", and "your files and inputs never
   touch a server", instead of "no trackers", "No analytics" or "zero telemetry".
+
+### 7. Removed pages return 404; one blog URL is an open follow-up
+
+- Owner decision (2026-09-17): a page whose tool or article no longer exists
+  returns **404**. A removed path redirects only when a live page does the same
+  job (see `lib/seo/removed-tool-redirects.ts`). Redirecting removed pages to a
+  generic index would be a soft 404 and is not done.
+- Under this rule, deploying the clean-up takes roughly 430 URLs from 200 to
+  404: the 427 guides whose tool is not live, `/video/compress`, `/image/ocr`
+  and `/roadmap`. They were already dropped from the sitemap in commit
+  `3581d71`, so this is a deliberate de-index, not a regression.
+- **Open follow-up:** `/blog/compress-mp4-webm-video-in-browser` is live and
+  indexed today and was in the submitted sitemap. Task A3 replaced that article
+  with `/blog/optimize-images-browser-webp-converter`, a different slug, so the
+  old URL will 404 after deploy. The owner accepted the 404 for now and wants it
+  revisited — either a video-compression article that matches the old intent, or
+  a redirect once there is a page worth sending that traffic to.
