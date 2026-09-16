@@ -17,6 +17,7 @@ export interface WebOperation {
   name: string;
   description: string;
   fields: readonly WebField[];
+  outputExtension?: string;
 }
 
 const SECURE_WEB = 'https' + '://';
@@ -612,6 +613,52 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
       text('tileColor', 'Windows tile color (hex)', '#09090b'),
       text('basePath', 'Base icon directory path', '/'),
     ],
+  },
+  {
+    id: 'css-glassmorphism-generator',
+    name: 'CSS glassmorphism & backdrop-filter generator',
+    description:
+      'Generate modern frosted glass CSS effects with backdrop blur, specular border highlights, and surface opacity.',
+    fields: [
+      number('blur', 'Blur radius (px)', '16'),
+      number('opacity', 'Background opacity (%)', '25'),
+      text('tint', 'Tint color (hex)', '#ffffff'),
+      number('borderOpacity', 'Border opacity (%)', '20'),
+      select('shadowDepth', 'Shadow depth', [
+        { value: 'subtle', label: 'Subtle (soft elevation)' },
+        { value: 'medium', label: 'Medium (floating card)' },
+        { value: 'deep', label: 'Deep (dramatic glow)' },
+        { value: 'none', label: 'None' },
+      ]),
+      number('borderRadius', 'Border radius (px)', '16'),
+    ],
+    outputExtension: 'css',
+  },
+  {
+    id: 'css-neumorphism-generator',
+    name: 'CSS neumorphism & soft-shadow generator',
+    description:
+      'Calculate dual light and dark physics-based box shadows for soft UI buttons, cards, and inset surfaces.',
+    fields: [
+      text('baseColor', 'Base background color (hex)', '#e0e5ec'),
+      number('distance', 'Shadow distance (px)', '12'),
+      number('blur', 'Shadow blur radius (px)', '24'),
+      select('shape', 'Surface curve & style', [
+        { value: 'flat', label: 'Flat (elevated surface)' },
+        { value: 'concave', label: 'Concave (inner curve)' },
+        { value: 'convex', label: 'Convex (outer dome)' },
+        { value: 'pressed', label: 'Pressed (inset indented)' },
+      ]),
+      select('lightAngle', 'Light direction', [
+        { value: 'top-left', label: 'Top-Left (145°)' },
+        { value: 'top-right', label: 'Top-Right (225°)' },
+        { value: 'bottom-left', label: 'Bottom-Left (45°)' },
+        { value: 'bottom-right', label: 'Bottom-Right (315°)' },
+      ]),
+      number('intensity', 'Shadow intensity (%)', '15'),
+      number('borderRadius', 'Border radius (px)', '20'),
+    ],
+    outputExtension: 'css',
   },
 ] as const;
 
@@ -1304,6 +1351,12 @@ export function runWebOperation(
     case 'favicon-html-generator': {
       return generateFaviconHtml(values);
     }
+    case 'css-glassmorphism-generator': {
+      return generateGlassmorphismCss(values);
+    }
+    case 'css-neumorphism-generator': {
+      return generateNeumorphismCss(values);
+    }
     default:
       throw new Error('Choose a supported web or SEO operation.');
   }
@@ -1451,4 +1504,172 @@ function generateFaviconHtml(values: Record<string, string>): string {
     '/* site.webmanifest Content */',
     manifest,
   ].join('\n');
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  let clean = hex.replace('#', '').trim();
+  if (clean.length === 3) {
+    clean = clean
+      .split('')
+      .map((c) => c + c)
+      .join('');
+  }
+  const num = parseInt(clean, 16);
+  if (Number.isNaN(num) || clean.length !== 6) {
+    return { r: 255, g: 255, b: 255 };
+  }
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255,
+  };
+}
+
+function adjustHexColor(hex: string, percent: number): string {
+  const { r, g, b } = hexToRgb(hex);
+  const factor = percent / 100;
+  const newR = Math.max(
+    0,
+    Math.min(
+      255,
+      Math.round(r + (percent > 0 ? (255 - r) * factor : r * factor)),
+    ),
+  );
+  const newG = Math.max(
+    0,
+    Math.min(
+      255,
+      Math.round(g + (percent > 0 ? (255 - g) * factor : g * factor)),
+    ),
+  );
+  const newB = Math.max(
+    0,
+    Math.min(
+      255,
+      Math.round(b + (percent > 0 ? (255 - b) * factor : b * factor)),
+    ),
+  );
+  return `#${((1 << 24) + (newR << 16) + (newG << 8) + newB).toString(16).slice(1)}`;
+}
+
+function generateGlassmorphismCss(values: Record<string, string>): string {
+  const blur = Math.max(
+    0,
+    Math.min(100, parseFloat(values.blur || '16') || 16),
+  );
+  const opacity =
+    Math.max(0, Math.min(100, parseFloat(values.opacity || '25') || 25)) / 100;
+  const tint = values.tint?.trim() || '#ffffff';
+  const borderOpacity =
+    Math.max(0, Math.min(100, parseFloat(values.borderOpacity || '20') || 20)) /
+    100;
+  const shadowDepth = values.shadowDepth || 'subtle';
+  const radius = Math.max(
+    0,
+    Math.min(100, parseFloat(values.borderRadius || '16') || 16),
+  );
+
+  const { r, g, b } = hexToRgb(tint);
+
+  let shadow = 'none';
+  if (shadowDepth === 'subtle') {
+    shadow = '0 8px 32px 0 rgba(0, 0, 0, 0.12)';
+  } else if (shadowDepth === 'medium') {
+    shadow =
+      '0 12px 40px 0 rgba(0, 0, 0, 0.25), 0 2px 6px 0 rgba(0, 0, 0, 0.08)';
+  } else if (shadowDepth === 'deep') {
+    shadow =
+      '0 20px 50px 0 rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.1) inset';
+  }
+
+  const cssProperties = [
+    `background: rgba(${r}, ${g}, ${b}, ${opacity.toFixed(2)});`,
+    `-webkit-backdrop-filter: blur(${blur}px);`,
+    `backdrop-filter: blur(${blur}px);`,
+    `border: 1px solid rgba(${r}, ${g}, ${b}, ${borderOpacity.toFixed(2)});`,
+    `border-radius: ${radius}px;`,
+    `box-shadow: ${shadow};`,
+  ].join('\n  ');
+
+  return `/* Glassmorphism CSS */
+.glass-card {
+  ${cssProperties}
+}
+
+/* HTML Container Template */
+<div class="glass-card" style="padding: 24px; max-width: 400px;">
+  <h3 style="margin-top: 0; color: inherit;">Glassmorphic Card</h3>
+  <p style="margin-bottom: 0; opacity: 0.9;">Frosted glass effect with GPU blur acceleration.</p>
+</div>`;
+}
+
+function generateNeumorphismCss(values: Record<string, string>): string {
+  const baseColor = values.baseColor?.trim() || '#e0e5ec';
+  const distance = Math.max(
+    1,
+    Math.min(60, parseFloat(values.distance || '12') || 12),
+  );
+  const blur = Math.max(
+    1,
+    Math.min(100, parseFloat(values.blur || '24') || 24),
+  );
+  const shape = values.shape || 'flat';
+  const lightAngle = values.lightAngle || 'top-left';
+  const intensity = Math.max(
+    5,
+    Math.min(40, parseFloat(values.intensity || '15') || 15),
+  );
+  const radius = Math.max(
+    0,
+    Math.min(100, parseFloat(values.borderRadius || '20') || 20),
+  );
+
+  let xLight = -distance;
+  let yLight = -distance;
+  let xDark = distance;
+  let yDark = distance;
+
+  if (lightAngle === 'top-right') {
+    xLight = distance;
+    yLight = -distance;
+    xDark = -distance;
+    yDark = distance;
+  } else if (lightAngle === 'bottom-left') {
+    xLight = -distance;
+    yLight = distance;
+    xDark = distance;
+    yDark = -distance;
+  } else if (lightAngle === 'bottom-right') {
+    xLight = distance;
+    yLight = distance;
+    xDark = -distance;
+    yDark = -distance;
+  }
+
+  const lightColor = adjustHexColor(baseColor, intensity * 1.5);
+  const darkColor = adjustHexColor(baseColor, -intensity * 1.5);
+
+  let bgCss = `background: ${baseColor};`;
+  if (shape === 'concave') {
+    bgCss = `background: linear-gradient(145deg, ${darkColor}, ${lightColor});`;
+  } else if (shape === 'convex') {
+    bgCss = `background: linear-gradient(145deg, ${lightColor}, ${darkColor});`;
+  }
+
+  let shadowCss = `box-shadow: ${xDark}px ${yDark}px ${blur}px ${darkColor}, ${xLight}px ${yLight}px ${blur}px ${lightColor};`;
+  if (shape === 'pressed') {
+    shadowCss = `box-shadow: inset ${xDark}px ${yDark}px ${blur}px ${darkColor}, inset ${xLight}px ${yLight}px ${blur}px ${lightColor};`;
+  }
+
+  return `/* Neumorphism (${shape}) CSS */
+.neumorphic-element {
+  border-radius: ${radius}px;
+  ${bgCss}
+  ${shadowCss}
+}
+
+/* HTML Button / Container Template */
+<div class="neumorphic-element" style="padding: 24px; max-width: 320px; text-align: center;">
+  <span style="font-weight: 600; color: #334155;">Soft UI Surface</span>
+</div>`;
 }

@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('web and SEO workbench', () => {
-  it('publishes 43 unique real operations whose defaults all run', () => {
-    expect(WEB_OPERATIONS).toHaveLength(43);
-    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(43);
+  it('publishes 45 unique real operations whose defaults all run', () => {
+    expect(WEB_OPERATIONS).toHaveLength(45);
+    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(45);
     for (const operation of WEB_OPERATIONS) {
       expect(runWebOperation(operation.id, defaults(operation.id))).not.toBe(
         '',
@@ -173,5 +173,33 @@ describe('web and SEO workbench', () => {
     expect(output).toContain('rel="icon" type="image/png" sizes="32x32"');
     expect(output).toContain('site.webmanifest');
     expect(output).toContain('"short_name": "Tools"');
+  });
+
+  it('generates CSS glassmorphism and neumorphism styles', () => {
+    const glass = runWebOperation('css-glassmorphism-generator', {
+      blur: '20',
+      opacity: '30',
+      tint: '#ffffff',
+      borderOpacity: '25',
+      shadowDepth: 'medium',
+      borderRadius: '16',
+    });
+    expect(glass).toContain('backdrop-filter: blur(20px);');
+    expect(glass).toContain('-webkit-backdrop-filter: blur(20px);');
+    expect(glass).toContain('border-radius: 16px;');
+    expect(glass).toContain('rgba(255, 255, 255, 0.30)');
+
+    const neumorph = runWebOperation('css-neumorphism-generator', {
+      baseColor: '#e0e5ec',
+      distance: '12',
+      blur: '24',
+      shape: 'flat',
+      lightAngle: 'top-left',
+      intensity: '15',
+      borderRadius: '20',
+    });
+    expect(neumorph).toContain('.neumorphic-element');
+    expect(neumorph).toContain('border-radius: 20px;');
+    expect(neumorph).toContain('box-shadow:');
   });
 });

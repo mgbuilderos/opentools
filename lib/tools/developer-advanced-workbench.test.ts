@@ -16,11 +16,11 @@ function defaults(id: string) {
 }
 
 describe('advanced developer workbench', () => {
-  it('publishes 51 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(51);
+  it('publishes 52 unique operations whose defaults all run', async () => {
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(52);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(51);
+    ).toBe(52);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -513,5 +513,54 @@ const db = "postgres://root:pass123@prod-db.internal:5432/core";`;
     });
     expect(goCode).toContain('http.NewRequest("POST"');
     expect(goCode).toContain('req.Header.Set("Authorization"');
+  });
+
+  it('converts JSON payloads to TypeScript interfaces, types, and JSON Schema', async () => {
+    const payload = JSON.stringify({
+      id: 'usr_101',
+      name: 'Ada Lovelace',
+      active: true,
+      score: 98.5,
+      tags: ['admin', 'engineer'],
+      profile: {
+        city: 'London',
+        zipCode: 10001,
+      },
+    });
+
+    const interfaces = await runAdvancedDeveloperOperation(
+      'json-to-typescript',
+      {
+        input: payload,
+        rootName: 'UserProfile',
+        format: 'interfaces',
+        exportPrefix: 'export',
+      },
+    );
+    expect(interfaces).toContain('export interface UserProfile');
+    expect(interfaces).toContain('export interface Profile');
+    expect(interfaces).toContain('tags: string[];');
+    expect(interfaces).toContain('profile: Profile;');
+
+    const types = await runAdvancedDeveloperOperation('json-to-typescript', {
+      input: payload,
+      rootName: 'UserProfile',
+      format: 'types',
+      exportPrefix: 'declare',
+    });
+    expect(types).toContain('declare type UserProfile =');
+    expect(types).toContain('declare type Profile =');
+
+    const jsonSchema = await runAdvancedDeveloperOperation(
+      'json-to-typescript',
+      {
+        input: payload,
+        rootName: 'UserProfile',
+        format: 'json-schema',
+      },
+    );
+    expect(jsonSchema).toContain('http://json-schema.org/draft-07/schema#');
+    expect(jsonSchema).toContain('"title": "UserProfile"');
+    expect(jsonSchema).toContain('"type": "object"');
   });
 });

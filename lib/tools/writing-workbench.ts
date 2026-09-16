@@ -277,6 +277,42 @@ export const WRITING_OPERATIONS: readonly WritingOperation[] = [
     notice:
       'Basic starting point only. Verify the current style guide and the exact rules for your source type.',
   },
+  {
+    id: 'markdown-to-pdf-doc',
+    name: 'Markdown to print & PDF document formatter',
+    description:
+      'Transform raw Markdown into a beautifully typeset, printable HTML document with page headers, footers, and print styles.',
+    fields: [
+      area(
+        'markdown',
+        'Markdown source',
+        '# Executive Project Summary\n\n## 1. Objective & Philosophy\nOpenTools delivers zero-egress, client-side tools that run entirely in memory.\n\n* **Privacy First**: Zero server telemetry or data uploads.\n* **Standardized**: Governed by immutable W3C, POSIX, and algorithmic specifications.\n* **Reliability**: Instant execution with zero maintenance.\n\n### Core Tenets\n| Feature | Traditional Cloud Tools | OpenTools Local |\n| :--- | :--- | :--- |\n| Data Egress | Uploads to remote servers | 100% In-Browser |\n| Subscriptions | Paid monthly tiers | Free & Patronage |\n| Offline Ready | Requires active internet | Works offline |\n\n> "Simplicity is prerequisite for reliability."\n\n```typescript\nfunction executeSafely(): boolean {\n  return true;\n}\n```',
+      ),
+      text('title', 'Document title', 'Executive Project Summary'),
+      select('pageSize', 'Page size', [
+        { value: 'A4', label: 'A4 (210 × 297 mm)' },
+        { value: 'letter', label: 'Letter (8.5 × 11 in)' },
+        { value: 'legal', label: 'Legal (8.5 × 14 in)' },
+      ]),
+      select('orientation', 'Orientation', [
+        { value: 'portrait', label: 'Portrait' },
+        { value: 'landscape', label: 'Landscape' },
+      ]),
+      select('theme', 'Typography theme', [
+        { value: 'modern-clean', label: 'Modern Clean (System Sans-Serif)' },
+        {
+          value: 'academic-serif',
+          label: 'Academic Serif (Georgia / Garamond)',
+        },
+        {
+          value: 'technical-mono',
+          label: 'Technical Clean (Monospace headers)',
+        },
+        { value: 'minimalist', label: 'Minimalist (Swiss Style)' },
+      ]),
+    ],
+    outputExtension: 'html',
+  },
 ] as const;
 
 function required(value: string, label: string, maximum = 1_000_000) {
@@ -733,7 +769,177 @@ export function runWritingOperation(
       }
       return `${author}. (${year}). ${title}. ${source}.${url ? ` ${url}` : ''}`;
     }
+    case 'markdown-to-pdf-doc': {
+      return generateMarkdownPrintDoc(values);
+    }
     default:
       throw new Error('Choose a supported writing operation.');
   }
+}
+
+function generateMarkdownPrintDoc(values: Record<string, string>): string {
+  const md = required(values.markdown, 'Markdown source');
+  const title = values.title?.trim() || 'Document';
+  const pageSize = values.pageSize || 'A4';
+  const orientation = values.orientation || 'portrait';
+  const theme = values.theme || 'modern-clean';
+
+  const bodyHtml = markdownToHtml(md);
+
+  let fontFamily =
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  let headingFont = 'inherit';
+  if (theme === 'academic-serif') {
+    fontFamily = 'Georgia, "Times New Roman", Garamond, serif';
+    headingFont = 'Georgia, serif';
+  } else if (theme === 'technical-mono') {
+    fontFamily =
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    headingFont = '"SF Mono", "Segoe UI Mono", "Courier New", monospace';
+  } else if (theme === 'minimalist') {
+    fontFamily = 'Helvetica Neue, Arial, sans-serif';
+    headingFont = 'Helvetica Neue, Arial, sans-serif';
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${escapeHtml(title)}</title>
+  <style>
+    @page {
+      size: ${pageSize} ${orientation};
+      margin: 20mm 18mm;
+    }
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .document-container {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      h1, h2, h3, table, pre, blockquote {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+    body {
+      font-family: ${fontFamily};
+      background: #f4f4f5;
+      color: #18181b;
+      margin: 0;
+      padding: 32px 16px;
+      line-height: 1.65;
+    }
+    .print-bar {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .btn {
+      background: #18181b;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #27272a;
+    }
+    .document-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      padding: 48px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: ${headingFont};
+      color: #09090b;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+    h1 { font-size: 26pt; border-bottom: 2px solid #e4e4e7; padding-bottom: 8px; margin-top: 0; }
+    h2 { font-size: 18pt; border-bottom: 1px solid #f4f4f5; padding-bottom: 6px; }
+    h3 { font-size: 14pt; }
+    p { margin-top: 0; margin-bottom: 1.2em; font-size: 11pt; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5em 0;
+      font-size: 10pt;
+    }
+    th, td {
+      border: 1px solid #e4e4e7;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+    blockquote {
+      margin: 1.5em 0;
+      padding: 12px 20px;
+      border-left: 4px solid #18181b;
+      background: #f8fafc;
+      font-style: italic;
+      color: #3f3f46;
+    }
+    pre {
+      background: #09090b;
+      color: #f4f4f5;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 9.5pt;
+      line-height: 1.45;
+      margin: 1.5em 0;
+    }
+    code {
+      font-family: "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+    }
+    ul, ol {
+      margin-top: 0;
+      margin-bottom: 1.2em;
+      padding-left: 24px;
+      font-size: 11pt;
+    }
+    li {
+      margin-bottom: 0.35em;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid #e4e4e7;
+      margin: 2em 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="print-bar no-print">
+    <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+  <article class="document-container">
+    ${bodyHtml}
+  </article>
+</body>
+</html>`;
 }

@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('finance and business workbench', () => {
-  it('publishes 53 unique operations whose defaults all run', () => {
-    expect(FINANCE_OPERATIONS).toHaveLength(53);
-    expect(new Set(FINANCE_OPERATIONS.map((item) => item.id)).size).toBe(53);
+  it('publishes 55 unique operations whose defaults all run', () => {
+    expect(FINANCE_OPERATIONS).toHaveLength(55);
+    expect(new Set(FINANCE_OPERATIONS.map((item) => item.id)).size).toBe(55);
     for (const operation of FINANCE_OPERATIONS) {
       expect(
         runFinanceOperation(operation.id, defaults(operation.id)),
@@ -273,5 +273,45 @@ describe('finance and business workbench', () => {
         variable: '10',
       }),
     ).toThrow('must exceed');
+  });
+
+  it('generates zero-egress printable invoices and payment receipts', () => {
+    const invoice = runFinanceOperation('invoice-generator', {
+      invoiceNumber: 'INV-TEST-99',
+      invoiceDate: '2026-09-16',
+      dueDate: '2026-09-30',
+      sender: 'Acme Studio Inc.',
+      client: 'Globex Corp.',
+      currency: 'USD',
+      items: 'Web Engineering, 20, 100\nDesign System, 1, 500',
+      taxRate: '10',
+      discount: '100',
+      notes: 'Pay via Bank Transfer or UPI.',
+    });
+    expect(invoice).toContain('INVOICE');
+    expect(invoice).toContain('# INV-TEST-99');
+    expect(invoice).toContain('Acme Studio Inc.');
+    expect(invoice).toContain('Globex Corp.');
+    expect(invoice).toContain('Web Engineering');
+    expect(invoice).toContain('$2,500.00');
+    expect(invoice).toContain('$2,640.00 USD');
+    expect(invoice).toContain('@media print');
+
+    const receipt = runFinanceOperation('receipt-generator', {
+      receiptNumber: 'REC-TEST-42',
+      paymentDate: '2026-09-16',
+      payer: 'Sarah Jenkins',
+      payee: 'MG Services',
+      amount: '750',
+      currency: 'INR',
+      paymentMethod: 'UPI / Instant Pay',
+      transactionReference: 'TXN-998811',
+      description: 'Consulting fees',
+    });
+    expect(receipt).toContain('PAYMENT RECEIPT');
+    expect(receipt).toContain('# REC-TEST-42');
+    expect(receipt).toContain('PAID IN FULL');
+    expect(receipt).toContain('₹750.00');
+    expect(receipt).toContain('TXN-998811');
   });
 });

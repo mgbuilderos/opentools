@@ -955,6 +955,31 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       ],
       outputExtension: 'sql',
     },
+    {
+      id: 'json-to-typescript',
+      name: 'JSON to TypeScript & JSON Schema converter',
+      description:
+        'Infer strict TypeScript interface, type alias, or JSON Schema Draft-07 definitions from parsed JSON objects.',
+      fields: [
+        area(
+          'input',
+          'JSON payload',
+          '{\n  "id": "usr_101",\n  "name": "Ada Lovelace",\n  "email": "ada@example.com",\n  "role": "admin",\n  "tags": ["engineer", "pioneer"],\n  "stats": {\n    "loginCount": 42,\n    "lastActive": "2026-09-16T12:00:00Z"\n  },\n  "settings": {\n    "theme": "dark",\n    "notifications": true\n  }\n}',
+        ),
+        text('rootName', 'Root type / interface name', 'RootObject'),
+        select('format', 'Output format', [
+          { value: 'interfaces', label: 'TypeScript Interfaces' },
+          { value: 'types', label: 'TypeScript Type Aliases' },
+          { value: 'json-schema', label: 'JSON Schema (Draft-07)' },
+        ]),
+        select('exportPrefix', 'Export keyword', [
+          { value: 'export', label: 'export (ES Module)' },
+          { value: 'declare', label: 'declare (Ambient / .d.ts)' },
+          { value: 'none', label: 'None (Local / unqualified)' },
+        ]),
+      ],
+      outputExtension: 'ts',
+    },
   ] as const;
 
 const MAX_TEXT = 1_000_000;
@@ -2324,6 +2349,16 @@ export async function runAdvancedDeveloperOperation(
       const targetLang = values.language || values.targetLang || 'all';
       return convertCurlToCode(curlInput, targetLang);
     }
+    case 'json-to-typescript': {
+      const raw = required(values.input, 'JSON payload');
+      const rootName = values.rootName?.trim() || 'RootObject';
+      const format =
+        (values.format as 'interfaces' | 'types' | 'json-schema') ||
+        'interfaces';
+      const prefix =
+        (values.exportPrefix as 'export' | 'declare' | 'none') || 'export';
+      return convertJsonToTypeScript(raw, rootName, format, prefix);
+    }
     case 'svg-cleaner': {
       let markup = required(values.svg, 'SVG markup');
       const removeComments = values.removeComments !== 'no';
@@ -3589,4 +3624,154 @@ function convertCurlToCode(curlInput: string, targetLang: string): string {
     '',
     generators['php-curl']!(),
   ].join('\n');
+}
+
+export function convertJsonToTypeScript(
+  rawInput: string,
+  rootName = 'RootObject',
+  format: 'interfaces' | 'types' | 'json-schema' = 'interfaces',
+  prefix: 'export' | 'declare' | 'none' = 'export',
+): string {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawInput);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error(`JSON payload is invalid: ${error.message}`);
+    }
+    throw error;
+  }
+
+  const cleanRootName =
+    rootName.trim().replace(/[^a-zA-Z0-9_$]/gu, '') || 'RootObject';
+  const prefixStr =
+    prefix === 'export' ? 'export ' : prefix === 'declare' ? 'declare ' : '';
+
+  if (format === 'json-schema') {
+    function toJsonSchema(val: unknown): Record<string, unknown> {
+      if (val === null) return { type: 'null' };
+      if (Array.isArray(val)) {
+        const itemSchemas = val.map((item) => toJsonSchema(item));
+        return {
+          type: 'array',
+          items: itemSchemas.length > 0 ? itemSchemas[0] : {},
+        };
+      }
+      if (typeof val === 'object') {
+        const properties: Record<string, unknown> = {};
+        const requiredFields: string[] = [];
+        for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+          properties[k] = toJsonSchema(v);
+          requiredFields.push(k);
+        }
+        return {
+          type: 'object',
+          properties,
+          required: requiredFields.length > 0 ? requiredFields : undefined,
+        };
+      }
+      if (typeof val === 'number') {
+        return { type: Number.isInteger(val) ? 'integer' : 'number' };
+      }
+      return { type: typeof val };
+    }
+
+    const schema = {
+      $schema: 'http:' + '//json-schema.org/draft-07/schema#',
+      title: cleanRootName,
+      ...toJsonSchema(parsed),
+    };
+    return JSON.stringify(schema, null, 2);
+  }
+
+  const generatedTypes: { name: string; content: string }[] = [];
+  const typeNameMap = new Map<string, number>();
+
+  function getUniqueTypeName(baseName: string): string {
+    const pascal =
+      baseName
+        .replace(/[-_](\w)/gu, (_, c: string) => c.toUpperCase())
+        .replace(/^([a-z])/u, (_, c: string) => c.toUpperCase())
+        .replace(/[^a-zA-Z0-9_$]/gu, '') || 'Item';
+    const count = typeNameMap.get(pascal) ?? 0;
+    typeNameMap.set(pascal, count + 1);
+    return count === 0 ? pascal : `${pascal}${count + 1}`;
+  }
+
+  function inferType(val: unknown, keyContext: string): string {
+    if (val === null) return 'null';
+    if (val === undefined) return 'undefined';
+    if (typeof val === 'string') return 'string';
+    if (typeof val === 'number') return 'number';
+    if (typeof val === 'boolean') return 'boolean';
+
+    if (Array.isArray(val)) {
+      if (val.length === 0) return 'unknown[]';
+      const itemTypes = Array.from(
+        new Set(val.map((item) => inferType(item, `${keyContext}Item`))),
+      );
+      if (itemTypes.length === 1) {
+        const t = itemTypes[0]!;
+        return t.includes(' ') || t.includes('|') ? `(${t})[]` : `${t}[]`;
+      }
+      return `(${itemTypes.join(' | ')})[]`;
+    }
+
+    if (typeof val === 'object') {
+      const typeName = getUniqueTypeName(keyContext);
+      const entries = Object.entries(val as Record<string, unknown>);
+      const fields: string[] = [];
+
+      for (const [k, v] of entries) {
+        const safeKey = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/u.test(k)
+          ? k
+          : JSON.stringify(k);
+        const childType = inferType(v, k);
+        const optional = v === null || v === undefined ? '?' : '';
+        fields.push(`  ${safeKey}${optional}: ${childType};`);
+      }
+
+      const body = fields.length > 0 ? `{\n${fields.join('\n')}\n}` : '{}';
+      const typeDef =
+        format === 'interfaces'
+          ? `${prefixStr}interface ${typeName} ${body}`
+          : `${prefixStr}type ${typeName} = ${body};`;
+
+      generatedTypes.push({ name: typeName, content: typeDef });
+      return typeName;
+    }
+
+    return 'unknown';
+  }
+
+  if (Array.isArray(parsed)) {
+    const itemType = inferType(parsed, cleanRootName);
+    const rootDef = `${prefixStr}type ${cleanRootName} = ${itemType};`;
+    generatedTypes.push({ name: cleanRootName, content: rootDef });
+  } else if (typeof parsed === 'object' && parsed !== null) {
+    const rootEntries = Object.entries(parsed as Record<string, unknown>);
+    const fields: string[] = [];
+    typeNameMap.set(cleanRootName, 1);
+
+    for (const [k, v] of rootEntries) {
+      const safeKey = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/u.test(k)
+        ? k
+        : JSON.stringify(k);
+      const childType = inferType(v, k);
+      const optional = v === null || v === undefined ? '?' : '';
+      fields.push(`  ${safeKey}${optional}: ${childType};`);
+    }
+
+    const body = fields.length > 0 ? `{\n${fields.join('\n')}\n}` : '{}';
+    const rootDef =
+      format === 'interfaces'
+        ? `${prefixStr}interface ${cleanRootName} ${body}`
+        : `${prefixStr}type ${cleanRootName} = ${body};`;
+    generatedTypes.push({ name: cleanRootName, content: rootDef });
+  } else {
+    const primitiveType = typeof parsed;
+    return `${prefixStr}type ${cleanRootName} = ${primitiveType};`;
+  }
+
+  return generatedTypes.map((t) => t.content).join('\n\n');
 }

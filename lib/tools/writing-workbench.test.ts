@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('writing workbench', () => {
-  it('publishes 16 unique operations whose defaults all run', () => {
-    expect(WRITING_OPERATIONS).toHaveLength(16);
-    expect(new Set(WRITING_OPERATIONS.map((item) => item.id)).size).toBe(16);
+  it('publishes 17 unique operations whose defaults all run', () => {
+    expect(WRITING_OPERATIONS).toHaveLength(17);
+    expect(new Set(WRITING_OPERATIONS.map((item) => item.id)).size).toBe(17);
     for (const operation of WRITING_OPERATIONS) {
       expect(
         runWritingOperation(operation.id, defaults(operation.id)),
@@ -149,5 +149,22 @@ describe('writing workbench', () => {
     expect(() =>
       runWritingOperation('outline-builder', { items: 'Heading only' }),
     ).toThrow('level | heading');
+  });
+
+  it('formats Markdown into printable publication-grade HTML documents', () => {
+    const output = runWritingOperation('markdown-to-pdf-doc', {
+      markdown:
+        '# Project Title\n\nExecutive brief on private tools.\n\n- Feature 1\n- Feature 2',
+      title: 'Project Title',
+      pageSize: 'A4',
+      orientation: 'portrait',
+      theme: 'modern-clean',
+    });
+    expect(output).toContain('<h1>Project Title</h1>');
+    expect(output).toContain('Executive brief on private tools.');
+    expect(output).toContain('@page {');
+    expect(output).toContain('size: A4 portrait;');
+    expect(output).toContain('@media print');
+    expect(output).toContain('window.print()');
   });
 });

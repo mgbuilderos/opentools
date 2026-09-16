@@ -20,11 +20,22 @@ const number = (
   label: string,
   defaultValue: string,
 ): FinanceField => ({ id, label, type: 'number', defaultValue });
+const text = (
+  id: string,
+  label: string,
+  defaultValue: string,
+): FinanceField => ({ id, label, type: 'text', defaultValue });
 const area = (
   id: string,
   label: string,
   defaultValue: string,
 ): FinanceField => ({ id, label, type: 'textarea', defaultValue });
+const select = (
+  id: string,
+  label: string,
+  options: readonly { value: string; label: string }[],
+  defaultValue = options[0]?.value ?? '',
+): FinanceField => ({ id, label, type: 'select', defaultValue, options });
 const scenarioNotice =
   'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.';
 const businessNotice =
@@ -653,6 +664,94 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
       number('months', 'Projection months (1 to 36)', '12'),
     ],
     notice: businessNotice,
+  },
+  {
+    id: 'invoice-generator',
+    name: 'Zero-egress printable invoice maker',
+    description:
+      'Generate professional, print-ready freelance and commercial invoices with itemized taxes, discounts, and payment instructions.',
+    fields: [
+      text('invoiceNumber', 'Invoice number / ID', 'INV-2026-001'),
+      area(
+        'sender',
+        'Your business / sender details',
+        'Acme Studio Inc.\n123 Innovation Way, Suite 400\nSan Francisco, CA 94105\ncontact@acmestudio.example',
+      ),
+      area(
+        'client',
+        'Billed to / client details',
+        'Globex Tech Corp.\n456 Enterprise Blvd\nNew York, NY 10001\nbilling@globex.example',
+      ),
+      text('invoiceDate', 'Invoice date (YYYY-MM-DD)', '2026-09-16'),
+      text('dueDate', 'Payment due date (YYYY-MM-DD)', '2026-09-30'),
+      select('currency', 'Currency', [
+        { value: 'USD', label: 'USD ($)' },
+        { value: 'EUR', label: 'EUR (€)' },
+        { value: 'GBP', label: 'GBP (£)' },
+        { value: 'INR', label: 'INR (₹)' },
+        { value: 'CAD', label: 'CAD ($)' },
+        { value: 'AUD', label: 'AUD ($)' },
+        { value: 'JPY', label: 'JPY (¥)' },
+        { value: 'SGD', label: 'SGD ($)' },
+      ]),
+      area(
+        'items',
+        'Line items (Description, Quantity, Unit Price)',
+        'UI/UX Design System, 1, 1200\nFrontend Engineering (Hours), 40, 75\nAPI Integration & QA Testing, 10, 80',
+      ),
+      number('taxRate', 'Tax / VAT / GST rate (%)', '10'),
+      number('discount', 'Discount amount', '0'),
+      area(
+        'notes',
+        'Payment terms & notes',
+        'Payment instructions:\nBank: First Commercial Bank\nAccount: 1234-5678-9012\nUPI: acmestudio@upi\nThank you for your business!',
+      ),
+    ],
+    notice:
+      '100% private. All invoice computations and print templates are generated locally in browser memory with zero server uploads.',
+    outputExtension: 'html',
+  },
+  {
+    id: 'receipt-generator',
+    name: 'Printable payment receipt maker',
+    description:
+      'Generate official, print-ready payment receipts with reference IDs, payer/payee details, and itemized confirmation.',
+    fields: [
+      text('receiptNumber', 'Receipt number / ID', 'REC-2026-9042'),
+      text('paymentDate', 'Payment date (YYYY-MM-DD)', '2026-09-16'),
+      text('payer', 'Received from (Payer)', 'Sarah Jenkins'),
+      text('payee', 'Issued by (Payee / Business)', 'MG Digital Services'),
+      number('amount', 'Amount received', '450'),
+      select('currency', 'Currency', [
+        { value: 'USD', label: 'USD ($)' },
+        { value: 'EUR', label: 'EUR (€)' },
+        { value: 'GBP', label: 'GBP (£)' },
+        { value: 'INR', label: 'INR (₹)' },
+        { value: 'CAD', label: 'CAD ($)' },
+        { value: 'AUD', label: 'AUD ($)' },
+        { value: 'JPY', label: 'JPY (¥)' },
+      ]),
+      select('paymentMethod', 'Payment method', [
+        { value: 'UPI / Instant Pay', label: 'UPI / Instant Pay' },
+        { value: 'Credit / Debit Card', label: 'Credit / Debit Card' },
+        { value: 'Bank Transfer / Wire', label: 'Bank Transfer / Wire' },
+        { value: 'Cash', label: 'Cash' },
+        { value: 'Cheque', label: 'Cheque' },
+      ]),
+      text(
+        'transactionReference',
+        'Transaction reference / ID',
+        'TXN-88492019',
+      ),
+      area(
+        'description',
+        'Payment memo / for',
+        'Payment in full for Website Performance Optimization & Technical SEO Audit.',
+      ),
+    ],
+    notice:
+      '100% private. All receipt formatting and print layouts are generated client-side.',
+    outputExtension: 'html',
   },
 ] as const;
 
@@ -1288,7 +1387,425 @@ New Accelerated Payoff Term:  ${(acceleratedMonths / 12).toFixed(1)} years (${ac
 
       return linesOut.join('\n');
     }
+    case 'invoice-generator': {
+      const invoiceNo = values.invoiceNumber?.trim() || 'INV-001';
+      const invoiceDate = values.invoiceDate?.trim() || '2026-09-16';
+      const dueDate = values.dueDate?.trim() || '2026-09-30';
+      const sender = values.sender?.trim() || 'Sender';
+      const client = values.client?.trim() || 'Client';
+      const curCode = values.currency || 'USD';
+      const curSym = CURRENCY_SYMBOLS[curCode] || '$';
+      const taxPct = Math.max(0, parseFloat(values.taxRate || '0') || 0);
+      const discountVal = Math.max(0, parseFloat(values.discount || '0') || 0);
+      const notes = values.notes?.trim() || '';
+
+      const lines = (values.items || '')
+        .split(/\r?\n/gu)
+        .filter((l) => l.trim());
+      const parsedItems = lines.map((line) => {
+        const parts = line.includes(',')
+          ? line.split(',')
+          : line.includes('|')
+            ? line.split('|')
+            : line.split('\t');
+        const desc = (parts[0] || 'Item').trim();
+        const qty = Math.max(1, parseFloat((parts[1] || '1').trim()) || 1);
+        const rate = Math.max(0, parseFloat((parts[2] || '0').trim()) || 0);
+        const amount = qty * rate;
+        return { desc, qty, rate, amount };
+      });
+
+      if (parsedItems.length === 0) {
+        parsedItems.push({
+          desc: 'Consulting / Engineering Services',
+          qty: 1,
+          rate: 1000,
+          amount: 1000,
+        });
+      }
+
+      const subtotal = parsedItems.reduce((acc, i) => acc + i.amount, 0);
+      const discountedSubtotal = Math.max(0, subtotal - discountVal);
+      const taxAmount = (discountedSubtotal * taxPct) / 100;
+      const grandTotal = discountedSubtotal + taxAmount;
+
+      return generateInvoiceHtml({
+        invoiceNo,
+        invoiceDate,
+        dueDate,
+        sender,
+        client,
+        currency: curSym,
+        currencyCode: curCode,
+        items: parsedItems,
+        subtotal,
+        discount: discountVal,
+        taxPercent: taxPct,
+        taxAmount,
+        grandTotal,
+        notes,
+      });
+    }
+    case 'receipt-generator': {
+      const receiptNo = values.receiptNumber?.trim() || 'REC-001';
+      const paymentDate = values.paymentDate?.trim() || '2026-09-16';
+      const payer = values.payer?.trim() || 'Payer';
+      const payee = values.payee?.trim() || 'Payee';
+      const amount = Math.max(0, parseFloat(values.amount || '0') || 0);
+      const curCode = values.currency || 'USD';
+      const curSym = CURRENCY_SYMBOLS[curCode] || '$';
+      const method = values.paymentMethod || 'UPI / Instant Pay';
+      const ref = values.transactionReference?.trim() || 'N/A';
+      const desc =
+        values.description?.trim() || 'Payment for services rendered';
+
+      return generateReceiptHtml({
+        receiptNo,
+        paymentDate,
+        payer,
+        payee,
+        amount,
+        currency: curSym,
+        currencyCode: curCode,
+        paymentMethod: method,
+        reference: ref,
+        description: desc,
+      });
+    }
     default:
       throw new Error('Choose a supported finance or business operation.');
   }
+}
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  INR: '₹',
+  CAD: 'CA$',
+  AUD: 'AU$',
+  JPY: '¥',
+  SGD: 'SG$',
+};
+
+function escapeHtmlStr(value: string): string {
+  return value
+    .replace(/&/gu, '&amp;')
+    .replace(/</gu, '&lt;')
+    .replace(/>/gu, '&gt;')
+    .replace(/"/gu, '&quot;')
+    .replace(/'/gu, '&#39;');
+}
+
+interface InvoiceData {
+  invoiceNo: string;
+  invoiceDate: string;
+  dueDate: string;
+  sender: string;
+  client: string;
+  currency: string;
+  currencyCode: string;
+  items: Array<{ desc: string; qty: number; rate: number; amount: number }>;
+  subtotal: number;
+  discount: number;
+  taxPercent: number;
+  taxAmount: number;
+  grandTotal: number;
+  notes: string;
+}
+
+function generateInvoiceHtml(d: InvoiceData): string {
+  const formatMoney = (n: number) =>
+    `${d.currency}${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const itemRows = d.items
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #e4e4e7;">${escapeHtmlStr(item.desc)}</td>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #e4e4e7; text-align: center;">${item.qty}</td>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #e4e4e7; text-align: right;">${formatMoney(item.rate)}</td>
+        <td style="padding: 12px 8px; border-bottom: 1px solid #e4e4e7; text-align: right; font-weight: 600;">${formatMoney(item.amount)}</td>
+      </tr>`,
+    )
+    .join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice ${escapeHtmlStr(d.invoiceNo)}</title>
+  <style>
+    @media print {
+      body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .invoice-card { box-shadow: none !important; border: none !important; max-width: 100% !important; }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f4f4f5;
+      color: #18181b;
+      margin: 0;
+      padding: 32px 16px;
+      line-height: 1.5;
+    }
+    .invoice-card {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      border-bottom: 2px solid #18181b;
+      padding-bottom: 20px;
+    }
+    .title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #f4f4f5;
+      border: 1px solid #d4d4d8;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+    .grid { display: flex; justify-content: space-between; gap: 24px; margin-bottom: 32px; }
+    .col { flex: 1; }
+    .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; font-weight: 700; margin-bottom: 4px; }
+    .info { font-size: 14px; white-space: pre-line; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
+    th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #18181b; font-size: 12px; text-transform: uppercase; color: #71717a; }
+    .totals-container { display: flex; justify-content: flex-end; margin-bottom: 32px; }
+    .totals-table { width: 320px; }
+    .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+    .grand-total { border-top: 2px solid #18181b; padding-top: 10px; font-size: 18px; font-weight: 800; }
+    .notes-box { background: #fafafa; border: 1px solid #e4e4e7; border-radius: 6px; padding: 16px; font-size: 13px; color: #3f3f46; white-space: pre-line; }
+    .print-bar { text-align: center; margin-bottom: 24px; }
+    .btn { background: #18181b; color: #fff; border: none; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; }
+    .btn:hover { background: #27272a; }
+  </style>
+</head>
+<body>
+  <div class="print-bar no-print">
+    <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+  <div class="invoice-card">
+    <div class="header">
+      <div>
+        <h1 class="title">INVOICE</h1>
+        <div class="badge"># ${escapeHtmlStr(d.invoiceNo)}</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="label">Date Issued</div>
+        <div class="info" style="font-weight: 600;">${escapeHtmlStr(d.invoiceDate)}</div>
+        <div class="label" style="margin-top: 8px;">Due Date</div>
+        <div class="info" style="font-weight: 600; color: #dc2626;">${escapeHtmlStr(d.dueDate)}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col">
+        <div class="label">From</div>
+        <div class="info">${escapeHtmlStr(d.sender)}</div>
+      </div>
+      <div class="col">
+        <div class="label">Billed To</div>
+        <div class="info">${escapeHtmlStr(d.client)}</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th style="text-align: center; width: 60px;">Qty</th>
+          <th style="text-align: right; width: 110px;">Unit Price</th>
+          <th style="text-align: right; width: 120px;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemRows}
+      </tbody>
+    </table>
+
+    <div class="totals-container">
+      <div class="totals-table">
+        <div class="totals-row">
+          <span style="color: #71717a;">Subtotal:</span>
+          <span>${formatMoney(d.subtotal)}</span>
+        </div>
+        ${
+          d.discount > 0
+            ? `<div class="totals-row" style="color: #16a34a;">
+          <span>Discount:</span>
+          <span>-${formatMoney(d.discount)}</span>
+        </div>`
+            : ''
+        }
+        ${
+          d.taxPercent > 0
+            ? `<div class="totals-row">
+          <span style="color: #71717a;">Tax (${d.taxPercent}%):</span>
+          <span>+${formatMoney(d.taxAmount)}</span>
+        </div>`
+            : ''
+        }
+        <div class="totals-row grand-total">
+          <span>Total Due:</span>
+          <span>${formatMoney(d.grandTotal)} ${escapeHtmlStr(d.currencyCode)}</span>
+        </div>
+      </div>
+    </div>
+
+    ${
+      d.notes
+        ? `<div class="notes-box">
+      <div class="label" style="margin-bottom: 6px;">Notes & Payment Instructions</div>
+      ${escapeHtmlStr(d.notes)}
+    </div>`
+        : ''
+    }
+  </div>
+</body>
+</html>`;
+}
+
+interface ReceiptData {
+  receiptNo: string;
+  paymentDate: string;
+  payer: string;
+  payee: string;
+  amount: number;
+  currency: string;
+  currencyCode: string;
+  paymentMethod: string;
+  reference: string;
+  description: string;
+}
+
+function generateReceiptHtml(d: ReceiptData): string {
+  const formatMoney = (n: number) =>
+    `${d.currency}${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receipt ${escapeHtmlStr(d.receiptNo)}</title>
+  <style>
+    @media print {
+      body { background: #fff !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .receipt-card { box-shadow: none !important; border: none !important; }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f4f4f5;
+      color: #18181b;
+      margin: 0;
+      padding: 32px 16px;
+      line-height: 1.5;
+    }
+    .receipt-card {
+      max-width: 650px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #18181b;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+    .title { font-size: 24px; font-weight: 800; margin: 0; }
+    .status-badge {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .amount-banner {
+      background: #fafafa;
+      border: 1px solid #e4e4e7;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .amount-val { font-size: 36px; font-weight: 800; color: #18181b; }
+    .amount-lbl { font-size: 12px; color: #71717a; text-transform: uppercase; font-weight: 600; }
+    .meta-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f4f4f5; font-size: 14px; }
+    .meta-lbl { color: #71717a; font-weight: 600; }
+    .meta-val { font-weight: 600; }
+    .memo { margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 6px; font-size: 13px; color: #334155; }
+    .print-bar { text-align: center; margin-bottom: 24px; }
+    .btn { background: #18181b; color: #fff; border: none; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; }
+    .btn:hover { background: #27272a; }
+  </style>
+</head>
+<body>
+  <div class="print-bar no-print">
+    <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+  <div class="receipt-card">
+    <div class="header">
+      <div>
+        <h1 class="title">PAYMENT RECEIPT</h1>
+        <div style="font-size: 13px; color: #71717a; margin-top: 4px;"># ${escapeHtmlStr(d.receiptNo)}</div>
+      </div>
+      <div class="status-badge">✓ PAID IN FULL</div>
+    </div>
+
+    <div class="amount-banner">
+      <div class="amount-lbl">Amount Received</div>
+      <div class="amount-val">${formatMoney(d.amount)} <span style="font-size: 18px; color: #71717a;">${escapeHtmlStr(d.currencyCode)}</span></div>
+    </div>
+
+    <div class="meta-row">
+      <span class="meta-lbl">Payment Date</span>
+      <span class="meta-val">${escapeHtmlStr(d.paymentDate)}</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-lbl">Received From (Payer)</span>
+      <span class="meta-val">${escapeHtmlStr(d.payer)}</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-lbl">Issued By (Payee)</span>
+      <span class="meta-val">${escapeHtmlStr(d.payee)}</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-lbl">Payment Method</span>
+      <span class="meta-val">${escapeHtmlStr(d.paymentMethod)}</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-lbl">Transaction Reference</span>
+      <span class="meta-val" style="font-family: monospace;">${escapeHtmlStr(d.reference)}</span>
+    </div>
+
+    <div class="memo">
+      <div style="font-weight: 700; margin-bottom: 4px; color: #0f172a; font-size: 12px; text-transform: uppercase;">Payment For</div>
+      ${escapeHtmlStr(d.description)}
+    </div>
+  </div>
+</body>
+</html>`;
 }
