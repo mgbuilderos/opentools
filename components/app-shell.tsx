@@ -89,6 +89,12 @@ export function AppShell({
       setIsDark(document.documentElement.classList.contains('dark'));
     });
 
+    const initialQuery = new URLSearchParams(window.location.search).get('q');
+    if (initialQuery) {
+      setQuery(initialQuery);
+      requestAnimationFrame(() => searchRef.current?.focus());
+    }
+
     const focusSearch = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);

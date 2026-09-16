@@ -4,6 +4,7 @@ import { LockKeyhole, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { destinationIcon } from '@/components/category-icons';
+import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
 import {
   toolDestinationsForGroup,
@@ -118,6 +119,12 @@ export function HomeWorkspace() {
               On-device tools
             </span>
           </div>
+
+          {/* Smart Universal Auto-Detector Dropzone */}
+          <div className="mt-8">
+            <SmartDropzone />
+          </div>
+
           <div className="my-6 flex flex-wrap items-center justify-between gap-4">
             <output className="text-sm text-muted-foreground">
               {totalVisibleCount} {totalVisibleCount === 1 ? 'tool' : 'tools'}
