@@ -7,6 +7,7 @@ import { destinationIcon } from '@/components/category-icons';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
 import {
   toolDestinationsForGroup,
+  toolSubsectionsForGroup,
   toolGroups,
   type ToolGroup,
 } from '@/lib/tools/catalog';
@@ -18,14 +19,43 @@ export function HomeWorkspace() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const selectedGroup =
     toolGroups.find((group) => group.id === selectedGroupId) ?? toolGroups[0];
-  const destinations = useMemo(
+  const _destinations = useMemo(
     () => toolDestinationsForGroup(selectedGroup),
     [selectedGroup],
   );
-  const visible = destinations.filter((tool) =>
-    `${tool.name} ${tool.description}`
-      .toLocaleLowerCase()
-      .includes(filter.trim().toLocaleLowerCase()),
+  const subsections = useMemo(
+    () => toolSubsectionsForGroup(selectedGroup),
+    [selectedGroup],
+  );
+
+  const normalizedFilter = filter.trim().toLocaleLowerCase();
+
+  const filteredSubsections = useMemo(() => {
+    if (!normalizedFilter) {
+      return subsections.map((section) => ({
+        ...section,
+        visibleDestinations: section.destinations,
+      }));
+    }
+    return subsections
+      .map((section) => ({
+        ...section,
+        visibleDestinations: section.destinations.filter((tool) =>
+          `${tool.name} ${tool.description}`
+            .toLocaleLowerCase()
+            .includes(normalizedFilter),
+        ),
+      }))
+      .filter((section) => section.visibleDestinations.length > 0);
+  }, [subsections, normalizedFilter]);
+
+  const totalVisibleCount = useMemo(
+    () =>
+      filteredSubsections.reduce(
+        (sum, section) => sum + section.visibleDestinations.length,
+        0,
+      ),
+    [filteredSubsections],
   );
 
   useEffect(() => {
@@ -90,7 +120,7 @@ export function HomeWorkspace() {
           </div>
           <div className="my-6 flex flex-wrap items-center justify-between gap-4">
             <output className="text-sm text-muted-foreground">
-              {visible.length} {visible.length === 1 ? 'tool' : 'tools'}
+              {totalVisibleCount} {totalVisibleCount === 1 ? 'tool' : 'tools'}
               {filter ? ` matching “${filter}”` : ' · Choose a task to begin'}
             </output>
             <div className="relative w-full sm:w-72">
@@ -108,22 +138,42 @@ export function HomeWorkspace() {
               />
             </div>
           </div>
-          <div
-            data-design="equal-tool-hierarchy"
-            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-          >
-            {visible.map((tool) => (
-              <ToolLinkCard
-                key={tool.id}
-                name={tool.name}
-                description={tool.description}
-                href={tool.href}
-                icon={destinationIcon(tool, selectedGroup.id)}
-                className="min-h-36 items-start [&>span]:items-start [&>span>span:last-child>span:first-child]:text-base [&>span>span:last-child>span:last-child]:text-sm"
-              />
+          <div data-design="equal-tool-hierarchy" className="space-y-10">
+            {filteredSubsections.map((section) => (
+              <div key={section.id} className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+                  <div>
+                    <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                      {section.title}
+                    </h2>
+                    <p className="text-xs text-muted-foreground">
+                      {section.description}
+                    </p>
+                  </div>
+                  <span className="tabular rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground">
+                    {section.visibleDestinations.length}{' '}
+                    {section.visibleDestinations.length === 1
+                      ? 'tool'
+                      : 'tools'}
+                  </span>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {section.visibleDestinations.map((tool) => (
+                    <ToolLinkCard
+                      key={tool.id}
+                      name={tool.name}
+                      description={tool.description}
+                      href={tool.href}
+                      icon={destinationIcon(tool, selectedGroup.id)}
+                      className="min-h-36 items-start [&>span]:items-start [&>span>span:last-child>span:first-child]:text-base [&>span>span:last-child>span:last-child]:text-sm"
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-          {!visible.length ? (
+          {!totalVisibleCount ? (
             <div className="rounded-xl border border-dashed p-8">
               <h2 className="text-lg font-semibold">
                 No matching tool in {selectedGroup.name}
@@ -140,7 +190,7 @@ export function HomeWorkspace() {
               </button>
             </div>
           ) : null}
-          <footer className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-sm text-muted-foreground">
+          <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-sm text-muted-foreground">
             <p>No account needed. Downloads are free.</p>
             <p>Files are processed in your browser.</p>
           </footer>

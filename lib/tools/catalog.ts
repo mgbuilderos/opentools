@@ -1034,6 +1034,317 @@ export function toolDestinationsForGroup(group: ToolGroup): ToolDestination[] {
   );
 }
 
+export interface ToolSubsection {
+  id: string;
+  title: string;
+  description: string;
+  destinations: ToolDestination[];
+}
+
+export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
+  const destinations = toolDestinationsForGroup(group);
+
+  if (group.id === 'pdf') {
+    const coreIds = new Set([
+      'pdf-merge',
+      'pdf-extract',
+      'images-to-pdf',
+      'pdf-page-tools:pdf-to-images',
+    ]);
+    const layoutIds = new Set([
+      'pdf-page-tools:rotate-pdf',
+      'pdf-page-tools:reorder-pdf-pages',
+      'pdf-page-tools:reverse-pdf-pages',
+      'pdf-page-tools:delete-pdf-pages',
+      'pdf-page-tools:split-pdf-ranges',
+    ]);
+    const securityIds = new Set([
+      'pdf-page-tools:pdf-page-numbers',
+      'pdf-page-tools:pdf-watermark',
+      'pdf-page-tools:pdf-metadata-editor',
+      'pdf-page-tools:flatten-pdf',
+    ]);
+
+    const core = destinations.filter((d) => coreIds.has(d.id));
+    const layout = destinations.filter((d) => layoutIds.has(d.id));
+    const security = destinations.filter((d) => securityIds.has(d.id));
+    const assigned = new Set([...coreIds, ...layoutIds, ...securityIds]);
+    const remaining = destinations.filter((d) => !assigned.has(d.id));
+
+    return [
+      {
+        id: 'core-operations',
+        title: 'Core Page Operations',
+        description: 'Merge, split, extract, and convert PDF documents.',
+        destinations: [...core, ...remaining],
+      },
+      {
+        id: 'layout-transform',
+        title: 'Layout & Page Transformation',
+        description:
+          'Rotate, reorder, reverse, omit, and assemble page ranges.',
+        destinations: layout,
+      },
+      {
+        id: 'security-presentation',
+        title: 'Document Security & Presentation',
+        description: 'Numbering, watermarks, metadata, and form flattening.',
+        destinations: security,
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  if (group.id === 'images') {
+    const aiIds = new Set([
+      'image-editor:solid-background-remover',
+      'image-ocr',
+      'video-compress',
+    ]);
+    const optIds = new Set(['image-optimize']);
+    const studioIds = new Set([
+      'image-editor:image-cropper',
+      'image-editor:image-flipper',
+      'image-editor:image-rotator',
+      'image-editor:image-brightness',
+      'image-editor:image-contrast',
+      'image-editor:image-grayscale',
+    ]);
+
+    const ai = destinations.filter((d) => aiIds.has(d.id));
+    const opt = destinations.filter((d) => optIds.has(d.id));
+    const studio = destinations.filter((d) => studioIds.has(d.id));
+    const assigned = new Set([...aiIds, ...optIds, ...studioIds]);
+    const remaining = destinations.filter((d) => !assigned.has(d.id));
+
+    return [
+      {
+        id: 'ai-media',
+        title: 'AI & Intelligent Media',
+        description:
+          'Background removal, OCR text extraction, and video transcoding.',
+        destinations: ai,
+      },
+      {
+        id: 'optimization-conversion',
+        title: 'Optimization & Compression',
+        description:
+          'Fast, on-device image compression and format optimization.',
+        destinations: [...opt, ...remaining],
+      },
+      {
+        id: 'canvas-studio',
+        title: 'Canvas Studio & Adjustments',
+        description: 'Crop, flip, rotate, and fine-tune image color channels.',
+        destinations: studio,
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  if (group.id === 'text-data') {
+    const isData = (d: ToolDestination) =>
+      d.id === 'json-format' ||
+      d.id === 'csv-to-json' ||
+      d.id.startsWith('spreadsheet-workbench');
+
+    const isText = (d: ToolDestination) =>
+      d.id === 'text-case-converter' ||
+      d.id.startsWith('text-workbench') ||
+      d.id.startsWith('writing-workbench');
+
+    const data = destinations.filter(isData);
+    const text = destinations.filter(isText);
+    const assigned = new Set([
+      ...data.map((d) => d.id),
+      ...text.map((d) => d.id),
+    ]);
+    const remaining = destinations.filter((d) => !assigned.has(d.id));
+
+    return [
+      {
+        id: 'data-spreadsheets',
+        title: 'Data Serialization & Spreadsheets',
+        description:
+          'Format JSON, convert CSVs, and manipulate tabular datasets.',
+        destinations: data,
+      },
+      {
+        id: 'typography-writing',
+        title: 'Typography, Formatting & Writing',
+        description:
+          'Case conversion, text inspection, word counting, and writing playbooks.',
+        destinations: [...text, ...remaining],
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  if (group.id === 'developer-files') {
+    const isArch = (d: ToolDestination) => d.id === 'sql-visualizer';
+    const isTokens = (d: ToolDestination) =>
+      d.id === 'base64-encode' ||
+      d.id === 'base64-decode' ||
+      d.id === 'uuid-generator' ||
+      d.id === 'unix-timestamp' ||
+      d.id === 'file-hash';
+    const isWorkbench = (d: ToolDestination) =>
+      d.id.startsWith('developer-data-workbench') ||
+      d.id.startsWith('developer-advanced-workbench') ||
+      d.id.startsWith('file-workbench');
+
+    const arch = destinations.filter(isArch);
+    const tokens = destinations.filter(isTokens);
+    const workbenches = destinations.filter(isWorkbench);
+    const assigned = new Set([
+      ...arch.map((d) => d.id),
+      ...tokens.map((d) => d.id),
+      ...workbenches.map((d) => d.id),
+    ]);
+    const remaining = destinations.filter((d) => !assigned.has(d.id));
+
+    return [
+      {
+        id: 'architecture-visualizers',
+        title: 'Architecture & Visualizers',
+        description: 'Render schemas and database entity relationships.',
+        destinations: arch,
+      },
+      {
+        id: 'encodings-tokens-hashes',
+        title: 'Encodings, Tokens & Hashes',
+        description: 'Base64, UUID v4, timestamps, and checksums.',
+        destinations: tokens,
+      },
+      {
+        id: 'engineering-workbenches',
+        title: 'Engineering Workbenches & Files',
+        description:
+          'Type generators, regex, token parsers, and binary file tools.',
+        destinations: [...workbenches, ...remaining],
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  if (group.id === 'calculators') {
+    const isMath = (d: ToolDestination) =>
+      d.id === 'percentage-calculator' || d.id.startsWith('math-workbench');
+    const isDate = (d: ToolDestination) =>
+      d.id === 'date-difference' ||
+      d.id === 'age-calculator' ||
+      d.id.startsWith('date-workbench');
+
+    const math = destinations.filter(isMath);
+    const date = destinations.filter(isDate);
+    const assigned = new Set([
+      ...math.map((d) => d.id),
+      ...date.map((d) => d.id),
+    ]);
+    const remaining = destinations.filter((d) => !assigned.has(d.id));
+
+    return [
+      {
+        id: 'math-calculations',
+        title: 'Math & Precision Calculations',
+        description:
+          'Percentages, arithmetic, scientific formulas, and unit conversions.',
+        destinations: math,
+      },
+      {
+        id: 'datetime-chronometry',
+        title: 'Date, Time & Chronometry',
+        description:
+          'Date differences, age counter, business days, and timesheets.',
+        destinations: [...date, ...remaining],
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  if (group.id === 'qr-barcode') {
+    const isBarcode = (d: ToolDestination) =>
+      /barcode|ean|upc|code-128|code-39|sheet|label/i.test(
+        `${d.id} ${d.name} ${d.description}`,
+      );
+
+    const barcode = destinations.filter(isBarcode);
+    const qr = destinations.filter((d) => !isBarcode(d));
+
+    return [
+      {
+        id: 'qr-generators',
+        title: 'Dynamic QR Code Generators',
+        description:
+          'Wi-Fi, URLs, contact vCards, payments, and custom payloads.',
+        destinations: qr.length ? qr : destinations,
+      },
+      {
+        id: 'barcode-labels',
+        title: 'Linear Barcodes & Print Sheets',
+        description:
+          'EAN-13, UPC, Code 128, Code 39, and multi-label printable layouts.',
+        destinations: barcode,
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  if (group.id === 'web-seo') {
+    const isCss = (d: ToolDestination) =>
+      /css|gradient|glass|neumorph|animat|shadow|palette/i.test(
+        `${d.id} ${d.name} ${d.description}`,
+      );
+
+    const css = destinations.filter(isCss);
+    const seo = destinations.filter((d) => !isCss(d));
+
+    return [
+      {
+        id: 'css-visual-studios',
+        title: 'CSS & Visual Design Studios',
+        description:
+          'Multi-stop gradients, glassmorphism, neumorphism, and animations.',
+        destinations: css,
+      },
+      {
+        id: 'webmaster-metadata',
+        title: 'Webmaster & Search Engine Metadata',
+        description:
+          'Meta tags, Open Graph previews, robots.txt, and sitemaps.',
+        destinations: seo.length ? seo : destinations,
+      },
+    ].filter((section) => section.destinations.length > 0);
+  }
+
+  return [
+    {
+      id: group.id,
+      title: group.name,
+      description: group.shortDescription,
+      destinations,
+    },
+  ];
+}
+
+export interface NavMajorSection {
+  id: string;
+  title: string;
+  groupCategoryIds: ToolGroup['id'][];
+}
+
+export const NAVIGATION_MAJOR_SECTIONS: NavMajorSection[] = [
+  {
+    id: 'primary-workspaces',
+    title: 'Workspaces',
+    groupCategoryIds: ['pdf', 'images'],
+  },
+  {
+    id: 'engineering-data',
+    title: 'Engineering & Data',
+    groupCategoryIds: ['developer-files', 'text-data'],
+  },
+  {
+    id: 'utilities-design',
+    title: 'Utilities & Design',
+    groupCategoryIds: ['web-seo', 'qr-barcode', 'calculators'],
+  },
+];
+
 const normalizeToken = (token: string) =>
   token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;
 

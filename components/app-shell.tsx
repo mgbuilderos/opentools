@@ -13,6 +13,9 @@ import {
   Sun,
   X,
   PanelLeftClose,
+  BookOpen,
+  Newspaper,
+  HeartHandshake,
 } from 'lucide-react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -22,6 +25,7 @@ import { groupIcons } from '@/components/category-icons';
 import { CompletionValueDialog } from '@/components/completion-value-dialog';
 import { SUPPORT_CONFIG } from '@/lib/support-config';
 import {
+  NAVIGATION_MAJOR_SECTIONS,
   searchTools,
   toolDestinationsForGroup,
   toolGroups,
@@ -165,44 +169,113 @@ export function AppShell({
     }, 450);
   };
   const categoryNavigation = (
-    <nav aria-label="Tool categories" className="space-y-1 p-3">
-      {toolGroups.map((group) => {
-        const Icon = groupIcons[group.id];
+    <nav aria-label="Tool categories" className="space-y-4 p-3">
+      {NAVIGATION_MAJOR_SECTIONS.map((section) => {
+        const groups = section.groupCategoryIds
+          .map((id) => toolGroups.find((g) => g.id === id))
+          .filter((g): g is ToolGroup => Boolean(g));
+
         return (
-          <a
-            key={group.id}
-            href={`/?category=${group.id}`}
-            title={group.name}
-            aria-current={group.id === activeGroupId ? 'page' : undefined}
-            onClick={(event) => {
-              if (
-                event.metaKey ||
-                event.ctrlKey ||
-                event.shiftKey ||
-                event.altKey
-              )
-                return;
-              if (onCategorySelect) {
-                event.preventDefault();
-                onCategorySelect(group.id);
-              }
-              setSidebarOpen(false);
-            }}
-            className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98] aria-[current=page]:bg-foreground aria-[current=page]:text-background aria-[current=page]:hover:translate-x-0 motion-reduce:transform-none"
-          >
-            <Icon
-              aria-hidden="true"
-              className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-aria-[current=page]:scale-100 motion-reduce:transform-none"
-            />
-            <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-              {group.name}
-              <span className="tabular text-xs opacity-60 transition-opacity duration-[var(--motion-standard)] group-hover:opacity-100">
-                {toolDestinationsForGroup(group).length}
-              </span>
-            </span>
-          </a>
+          <div key={section.id} className="space-y-1">
+            <div className="category-label px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
+              {section.title}
+            </div>
+            {groups.map((group) => {
+              const Icon = groupIcons[group.id];
+              const count = toolDestinationsForGroup(group).length;
+              return (
+                <a
+                  key={group.id}
+                  href={`/?category=${group.id}`}
+                  title={group.name}
+                  aria-current={group.id === activeGroupId ? 'page' : undefined}
+                  onClick={(event) => {
+                    if (
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey
+                    )
+                      return;
+                    if (onCategorySelect) {
+                      event.preventDefault();
+                      onCategorySelect(group.id);
+                    }
+                    setSidebarOpen(false);
+                  }}
+                  className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98] aria-[current=page]:bg-foreground aria-[current=page]:text-background aria-[current=page]:hover:translate-x-0 motion-reduce:transform-none"
+                >
+                  <Icon
+                    aria-hidden="true"
+                    className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-aria-[current=page]:scale-100 motion-reduce:transform-none"
+                  />
+                  <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+                    {group.name}
+                    <span className="tabular rounded bg-muted/70 px-1.5 py-0.5 text-[11px] font-mono opacity-70 transition-opacity duration-[var(--motion-standard)] group-hover:opacity-100 group-aria-[current=page]:bg-background/20 group-aria-[current=page]:text-background">
+                      {count}
+                    </span>
+                  </span>
+                </a>
+              );
+            })}
+          </div>
         );
       })}
+
+      <div className="space-y-1 border-t pt-3">
+        <div className="category-label px-3 pt-1 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
+          Resources
+        </div>
+        <a
+          href="/guides"
+          title="Guides & Solutions"
+          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+        >
+          <BookOpen
+            aria-hidden="true"
+            className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+          />
+          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            Guides &amp; Solutions
+            <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
+              Interactive
+            </span>
+          </span>
+        </a>
+        <a
+          href="/blog"
+          title="Engineering Blog"
+          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+        >
+          <Newspaper
+            aria-hidden="true"
+            className="size-5 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+          />
+          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            Engineering Blog
+            <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
+              20 Playbooks
+            </span>
+          </span>
+        </a>
+        <a
+          href="/support"
+          title="Support OpenTools"
+          className="category-link group focus-ring flex min-h-11 items-center gap-4 overflow-hidden rounded-lg px-3 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground hover:translate-x-1 active:translate-x-0 active:scale-[0.98]"
+        >
+          <HeartHandshake
+            aria-hidden="true"
+            className="size-5 shrink-0 text-success transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+          />
+          <span className="category-label flex min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
+            Support OpenTools
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
+              <span className="relative inline-flex size-2 rounded-full bg-success" />
+            </span>
+          </span>
+        </a>
+      </div>
     </nav>
   );
 
