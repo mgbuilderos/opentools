@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
@@ -52,6 +53,59 @@ export async function generateMetadata({
   };
 }
 
+function renderInlineMarkdown(text: string): ReactNode[] {
+  const tokenRegex = /(\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|`([^`]+)`)/g;
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = tokenRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    if (match[2] && match[3]) {
+      const linkText = match[2];
+      const linkUrl = match[3];
+      const isExternal = linkUrl.startsWith('http');
+      parts.push(
+        <a
+          key={match.index}
+          href={linkUrl}
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
+          className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-4 transition-colors hover:decoration-foreground"
+        >
+          {linkText}
+        </a>,
+      );
+    } else if (match[4]) {
+      parts.push(
+        <strong key={match.index} className="font-semibold text-foreground">
+          {match[4]}
+        </strong>,
+      );
+    } else if (match[5]) {
+      parts.push(
+        <code
+          key={match.index}
+          className="rounded bg-muted/80 px-1.5 py-0.5 font-mono text-xs font-medium text-foreground border border-border/40"
+        >
+          {match[5]}
+        </code>,
+      );
+    }
+
+    lastIndex = tokenRegex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
+
 function renderFormattedContent(text: string) {
   const paragraphs = text.split(/\n\n+/);
 
@@ -72,7 +126,7 @@ function renderFormattedContent(text: string) {
           {lang ? (
             <div className="flex items-center justify-between border-b bg-muted px-4 py-1.5 text-[11px] text-muted-foreground">
               <span>{lang}</span>
-              <span>copy</span>
+              <span className="opacity-60">read-only</span>
             </div>
           ) : null}
           <pre className="overflow-x-auto p-4 leading-5 text-foreground">
@@ -111,7 +165,7 @@ function renderFormattedContent(text: string) {
                 <tr>
                   {headerCells.map((h, hIdx) => (
                     <th key={hIdx} className="px-4 py-2.5">
-                      {h}
+                      {renderInlineMarkdown(h)}
                     </th>
                   ))}
                 </tr>
@@ -121,7 +175,7 @@ function renderFormattedContent(text: string) {
                   <tr key={rIdx} className="hover:bg-muted/30">
                     {dRow.map((cell, cIdx) => (
                       <td key={cIdx} className="px-4 py-2.5">
-                        {cell}
+                        {renderInlineMarkdown(cell)}
                       </td>
                     ))}
                   </tr>
@@ -133,10 +187,60 @@ function renderFormattedContent(text: string) {
       }
     }
 
+    // Check for blockquotes / callout notes
+    if (trimmed.startsWith('>')) {
+      const quoteText = trimmed
+        .split('\n')
+        .map((line) => line.replace(/^>\s?/, ''))
+        .join(' ');
+      return (
+        <blockquote
+          key={pIdx}
+          className="my-4 rounded-xl border-l-4 border-foreground bg-muted/40 p-4 text-sm leading-6 text-foreground italic"
+        >
+          {renderInlineMarkdown(quoteText)}
+        </blockquote>
+      );
+    }
+
+    // Check for bullet lists (- or *)
+    const lines = trimmed.split('\n');
+    if (
+      lines.length > 1 &&
+      lines.every((l) => l.trim().startsWith('- ') || l.trim().startsWith('* '))
+    ) {
+      return (
+        <ul
+          key={pIdx}
+          className="my-3 list-disc space-y-1.5 pl-6 text-sm leading-6 text-muted-foreground"
+        >
+          {lines.map((line, lIdx) => {
+            const itemText = line.trim().replace(/^[-*]\s+/, '');
+            return <li key={lIdx}>{renderInlineMarkdown(itemText)}</li>;
+          })}
+        </ul>
+      );
+    }
+
+    // Check for numbered lists (1. 2. 3.)
+    if (lines.length > 1 && lines.every((l) => /^\d+\.\s+/.test(l.trim()))) {
+      return (
+        <ol
+          key={pIdx}
+          className="my-3 list-decimal space-y-1.5 pl-6 text-sm leading-6 text-muted-foreground"
+        >
+          {lines.map((line, lIdx) => {
+            const itemText = line.trim().replace(/^\d+\.\s+/, '');
+            return <li key={lIdx}>{renderInlineMarkdown(itemText)}</li>;
+          })}
+        </ol>
+      );
+    }
+
     // Regular paragraph
     return (
       <p key={pIdx} className="text-base leading-7 text-muted-foreground">
-        {trimmed}
+        {renderInlineMarkdown(trimmed)}
       </p>
     );
   });
