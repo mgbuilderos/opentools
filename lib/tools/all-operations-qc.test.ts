@@ -381,7 +381,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 632 operation-level tool destinations', () => {
+  it('accounts for all 628 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -404,7 +404,7 @@ describe('exhaustive workbench input/output QC', () => {
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(632);
+    expect(expectedDestinations).toHaveLength(628);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

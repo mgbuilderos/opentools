@@ -1,24 +1,33 @@
 import { describe, expect, it } from 'vitest';
 
-import { publicTools } from '../tools/catalog';
-import { getCategoryBySlug } from './internal-linking-graph';
+import { getCategoryBySlug, toCategorySlug } from './internal-linking-graph';
+import { LIVE_TOOL_CATALOG, isLiveToolUrl } from './live-tools';
 import { removedToolRedirect } from './removed-tool-redirects';
-import { TOOL_CATALOG } from './tool-catalog-data';
 
-const guideSlugs = new Set(TOOL_CATALOG.map((tool) => tool.slug));
-const toolRoutes = new Set(publicTools.map((tool) => tool.href));
+const liveGuideSlugs = new Set(LIVE_TOOL_CATALOG.map((tool) => tool.slug));
+const liveCategorySlugs = new Set(
+  LIVE_TOOL_CATALOG.map((tool) => toCategorySlug(tool.category)),
+);
 
+/** A page only counts as live when it lists or runs at least one live tool. */
 function isLivePage(path: string) {
-  if (path === '/guides' || toolRoutes.has(path)) return true;
+  if (path === '/guides') return true;
+  if (isLiveToolUrl(path)) return true;
   const category = /^\/guides\/category\/([a-z0-9-]+)$/u.exec(path);
-  if (category) return getCategoryBySlug(category[1]) !== undefined;
+  if (category)
+    return (
+      getCategoryBySlug(category[1]!) !== undefined &&
+      liveCategorySlugs.has(category[1]!)
+    );
   const guide = /^\/guides\/([a-z0-9-]+)$/u.exec(path);
-  return guide ? guideSlugs.has(guide[1]) : false;
+  return guide ? liveGuideSlugs.has(guide[1]!) : false;
 }
 
 const removedPaths = [
   '/audio/transcribe',
   '/image/upscaler',
+  '/developer/sql-visualizer',
+  '/guides/category/video',
   '/guides/category/astrology-and-numerology',
   '/guides/health-and-fitness-water-intake-calculator',
   '/guides/image-image-upscaler',

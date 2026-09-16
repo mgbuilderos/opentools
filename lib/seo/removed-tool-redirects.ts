@@ -1,18 +1,22 @@
 /**
  * Permanent redirects for tools removed by owner decision on 2026-09-17
- * (docs/DECISION_LOG.md), so old links land on the closest page that still
- * exists instead of a 404.
+ * (docs/DECISION_LOG.md). A removed path redirects only when a live page does
+ * the same job or lists the same kind of tool; every other removed path
+ * (for example /video/compress, /image/ocr and /roadmap) returns a 404.
  */
 const EXACT_REDIRECTS: Readonly<Record<string, string>> = {
   '/audio/transcribe': '/guides/category/audio',
   '/image/upscaler': '/image/optimize',
+  '/developer/sql-visualizer': '/developer/advanced?tool=sql-to-er-diagram',
   '/guides/category/astrology-and-numerology':
     '/guides/category/date-time-and-productivity',
   '/guides/health-and-fitness-water-intake-calculator':
     '/guides/category/health-and-fitness',
   '/guides/image-image-upscaler': '/guides/category/image',
-  '/guides/video-video-to-gif': '/guides/category/video',
   '/guides/audio-audio-format-converter': '/guides/category/audio',
+  // No video tool is live, so the video hub is gone too; both land on the index.
+  '/guides/category/video': '/guides',
+  '/guides/video-video-to-gif': '/guides',
 };
 
 /** Numerology tools that still exist under a new guide slug. */

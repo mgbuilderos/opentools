@@ -59,28 +59,6 @@ export const PDF_PAGE_OPERATIONS = [
     name: 'PDF metadata editor',
     description: 'Set PDF title, author, subject, and keywords.',
   },
-  {
-    id: 'reverse-pdf-pages',
-    name: 'Reverse PDF pages',
-    description: 'Save PDF pages in reverse order from last to first.',
-  },
-  {
-    id: 'split-pdf-ranges',
-    name: 'Split PDF ranges',
-    description: 'Extract and assemble custom comma-separated page ranges.',
-  },
-  {
-    id: 'flatten-pdf',
-    name: 'Flatten PDF',
-    description:
-      'Flatten interactive form fields and annotations into static pages.',
-  },
-  {
-    id: 'pdf-to-images',
-    name: 'PDF to images',
-    description:
-      'Extract or render PDF pages into high-resolution image files.',
-  },
 ] as const;
 
 export const IMAGE_EDITOR_OPERATIONS = [
@@ -122,45 +100,6 @@ export const IMAGE_EDITOR_OPERATIONS = [
 ] as const;
 
 export const publicTools: ToolManifest[] = [
-  {
-    id: 'video-compress',
-    version: '0.1.0-canary',
-    status: 'canary',
-    name: 'Video compressor (Soon)',
-    shortDescription: 'Compress large MP4s and WebMs locally with FFmpeg.wasm.',
-    category: 'Video',
-    aliases: ['compress mp4', 'shrink video'],
-    jobs: ['compress video without uploading'],
-    href: '/video/compress',
-    execution: { mode: 'local-js', capabilities: [], offlineReady: false },
-    owner: 'platform-foundation',
-  },
-  {
-    id: 'image-ocr',
-    version: '0.1.0-canary',
-    status: 'canary',
-    name: 'On-Device OCR (Soon)',
-    shortDescription: 'Extract text from images locally using Tesseract.js.',
-    category: 'Image',
-    aliases: ['image to text', 'extract text from photo'],
-    jobs: ['read text from image'],
-    href: '/image/ocr',
-    execution: { mode: 'local-js', capabilities: [], offlineReady: false },
-    owner: 'platform-foundation',
-  },
-  {
-    id: 'sql-visualizer',
-    version: '0.1.0-canary',
-    status: 'canary',
-    name: 'SQL visualizer (Soon)',
-    shortDescription: 'Paste SQL tables and get an instant local ERD diagram.',
-    category: 'Developer',
-    aliases: ['sql to erd', 'database schema viewer'],
-    jobs: ['visualize sql schema'],
-    href: '/developer/sql-visualizer',
-    execution: { mode: 'local-js', capabilities: [], offlineReady: false },
-    owner: 'platform-foundation',
-  },
   {
     id: 'text-case-converter',
     version: '0.1.0-canary',
@@ -886,9 +825,9 @@ export const toolGroups: ToolGroup[] = [
   },
   {
     id: 'images',
-    name: 'Video & images',
-    shortDescription: 'Compress, resize, OCR, convert, and edit media.',
-    toolIds: ['video-compress', 'image-ocr', 'image-optimize', 'image-editor'],
+    name: 'Image',
+    shortDescription: 'Compress, resize, convert, crop, and adjust images.',
+    toolIds: ['image-optimize', 'image-editor'],
   },
   {
     id: 'text-data',
@@ -906,9 +845,8 @@ export const toolGroups: ToolGroup[] = [
   {
     id: 'developer-files',
     name: 'Developer & files',
-    shortDescription: 'Base64, UUID, SQL visualization, hashes, and files.',
+    shortDescription: 'Base64, UUIDs, timestamps, hashes, and files.',
     toolIds: [
-      'sql-visualizer',
       'base64-encode',
       'base64-decode',
       'uuid-generator',
@@ -991,24 +929,16 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   const destinations = toolDestinationsForGroup(group);
 
   if (group.id === 'pdf') {
-    const coreIds = new Set([
-      'pdf-merge',
-      'pdf-extract',
-      'images-to-pdf',
-      'pdf-page-tools:pdf-to-images',
-    ]);
+    const coreIds = new Set(['pdf-merge', 'pdf-extract', 'images-to-pdf']);
     const layoutIds = new Set([
       'pdf-page-tools:rotate-pdf',
       'pdf-page-tools:reorder-pdf-pages',
-      'pdf-page-tools:reverse-pdf-pages',
       'pdf-page-tools:delete-pdf-pages',
-      'pdf-page-tools:split-pdf-ranges',
     ]);
     const securityIds = new Set([
       'pdf-page-tools:pdf-page-numbers',
       'pdf-page-tools:pdf-watermark',
       'pdf-page-tools:pdf-metadata-editor',
-      'pdf-page-tools:flatten-pdf',
     ]);
 
     const core = destinations.filter((d) => coreIds.has(d.id));
@@ -1021,31 +951,26 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       {
         id: 'core-operations',
         title: 'Core Page Operations',
-        description: 'Merge, split, extract, and convert PDF documents.',
+        description: 'Merge PDFs, extract pages, and turn images into a PDF.',
         destinations: [...core, ...remaining],
       },
       {
         id: 'layout-transform',
         title: 'Layout & Page Transformation',
-        description:
-          'Rotate, reorder, reverse, omit, and assemble page ranges.',
+        description: 'Rotate, reorder, and remove pages.',
         destinations: layout,
       },
       {
         id: 'security-presentation',
-        title: 'Document Security & Presentation',
-        description: 'Numbering, watermarks, metadata, and form flattening.',
+        title: 'Document Presentation',
+        description: 'Page numbers, watermarks, and metadata.',
         destinations: security,
       },
     ].filter((section) => section.destinations.length > 0);
   }
 
   if (group.id === 'images') {
-    const aiIds = new Set([
-      'image-editor:solid-background-remover',
-      'image-ocr',
-      'video-compress',
-    ]);
+    const backgroundIds = new Set(['image-editor:solid-background-remover']);
     const optIds = new Set(['image-optimize']);
     const studioIds = new Set([
       'image-editor:image-cropper',
@@ -1056,25 +981,23 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       'image-editor:image-grayscale',
     ]);
 
-    const ai = destinations.filter((d) => aiIds.has(d.id));
+    const background = destinations.filter((d) => backgroundIds.has(d.id));
     const opt = destinations.filter((d) => optIds.has(d.id));
     const studio = destinations.filter((d) => studioIds.has(d.id));
-    const assigned = new Set([...aiIds, ...optIds, ...studioIds]);
+    const assigned = new Set([...backgroundIds, ...optIds, ...studioIds]);
     const remaining = destinations.filter((d) => !assigned.has(d.id));
 
     return [
       {
-        id: 'ai-media',
-        title: 'AI & Intelligent Media',
-        description:
-          'Background removal, OCR text extraction, and video transcoding.',
-        destinations: ai,
+        id: 'background-removal',
+        title: 'Background Removal',
+        description: 'Make a plain-color image background transparent.',
+        destinations: background,
       },
       {
         id: 'optimization-conversion',
         title: 'Optimization & Compression',
-        description:
-          'Fast, on-device image compression and format optimization.',
+        description: 'Resize, compress, and convert images in your browser.',
         destinations: [...opt, ...remaining],
       },
       {
@@ -1117,14 +1040,13 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
         id: 'typography-writing',
         title: 'Typography, Formatting & Writing',
         description:
-          'Case conversion, text inspection, word counting, and writing playbooks.',
+          'Case conversion, text inspection, word counting, and writing tools.',
         destinations: [...text, ...remaining],
       },
     ].filter((section) => section.destinations.length > 0);
   }
 
   if (group.id === 'developer-files') {
-    const isArch = (d: ToolDestination) => d.id === 'sql-visualizer';
     const isTokens = (d: ToolDestination) =>
       d.id === 'base64-encode' ||
       d.id === 'base64-decode' ||
@@ -1136,23 +1058,15 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       d.id.startsWith('developer-advanced-workbench') ||
       d.id.startsWith('file-workbench');
 
-    const arch = destinations.filter(isArch);
     const tokens = destinations.filter(isTokens);
     const workbenches = destinations.filter(isWorkbench);
     const assigned = new Set([
-      ...arch.map((d) => d.id),
       ...tokens.map((d) => d.id),
       ...workbenches.map((d) => d.id),
     ]);
     const remaining = destinations.filter((d) => !assigned.has(d.id));
 
     return [
-      {
-        id: 'architecture-visualizers',
-        title: 'Architecture & Visualizers',
-        description: 'Render schemas and database entity relationships.',
-        destinations: arch,
-      },
       {
         id: 'encodings-tokens-hashes',
         title: 'Encodings, Tokens & Hashes',
@@ -1215,7 +1129,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
     return [
       {
         id: 'qr-generators',
-        title: 'Dynamic QR Code Generators',
+        title: 'QR Code Generators',
         description:
           'Wi-Fi, URLs, contact vCards, payments, and custom payloads.',
         destinations: qr.length ? qr : destinations,
@@ -1224,7 +1138,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
         id: 'barcode-labels',
         title: 'Linear Barcodes & Print Sheets',
         description:
-          'EAN-13, UPC, Code 128, Code 39, and multi-label printable layouts.',
+          'EAN-13, EAN-8, UPC-A, Code 39, ITF-14, and printable code sheets.',
         destinations: barcode,
       },
     ].filter((section) => section.destinations.length > 0);
@@ -1250,8 +1164,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       {
         id: 'webmaster-metadata',
         title: 'Webmaster & Search Engine Metadata',
-        description:
-          'Meta tags, Open Graph previews, robots.txt, and sitemaps.',
+        description: 'Meta tags, Open Graph tags, robots.txt, and sitemaps.',
         destinations: seo.length ? seo : destinations,
       },
     ].filter((section) => section.destinations.length > 0);
