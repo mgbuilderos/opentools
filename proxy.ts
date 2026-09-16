@@ -13,7 +13,6 @@ const responseHeaders = {
     'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
   'Referrer-Policy': 'no-referrer',
   'X-Content-Type-Options': 'nosniff',
-  'X-Robots-Tag': 'noindex, nofollow, noarchive',
 } as const;
 
 export function proxy(request: NextRequest) {
