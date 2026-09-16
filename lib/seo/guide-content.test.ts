@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getGuideBySlug } from './guide-content';
+import { LIVE_TOOL_CATALOG } from './live-tools';
 import {
   getAllToolSlugs,
   getToolsByCategory,
@@ -43,8 +44,9 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
     if (!mergeGuide) return;
 
     expect(mergeGuide.metaTitle).toContain('Merge PDF');
-    expect(mergeGuide.metaDescription).toContain('client-side');
-    expect(mergeGuide.directAnswer).toContain('To merge pdf online');
+    expect(mergeGuide.metaDescription).toContain('never touch a server');
+    expect(mergeGuide.directAnswer).toContain('To merge pdf without uploading');
+    expect(mergeGuide.cspHeader).toContain("connect-src 'none'");
     expect(mergeGuide.diagramSvg).toContain('<svg');
     expect(mergeGuide.steps).toHaveLength(3);
     expect(mergeGuide.comparison).toHaveLength(5);
@@ -65,5 +67,53 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
 
   it('returns undefined gracefully for non-existent guide slugs', () => {
     expect(getGuideBySlug('non-existent-tool-slug-xyz')).toBeUndefined();
+  });
+
+  it('has a guide only for tools that are live', () => {
+    const liveSlugs = new Set(LIVE_TOOL_CATALOG.map((tool) => tool.slug));
+    expect(liveSlugs.size).toBeGreaterThan(0);
+    expect(liveSlugs.size).toBeLessThan(TOOL_CATALOG.length);
+
+    for (const tool of TOOL_CATALOG) {
+      const guide = getGuideBySlug(tool.slug);
+      expect(guide === undefined, tool.slug).toBe(!liveSlugs.has(tool.slug));
+    }
+  });
+
+  it('states no claim the code does not back', () => {
+    const banned = [
+      'millisecond',
+      'sub-second',
+      'instant',
+      '0 bytes',
+      'zero bytes',
+      'offline',
+      'forever',
+      'cryptographic',
+      'zero-trust',
+      'revoked',
+      'zeroed',
+    ];
+
+    for (const slug of ['pdf-merge-pdf', 'image-image-optimizer']) {
+      const guide = getGuideBySlug(slug);
+      if (!guide) continue;
+      const prose = [
+        guide.metaTitle,
+        guide.metaDescription,
+        guide.directAnswer,
+        guide.leadParagraph,
+        guide.technicalArchitecture,
+        ...guide.steps.flatMap((step) => [step.name, step.text]),
+        ...guide.comparison.flatMap((row) => [row.localTools, row.aspect]),
+        ...guide.faqs.flatMap((faq) => [faq.question, faq.answer]),
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      for (const word of banned) {
+        expect(prose.includes(word), `${slug}: ${word}`).toBe(false);
+      }
+    }
   });
 });

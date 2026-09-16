@@ -16,7 +16,7 @@ import {
   getCategoryBySlug,
   getCategoryPillar,
 } from '@/lib/seo/internal-linking-graph';
-import { getToolsByCategory } from '@/lib/seo/tool-catalog-data';
+import { getLiveToolsByCategory } from '@/lib/seo/live-tools';
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
@@ -67,7 +67,9 @@ export default async function CategoryPillarPage({
   const pillar = getCategoryPillar(categoryName);
   if (!pillar) notFound();
 
-  const tools = getToolsByCategory(categoryName);
+  const tools = getLiveToolsByCategory(categoryName);
+  if (tools.length === 0) notFound();
+  const toolWord = tools.length === 1 ? 'tool' : 'tools';
 
   const jsonLd = {
     '@context': ['https:', '//schema.org'].join(''),
@@ -151,13 +153,13 @@ export default async function CategoryPillarPage({
                   aria-hidden="true"
                   className="size-3.5 text-success"
                 />
-                Zero Cloud Egress
+                Never uploaded
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-mono text-muted-foreground">
-                {tools.length} Local Tools
+                {tools.length} {toolWord}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
-                100% Free Forever
+                Free, no account
               </span>
             </div>
 
@@ -174,12 +176,10 @@ export default async function CategoryPillarPage({
                 Quick Summary / Direct Answer
               </p>
               <p className="mt-2 text-sm leading-6 font-medium">
-                OpenTools provides {tools.length} in-browser{' '}
-                {categoryName.toLowerCase()} utilities that execute 100% locally
-                on your computer via client-side WebAssembly and modern browser
-                APIs. No files are uploaded to any server, there are no
-                subscriptions or paywalls, and all tools run with zero network
-                egress.
+                OpenTools has {tools.length} working{' '}
+                {categoryName.toLowerCase()} {toolWord}. Each one runs in your
+                own browser tab, so your files and inputs never touch a server.
+                There is no account and no paywall.
               </p>
             </div>
           </header>
@@ -192,32 +192,32 @@ export default async function CategoryPillarPage({
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="rounded-xl border bg-card p-4">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Available Utilities
+                  Working tools
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <Cpu aria-hidden="true" className="size-4" />
-                  {tools.length} Operations
+                  {tools.length}
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Server Upload
+                  Server upload
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <ShieldCheck
                     aria-hidden="true"
                     className="size-4 text-success"
                   />
-                  0 Bytes Egress
+                  None
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Execution Model
+                  Runs on
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <Zap aria-hidden="true" className="size-4 text-success" />
-                  Device RAM
+                  Your browser
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
@@ -226,7 +226,7 @@ export default async function CategoryPillarPage({
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <LockKeyhole aria-hidden="true" className="size-4" />
-                  $0 / Free Forever
+                  Free, no paywall
                 </p>
               </div>
             </div>
@@ -235,11 +235,10 @@ export default async function CategoryPillarPage({
           {/* Tool Cluster Directory */}
           <section className="mt-12">
             <h2 className="text-xl font-semibold tracking-[-0.03em] sm:text-2xl">
-              All {categoryName} Utilities &amp; Tutorials
+              All {categoryName} tools
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Explore step-by-step technical guides or jump straight into the
-              live interactive tool tab.
+              Read the guide, or open the tool straight away.
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -251,7 +250,7 @@ export default async function CategoryPillarPage({
                   <div>
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono text-xs text-muted-foreground">
-                        #{tool.rank} in {categoryName}
+                        {categoryName}
                       </span>
                       <span className="rounded-full border bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
                         {tool.executionMode}
@@ -261,8 +260,7 @@ export default async function CategoryPillarPage({
                       {tool.name}
                     </h3>
                     <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                      {tool.notes ||
-                        `Client-side ${tool.name.toLowerCase()} executed locally in device memory with zero server upload.`}
+                      Run {tool.name.toLowerCase()} in your browser tab.
                     </p>
                   </div>
 
@@ -301,8 +299,7 @@ export default async function CategoryPillarPage({
               Explore Other Tool Categories
             </h2>
             <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
-              Discover over 1,000 free, zero-egress browser utilities across all
-              computing domains.
+              Every other category that still has working tools.
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               {getAllCategoryPillars()

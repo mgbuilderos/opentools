@@ -23,16 +23,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1.0 : 0.9,
   }));
 
-  const liveCategories = new Set(
-    LIVE_TOOL_CATALOG.map((tool) => tool.category),
-  );
-  const pillarRoutes: MetadataRoute.Sitemap = getAllCategoryPillars()
-    .filter((pillar) => liveCategories.has(pillar.name))
-    .map((pillar) => ({
+  // getAllCategoryPillars() already covers only categories with a live tool.
+  const pillarRoutes: MetadataRoute.Sitemap = getAllCategoryPillars().map(
+    (pillar) => ({
       url: `${baseUrl}${pillar.href}`,
       changeFrequency: 'weekly' as const,
       priority: 0.9,
-    }));
+    }),
+  );
 
   const guideRoutes: MetadataRoute.Sitemap = LIVE_TOOL_CATALOG.map((tool) => ({
     url: `${baseUrl}/guides/${tool.slug}`,

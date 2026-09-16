@@ -10,23 +10,23 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
-import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
+import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 const httpsScheme = ['https:', '//'].join('');
 const httpsOrigin = `${httpsScheme}getopentools.com`;
 const schemaContext = `${httpsScheme}schema.org`;
 
 export const metadata: Metadata = {
-  title: 'Tool Guides & Solution Playbooks — 100% Private In-Browser Utilities',
+  title: 'Tool Guides — every OpenTools utility, step by step',
   description:
-    'Comprehensive step-by-step guides, technical architectures, and FAQs for 1,000+ zero-egress browser tools across Developer, PDF, Video, Audio, and Finance.',
+    'Step-by-step guides and FAQs for every working OpenTools utility. Each tool runs in your browser tab; your files and inputs never touch a server.',
   alternates: {
     canonical: `${httpsOrigin}/guides`,
   },
   openGraph: {
     title: 'Tool Guides & Solution Playbooks | OpenTools',
     description:
-      'Step-by-step guides, technical comparisons, and FAQs for 1,000+ zero-egress, client-side browser tools.',
+      'Step-by-step guides, comparisons and FAQs for every working OpenTools utility.',
     url: `${httpsOrigin}/guides`,
     siteName: 'OpenTools',
     type: 'website',
@@ -35,16 +35,17 @@ export const metadata: Metadata = {
 
 export default function GuidesDirectoryPage() {
   const pillars = getAllCategoryPillars();
-  const featuredTools = TOOL_CATALOG.filter(
+  const featuredTools = LIVE_TOOL_CATALOG.filter(
     (t) => t.releaseWave === 'P0' || t.rank <= 5,
   ).slice(0, 18);
+  const toolCount = LIVE_TOOL_CATALOG.length;
 
   const jsonLd = {
     '@context': schemaContext,
     '@type': 'CollectionPage',
     name: 'OpenTools In-Browser Tool Guides & Solutions',
     description:
-      'Comprehensive step-by-step guides for 1,000+ zero-egress browser tools operating 100% client-side with zero server uploads.',
+      'Step-by-step guides for every OpenTools utility that runs in the browser tab, with no server upload.',
     url: `${httpsOrigin}/guides`,
     publisher: {
       '@type': 'Organization',
@@ -82,15 +83,15 @@ export default function GuidesDirectoryPage() {
           <div className="space-y-4 text-center sm:text-left">
             <div className="inline-flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-xs font-mono font-medium text-muted-foreground">
               <BookOpen className="h-3.5 w-3.5" />
-              <span>1,000+ Solutions &amp; Technical Guides</span>
+              <span>{toolCount} tool guides</span>
             </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
               Tool Guides &amp; Privacy Playbooks
             </h1>
             <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">
-              Step-by-step tutorials, technical architecture diagrams, and
-              direct answers for every in-browser tool in the OpenTools catalog.
-              Zero server uploads, zero data egress.
+              Step-by-step tutorials, architecture diagrams and direct answers
+              for every working tool in the OpenTools catalog. Each one runs in
+              your browser tab; your files and inputs never touch a server.
             </p>
           </div>
 
@@ -102,11 +103,11 @@ export default function GuidesDirectoryPage() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold">
-                  100% In-Browser Privacy
+                  Your file stays in the page
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  Zero cloud storage. Files are processed in device RAM and
-                  revoked instantly.
+                  Your file is read by the page you have open. It never touches
+                  a server.
                 </p>
               </div>
             </div>
@@ -115,12 +116,10 @@ export default function GuidesDirectoryPage() {
                 <Cpu className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">
-                  WASM &amp; Hardware Speed
-                </h3>
+                <h3 className="text-sm font-semibold">No upload to wait for</h3>
                 <p className="text-xs text-muted-foreground">
-                  Native WebAssembly execution without network upload
-                  bottlenecks.
+                  The work starts as soon as you pick a file — there is no
+                  transfer step.
                 </p>
               </div>
             </div>
@@ -129,11 +128,9 @@ export default function GuidesDirectoryPage() {
                 <ShieldCheck className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">
-                  Free Forever &amp; No Signup
-                </h3>
+                <h3 className="text-sm font-semibold">Free, and no account</h3>
                 <p className="text-xs text-muted-foreground">
-                  No paywalls, subscriptions, or forced account creation.
+                  No paywall, no subscription, no sign-up.
                 </p>
               </div>
             </div>
@@ -147,8 +144,7 @@ export default function GuidesDirectoryPage() {
                   Explore Categories
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Discover dedicated solution hubs grouped by discipline and
-                  workflow.
+                  Every category that has working tools.
                 </p>
               </div>
             </div>
@@ -165,7 +161,8 @@ export default function GuidesDirectoryPage() {
                       {pillar.name}
                     </h3>
                     <span className="rounded-full border bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-                      {pillar.toolCount} tools
+                      {pillar.toolCount}{' '}
+                      {pillar.toolCount === 1 ? 'tool' : 'tools'}
                     </span>
                   </div>
                   <p className="line-clamp-2 text-xs text-muted-foreground">
@@ -185,11 +182,11 @@ export default function GuidesDirectoryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold tracking-tight">
-                  Popular Tool Guides
+                  Start here
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Most frequently consulted guides with step-by-step execution
-                  workflows.
+                  A cross-section of the catalog, with a step-by-step guide
+                  each.
                 </p>
               </div>
             </div>
@@ -215,8 +212,7 @@ export default function GuidesDirectoryPage() {
                       {tool.name}
                     </h3>
                     <p className="mt-1 text-xs leading-5 text-muted-foreground line-clamp-2">
-                      In-browser {tool.name.toLowerCase()} with zero server
-                      uploads and instant export.
+                      Run {tool.name.toLowerCase()} in your browser tab.
                     </p>
                   </div>
 

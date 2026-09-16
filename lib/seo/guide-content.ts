@@ -1,4 +1,9 @@
-import { type ToolCatalogEntry, getToolBySlug } from './tool-catalog-data';
+import {
+  contentSecurityPolicy,
+  loadsLocalModel,
+} from '../security/content-security-policy';
+import type { ToolCatalogEntry } from './tool-catalog-data';
+import { getLiveToolBySlug } from './live-tools';
 import {
   type CategoryPillarInfo,
   type RelatedToolLink,
@@ -31,6 +36,8 @@ export interface ToolGuideData {
   directAnswer: string;
   leadParagraph: string;
   technicalArchitecture: string;
+  /** The Content-Security-Policy this tool's own route is served with. */
+  cspHeader: string;
   diagramSvg: string;
   steps: readonly GuideStep[];
   comparison: readonly GuideComparisonRow[];
@@ -56,7 +63,7 @@ function getSemanticEntities(tool: ToolCatalogEntry) {
       '@type': 'Standard',
       name: 'POSIX tar / ZIP Archive Specification (ISO/IEC 21320-1)',
     });
-  } else if (tool.category === 'Audio' || tool.category === 'Video') {
+  } else if (tool.category === 'Audio') {
     entities.push({
       '@type': 'Standard',
       name: 'W3C Web Audio API Recommendation',
@@ -73,6 +80,7 @@ function getSemanticEntities(tool: ToolCatalogEntry) {
 export function generateArchitectureDiagramSvg(
   toolName: string,
   executionMode: string,
+  connectSrc = "connect-src 'none'",
 ): string {
   const runtime =
     executionMode === 'local-wasm'
@@ -109,7 +117,7 @@ export function generateArchitectureDiagramSvg(
 
     <rect x="480" y="26" width="230" height="60" rx="8" stroke="currentColor" stroke-opacity="0.2" fill="currentColor" fill-opacity="0.02" />
     <text x="494" y="52" fill="currentColor" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Download Output</text>
-    <text x="494" y="70" fill="currentColor" fill-opacity="0.5" font-family="monospace" font-size="10">Server copy retained on disk</text>
+    <text x="494" y="70" fill="currentColor" fill-opacity="0.5" font-family="monospace" font-size="10">Provider keeps a copy</text>
   </g>
 
   <!-- Divider -->
@@ -117,109 +125,117 @@ export function generateArchitectureDiagramSvg(
 
   <!-- Bottom track: OpenTools Zero-Egress In-Browser Architecture -->
   <g transform="translate(20, 150)">
-    <text x="0" y="14" fill="currentColor" font-family="monospace" font-size="11" font-weight="700">OPENTOOLS ZERO-EGRESS IN-BROWSER EXECUTION</text>
+    <text x="0" y="14" fill="currentColor" font-family="monospace" font-size="11" font-weight="700">OPENTOOLS: THE WORK HAPPENS IN THE PAGE</text>
 
     <rect x="0" y="26" width="220" height="64" rx="8" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.03" />
     <text x="14" y="50" fill="currentColor" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Your Browser Tab</text>
-    <text x="14" y="70" fill="currentColor" fill-opacity="0.6" font-family="monospace" font-size="10">Device RAM: Zero network upload</text>
+    <text x="14" y="70" fill="currentColor" fill-opacity="0.6" font-family="monospace" font-size="10">File read into the page</text>
 
     <!-- Arrow -->
     <path d="M 225 58 L 275 58" stroke="currentColor" stroke-width="2" />
     <polygon points="275,54 285,58 275,62" fill="currentColor" />
-    <text x="232" y="48" fill="currentColor" fill-opacity="0.7" font-family="monospace" font-size="9">Direct Memory</text>
+    <text x="232" y="48" fill="currentColor" fill-opacity="0.7" font-family="monospace" font-size="9">No upload</text>
 
     <rect x="288" y="26" width="240" height="64" rx="8" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.05" />
     <text x="302" y="50" fill="currentColor" font-family="system-ui, sans-serif" font-size="13" font-weight="700">${runtime}</text>
-    <text x="302" y="70" fill="currentColor" fill-opacity="0.6" font-family="monospace" font-size="10">connect-src none (Strict Invariant)</text>
+    <text x="302" y="70" fill="currentColor" fill-opacity="0.6" font-family="monospace" font-size="10">${connectSrc}</text>
 
     <!-- Arrow -->
     <path d="M 533 58 L 578 58" stroke="currentColor" stroke-width="2" />
     <polygon points="578,54 588,58 578,62" fill="currentColor" />
-    <text x="540" y="48" fill="currentColor" fill-opacity="0.7" font-family="monospace" font-size="9">Instant Save</text>
+    <text x="540" y="48" fill="currentColor" fill-opacity="0.7" font-family="monospace" font-size="9">Save</text>
 
     <rect x="592" y="26" width="128" height="64" rx="8" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.03" />
     <text x="606" y="50" fill="currentColor" font-family="system-ui, sans-serif" font-size="13" font-weight="700">Local Disk</text>
-    <text x="606" y="70" fill="currentColor" fill-opacity="0.6" font-family="monospace" font-size="10">Buffers Revoked</text>
+    <text x="606" y="70" fill="currentColor" fill-opacity="0.6" font-family="monospace" font-size="10">Your own disk</text>
   </g>
 </svg>`;
 }
 
 export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
-  const metaTitle = `How to ${tool.name} Online Free — 100% Private Browser Tool`;
-  const metaDescription = `${tool.name} directly in your browser. 100% client-side execution with zero server uploads, complete privacy, no file size limits to server, and completely free forever.`;
+  const runtime =
+    tool.executionMode === 'local-wasm' ? 'WebAssembly' : 'browser JavaScript';
+  const route = tool.destinationUrl.split('?')[0]!;
+  const localModel = loadsLocalModel(route);
+  const cspHeader = contentSecurityPolicy({ localModel });
+
+  const metaTitle = `How to ${tool.name} in your browser — free, no upload`;
+  const metaDescription = `${tool.name} runs in your own browser tab. Your files and inputs never touch a server, no account is needed, and there is no paywall.`;
   const eyebrow = `${tool.category} / Free Browser Utility`;
   const heading = `How to ${tool.name} Online Without Uploading Your Files`;
-  const directAnswer = `To ${tool.name.toLowerCase()} online for free without uploading files: Open the OpenTools ${tool.name} workbench in your browser, load your input, and click execute. All processing runs entirely inside device memory using client-side ${tool.executionMode === 'local-wasm' ? 'WebAssembly' : 'browser JavaScript'}, with zero server uploads and an instantaneous download.`;
-  const leadParagraph = `${tool.name} gives you instant, operator-grade ${tool.category.toLowerCase()} processing right inside your browser tab. Unlike conventional online converters that upload your confidential files to remote cloud servers, this tool executes 100% locally on your device using native ${tool.executionMode === 'local-wasm' ? 'WebAssembly and typed memory buffers' : 'modern browser APIs'}. Zero bytes leave your machine.`;
+  const directAnswer = `To ${tool.name.toLowerCase()} without uploading anything: open the OpenTools ${tool.name} workbench, load your input, and run it. The work happens in the page itself using ${runtime}, and the result is saved straight from your browser to your own disk.`;
+  const leadParagraph = `${tool.name} runs inside your browser tab. Where a conventional online converter sends your file to its servers and returns a result, this tool reads the file in the page using ${tool.executionMode === 'local-wasm' ? 'WebAssembly and typed memory buffers' : 'the browser\x27s own APIs'}. Your files and inputs never touch a server.`;
 
-  const technicalArchitecture = `This utility leverages modern client-side sandboxing and offline-capable browser runtimes. By enforcing a strict Content Security Policy (connect-src \x27none\x27), your browser is cryptographically barred from transmitting document contents or metadata to any external server. Memory buffers are revoked immediately upon download, ensuring complete compliance with enterprise zero-trust security standards.`;
+  const technicalArchitecture = localModel
+    ? `This page is served with a Content Security Policy that allows network requests to this site only (connect-src \x27self\x27), because the background remover loads its model weights and WebAssembly runtime from this same site. No third-party origin is reachable, and your image is never sent anywhere — it is read into the page and processed there.`
+    : `This page is served with a Content Security Policy that blocks every network connection the page could make (connect-src \x27none\x27). Your browser will not send the file, its name or its contents to any server, including this one. The exact header is below.`;
 
   const diagramSvg = generateArchitectureDiagramSvg(
     tool.name,
     tool.executionMode,
+    localModel ? "connect-src 'self'" : "connect-src 'none'",
   );
 
   const steps: GuideStep[] = [
     {
-      name: `Launch the interactive ${tool.name} workbench`,
-      text: `Open the workspace in your browser. All required algorithms load into your local browser tab once—no remote software installation or account registration is ever required.`,
+      name: `Open the ${tool.name} workbench`,
+      text: `Open the workspace in your browser. The code it needs loads with the page — there is nothing to install and no account to create.`,
     },
     {
       name: `Provide your input files or parameters`,
-      text: `Select, drag, or configure your input. Files are read directly into device memory (RAM) and processed in milliseconds without incurring network transfer wait times.`,
+      text: `Select, drag, or configure your input. The file is read into the page and processed there, so there is no upload to wait for.`,
     },
     {
-      name: `Save your output instantly`,
-      text: `Preview the result and click download. The file is saved directly from local memory to your filesystem with zero data retention or tracking.`,
+      name: `Save your output`,
+      text: `Preview the result and click download. The file is written from the page straight to your disk; nothing is stored on a server.`,
     },
   ];
 
   const comparison: GuideComparisonRow[] = [
     {
-      aspect: 'Data Privacy & Egress',
-      localTools: '100% Local (0 bytes uploaded to any server)',
-      traditionalCloud: 'Files uploaded and processed on remote cloud servers',
+      aspect: 'Where your file goes',
+      localTools: 'Stays in the page; it never touches a server',
+      traditionalCloud: 'Uploaded to and processed on the provider’s servers',
     },
     {
-      aspect: 'Processing Speed',
-      localTools: 'Milliseconds (Instant in-memory execution)',
-      traditionalCloud: 'Queued behind remote upload and server queue delays',
+      aspect: 'Waiting to upload',
+      localTools: 'None — there is no upload step',
+      traditionalCloud: 'Upload time, then a place in the server queue',
     },
     {
-      aspect: 'Pricing & Paywalls',
-      localTools: '100% Free Forever (No paywalls or forced signups)',
-      traditionalCloud:
-        'Freemium traps, recurring subscriptions, or daily limits',
+      aspect: 'Price',
+      localTools: 'Free, with no paywall and no sign-up',
+      traditionalCloud: 'Often a free tier with daily limits or a subscription',
     },
     {
-      aspect: 'File Security & Retention',
-      localTools: 'Ephemeral RAM buffers zeroed after download',
-      traditionalCloud:
-        'Files stored on third-party disks with uncertain deletion',
+      aspect: 'Retention',
+      localTools: 'Nothing to retain; the file was never sent',
+      traditionalCloud: 'Stored on the provider’s disks under their policy',
     },
     {
-      aspect: 'Account & Tracking',
-      localTools: 'No account, no cookies, no email gate',
-      traditionalCloud: 'Mandatory email registration or invasive tracking ads',
+      aspect: 'Account & tracking',
+      localTools:
+        'No account, no third-party trackers, no client-side analytics',
+      traditionalCloud: 'Often an email sign-up and advertising trackers',
     },
   ];
 
   const faqs: GuideFaq[] = [
     {
       question: `Does ${tool.name} upload my files or data to any server?`,
-      answer: `No. Everything runs strictly inside your local browser tab. Our strict CSP (connect-src \x27none\x27) guarantees that your files, filenames, and parameters never leave your computer.`,
+      answer: `No. The work happens in the page you have open. ${localModel ? 'This page may fetch its own model and WebAssembly files from this site, and its Content Security Policy allows no other origin.' : 'This page is served with a Content Security Policy of connect-src \x27none\x27, so the browser will not let it open a network connection at all.'}`,
     },
     {
-      question: `Is ${tool.name} really 100% free?`,
-      answer: `Yes, completely free forever. There are no monthly subscriptions, usage limits, or hidden fees. You can optionally support independent open-source development if the tool brings you value.`,
+      question: `Is ${tool.name} free?`,
+      answer: `Yes. There is no paywall, no usage limit and no account. If the tool is useful to you, you can choose to support the project.`,
     },
     {
-      question: `Is it safe to use this tool for confidential legal or financial records?`,
-      answer: `Yes. Because zero data is sent across the internet and memory allocations are cleared on tab close or download, this architecture is suitable for sensitive enterprise and personal data.`,
+      question: `Can I use this for confidential legal or financial records?`,
+      answer: `Your file is not sent anywhere, so it is not exposed to this site or to a third party. What remains is your own device and browser — treat it the way your organisation's policy treats any local file.`,
     },
     {
-      question: `Why is local browser compute faster than cloud converters?`,
-      answer: `Cloud converters require waiting for large files to upload over your internet connection, wait in a server queue, and then download again. Local execution processes raw bytes directly in your device RAM at hardware speed.`,
+      question: `Does the site collect anything when I visit?`,
+      answer: `The server records one coarse metadata event per page visit (see the security policy for exactly what). There are no third-party trackers and no client-side analytics, and nothing from the tool itself — your files, inputs or results — is included.`,
     },
   ];
 
@@ -246,17 +262,15 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
           priceCurrency: 'USD',
         },
         featureList: [
-          '100% Client-Side In-Browser Execution',
-          'Zero Cloud Server Uploads',
-          'Zero-Egress Security Invariant',
-          'Instant Millisecond Output',
-          'Free Forever with No Signups',
+          'Runs in the browser tab',
+          'Your files and inputs never touch a server',
+          'No account and no paywall',
         ],
         about: semanticEntities,
       },
       {
         '@type': 'HowTo',
-        name: `How to ${tool.name} Online Free`,
+        name: `How to ${tool.name} in your browser`,
         description: directAnswer,
         step: steps.map((step, index) => ({
           '@type': 'HowToStep',
@@ -317,6 +331,7 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
     directAnswer,
     leadParagraph,
     technicalArchitecture,
+    cspHeader,
     diagramSvg,
     steps,
     comparison,
@@ -327,8 +342,9 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   };
 }
 
+/** Undefined when no live tool answers this slug, so the page can 404. */
 export function getGuideBySlug(slug: string): ToolGuideData | undefined {
-  const tool = getToolBySlug(slug);
+  const tool = getLiveToolBySlug(slug);
   if (!tool) return undefined;
   return generateToolGuide(tool);
 }

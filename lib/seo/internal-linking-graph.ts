@@ -1,9 +1,9 @@
+import type { ToolCatalogEntry } from './tool-catalog-data';
 import {
-  type ToolCatalogEntry,
-  getToolBySlug,
-  getToolsByCategory,
-  getAllCategories,
-} from './tool-catalog-data';
+  getLiveCategories,
+  getLiveToolBySlug,
+  getLiveToolsByCategory,
+} from './live-tools';
 
 export interface CategoryPillarInfo {
   name: string;
@@ -24,48 +24,50 @@ export function toCategorySlug(category: string): string {
 const CATEGORY_SLUG_MAP = new Map<string, string>();
 const SLUG_TO_CATEGORY_MAP = new Map<string, string>();
 
-for (const cat of getAllCategories()) {
+for (const cat of getLiveCategories()) {
   const slug = toCategorySlug(cat);
   CATEGORY_SLUG_MAP.set(cat, slug);
   SLUG_TO_CATEGORY_MAP.set(slug, cat);
 }
 
+/**
+ * One plain sentence per category, describing only what the live tools in it
+ * actually do. No speed, egress or offline claims here (AGENTS.md truth rules);
+ * privacy wording follows docs/DECISION_LOG.md §6.
+ */
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  PDF: 'Industrial-grade local PDF manipulation tools. Merge, split, compress, flatten form fields, extract pages, and convert documents directly in-browser with zero server uploads.',
+  PDF: 'Merge PDFs, extract pages, build a PDF from images, and rotate, reorder, delete, number, watermark or retitle pages in your browser.',
   Image:
-    'Fast, private image editors, format converters, background removers, compressors, and EXIF scrubbers running entirely on your GPU and device memory.',
-  Video:
-    'In-browser video trimmers, frame extractors, aspect-ratio reframers, and subtitle converters operating with zero network egress.',
-  Audio:
-    'Web Audio API converters, precision sound trimmers, and video-to-audio extractors delivering sub-second audio processing with zero cloud data transfer.',
+    'Resize, compress and convert images, crop and rotate them, and make a plain-colour background transparent.',
+  Audio: 'Trim a WAV file to the section you want.',
   'Documents and Office':
-    'Client-side document inspectors, format converters, Markdown editors, and office file processors running locally in WebAssembly.',
+    'Inspect and convert document text: Markdown, HTML, plain text and structured document fields.',
   'Spreadsheet and Data':
-    'Tabular data workbench for CSV cleaning, reshaping, JSON serialization, and column deduplication with zero database retention.',
+    'Clean and reshape tabular data: CSV to JSON, column edits, deduplication and format conversion.',
   'Archive and File':
-    'High-security client-side file tools featuring local archive extraction, compression, packaging, and validation with zero data egress.',
+    'File utilities: hashes and checksums, size and type inspection, filename and path handling.',
   'Text and Writing':
-    'Precision typographic converters, case normalizers, word counters, text diff checkers, and privacy-preserving writing aids.',
+    'Case conversion, word and character counts, text comparison, cleanup and formatting helpers.',
   'Developer and Data':
-    'Essential developer utilities: Base64 encoding, JWT inspection, UUID v4 generation, and Unix timestamp conversion with no client-side telemetry.',
+    'Base64, UUIDs, Unix timestamps, hashes, JSON and SQL formatting, and other everyday developer conversions.',
   'Web and SEO':
-    'Client-side webmaster utilities: robots.txt generators, meta tag creators, OpenGraph previewers, and URL encoders.',
+    'robots.txt and meta tag builders, Open Graph previews, URL encoding and other webmaster helpers.',
   'QR and Barcode':
-    'Vector SVG QR code card generators, print-ready frames, MeCard contact codes, and direct payment barcodes.',
+    'QR codes for links, contacts, Wi-Fi and payments, plus common barcode formats, rendered as SVG.',
   'Math and Units':
-    'Scientific arithmetic, percentage calculators, aspect ratio tools, and unit converters running in hardware floating-point precision.',
+    'Percentages, ratios, unit conversion and everyday arithmetic calculators.',
   'Finance and Business':
-    'Loan amortization calculators, freelance invoice makers, compound interest projectors, and tax estimation tools with zero cloud financial retention.',
+    'Loan and EMI schedules, compound interest, invoices, margins and tax estimates.',
   'Date Time and Productivity':
-    'Chrono-utilities: date difference finders, age calculators, work day adders, timezone comparison tools, and birthday number arithmetic.',
+    'Date differences, age, working days, timezone comparison and birthday number arithmetic.',
   'Health and Fitness':
-    'Formula calculators for BMI, BMR, TDEE, and ideal body weight estimates. Results only, not medical advice; inputs stay on your device.',
+    'BMI, BMR, TDEE and ideal body weight formula results. Numbers only, not medical advice.',
   'Science and Education':
-    'Interactive periodic table, molecular weight calculator, scientific unit conversion, and physics formulas.',
+    'Periodic table lookup, molecular weight, scientific unit conversion and physics formulas.',
   'India and Life Admin':
-    'Specialized life administration tools: IFSC lookup, PIN code directories, HRA exemption calculators, and rent receipt generators.',
+    'IFSC and PIN code lookup, HRA exemption, rent receipts and similar paperwork helpers.',
   'Creator and Social':
-    'Creator toolkit: caption line breakers, hashtag deduplicators, sponsorship CPM calculators, and platform profile QR codes.',
+    'Caption and hashtag helpers, CPM and engagement maths, and profile QR codes.',
 };
 
 export function getCategoryBySlug(slug: string): string | undefined {
@@ -78,10 +80,10 @@ export function getCategoryPillar(
   const slug = CATEGORY_SLUG_MAP.get(categoryName);
   if (!slug) return undefined;
 
-  const tools = getToolsByCategory(categoryName);
+  const tools = getLiveToolsByCategory(categoryName);
   const description =
     CATEGORY_DESCRIPTIONS[categoryName] ??
-    `Comprehensive in-browser utilities for ${categoryName.toLowerCase()} tasks with zero server uploads.`;
+    `In-browser utilities for ${categoryName.toLowerCase()} tasks.`;
 
   return {
     name: categoryName,
@@ -94,7 +96,7 @@ export function getCategoryPillar(
 }
 
 export function getAllCategoryPillars(): readonly CategoryPillarInfo[] {
-  return getAllCategories().map((cat) => getCategoryPillar(cat)!);
+  return getLiveCategories().map((cat) => getCategoryPillar(cat)!);
 }
 
 export interface RelatedToolLink {
@@ -107,10 +109,10 @@ export function getRelatedToolLinks(
   currentSlug: string,
   count = 4,
 ): readonly RelatedToolLink[] {
-  const current = getToolBySlug(currentSlug);
+  const current = getLiveToolBySlug(currentSlug);
   if (!current) return [];
 
-  const categoryTools = getToolsByCategory(current.category).filter(
+  const categoryTools = getLiveToolsByCategory(current.category).filter(
     (t) => t.slug !== currentSlug,
   );
 
@@ -139,18 +141,11 @@ export function getRelatedToolLinks(
 
   scored.sort((a, b) => b.score - a.score || a.tool.rank - b.tool.rank);
 
-  return scored.slice(0, count).map(({ tool }) => {
-    let relationship = 'Next step in workflow';
-    if (tool.name.includes('Convert') || tool.name.includes('To')) {
-      relationship = 'Alternative format conversion';
-    } else if (tool.releaseWave === 'P0') {
-      relationship = 'Frequently paired utility';
-    }
-
-    return {
-      tool,
-      guideHref: `/guides/${tool.slug}`,
-      relationship,
-    };
-  });
+  // The label states where the tool sits in the catalog. Nothing here measures
+  // how people actually use it, so it must not imply that it does.
+  return scored.slice(0, count).map(({ tool }) => ({
+    tool,
+    guideHref: `/guides/${tool.slug}`,
+    relationship: `Also in ${tool.category}`,
+  }));
 }

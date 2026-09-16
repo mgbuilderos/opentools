@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
+import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 
@@ -7,14 +7,15 @@ export const dynamic = 'force-static';
 
 export async function GET() {
   const lines = [
-    `# OpenTools Full Machine-Readable Catalog (1,000 Tools)`,
+    `# OpenTools machine-readable catalog (${LIVE_TOOL_CATALOG.length} working tools)`,
     `# Canonical URL: ${baseUrl}`,
-    `# Privacy Standard: 100% Client-Side In-Browser Computation (Zero Egress)`,
-    `# Format: ID | Name | Category | Interactive URL | Guide URL | Risk Tier | Execution Mode`,
+    `# Every tool below runs in the visitor's own browser tab. Files and inputs`,
+    `# are not sent to a server. Only tools that work are listed.`,
+    `# Format: ID | Name | Category | Tool URL | Guide URL | Execution mode`,
     ``,
-    ...TOOL_CATALOG.map(
+    ...LIVE_TOOL_CATALOG.map(
       (t) =>
-        `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${baseUrl}/guides/${t.slug} | ${t.riskTier} | ${t.executionMode}`,
+        `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${baseUrl}/guides/${t.slug} | ${t.executionMode}`,
     ),
   ];
 

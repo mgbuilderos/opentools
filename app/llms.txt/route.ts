@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllBlogPosts } from '@/lib/seo/blog-data';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
-import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
+import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 
@@ -9,40 +9,41 @@ export const dynamic = 'force-static';
 
 export async function GET() {
   const pillars = getAllCategoryPillars();
-  const topTools = TOOL_CATALOG.filter(
+  const topTools = LIVE_TOOL_CATALOG.filter(
     (t) => t.releaseWave === 'P0' || t.rank <= 3,
   ).slice(0, 30);
   const blogPosts = getAllBlogPosts().slice(0, 20);
 
   const lines = [
-    `# OpenTools — 100% In-Browser Privacy Tools`,
+    `# OpenTools — tools that run in your browser`,
     ``,
-    `> OpenTools (${baseUrl}) is an open-source, zero-egress web platform providing 1,000+ developer, document, audio, video, image, and data utilities that run 100% client-side inside the user's browser. Zero files or data are ever uploaded to remote servers.`,
+    `> OpenTools (${baseUrl}) is an open-source web app with ${LIVE_TOOL_CATALOG.length} document, image, data, developer and calculator utilities. Each one runs in the visitor's own browser tab: the file or input is read by the page and never sent to a server. Only tools that actually work are listed here.`,
     ``,
-    `## Core Architecture & Security Invariants`,
-    `- **100% Client-Side Execution**: All processing executes locally via WebAssembly (WASM), Web Workers, and native browser APIs.`,
-    `- **Zero-Egress Privacy**: No document, image, audio, or parameter data is transmitted across the network.`,
-    `- **Zero Cloud Retention**: Files remain in ephemeral device memory (RAM) and are revoked immediately upon download.`,
-    `- **Free Forever**: No paywalls, subscription gates, or forced account registration.`,
+    `## How it works`,
+    `- **Runs in the page**: processing happens in the browser tab using JavaScript, WebAssembly and Web Workers.`,
+    `- **Your files and inputs never touch a server**: most routes are served with \`connect-src 'none'\`, so the page cannot open a network connection at all. The background remover is the one exception: it may fetch its model and WebAssembly runtime from this same site (\`connect-src 'self'\`), never from a third party.`,
+    `- **Visit logging**: the server records one coarse metadata event per page visit; the repository's SECURITY.md lists the exact fields. There are no third-party trackers and no client-side analytics.`,
+    `- **No account, no paywall.**`,
     ``,
-    `## Tool Categories & Hubs`,
+    `## Tool categories`,
     ...pillars.map(
-      (p) => `- [${p.name}](${baseUrl}${p.href}): ${p.description}`,
+      (p) =>
+        `- [${p.name}](${baseUrl}${p.href}) — ${p.toolCount} ${p.toolCount === 1 ? 'tool' : 'tools'}: ${p.description}`,
     ),
     ``,
-    `## Engineering Playbooks & Blog Articles`,
+    `## Articles`,
     ...blogPosts.map(
       (b) => `- [${b.title}](${baseUrl}/blog/${b.slug}): ${b.summary}`,
     ),
     ``,
-    `## Featured Evergreen Tools & Workbenches`,
+    `## Featured tools`,
     ...topTools.map(
       (t) =>
-        `- [${t.name}](${baseUrl}${t.destinationUrl}): In-browser ${t.category.toLowerCase()} utility. Guide: ${baseUrl}/guides/${t.slug}`,
+        `- [${t.name}](${baseUrl}${t.destinationUrl}): in-browser ${t.category.toLowerCase()} utility. Guide: ${baseUrl}/guides/${t.slug}`,
     ),
     ``,
-    `## Full Catalog Specification`,
-    `For the complete machine-readable index of all 1,000 tools, retrieve: ${baseUrl}/llms-full.txt`,
+    `## Full catalog`,
+    `The complete machine-readable index of all ${LIVE_TOOL_CATALOG.length} working tools: ${baseUrl}/llms-full.txt`,
   ];
 
   return new NextResponse(lines.join('\n'), {

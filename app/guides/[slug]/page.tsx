@@ -12,7 +12,7 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getGuideBySlug } from '@/lib/seo/guide-content';
-import { TOOL_CATALOG } from '@/lib/seo/tool-catalog-data';
+import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 interface GuidePageProps {
   params: Promise<{ slug: string }>;
@@ -21,7 +21,7 @@ interface GuidePageProps {
 const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 
 export async function generateStaticParams() {
-  return TOOL_CATALOG.filter((t) => t.releaseWave === 'P0' || t.rank <= 5)
+  return LIVE_TOOL_CATALOG.filter((t) => t.releaseWave === 'P0' || t.rank <= 5)
     .slice(0, 50)
     .map((tool) => ({ slug: tool.slug }));
 }
@@ -103,14 +103,14 @@ export default async function GuidePage({ params }: GuidePageProps) {
                   aria-hidden="true"
                   className="size-3.5 text-success"
                 />
-                Zero Cloud Egress
+                Never uploaded
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-mono text-muted-foreground">
                 <Cpu aria-hidden="true" className="size-3.5" />
                 {guide.tool.executionMode}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
-                100% Free Forever
+                Free, no account
               </span>
             </div>
 
@@ -164,32 +164,32 @@ export default async function GuidePage({ params }: GuidePageProps) {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="rounded-xl border bg-card p-4">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Execution
+                  Runs on
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <Cpu aria-hidden="true" className="size-4" />
-                  Local Browser RAM
+                  Your browser
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Server Upload
+                  Server upload
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <ShieldCheck
                     aria-hidden="true"
                     className="size-4 text-success"
                   />
-                  0 Cloud Egress
+                  None
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Speed
+                  Account
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <Zap aria-hidden="true" className="size-4 text-success" />
-                  Sub-second
+                  Not required
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
@@ -198,7 +198,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                   <LockKeyhole aria-hidden="true" className="size-4" />
-                  $0 / No Paywall
+                  Free, no paywall
                 </p>
               </div>
             </div>
@@ -210,8 +210,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
               How to use {guide.tool.name} in 3 simple steps
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Follow this step-by-step operator guide to process your files
-              securely with zero cloud exposure.
+              Three steps, all of them inside this browser tab.
             </p>
 
             <div className="mt-6 space-y-4">
@@ -240,8 +239,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
               Local Browser Compute vs. Traditional Cloud Converters
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Why running tools client-side in WebAssembly is faster and
-              completely leak-proof.
+              What changes when the tool runs in your own tab instead of on
+              someone else&apos;s server.
             </p>
 
             <div className="mt-6 overflow-x-auto rounded-xl border bg-card">
@@ -290,7 +289,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
           {/* Technical Architecture & Visual Flowchart */}
           <section className="mt-12 rounded-xl border bg-muted/40 p-6 sm:p-8">
             <h2 className="text-xl font-semibold tracking-[-0.03em]">
-              Security Architecture &amp; Invariant Guarantees
+              How this page is locked down
             </h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
               {guide.technicalArchitecture}
@@ -303,11 +302,12 @@ export default async function GuidePage({ params }: GuidePageProps) {
               />
             </div>
 
-            <div className="mt-5 rounded-lg border bg-card p-4 font-mono text-xs">
-              <span className="text-muted-foreground">CSP Header: </span>
+            <div className="mt-5 overflow-x-auto rounded-lg border bg-card p-4 font-mono text-xs">
+              <span className="text-muted-foreground">
+                Content-Security-Policy:{' '}
+              </span>
               <span className="font-semibold text-foreground">
-                default-src &apos;self&apos;; connect-src &apos;none&apos;;
-                object-src &apos;none&apos;;
+                {guide.cspHeader}
               </span>
             </div>
           </section>
@@ -320,7 +320,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                   Related {guide.tool.category} Utilities
                 </h2>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Common next steps and complementary client-side operations.
+                  Other {guide.tool.category} tools that run the same way.
                 </p>
               </div>
               {guide.categoryPillar ? (
@@ -349,8 +349,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                    {rel.tool.notes ||
-                      `Run ${rel.tool.name.toLowerCase()} locally in your browser tab.`}
+                    Run {rel.tool.name.toLowerCase()} in your browser tab.
                   </p>
                   <p className="mt-2 text-[11px] font-mono text-muted-foreground">
                     {rel.relationship} →
@@ -386,8 +385,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
               Ready to use {guide.tool.name}?
             </h2>
             <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
-              Open the interactive workspace directly in your browser. Free
-              forever, no registration, 100% private.
+              Open the workspace in your browser. No account, no paywall, and
+              your file never leaves the page.
             </p>
             <div className="mt-5 flex justify-center">
               <a
@@ -398,7 +397,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
                 )}
                 aria-label={`Start using ${guide.tool.name} free`}
               >
-                Start Using {guide.tool.name} Free
+                Open {guide.tool.name}
                 <ArrowRight aria-hidden="true" className="size-4" />
               </a>
             </div>

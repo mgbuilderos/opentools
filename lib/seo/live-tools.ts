@@ -110,3 +110,22 @@ export function isLiveToolUrl(url: string) {
 /** Catalog entries whose guide leads to a working tool. */
 export const LIVE_TOOL_CATALOG: readonly ToolCatalogEntry[] =
   TOOL_CATALOG.filter((tool) => isLiveToolUrl(tool.destinationUrl));
+
+const LIVE_TOOL_BY_SLUG: ReadonlyMap<string, ToolCatalogEntry> = new Map(
+  LIVE_TOOL_CATALOG.map((tool) => [tool.slug, tool]),
+);
+
+/** The tool behind a guide slug, or undefined when that tool is not live. */
+export function getLiveToolBySlug(slug: string) {
+  return LIVE_TOOL_BY_SLUG.get(slug);
+}
+
+/** Live tools in a category; empty when the category has none left. */
+export function getLiveToolsByCategory(category: string) {
+  return LIVE_TOOL_CATALOG.filter((tool) => tool.category === category);
+}
+
+/** Categories that still have at least one live tool. */
+export function getLiveCategories(): string[] {
+  return [...new Set(LIVE_TOOL_CATALOG.map((tool) => tool.category))];
+}
