@@ -8,7 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Zero Server Egress](https://img.shields.io/badge/Server%20Egress-0%20bytes-2ea44f.svg)](.github/SECURITY.md)
-[![Tests](https://img.shields.io/badge/Tests-292%20passing-2ea44f.svg)](#local-development--quality-control)
+[![Tests](https://img.shields.io/badge/Tests-317%20passing-2ea44f.svg)](#local-development--quality-control)
 [![Client-Side WebAssembly](https://img.shields.io/badge/Runtime-Client--Side%20WASM-654ff0.svg)](#the-zero-egress-privacy-promise)
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/opentools)
 
@@ -30,7 +30,7 @@ happens in-memory on your device.
 | Layer            | How it stays local                                                                                                                                                                                                                                  |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Input**        | Files are read as in-memory `File` / `ArrayBuffer` objects. Nothing is written to a server or to persistent storage.                                                                                                                                |
-| **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. AI tools (background removal, upscaling, transcription) run **WebAssembly / WebGL** inference in the tab. Hashing uses **WebCrypto**. |
+| **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. Background removal runs **WebAssembly** model inference in a Web Worker. Hashing uses **WebCrypto**. |
 | **Output**       | Results are handed back as temporary `blob:` URLs and revoked on clear, cancel, or unmount.                                                                                                                                                         |
 | **Enforcement**  | Production responses ship `Content-Security-Policy: connect-src 'none'`, and the test suite rejects direct network primitives in local engine code.                                                                                                 |
 | **Visit log**    | No analytics, session replay, advertising, or payment SDK is loaded in the browser. The server logs one metadata event per page visit, never your files or inputs — see [What the server logs](#what-the-server-logs). |
@@ -68,7 +68,7 @@ Cloudflare may also record standard request metadata for its platform logs.
 | Suite                      | Tools                                                                                                                                          | Routes                                                                      |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | 📄 **Document & PDF**      | Merge, extract pages, rotate & page tools, images → PDF                                                                                        | `/pdf/merge`, `/pdf/extract-pages`, `/pdf/page-tools`, `/pdf/images-to-pdf` |
-| 🖼️ **Image & Media**       | Background removal, optimizer (resize/compress/convert), AI upscaler, editor, audio transcription · _OCR and video compression in development_ | `/image/*`, `/audio/transcribe`                                             |
+| 🖼️ **Image & Media**       | Background removal, optimizer (resize/compress/convert), editor · _OCR and video compression in development_                                   | `/image/*`                                                                  |
 | ⚡ **Developer Utilities** | JSON formatter, Base64 encoder/decoder, UNIX timestamp, UUID generator, file hash (SHA-256/384/512) · _SQL visualizer in development_          | `/developer/*`, `/data/json`, `/file/hash-calculator`                       |
 | 📊 **Data & Spreadsheets** | CSV ↔ JSON transformer, delimiter conversion                                                                                                   | `/data/csv-to-json`, `/data/workbench`                                      |
 | 🔤 **Text & Writing**      | Word count, case converter, regex find & replace                                                                                               | `/text/case-converter`, `/text/workbench`                                   |
@@ -118,7 +118,7 @@ npm run build      # production build (Cloudflare Workers output in dist/)
 `npm run qc` runs the fail-fast gates in order:
 
 1. **Format** — `oxfmt --check`
-2. **Unit + all-operation I/O** — 292 Vitest tests, including local-source zero-egress policy checks
+2. **Unit + all-operation I/O** — 317 Vitest tests, including local-source zero-egress policy checks
 3. **Type check** — `tsc --noEmit`
 4. **Lint** — OxLint with warnings denied
 5. **Design system contract** — semantic Tailwind tokens only
@@ -131,7 +131,7 @@ npm run build      # production build (Cloudflare Workers output in dist/)
 ### Tech stack
 
 Vinext (Next.js API on Vite) · React 19 · Tailwind CSS v4 · Base UI ·
-`pdf-lib` · ONNX Runtime Web · `@xenova/transformers` · TensorFlow.js · Web Workers ·
+`pdf-lib` · ONNX Runtime Web · Web Workers ·
 Cloudflare Workers.
 
 ### Project layout
@@ -147,8 +147,8 @@ release/      checked-in SBOM
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. In
-short:
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[owner decision log](docs/DECISION_LOG.md) first. In short:
 
 - Tools must never make network requests with user data, and must never add
   client-side analytics or tracking. The only server-side log is the

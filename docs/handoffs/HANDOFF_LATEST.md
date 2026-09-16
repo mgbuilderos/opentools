@@ -22,7 +22,7 @@
 
 ## 2. Non-Negotiable System Invariants
 
-Every agent modifying this codebase must uphold these four cardinal invariants:
+Every agent modifying this codebase must uphold these five cardinal invariants:
 
 1. **Zero Network Egress (`connect-src \x27none\x27`)**:
    - The Content Security Policy in `next.config.ts` forbids network connections.
@@ -40,6 +40,11 @@ Every agent modifying this codebase must uphold these four cardinal invariants:
    - In-memory compute over disk I/O; typed arrays (`Uint8Array`, `Float32Array`) over dynamic objects.
    - Zero-copy buffer transfer in Web Workers via `toTransferableBuffer()`.
    - Static candidate indexing in `catalog.ts` avoiding per-keystroke heap allocations.
+5. **Owner Decisions Override Plans** (`docs/DECISION_LOG.md`):
+   - Read `docs/DECISION_LOG.md` before adding or restoring any tool. Entries there are owner decisions and override catalog entries, roadmaps and agent plans.
+   - **No astrology tools** (Kundali, Panchang, Lagna, Nakshatra, charts, muhurat, etc.). Numerology is limited to birthday arithmetic (life path, birth, personal year) with numbers only — no meanings or predictions.
+   - **No health advice**: health calculators show formula results only with a "not medical advice" note — no classifications, "healthy" ranges, calorie targets or hydration recommendations.
+   - **No tool that fakes its output**: a tool must genuinely process the user's input locally, load every asset from this site, and have tests proving it.
 
 ---
 
@@ -68,7 +73,7 @@ Every agent modifying this codebase must uphold these four cardinal invariants:
 
 ### D. Media & Video Tooling & Turnkey Deployment
 
-- **Video to Animated GIF (`video-to-gif`)** (`creator-workbench.ts`): Client-side animated GIF89a encoder with LZW bitstream compression, 256-color deterministic palette quantization, loop extensions, configurable FPS (5, 10, 15), max width (240, 320, 480), and duration limits.
+- **Removed 2026-09-17 (owner decision, `docs/DECISION_LOG.md`)**: `video-to-gif` returned synthetic frames rather than frames from the video, `audio-format-converter` and `video-to-audio-extractor` returned a generated 440 Hz tone, and `exact-kb-image-compressor` only calculated a plan. `/audio/transcribe` and `/image/upscaler` were also removed because their remote model downloads are blocked by the CSP. Do not restore them without real local processing and tests.
 - **Production Deployment Configuration**: Added `"deploy": "wrangler deploy --config dist/server/wrangler.json"` to `package.json` for 1-command deployment to Cloudflare Pages / Workers.
 
 ---

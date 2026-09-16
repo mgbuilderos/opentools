@@ -737,7 +737,7 @@ Formatting agile requirements using the industry-standard **Gherkin Behavior-Dri
       'free invoice generator no sign up',
       'create invoice online free pdf',
       'freelance agency invoice maker',
-      'private invoice generator no tracking',
+      'private invoice generator no uploads',
       'simple invoice creator online',
     ],
     category: 'Finance & Business',

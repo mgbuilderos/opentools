@@ -47,7 +47,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   'Text and Writing':
     'Precision typographic converters, case normalizers, word counters, text diff checkers, and privacy-preserving writing aids.',
   'Developer and Data':
-    'Essential developer utilities: Base64 encoding, JWT inspection, UUID v4 generation, and Unix timestamp conversion with zero telemetry.',
+    'Essential developer utilities: Base64 encoding, JWT inspection, UUID v4 generation, and Unix timestamp conversion with no client-side telemetry.',
   'Web and SEO':
     'Client-side webmaster utilities: robots.txt generators, meta tag creators, OpenGraph previewers, and URL encoders.',
   'QR and Barcode':
@@ -57,15 +57,13 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   'Finance and Business':
     'Loan amortization calculators, freelance invoice makers, compound interest projectors, and tax estimation tools with zero cloud financial retention.',
   'Date Time and Productivity':
-    'Chrono-utilities: date difference finders, age calculators, work day adders, and timezone comparison tools.',
+    'Chrono-utilities: date difference finders, age calculators, work day adders, timezone comparison tools, and birthday number arithmetic.',
   'Health and Fitness':
-    'Health and fitness metrics calculators: BMI, BMR, TDEE, macronutrient splitters, and hydration trackers with zero personal data leakage.',
+    'Formula calculators for BMI, BMR, TDEE, and ideal body weight estimates. Results only, not medical advice; inputs stay on your device.',
   'Science and Education':
     'Interactive periodic table, molecular weight calculator, scientific unit conversion, and physics formulas.',
   'India and Life Admin':
     'Specialized life administration tools: IFSC lookup, PIN code directories, HRA exemption calculators, and rent receipt generators.',
-  'Astrology and Numerology':
-    'Local ephemeris calculators, planetary hour tracking, and numerology charts computed 100% in JavaScript.',
   'Creator and Social':
     'Creator toolkit: caption line breakers, hashtag deduplicators, sponsorship CPM calculators, and platform profile QR codes.',
 };

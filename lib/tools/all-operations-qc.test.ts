@@ -106,11 +106,40 @@ const fileFixtures: readonly LocalFileInput[] = [
 const onePixelPng =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 
+function tinyPcmWav() {
+  const sampleRate = 8000;
+  const dataSize = sampleRate * 2;
+  const wav = Buffer.alloc(44 + dataSize);
+  wav.write('RIFF', 0);
+  wav.writeUInt32LE(36 + dataSize, 4);
+  wav.write('WAVE', 8);
+  wav.write('fmt ', 12);
+  wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20);
+  wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(sampleRate, 24);
+  wav.writeUInt32LE(sampleRate * 2, 28);
+  wav.writeUInt16LE(2, 32);
+  wav.writeUInt16LE(16, 34);
+  wav.write('data', 36);
+  wav.writeUInt32LE(dataSize, 40);
+  return `data:audio/wav;base64,${wav.toString('base64')}`;
+}
+
+function isAudioFileField(field: QcOperation['fields'][number]) {
+  const accept = (field as { accept?: string }).accept ?? '';
+  return /wav|audio/iu.test(`${field.label} ${accept}`);
+}
+
 function defaultValues(operation: QcOperation) {
   return Object.fromEntries(
     operation.fields.map((field) => [
       field.id,
-      field.type === 'file' ? onePixelPng : field.defaultValue,
+      field.type === 'file'
+        ? isAudioFileField(field)
+          ? tinyPcmWav()
+          : onePixelPng
+        : field.defaultValue,
     ]),
   );
 }
@@ -250,7 +279,7 @@ describe('exhaustive workbench input/output QC', () => {
   it('keeps every field contract complete and internally valid', () => {
     const allOperations = suites.flatMap((suite) => suite.operations);
 
-    expect(allOperations).toHaveLength(595);
+    expect(allOperations).toHaveLength(582);
     for (const suite of suites) {
       expect(new Set(suite.operations.map(({ id }) => id)).size).toBe(
         suite.operations.length,
@@ -352,7 +381,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 605 operation-level tool destinations', () => {
+  it('accounts for all 632 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -375,7 +404,7 @@ describe('exhaustive workbench input/output QC', () => {
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(645);
+    expect(expectedDestinations).toHaveLength(632);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

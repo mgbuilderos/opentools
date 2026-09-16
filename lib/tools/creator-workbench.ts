@@ -506,47 +506,15 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
     ],
   },
   {
-    id: 'audio-format-converter',
-    name: 'Audio format converter',
-    description:
-      'Transcode audio inputs to clean uncompressed 16-bit PCM WAV locally in-memory.',
-    notice:
-      'Zero remote egress. Decodes audio inputs and serializes clean uncompressed 16-bit PCM WAV in your browser.',
-    outputExtension: 'wav',
-    fields: [
-      file(
-        'audio',
-        'Audio file (WAV, MP3, OGG, M4A, FLAC)',
-        'audio/*,.wav,.mp3,.ogg,.m4a,.flac',
-      ),
-      select('targetFormat', 'Target format', [
-        { value: 'wav', label: '16-bit PCM WAV (.wav)' },
-      ]),
-      select('sampleRate', 'Output sample rate', [
-        { value: '44100', label: '44,100 Hz (CD quality)' },
-        { value: '48000', label: '48,000 Hz (Studio/Broadcast)' },
-        { value: '22050', label: '22,050 Hz (Speech/Compact)' },
-      ]),
-      select('channels', 'Channels', [
-        { value: 'stereo', label: 'Stereo (2 channels)' },
-        { value: 'mono', label: 'Mono (1 channel)' },
-      ]),
-    ],
-  },
-  {
     id: 'audio-trimmer',
     name: 'Audio trimmer & cutter',
     description:
       'Trim start/end timestamps, adjust gain, and apply anti-pop crossfades.',
     notice:
-      'Zero remote egress. Edits and exports 16-bit PCM WAV clips directly in this tab.',
+      'Zero remote egress. Trims uncompressed PCM WAV files and exports WAV clips in this tab. Other audio formats are not supported.',
     outputExtension: 'wav',
     fields: [
-      file(
-        'audio',
-        'Audio file (WAV, MP3, OGG, M4A)',
-        'audio/*,.wav,.mp3,.ogg,.m4a',
-      ),
+      file('audio', 'WAV audio file (uncompressed PCM)', 'audio/wav,.wav'),
       text('start', 'Start timestamp (seconds or M:SS)', '0:00'),
       text(
         'end',
@@ -559,30 +527,6 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
         { value: 'fade-in', label: 'Fade in only (50ms)' },
         { value: 'fade-out', label: 'Fade out only (50ms)' },
         { value: 'none', label: 'No fade' },
-      ]),
-    ],
-  },
-  {
-    id: 'video-to-audio-extractor',
-    name: 'Video to audio extractor',
-    description:
-      'Extract soundtracks from MP4, MOV, WebM, and MKV containers into clean WAV.',
-    notice:
-      'Zero remote egress. Demuxes and exports uncompressed 16-bit PCM audio locally.',
-    outputExtension: 'wav',
-    fields: [
-      file(
-        'video',
-        'Video file (MP4, MOV, WebM, MKV)',
-        'video/*,.mp4,.mov,.webm,.mkv',
-      ),
-      select('sampleRate', 'Output sample rate', [
-        { value: '44100', label: '44,100 Hz' },
-        { value: '48000', label: '48,000 Hz' },
-      ]),
-      select('channels', 'Channels', [
-        { value: 'stereo', label: 'Stereo (2 channels)' },
-        { value: 'mono', label: 'Mono (1 channel)' },
       ]),
     ],
   },
@@ -609,29 +553,6 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
         'Timestamp shift in seconds (e.g. 1.5, -0.5, or 0)',
         '0.0',
       ),
-    ],
-  },
-  {
-    id: 'video-to-gif',
-    name: 'Video to animated GIF',
-    description:
-      'Convert short video clips into lightweight, animated loop GIFs locally in-browser.',
-    notice:
-      'Zero remote egress. Samples video frames and encodes an animated GIF89a file directly in this tab.',
-    outputExtension: 'gif',
-    fields: [
-      file('video', 'Video file (MP4, WebM, MOV)', 'video/*,.mp4,.webm,.mov'),
-      select('fps', 'Frame rate (FPS)', [
-        { value: '10', label: '10 fps (Balanced)' },
-        { value: '5', label: '5 fps (Compact / Small file)' },
-        { value: '15', label: '15 fps (Smooth)' },
-      ]),
-      select('width', 'Max width', [
-        { value: '320', label: '320 px (Compact)' },
-        { value: '480', label: '480 px (Standard)' },
-        { value: '240', label: '240 px (Thumbnail)' },
-      ]),
-      number('duration', 'Duration limit (seconds)', '3'),
     ],
   },
   {
@@ -743,23 +664,6 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
         { value: 'end', label: 'End' },
       ]),
       number('gap', 'Gap (px)', '16'),
-    ],
-  },
-  {
-    id: 'exact-kb-image-compressor',
-    name: 'Exact-KB image target size compressor',
-    description:
-      'Calculate optimal compression quality, dimension scaling, and byte budget to fit strict portal upload limits (e.g. < 50KB / < 100KB / < 200KB).',
-    outputExtension: 'txt',
-    fields: [
-      number('targetKb', 'Target maximum size (KB)', '100'),
-      number('originalKb', 'Current / Original size (KB)', '850'),
-      number('width', 'Image width (px)', '1920'),
-      number('height', 'Image height (px)', '1080'),
-      select('format', 'Target format', [
-        { value: 'image/jpeg', label: 'JPEG (.jpg)' },
-        { value: 'image/webp', label: 'WebP (.webp)' },
-      ]),
     ],
   },
   {
@@ -1199,43 +1103,6 @@ function encodePcmWav(
   return `data:audio/wav;base64,${base64}`;
 }
 
-function generateSineTone(
-  durationSeconds: number,
-  frequency = 440,
-  sampleRate = 44100,
-  numChannels = 1,
-): Float32Array[] {
-  const numSamples = Math.max(1, Math.floor(durationSeconds * sampleRate));
-  const channels: Float32Array[] = [];
-  for (let ch = 0; ch < numChannels; ch++) {
-    const data = new Float32Array(numSamples);
-    for (let i = 0; i < numSamples; i++) {
-      data[i] = 0.5 * Math.sin((2 * Math.PI * frequency * i) / sampleRate);
-    }
-    channels.push(data);
-  }
-  return channels;
-}
-
-function resample(
-  source: Float32Array,
-  inRate: number,
-  outRate: number,
-): Float32Array {
-  if (inRate === outRate || source.length === 0) return source;
-  const ratio = inRate / outRate;
-  const outLength = Math.max(1, Math.round(source.length / ratio));
-  const result = new Float32Array(outLength);
-  for (let i = 0; i < outLength; i++) {
-    const srcIndex = i * ratio;
-    const i0 = Math.floor(srcIndex);
-    const i1 = Math.min(i0 + 1, source.length - 1);
-    const frac = srcIndex - i0;
-    result[i] = source[i0] * (1 - frac) + source[i1] * frac;
-  }
-  return result;
-}
-
 function parseSeconds(input: string): number {
   const trimmed = (input || '').trim();
   if (trimmed.includes(':')) {
@@ -1389,296 +1256,6 @@ function convertSubtitles(
     });
     return linesOut.join('\n').trimEnd();
   }
-}
-
-class LzwBitWriter {
-  private buffer = 0;
-  private bitsInBuffer = 0;
-  private currentSubBlock: number[] = [];
-  public output: number[] = [];
-
-  writeBits(value: number, numBits: number) {
-    this.buffer |= value << this.bitsInBuffer;
-    this.bitsInBuffer += numBits;
-    while (this.bitsInBuffer >= 8) {
-      this.writeSubBlockByte(this.buffer & 0xff);
-      this.buffer >>= 8;
-      this.bitsInBuffer -= 8;
-    }
-  }
-
-  flush() {
-    if (this.bitsInBuffer > 0) {
-      this.writeSubBlockByte(this.buffer & 0xff);
-      this.buffer = 0;
-      this.bitsInBuffer = 0;
-    }
-    this.flushSubBlock();
-    this.output.push(0x00);
-  }
-
-  private writeSubBlockByte(byte: number) {
-    this.currentSubBlock.push(byte);
-    if (this.currentSubBlock.length === 255) {
-      this.flushSubBlock();
-    }
-  }
-
-  private flushSubBlock() {
-    if (this.currentSubBlock.length > 0) {
-      this.output.push(this.currentSubBlock.length);
-      this.output.push(...this.currentSubBlock);
-      this.currentSubBlock = [];
-    }
-  }
-}
-
-function lzwEncode(minCodeSize: number, pixelIndices: Uint8Array): number[] {
-  const clearCode = 1 << minCodeSize;
-  const eoiCode = clearCode + 1;
-
-  let codeSize = minCodeSize + 1;
-  let nextCode = eoiCode + 1;
-
-  const bitWriter = new LzwBitWriter();
-  const dict = new Map<number, number>();
-
-  bitWriter.writeBits(clearCode, codeSize);
-
-  if (pixelIndices.length > 0) {
-    let prefix = pixelIndices[0];
-
-    for (let i = 1; i < pixelIndices.length; i++) {
-      const pixel = pixelIndices[i];
-      const key = (prefix << 8) | pixel;
-      const code = dict.get(key);
-
-      if (code !== undefined) {
-        prefix = code;
-      } else {
-        bitWriter.writeBits(prefix, codeSize);
-
-        if (nextCode < 4096) {
-          dict.set(key, nextCode);
-          nextCode++;
-          if (nextCode === (1 << codeSize) + 1 && codeSize < 12) {
-            codeSize++;
-          }
-        } else {
-          bitWriter.writeBits(clearCode, codeSize);
-          dict.clear();
-          codeSize = minCodeSize + 1;
-          nextCode = eoiCode + 1;
-        }
-
-        prefix = pixel;
-      }
-    }
-
-    bitWriter.writeBits(prefix, codeSize);
-  }
-
-  bitWriter.writeBits(eoiCode, codeSize);
-  bitWriter.flush();
-
-  return bitWriter.output;
-}
-
-function generateStandardGifPalette(): Uint8Array {
-  const palette = new Uint8Array(256 * 3);
-  for (let i = 0; i < 216; i++) {
-    const r = Math.floor(i / 36) * 51;
-    const g = Math.floor((i % 36) / 6) * 51;
-    const b = (i % 6) * 51;
-    palette[i * 3] = r;
-    palette[i * 3 + 1] = g;
-    palette[i * 3 + 2] = b;
-  }
-  for (let j = 0; j < 40; j++) {
-    const idx = 216 + j;
-    const gray = Math.round(j * (255 / 39));
-    palette[idx * 3] = gray;
-    palette[idx * 3 + 1] = gray;
-    palette[idx * 3 + 2] = gray;
-  }
-  return palette;
-}
-
-function quantizeRgbaToGifPalette(
-  r: number,
-  g: number,
-  b: number,
-  a: number,
-): number {
-  if (a < 64) return 0;
-  if (Math.abs(r - g) <= 6 && Math.abs(g - b) <= 6) {
-    const avg = Math.round((r + g + b) / 3);
-    const grayIdx = Math.min(39, Math.floor((avg * 39 + 127) / 255));
-    return 216 + grayIdx;
-  }
-  const ri = Math.min(5, Math.floor((r + 25) / 51));
-  const gi = Math.min(5, Math.floor((g + 25) / 51));
-  const bi = Math.min(5, Math.floor((b + 25) / 51));
-  return ri * 36 + gi * 6 + bi;
-}
-
-function encodeAnimatedGif(
-  frames: Uint8Array[],
-  width: number,
-  height: number,
-  fps: number,
-): string {
-  const bytes: number[] = [];
-
-  // Header 'GIF89a'
-  bytes.push(0x47, 0x49, 0x46, 0x38, 0x39, 0x61);
-
-  // Logical Screen Descriptor
-  bytes.push(width & 0xff, (width >> 8) & 0xff);
-  bytes.push(height & 0xff, (height >> 8) & 0xff);
-  bytes.push(0xf7); // GCT present, 8 bits/pixel, 256 colors
-  bytes.push(0x00); // background color index
-  bytes.push(0x00); // pixel aspect ratio
-
-  // Global Color Table
-  const palette = generateStandardGifPalette();
-  for (let i = 0; i < palette.length; i++) {
-    bytes.push(palette[i]);
-  }
-
-  // Netscape 2.0 Loop Extension
-  bytes.push(
-    0x21,
-    0xff,
-    0x0b,
-    0x4e,
-    0x45,
-    0x54,
-    0x53,
-    0x43,
-    0x41,
-    0x50,
-    0x45,
-    0x32,
-    0x2e,
-    0x30, // 'NETSCAPE2.0'
-    0x03,
-    0x01,
-    0x00,
-    0x00,
-    0x00,
-  );
-
-  const delayHundredths = Math.max(1, Math.round(100 / fps));
-
-  for (const frame of frames) {
-    // Graphic Control Extension
-    bytes.push(
-      0x21,
-      0xf9,
-      0x04,
-      0x04, // disposal method 1 (keep)
-      delayHundredths & 0xff,
-      (delayHundredths >> 8) & 0xff,
-      0x00, // transparent index
-      0x00, // terminator
-    );
-
-    // Image Descriptor
-    bytes.push(
-      0x2c,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      width & 0xff,
-      (width >> 8) & 0xff,
-      height & 0xff,
-      (height >> 8) & 0xff,
-      0x00,
-    );
-
-    // Image Data
-    bytes.push(0x08); // minCodeSize = 8
-    const lzwBlocks = lzwEncode(8, frame);
-    bytes.push(...lzwBlocks);
-  }
-
-  // Trailer
-  bytes.push(0x3b);
-
-  const uint8 = new Uint8Array(bytes);
-  let binary = '';
-  const chunkSize = 8192;
-  for (let i = 0; i < uint8.length; i += chunkSize) {
-    const chunk = uint8.subarray(i, i + chunkSize);
-    binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
-  }
-  const base64 =
-    typeof btoa === 'function'
-      ? btoa(binary)
-      : Buffer.from(binary, 'binary').toString('base64');
-  return `data:image/gif;base64,${base64}`;
-}
-
-function generateSyntheticGifFrames(
-  width: number,
-  height: number,
-  fps: number,
-  durationSec: number,
-  seedBytes?: Uint8Array | null,
-): Uint8Array[] {
-  const frameCount = Math.max(3, Math.min(30, Math.round(fps * durationSec)));
-  const frames: Uint8Array[] = [];
-
-  let accentR = 34;
-  let accentG = 197;
-  let accentB = 94;
-
-  if (seedBytes && seedBytes.length >= 4) {
-    accentR = (seedBytes[0] * 3) % 256;
-    accentG = (seedBytes[1] * 5) % 256;
-    accentB = (seedBytes[2] * 7) % 256;
-  }
-
-  for (let f = 0; f < frameCount; f++) {
-    const indices = new Uint8Array(width * height);
-    const progress = f / frameCount;
-    const barWidth = Math.round(progress * width);
-    const pulse = Math.sin(progress * Math.PI * 2);
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        let r = 15;
-        let g = 23;
-        let b = 42;
-
-        if (y >= height - 6 && x <= barWidth) {
-          r = accentR;
-          g = accentG;
-          b = accentB;
-        } else {
-          const cx = Math.round(
-            width / 2 + (width / 4) * Math.sin(progress * Math.PI * 2),
-          );
-          const cy = Math.round(
-            height / 2 + (height / 6) * Math.cos(progress * Math.PI * 2),
-          );
-          const radius = Math.max(8, Math.round(14 + 4 * pulse));
-          const dx = x - cx;
-          const dy = y - cy;
-          if (dx * dx + dy * dy <= radius * radius) {
-            r = 255;
-            g = 255;
-            b = 255;
-          }
-        }
-        indices[y * width + x] = quantizeRgbaToGifPalette(r, g, b, 255);
-      }
-    }
-    frames.push(indices);
-  }
-  return frames;
 }
 
 export function runCreatorOperation(
@@ -2011,42 +1588,17 @@ export function runCreatorOperation(
         throw new Error('Extension must contain 1–12 letters or digits.');
       return `${date}_${slug(values.project)}_${slug(values.asset)}_${slug(values.version)}.${extension}`;
     }
-    case 'audio-format-converter': {
-      const targetRate = parseInt(values.sampleRate || '44100', 10) || 44100;
-      const targetChannels = values.channels === 'mono' ? 1 : 2;
-      const bytes = parseDataUrlBytes(values.audio);
-      const decoded = bytes ? decodePcmWav(bytes) : null;
-      let samples: Float32Array[];
-      if (decoded && decoded.channels.length > 0) {
-        if (targetChannels === 1 && decoded.channels.length > 1) {
-          const mono = new Float32Array(decoded.channels[0].length);
-          for (let i = 0; i < mono.length; i++) {
-            let sum = 0;
-            for (const ch of decoded.channels) sum += ch[i];
-            mono[i] = sum / decoded.channels.length;
-          }
-          samples = [mono];
-        } else if (targetChannels === 2 && decoded.channels.length === 1) {
-          samples = [decoded.channels[0], decoded.channels[0]];
-        } else {
-          samples = decoded.channels.slice(0, targetChannels);
-        }
-        samples = samples.map((ch) =>
-          resample(ch, decoded.sampleRate, targetRate),
-        );
-      } else {
-        samples = generateSineTone(0.5, 440, targetRate, targetChannels);
-      }
-      return encodePcmWav(samples, targetRate);
-    }
     case 'audio-trimmer': {
       const bytes = parseDataUrlBytes(values.audio);
-      const decoded = bytes ? decodePcmWav(bytes) : null;
-      const sampleRate = decoded ? decoded.sampleRate : 44100;
-      const sourceChannels =
-        decoded && decoded.channels.length > 0
-          ? decoded.channels
-          : generateSineTone(1.0, 440, sampleRate, 2);
+      if (!bytes || bytes.length === 0)
+        throw new Error('Choose a WAV audio file to trim.');
+      const decoded = decodePcmWav(bytes);
+      if (!decoded || decoded.channels.length === 0)
+        throw new Error(
+          'Only uncompressed PCM WAV files are supported. Convert the audio to WAV first.',
+        );
+      const sampleRate = decoded.sampleRate;
+      const sourceChannels = decoded.channels;
 
       const totalSamples = sourceChannels[0].length;
       const startSec = parseSeconds(values.start || '0');
@@ -2090,64 +1642,11 @@ export function runCreatorOperation(
 
       return encodePcmWav(trimmedChannels, sampleRate);
     }
-    case 'video-to-audio-extractor': {
-      const targetRate = parseInt(values.sampleRate || '44100', 10) || 44100;
-      const targetChannels = values.channels === 'mono' ? 1 : 2;
-      const bytes = parseDataUrlBytes(values.video);
-      const decoded = bytes ? decodePcmWav(bytes) : null;
-      let samples: Float32Array[];
-      if (decoded && decoded.channels.length > 0) {
-        if (targetChannels === 1 && decoded.channels.length > 1) {
-          const mono = new Float32Array(decoded.channels[0].length);
-          for (let i = 0; i < mono.length; i++) {
-            let sum = 0;
-            for (const ch of decoded.channels) sum += ch[i];
-            mono[i] = sum / decoded.channels.length;
-          }
-          samples = [mono];
-        } else if (targetChannels === 2 && decoded.channels.length === 1) {
-          samples = [decoded.channels[0], decoded.channels[0]];
-        } else {
-          samples = decoded.channels.slice(0, targetChannels);
-        }
-        samples = samples.map((ch) =>
-          resample(ch, decoded.sampleRate, targetRate),
-        );
-      } else {
-        samples = generateSineTone(0.5, 440, targetRate, targetChannels);
-      }
-      return encodePcmWav(samples, targetRate);
-    }
     case 'subtitle-converter': {
       const raw = required(values.subtitles, 'Subtitles');
       const targetFormat = values.targetFormat === 'srt' ? 'srt' : 'vtt';
       const offset = parseFloat(values.offset || '0') || 0;
       return convertSubtitles(raw, targetFormat, offset);
-    }
-    case 'video-to-gif': {
-      const fps = Math.max(
-        1,
-        Math.min(30, parseInt(values.fps || '10', 10) || 10),
-      );
-      const targetWidth = Math.max(
-        64,
-        Math.min(800, parseInt(values.width || '480', 10) || 480),
-      );
-      const durationSec = Math.max(
-        0.5,
-        Math.min(10, parseFloat(values.duration || '3') || 3),
-      );
-
-      const targetHeight = Math.max(16, Math.round((targetWidth * 9) / 16));
-      const seedBytes = parseDataUrlBytes(values.video);
-      const frames = generateSyntheticGifFrames(
-        targetWidth,
-        targetHeight,
-        fps,
-        durationSec,
-        seedBytes,
-      );
-      return encodeAnimatedGif(frames, targetWidth, targetHeight, fps);
     }
     case 'svg-to-react': {
       const svg = required(values.svg, 'SVG markup');
@@ -2197,21 +1696,6 @@ export function runCreatorOperation(
       const align = values.align || 'center';
       const gap = parseFloat(values.gap || '16') || 16;
       return generateFlexboxGridGuide(layout, direction, justify, align, gap);
-    }
-    case 'exact-kb-image-compressor': {
-      const targetKb = parseFloat(values.targetKb || '100') || 100;
-      const originalKb = parseFloat(values.originalKb || '850') || 850;
-      const width = parseInt(values.width || '1920', 10) || 1920;
-      const height = parseInt(values.height || '1080', 10) || 1080;
-      const format =
-        values.format === 'image/webp' ? 'image/webp' : 'image/jpeg';
-      return computeExactKbImageBudget(
-        targetKb,
-        originalKb,
-        width,
-        height,
-        format,
-      );
     }
     case 'app-store-mockup-generator': {
       return generateAppStoreMockupSvg(values);
@@ -2501,73 +1985,6 @@ function generateFlexboxGridGuide(
 +-------------------------------------------+
 | ${flexDir === 'row' ? '[ Item 1 ]  <gap>  [ Item 2 ]  <gap>  [ Item 3 ]' : '[ Item 1 ]\n|   <gap>\n| [ Item 2 ]\n|   <gap>\n| [ Item 3 ]'} |
 +-------------------------------------------+
-`;
-}
-
-function computeExactKbImageBudget(
-  targetKb: number,
-  originalKb: number,
-  width: number,
-  height: number,
-  format: string,
-): string {
-  const targetBytes = Math.max(1, targetKb) * 1024;
-  const origBytes = Math.max(1, originalKb) * 1024;
-  const pixels = Math.max(1, width) * Math.max(1, height);
-  const reductionPercent = Math.max(
-    0,
-    ((origBytes - targetBytes) / origBytes) * 100,
-  );
-
-  const targetBpp = (targetBytes * 8) / pixels;
-
-  let recommendedQuality = 0.85;
-  let recommendedScale = 100;
-  let scaleNeeded = false;
-
-  if (targetBpp >= 1.5) {
-    recommendedQuality = 0.88;
-  } else if (targetBpp >= 0.8) {
-    recommendedQuality = 0.72;
-  } else if (targetBpp >= 0.4) {
-    recommendedQuality = 0.55;
-  } else if (targetBpp >= 0.2) {
-    recommendedQuality = 0.4;
-    recommendedScale = 75;
-    scaleNeeded = true;
-  } else {
-    recommendedQuality = 0.35;
-    recommendedScale = Math.max(
-      25,
-      Math.round(Math.sqrt((targetBytes * 8) / (pixels * 0.4)) * 100),
-    );
-    scaleNeeded = true;
-  }
-
-  const scaledWidth = Math.round((width * recommendedScale) / 100);
-  const scaledHeight = Math.round((height * recommendedScale) / 100);
-
-  return `/* Exact-KB Image Compression Recipe */
-Target File Size:        ≤ ${targetKb} KB (${targetBytes.toLocaleString()} bytes)
-Original File Size:      ${originalKb} KB (${origBytes.toLocaleString()} bytes)
-Required Size Reduction: ${reductionPercent.toFixed(1)}%
-
-Target Bits-Per-Pixel:   ${targetBpp.toFixed(3)} bpp
-Target Codec:            ${format === 'image/webp' ? 'WebP (High Efficiency)' : 'JPEG (Standard)'}
-Recommended Quality:     ${(recommendedQuality * 100).toFixed(0)}% (${recommendedQuality})
-${
-  scaleNeeded
-    ? `Dimension Downscale:    ${recommendedScale}% (New Dimensions: ${scaledWidth} x ${scaledHeight} px)`
-    : `Dimensions:             100% Original (${width} x ${height} px)`
-}
-
---- 100% In-Browser Zero-Upload Canvas Code ---
-const canvas = document.createElement('canvas');
-canvas.width = ${scaledWidth};
-canvas.height = ${scaledHeight};
-const ctx = canvas.getContext('2d');
-ctx.drawImage(originalImage, 0, 0, ${scaledWidth}, ${scaledHeight});
-const compressedDataUrl = canvas.toDataURL('${format}', ${recommendedQuality});
 `;
 }
 

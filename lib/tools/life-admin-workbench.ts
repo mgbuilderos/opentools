@@ -54,6 +54,8 @@ const planningNotice =
   'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.';
 const dateNotice =
   'Calendar estimate using the dates and interval you supply. Verify contractual, banking, holiday, time-zone, and local-rule effects separately.';
+const numerologyNotice =
+  'Numerology is a cultural practice, not science. This shows the arithmetic only — no meanings or predictions. Your date of birth stays on this device.';
 
 export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
   {
@@ -301,120 +303,31 @@ export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
       'Calendar-day arithmetic only. Employment terms, service rules, holidays, leave, buyout, notice acceptance, and jurisdiction can change the actual last working day.',
   },
   {
-    id: 'lagna-calculator',
-    name: 'Lagna (Ascendant) calculator',
+    id: 'life-path-number-calculator',
+    name: 'Life path number calculator',
     description:
-      'Calculate Vedic Sidereal Ascendant (Lagna) Rashi, Lord, and Nakshatra from birth time and coordinates.',
+      'Calculate the life path number from a date of birth using digit reduction.',
+    fields: [text('birthDate', 'Date of birth (YYYY-MM-DD)', '1990-07-15')],
+    notice: numerologyNotice,
+  },
+  {
+    id: 'birth-number-calculator',
+    name: 'Birth number calculator',
+    description:
+      'Calculate the birth number from the day of a date of birth using digit reduction.',
+    fields: [text('birthDate', 'Date of birth (YYYY-MM-DD)', '1990-07-15')],
+    notice: numerologyNotice,
+  },
+  {
+    id: 'personal-year-number-calculator',
+    name: 'Personal year number calculator',
+    description:
+      'Calculate the personal year number for a chosen year from a date of birth using digit reduction.',
     fields: [
-      text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15'),
-      text('time', 'Birth time (HH:MM in 24h)', '14:30'),
-      text('latitude', 'Latitude (e.g. 28.61 for Delhi)', '28.61'),
-      text('longitude', 'Longitude (e.g. 77.20 for Delhi)', '77.20'),
+      text('birthDate', 'Date of birth (YYYY-MM-DD)', '1990-07-15'),
+      number('year', 'Year', '2026'),
     ],
-    notice:
-      'Local astronomical computation using Sidereal Lahiri Ayanamsha in device memory. No personal birth details are transmitted.',
-  },
-  {
-    id: 'kundali-chart-maker',
-    name: 'Kundali chart maker',
-    description:
-      'Generate a 12-Bhava Vedic Kundali table with House Lords and astrological significations.',
-    fields: [
-      text('name', 'Name / Native', 'Native'),
-      text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15'),
-      text('time', 'Birth time (HH:MM in 24h)', '14:30'),
-    ],
-    notice:
-      'Generates client-side Vedic Rashi and Bhava map without sending any identity or birth data away.',
-  },
-  {
-    id: 'panchang-viewer',
-    name: 'Panchang viewer',
-    description:
-      'Compute the 5 limbs of Vedic Panchang (Tithi, Vara, Nakshatra, Yoga, Karana) for any date.',
-    fields: [text('date', 'Date (YYYY-MM-DD)', '2026-09-17')],
-    notice:
-      'Calculated locally via astronomical calendar algorithms. No network requests are made.',
-  },
-  {
-    id: 'nakshatra-calculator',
-    name: 'Nakshatra & Pada calculator',
-    description:
-      'Determine the Vedic Nakshatra (lunar mansion), Pada, ruling deity, and planetary lord.',
-    fields: [
-      text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15'),
-      text('time', 'Birth time (HH:MM in 24h)', '14:30'),
-    ],
-    notice:
-      'Deterministic Vedic astronomy computation performed in local browser memory.',
-  },
-  {
-    id: 'birth-chart-calculator',
-    name: 'Birth chart calculator',
-    description:
-      'Compute planetary positions, Sun sign, Moon sign, and Ascendant for a birth instant.',
-    fields: [
-      text('name', 'Name', 'Native'),
-      text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15'),
-      text('time', 'Birth time (HH:MM in 24h)', '14:30'),
-    ],
-    notice:
-      '100% private in-browser planetary computation. Zero cloud storage or tracking.',
-  },
-  {
-    id: 'moon-sign-calculator',
-    name: 'Moon sign (Chandra Rashi) calculator',
-    description:
-      'Calculate Moon sign, ruling planet, element, and Nakshatra for emotional blueprinting.',
-    fields: [
-      text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15'),
-      text('time', 'Birth time (HH:MM in 24h)', '14:30'),
-    ],
-    notice: 'Client-side lunar position algorithm calculated in device RAM.',
-  },
-  {
-    id: 'sun-sign-calculator',
-    name: 'Sun sign (Zodiac) calculator',
-    description:
-      'Determine Western Zodiac Sun sign, element, modality, and ruling planet.',
-    fields: [text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15')],
-    notice: 'Calculated 100% offline via calendar date ranges.',
-  },
-  {
-    id: 'tithi-calculator',
-    name: 'Tithi & lunar phase calculator',
-    description:
-      'Calculate Vedic Tithi, Paksha (Shukla/Krishna), and lunar day significance.',
-    fields: [text('date', 'Date (YYYY-MM-DD)', '2026-09-17')],
-    notice:
-      'Astronomical lunar-solar phase calculation running entirely in JavaScript.',
-  },
-  {
-    id: 'pada-calculator',
-    name: 'Pada calculator',
-    description:
-      'Calculate the exact 1-4 quarter (Pada) of a Nakshatra and its Navamsa sign.',
-    fields: [
-      text('date', 'Birth date (YYYY-MM-DD)', '1995-05-15'),
-      text('time', 'Birth time (HH:MM in 24h)', '14:30'),
-    ],
-    notice: 'Client-side division calculation for Vedic astrology research.',
-  },
-  {
-    id: 'yoga-calculator',
-    name: 'Vedic Yoga calculator',
-    description:
-      'Calculate the ruling astrological Yoga (1 to 27) for any birth date or auspicious event.',
-    fields: [text('date', 'Date (YYYY-MM-DD)', '2026-09-17')],
-    notice: 'Local sum of solar and lunar celestial longitudes.',
-  },
-  {
-    id: 'karana-calculator',
-    name: 'Karana calculator',
-    description:
-      'Calculate the active half-tithi Karana (Bava, Balava, Kaulava, etc.) for any day.',
-    fields: [text('date', 'Date (YYYY-MM-DD)', '2026-09-17')],
-    notice: 'Computed locally in device memory with zero server calls.',
+    notice: numerologyNotice,
   },
 ] as const;
 
@@ -582,357 +495,65 @@ function formatCheck(valid: boolean, normalized: string, rule: string) {
   return `${valid ? 'MATCHES FORMAT' : 'DOES NOT MATCH FORMAT'}\nNormalized: ${normalized || '—'}\nRule: ${rule}\nNot an existence or ownership check.`;
 }
 
-const RASHIS = [
-  {
-    name: 'Mesha (Aries)',
-    lord: 'Mangala (Mars)',
-    element: 'Fire (Agni)',
-    nature: 'Char (Movable)',
-    symbol: 'Ram',
-  },
-  {
-    name: 'Vrishabha (Taurus)',
-    lord: 'Shukra (Venus)',
-    element: 'Earth (Prithvi)',
-    nature: 'Sthir (Fixed)',
-    symbol: 'Bull',
-  },
-  {
-    name: 'Mithuna (Gemini)',
-    lord: 'Budha (Mercury)',
-    element: 'Air (Vayu)',
-    nature: 'Dwisvabhav (Dual)',
-    symbol: 'Twins',
-  },
-  {
-    name: 'Karka (Cancer)',
-    lord: 'Chandra (Moon)',
-    element: 'Water (Jala)',
-    nature: 'Char (Movable)',
-    symbol: 'Crab',
-  },
-  {
-    name: 'Simha (Leo)',
-    lord: 'Surya (Sun)',
-    element: 'Fire (Agni)',
-    nature: 'Sthir (Fixed)',
-    symbol: 'Lion',
-  },
-  {
-    name: 'Kanya (Virgo)',
-    lord: 'Budha (Mercury)',
-    element: 'Earth (Prithvi)',
-    nature: 'Dwisvabhav (Dual)',
-    symbol: 'Maiden',
-  },
-  {
-    name: 'Tula (Libra)',
-    lord: 'Shukra (Venus)',
-    element: 'Air (Vayu)',
-    nature: 'Char (Movable)',
-    symbol: 'Scales',
-  },
-  {
-    name: 'Vrishchika (Scorpio)',
-    lord: 'Mangala (Mars)',
-    element: 'Water (Jala)',
-    nature: 'Sthir (Fixed)',
-    symbol: 'Scorpion',
-  },
-  {
-    name: 'Dhanu (Sagittarius)',
-    lord: 'Guru (Jupiter)',
-    element: 'Fire (Agni)',
-    nature: 'Dwisvabhav (Dual)',
-    symbol: 'Archer / Bow',
-  },
-  {
-    name: 'Makara (Capricorn)',
-    lord: 'Shani (Saturn)',
-    element: 'Earth (Prithvi)',
-    nature: 'Char (Movable)',
-    symbol: 'Sea-Goat',
-  },
-  {
-    name: 'Kumbha (Aquarius)',
-    lord: 'Shani (Saturn)',
-    element: 'Air (Vayu)',
-    nature: 'Sthir (Fixed)',
-    symbol: 'Water-Bearer',
-  },
-  {
-    name: 'Meena (Pisces)',
-    lord: 'Guru (Jupiter)',
-    element: 'Water (Jala)',
-    nature: 'Dwisvabhav (Dual)',
-    symbol: 'Two Fishes',
-  },
-] as const;
+function birthDateParts(values: Record<string, string>) {
+  const value = required(values, 'birthDate', 'a date of birth');
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) {
+    throw new Error('Date of birth must use YYYY-MM-DD.');
+  }
+  const [year, month, day] = value.split('-').map(Number);
+  if (year < 1)
+    throw new Error('Date of birth year must be between 1 and 9999.');
+  // setUTCFullYear keeps years 1–99 literal; Date.UTC would read them as 1900–1999.
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    throw new Error('Date of birth is not a real calendar date.');
+  }
+  return { year, month, day };
+}
 
-const NAKSHATRAS = [
-  { name: 'Ashwini', lord: 'Ketu', deity: 'Ashvins', symbol: "Horse's head" },
-  { name: 'Bharani', lord: 'Venus', deity: 'Yama', symbol: 'Yoni' },
-  { name: 'Krittika', lord: 'Sun', deity: 'Agni', symbol: 'Razor / Flame' },
-  { name: 'Rohini', lord: 'Moon', deity: 'Brahma', symbol: 'Cart / Chariot' },
-  { name: 'Mrigashira', lord: 'Mars', deity: 'Soma', symbol: "Deer's head" },
-  { name: 'Ardra', lord: 'Rahu', deity: 'Rudra', symbol: 'Teardrop' },
-  {
-    name: 'Punarvasu',
-    lord: 'Jupiter',
-    deity: 'Aditi',
-    symbol: 'Bow & Quiver',
-  },
-  {
-    name: 'Pushya',
-    lord: 'Saturn',
-    deity: 'Brihaspati',
-    symbol: 'Cow udder / Lotus',
-  },
-  {
-    name: 'Ashlesha',
-    lord: 'Mercury',
-    deity: 'Nagas',
-    symbol: 'Coiled serpent',
-  },
-  { name: 'Magha', lord: 'Ketu', deity: 'Pitris', symbol: 'Royal Throne' },
-  {
-    name: 'Purva Phalguni',
-    lord: 'Venus',
-    deity: 'Bhaga',
-    symbol: 'Front legs of couch',
-  },
-  {
-    name: 'Uttara Phalguni',
-    lord: 'Sun',
-    deity: 'Aryaman',
-    symbol: 'Back legs of couch',
-  },
-  { name: 'Hasta', lord: 'Moon', deity: 'Savitr', symbol: 'Open Hand' },
-  { name: 'Chitra', lord: 'Mars', deity: 'Tvashtar', symbol: 'Bright Jewel' },
-  { name: 'Swati', lord: 'Rahu', deity: 'Vayu', symbol: 'Coral / Plant shoot' },
-  {
-    name: 'Vishakha',
-    lord: 'Jupiter',
-    deity: 'Indra-Agni',
-    symbol: 'Triumphal Arch',
-  },
-  { name: 'Anuradha', lord: 'Saturn', deity: 'Mitra', symbol: 'Lotus flower' },
-  {
-    name: 'Jyeshtha',
-    lord: 'Mercury',
-    deity: 'Indra',
-    symbol: 'Circular amulet',
-  },
-  {
-    name: 'Mula',
-    lord: 'Ketu',
-    deity: 'Nirriti',
-    symbol: 'Tied bunch of roots',
-  },
-  {
-    name: 'Purva Ashadha',
-    lord: 'Venus',
-    deity: 'Apah',
-    symbol: "Elephant's tusk",
-  },
-  {
-    name: 'Uttara Ashadha',
-    lord: 'Sun',
-    deity: 'Vishvadevas',
-    symbol: 'Planks of bed',
-  },
-  {
-    name: 'Shravana',
-    lord: 'Moon',
-    deity: 'Vishnu',
-    symbol: 'Three footprints / Ear',
-  },
-  {
-    name: 'Dhanishta',
-    lord: 'Mars',
-    deity: 'Eight Vasus',
-    symbol: 'Drum (Mridanga)',
-  },
-  {
-    name: 'Shatabhisha',
-    lord: 'Rahu',
-    deity: 'Varuna',
-    symbol: '100 Physicians / Circle',
-  },
-  {
-    name: 'Purva Bhadrapada',
-    lord: 'Jupiter',
-    deity: 'Aja Ekapada',
-    symbol: 'Front of funeral cot',
-  },
-  {
-    name: 'Uttara Bhadrapada',
-    lord: 'Saturn',
-    deity: 'Ahir Budhnya',
-    symbol: 'Back of funeral cot',
-  },
-  {
-    name: 'Revati',
-    lord: 'Mercury',
-    deity: 'Pushan',
-    symbol: 'Pair of fishes',
-  },
-] as const;
-
-const YOGAS = [
-  'Vishkambha (Door bolt)',
-  'Priti (Affection)',
-  'Ayushman (Long life)',
-  'Saubhagya (Good fortune)',
-  'Shobhana (Splendor)',
-  'Atiganda (Great obstacle)',
-  'Sukarma (Praiseworthy action)',
-  'Dhriti (Steadfastness)',
-  'Shula (Spear)',
-  'Ganda (Knot)',
-  'Vriddhi (Growth)',
-  'Dhruva (Constant/Fixed)',
-  'Vyaghata (Fierce)',
-  'Harshana (Joyous)',
-  'Vajra (Diamond/Thunderbolt)',
-  'Siddhi (Accomplishment)',
-  'Vyatipata (Calamity)',
-  'Variyan (Comfortable)',
-  'Parigha (Iron bar)',
-  'Shiva (Auspicious)',
-  'Siddha (Perfected)',
-  'Sadhya (Achievable)',
-  'Shubha (Favorable)',
-  'Shukla (Bright)',
-  'Brahma (Divine)',
-  'Indra (Royal)',
-  'Vaidhriti (Divisive)',
-] as const;
-
-const KARANAS = [
-  'Bava (Lion)',
-  'Balava (Tiger)',
-  'Kaulava (Pig)',
-  'Taitila (Donkey)',
-  'Gara (Elephant)',
-  'Vanija (Bull)',
-  'Vishti / Bhadra (Hen)',
-  'Shakuni (Bird)',
-  'Chatushpada (Quadruped)',
-  'Naga (Serpent)',
-  'Kintughna (Worm)',
-] as const;
-
-const TITHI_NAMES = [
-  'Pratipada (1st Day)',
-  'Dwitiya (2nd Day)',
-  'Tritiya (3rd Day)',
-  'Chaturthi (4th Day)',
-  'Panchami (5th Day)',
-  'Shashthi (6th Day)',
-  'Saptami (7th Day)',
-  'Ashtami (8th Day)',
-  'Navami (9th Day)',
-  'Dashami (10th Day)',
-  'Ekadashi (11th Day)',
-  'Dwadashi (12th Day)',
-  'Trayodashi (13th Day)',
-  'Chaturdashi (14th Day)',
-  'Purnima / Amavasya (15th Day)',
-] as const;
-
-const BHAVAS = [
-  {
-    id: '1st House (Tanu)',
-    title: 'Self, Physical Vitality, Temperament & Life Path',
-  },
-  {
-    id: '2nd House (Dhana)',
-    title: 'Wealth, Family Heritage, Speech & Financial Accumulation',
-  },
-  {
-    id: '3rd House (Sahaja)',
-    title: 'Courage, Siblings, Mental Drive, Writing & Communication',
-  },
-  {
-    id: '4th House (Bandhu)',
-    title: 'Mother, Home, Domestic Happiness, Land & Vehicles',
-  },
-  {
-    id: '5th House (Putra)',
-    title: 'Intelligence, Creativity, Education, Children & Speculation',
-  },
-  {
-    id: '6th House (Ari)',
-    title: 'Health, Overcoming Competition, Daily Routine & Debts',
-  },
-  {
-    id: '7th House (Yuvati)',
-    title: 'Marriage, Long-Term Partnerships, Contracts & Business',
-  },
-  {
-    id: '8th House (Randhra)',
-    title: 'Longevity, Transformation, Occult & Shared Resources',
-  },
-  {
-    id: '9th House (Dharma)',
-    title: 'Higher Wisdom, Fortune, Mentors, Ethics & Travel',
-  },
-  {
-    id: '10th House (Karma)',
-    title: 'Career, Profession, Social Status & Public Authority',
-  },
-  {
-    id: '11th House (Labha)',
-    title: 'Gains, Income, Aspirations, Elder Siblings & Large Networks',
-  },
-  {
-    id: '12th House (Vyaya)',
-    title: 'Expenditure, Foreign Settlements, Privacy & Spiritual Liberation',
-  },
-] as const;
-
-function computeEphemerisDeg(
-  dateStr: string,
-  timeStr = '12:00',
-  lon = 77.2,
-  lat = 28.6,
-) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const [hh, mm] = timeStr.split(':').map(Number);
-  const totalHours = (hh || 0) + (mm || 0) / 60;
-
-  const dayOfYear =
-    Math.floor((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / 86400000) + 1;
-  const sunDeg = ((dayOfYear - 80) * 0.9856 + 360) % 360;
-  const moonDeg = (dayOfYear * 13.176 + totalHours * 0.55 + 360) % 360;
-
-  const lstHours =
-    (6.6 + dayOfYear * 0.0657 + totalHours * 1.0027 + lon / 15 + 24) % 24;
-  const ramc = lstHours * 15;
-  const rad = Math.PI / 180;
-  const eps = 23.44 * rad;
-  const phi = (lat || 28.6) * rad;
-
-  const yAsc = -Math.cos(ramc * rad);
-  const xAsc =
-    Math.sin(ramc * rad) * Math.cos(eps) + Math.tan(phi) * Math.sin(eps);
-  let ascTropical = Math.atan2(yAsc, xAsc) / rad;
-  if (ascTropical < 0) ascTropical += 360;
-
-  const ayanamsha = 23.85;
-  const ascSidereal = (ascTropical - ayanamsha + 360) % 360;
-  const sunSidereal = (sunDeg - ayanamsha + 360) % 360;
-  const moonSidereal = (moonDeg - ayanamsha + 360) % 360;
-
+/** Sums digits until 1–9, optionally stopping early at master numbers 11, 22 and 33. */
+function reduceDigits(start: number, keepMasterNumbers: boolean) {
+  const chain = [start];
+  let value = start;
+  while (value > 9 && !(keepMasterNumbers && [11, 22, 33].includes(value))) {
+    let sum = 0;
+    for (let rest = value; rest > 0; rest = Math.floor(rest / 10)) {
+      sum += rest % 10;
+    }
+    value = sum;
+    chain.push(value);
+  }
   return {
-    sunDeg,
-    sunSidereal,
-    moonDeg,
-    moonSidereal,
-    ascSidereal,
-    dayOfWeek: new Date(Date.UTC(y, m - 1, d)).getUTCDay(),
+    value,
+    steps: (chain.length > 1 ? chain : [start, start]).join(' → '),
   };
+}
+
+function numerologyTotal(
+  title: string,
+  parts: [label: string, value: number][],
+  keepMasterNumbers: boolean,
+  method: string,
+) {
+  const reduced = parts.map(([label, value]) => ({
+    label,
+    ...reduceDigits(value, keepMasterNumbers),
+  }));
+  const total = reduceDigits(
+    reduced.reduce((sum, part) => sum + part.value, 0),
+    keepMasterNumbers,
+  );
+  return [
+    `${title}: ${total.value}`,
+    ...reduced.map((part) => `${part.label} ${part.steps}`),
+    `Total ${reduced.map((part) => part.value).join(' + ')} = ${total.steps}`,
+    `Method: ${method}`,
+  ].join('\n');
 }
 
 function expiryResult(name: string, asOf: Date, expiry: Date) {
@@ -1187,238 +808,35 @@ export function runLifeAdminOperation(
       const days = integer(values, 'days', 'Calendar notice days', 0, 3650);
       return `Notice date: ${iso(start)}\nCalendar days: ${days}\nEstimated end date: ${iso(addDays(start, days))}`;
     }
-    case 'lagna-calculator': {
-      const dateStr = required(values, 'date', 'Birth date (YYYY-MM-DD)');
-      const timeStr = raw(values, 'time') || '12:00';
-      const lat = parseFloat(raw(values, 'latitude')) || 28.61;
-      const lon = parseFloat(raw(values, 'longitude')) || 77.2;
-      const eph = computeEphemerisDeg(dateStr, timeStr, lon, lat);
-      const rashiIdx = Math.floor(eph.ascSidereal / 30) % 12;
-      const rashi = RASHIS[rashiIdx];
-      const degInSign = (eph.ascSidereal % 30).toFixed(2);
-      const nakIdx = Math.floor(eph.ascSidereal / (360 / 27)) % 27;
-      const nak = NAKSHATRAS[nakIdx];
-      const pada =
-        (Math.floor((eph.ascSidereal % (360 / 27)) / (360 / 108)) % 4) + 1;
-
-      return [
-        '--- VEDIC SIDEREAL LAGNA (ASCENDANT) REPORT ---',
-        `Date: ${dateStr} | Time: ${timeStr} (24h)`,
-        `Coordinates: ${lat.toFixed(2)}° N, ${lon.toFixed(2)}° E`,
-        '',
-        `Ascendant (Lagna) Rashi : ${rashi.name}`,
-        `Degree within Sign      : ${degInSign}° (${rashi.symbol})`,
-        `Lagna Ruling Lord       : ${rashi.lord}`,
-        `Elemental Attribute     : ${rashi.element}`,
-        `Modality (Guna)         : ${rashi.nature}`,
-        `Ascendant Nakshatra     : ${nak.name} (Pada ${pada})`,
-        `Nakshatra Lord & Deity  : Lord ${nak.lord}, Deity ${nak.deity}`,
-        `Symbolic Representation : ${nak.symbol}`,
-        '',
-        'Privacy Note: Computed 100% locally in device RAM using Sidereal Lahiri Ayanamsha without network egress.',
-      ].join('\n');
+    case 'life-path-number-calculator': {
+      const { year, month, day } = birthDateParts(values);
+      return numerologyTotal(
+        'Life path number',
+        [
+          ['Day', day],
+          ['Month', month],
+          ['Year', year],
+        ],
+        true,
+        'reduce the day, the month and the year separately by summing digits until a single digit or a master number (11, 22 or 33) remains; add the three results; reduce the total the same way.',
+      );
     }
-    case 'kundali-chart-maker': {
-      const name = raw(values, 'name') || 'Native';
-      const dateStr = required(values, 'date', 'Birth date (YYYY-MM-DD)');
-      const timeStr = raw(values, 'time') || '12:00';
-      const eph = computeEphemerisDeg(dateStr, timeStr);
-      const lagnaIdx = Math.floor(eph.ascSidereal / 30) % 12;
-
-      const houses = BHAVAS.map((bhava, index) => {
-        const signIdx = (lagnaIdx + index) % 12;
-        const sign = RASHIS[signIdx];
-        return `${bhava.id} -> ${sign.name} (Lord: ${sign.lord})\n   Significance: ${bhava.title}`;
-      });
-
-      return [
-        `--- 12-BHAVA KUNDALI RASHI CHART (${name}) ---`,
-        `Birth: ${dateStr} at ${timeStr} | Lagna: ${RASHIS[lagnaIdx].name}`,
-        '',
-        ...houses,
-        '',
-        'Zero Cloud Egress: Computed locally in your browser with zero data retention.',
-      ].join('\n');
+    case 'birth-number-calculator': {
+      const day = reduceDigits(birthDateParts(values).day, false);
+      return `Birth number: ${day.value}\nDay ${day.steps}\nMethod: sum the digits of the day of the month until a single digit (1–9) remains. Master numbers are not kept.`;
     }
-    case 'panchang-viewer': {
-      const dateStr = required(values, 'date', 'Date (YYYY-MM-DD)');
-      const eph = computeEphemerisDeg(dateStr);
-      const varas = [
-        'Ravivara (Sunday)',
-        'Somavara (Monday)',
-        'Mangalavara (Tuesday)',
-        'Budhavara (Wednesday)',
-        'Guruvara (Thursday)',
-        'Shukravara (Friday)',
-        'Shanivara (Saturday)',
-      ];
-      const vara = varas[eph.dayOfWeek];
-
-      const diff = (eph.moonDeg - eph.sunDeg + 360) % 360;
-      const tithiIdx = Math.floor(diff / 12) % 30;
-      const paksha =
-        tithiIdx < 15 ? 'Shukla Paksha (Waxing)' : 'Krishna Paksha (Waning)';
-      const tithiName = TITHI_NAMES[tithiIdx % 15];
-
-      const nakIdx = Math.floor(eph.moonSidereal / (360 / 27)) % 27;
-      const nak = NAKSHATRAS[nakIdx];
-
-      const yogaIdx =
-        Math.floor(((eph.moonDeg + eph.sunDeg) % 360) / (360 / 27)) % 27;
-      const yoga = YOGAS[yogaIdx];
-
-      const karanaIdx = Math.floor(diff / 6) % 11;
-      const karana = KARANAS[karanaIdx];
-
-      return [
-        `--- DAILY VEDIC PANCHANG FOR ${dateStr} ---`,
-        `1. Vara (Solar Day)    : ${vara}`,
-        `2. Tithi (Lunar Day)   : ${tithiName} [${paksha}]`,
-        `3. Nakshatra (Mansion) : ${nak.name} (Lord: ${nak.lord})`,
-        `4. Yoga (Combination)  : ${yoga}`,
-        `5. Karana (Half-Tithi) : ${karana}`,
-        '',
-        `Sun Sidereal Position  : ${RASHIS[Math.floor(eph.sunSidereal / 30) % 12].name}`,
-        `Moon Sidereal Position : ${RASHIS[Math.floor(eph.moonSidereal / 30) % 12].name}`,
-        '',
-        'Calculated 100% locally in browser memory via astronomical solar-lunar algorithms.',
-      ].join('\n');
-    }
-    case 'nakshatra-calculator':
-    case 'pada-calculator': {
-      const dateStr = required(values, 'date', 'Birth date (YYYY-MM-DD)');
-      const timeStr = raw(values, 'time') || '12:00';
-      const eph = computeEphemerisDeg(dateStr, timeStr);
-      const nakIdx = Math.floor(eph.moonSidereal / (360 / 27)) % 27;
-      const nak = NAKSHATRAS[nakIdx];
-      const pada =
-        (Math.floor((eph.moonSidereal % (360 / 27)) / (360 / 108)) % 4) + 1;
-      const moonRashi = RASHIS[Math.floor(eph.moonSidereal / 30) % 12];
-
-      return [
-        '--- VEDIC NAKSHATRA & PADA REPORT ---',
-        `Date: ${dateStr} | Time: ${timeStr}`,
-        '',
-        `Nakshatra (Mansion)    : ${nak.name}`,
-        `Pada (Quarter)         : Pada ${pada} (of 4)`,
-        `Planetary Ruler (Lord) : ${nak.lord}`,
-        `Presiding Deity        : ${nak.deity}`,
-        `Sacred Symbol          : ${nak.symbol}`,
-        `Associated Moon Rashi  : ${moonRashi.name} (Lord: ${moonRashi.lord})`,
-        '',
-        'Local Execution: Computed client-side with zero network uploads.',
-      ].join('\n');
-    }
-    case 'birth-chart-calculator': {
-      const name = raw(values, 'name') || 'Native';
-      const dateStr = required(values, 'date', 'Birth date (YYYY-MM-DD)');
-      const timeStr = raw(values, 'time') || '12:00';
-      const eph = computeEphemerisDeg(dateStr, timeStr);
-      const lagna = RASHIS[Math.floor(eph.ascSidereal / 30) % 12];
-      const sun = RASHIS[Math.floor(eph.sunSidereal / 30) % 12];
-      const moon = RASHIS[Math.floor(eph.moonSidereal / 30) % 12];
-      const nak = NAKSHATRAS[Math.floor(eph.moonSidereal / (360 / 27)) % 27];
-
-      return [
-        `--- COMPREHENSIVE BIRTH CHART SUMMARY (${name}) ---`,
-        `Birth Instant: ${dateStr} at ${timeStr}`,
-        '',
-        `Ascendant (Lagna) : ${lagna.name} (Lord: ${lagna.lord}, Element: ${lagna.element})`,
-        `Sun Sign (Surya)  : ${sun.name} (Lord: ${sun.lord})`,
-        `Moon Sign (Rashi) : ${moon.name} (Lord: ${moon.lord})`,
-        `Birth Nakshatra   : ${nak.name} (Lord: ${nak.lord}, Deity: ${nak.deity})`,
-        '',
-        'Client-Side Guarantee: Computed entirely in your browser. No files or private dates leave this machine.',
-      ].join('\n');
-    }
-    case 'moon-sign-calculator': {
-      const dateStr = required(values, 'date', 'Birth date (YYYY-MM-DD)');
-      const timeStr = raw(values, 'time') || '12:00';
-      const eph = computeEphemerisDeg(dateStr, timeStr);
-      const moon = RASHIS[Math.floor(eph.moonSidereal / 30) % 12];
-      const nak = NAKSHATRAS[Math.floor(eph.moonSidereal / (360 / 27)) % 27];
-
-      return [
-        '--- MOON SIGN (CHANDRA RASHI) REPORT ---',
-        `Birth Date: ${dateStr} ${timeStr}`,
-        '',
-        `Moon Sign (Rashi)    : ${moon.name}`,
-        `Ruling Planet (Lord) : ${moon.lord}`,
-        `Elemental Nature     : ${moon.element}`,
-        `Behavioral Modality  : ${moon.nature}`,
-        `Birth Nakshatra      : ${nak.name} (Lord: ${nak.lord})`,
-        '',
-        'Zero Data Egress: 100% private in-browser computation.',
-      ].join('\n');
-    }
-    case 'sun-sign-calculator': {
-      const dateStr = required(values, 'date', 'Birth date (YYYY-MM-DD)');
-      const [y, m, d] = dateStr.split('-').map(Number);
-      const dayOfYear =
-        Math.floor((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 1)) / 86400000) + 1;
-      const sunTropical = ((dayOfYear - 80) * 0.9856 + 360) % 360;
-      const zIdx = Math.floor(sunTropical / 30) % 12;
-      const zodiacs = [
-        'Aries (Mar 21 - Apr 19)',
-        'Taurus (Apr 20 - May 20)',
-        'Gemini (May 21 - Jun 20)',
-        'Cancer (Jun 21 - Jul 22)',
-        'Leo (Jul 23 - Aug 22)',
-        'Virgo (Aug 23 - Sep 22)',
-        'Libra (Sep 23 - Oct 22)',
-        'Scorpio (Oct 23 - Nov 21)',
-        'Sagittarius (Nov 22 - Dec 21)',
-        'Capricorn (Dec 22 - Jan 19)',
-        'Aquarius (Jan 20 - Feb 18)',
-        'Pisces (Feb 19 - Mar 20)',
-      ];
-
-      return [
-        '--- WESTERN ZODIAC SUN SIGN REPORT ---',
-        `Birth Date: ${dateStr}`,
-        '',
-        `Sun Sign (Zodiac) : ${zodiacs[zIdx]}`,
-        `Element           : ${RASHIS[zIdx].element}`,
-        `Quality           : ${RASHIS[zIdx].nature}`,
-        `Ruling Planet     : ${RASHIS[zIdx].lord}`,
-        '',
-        'Calculated 100% on-device in browser memory.',
-      ].join('\n');
-    }
-    case 'tithi-calculator': {
-      const dateStr = required(values, 'date', 'Date (YYYY-MM-DD)');
-      const eph = computeEphemerisDeg(dateStr);
-      const diff = (eph.moonDeg - eph.sunDeg + 360) % 360;
-      const tithiIdx = Math.floor(diff / 12) % 30;
-      const paksha =
-        tithiIdx < 15
-          ? 'Shukla Paksha (Bright Half)'
-          : 'Krishna Paksha (Dark Half)';
-      const tithiName = TITHI_NAMES[tithiIdx % 15];
-
-      return [
-        `--- VEDIC TITHI REPORT FOR ${dateStr} ---`,
-        `Tithi: ${tithiName}`,
-        `Paksha: ${paksha}`,
-        `Lunar Elongation: ${diff.toFixed(2)}° from Sun`,
-        `Lunar Illumination: ${(Math.sin((diff / 2) * (Math.PI / 180)) ** 2 * 100).toFixed(1)}%`,
-        '',
-        '100% client-side calculation with zero server tracking.',
-      ].join('\n');
-    }
-    case 'yoga-calculator': {
-      const dateStr = required(values, 'date', 'Date (YYYY-MM-DD)');
-      const eph = computeEphemerisDeg(dateStr);
-      const yogaIdx =
-        Math.floor(((eph.moonDeg + eph.sunDeg) % 360) / (360 / 27)) % 27;
-      return `Date: ${dateStr}\nVedic Yoga: ${YOGAS[yogaIdx]}\nIndex: #${yogaIdx + 1} of 27 Nitya Yogas\nCalculation: (Sun Longitude + Moon Longitude) / 13°20'\nStatus: Computed locally in device RAM.`;
-    }
-    case 'karana-calculator': {
-      const dateStr = required(values, 'date', 'Date (YYYY-MM-DD)');
-      const eph = computeEphemerisDeg(dateStr);
-      const diff = (eph.moonDeg - eph.sunDeg + 360) % 360;
-      const karanaIdx = Math.floor(diff / 6) % 11;
-      return `Date: ${dateStr}\nVedic Karana: ${KARANAS[karanaIdx]}\nType: Half-Tithi division (${(diff % 6).toFixed(2)}° elapsed of 6°)\nStatus: Computed locally with zero data transfer.`;
+    case 'personal-year-number-calculator': {
+      const { month, day } = birthDateParts(values);
+      return numerologyTotal(
+        'Personal year number',
+        [
+          ['Birth month', month],
+          ['Birth day', day],
+          ['Year', integer(values, 'year', 'Year', 1, 9999)],
+        ],
+        false,
+        'reduce the birth month, the birth day and the chosen year separately by summing digits until a single digit (1–9) remains; add the three results; reduce the total the same way. Master numbers are not kept.',
+      );
     }
     default:
       throw new Error('Unknown life-admin operation.');

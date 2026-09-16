@@ -9,9 +9,9 @@ import {
 import { getAllCategories, TOOL_CATALOG } from './tool-catalog-data';
 
 describe('Internal Linking Graph & Topic Clusters', () => {
-  it('defines exactly 19 category pillar hubs with non-empty descriptions', () => {
+  it('defines exactly 18 category pillar hubs with non-empty descriptions', () => {
     const pillars = getAllCategoryPillars();
-    expect(pillars).toHaveLength(19);
+    expect(pillars).toHaveLength(18);
 
     for (const pillar of pillars) {
       expect(pillar.name).toBeTruthy();
@@ -25,7 +25,7 @@ describe('Internal Linking Graph & Topic Clusters', () => {
 
   it('accurately round-trips category slugs', () => {
     const categories = getAllCategories();
-    expect(categories).toHaveLength(19);
+    expect(categories).toHaveLength(18);
 
     for (const category of categories) {
       const slug = toCategorySlug(category);
@@ -49,7 +49,7 @@ describe('Internal Linking Graph & Topic Clusters', () => {
     }
   });
 
-  it('links every single tool in the 1,000 catalog with zero orphan pages', () => {
+  it('links every single tool in the 964-tool catalog with zero orphan pages', () => {
     for (const tool of TOOL_CATALOG) {
       const links = getRelatedToolLinks(tool.slug, 3);
       expect(links.length).toBeGreaterThanOrEqual(3);

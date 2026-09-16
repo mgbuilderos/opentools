@@ -10,13 +10,38 @@ function defaults(id: string) {
   );
 }
 
+// Three seconds of silent 16-bit mono PCM at 8 kHz, as a WAV data URL.
+function silentPcmWav() {
+  const sampleRate = 8000;
+  const dataSize = 3 * sampleRate * 2;
+  const wav = Buffer.alloc(44 + dataSize);
+  wav.write('RIFF', 0, 'ascii');
+  wav.writeUInt32LE(36 + dataSize, 4);
+  wav.write('WAVEfmt ', 8, 'ascii');
+  wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20);
+  wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(sampleRate, 24);
+  wav.writeUInt32LE(sampleRate * 2, 28);
+  wav.writeUInt16LE(2, 32);
+  wav.writeUInt16LE(16, 34);
+  wav.write('data', 36, 'ascii');
+  wav.writeUInt32LE(dataSize, 40);
+  return `data:audio/wav;base64,${wav.toString('base64')}`;
+}
+
 describe('creator and social workbench', () => {
-  it('publishes 52 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(52);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(52);
+  it('publishes 48 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(48);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(48);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
-        runCreatorOperation(operation.id, defaults(operation.id)),
+        runCreatorOperation(
+          operation.id,
+          operation.id === 'audio-trimmer'
+            ? { ...defaults(operation.id), audio: silentPcmWav() }
+            : defaults(operation.id),
+        ),
       ).not.toBe('');
     }
   });
@@ -147,30 +172,29 @@ describe('creator and social workbench', () => {
     ).toThrow('audience must be positive');
   });
 
-  it('converts, trims, and extracts clean 16-bit PCM WAV audio', () => {
-    const converted = runCreatorOperation('audio-format-converter', {
-      audio: '',
-      targetFormat: 'wav',
-      sampleRate: '44100',
-      channels: 'stereo',
-    });
-    expect(converted).toMatch(/^data:audio\/wav;base64,/);
-
+  it('trims clean 16-bit PCM WAV audio', () => {
     const trimmed = runCreatorOperation('audio-trimmer', {
-      audio: converted,
+      audio: silentPcmWav(),
       start: '0:00',
       end: '0:02',
       gain: '1.2',
       fade: 'fade-both',
     });
     expect(trimmed).toMatch(/^data:audio\/wav;base64,/);
+  });
 
-    const extracted = runCreatorOperation('video-to-audio-extractor', {
-      video: '',
-      sampleRate: '48000',
-      channels: 'mono',
-    });
-    expect(extracted).toMatch(/^data:audio\/wav;base64,/);
+  it('rejects missing and non-WAV audio instead of generating a tone', () => {
+    expect(() =>
+      runCreatorOperation('audio-trimmer', { audio: '', start: '0', end: '1' }),
+    ).toThrow('Choose a WAV audio file');
+    const mp3Header = `data:audio/mpeg;base64,${Buffer.from([0x49, 0x44, 0x33, 0x03, 0, 0, 0, 0, 0, 0]).toString('base64')}`;
+    expect(() =>
+      runCreatorOperation('audio-trimmer', {
+        audio: mp3Header,
+        start: '0',
+        end: '1',
+      }),
+    ).toThrow('Only uncompressed PCM WAV files are supported');
   });
 
   it('converts and shifts subtitles bidirectionally', () => {
@@ -193,24 +217,6 @@ describe('creator and social workbench', () => {
     expect(srtOutput).not.toContain('WEBVTT');
     expect(srtOutput).toContain('00:00:01,000 --> 00:00:04,000');
     expect(srtOutput).toContain('Welcome to local tools.');
-  });
-
-  it('encodes animated GIF loops with valid GIF89a header', () => {
-    const gifOutput = runCreatorOperation('video-to-gif', {
-      video: '',
-      fps: '10',
-      width: '320',
-      duration: '2',
-    });
-    expect(typeof gifOutput === 'string' ? gifOutput : '').toMatch(
-      /^data:image\/gif;base64,/,
-    );
-    const base64Data = (gifOutput as string).replace(
-      'data:image/gif;base64,',
-      '',
-    );
-    const raw = Buffer.from(base64Data, 'base64').toString('ascii', 0, 6);
-    expect(raw).toBe('GIF89a');
   });
 
   it('converts SVG markup to typed React TSX and JSX components', () => {
@@ -287,19 +293,7 @@ describe('creator and social workbench', () => {
     expect(flexResult).toContain('gap: 12px;');
   });
 
-  it('calculates image compression budget for strict portal limits', () => {
-    const budget = runCreatorOperation('exact-kb-image-compressor', {
-      targetKb: '50',
-      originalKb: '500',
-      width: '1200',
-      height: '800',
-      format: 'image/jpeg',
-    });
-    expect(budget).toContain('Target File Size:        ≤ 50 KB');
-    expect(budget).toContain('Required Size Reduction: 90.0%');
-    expect(budget).toContain('Recommended Quality:');
-    expect(budget).toContain('canvas.toDataURL');
-
+  it('generates App Store screenshot mockups as SVG', () => {
     const mockup = runCreatorOperation('app-store-mockup-generator', {
       appName: 'OpenTools Mobile',
       tagline: 'Private Offline Utilities',

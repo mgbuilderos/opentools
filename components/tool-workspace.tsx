@@ -358,8 +358,8 @@ export function ToolWorkspace() {
 
           <footer className="mt-10 flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Canary {manifest.version} · Local JavaScript · No analytics in
-              this preview
+              Canary {manifest.version} · Local JavaScript · No client-side
+              analytics in this preview
             </p>
             <a
               href="/pdf/merge"

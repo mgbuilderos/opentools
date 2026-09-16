@@ -16,11 +16,11 @@ function defaults(operationId: string) {
 }
 
 describe('life-admin workbench', () => {
-  it('ships 34 unique operations whose defaults execute', () => {
-    expect(LIFE_ADMIN_OPERATIONS).toHaveLength(34);
+  it('ships 26 unique operations whose defaults execute', () => {
+    expect(LIFE_ADMIN_OPERATIONS).toHaveLength(26);
     expect(
       new Set(LIFE_ADMIN_OPERATIONS.map((operation) => operation.id)).size,
-    ).toBe(34);
+    ).toBe(26);
 
     for (const operation of LIFE_ADMIN_OPERATIONS) {
       expect(
@@ -28,32 +28,6 @@ describe('life-admin workbench', () => {
       ).toBeGreaterThan(0);
       expect(operation.notice.length).toBeGreaterThan(20);
     }
-  });
-
-  it('computes Vedic Sidereal Lagna and Panchang accurately without cloud egress', () => {
-    const lagna = runLifeAdminOperation('lagna-calculator', {
-      date: '1995-05-15',
-      time: '14:30',
-      latitude: '28.61',
-      longitude: '77.20',
-    });
-    expect(lagna).toContain('VEDIC SIDEREAL LAGNA');
-    expect(lagna).toContain('Ascendant (Lagna) Rashi');
-
-    const kundali = runLifeAdminOperation('kundali-chart-maker', {
-      name: 'Aditi',
-      date: '1995-05-15',
-      time: '14:30',
-    });
-    expect(kundali).toContain('12-BHAVA KUNDALI RASHI CHART');
-    expect(kundali).toContain('1st House (Tanu)');
-
-    const panchang = runLifeAdminOperation('panchang-viewer', {
-      date: '2026-09-17',
-    });
-    expect(panchang).toContain('DAILY VEDIC PANCHANG FOR 2026-09-17');
-    expect(panchang).toContain('Tithi');
-    expect(panchang).toContain('Nakshatra');
   });
 
   it('masks identifiers without validating ownership', () => {
@@ -198,6 +172,148 @@ describe('life-admin workbench', () => {
         other: '50',
       }),
     ).toContain('Unallocated: ₹150');
+  });
+
+  it('reduces birth-date digits and keeps master numbers only for life path', () => {
+    const lines = (operationId: string, values: Record<string, string>) =>
+      runLifeAdminOperation(operationId, values).split('\n');
+    const method = expect.stringMatching(/^Method: \S/u);
+
+    // 15 → 1+5 = 6; 7 → 7; 1990 → 1+9+9+0 = 19 → 1+9 = 10 → 1+0 = 1;
+    // total 6 + 7 + 1 = 14 → 1+4 = 5.
+    expect(
+      lines('life-path-number-calculator', { birthDate: '1990-07-15' }),
+    ).toEqual([
+      'Life path number: 5',
+      'Day 15 → 6',
+      'Month 7 → 7',
+      'Year 1990 → 19 → 10 → 1',
+      'Total 6 + 7 + 1 = 14 → 5',
+      method,
+    ]);
+    // Master total kept: 12 → 1+2 = 3; 7 → 7; 1990 → 19 → 10 → 1;
+    // total 3 + 7 + 1 = 11 stays 11 (a plain reduction would give 2).
+    expect(
+      lines('life-path-number-calculator', { birthDate: '1990-07-12' }),
+    ).toEqual([
+      'Life path number: 11',
+      'Day 12 → 3',
+      'Month 7 → 7',
+      'Year 1990 → 19 → 10 → 1',
+      'Total 3 + 7 + 1 = 11 → 11',
+      method,
+    ]);
+    // Master component kept: 29 → 2+9 = 11 stays 11; 7 → 7;
+    // 1930 → 1+9+3+0 = 13 → 1+3 = 4; total 11 + 7 + 4 = 22 stays 22.
+    // Reducing the day to 2 instead would give 2 + 7 + 4 = 13 → 4.
+    expect(
+      lines('life-path-number-calculator', { birthDate: '1930-07-29' }),
+    ).toEqual([
+      'Life path number: 22',
+      'Day 29 → 11',
+      'Month 7 → 7',
+      'Year 1930 → 13 → 4',
+      'Total 11 + 7 + 4 = 22 → 22',
+      method,
+    ]);
+    // Every part is a master number: 29 → 2+9 = 11; month 11 needs no
+    // reduction; 2009 → 2+0+0+9 = 11; total 11 + 11 + 11 = 33 stays 33.
+    expect(
+      lines('life-path-number-calculator', { birthDate: '2009-11-29' }),
+    ).toEqual([
+      'Life path number: 33',
+      'Day 29 → 11',
+      'Month 11 → 11',
+      'Year 2009 → 11',
+      'Total 11 + 11 + 11 = 33 → 33',
+      method,
+    ]);
+
+    // Birth number never keeps master numbers: 29 → 2+9 = 11 → 1+1 = 2.
+    expect(
+      lines('birth-number-calculator', { birthDate: '1990-07-29' }),
+    ).toEqual(['Birth number: 2', 'Day 29 → 11 → 2', method]);
+
+    // Month 7 → 7; day 15 → 1+5 = 6; 2026 → 2+0+2+6 = 10 → 1+0 = 1;
+    // total 7 + 6 + 1 = 14 → 1+4 = 5.
+    expect(
+      lines('personal-year-number-calculator', {
+        birthDate: '1990-07-15',
+        year: '2026',
+      }),
+    ).toEqual([
+      'Personal year number: 5',
+      'Birth month 7 → 7',
+      'Birth day 15 → 6',
+      'Year 2026 → 10 → 1',
+      'Total 7 + 6 + 1 = 14 → 5',
+      method,
+    ]);
+    // Personal year does not keep a master total: 7 + 3 + 1 = 11 → 1+1 = 2.
+    expect(
+      lines('personal-year-number-calculator', {
+        birthDate: '1990-07-12',
+        year: '2026',
+      }),
+    ).toEqual([
+      'Personal year number: 2',
+      'Birth month 7 → 7',
+      'Birth day 12 → 3',
+      'Year 2026 → 10 → 1',
+      'Total 7 + 3 + 1 = 11 → 2',
+      method,
+    ]);
+  });
+
+  it('rejects empty, malformed, and impossible birth dates and years', () => {
+    for (const operationId of [
+      'life-path-number-calculator',
+      'birth-number-calculator',
+      'personal-year-number-calculator',
+    ]) {
+      const run = (birthDate: string) => () =>
+        runLifeAdminOperation(operationId, { birthDate, year: '2026' });
+      expect(run('')).toThrow('Enter a date of birth first.');
+      expect(run('15/07/1990')).toThrow(/must use YYYY-MM-DD/u);
+      expect(run('2026-02-30')).toThrow(/not a real calendar date/u);
+      expect(run('1990-13-01')).toThrow(/not a real calendar date/u);
+      expect(run('0000-01-01')).toThrow(/between 1 and 9999/u);
+      expect(run('0001-01-01')).not.toThrow();
+      expect(run('9999-12-31')).not.toThrow();
+    }
+    for (const year of ['', '0', '10000', '2026.5']) {
+      expect(() =>
+        runLifeAdminOperation('personal-year-number-calculator', {
+          birthDate: '1990-07-15',
+          year,
+        }),
+      ).toThrow(/^Year must be/u);
+    }
+  });
+
+  it('limits numerology output to numbers and neutral arithmetic wording', () => {
+    // Allowlist rather than blocklist: any word outside this neutral
+    // arithmetic vocabulary fails the test, whatever topic it comes from.
+    const neutralWords = new Set(
+      'a add and are birth by chosen day digit digits kept life master method month not number numbers of or path personal reduce remains results same separately single sum summing the three total until way year'.split(
+        ' ',
+      ),
+    );
+    for (const operationId of [
+      'life-path-number-calculator',
+      'birth-number-calculator',
+      'personal-year-number-calculator',
+    ]) {
+      for (const birthDate of ['1990-07-15', '2009-11-29']) {
+        const output = runLifeAdminOperation(operationId, {
+          birthDate,
+          year: '2026',
+        });
+        for (const word of output.toLowerCase().match(/\p{L}+/gu) ?? []) {
+          expect(neutralWords, `${operationId}: ${word}`).toContain(word);
+        }
+      }
+    }
   });
 
   it('rejects unknown operation identifiers', () => {

@@ -4,6 +4,7 @@ import {
   contentSecurityPolicy,
   loadsLocalModel,
 } from './lib/security/content-security-policy';
+import { removedToolRedirect } from './lib/seo/removed-tool-redirects';
 
 const responseHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -65,6 +66,12 @@ export function proxy(request: NextRequest) {
         time: Date.now(),
       }),
     );
+  }
+
+  // Old links to tools removed by owner decision go to the closest live page.
+  const redirectTo = removedToolRedirect(pathname);
+  if (redirectTo) {
+    return NextResponse.redirect(new URL(redirectTo, request.url), 308);
   }
 
   const response = NextResponse.next();

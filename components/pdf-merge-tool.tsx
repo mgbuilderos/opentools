@@ -738,8 +738,8 @@ export function PdfMergeTool() {
 
           <footer className="mt-10 flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Canary {manifest.version} · pdf-lib 1.17.1 · No analytics in this
-              preview
+              Canary {manifest.version} · pdf-lib 1.17.1 · No client-side
+              analytics in this preview
             </p>
             <a
               href="/"

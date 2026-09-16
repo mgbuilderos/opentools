@@ -43,7 +43,6 @@ function getReliefHeadline(operation?: string): string {
   if (
     op.includes('compress') ||
     op.includes('size') ||
-    op.includes('exact-kb') ||
     op.includes('optimize')
   ) {
     return 'Target size achieved. Ready for upload portals with zero data leaks.';
@@ -56,12 +55,7 @@ function getReliefHeadline(operation?: string): string {
   ) {
     return 'Saved you paid software subscriptions and kept documents 100% private.';
   }
-  if (
-    op.includes('ocr') ||
-    op.includes('transcribe') ||
-    op.includes('audio') ||
-    op.includes('speech')
-  ) {
+  if (op.includes('ocr') || op.includes('audio') || op.includes('speech')) {
     return 'Fast offline AI processing with zero third-party cloud uploads.';
   }
   return 'Saved you paid software subscriptions and kept data 100% on your device.';

@@ -7,16 +7,16 @@ import {
   TOOL_CATALOG,
 } from './tool-catalog-data';
 
-describe('Programmatic SEO Engine — 1,000 Tool Catalog & Guides', () => {
-  it('contains exactly 1,000 catalog tools', () => {
-    expect(TOOL_CATALOG).toHaveLength(1000);
+describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
+  it('contains exactly 964 catalog tools', () => {
+    expect(TOOL_CATALOG).toHaveLength(964);
   });
 
-  it('assigns unique, URL-safe slugs to all 1,000 tools', () => {
+  it('assigns unique, URL-safe slugs to all 964 tools', () => {
     const slugs = getAllToolSlugs();
-    expect(slugs).toHaveLength(1000);
+    expect(slugs).toHaveLength(964);
     const uniqueSlugs = new Set(slugs);
-    expect(uniqueSlugs.size).toBe(1000);
+    expect(uniqueSlugs.size).toBe(964);
 
     for (const slug of slugs) {
       expect(slug).toMatch(/^[a-z0-9-]+$/);

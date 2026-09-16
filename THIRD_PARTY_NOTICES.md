@@ -18,11 +18,8 @@ Primary runtime packages:
 - Lucide React 1.31.0 — ISC.
 - vinext 1.0.0-beta.9 — MIT.
 
-AI and media runtime packages:
+AI runtime packages:
 
-- `@xenova/transformers` 2.x — Apache-2.0.
-- `@tensorflow/tfjs` 4.x — Apache-2.0.
-- `upscaler` 1.x — MIT.
 - `onnxruntime-web` 1.21.0 — MIT (Microsoft). Its WebAssembly binary is
   self-hosted at `public/ort/ort-wasm-simd-threaded.wasm`.
 

@@ -463,8 +463,8 @@ export function TextWorkbenchTool() {
           ) : null}
 
           <footer className="mt-8 border-t py-5 text-xs text-muted-foreground">
-            Local JavaScript · 2,000,000-character limit · No analytics · Formal
-            multi-browser egress proof pending
+            Local JavaScript · 2,000,000-character limit · No client-side
+            analytics · Formal multi-browser egress proof pending
           </footer>
         </div>
       </section>

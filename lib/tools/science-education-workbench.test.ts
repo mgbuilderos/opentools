@@ -14,9 +14,9 @@ function defaults(id: string) {
 }
 
 describe('science and education workbench', () => {
-  it('publishes 53 unique operations whose defaults all run', () => {
-    expect(SCIENCE_OPERATIONS).toHaveLength(53);
-    expect(new Set(SCIENCE_OPERATIONS.map((item) => item.id)).size).toBe(53);
+  it('publishes 52 unique operations whose defaults all run', () => {
+    expect(SCIENCE_OPERATIONS).toHaveLength(52);
+    expect(new Set(SCIENCE_OPERATIONS.map((item) => item.id)).size).toBe(52);
     for (const operation of SCIENCE_OPERATIONS) {
       expect(
         runScienceOperation(operation.id, defaults(operation.id)),
@@ -24,14 +24,14 @@ describe('science and education workbench', () => {
     }
   });
 
-  it('calculates clinical health, metabolic, and hydration metrics accurately', () => {
+  it('calculates health formula results without advice', () => {
     const bmiResult = runScienceOperation('bmi-calculator', {
       weight: '70',
       height: '175',
     });
-    expect(bmiResult).toContain('BMI: 22.86 kg/m²');
-    expect(bmiResult).toContain('Classification: Normal weight');
-    expect(bmiResult).toContain('Healthy weight range: 56.7 kg – 76.3 kg');
+    expect(bmiResult).toBe(
+      'BMI: 22.86 kg/m²\nPonderal index: 13.06 kg/m³\nFormula: BMI = weight (kg) ÷ height (m)²',
+    );
 
     const bmrResult = runScienceOperation('bmr-calculator', {
       gender: 'male',
@@ -48,26 +48,23 @@ describe('science and education workbench', () => {
       height: '175',
       activity: 'moderate',
     });
-    expect(tdeeResult).toContain('Maintenance (TDEE): 2556 kcal/day');
-    expect(tdeeResult).toContain(
-      'Standard fat loss (-500 kcal/day): 2056 kcal/day',
-    );
-
-    const waterResult = runScienceOperation('water-intake-calculator', {
-      weight: '70',
-      exerciseMinutes: '45',
-      climate: 'temperate',
-    });
-    expect(waterResult).toContain(
-      'Daily hydration recommendation: 2.98 L (2,975 mL)',
+    expect(tdeeResult).toBe(
+      'BMR (Mifflin-St Jeor): 1648.8 kcal/day\nActivity multiplier: 1.55×\nTDEE: 2556 kcal/day',
     );
 
     const idealResult = runScienceOperation('ideal-weight-calculator', {
       gender: 'male',
       height: '175',
     });
-    expect(idealResult).toContain('Devine formula (1974): 70.5 kg');
-    expect(idealResult).toContain('Robinson formula (1983): 68.9 kg');
+    expect(idealResult).toBe(
+      'Devine formula (1974): 70.5 kg\nRobinson formula (1983): 68.9 kg\nMiller formula (1983): 68.7 kg\nHamwi formula (1964): 72.0 kg',
+    );
+
+    for (const result of [bmiResult, bmrResult, tdeeResult, idealResult]) {
+      expect(result).not.toMatch(
+        /classification|healthy|fat loss|bulk|clinical/iu,
+      );
+    }
   });
 
   it('calculates mole count, dilution, and ideal pH', () => {
