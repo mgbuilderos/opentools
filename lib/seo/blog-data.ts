@@ -133,15 +133,15 @@ You can copy this generated snippet directly into your codebase and immediately 
 
 - **Handling Nullable vs Optional Attributes**: If an incoming API payload contains \`null\`, you can append \`.nullable()\` to the schema attribute. If a field might be completely omitted in certain API responses, append \`.optional()\`.
 - **Union Types Across Varied Payloads**: If an API endpoint returns heterogeneous arrays (e.g. mixed event types), pass multiple sample objects into the schema generator to inspect overlapping keys and generate discriminated unions with \`z.discriminatedUnion()\`.
-- **Zero-Egress Security Invariant**: Because OpenTools enforces a strict Content Security Policy (\`connect-src 'none'\`), your browser tab cannot transmit your schema or sample payload to any external server. You can safely generate schemas from real production databases, customer records, and internal microservice payloads.`,
+- **Local-First Security**: Because OpenTools enforces a strict Content Security Policy (\`connect-src 'none'\`), your browser tab does not transmit your schema or sample payload to any external server. You can safely generate schemas from real production databases, customer records, and internal microservice payloads.`,
       },
       {
         id: 'benchmark-comparison',
         heading: 'Benchmark Comparison: In-Browser vs Cloud Converters',
         content: `| Evaluation Metric | OpenTools Local Generator | Traditional Cloud Converters |
 | :--- | :--- | :--- |
-| **Data Privacy & Egress** | **100% Local Device RAM (0 bytes uploaded)** | Payload transmitted to cloud servers |
-| **Execution Latency** | **< 15 milliseconds (Instant AST parse)** | 300ms - 2,500ms network roundtrip |
+| **Data Privacy** | **100% Local Device RAM (No server uploads)** | Payload transmitted to cloud servers |
+| **Processing Speed** | **In-memory AST parse (No network wait)** | Network roundtrip latency |
 | **String Refinements** | **Automatic (Email, UUID, ISO Date, URL)** | Basic generic strings only |
 | **TypeScript Inference** | **Included (\`z.infer\` export)** | Often missing or paywalled |
 | **Usage Limits & Ads** | **100% Free Forever (0 limits, 0 ads)** | Rate limits, captchas, and paywalls |`,
@@ -152,7 +152,7 @@ You can copy this generated snippet directly into your codebase and immediately 
         question:
           'Does this Zod schema generator upload my JSON data to any server?',
         answer:
-          'No. All recursive parsing and TypeScript code generation runs 100% locally inside your device memory (RAM). Zero network requests are made.',
+          'No. All recursive parsing and TypeScript code generation runs 100% locally inside your device memory (RAM). Your files and inputs never touch a server.',
       },
       {
         question: 'How does the tool detect emails, UUIDs, and ISO dates?',
@@ -169,7 +169,7 @@ You can copy this generated snippet directly into your codebase and immediately 
         question:
           'What happens if my JSON has deeply nested objects or arrays?',
         answer:
-          'The recursive AST parser handles arbitrary levels of nested objects and arrays in milliseconds without stack overflow.',
+          'The recursive AST parser handles arbitrary levels of nested objects and arrays efficiently without stack overflow.',
       },
       {
         question: 'Is this tool free for commercial and enterprise projects?',
@@ -195,7 +195,7 @@ You can copy this generated snippet directly into your codebase and immediately 
       'generate er diagram from sql query online free',
       'sql ddl to entity relationship diagram',
       'schema visualizer private',
-      'sql visualizer offline',
+      'sql to er diagram generator private',
       'convert create table to er diagram',
     ],
     category: 'Developer & Systems',
@@ -269,11 +269,12 @@ The visualizer instantly renders a multi-table vector diagram with table headers
       },
       {
         id: 'comparison-matrix',
-        heading: 'Comparison: OpenTools SQL Visualizer vs Cloud Database SaaS',
+        heading:
+          'Comparison: OpenTools SQL to ER Diagram Generator vs Cloud Database SaaS',
         content: `| Feature | OpenTools In-Browser ER Visualizer | Cloud Database Visualizer SaaS |
 | :--- | :--- | :--- |
 | **Database Connection Required** | **None (Pure SQL text)** | Live connection string / SSH tunnel |
-| **Data Privacy** | **100% In-Browser Memory (0 network egress)** | Schema uploaded and logged on servers |
+| **Data Privacy** | **100% In-Browser Memory (No server uploads)** | Schema uploaded and logged on servers |
 | **Cost** | **$0 / Free Forever** | $15 - $49 / user / month |
 | **Render Engine** | **Native Vector SVG** | Canvas / Raster bitmap |
 | **Dark Mode Support** | **Built-in Zinc Dark & Clean Light** | Often locked to paid tiers |`,
@@ -305,7 +306,7 @@ The visualizer instantly renders a multi-table vector diagram with table headers
       {
         question: 'Is my proprietary schema data stored on any server?',
         answer:
-          'Never. All lexing, parsing, and SVG generation occurs strictly inside your local browser tab with zero data egress.',
+          'Never. All lexing, parsing, and SVG generation occurs strictly inside your local browser tab with your files and inputs never touching a server.',
       },
     ],
     relatedSlugs: [
@@ -351,7 +352,7 @@ This poses significant corporate and regulatory liabilities:
       },
       {
         id: 'how-wasm-pdf-merging-works',
-        heading: 'The Zero-Egress Architecture: Browser-Native WebAssembly',
+        heading: 'The Local-First Architecture: Browser-Native WebAssembly',
         content: `OpenTools solves this fundamental privacy and performance problem by compiling a complete ISO 32000-1 compliant PDF manipulation engine to WebAssembly (WASM).
 
 When you merge PDF files on OpenTools:
@@ -359,7 +360,7 @@ When you merge PDF files on OpenTools:
 2. **Page Tree Concatenation in WASM**: The WebAssembly engine parses the internal Cross-Reference Tables (XREFs), merges document catalog dictionaries, and resolves page resource streams in memory.
 3. **Instant Local Download**: The merged PDF is written to an ephemeral memory blob and downloaded immediately to your disk.
 
-Zero network requests are made during the entire process. The execution speed is bounded only by your local CPU and RAM, completing multi-page merges in milliseconds.`,
+Zero network requests are made during the entire process. The execution speed is bounded only by your local CPU and RAM, completing multi-page merges directly on your machine.`,
       },
       {
         id: 'step-by-step-guide',
@@ -373,7 +374,7 @@ Zero network requests are made during the entire process. The execution speed is
         heading: 'Comparison: OpenTools WASM Merger vs Cloud PDF SaaS',
         content: `| Evaluation Metric | OpenTools In-Browser PDF Merger | Traditional Cloud PDF Tools |
 | :--- | :--- | :--- |
-| **Data Transmission** | **0 Bytes (100% In-Browser)** | Full document uploaded to remote server |
+| **Data Transmission** | **None (100% In-Browser)** | Full document uploaded to remote server |
 | **File Size Limits** | **Unlimited (Limited only by your device RAM)** | Usually capped at 15MB - 50MB on free tiers |
 | **Processing Speed** | **Instant (Zero upload/download latency)** | Dependent on internet upload speed |
 | **Document Retention** | **Zero (Memory cleared on tab close)** | Stored on third-party servers for hours |
@@ -384,7 +385,7 @@ Zero network requests are made during the entire process. The execution speed is
       {
         question: 'Are my confidential documents uploaded to any server?',
         answer:
-          'No. OpenTools operates under a strict zero-egress security model. All PDF page parsing and merging runs entirely inside your browser tab via WebAssembly.',
+          'No. All PDF page parsing and merging runs entirely inside your browser tab via WebAssembly, and your files never touch a server.',
       },
       {
         question: 'Is there a file size limit when merging large documents?',
@@ -398,10 +399,9 @@ Zero network requests are made during the entire process. The execution speed is
           'No. Vector text, high-resolution images, and embedded fonts are preserved losslessly without any added watermarks.',
       },
       {
-        question:
-          'Can I use this tool offline without an active internet connection?',
+        question: 'Do my PDF files ever get uploaded to a server?',
         answer:
-          'Yes. Once the web application is loaded, the WebAssembly engine is cached locally and can merge documents completely offline.',
+          'No. All document parsing and merging happens entirely on your device in local browser memory.',
       },
       {
         question:
@@ -705,7 +705,7 @@ Formatting agile requirements using the industry-standard **Gherkin Behavior-Dri
    - **When**: The user action or event occurs.
    - **Then**: The expected observable outcome.
 
-3. **Definition of Done (DoD) Checklist**: Verification criteria covering unit tests, code review, zero console warnings, zero-egress compliance, and documentation.`,
+3. **Definition of Done (DoD) Checklist**: Verification criteria covering unit tests, code review, zero console warnings, privacy compliance, and documentation.`,
       },
     ],
     faqs: [
@@ -718,7 +718,7 @@ Formatting agile requirements using the industry-standard **Gherkin Behavior-Dri
       {
         question: 'Is my project backlog data stored on any server?',
         answer:
-          'No. All story generation occurs in local browser RAM with zero network egress.',
+          'No. All story generation occurs in local browser RAM and your inputs never touch a server.',
       },
     ],
     relatedSlugs: [
@@ -986,14 +986,14 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   {
     slug: 'markdown-to-pdf-academic-print-guide',
     title:
-      'Publishing Academic & Corporate PDF Documents from Markdown in Milliseconds',
+      'Publishing Academic & Corporate PDF Documents from Markdown in the Browser',
     metaDescription:
       'Convert Markdown notes into publication-grade print and PDF documents with academic serif typography, standard margins, and page breaks.',
     keywords: [
       'markdown to pdf converter free online',
       'format markdown to publication print pdf',
       'private markdown pdf generator',
-      'render markdown to pdf offline',
+      'render markdown to pdf in browser',
       'academic markdown pdf formatter',
     ],
     category: 'PDF & Documents',
@@ -1001,14 +1001,14 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     readingTime: '8 min read',
     author: 'OpenTools Document Engineering Group',
     toolName: 'Markdown to PDF Document Maker',
-    toolDestination: '/documents/workbench?tool=markdown-to-pdf-doc',
+    toolDestination: '/text/writing?tool=markdown-to-pdf-doc',
     summary:
       'Transform plain Markdown text into publication-ready corporate documents and research briefs with custom print styling in device memory.',
     sections: [
       {
         id: 'markdown-publishing',
         heading: 'Markdown to PDF Without Cloud Document Converters',
-        content: `Markdown is the standard format for technical documentation, research notes, and articles. The OpenTools [Markdown to PDF Maker](/documents/workbench?tool=markdown-to-pdf-doc) applies professional CSS print styles with proper @page rules and header hierarchies for instant export.`,
+        content: `Markdown is the standard format for technical documentation, research notes, and articles. The OpenTools [Markdown to PDF Maker](/text/writing?tool=markdown-to-pdf-doc) applies professional CSS print styles with proper @page rules and header hierarchies for instant export.`,
       },
     ],
     faqs: [
@@ -1085,7 +1085,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     toolName: 'UUID v4 Generator',
     toolDestination: '/developer/uuid-generator',
     summary:
-      'Generate single or bulk RFC 4122 UUID v4 identifiers using hardware entropy from crypto.randomUUID() in zero milliseconds.',
+      'Generate single or bulk RFC 4122 UUID v4 identifiers using hardware entropy from crypto.randomUUID() in browser memory.',
     sections: [
       {
         id: 'hardware-entropy-uuid',
@@ -1117,7 +1117,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'epoch time converter utc local',
       'epoch timestamp to datetime online',
       'convert unix time to date free',
-      'epoch converter offline',
+      'epoch converter in browser',
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
@@ -1151,13 +1151,13 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   {
     slug: 'clean-csv-transform-to-json-browser',
     title:
-      'Cleaning and Transforming Messy Tabular CSV Data to Structured JSON Offline',
+      'Cleaning and Transforming Messy Tabular CSV Data to Structured JSON In-Browser',
     metaDescription:
       'Convert CSV spreadsheets into clean, structured JSON arrays and objects. Supports custom delimiters, header normalization, and data type coercion.',
     keywords: [
       'csv to json converter online free',
       'transform csv data to json format private',
-      'clean csv to json offline',
+      'clean csv to json in browser',
       'csv spreadsheet to json array',
       'private tabular data transformer',
     ],
@@ -1226,44 +1226,60 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       },
     ],
     relatedSlugs: [
-      'compress-mp4-webm-video-in-browser',
+      'optimize-images-browser-webp-converter',
       'modern-css-gradient-studio-guide',
       'style-linkedin-x-posts-unicode-text',
     ],
   },
   {
-    slug: 'compress-mp4-webm-video-in-browser',
+    slug: 'optimize-images-browser-webp-converter',
     title:
-      'Compressing MP4 & WebM Videos in the Browser Without Server Size Limits',
+      'Compressing and Converting Images in the Browser Without Server Uploads',
     metaDescription:
-      'Compress and reduce video file sizes in your browser using WebAssembly. 100% client-side compression with zero server uploads and no watermarks.',
+      'Resize, compress, and convert PNG, JPEG, and WebP images directly in your browser. Fast client-side image processing with zero server uploads.',
     keywords: [
-      'compress video online free without watermarks',
-      'mp4 video compressor in browser',
-      'reduce video file size private',
-      'wasm video compressor free',
-      'compress large video file no upload limit',
+      'compress images in browser',
+      'webp converter online private',
+      'reduce png image file size',
+      'client side image optimizer',
+      'convert jpeg to webp without upload',
     ],
-    category: 'Video & Media',
+    category: 'Image & Media',
     publishedAt: '2026-09-16',
     readingTime: '8 min read',
-    author: 'OpenTools Media Compression Practice',
-    toolName: 'Video Compressor',
-    toolDestination: '/video/compress',
+    author: 'OpenTools Media Engineering Group',
+    toolName: 'Image Compressor and Converter',
+    toolDestination: '/image/optimize',
     summary:
-      'Reduce MP4, WebM, and MOV video file sizes locally in browser memory without upload bandwidth delays or file size caps.',
+      'Resize, compress, and convert PNG, JPEG, and WebP images locally in browser memory without sending private photos or confidential assets to cloud servers.',
     sections: [
       {
-        id: 'the-video-upload-bottleneck',
-        heading: 'Overcoming the Video Upload Bottleneck',
-        content: `Uploading gigabyte-sized raw video recordings to cloud converters takes massive bandwidth and time. OpenTools uses WebAssembly video encoders to process frames directly on your machine at hardware speed with zero data transfer.`,
+        id: 'in-browser-image-compression',
+        heading: 'Why Client-Side Image Compression Protects Privacy',
+        content: `Standard online image converters transmit your images over the internet to remote servers for processing. For sensitive product screenshots, identity documents, or proprietary creative assets, uploading files introduces unnecessary privacy risks.
+
+With the OpenTools [Image Compressor and Converter](/image/optimize), image processing executes directly in your browser tab using native HTML5 Canvas and browser image codecs. Your images never touch an external server, and files are saved directly to your local downloads folder.`,
+      },
+      {
+        id: 'supported-formats-and-workflows',
+        heading: 'Supported Formats and Compression Controls',
+        content: `The optimizer supports JPEG, PNG, and WebP formats. You can adjust output quality and resize dimensions before exporting:
+
+1. **Format Conversion**: Convert uncompressed PNGs or large JPEGs to modern, lightweight WebP files.
+2. **Quality Adjustment**: Tune lossy compression quality to strike the right balance between file size and visual fidelity.
+3. **Dimension Scaling**: Resize high-resolution assets for web publishing without installing heavy desktop photo editors.`,
       },
     ],
     faqs: [
       {
-        question: 'Are my videos uploaded to any cloud server?',
+        question: 'Are my images uploaded to any cloud server?',
         answer:
-          'No. Video transcoding executes entirely in WebAssembly inside your browser tab.',
+          'No. All decoding, compression, and format conversion runs locally in your browser memory.',
+      },
+      {
+        question: 'What image formats can I convert?',
+        answer:
+          'You can convert and optimize JPEG, PNG, and WebP images with custom quality settings.',
       },
     ],
     relatedSlugs: [

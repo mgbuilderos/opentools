@@ -12,14 +12,14 @@ const schemaContext = `${httpsScheme}schema.org`;
 export const metadata: Metadata = {
   title: 'Blog & Engineering Playbooks — 100% Private In-Browser Tools',
   description:
-    'In-depth technical tutorials, security deep-dives, and workflow playbooks for modern developers, creators, and professionals using zero-egress browser tools.',
+    'In-depth technical tutorials, security deep-dives, and workflow playbooks for modern developers, creators, and professionals using private browser tools.',
   alternates: {
     canonical: `${httpsOrigin}/blog`,
   },
   openGraph: {
     title: 'OpenTools Blog & Engineering Playbooks',
     description:
-      'Technical tutorials, privacy analyses, and step-by-step guides for zero-egress browser tools.',
+      'Technical tutorials, privacy analyses, and step-by-step guides for in-browser tools.',
     url: `${httpsOrigin}/blog`,
     siteName: 'OpenTools',
     type: 'website',
@@ -37,7 +37,7 @@ export default function BlogDirectoryPage() {
     '@type': 'CollectionPage',
     name: 'OpenTools Blog & Engineering Playbooks',
     description:
-      'Technical tutorials, security deep-dives, and workflow playbooks for in-browser, zero-egress tools.',
+      'Technical tutorials, security deep-dives, and workflow playbooks for in-browser, private tools.',
     url: `${httpsOrigin}/blog`,
     publisher: {
       '@type': 'Organization',
@@ -82,8 +82,8 @@ export default function BlogDirectoryPage() {
             </h1>
             <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">
               Practical guides, privacy breakdowns, and operator tutorials on
-              how to build and work faster using 100% client-side, zero-egress
-              browser tools.
+              how to build and work faster using in-browser tools with zero
+              server uploads.
             </p>
           </div>
 

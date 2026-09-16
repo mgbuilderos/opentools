@@ -67,7 +67,7 @@ export default function TemplatesCatalogPage() {
                   aria-hidden="true"
                   className="size-3.5 text-muted-foreground"
                 />
-                Zero Cloud Egress
+                Zero Server Uploads
               </span>
             </div>
 

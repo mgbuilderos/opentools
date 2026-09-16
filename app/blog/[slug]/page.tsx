@@ -362,7 +362,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   aria-hidden="true"
                   className="size-3.5 text-success"
                 />
-                Zero Cloud Egress
+                Zero Server Uploads
               </span>
               <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="size-3" />

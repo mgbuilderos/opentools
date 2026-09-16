@@ -180,7 +180,7 @@ export function TemplateClientCustomizer({
             Live Preview &amp; Code Inspector
           </span>
           <span className="rounded-full border bg-background px-2.5 py-0.5 text-[11px] font-medium text-foreground">
-            Zero Cloud Egress
+            Zero Server Uploads
           </span>
         </div>
 

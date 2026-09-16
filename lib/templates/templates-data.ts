@@ -247,8 +247,8 @@ Build a permanent compounding asset of your technical knowledge, reusable archit
       'YouTubers, Technical Writers, Podcasters, and Solopreneurs',
     duplicateUrl: `${httpsPrefix}getopentools.notion.site/creator-editorial-hub`,
     downloadFilename: 'content-creator-editorial-calendar.md',
-    relatedToolName: 'Social Media Text Formatter',
-    relatedToolHref: '/text/writing?tool=social-media-formatter',
+    relatedToolName: 'Social Media Post Formatter',
+    relatedToolHref: '/creator/workbench?tool=social-media-post-formatter',
     contentMarkdown: `# Content Creator & Multi-Platform Editorial Hub
 
 A unified production pipeline to keep your publishing schedule consistent across all channels.
@@ -443,7 +443,7 @@ Know your numbers before talking to investors or scaling paid acquisition channe
       'mutual nda template free pdf',
       'free non disclosure agreement generator online',
       'standard 2 party nda template markdown',
-      'confidentiality agreement generator offline private',
+      'confidentiality agreement generator in browser private',
       'freelance nda template free download',
     ],
     features: [
@@ -455,8 +455,8 @@ Know your numbers before talking to investors or scaling paid acquisition channe
     targetAudience:
       'Founders, Freelancers, Software Contractors, and Agency Partners',
     downloadFilename: 'mutual-non-disclosure-agreement-nda.md',
-    relatedToolName: 'Documents & Office Workbench',
-    relatedToolHref: '/documents/workbench?tool=document-generator',
+    relatedToolName: 'Mutual NDA Generator',
+    relatedToolHref: '/documents/workbench?tool=legal-nda-generator',
     interactiveFields: [
       {
         id: 'party1',
