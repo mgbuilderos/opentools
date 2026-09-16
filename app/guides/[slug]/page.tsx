@@ -79,6 +79,12 @@ export default async function GuidePage({ params }: GuidePageProps) {
               </li>
               <li aria-hidden="true">/</li>
               <li>
+                <a href="/guides" className="hover:text-foreground">
+                  Guides
+                </a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li>
                 <a href={categoryPillarHref} className="hover:text-foreground">
                   {guide.tool.category}
                 </a>

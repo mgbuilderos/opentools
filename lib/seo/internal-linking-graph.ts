@@ -43,7 +43,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   'Spreadsheet and Data':
     'Tabular data workbench for CSV cleaning, reshaping, JSON serialization, and column deduplication with zero database retention.',
   'Archive and File':
-    'High-security client-side file tools featuring 256-bit AES-GCM encryption, PBKDF2 password derivation, and SHA-256 integrity hashing.',
+    'High-security client-side file tools featuring local archive extraction, compression, packaging, and validation with zero data egress.',
   'Text and Writing':
     'Precision typographic converters, case normalizers, word counters, text diff checkers, and privacy-preserving writing aids.',
   'Developer and Data':
@@ -51,7 +51,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   'Web and SEO':
     'Client-side webmaster utilities: robots.txt generators, meta tag creators, OpenGraph previewers, and URL encoders.',
   'QR and Barcode':
-    'Vector SVG QR code card generators, print-ready frames, MeCard contact codes, and multi-crypto payment barcodes.',
+    'Vector SVG QR code card generators, print-ready frames, MeCard contact codes, and direct payment barcodes.',
   'Math and Units':
     'Scientific arithmetic, percentage calculators, aspect ratio tools, and unit converters running in hardware floating-point precision.',
   'Finance and Business':
@@ -143,9 +143,7 @@ export function getRelatedToolLinks(
 
   return scored.slice(0, count).map(({ tool }) => {
     let relationship = 'Next step in workflow';
-    if (tool.name.includes('Encrypt') || tool.name.includes('Decrypt')) {
-      relationship = 'Cryptographic companion';
-    } else if (tool.name.includes('Convert') || tool.name.includes('To')) {
+    if (tool.name.includes('Convert') || tool.name.includes('To')) {
       relationship = 'Alternative format conversion';
     } else if (tool.releaseWave === 'P0') {
       relationship = 'Frequently paired utility';

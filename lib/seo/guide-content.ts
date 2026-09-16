@@ -54,7 +54,7 @@ function getSemanticEntities(tool: ToolCatalogEntry) {
   } else if (tool.category === 'Archive and File') {
     entities.push({
       '@type': 'Standard',
-      name: 'NIST SP 800-38D (AES-GCM Authenticated Encryption)',
+      name: 'POSIX tar / ZIP Archive Specification (ISO/IEC 21320-1)',
     });
   } else if (tool.category === 'Audio' || tool.category === 'Video') {
     entities.push({

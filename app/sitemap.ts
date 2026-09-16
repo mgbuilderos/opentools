@@ -50,6 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/life-admin/workbench',
     '/roadmap',
     '/support',
+    '/guides',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: now,
