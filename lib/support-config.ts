@@ -20,7 +20,7 @@ export interface SupportTier {
 
 export const SUPPORT_TIERS: SupportTier[] = [
   {
-    name: 'Quick Coffee',
+    name: '☕ Quick Coffee',
     amountUsd: '$3',
     amountInr: '₹150',
     usdValue: 3,
@@ -33,7 +33,7 @@ export const SUPPORT_TIERS: SupportTier[] = [
     ],
   },
   {
-    name: 'Tool Backer',
+    name: '⚡ Tool Backer',
     amountUsd: '$10',
     amountInr: '₹500',
     usdValue: 10,
@@ -47,7 +47,7 @@ export const SUPPORT_TIERS: SupportTier[] = [
     ],
   },
   {
-    name: 'Pro Patron',
+    name: '💖 Pro Patron',
     amountUsd: '$25',
     amountInr: '₹1,500',
     usdValue: 25,

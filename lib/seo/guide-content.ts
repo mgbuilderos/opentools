@@ -229,7 +229,7 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   const semanticEntities = getSemanticEntities(tool);
 
   const httpsScheme = ['https:', '//'].join('');
-  const siteUrl = `${httpsScheme}opentools.org`;
+  const siteUrl = `${httpsScheme}getopentools.com`;
   const schemaContext = `${httpsScheme}schema.org`;
 
   const jsonLd = {

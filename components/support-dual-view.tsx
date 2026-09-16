@@ -196,12 +196,12 @@ export function SupportDualView() {
                     </div>
                     <div className="text-[11px] text-muted-foreground mt-0.5">
                       {amt === 50
-                        ? 'Chai'
+                        ? '☕ Chai'
                         : amt === 150
-                          ? 'Lunch (Popular)'
+                          ? '🍕 Lunch (Popular)'
                           : amt === 500
-                            ? 'Patron'
-                            : 'Sponsor'}
+                            ? '💖 Patron'
+                            : '🚀 Sponsor'}
                     </div>
                   </button>
                 );
