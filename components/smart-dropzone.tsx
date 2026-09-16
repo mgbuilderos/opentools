@@ -8,13 +8,14 @@ import {
   FileCode,
   FileSpreadsheet,
   FileText,
+  FileUp,
   Image as ImageIcon,
   Link as LinkIcon,
   Palette,
   UploadCloud,
   X,
 } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -107,6 +108,80 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         ],
       };
     }
+
+    if (ext === 'json') {
+      return {
+        category: 'Developer',
+        typeLabel: 'JSON File',
+        summary: `${file.name} (${sizeKb} KB)`,
+        details:
+          'Format, validate against schema, or generate TypeScript/Zod models.',
+        icon: <Code2 className="size-5 text-foreground" />,
+        actions: [
+          {
+            label: 'Format & Validate JSON',
+            href: '/developer/workbench?tool=json-formatter',
+            isPrimary: true,
+          },
+          {
+            label: 'Generate Zod Schema',
+            href: '/developer/advanced?tool=json-to-zod-schema',
+          },
+          {
+            label: 'Generate TypeScript Types',
+            href: '/developer/advanced?tool=json-to-typescript',
+          },
+          {
+            label: 'Minify JSON',
+            href: '/developer/workbench?tool=json-minifier',
+          },
+        ],
+      };
+    }
+
+    if (
+      ['sql', 'md', 'txt', 'html', 'xml', 'yaml', 'yml', 'js', 'ts'].includes(
+        ext,
+      )
+    ) {
+      return {
+        category: 'Text & Code',
+        typeLabel: `${ext.toUpperCase()} Document`,
+        summary: `${file.name} (${sizeKb} KB)`,
+        details: 'Inspect, format, calculate hash, or convert letter case.',
+        icon: <FileCode className="size-5 text-foreground" />,
+        actions: [
+          {
+            label: 'SHA-256 / MD5 Hash',
+            href: '/file/hash-calculator',
+            isPrimary: true,
+          },
+          { label: 'Writing Workbench', href: '/text/writing' },
+          { label: 'File Workbench', href: '/file/workbench' },
+        ],
+      };
+    }
+
+    // Generic file fallback
+    return {
+      category: 'File',
+      typeLabel: ext ? `${ext.toUpperCase()} File` : 'Binary File',
+      summary: `${file.name} (${sizeKb} KB)`,
+      details:
+        'Compute SHA-256 cryptographic hashes, view file metadata, and inspect headers.',
+      icon: <FileText className="size-5 text-foreground" />,
+      actions: [
+        {
+          label: 'Compute SHA-256 / Hashes',
+          href: '/file/hash-calculator',
+          isPrimary: true,
+        },
+        {
+          label: 'File Inspection Workbench',
+          href: '/file/workbench',
+        },
+      ],
+    };
   }
 
   const trimmed = text.trim();
@@ -310,6 +385,7 @@ export function SmartDropzone() {
   const [dragOver, setDragOver] = useState(false);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [inputText, setInputText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -323,30 +399,43 @@ export function SmartDropzone() {
     setDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragOver(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      const detection = detectInput('', file);
-      if (detection) {
-        setResult(detection);
-        setInputText(file.name);
-        return;
-      }
-    }
-
-    const text = e.dataTransfer.getData('text');
-    if (text) {
-      setInputText(text.slice(0, 100));
-      const detection = detectInput(text);
-      if (detection) {
-        setResult(detection);
-      }
+  const handleProcessFile = useCallback((file: File) => {
+    const detection = detectInput('', file);
+    if (detection) {
+      setResult(detection);
+      setInputText(file.name);
     }
   }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragOver(false);
+
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        handleProcessFile(file);
+        return;
+      }
+
+      const text = e.dataTransfer.getData('text');
+      if (text) {
+        setInputText(text.slice(0, 100));
+        const detection = detectInput(text);
+        if (detection) {
+          setResult(detection);
+        }
+      }
+    },
+    [handleProcessFile],
+  );
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleProcessFile(e.target.files[0]);
+    }
+  };
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const text = e.clipboardData.getData('text');
@@ -395,6 +484,14 @@ export function SmartDropzone() {
           : 'border-border hover:border-foreground/40',
       )}
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        aria-label="Upload file to inspect and detect tools"
+        className="hidden"
+        onChange={handleFileInputChange}
+      />
+
       {!result ? (
         <div className="space-y-4 text-center">
           <div className="mx-auto flex size-12 items-center justify-center rounded-full border bg-muted/40">
@@ -411,15 +508,28 @@ export function SmartDropzone() {
             </p>
           </div>
 
-          <div className="max-w-xl mx-auto">
-            <input
-              type="text"
-              aria-label="Paste text or type to auto-detect tool"
-              placeholder="Or paste code, timestamp, JSON, SQL, or URL here..."
-              value={inputText}
-              onChange={handleTextChange}
-              className="focus-ring h-10 w-full rounded-lg border bg-background px-3.5 text-xs sm:text-sm transition-all hover:border-foreground/30 text-center placeholder:text-muted-foreground/70"
-            />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-xl mx-auto">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                buttonVariants({ variant: 'default', size: 'sm' }),
+                'h-10 px-4 gap-2 font-medium text-xs sm:text-sm shrink-0 shadow-sm',
+              )}
+            >
+              <FileUp className="size-4" />
+              <span>Browse file</span>
+            </button>
+            <div className="relative w-full">
+              <input
+                type="text"
+                aria-label="Paste text or type to auto-detect tool"
+                placeholder="Or paste code, timestamp, JSON, SQL, or URL..."
+                value={inputText}
+                onChange={handleTextChange}
+                className="focus-ring h-10 w-full rounded-lg border bg-background px-3.5 text-xs sm:text-sm transition-all hover:border-foreground/30 placeholder:text-muted-foreground/70"
+              />
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1 text-[11px] text-muted-foreground">
