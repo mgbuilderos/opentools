@@ -74,10 +74,10 @@ function filesFor(id: string, sampleEnc?: LocalFileInput) {
 }
 
 describe('file workbench', () => {
-  it('publishes 29 unique operations whose defaults all run', async () => {
-    expect(FILE_WORKBENCH_OPERATIONS).toHaveLength(29);
+  it('publishes 31 unique operations whose defaults all run', async () => {
+    expect(FILE_WORKBENCH_OPERATIONS).toHaveLength(31);
     expect(new Set(FILE_WORKBENCH_OPERATIONS.map((item) => item.id)).size).toBe(
-      29,
+      31,
     );
     const encResult = await runFileWorkbenchOperation(
       'file-encrypt',
@@ -314,5 +314,75 @@ describe('file workbench', () => {
     await expect(
       runFileWorkbenchOperation('hex-patch-generator', {}, [hello, world]),
     ).rejects.toThrow('equal byte length');
+  });
+
+  it('inspects and strips EXIF metadata from JPEG and PNG files', async () => {
+    const sampleJpegWithExif = makeFile(
+      'photo.jpg',
+      new Uint8Array([
+        0xff,
+        0xd8, // SOI
+        0xff,
+        0xe1, // APP1
+        0x00,
+        0x16, // Length (22 bytes)
+        0x45,
+        0x78,
+        0x69,
+        0x66,
+        0x00,
+        0x00, // "Exif\0\0"
+        0x49,
+        0x49, // II
+        0x2a,
+        0x00, // 42
+        0x08,
+        0x00,
+        0x00,
+        0x00, // IFD0 offset
+        0x00,
+        0x00, // 0 entries
+        0xff,
+        0xdb, // DQT
+        0x00,
+        0x04,
+        0x00,
+        0x00,
+        0xff,
+        0xda, // SOS
+        0x00,
+        0x02,
+        0x12,
+        0x34,
+        0xff,
+        0xd9, // EOI
+      ]),
+      'image/jpeg',
+    );
+
+    const inspected = await runFileWorkbenchOperation(
+      'exif-metadata-inspector',
+      {},
+      [sampleJpegWithExif],
+    );
+    expect(inspected.summary).toContain('Inspected metadata across 1 file(s)');
+
+    const stripped = await runFileWorkbenchOperation(
+      'exif-metadata-stripper',
+      { outputSuffix: '_clean' },
+      [sampleJpegWithExif],
+    );
+    expect(stripped.summary).toContain('Scrubbed metadata from 1 image(s)');
+    expect(stripped.downloads[0].name).toBe('photo_clean.jpg');
+    // Ensure stripped JPEG does not contain APP1 (0xFF 0xE1)
+    const outBytes = stripped.downloads[0].bytes;
+    let foundApp1 = false;
+    for (let i = 0; i < outBytes.length - 1; i++) {
+      if (outBytes[i] === 0xff && outBytes[i + 1] === 0xe1) {
+        foundApp1 = true;
+        break;
+      }
+    }
+    expect(foundApp1).toBe(false);
   });
 });

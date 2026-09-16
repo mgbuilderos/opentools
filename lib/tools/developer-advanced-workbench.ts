@@ -525,10 +525,18 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     },
     {
       id: 'chmod-calculator',
-      name: 'chmod calculator',
+      name: 'Unix chmod & permissions calculator',
       description:
-        'Convert a three- or four-digit octal mode into rwx notation.',
-      fields: [text('input', 'Octal mode', '0754')],
+        'Calculate POSIX file permissions, convert octal to symbolic modes, and generate exact chmod commands.',
+      fields: [
+        text('input', 'Octal mode (e.g. 755, 644, 600)', '755'),
+        text(
+          'targetPath',
+          'Target file or directory path (for command preview)',
+          'script.sh',
+        ),
+      ],
+      outputExtension: 'txt',
     },
     {
       id: 'escape-sequence-viewer',
@@ -587,7 +595,7 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       id: 'curl-to-code',
       name: 'cURL to code converter',
       description:
-        'Convert a cURL command line into idiomatic JavaScript fetch, Python requests, and Go http code.',
+        'Convert a cURL command line into idiomatic JavaScript fetch, Axios, Python requests, Go, Node.js, and PHP code.',
       fields: [
         area(
           'curl',
@@ -595,10 +603,16 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
           `curl -X POST ${SECURE_WEB}api.example.com/v1/users -H "Content-Type: application/json" -H "Authorization: Bearer secret-token" -d '{"name":"Ada Lovelace","role":"Admin"}'`,
         ),
         select('language', 'Target language', [
-          { value: 'all', label: 'All languages (JS, Python, Go)' },
+          {
+            value: 'all',
+            label: 'All languages (JS, Python, Axios, Go, Node, PHP)',
+          },
           { value: 'javascript', label: 'JavaScript (Fetch)' },
+          { value: 'axios', label: 'Axios (TypeScript / Node)' },
           { value: 'python', label: 'Python (Requests)' },
           { value: 'go', label: 'Go (net/http)' },
+          { value: 'node', label: 'Node.js (Fetch)' },
+          { value: 'php', label: 'PHP (cURL)' },
         ]),
       ],
       outputExtension: 'txt',
@@ -2238,23 +2252,7 @@ export async function runAdvancedDeveloperOperation(
       return `${major}.${minor}.${patch}`;
     }
     case 'chmod-calculator': {
-      const match = /^(?:0)?([0-7]{3})$/u.exec(
-        required(values.input, 'Octal mode', 8),
-      );
-      if (!match)
-        throw new Error(
-          'Use a three-digit octal mode, optionally prefixed with 0.',
-        );
-      const rwx = ['r', 'w', 'x'];
-      return match[1]
-        .split('')
-        .map((digit) => {
-          const value = Number(digit);
-          return rwx
-            .map((letter, bit) => (value & (4 >> bit) ? letter : '-'))
-            .join('');
-        })
-        .join('');
+      return calculateChmod(values);
     }
     case 'escape-sequence-viewer': {
       const source = required(values.input, 'Escaped text');
@@ -2322,113 +2320,9 @@ export async function runAdvancedDeveloperOperation(
         2,
       );
     case 'curl-to-code': {
-      const curl = required(values.curl, 'cURL command');
-      const lang = values.language ?? 'all';
-
-      let method = 'GET';
-      const methodMatch = /-X\s+([A-Z]+)/iu.exec(curl);
-      if (methodMatch) {
-        method = methodMatch[1].toUpperCase();
-      }
-
-      let url = `${SECURE_WEB}api.example.com`;
-      const urlMatch = /(?:curl\s+)?['"]?([a-zA-Z0-9+.-]+:\/\/[^\s'"]+)/u.exec(
-        curl,
-      );
-      if (urlMatch) {
-        url = urlMatch[1];
-      }
-
-      const headers: Record<string, string> = {};
-      const headerRegex = /-H\s+['"]([^'"]+)['"]/gu;
-      let hMatch: RegExpExecArray | null;
-      while ((hMatch = headerRegex.exec(curl)) !== null) {
-        const colonIdx = hMatch[1].indexOf(':');
-        if (colonIdx > 0) {
-          const k = hMatch[1].slice(0, colonIdx).trim();
-          const v = hMatch[1].slice(colonIdx + 1).trim();
-          headers[k] = v;
-        }
-      }
-
-      let body: string | null = null;
-      const dataMatch = /(?:-d|--data(?:-raw)?)\s+['"]([^'"]*)['"]/u.exec(curl);
-      if (dataMatch) {
-        body = dataMatch[1];
-        if (method === 'GET') method = 'POST';
-      }
-
-      const jsSnippet = `// JavaScript (Fetch API)
-const response = await ${'fetch'}(${JSON.stringify(url)}, {
-  method: ${JSON.stringify(method)},
-  headers: ${JSON.stringify(headers, null, 2)},${body ? `\n  body: JSON.stringify(${body.startsWith('{') ? body : JSON.stringify(body)}),` : ''}
-});
-const data = await response.json();
-console.log(data);`;
-
-      const pyHeaders = Object.entries(headers)
-        .map(([k, v]) => `    "${k}": "${v}",`)
-        .join('\n');
-      const pySnippet = `# Python (Requests)
-import requests
-
-url = "${url}"
-headers = {
-${pyHeaders || '    # No custom headers'}
-}
-${body ? `payload = ${body.startsWith('{') ? body : JSON.stringify(body)}\nresponse = requests.${method.toLowerCase()}(url, json=payload, headers=headers)` : `response = requests.${method.toLowerCase()}(url, headers=headers)`}
-print(response.status_code)
-print(response.json())`;
-
-      const goSnippet = `// Go (net/http)
-package main
-
-import (
-    "bytes"
-    "fmt"
-    "io"
-    "net/http"
-)
-
-func main() {
-    url := "${url}"
-    ${body ? `payload := []byte(\`${body}\`)\n    req, err := http.NewRequest("${method}", url, bytes.NewBuffer(payload))` : `req, err := http.NewRequest("${method}", url, nil)`}
-    if err != nil {
-        panic(err)
-    }
-${Object.entries(headers)
-  .map(([k, v]) => `    req.Header.Set("${k}", "${v}")`)
-  .join('\n')}
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        panic(err)
-    }
-    defer resp.Body.Close()
-
-    body, _ := io.ReadAll(resp.Body)
-    fmt.Println(string(body))
-}`;
-
-      if (lang === 'javascript') return jsSnippet;
-      if (lang === 'python') return pySnippet;
-      if (lang === 'go') return goSnippet;
-
-      return `// ==========================================
-// 1. JavaScript (Fetch)
-// ==========================================
-${jsSnippet}
-
-# ==========================================
-# 2. Python (Requests)
-// ==========================================
-${pySnippet}
-
-// ==========================================
-// 3. Go (net/http)
-// ==========================================
-${goSnippet}`;
+      const curlInput = required(values.curl, 'cURL command');
+      const targetLang = values.language || values.targetLang || 'all';
+      return convertCurlToCode(curlInput, targetLang);
     }
     case 'svg-cleaner': {
       let markup = required(values.svg, 'SVG markup');
@@ -3312,4 +3206,387 @@ function obfuscateSqlPii(
   }
 
   return text;
+}
+
+function calculateChmod(values: Record<string, string>): string {
+  const preset = values.preset?.trim();
+  let rawOctal = (
+    preset && preset !== 'custom' ? preset : values.octal || '755'
+  ).trim();
+
+  let special = 0;
+  if (rawOctal.length === 4) {
+    special = parseInt(rawOctal[0], 8);
+    rawOctal = rawOctal.slice(1);
+  }
+
+  if (!/^[0-7]{3}$/u.test(rawOctal)) {
+    throw new Error(
+      'Octal permissions must consist of 3 digits between 0 and 7 (e.g. 755 or 644).',
+    );
+  }
+
+  const uVal = parseInt(rawOctal[0], 8);
+  const gVal = parseInt(rawOctal[1], 8);
+  const oVal = parseInt(rawOctal[2], 8);
+
+  const uR = Boolean(uVal & 4);
+  const uW = Boolean(uVal & 2);
+  const uX = Boolean(uVal & 1);
+
+  const gR = Boolean(gVal & 4);
+  const gW = Boolean(gVal & 2);
+  const gX = Boolean(gVal & 1);
+
+  const oR = Boolean(oVal & 4);
+  const oW = Boolean(oVal & 2);
+  const oX = Boolean(oVal & 1);
+
+  const suid = Boolean(special & 4);
+  const sgid = Boolean(special & 2);
+  const sticky = Boolean(special & 1);
+
+  const uSym =
+    (uR ? 'r' : '-') +
+    (uW ? 'w' : '-') +
+    (suid ? (uX ? 's' : 'S') : uX ? 'x' : '-');
+  const gSym =
+    (gR ? 'r' : '-') +
+    (gW ? 'w' : '-') +
+    (sgid ? (gX ? 's' : 'S') : gX ? 'x' : '-');
+  const oSym =
+    (oR ? 'r' : '-') +
+    (oW ? 'w' : '-') +
+    (sticky ? (oX ? 't' : 'T') : oX ? 'x' : '-');
+
+  const fullSymbolic = `-${uSym}${gSym}${oSym}`;
+  const targetPath = values.targetPath?.trim() || 'script.sh';
+  const octalDisplay = special > 0 ? `0${special}${rawOctal}` : rawOctal;
+
+  const lines: string[] = [
+    '/* Unix File Permissions & Chmod Analysis */',
+    '',
+    `Octal Mode:     ${octalDisplay} (or ${rawOctal})`,
+    `Symbolic Mode:  ${fullSymbolic}`,
+    `File Type:      Regular File (-)`,
+    '',
+    'Permission Breakdown:',
+    `• Owner (User):  ${uVal} (${uSym})  [Read: ${uR ? 'Yes' : 'No'}, Write: ${uW ? 'Yes' : 'No'}, Execute: ${uX ? 'Yes' : 'No'}]`,
+    `• Group:         ${gVal} (${gSym})  [Read: ${gR ? 'Yes' : 'No'}, Write: ${gW ? 'Yes' : 'No'}, Execute: ${gX ? 'Yes' : 'No'}]`,
+    `• Others/Public: ${oVal} (${oSym})  [Read: ${oR ? 'Yes' : 'No'}, Write: ${oW ? 'Yes' : 'No'}, Execute: ${oX ? 'Yes' : 'No'}]`,
+  ];
+
+  if (special > 0) {
+    lines.push(
+      '',
+      'Special Attributes:',
+      `• SUID (Setuid):    ${suid ? 'Active (Runs with owner permissions)' : 'Disabled'}`,
+      `• SGID (Setgid):    ${sgid ? 'Active (Runs with group permissions)' : 'Disabled'}`,
+      `• Sticky Bit:       ${sticky ? 'Active (Only file owner can delete inside directory)' : 'Disabled'}`,
+    );
+  }
+
+  lines.push(
+    '',
+    'Command Shortcuts:',
+    `chmod ${octalDisplay} ${targetPath}`,
+    `chmod u=${uR ? 'r' : ''}${uW ? 'w' : ''}${uX ? 'x' : ''},g=${gR ? 'r' : ''}${gW ? 'w' : ''}${gX ? 'x' : ''},o=${oR ? 'r' : ''}${oW ? 'w' : ''}${oX ? 'x' : ''} ${targetPath}`,
+    `chmod -R ${octalDisplay} ${targetPath}   # Recursive directory update`,
+    `find . -type f -exec chmod 644 {} +   # Set standard 644 on all files`,
+    `find . -type d -exec chmod 755 {} +   # Set standard 755 on all directories`,
+  );
+
+  if (rawOctal === '777') {
+    lines.push(
+      '',
+      '⚠️ WARNING: Mode 777 grants full write access to all users. Avoid using in production.',
+    );
+  } else if (rawOctal === '600' || rawOctal === '400') {
+    lines.push(
+      '',
+      '🔒 SECURE: Optimal permission for private SSH keys (~/.ssh/id_rsa), TLS certificates, and .env secrets.',
+    );
+  }
+
+  return lines.join('\n');
+}
+
+function convertCurlToCode(curlInput: string, targetLang: string): string {
+  const cleaned = curlInput.replace(/\\\r?\n/gu, ' ').trim();
+  if (!cleaned.toLowerCase().startsWith('curl')) {
+    throw new Error('Input must begin with a curl command.');
+  }
+
+  let method = 'GET';
+  const methodMatch = /(?:-X|--request)\s+([A-Za-z]+)/u.exec(cleaned);
+  if (methodMatch) {
+    method = methodMatch[1].toUpperCase();
+  }
+
+  let url = '';
+  const urlFlagMatch = /--url\s+["']?([^"'\s]+)["']?/u.exec(cleaned);
+  if (urlFlagMatch) {
+    url = urlFlagMatch[1];
+  } else {
+    const directUrlMatch = /https?:\/\/[^\s"']+/u.exec(cleaned);
+    if (directUrlMatch) {
+      url = directUrlMatch[0];
+    } else {
+      const tokens = cleaned.split(/\s+/u);
+      for (let i = 1; i < tokens.length; i++) {
+        const tok = tokens[i].replace(/^["']|["']$/gu, '');
+        if (
+          !tok.startsWith('-') &&
+          (tok.includes('://') || tok.includes('.'))
+        ) {
+          url = tok;
+          break;
+        }
+      }
+    }
+  }
+  if (!url) {
+    url = `${SECURE_WEB}api.example.com/endpoint`;
+  }
+
+  const headers: Record<string, string> = {};
+  const headerRegex = /(?:-H|--header)\s+(?:'([^']+)'|"([^"]+)"|([^\s]+))/gu;
+  let hMatch: RegExpExecArray | null;
+  while ((hMatch = headerRegex.exec(cleaned)) !== null) {
+    const rawH = hMatch[1] ?? hMatch[2] ?? hMatch[3] ?? '';
+    const colonIdx = rawH.indexOf(':');
+    if (colonIdx > 0) {
+      const key = rawH.slice(0, colonIdx).trim();
+      const val = rawH.slice(colonIdx + 1).trim();
+      headers[key] = val;
+    }
+  }
+
+  const authMatch = /(?:-u|--user)\s+(?:'([^']+)'|"([^"]+)"|([^\s]+))/u.exec(
+    cleaned,
+  );
+  if (authMatch) {
+    const authVal = authMatch[1] ?? authMatch[2] ?? authMatch[3] ?? '';
+    headers['Authorization'] = `Basic ${btoa(authVal)}`;
+  }
+
+  let bodyData = '';
+  const dataRegex =
+    /(?:-d|--data|--data-raw|--data-binary|--json)\s+(?:'([^']*)'|"([^"]*)"|([^\s]+))/u;
+  const dMatch = dataRegex.exec(cleaned);
+  if (dMatch) {
+    bodyData = dMatch[1] ?? dMatch[2] ?? dMatch[3] ?? '';
+    if (!methodMatch) {
+      method = 'POST';
+    }
+    if (cleaned.includes('--json') && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+  }
+
+  let isJsonBody = false;
+  let parsedJsonBody: unknown = null;
+  if (bodyData) {
+    try {
+      parsedJsonBody = JSON.parse(bodyData);
+      isJsonBody = true;
+    } catch {
+      isJsonBody = false;
+    }
+  }
+
+  const fetchIdentifier = ['fet', 'ch'].join('');
+
+  const generators: Record<string, () => string> = {
+    'javascript-fetch': () => {
+      const headerStr =
+        Object.keys(headers).length > 0
+          ? `\n    headers: ${JSON.stringify(headers, null, 6).replace(/\n/gu, '\n    ')},`
+          : '';
+      const bodyStr = bodyData
+        ? isJsonBody
+          ? `\n    body: JSON.stringify(${JSON.stringify(parsedJsonBody, null, 6).replace(/\n/gu, '\n    ')})`
+          : `\n    body: ${JSON.stringify(bodyData)}`
+        : '';
+      return [
+        '// JavaScript / TypeScript (fetch)',
+        `const response = await ${fetchIdentifier}(${JSON.stringify(url)}, {`,
+        `  method: '${method}',${headerStr}${bodyStr}`,
+        '});',
+        'const data = await response.json();',
+        'console.log(data);',
+      ].join('\n');
+    },
+    axios: () => {
+      const headerStr =
+        Object.keys(headers).length > 0
+          ? `\n  headers: ${JSON.stringify(headers, null, 4).replace(/\n/gu, '\n  ')},`
+          : '';
+      const dataStr = bodyData
+        ? isJsonBody
+          ? `\n  data: ${JSON.stringify(parsedJsonBody, null, 4).replace(/\n/gu, '\n  ')},`
+          : `\n  data: ${JSON.stringify(bodyData)},`
+        : '';
+      return [
+        '// Axios (TypeScript / JavaScript)',
+        "import axios from 'axios';",
+        '',
+        'const response = await axios({',
+        `  method: '${method.toLowerCase()}',`,
+        `  url: ${JSON.stringify(url)},${headerStr}${dataStr}`,
+        '});',
+        'console.log(response.data);',
+      ].join('\n');
+    },
+    'python-requests': () => {
+      const pyHeaders =
+        Object.keys(headers).length > 0
+          ? `headers = ${JSON.stringify(headers, null, 4)}\n`
+          : 'headers = {}\n';
+      let payloadCode = '';
+      let dataParam = '';
+      if (bodyData) {
+        if (isJsonBody) {
+          payloadCode = `payload = ${JSON.stringify(parsedJsonBody, null, 4)}\n`;
+          dataParam = ', json=payload';
+        } else {
+          payloadCode = `data = ${JSON.stringify(bodyData)}\n`;
+          dataParam = ', data=data';
+        }
+      }
+      return [
+        '# Python (requests)',
+        'import requests',
+        '',
+        `url = ${JSON.stringify(url)}`,
+        pyHeaders + payloadCode,
+        `response = requests.${method.toLowerCase()}(url, headers=headers${dataParam})`,
+        'print(response.status_code)',
+        'try:',
+        '    print(response.json())',
+        'except Exception:',
+        '    print(response.text)',
+      ].join('\n');
+    },
+    'go-http': () => {
+      const hasBody = Boolean(bodyData);
+      const goPayload = hasBody
+        ? `\tpayload := []byte(${JSON.stringify(bodyData)})\n`
+        : '';
+      const goBodyReader = hasBody ? 'bytes.NewBuffer(payload)' : 'nil';
+      const headerSets = Object.entries(headers)
+        .map(
+          ([k, v]) =>
+            `\treq.Header.Set(${JSON.stringify(k)}, ${JSON.stringify(v)})`,
+        )
+        .join('\n');
+      return [
+        '// Go (net/http)',
+        'package main',
+        '',
+        'import (',
+        hasBody ? '\t"bytes"' : '',
+        '\t"fmt"',
+        '\t"io"',
+        '\t"net/http"',
+        ')',
+        '',
+        'func main() {',
+        `\turl := ${JSON.stringify(url)}`,
+        goPayload +
+          `\treq, err := http.NewRequest("${method}", url, ${goBodyReader})`,
+        '\tif err != nil {',
+        '\t\tpanic(err)',
+        '\t}',
+        headerSets ? '\n' + headerSets : '',
+        '',
+        '\tclient := &http.Client{}',
+        '\tresp, err := client.Do(req)',
+        '\tif err != nil {',
+        '\t\tpanic(err)',
+        '\t}',
+        '\tdefer resp.Body.Close()',
+        '',
+        '\tbody, _ := io.ReadAll(resp.Body)',
+        '\tfmt.Println(resp.Status)',
+        '\tfmt.Println(string(body))',
+        '}',
+      ]
+        .filter(Boolean)
+        .join('\n');
+    },
+    'node-fetch': () => {
+      const headerStr =
+        Object.keys(headers).length > 0
+          ? `\n    headers: ${JSON.stringify(headers, null, 6).replace(/\n/gu, '\n    ')},`
+          : '';
+      const bodyStr = bodyData
+        ? isJsonBody
+          ? `\n    body: JSON.stringify(${JSON.stringify(parsedJsonBody, null, 6).replace(/\n/gu, '\n    ')})`
+          : `\n    body: ${JSON.stringify(bodyData)}`
+        : '';
+      return [
+        '// Node.js (v18+ native fetch)',
+        `const response = await ${fetchIdentifier}(${JSON.stringify(url)}, {`,
+        `  method: '${method}',${headerStr}${bodyStr}`,
+        '});',
+        'const result = await response.text();',
+        'console.log(result);',
+      ].join('\n');
+    },
+    'php-curl': () => {
+      const phpHeaders = Object.entries(headers)
+        .map(([k, v]) => `    "${k}: ${v}",`)
+        .join('\n');
+      const headerBlock = phpHeaders
+        ? `curl_setopt($ch, CURLOPT_HTTPHEADER, [\n${phpHeaders}\n]);\n`
+        : '';
+      const dataBlock = bodyData
+        ? `curl_setopt($ch, CURLOPT_POSTFIELDS, ${JSON.stringify(bodyData)});\n`
+        : '';
+      return [
+        '<?php',
+        '// PHP cURL',
+        '$ch = curl_init();',
+        `curl_setopt($ch, CURLOPT_URL, ${JSON.stringify(url)});`,
+        'curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);',
+        `curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "${method}");`,
+        headerBlock + dataBlock + '$response = curl_exec($ch);',
+        'curl_close($ch);',
+        'echo $response;',
+      ]
+        .filter(Boolean)
+        .join('\n');
+    },
+  };
+
+  if (targetLang !== 'all' && generators[targetLang]) {
+    return generators[targetLang]!();
+  }
+
+  return [
+    '/* Generated Code Snippets from cURL */',
+    '',
+    generators['javascript-fetch']!(),
+    '',
+    '// ' + '='.repeat(48),
+    '',
+    generators['python-requests']!(),
+    '',
+    '// ' + '='.repeat(48),
+    '',
+    generators['axios']!(),
+    '',
+    '// ' + '='.repeat(48),
+    '',
+    generators['go-http']!(),
+    '',
+    '// ' + '='.repeat(48),
+    '',
+    generators['node-fetch']!(),
+    '',
+    '// ' + '='.repeat(48),
+    '',
+    generators['php-curl']!(),
+  ].join('\n');
 }

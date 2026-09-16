@@ -11,9 +11,9 @@ function defaults(id: string) {
 }
 
 describe('web and SEO workbench', () => {
-  it('publishes 41 unique real operations whose defaults all run', () => {
-    expect(WEB_OPERATIONS).toHaveLength(41);
-    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(41);
+  it('publishes 43 unique real operations whose defaults all run', () => {
+    expect(WEB_OPERATIONS).toHaveLength(43);
+    expect(new Set(WEB_OPERATIONS.map((item) => item.id)).size).toBe(43);
     for (const operation of WEB_OPERATIONS) {
       expect(runWebOperation(operation.id, defaults(operation.id))).not.toBe(
         '',
@@ -142,5 +142,36 @@ describe('web and SEO workbench', () => {
     expect(() =>
       runWebOperation('css-clip-path-generator', { points: 'not a point' }),
     ).toThrow('x% y%');
+  });
+
+  it('optimizes and cleans SVG markup', () => {
+    const rawSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><!-- comment --><g inkscape:label="Layer 1"><circle cx="50.0001" cy="50.0002" r="40.0000" fill="#000"/></g></svg>`;
+    const output = runWebOperation('svg-optimizer', {
+      svg: rawSvg,
+      precision: '2',
+      removeComments: 'yes',
+      removeMetadata: 'yes',
+      minifyWhitespace: 'yes',
+    });
+
+    expect(output).toContain('SVG Optimization Report');
+    expect(output).toContain('Reduction:');
+    expect(output).not.toContain('<!-- comment -->');
+    expect(output).not.toContain('inkscape:label');
+  });
+
+  it('generates multi-platform favicon HTML snippet and webmanifest', () => {
+    const output = runWebOperation('favicon-html-generator', {
+      appName: 'OpenTools',
+      shortName: 'Tools',
+      themeColor: '#09090b',
+      tileColor: '#09090b',
+      basePath: '/',
+    });
+
+    expect(output).toContain('rel="apple-touch-icon" sizes="180x180"');
+    expect(output).toContain('rel="icon" type="image/png" sizes="32x32"');
+    expect(output).toContain('site.webmanifest');
+    expect(output).toContain('"short_name": "Tools"');
   });
 });

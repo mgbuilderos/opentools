@@ -306,7 +306,7 @@ describe('advanced developer workbench', () => {
       'curl-to-code',
       defaults('curl-to-code'),
     );
-    expect(code).toContain('// 1. JavaScript (Fetch)');
+    expect(code).toContain('// JavaScript / TypeScript (fetch)');
     expect(code).toContain('requests.post');
     expect(code).toContain('http.NewRequest');
 
@@ -463,5 +463,55 @@ const db = "postgres://root:pass123@prod-db.internal:5432/core";`;
     expect(obfuscated).not.toContain('4111-2222-3333-4444');
     expect(obfuscated).toContain('4111-XXXX-XXXX-1111');
     expect(obfuscated).toContain('@synthetic-test.local');
+  });
+
+  it('calculates POSIX chmod permissions and symbolic representation', async () => {
+    const result755 = await runAdvancedDeveloperOperation('chmod-calculator', {
+      preset: '755',
+      targetPath: 'deploy.sh',
+    });
+    expect(result755).toContain('Octal Mode:     755');
+    expect(result755).toContain('Symbolic Mode:  -rwxr-xr-x');
+    expect(result755).toContain('chmod 755 deploy.sh');
+
+    const result600 = await runAdvancedDeveloperOperation('chmod-calculator', {
+      preset: '600',
+      targetPath: 'id_rsa',
+    });
+    expect(result600).toContain('Symbolic Mode:  -rw-------');
+    expect(result600).toContain('🔒 SECURE');
+
+    const result777 = await runAdvancedDeveloperOperation('chmod-calculator', {
+      preset: '777',
+    });
+    expect(result777).toContain(
+      '⚠️ WARNING: Mode 777 grants full write access',
+    );
+  });
+
+  it('converts cURL commands into multiple idiomatic languages', async () => {
+    const sampleCurl = `curl -X POST "https://api.example.com/v1/users" -H "Content-Type: application/json" -H "Authorization: Bearer secret-token" -d '{"name":"Alice"}'`;
+
+    const fetchCode = await runAdvancedDeveloperOperation('curl-to-code', {
+      curl: sampleCurl,
+      targetLang: 'javascript-fetch',
+    });
+    expect(fetchCode).toContain('fetch("https://api.example.com/v1/users"');
+    expect(fetchCode).toContain('"Authorization": "Bearer secret-token"');
+    expect(fetchCode).toContain('body: JSON.stringify(');
+
+    const pyCode = await runAdvancedDeveloperOperation('curl-to-code', {
+      curl: sampleCurl,
+      targetLang: 'python-requests',
+    });
+    expect(pyCode).toContain('requests.post');
+    expect(pyCode).toContain('json=payload');
+
+    const goCode = await runAdvancedDeveloperOperation('curl-to-code', {
+      curl: sampleCurl,
+      targetLang: 'go-http',
+    });
+    expect(goCode).toContain('http.NewRequest("POST"');
+    expect(goCode).toContain('req.Header.Set("Authorization"');
   });
 });

@@ -21,6 +21,7 @@ export interface WebOperation {
 
 const SECURE_WEB = 'https' + '://';
 const EXAMPLE_ORIGIN = `${SECURE_WEB}example.com`;
+const svgNamespace = 'http:' + '//www.w3.org/2000/svg';
 
 const text = (
   id: string,
@@ -560,6 +561,56 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
         { value: 'same', label: 'Same tab' },
         { value: 'blank', label: 'New tab' },
       ]),
+    ],
+  },
+  {
+    id: 'svg-optimizer',
+    name: 'SVG optimizer & cleaner',
+    description:
+      'Clean and optimize SVG code by stripping comments, editor metadata, redundant attributes, and rounding coordinates.',
+    fields: [
+      area(
+        'svg',
+        'SVG XML markup',
+        `<svg xmlns="${svgNamespace}" viewBox="0 0 100 100">\n  <!-- Generator: Vector Designer 1.0 -->\n  <g id="layer1" inkscape:label="Layer 1">\n    <circle cx="50.0001" cy="50.0002" r="40.0000" fill="#09090b" style="opacity: 1;" />\n  </g>\n</svg>`,
+      ),
+      select('precision', 'Decimal precision', [
+        { value: '2', label: '2 decimals (0.01px - recommended)' },
+        { value: '1', label: '1 decimal (0.1px)' },
+        { value: '3', label: '3 decimals (0.001px)' },
+        { value: 'none', label: 'Keep exact original decimals' },
+      ]),
+      select('removeComments', 'Remove XML comments', [
+        { value: 'yes', label: 'Yes — Strip all comments' },
+        { value: 'no', label: 'No' },
+      ]),
+      select('removeMetadata', 'Remove editor metadata & namespaces', [
+        {
+          value: 'yes',
+          label: 'Yes — Strip inkscape, sodipodi, adobe, sketch tags',
+        },
+        { value: 'no', label: 'No' },
+      ]),
+      select('minifyWhitespace', 'Minify whitespace', [
+        {
+          value: 'yes',
+          label: 'Yes — Compact single-line / minimal whitespace',
+        },
+        { value: 'no', label: 'No — Pretty format' },
+      ]),
+    ],
+  },
+  {
+    id: 'favicon-html-generator',
+    name: 'Favicon & app icon HTML snippet generator',
+    description:
+      'Generate production-ready HTML <link> tags and web app manifest configurations for modern browsers and mobile devices.',
+    fields: [
+      text('appName', 'Application name', 'OpenTools'),
+      text('shortName', 'Short app name (homescreen)', 'Tools'),
+      text('themeColor', 'Theme color (hex)', '#09090b'),
+      text('tileColor', 'Windows tile color (hex)', '#09090b'),
+      text('basePath', 'Base icon directory path', '/'),
     ],
   },
 ] as const;
@@ -1247,7 +1298,157 @@ export function runWebOperation(
           : '';
       return `<a href="${html(url)}"${target}>${html(required(values.label, 'Link text'))}</a>`;
     }
+    case 'svg-optimizer': {
+      return optimizeSvg(values);
+    }
+    case 'favicon-html-generator': {
+      return generateFaviconHtml(values);
+    }
     default:
       throw new Error('Choose a supported web or SEO operation.');
   }
+}
+
+function optimizeSvg(values: Record<string, string>): string {
+  const rawSvg = required(values.svg, 'SVG XML markup');
+  if (!rawSvg.toLowerCase().includes('<svg')) {
+    throw new Error('Input must contain a valid <svg> root element.');
+  }
+
+  const removeComments = values.removeComments !== 'no';
+  const removeMetadata = values.removeMetadata !== 'no';
+  const minifyWhitespace = values.minifyWhitespace !== 'no';
+  const precision = values.precision || '2';
+
+  let optimized = rawSvg;
+
+  // 1. Remove XML declarations and doctype
+  optimized = optimized.replace(/<\?xml[\s\S]*?\?>/giu, '');
+  optimized = optimized.replace(/<!DOCTYPE[\s\S]*?>/giu, '');
+
+  // 2. Remove comments
+  if (removeComments) {
+    optimized = optimized.replace(/<!--[\s\S]*?-->/gu, '');
+  }
+
+  // 3. Remove metadata, editor tags, and namespaces
+  if (removeMetadata) {
+    optimized = optimized.replace(/<metadata[\s\S]*?<\/metadata>/giu, '');
+    optimized = optimized.replace(/<sodipodi:namedview[\s\S]*?\/>/giu, '');
+    optimized = optimized.replace(/<inkscape:[a-zA-Z0-9_-]+[\s\S]*?\/>/giu, '');
+    optimized = optimized.replace(
+      /\s*xmlns:(?:inkscape|sodipodi|adobe|sketch|serif|i|x)="[^"]*"/giu,
+      '',
+    );
+    optimized = optimized.replace(
+      /\s*(?:inkscape|sodipodi|adobe|sketch|serif|i|x):[a-zA-Z0-9_-]+="[^"]*"/giu,
+      '',
+    );
+    optimized = optimized.replace(/\s*id="Layer_\d+"/giu, '');
+    optimized = optimized.replace(/\s*xml:space="preserve"/giu, '');
+  }
+
+  // 4. Round numeric coordinates
+  if (precision !== 'none') {
+    const decimals = parseInt(precision, 10);
+    if (!isNaN(decimals) && decimals >= 0 && decimals <= 4) {
+      optimized = optimized.replace(
+        /(\b(?:d|points|viewBox|cx|cy|r|rx|ry|x|y|x1|y1|x2|y2|width|height)=")([^"]+)(")/giu,
+        (_match, prefix, content, suffix) => {
+          const rounded = content.replace(/-?\d+\.\d+/gu, (numStr: string) => {
+            const val = parseFloat(numStr);
+            return val.toFixed(decimals).replace(/\.?0+$/u, '');
+          });
+          return `${prefix}${rounded}${suffix}`;
+        },
+      );
+    }
+  }
+
+  // 5. Minify whitespace
+  if (minifyWhitespace) {
+    optimized = optimized
+      .replace(/>\s+</gu, '><')
+      .replace(/\s{2,}/gu, ' ')
+      .trim();
+  } else {
+    optimized = optimized.trim();
+  }
+
+  const origBytes = new TextEncoder().encode(rawSvg).length;
+  const optBytes = new TextEncoder().encode(optimized).length;
+  const savedBytes = Math.max(0, origBytes - optBytes);
+  const pct =
+    origBytes > 0 ? ((savedBytes / origBytes) * 100).toFixed(2) : '0.00';
+
+  return [
+    '/* SVG Optimization Report */',
+    `Original Size:   ${origBytes.toLocaleString()} bytes`,
+    `Optimized Size:  ${optBytes.toLocaleString()} bytes`,
+    `Reduction:       ${pct}% saved (${savedBytes.toLocaleString()} bytes removed)`,
+    '',
+    '=== Optimized SVG Code ===',
+    optimized,
+  ].join('\n');
+}
+
+function generateFaviconHtml(values: Record<string, string>): string {
+  const appName = values.appName?.trim() || 'OpenTools';
+  const shortName = values.shortName?.trim() || appName.slice(0, 12);
+  const themeColor = values.themeColor?.trim() || '#09090b';
+  const tileColor = values.tileColor?.trim() || '#09090b';
+  let basePath = (values.basePath?.trim() || '/').replace(/\/+$/u, '');
+  if (basePath && !basePath.startsWith('/')) {
+    basePath = `/${basePath}`;
+  }
+  const prefix = basePath ? `${basePath}/` : '/';
+
+  const htmlTags = [
+    `<!-- Standard Favicon & Multi-Platform Web App Icons -->`,
+    `<link rel="icon" type="image/x-icon" href="${prefix}favicon.ico">`,
+    `<link rel="icon" type="image/png" sizes="16x16" href="${prefix}favicon-16x16.png">`,
+    `<link rel="icon" type="image/png" sizes="32x32" href="${prefix}favicon-32x32.png">`,
+    `<link rel="icon" type="image/png" sizes="48x48" href="${prefix}favicon-48x48.png">`,
+    `<link rel="apple-touch-icon" sizes="180x180" href="${prefix}apple-touch-icon.png">`,
+    `<link rel="manifest" href="${prefix}site.webmanifest">`,
+    `<meta name="theme-color" content="${themeColor}">`,
+    `<meta name="apple-mobile-web-app-title" content="${appName}">`,
+    `<meta name="application-name" content="${appName}">`,
+    `<meta name="msapplication-TileColor" content="${tileColor}">`,
+  ].join('\n');
+
+  const manifest = JSON.stringify(
+    {
+      name: appName,
+      short_name: shortName,
+      icons: [
+        {
+          src: `${prefix}android-chrome-192x192.png`,
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'any maskable',
+        },
+        {
+          src: `${prefix}android-chrome-512x512.png`,
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable',
+        },
+      ],
+      theme_color: themeColor,
+      background_color: themeColor,
+      display: 'standalone',
+      start_url: '/',
+    },
+    null,
+    2,
+  );
+
+  return [
+    '/* HTML <head> Favicon Tags */',
+    htmlTags,
+    '',
+    '/* site.webmanifest Content */',
+    manifest,
+  ].join('\n');
 }
