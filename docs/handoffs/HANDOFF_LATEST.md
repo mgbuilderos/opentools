@@ -2,6 +2,8 @@
 
 > **Notice to any AI Model, Agent, or Engineer**: Read this document before making any changes. This project is built as a **forever system** with strict cryptographic, architectural, and design invariants that must never be violated.
 
+> **Multi-agent coordination (2026-09-17)**: Claude Code and Antigravity work on this repository at the same time. Before any task, read the shared board `../../AGENT_BOARD.md` (the blueprint folder two levels above this app; a local file outside the public repository) and follow its protocol: claim files before editing, stay in your own git worktree, commit only your own files, and do not deploy unless the board says you hold the deploy lock.
+
 ---
 
 ## 1. Current State & Verification Baseline
