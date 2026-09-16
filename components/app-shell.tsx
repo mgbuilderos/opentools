@@ -277,7 +277,7 @@ export function AppShell({
         </a>
         <a
           href="/blog"
-          title="Engineering Blog (20 Playbooks)"
+          title="Engineering Blog (Playbooks)"
           className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <Newspaper
@@ -374,21 +374,21 @@ export function AppShell({
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">🔒</span>
-                    <span>Your Files Never Leave Your Device</span>
+                    <span>Your Files &amp; Inputs Never Touch a Server</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">🛡️</span>
-                    <span>100% Private &amp; Offline-Ready</span>
+                    <span>No Third-Party Trackers</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">⚡</span>
-                    <span>Zero Server Uploads</span>
+                    <span>No Client-Side Analytics</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
