@@ -18,13 +18,12 @@ import {
 import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import {
+  type DetectedAction,
+  SMART_DROPZONE_ACTIONS,
+} from './smart-dropzone-actions';
 
-interface DetectedAction {
-  label: string;
-  href: string;
-  variant?: 'default' | 'outline';
-  isPrimary?: boolean;
-}
+export type { DetectedAction };
 
 interface DetectionResult {
   category: string;
@@ -32,7 +31,7 @@ interface DetectionResult {
   summary: string;
   details?: string;
   icon: React.ReactNode;
-  actions: DetectedAction[];
+  actions: readonly DetectedAction[];
 }
 
 function detectInput(text: string, file?: File): DetectionResult | null {
@@ -46,19 +45,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         typeLabel: 'PDF Document',
         summary: `${file.name} (${sizeKb} KB)`,
         details:
-          'Ready for on-device page manipulation, compression, and text extraction.',
+          'Ready for on-device page manipulation, reordering, numbering, and merging.',
         icon: <FileText className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'Compress PDF',
-            href: '/pdf/page-tools?tool=compress-pdf',
-            isPrimary: true,
-          },
-          { label: 'Split Pages', href: '/pdf/page-tools?tool=split-pdf' },
-          { label: 'Merge PDFs', href: '/pdf/merge' },
-          { label: 'Extract Pages', href: '/pdf/extract-pages' },
-          { label: 'Rotate PDF', href: '/pdf/page-tools?tool=rotate-pdf' },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.pdf,
       };
     }
 
@@ -73,16 +62,7 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Ready for client-side compression, background removal, and dimensions editing.',
         icon: <ImageIcon className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'Compress & Optimize',
-            href: '/image/optimize',
-            isPrimary: true,
-          },
-          { label: 'Remove Background', href: '/image/background-remover' },
-          { label: 'Crop & Resize', href: '/image/editor?tool=image-cropper' },
-          { label: 'Convert to PDF', href: '/pdf/images-to-pdf' },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.image,
       };
     }
 
@@ -92,20 +72,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         typeLabel: 'Tabular CSV / TSV',
         summary: `${file.name} (${sizeKb} KB)`,
         details:
-          'Ready for in-browser SQL querying and JSON data transformation.',
+          'Ready for in-browser spreadsheet viewing, filtering, and JSON conversion.',
         icon: <FileSpreadsheet className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'Convert CSV to JSON',
-            href: '/data/csv-to-json',
-            isPrimary: true,
-          },
-          {
-            label: 'Spreadsheet Workbench',
-            href: '/data/workbench?tool=csv-viewer',
-          },
-          { label: 'SQL Visualizer', href: '/developer/sql-visualizer' },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.csv,
       };
     }
 
@@ -117,25 +86,7 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Format, validate against schema, or generate TypeScript/Zod models.',
         icon: <Code2 className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'Format & Validate JSON',
-            href: '/developer/workbench?tool=json-formatter',
-            isPrimary: true,
-          },
-          {
-            label: 'Generate Zod Schema',
-            href: '/developer/advanced?tool=json-to-zod-schema',
-          },
-          {
-            label: 'Generate TypeScript Types',
-            href: '/developer/advanced?tool=json-to-typescript',
-          },
-          {
-            label: 'Minify JSON',
-            href: '/developer/workbench?tool=json-minifier',
-          },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.json,
       };
     }
 
@@ -148,17 +99,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         category: 'Text & Code',
         typeLabel: `${ext.toUpperCase()} Document`,
         summary: `${file.name} (${sizeKb} KB)`,
-        details: 'Inspect, format, calculate hash, or convert letter case.',
+        details: 'Inspect, calculate checksums, or edit in writing workbench.',
         icon: <FileCode className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'SHA-256 / MD5 Hash',
-            href: '/file/hash-calculator',
-            isPrimary: true,
-          },
-          { label: 'Writing Workbench', href: '/text/writing' },
-          { label: 'File Workbench', href: '/file/workbench' },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.code,
       };
     }
 
@@ -170,17 +113,7 @@ function detectInput(text: string, file?: File): DetectionResult | null {
       details:
         'Compute SHA-256 cryptographic hashes, view file metadata, and inspect headers.',
       icon: <FileText className="size-5 text-foreground" />,
-      actions: [
-        {
-          label: 'Compute SHA-256 / Hashes',
-          href: '/file/hash-calculator',
-          isPrimary: true,
-        },
-        {
-          label: 'File Inspection Workbench',
-          href: '/file/workbench',
-        },
-      ],
+      actions: SMART_DROPZONE_ACTIONS['generic-file'],
     };
   }
 
@@ -202,28 +135,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
           ? `JSON Array (${keysCount} items)`
           : `JSON Object (${keysCount} keys)`,
         summary: `Valid JSON structure with ${trimmed.length} characters`,
-        details:
-          'Format, validate against JSON Schema, or generate TypeScript/Zod models in RAM.',
+        details: 'Format, validate, or generate TypeScript/Zod models in RAM.',
         icon: <Code2 className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'Format & Validate JSON',
-            href: '/developer/workbench?tool=json-formatter',
-            isPrimary: true,
-          },
-          {
-            label: 'Generate Zod Schema',
-            href: '/developer/advanced?tool=json-to-zod-schema',
-          },
-          {
-            label: 'Generate TypeScript Types',
-            href: '/developer/advanced?tool=json-to-typescript',
-          },
-          {
-            label: 'Minify JSON',
-            href: '/developer/workbench?tool=json-minifier',
-          },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.json,
       };
     } catch {
       // Invalid JSON fallback if it looked like JSON
@@ -246,18 +160,7 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         summary: date.toUTCString(),
         details: `Local: ${date.toLocaleString()} · ISO: ${date.toISOString()}`,
         icon: <Clock className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'Unix Timestamp Converter',
-            href: '/developer/unix-timestamp',
-            isPrimary: true,
-          },
-          {
-            label: 'Date Difference Calculator',
-            href: '/date/date-difference',
-          },
-          { label: 'Age & Milestone Calculator', href: '/date/age-calculator' },
-        ],
+        actions: SMART_DROPZONE_ACTIONS.timestamp,
       };
     }
   }
@@ -269,19 +172,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
       typeLabel: 'HEX Color Code',
       summary: `Color: ${trimmed.toUpperCase()}`,
       details:
-        'Convert to RGB, HSL, OKLCH and compute accessible WCAG contrast ratios.',
+        'Compute accessible WCAG contrast ratios or build box-shadow presets.',
       icon: <Palette className="size-5 text-foreground" />,
-      actions: [
-        {
-          label: 'Color Converter & OKLCH',
-          href: '/web/workbench?tool=color-converter',
-          isPrimary: true,
-        },
-        {
-          label: 'Contrast Ratio Checker',
-          href: '/web/workbench?tool=color-contrast-checker',
-        },
-      ],
+      actions: SMART_DROPZONE_ACTIONS.color,
     };
   }
 
@@ -293,20 +186,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
       category: 'Database',
       typeLabel: 'SQL Query Statement',
       summary: `${trimmed.split('\n')[0].slice(0, 50)}...`,
-      details:
-        'Analyze table relations, format syntax, or visualize entity execution models.',
+      details: 'Format SQL, sanitize PII, or generate visual ER diagrams.',
       icon: <Database className="size-5 text-foreground" />,
-      actions: [
-        {
-          label: 'SQL Diagram Visualizer',
-          href: '/developer/sql-visualizer',
-          isPrimary: true,
-        },
-        {
-          label: 'Format SQL',
-          href: '/developer/workbench?tool=sql-formatter',
-        },
-      ],
+      actions: SMART_DROPZONE_ACTIONS.sql,
     };
   }
 
@@ -320,23 +202,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
       typeLabel: 'Web URL / Endpoint',
       summary: trimmed.length > 50 ? `${trimmed.slice(0, 50)}...` : trimmed,
       details:
-        'Generate on-device QR codes, inspect Open Graph meta tags, or parse URI components.',
+        'Generate on-device QR codes, Open Graph metadata, or encode components.',
       icon: <LinkIcon className="size-5 text-foreground" />,
-      actions: [
-        {
-          label: 'Generate QR Code',
-          href: '/qr/workbench?tool=url-qr-code',
-          isPrimary: true,
-        },
-        {
-          label: 'Open Graph Inspector',
-          href: '/web/workbench?tool=open-graph-generator',
-        },
-        {
-          label: 'URL Parser & Encoder',
-          href: '/developer/workbench?tool=url-encoder',
-        },
-      ],
+      actions: SMART_DROPZONE_ACTIONS.url,
     };
   }
 
@@ -349,15 +217,7 @@ function detectInput(text: string, file?: File): DetectionResult | null {
       details:
         'Decode binary bytes, inspect plaintext data, or verify cryptographic hashes.',
       icon: <FileCode className="size-5 text-foreground" />,
-      actions: [
-        {
-          label: 'Decode Base64',
-          href: '/developer/base64-decoder',
-          isPrimary: true,
-        },
-        { label: 'Encode Base64', href: '/developer/base64-encoder' },
-        { label: 'Hash Calculator (SHA-256)', href: '/file/hash-calculator' },
-      ],
+      actions: SMART_DROPZONE_ACTIONS.base64,
     };
   }
 
@@ -367,17 +227,9 @@ function detectInput(text: string, file?: File): DetectionResult | null {
     typeLabel: 'Plaintext / Markdown',
     summary: `${trimmed.split(/\s+/).length} words · ${trimmed.length} characters`,
     details:
-      'Convert case, inspect reading statistics, or clean formatting with zero uploads.',
+      'Convert case, inspect word statistics, or format in writing workbench.',
     icon: <FileText className="size-5 text-foreground" />,
-    actions: [
-      {
-        label: 'Word Counter & Stats',
-        href: '/text/workbench?tool=word-counter',
-        isPrimary: true,
-      },
-      { label: 'Convert Letter Case', href: '/text/case-converter' },
-      { label: 'Writing Workbench', href: '/text/writing' },
-    ],
+    actions: SMART_DROPZONE_ACTIONS.text,
   };
 }
 
