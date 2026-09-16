@@ -3,6 +3,11 @@
  * (docs/DECISION_LOG.md). A removed path redirects only when a live page does
  * the same job or lists the same kind of tool; every other removed path
  * (for example /video/compress, /image/ocr and /roadmap) returns a 404.
+ *
+ * `/blog/compress-mp4-webm-video-in-browser` is deliberately absent: the owner
+ * removed that article and no live page compresses video, so it returns 404
+ * (docs/DECISION_LOG.md section 7). Do not point it at the image-compression
+ * article; the topic differs and that would be a soft 404.
  */
 const EXACT_REDIRECTS: Readonly<Record<string, string>> = {
   '/audio/transcribe': '/guides/category/audio',

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { getAllBlogPosts } from './blog-data';
 import { getCategoryBySlug, toCategorySlug } from './internal-linking-graph';
 import { LIVE_TOOL_CATALOG, isLiveToolUrl } from './live-tools';
 import { removedToolRedirect } from './removed-tool-redirects';
@@ -64,6 +65,26 @@ describe('removed tool redirects', () => {
       expect(
         removedToolRedirect(`/guides/astrology-and-numerology-${tool}`),
       ).toBe(`/guides/date-time-and-productivity-${tool}`);
+    }
+  });
+
+  // Owner decision 2026-09-17 (docs/DECISION_LOG.md section 7, board item A5.1):
+  // the video-compression article was removed and no live page compresses
+  // video, so its URL 404s rather than redirecting to an off-topic article.
+  it('leaves the removed video-compression article as a 404', () => {
+    const path = '/blog/compress-mp4-webm-video-in-browser';
+    const slug = path.slice('/blog/'.length);
+
+    expect(
+      getAllBlogPosts().some((post) => post.slug === slug),
+      'the article is removed, so nothing should publish this slug',
+    ).toBe(false);
+
+    for (const variant of [path, `${path}/`]) {
+      expect(
+        removedToolRedirect(variant),
+        `${variant} must stay a 404, not redirect to an unrelated article`,
+      ).toBeNull();
     }
   });
 

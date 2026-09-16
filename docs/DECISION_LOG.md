@@ -75,7 +75,7 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   trackers" and "no client-side analytics", and "your files and inputs never
   touch a server", instead of "no trackers", "No analytics" or "zero telemetry".
 
-### 7. Removed pages return 404; one blog URL is an open follow-up
+### 7. Removed pages return 404; the video-article URL 404s by decision
 
 - Owner decision (2026-09-17): a page whose tool or article no longer exists
   returns **404**. A removed path redirects only when a live page does the same
@@ -85,9 +85,32 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   404: the 427 guides whose tool is not live, `/video/compress`, `/image/ocr`
   and `/roadmap`. They were already dropped from the sitemap in commit
   `3581d71`, so this is a deliberate de-index, not a regression.
-- **Open follow-up:** `/blog/compress-mp4-webm-video-in-browser` is live and
-  indexed today and was in the submitted sitemap. Task A3 replaced that article
-  with `/blog/optimize-images-browser-webp-converter`, a different slug, so the
-  old URL will 404 after deploy. The owner accepted the 404 for now and wants it
-  revisited — either a video-compression article that matches the old intent, or
-  a redirect once there is a page worth sending that traffic to.
+- **Resolved (2026-09-17), previously an open follow-up:**
+  `/blog/compress-mp4-webm-video-in-browser` returned 200 and was listed in the
+  live `sitemap.xml` (both verified on 2026-09-17). Task A3 replaced that
+  article with `/blog/optimize-images-browser-webp-converter`, a different
+  slug, so the old URL 404s after deploy.
+
+  The owner was offered three routes — write a genuine article at the original
+  slug, keep the 404, or redirect to the nearest live page — and decided:
+  **remove the article and let the URL 404.** No redirect is added.
+
+  Reasons recorded with the decision:
+  - No live page compresses video. `LIVE_TOOL_ROUTES` in
+    `lib/seo/live-tools.ts` contains no `/video/*` route, and no operation id
+    in `lib/tools/**` matches `video`. The gzip compressor
+    (`/file/workbench?tool=file-compressor`) states in its own notice that it
+    "is not ZIP or a media-specific optimizer", so it does not serve this
+    intent either.
+  - Redirecting to the image-compression article would be a soft 404: the
+    topic does not match, which is the case the redirect rule above excludes.
+  - The article was one day old (`publishedAt: 2026-09-16`) when it was
+    removed, so little ranking had accumulated.
+  - Writing a replacement article would have meant promising nothing and
+    linking only to unrelated tools, which is the kind of page this clean-up
+    is removing.
+
+  `lib/seo/removed-tool-redirects.ts` documents the exclusion, and
+  `lib/seo/removed-tool-redirects.test.ts` asserts that the path stays
+  unredirected and that no blog post publishes that slug, so the redirect
+  cannot be added back silently.
