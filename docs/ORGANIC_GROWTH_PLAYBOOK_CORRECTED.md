@@ -2,9 +2,9 @@
 
 > **Status**: proposal for the owner. Nothing here is implemented, published or
 > deployed.
-> **Supersedes**: `docs/ORGANIC_GROWTH_PLAYBOOK.md` in `apps/web-ui-ux-worktree`
-> (Antigravity, commit
-> `98a6433`, 2026-09-17) — see §9 for what was removed and why.
+> **Supersedes**: `docs/ORGANIC_GROWTH_PLAYBOOK.md` in
+> `apps/web-ui-ux-worktree` (Antigravity, `98a6433`, 2026-09-17) — see §9 for
+> what was removed and why.
 > **Branch**: `claude/growth`, worktree `apps/claude-growth`, off `origin/main`.
 > **Objective**: grow organic traffic to getopentools.com with no paid spend,
 > using only tactics that survive the project's recorded rules and decisions.
@@ -40,8 +40,8 @@ rest are in this worktree.
    `origin/main` will show only 1–7.
 3. `research/LEARNINGS.md` (blueprint root) — items 24, 33, 35, 36 govern
    growth directly.
-4. `docs/PRODUCT_AS_MARKETER_AND_GROWTH_LOOPS.md` (blueprint root) — seven loops already
-   specified. Extend them; do not re-derive them under new names.
+4. `docs/PRODUCT_AS_MARKETER_AND_GROWTH_LOOPS.md` (blueprint root) — seven
+   loops already specified. Extend them; do not re-derive them under new names.
 5. `AGENT_BOARD.md` §4 (blueprint root) — what is already in flight.
 
 ---
@@ -195,8 +195,8 @@ a board §7 request.
 **Mechanism.** A shared link that reproduces someone's *setup* — tool,
 operation, options — so a colleague lands in a configured workbench. This is the
 task-link and recipe loop already specified in
-the blueprint's `docs/PRODUCT_AS_MARKETER_AND_GROWTH_LOOPS.md` ("Task-link
- loop", "Recipe loop"), not a new invention.
+the blueprint's `docs/PRODUCT_AS_MARKETER_AND_GROWTH_LOOPS.md` ("Task-link loop",
+"Recipe loop"), not a new invention.
 
 **Scope.** Query parameters describing the operation only:
 `/developer/advanced?tool=sql-to-er-diagram&layout=...`. Content-free by
@@ -272,12 +272,11 @@ running, these wait.
 
 ### Pillar 6 — Embeds: a security decision, not a marketing one
 
-**Mechanism.** Free embeddable widgets earn contextual backlinks. The "Embed loop"
-is already specified in the blueprint's
+**Mechanism.** Free embeddable widgets earn contextual backlinks. The "Embed
+loop" is already specified in the blueprint's
 `docs/PRODUCT_AS_MARKETER_AND_GROWTH_LOOPS.md`.
 
-**The blocker the original missed.**
-`lib/security/content-security-policy.ts`
+**The blocker the original missed.** `lib/security/content-security-policy.ts`
 sets `frame-ancestors 'none'` on every route. The site cannot currently be
 embedded anywhere. Shipping the original's iframe snippet requires relaxing
 that.
