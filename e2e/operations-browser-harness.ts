@@ -224,6 +224,24 @@ const suites: readonly HarnessSuite[] = [
       const operation = FILE_WORKBENCH_OPERATIONS.find(
         (candidate) => candidate.id === id,
       );
+      // The metadata scrubber refuses any container it cannot actually clean,
+      // so a .txt fixture is not a valid input for it.
+      if (id === 'exif-metadata-stripper' || id === 'exif-metadata-inspector') {
+        const binary = atob(onePixelPng.split(',')[1]!);
+        const bytes = Uint8Array.from(binary, (character) =>
+          character.charCodeAt(0),
+        );
+        return runFileWorkbenchOperation(id, values, [
+          {
+            name: 'pixel.png',
+            path: 'fixtures/pixel.png',
+            type: 'image/png',
+            size: bytes.length,
+            lastModified: Date.UTC(2026, 8, 6),
+            bytes,
+          },
+        ]);
+      }
       if (id === 'file-decrypt') {
         const encrypted = await runFileWorkbenchOperation(
           'file-encrypt',
