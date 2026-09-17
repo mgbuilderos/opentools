@@ -38,7 +38,7 @@ for (const cat of getLiveCategories()) {
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   PDF: 'Merge PDFs, extract pages, build a PDF from images, and rotate, reorder, delete, number, watermark or retitle pages in your browser.',
   Image:
-    'Resize, compress and convert images, crop and rotate them, and make a plain-colour background transparent.',
+    'Resize, compress and convert images, fit a photo under a KB limit at exact pixels and DPI, crop and rotate them, and make a plain-colour background transparent.',
   Audio: 'Trim a WAV file to the section you want.',
   'Documents and Office':
     'Inspect and convert document text: Markdown, HTML, plain text and structured document fields.',

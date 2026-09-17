@@ -88,6 +88,26 @@ describe('removed tool redirects', () => {
     }
   });
 
+  // DECISION_LOG section 7: a removed path redirects only when a live page does
+  // the same job. The plan-only exact-KB calculator was removed (section 4);
+  // /image/exact-size now produces the file, so its old link goes there.
+  it('sends the removed exact-KB operation to the tool that now does the job', () => {
+    const path = '/creator/workbench';
+    const search = '?tool=exact-kb-image-compressor';
+    expect(isLiveToolUrl(`${path}${search}`)).toBe(false);
+    for (const variant of [path, `${path}/`]) {
+      const target = removedToolRedirect(variant, search);
+      expect(target).toBe('/image/exact-size');
+      expect(isLivePage(target!)).toBe(true);
+    }
+    // The live workbench itself and its real operations are left alone.
+    expect(removedToolRedirect(path)).toBeNull();
+    expect(
+      removedToolRedirect(path, '?tool=youtube-chapter-generator'),
+    ).toBeNull();
+    expect(removedToolRedirect('/image/editor', search)).toBeNull();
+  });
+
   it('handles trailing slashes and leaves live pages alone', () => {
     expect(removedToolRedirect('/image/upscaler/')).toBe('/image/optimize');
     for (const path of [
@@ -95,6 +115,7 @@ describe('removed tool redirects', () => {
       '/guides',
       '/image/editor',
       '/image/optimize',
+      '/image/exact-size',
       '/guides/date-time-and-productivity-life-path-number-calculator',
       '/guides/category/date-time-and-productivity',
       '/guides/pdf-merge-pdf',

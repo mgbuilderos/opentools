@@ -9,15 +9,15 @@ import {
 } from './tool-catalog-data';
 
 describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
-  it('contains exactly 973 catalog tools', () => {
-    expect(TOOL_CATALOG).toHaveLength(973);
+  it('contains exactly 974 catalog tools', () => {
+    expect(TOOL_CATALOG).toHaveLength(974);
   });
 
-  it('assigns unique, URL-safe slugs to all 973 tools', () => {
+  it('assigns unique, URL-safe slugs to all 974 tools', () => {
     const slugs = getAllToolSlugs();
-    expect(slugs).toHaveLength(973);
+    expect(slugs).toHaveLength(974);
     const uniqueSlugs = new Set(slugs);
-    expect(uniqueSlugs.size).toBe(973);
+    expect(uniqueSlugs.size).toBe(974);
 
     for (const slug of slugs) {
       expect(slug).toMatch(/^[a-z0-9-]+$/);
@@ -95,7 +95,11 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
       'zeroed',
     ];
 
-    for (const slug of ['pdf-merge-pdf', 'image-image-optimizer']) {
+    for (const slug of [
+      'pdf-merge-pdf',
+      'image-image-optimizer',
+      'image-resize-image-to-exact-kb',
+    ]) {
       const guide = getGuideBySlug(slug);
       if (!guide) continue;
       const prose = [
@@ -146,5 +150,24 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
       expect(limits).toContain('does not certify');
       expect(limits).toContain('basic Latin text');
     }
+  });
+
+  it('describes the exact-size tool truthfully', () => {
+    const guide = getGuideBySlug('image-resize-image-to-exact-kb');
+    expect(guide?.tool.destinationUrl).toBe('/image/exact-size');
+    expect(guide?.tool.executionMode).toBe('local-js');
+    expect(guide?.cspHeader).toContain("connect-src 'none'");
+    const prose = [
+      guide!.directAnswer,
+      guide!.leadParagraph,
+      ...guide!.faqs.map((faq) => faq.answer),
+    ].join(' ');
+    expect(prose).toContain('Canvas');
+    expect(prose).toContain('not WebAssembly');
+    expect(prose).toContain('1,024 bytes');
+    expect(prose).toContain('check the current notice');
+    expect(prose).toContain('not pad');
+    // No named portal presets: limits change with every notice.
+    expect(prose).not.toMatch(/\b\d+\s*(?:–|-|to)\s*\d+\s*KB\b/u);
   });
 });

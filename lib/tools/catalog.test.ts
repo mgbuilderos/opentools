@@ -53,6 +53,9 @@ describe('public canary catalog', () => {
     expect(searchTools('compress image').map((tool) => tool.id)).toContain(
       'image-optimize',
     );
+    expect(searchTools('resize image to kb').map((tool) => tool.id)).toContain(
+      'image-exact-size',
+    );
     expect(searchTools('validate json').map((tool) => tool.id)).toContain(
       'json-format',
     );

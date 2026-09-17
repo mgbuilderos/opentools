@@ -24,6 +24,21 @@ const EXACT_REDIRECTS: Readonly<Record<string, string>> = {
   '/guides/video-video-to-gif': '/guides',
 };
 
+/**
+ * Removed `?tool=` operations on a route that is still live. Without these the
+ * workbench silently opens its default operation, which is a different tool.
+ * `exact-kb-image-compressor` only calculated a plan (docs/DECISION_LOG.md
+ * section 4); /image/exact-size now really produces the file, so the old link
+ * goes there.
+ */
+const REMOVED_OPERATIONS: Readonly<
+  Record<string, Readonly<Record<string, string>>>
+> = {
+  '/creator/workbench': {
+    'exact-kb-image-compressor': '/image/exact-size',
+  },
+};
+
 /** Numerology tools that still exist under a new guide slug. */
 const MOVED_NUMEROLOGY_TOOLS = new Set([
   'life-path-number-calculator',
@@ -44,10 +59,17 @@ const REMOVED_NUMEROLOGY_TOOLS = new Set([
 const LEGACY_ASTROLOGY_GUIDE =
   /^\/guides\/astrology-and-numerology-([a-z0-9-]+)$/u;
 
-export function removedToolRedirect(pathname: string): string | null {
+export function removedToolRedirect(
+  pathname: string,
+  search = '',
+): string | null {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/u, '') : pathname;
   const exact = EXACT_REDIRECTS[path];
   if (exact) return exact;
+
+  const operation = new URLSearchParams(search).get('tool');
+  const moved = operation ? REMOVED_OPERATIONS[path]?.[operation] : undefined;
+  if (moved) return moved;
 
   const legacy = LEGACY_ASTROLOGY_GUIDE.exec(path);
   if (!legacy) return null;

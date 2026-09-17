@@ -2232,6 +2232,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     destinationUrl: '/image/editor?tool=blurhash-generator',
   },
   {
+    id: 'image.resize-image-to-exact-kb',
+    slug: 'image-resize-image-to-exact-kb',
+    name: 'Resize Image to Exact KB',
+    category: 'Image',
+    rank: 76,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'backlog-candidate',
+    notes:
+      'Canvas encode with a quality search; JFIF and pHYs DPI written and read back in tests.',
+    destinationUrl: '/image/exact-size',
+  },
+  {
     id: 'video.video-compressor',
     slug: 'video-video-compressor',
     name: 'Video Compressor',

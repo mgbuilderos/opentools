@@ -105,6 +105,22 @@ export type PdfFormFieldReadOnlyReason =
   | 'richText'
   | 'duplicateName'
   | 'unreadable';
+export type PdfFitToSizeOptions = {
+  /** The ceiling the output must land under, in bytes. */
+  targetBytes: number;
+  removeMetadata: boolean;
+};
+
+/**
+ * Compress until the file is under a stated size, rather than to a stated
+ * quality. The worker searches for settings and reports which ones it landed
+ * on, so the answer is never a guess the caller has to trust.
+ */
+export type PdfFitToSizeRequest = {
+  type: 'fit-to-size';
+  input: PdfWorkerInput;
+  options: PdfFitToSizeOptions;
+};
 
 /** One fillable field, described for the UI without exposing pdf-lib types. */
 export type PdfFormField = {
@@ -220,6 +236,7 @@ export type PdfWorkerRequest =
   | PdfTransformRequest
   | ImagesToPdfRequest
   | PdfCompressRequest
+  | PdfFitToSizeRequest
   | PdfFormInspectRequest
   | PdfFillRequest;
 
@@ -239,7 +256,7 @@ export type PdfWorkerResponse =
       type: 'progress';
       completed: number;
       total: number;
-      phase: 'reading' | 'copying' | 'validating';
+      phase: 'reading' | 'copying' | 'validating' | 'fitting';
     }
   | {
       type: 'result';
@@ -254,6 +271,12 @@ export type PdfWorkerResponse =
       imagesLeftAlone?: number;
       /** Set by form filling only: fields whose value actually changed. */
       fieldsChanged?: number;
+      /** Set by fit-to-size only. */
+      fitOutcome?: 'already-under' | 'met' | 'over-max';
+      fitQuality?: number;
+      fitMaxImageDimension?: number;
+      fitAttempts?: number;
+      targetBytes?: number;
       signaturePlaced?: boolean;
       flattened?: boolean;
     }
@@ -271,6 +294,7 @@ export type PdfWorkerResponse =
         | 'EXTRACT_FAILED'
         | 'TRANSFORM_FAILED'
         | 'COMPRESS_FAILED'
+        | 'FIT_FAILED'
         | 'FILL_FAILED'
         | 'IMAGE_TO_PDF_FAILED';
       message: string;

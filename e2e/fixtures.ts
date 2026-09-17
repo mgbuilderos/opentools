@@ -335,4 +335,38 @@ export async function testStaticXfaPdf() {
   );
   // pdf-lib's own appearance pass would strip the XFA from the fixture.
   return Buffer.from(await pdf.save({ updateFieldAppearances: false }));
+ * A detailed PNG the browser encodes for us: smooth gradients with noise on
+ * top. A flat image would fit any KB limit at full quality and prove nothing
+ * about the quality search; this one needs real compression to fit.
+ */
+export async function testDetailedPng(
+  page: import('@playwright/test').Page,
+  width = 1200,
+  height = 900,
+) {
+  const base64Png = await page.evaluate(
+    ([w, h]) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const context = canvas.getContext('2d')!;
+      const image = context.createImageData(w, h);
+      let seed = 20260917;
+      for (let y = 0; y < h; y += 1) {
+        for (let x = 0; x < w; x += 1) {
+          seed = (seed * 1103515245 + 12345) % 2147483648;
+          const noise = (seed % 64) - 32;
+          const i = (y * w + x) * 4;
+          image.data[i] = (x * 255) / w + noise;
+          image.data[i + 1] = (y * 255) / h + noise;
+          image.data[i + 2] = ((x + y) * 127) / (w + h) + noise;
+          image.data[i + 3] = 255;
+        }
+      }
+      context.putImageData(image, 0, 0);
+      return canvas.toDataURL('image/png').split(',')[1]!;
+    },
+    [width, height] as const,
+  );
+  return Buffer.from(base64Png, 'base64');
 }

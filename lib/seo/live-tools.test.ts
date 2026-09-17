@@ -32,6 +32,10 @@ describe('live tool registry', () => {
     expect(isLiveToolUrl('/developer/advanced?tool=jwt-decoder')).toBe(true);
     expect(isLiveToolUrl('/pdf/page-tools?tool=rotate-pdf')).toBe(true);
     expect(isLiveToolUrl('/pdf/merge')).toBe(true);
+    expect(isLiveToolUrl('/image/exact-size')).toBe(true);
+    expect(
+      isLiveToolUrl('/creator/workbench?tool=exact-kb-image-compressor'),
+    ).toBe(false);
     expect(isLiveToolUrl('/pdf/page-tools?tool=compress-pdf')).toBe(false);
     expect(isLiveToolUrl('/pdf/page-tools?tool=pdf-to-images')).toBe(false);
     expect(isLiveToolUrl('/developer/workbench?tool=jwt-decoder')).toBe(false);
@@ -105,6 +109,8 @@ describe('sitemap', () => {
     // to point at a control the page tool never had is back in the sitemap.
     expect(guides).toContain('/guides/pdf-compress-pdf');
     expect(guides).not.toContain('/guides/video-video-to-gif');
+    // /image/exact-size really writes the file, so its guide is listed.
+    expect(guides).toContain('/guides/image-resize-image-to-exact-kb');
   });
 
   it('leaves out placeholder pages and the roadmap', () => {

@@ -575,6 +575,39 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'image-exact-size',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Resize image to exact KB',
+    shortDescription:
+      'Fit an image under a KB limit at exact pixels with a real DPI value.',
+    category: 'Image',
+    aliases: [
+      'resize image to kb',
+      'reduce photo size in kb',
+      'image size reducer',
+      'compress image to exact size',
+      'photo and signature resizer',
+      'change image dpi',
+    ],
+    jobs: [
+      'make a photo under 50 kb',
+      'resize a signature for an online form',
+      'set exact pixels and dpi for a portal upload',
+    ],
+    href: '/image/exact-size',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'image.raster.decode',
+        'image.raster.encode',
+        'image.metadata.density',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'image-editor',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1139,7 +1172,7 @@ export const toolGroups: ToolGroup[] = [
     id: 'images',
     name: 'Image',
     shortDescription: 'Compress, resize, convert, crop, and adjust images.',
-    toolIds: ['image-optimize', 'image-editor'],
+    toolIds: ['image-optimize', 'image-exact-size', 'image-editor'],
   },
   {
     id: 'audio',
@@ -1306,7 +1339,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
 
   if (group.id === 'images') {
     const backgroundIds = new Set(['image-editor:solid-background-remover']);
-    const optIds = new Set(['image-optimize']);
+    const optIds = new Set(['image-optimize', 'image-exact-size']);
     const studioIds = new Set([
       'image-editor:image-cropper',
       'image-editor:image-flipper',

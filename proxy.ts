@@ -64,7 +64,7 @@ export function proxy(request: NextRequest) {
   }
 
   // Old links to tools removed by owner decision go to the closest live page.
-  const redirectTo = removedToolRedirect(pathname);
+  const redirectTo = removedToolRedirect(pathname, request.nextUrl.search);
   if (redirectTo) {
     return NextResponse.redirect(new URL(redirectTo, request.url), 308);
   }

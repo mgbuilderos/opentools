@@ -11,6 +11,7 @@ import {
   PdfEngineError,
   transformPdfPages,
 } from '@/lib/tools/pdf/engine';
+import { fitPdfToSize } from '@/lib/tools/pdf/fit-to-size';
 import { reencodeJpegWithCanvas } from '@/lib/tools/pdf/jpeg-reencode';
 import type {
   PdfWorkerRequest,
@@ -169,6 +170,90 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
         );
       })
       .catch(sendError);
+    return;
+  }
+
+  if (request.type === 'fit-to-size') {
+    const { input, options } = request;
+    const started = performance.now();
+    void (async () => {
+      // Attempts re-parse the whole document, so the count is worth surfacing:
+      // it is the honest measure of how hard this file was to get under.
+      let ran = 0;
+      const { outcome, chosen, settings, attempts } = await fitPdfToSize({
+        targetBytes: options.targetBytes,
+        originalBytes: input.bytes.byteLength,
+        attempt: async ({ quality, maxImageDimension }) => {
+          ran += 1;
+          send({
+            type: 'progress',
+            phase: 'fitting',
+            completed: ran,
+            total: 0,
+          });
+          const pass = await compressPdf(
+            input,
+            {
+              recompressImages: true,
+              imageQuality: quality,
+              maxImageDimension,
+              removeMetadata: options.removeMetadata,
+            },
+            reencodeJpegWithCanvas,
+          );
+          return { byteLength: pass.bytes.length, value: pass };
+        },
+      });
+
+      // Already under the target: hand the file back untouched rather than
+      // rewrite it. Someone who asked for "under 2 MB" and is already there
+      // has nothing to gain from a lossy pass.
+      if (outcome === 'already-under' || chosen === null) {
+        const [inspected] = await inspectPdfInputs([input]);
+        const original = new Uint8Array(input.bytes).slice();
+        const output = toTransferableBuffer(original);
+        send(
+          {
+            type: 'result',
+            bytes: output,
+            pageCount: inspected?.pages ?? 0,
+            computeDurationMs: performance.now() - started,
+            validationDurationMs: 0,
+            originalByteLength: input.bytes.byteLength,
+            compressedByteLength: input.bytes.byteLength,
+            imagesRecompressed: 0,
+            imagesLeftAlone: 0,
+            fitOutcome: 'already-under',
+            fitAttempts: attempts,
+            targetBytes: options.targetBytes,
+          },
+          [output],
+        );
+        return;
+      }
+
+      const result = chosen.value;
+      const output = toTransferableBuffer(result.bytes);
+      send(
+        {
+          type: 'result',
+          bytes: output,
+          pageCount: result.pageCount,
+          computeDurationMs: performance.now() - started,
+          validationDurationMs: result.validationDurationMs,
+          originalByteLength: result.originalByteLength,
+          compressedByteLength: result.compressedByteLength,
+          imagesRecompressed: result.imagesRecompressed,
+          imagesLeftAlone: result.imagesLeftAlone,
+          fitOutcome: outcome,
+          fitQuality: settings?.quality,
+          fitMaxImageDimension: settings?.maxImageDimension,
+          fitAttempts: attempts,
+          targetBytes: options.targetBytes,
+        },
+        [output],
+      );
+    })().catch(sendError);
     return;
   }
 

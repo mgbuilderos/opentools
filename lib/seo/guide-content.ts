@@ -152,6 +152,49 @@ export function generateArchitectureDiagramSvg(
 </svg>`;
 }
 
+/**
+ * Tool-specific wording for guides whose generic text would leave out what the
+ * tool actually does or where it stops. Every sentence here is backed by the
+ * tool's own code and tests.
+ */
+interface GuideDetail {
+  directAnswer: string;
+  leadParagraph: string;
+  faqs: readonly GuideFaq[];
+}
+
+const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
+  // lib/tools/exact-size.ts and e2e/image-exact-size.spec.ts
+  'image-resize-image-to-exact-kb': {
+    directAnswer:
+      'To resize an image to an exact KB size without uploading it: open the OpenTools exact-size tool, enter the maximum KB, the pixels and the DPI your form asks for, and choose Fit to size. The browser re-encodes the image with Canvas, searches JPEG quality until the file fits, and checks the saved bytes.',
+    leadParagraph:
+      'Exam, job and government portal uploads (photo and signature) often ask for a file under a set number of KB, at set pixels and sometimes a set DPI. This tool does that in your browser tab with the Canvas API, not WebAssembly, and reports whether the saved file meets each limit. Portal limits change — check the current notice for the exact size, pixels and format.',
+    faqs: [
+      {
+        question: 'What does KB mean in this tool?',
+        answer:
+          'By default 1 KB is 1,024 bytes. Some portals use 1,000 instead, so you can choose, and the result shows the exact byte limit that was used. Check which one your portal means.',
+      },
+      {
+        question: 'What happens if the image cannot get under the limit?',
+        answer:
+          'The tool says so and does not change your pixels on its own. The lowest JPEG quality it tries is 10%. If you turn on "Allow smaller pixels", it keeps the shape, reduces the dimensions until the file fits and reports the final pixels. PNG has no quality setting, so only pixels change its size.',
+      },
+      {
+        question: 'Can it make a small file bigger to reach a minimum size?',
+        answer:
+          'Only by using a higher quality. If the file is still under the minimum at full quality, the tool reports that. It does not pad the file with filler bytes.',
+      },
+      {
+        question: 'Does it really change the DPI?',
+        answer:
+          'Yes. It writes the density into the file itself — the JFIF header for JPEG and the pHYs chunk for PNG — and reads it back from the saved bytes. The image is re-encoded by the browser, so metadata other than DPI, such as EXIF, is not kept.',
+      },
+    ],
+  },
+};
+
 export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   const runtime =
     tool.executionMode === 'local-wasm' ? 'WebAssembly' : 'browser JavaScript';
@@ -163,8 +206,13 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   const metaDescription = `${tool.name} runs in your own browser tab. Your files and inputs never touch a server, no account is needed, and there is no paywall.`;
   const eyebrow = `${tool.category} / Free Browser Utility`;
   const heading = `How to ${tool.name} Online Without Uploading Your Files`;
-  const directAnswer = `To ${tool.name.toLowerCase()} without uploading anything: open the OpenTools ${tool.name} workbench, load your input, and run it. The work happens in the page itself using ${runtime}, and the result is saved straight from your browser to your own disk.`;
-  const leadParagraph = `${tool.name} runs inside your browser tab. Where a conventional online converter sends your file to its servers and returns a result, this tool reads the file in the page using ${tool.executionMode === 'local-wasm' ? 'WebAssembly and typed memory buffers' : 'the browser\x27s own APIs'}. Your files and inputs never touch a server.`;
+  const detail = GUIDE_DETAILS[tool.slug];
+  const directAnswer =
+    detail?.directAnswer ??
+    `To ${tool.name.toLowerCase()} without uploading anything: open the OpenTools ${tool.name} workbench, load your input, and run it. The work happens in the page itself using ${runtime}, and the result is saved straight from your browser to your own disk.`;
+  const leadParagraph =
+    detail?.leadParagraph ??
+    `${tool.name} runs inside your browser tab. Where a conventional online converter sends your file to its servers and returns a result, this tool reads the file in the page using ${tool.executionMode === 'local-wasm' ? 'WebAssembly and typed memory buffers' : 'the browser\x27s own APIs'}. Your files and inputs never touch a server.`;
 
   const technicalArchitecture = localModel
     ? `This page is served with a Content Security Policy that allows network requests to this site only (connect-src \x27self\x27), because the background remover loads its model weights and WebAssembly runtime from this same site. No third-party origin is reachable, and your image is never sent anywhere — it is read into the page and processed there.`
@@ -221,6 +269,7 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   ];
 
   const faqs: GuideFaq[] = [
+    ...(detail?.faqs ?? []),
     {
       question: `Does ${tool.name} upload my files or data to any server?`,
       answer: `No. The work happens in the page you have open. ${localModel ? 'This page may fetch its own model and WebAssembly files from this site, and its Content Security Policy allows no other origin.' : 'This page is served with a Content Security Policy of connect-src \x27none\x27, so the browser will not let it open a network connection at all.'}`,
