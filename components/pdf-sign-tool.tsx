@@ -100,6 +100,8 @@ export function PdfSignTool() {
 
   const [source, setSource] = useState<SourcePdf | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [mode, setMode] = useState<'draw' | 'type'>('draw');
+  const [typedName, setTypedName] = useState('');
   const [hasSignature, setHasSignature] = useState(false);
   const [signaturePage, setSignaturePage] = useState(1);
   const [signatureX, setSignatureX] = useState(72);
@@ -123,6 +125,61 @@ export function PdfSignTool() {
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
+
+  const renderTypedSignatureToCanvas = (name: string) => {
+    const canvas = padRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setHasSignature(false);
+      return;
+    }
+
+    let fontSize = 54;
+    const maxTextWidth = canvas.width - 64;
+    context.font = `italic ${fontSize}px Georgia, "Times New Roman", serif`;
+    let measured = context.measureText(trimmed).width;
+
+    if (measured > maxTextWidth) {
+      fontSize = Math.max(18, Math.floor(fontSize * (maxTextWidth / measured)));
+      context.font = `italic ${fontSize}px Georgia, "Times New Roman", serif`;
+      measured = context.measureText(trimmed).width;
+    }
+
+    context.fillStyle = '#111111';
+    context.textBaseline = 'middle';
+    context.fillText(
+      trimmed,
+      Math.max(32, (canvas.width - measured) / 2),
+      canvas.height / 2,
+    );
+    setHasSignature(true);
+  };
+
+  const handleTypedNameChange = (newName: string) => {
+    setTypedName(newName);
+    renderTypedSignatureToCanvas(newName);
+    clearResult();
+  };
+
+  const handleModeChange = (newMode: 'draw' | 'type') => {
+    setMode(newMode);
+    clearResult();
+    const canvas = padRef.current;
+    const context = canvas?.getContext('2d');
+    if (canvas && context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    if (newMode === 'type') {
+      renderTypedSignatureToCanvas(typedName);
+    } else {
+      setHasSignature(false);
+    }
+  };
 
   const clearResult = () => {
     if (outputUrlRef.current) URL.revokeObjectURL(outputUrlRef.current);
@@ -152,6 +209,7 @@ export function PdfSignTool() {
   };
 
   const startStroke = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (mode !== 'draw') return;
     const context = padContext();
     if (!context) return;
     // Capture keeps a stroke going if the pointer leaves the pad mid-signature.
@@ -174,6 +232,7 @@ export function PdfSignTool() {
   };
 
   const continueStroke = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (mode !== 'draw') return;
     if (!drawingRef.current) return;
     const context = padContext();
     if (!context) return;
@@ -190,6 +249,7 @@ export function PdfSignTool() {
     const canvas = padRef.current;
     const context = canvas?.getContext('2d');
     if (canvas && context) context.clearRect(0, 0, canvas.width, canvas.height);
+    setTypedName('');
     setHasSignature(false);
     clearResult();
   };
@@ -382,8 +442,8 @@ export function PdfSignTool() {
                 Sign and fill a PDF
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Complete a form and draw your signature onto it. The document is
-                read by this page and never sent to a server.
+                Complete a form and draw or type your signature onto it. The
+                document is read by this page and never sent to a server.
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -394,7 +454,7 @@ export function PdfSignTool() {
 
           <p className="mt-6 rounded-xl border bg-muted/40 p-4 text-sm text-muted-foreground">
             <strong className="font-semibold text-foreground">
-              This draws a signature, it does not certify one.
+              This draws or types a signature, it does not certify one.
             </strong>{' '}
             The result is an image on the page, the same as signing a printout
             and scanning it. It carries no certificate and no audit trail, so it
@@ -573,16 +633,69 @@ export function PdfSignTool() {
                     id="signature-pad-help"
                     className="mt-1 text-sm text-muted-foreground"
                   >
-                    Draw with a mouse, trackpad or finger. Drawing needs a
-                    pointer; there is no keyboard equivalent yet.
+                    Draw with a mouse, trackpad or finger, or type your name
+                    with the keyboard.
                   </p>
+
+                  <fieldset className="mt-3">
+                    <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Signature mode
+                    </legend>
+                    <div className="mt-2 flex gap-5">
+                      <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium">
+                        <input
+                          type="radio"
+                          name="signature-mode"
+                          value="draw"
+                          checked={mode === 'draw'}
+                          onChange={() => handleModeChange('draw')}
+                          className="accent-foreground"
+                        />
+                        Draw
+                      </label>
+                      <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium">
+                        <input
+                          type="radio"
+                          name="signature-mode"
+                          value="type"
+                          checked={mode === 'type'}
+                          onChange={() => handleModeChange('type')}
+                          className="accent-foreground"
+                        />
+                        Type your name
+                      </label>
+                    </div>
+                  </fieldset>
+
+                  {mode === 'type' ? (
+                    <div className="mt-3">
+                      <label
+                        htmlFor="typed-name-input"
+                        className="block text-sm font-medium"
+                      >
+                        Type your name
+                      </label>
+                      <input
+                        id="typed-name-input"
+                        type="text"
+                        value={typedName}
+                        onChange={(e) => handleTypedNameChange(e.target.value)}
+                        placeholder="e.g. Jane Doe"
+                        className="focus-ring mt-1 h-11 w-full rounded-xl border bg-background px-3 text-sm"
+                      />
+                    </div>
+                  ) : null}
+
                   {/*
                     A bare <canvas> has no implicit role, so a label on it alone
                     is not reliably announced. The group carries the name and
                     the instructions; the canvas keeps its label as well so it
                     can be addressed directly.
                   */}
-                  <fieldset aria-describedby="signature-pad-help">
+                  <fieldset
+                    aria-describedby="signature-pad-help"
+                    className="mt-3"
+                  >
                     <legend className="sr-only">Signature pad</legend>
                     <canvas
                       ref={padRef}
@@ -593,14 +706,18 @@ export function PdfSignTool() {
                       onPointerMove={continueStroke}
                       onPointerUp={endStroke}
                       onPointerLeave={endStroke}
-                      className="mt-3 aspect-[16/5] w-full touch-none rounded-xl border border-dashed bg-background"
+                      className={`aspect-[16/5] w-full rounded-xl border border-dashed bg-background ${
+                        mode === 'draw' ? 'touch-none' : 'pointer-events-none'
+                      }`}
                     />
                   </fieldset>
                   <div className="mt-2 flex items-center justify-between gap-3">
                     <span className="text-xs text-muted-foreground">
                       {hasSignature
                         ? 'Signature ready'
-                        : 'Nothing drawn yet — the PDF will just be filled in'}
+                        : mode === 'type'
+                          ? 'Enter your name above to create a signature'
+                          : 'Nothing drawn yet — the PDF will just be filled in'}
                     </span>
                     <Button
                       variant="ghost"
@@ -826,7 +943,9 @@ export function PdfSignTool() {
                   <p className="text-xs text-muted-foreground">Signature</p>
                   <p className="mt-1 text-sm font-semibold">
                     {receipt.signaturePlaced
-                      ? 'Drawn onto the page'
+                      ? mode === 'type'
+                        ? 'Typed onto the page'
+                        : 'Drawn onto the page'
                       : 'Not added'}
                   </p>
                 </div>
