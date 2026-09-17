@@ -212,3 +212,65 @@ self-host and attestation ideas, then chose the scope below for each.
   that release exists (business rule 23, decision 5).
 - The record stays on the device unless the user downloads it; it is never
   sent to checkout, analytics or support (business rule 38).
+
+## 2026-09-17 — Portal presets allowed when dated and sourced (amends decision 9)
+
+Owner decision, given in chat on 2026-09-17 after the corrected organic growth
+playbook (`docs/ORGANIC_GROWTH_PLAYBOOK_CORRECTED.md` on branch
+`claude/growth`) showed that `claude/exact-size` already ships a
+`PORTAL_PRESETS` table that decision 9 forbids.
+
+### 16. Named portal presets are allowed, with a source, a date and an expiry
+
+This **amends decision 9**, which banned named presets with numbers outright.
+The ban existed because portal limits change without announcement and a stale
+number breaks the evergreen-tools rule (ADR-017). The amendment keeps that
+concern and answers it with expiry rather than absence: a preset that goes
+stale must fail loudly, not sit there quietly being wrong.
+
+**What is now allowed.** A preset may name a portal and carry a byte limit.
+
+**What every preset must carry**, or it does not ship:
+
+- `sourceUrl` — the page that states the limit, published by the portal itself.
+  Not a blog, not a forum answer, not another tool's website.
+- `checkedOn` — the ISO date a person last opened that URL and read the number
+  off it.
+- `field` — the specific form or upload the limit applies to. A portal usually
+  has more than one ceiling; USCIS alone has two (2 MiB per evidence file,
+  6 MiB for a completed form). A preset naming only the portal is ambiguous
+  enough to be wrong.
+
+**Where the number may appear.** In the app only: the preset fills the target
+box, and the number stays editable afterwards. The UI shows the source link and
+the `checkedOn` date next to it, so a user can check the figure themselves in
+one click.
+
+**Where it may not appear.** Never in a page `<title>`, `<h1>`, meta
+description, structured data, sitemap entry, or any other text a search engine
+caches. A title like `Fix "File Exceeds 2048 KB"` is banned: search engines keep
+serving it long after the limit moves, and it names one of a portal's several
+ceilings as though it were the only one. Page and guide copy stay generic and
+describe the use case, as decision 9 already required.
+
+**Expiry.** A test fails the build when any preset's `checkedOn` is more than
+**90 days** old. The fix is to re-open the source and either update the date or
+delete the row. A limit that cannot be re-verified from the portal's own page is
+deleted, never guessed or carried forward.
+
+**What survives from decision 9, unchanged:**
+
+- The tool takes user-entered values — target size in KB, exact pixels, DPI —
+  and a preset only fills them in. Presets are never the only way to set a
+  target.
+- It must really produce a file that meets the target, or say plainly that it
+  could not.
+- Guide copy tells users to check their portal's current notice.
+
+**Applies to** `lib/tools/pdf/size-targets.ts` on `claude/exact-size`, which
+today has `portal`, `field`, `limitBytes` and `note` but **no `sourceUrl` and no
+`checkedOn`**, and no expiry test. It cannot merge until it has them. Its six
+rows each need a real source or removal; the `email-attachment` row
+("Providers stop between 20 and 25 MB") is a generalisation across several
+providers rather than one authority's published figure, so it either names one
+provider with one source or comes out.
