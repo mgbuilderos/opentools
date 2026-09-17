@@ -239,6 +239,15 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
     },
   ];
 
+  // Sign PDF and Fill PDF Form share /pdf/sign. State its limits so the guide
+  // never promises more than a drawn or typed signature.
+  if (route === '/pdf/sign') {
+    faqs.push({
+      question: `Does ${tool.name} certify a signature?`,
+      answer: `No. It fills the form fields you change and can draw or type a signature onto the page. It does not certify one or check who signed. A PDF that already carries a digital signature is refused, because any change would break that signature. Form fields accept only basic Latin text for now.`,
+    });
+  }
+
   const relatedTools = getRelatedToolLinks(tool.slug, 4);
   const categoryPillar = getCategoryPillar(tool.category);
 

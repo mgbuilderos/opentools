@@ -116,4 +116,35 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
       }
     }
   });
+
+  it('promises no more than a drawn or typed signature on the sign guides', () => {
+    const banned = [
+      'legally binding',
+      'legally-binding',
+      'certified',
+      'e-signature',
+      'esignature',
+      'electronic signature',
+      'audit trail',
+      'secure signature',
+      'multiple signers',
+      'signers',
+      'unicode',
+      'any language',
+      'webassembly',
+    ];
+
+    for (const slug of ['pdf-sign-pdf', 'pdf-fill-pdf-form']) {
+      const guide = getGuideBySlug(slug);
+      expect(guide, slug).toBeDefined();
+      if (!guide) continue;
+      const prose = JSON.stringify(guide).toLowerCase();
+      for (const word of banned) {
+        expect(prose.includes(word), `${slug}: ${word}`).toBe(false);
+      }
+      const limits = guide.faqs.map((faq) => faq.answer).join(' ');
+      expect(limits).toContain('does not certify');
+      expect(limits).toContain('basic Latin text');
+    }
+  });
 });

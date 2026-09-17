@@ -1,9 +1,11 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
 import sitemap from '../../app/sitemap';
+import { loadsLocalModel } from '../security/content-security-policy';
+import { getGuideBySlug } from './guide-content';
 import {
   LIVE_TOOL_CATALOG,
   LIVE_TOOL_ROUTES,
@@ -49,6 +51,44 @@ describe('live tool registry', () => {
       );
     }).map((tool) => tool.slug);
     expect(misrouted).toEqual([]);
+  });
+});
+
+describe('execution mode claims', () => {
+  it('says local-wasm only where the route may compile WebAssembly', () => {
+    // Only local-model routes are served with 'wasm-unsafe-eval'; everywhere
+    // else the Content Security Policy blocks WebAssembly outright.
+    const unbacked = LIVE_TOOL_CATALOG.filter(
+      (tool) =>
+        tool.executionMode === 'local-wasm' &&
+        !loadsLocalModel(tool.destinationUrl.split('?')[0]),
+    ).map((tool) => tool.id);
+    expect(unbacked).toEqual([]);
+  });
+
+  it('does not claim every tool runs on WebAssembly on the support page', () => {
+    const page = readFileSync(
+      path.join(appRoot, 'app/support/page.tsx'),
+      'utf8',
+    ).replace(/\s+/gu, ' ');
+    const sentences = page
+      .split(/(?<=\.)\s/u)
+      .filter((sentence) => /webassembly|wasm/iu.test(sentence));
+    for (const sentence of sentences) {
+      if (/\bevery\b|\ball\b/iu.test(sentence)) {
+        expect(sentence).toMatch(/\b(a few|some|where)\b/iu);
+      }
+    }
+  });
+
+  it('keeps WebAssembly out of the sign and form guides', () => {
+    for (const slug of ['pdf-sign-pdf', 'pdf-fill-pdf-form']) {
+      const guide = getGuideBySlug(slug);
+      expect(guide, slug).toBeDefined();
+      const text = JSON.stringify(guide).toLowerCase();
+      expect(text.includes('webassembly'), slug).toBe(false);
+      expect(text.includes('wasm'), slug).toBe(false);
+    }
   });
 });
 

@@ -32,20 +32,24 @@ function send(message: PdfWorkerResponse, transfer: Transferable[] = []) {
   workerScope.postMessage(message, transfer);
 }
 
-function sendError(error: unknown) {
+function sendError(
+  error: unknown,
+  fallbackCode: 'MERGE_FAILED' | 'FILL_FAILED' | 'INVALID_PDF' = 'MERGE_FAILED',
+) {
   if (error instanceof PdfEngineError) {
     send({
       type: 'error',
       code: error.code,
       message: error.message,
       inputId: error.inputId,
+      fieldIds: error.fieldIds,
     });
     return;
   }
 
   send({
     type: 'error',
-    code: 'MERGE_FAILED',
+    code: fallbackCode,
     message:
       'The PDF task stopped unexpectedly. Your original files are unchanged.',
   });
@@ -110,7 +114,7 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
   if (request.type === 'inspect-form') {
     inspectPdfForm(request.input)
       .then((result) => send({ type: 'form', ...result }))
-      .catch(sendError);
+      .catch((error: unknown) => sendError(error, 'INVALID_PDF'));
     return;
   }
 
@@ -127,14 +131,14 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
             pageCount: result.pageCount,
             computeDurationMs: result.computeDurationMs,
             validationDurationMs: result.validationDurationMs,
-            fieldsFilled: result.fieldsFilled,
+            fieldsChanged: result.fieldsChanged,
             signaturePlaced: result.signaturePlaced,
             flattened: result.flattened,
           },
           [output],
         );
       })
-      .catch(sendError);
+      .catch((error: unknown) => sendError(error, 'FILL_FAILED'));
     return;
   }
 

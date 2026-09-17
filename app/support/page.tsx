@@ -51,8 +51,9 @@ export default function SupportPage() {
           <p className="mt-5 text-base leading-7 text-muted-foreground sm:text-lg">
             These tools are 100% free with no ads, no third-party trackers, no
             paywalls, and no corporate investors. Every single tool runs
-            directly inside your browser tab using local WebAssembly and
-            on-device compute. Your files and inputs never touch a server.
+            directly inside your browser tab on your own device, using
+            JavaScript and Web Workers, and WebAssembly for a few tools that
+            need a local model. Your files and inputs never touch a server.
           </p>
 
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
