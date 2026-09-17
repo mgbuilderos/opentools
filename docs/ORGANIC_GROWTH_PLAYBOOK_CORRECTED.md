@@ -143,30 +143,32 @@ test rejects any row more than **90 days** old; the fix is to re-open the source
 and update the date, or delete the row. A limit that cannot be re-verified from
 the portal's own page is deleted, never guessed.
 
-**What `claude/exact-size` needs before it can merge.**
-`lib/tools/pdf/size-targets.ts` today has `portal`, `field`, `limitBytes` and
-`note` — **no `sourceUrl`, no `checkedOn`, no expiry test**. Six rows need a
-real source or removal. The `email-attachment` row ("Providers stop between 20
-and 25 MB") is a generalisation across providers rather than one authority's
-published figure, so it names one provider with one source or it comes out.
-`PORTAL_PRESETS` is currently referenced only by its own test, not by any UI, so
-this can be fixed before anything is user-visible.
+**Done — `claude/exact-size` (`1d0bd7f`).** `lib/tools/pdf/size-targets.ts` now
+carries `sourceUrl` and `checkedOn` on every row, `PRESET_MAX_AGE_DAYS = 90`,
+and `presetsOverdue()` behind a build-failing test. The gate was verified by
+dating a row `2026-01-01`: the suite goes red on exactly that test, and only
+that test. Sixteen tests pass.
 
-Note the table already undercuts the original playbook's premise: it records
-**two** USCIS ceilings (2 MiB for evidence, 6 MiB for a completed form), so the
-flat "2,048 KB" the original hardcodes into a page title is wrong on its own
-terms.
+**Sourcing the six rows found that most of them were invented.** Only two
+survived:
 
-**What must not happen** (either way): a page titled `Fix "File Exceeds
-2048 KB"`. It bakes a number into a cached title, it is one of two USCIS
-ceilings, and C4 makes a matrix of fifteen such pages a scaled-content risk on a
-site mid-way through de-indexing ~430 thin URLs.
+| Row | Outcome |
+| :--- | :--- |
+| USCIS (2 MiB evidence) + USCIS (6 MiB form) | **Both wrong.** USCIS publishes **one** limit for every upload — 12MB, on its own "Tips for Filing Forms Online" page. Replaced by one sourced row. |
+| VFS Global ×2 | **Deleted.** Limits are per mission, not per "Schengen", and `visa.vfsglobal.com` returns 403 to any fetch, so no stable published figure exists to cite. |
+| Workday | **Deleted.** Configured per tenant, candidate docs behind each employer's login — no Workday-published number exists. |
+| Email ("providers stop between 20 and 25 MB") | **Replaced.** A generalisation across providers, not one authority's figure. Now Gmail alone at its published 25 MB for personal accounts. |
 
-**Gate.** `claude/exact-size` reviewed and merged, with the three preset fields
-and the expiry test added per decision 16; `isLiveToolUrl()` true for the route
-before any guide links to it.
+**Correction to an earlier draft of this document.** It said the table records
+"two USCIS ceilings (2 MiB evidence, 6 MiB form)", and used that to argue the
+original playbook's flat "2,048 KB" was wrong. The conclusion holds and the
+reason was wrong: both of those numbers were invented too. USCIS states one
+ceiling, 12MB. "2,048 KB" was never a USCIS figure at all.
 
----
+**What this says about the method.** Decision 16's expiry rule was written to
+catch limits that *drift*. Its first run caught limits that were never right —
+four of six rows unsourceable or wrong. Requiring a source is doing more work
+here than requiring a date.
 
 ### Pillar 2 — The processing record as the share object (replaces "forensic receipt" + output metadata)
 
@@ -382,7 +384,7 @@ Each phase gates the next. No phase starts before its gate passes.
 | 1 | AlternativeTo profile | phase 0 | C8 — outward action |
 | 2 | Processing record (`claude/attestation`) ships; board §7 request to mount it | phase 0 | review |
 | 3 | Recipe links (Pillar 3) | phase 0 | review |
-| 4 | Add `sourceUrl`, `checkedOn` and the 90-day expiry test to `size-targets.ts`; review and merge `claude/exact-size` | phase 0 | source each of the six rows (or drop it) |
+| 4 | ~~Source the presets~~ **done (`1d0bd7f`)**; fix the four pre-existing `tsc` errors, then review and merge `claude/exact-size` | phase 0 | assign a reviewer |
 | 5 | Burst test (§5.2) | phase 4 merged | canary |
 | 6 | First bounced-upload pages — small number, each with a live tool | phase 5 | review |
 | 7 | Self-host release → `awesome-selfhosted`; `free-for-dev`, `awesome-privacy` | `claude/selfhost` ready | C8 — release + PRs |
@@ -415,7 +417,7 @@ scheduled task. Phase 4 is the one that needs a ruling.
 | :--- | :--- |
 | `setProducer('OpenTools … getopentools.com')` in every output PDF | Rule 33: core outputs are never branded. Beyond the rule: it stamps a third-party identifier into a user's immigration or court filing without asking, which is against the interest of the person the product exists to protect. |
 | Receipt reading "0 Bytes Sent to Server" | Rule 23, decisions 5 and 15 — verbatim the string decision 15 forbids without a release egress proof. `components/audit-terminal.tsx` was deleted for precisely this. |
-| Named portal presets in page titles and metadata (`Fix "File Exceeds 2048 KB"`) | Still out under decision 16, which allows the number **in the app only** and bars it from anything a search engine caches. Also factually wrong: USCIS applies at least two ceilings. |
+| Named portal presets in page titles and metadata (`Fix "File Exceeds 2048 KB"`) | Still out under decision 16, which allows the number **in the app only** and bars it from anything a search engine caches. Also simply false: USCIS publishes one ceiling and it is 12MB, so the page would have been titled after a number no portal uses. |
 | A 15-page programmatic pSEO matrix, and programmatic `/compare/*` | Decision 11, Learning 24. ~430 thin URLs are being taken to 404 right now; a new generated family invites a scaled-content action. |
 | PDF or schema encrypted into a URL fragment | Decision 12 ("set aside"), Learning 35, plus the Slack-upload contradiction in Pillar 3. |
 | `npx opentools` now | Decisions 12 and 13: later, and no npm publish. |
