@@ -10,9 +10,9 @@ test.describe('Background Remover Pixel Test', () => {
     test.setTimeout(180_000);
     await page.goto('/image/background-remover');
 
-    // Create a 10x10 image with a white background and a red dot in the middle
-    // (Base64 of a 10x10 image: white background, red pixel at 5,5)
-    // Actually, I'll generate it using canvas in the test.
+    // A 10×10 white field with a 2×2 red block at its centre: small enough to
+    // check every pixel afterwards, and distinct enough to tell a removed
+    // background from a removed subject.
     const base64Image = await page.evaluate(() => {
       const canvas = document.createElement('canvas');
       canvas.width = 10;
@@ -37,22 +37,19 @@ test.describe('Background Remover Pixel Test', () => {
       buffer: imageBuffer,
     });
 
-    // Check 'Remove background' button is clicked
     await page.getByRole('button', { name: 'Remove background' }).click();
 
-    // Verify completion
     await expect(page.getByText('Done — 10 × 10px')).toBeVisible({
       timeout: 120_000,
     });
 
-    // Wait for the resulting image to be rendered
     const imgLocator = page.locator('img[alt="Edited image preview"]');
     await expect(imgLocator).toBeVisible();
 
-    // Get the src of the result image (blob URL)
     const blobUrl = await imgLocator.getAttribute('src');
 
-    // Fetch the blob and check pixels in the browser context
+    // Decode the result back into a canvas to inspect the actual alpha channel;
+    // a "Done" receipt alone would not prove any pixel became transparent.
     const pixelData = await page.evaluate(async (url) => {
       return new Promise<{
         transparentCount: number;

@@ -116,19 +116,20 @@ export function getRelatedToolLinks(
     (t) => t.slug !== currentSlug,
   );
 
+  // Three signals, none of which measure real usage: catalog neighbours score
+  // highest, then earlier release waves, then a shared word in the name.
   const scored = categoryTools.map((tool) => {
     let score = 0;
-    // Prefer tools close in rank (sequential workflow items)
+    // Catalog rank orders tools within a category, so near ranks are related.
     const rankDiff = Math.abs(tool.rank - current.rank);
     if (rankDiff === 1) score += 50;
     else if (rankDiff <= 3) score += 30;
     else if (rankDiff <= 8) score += 15;
 
-    // Prioritize high-demand P0/P1 wave tools
+    // Earlier release waves are the more established tools.
     if (tool.releaseWave === 'P0') score += 20;
     else if (tool.releaseWave === 'P1') score += 10;
 
-    // Word similarity in names
     const currentWords = new Set(current.name.toLowerCase().split(/\s+/));
     for (const word of tool.name.toLowerCase().split(/\s+/)) {
       if (word.length > 3 && currentWords.has(word)) {

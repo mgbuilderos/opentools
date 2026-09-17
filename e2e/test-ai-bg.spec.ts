@@ -32,8 +32,8 @@ test('AI background removal test', async ({ page }) => {
     buffer: imageBuffer,
   });
 
-  // The auto-run should kick in. The first run loads the self-hosted model and runtime.
-  // We wait for the 'Done' text
+  // Choosing an image on this route starts the run on its own; nothing else
+  // needs clicking.
   await expect(page.getByText(/Done —/)).toBeVisible({ timeout: 60000 });
 
   console.log('AI extraction completed successfully!');

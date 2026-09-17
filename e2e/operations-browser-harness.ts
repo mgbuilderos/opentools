@@ -434,7 +434,6 @@ export async function runAllOperations(): Promise<HarnessReport> {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var __runAllOperations: typeof runAllOperations | undefined;
 }
 
