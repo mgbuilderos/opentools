@@ -166,3 +166,49 @@ research. They override plans and catalog entries like every entry above.
 - Not decided (owner set aside): runtime `pdfjs-dist`, share links carrying
   user input, and turning off Cloudflare error reporting / the Web Analytics
   beacon.
+
+## 2026-09-17 — Engine separation, redaction re-check, measured attestation
+
+Owner decisions, given in chat on 2026-09-17 after rating growth and
+monetisation ideas (`research/GROWTH_AND_MONETIZATION_PLAYBOOK_2026-09-17.md`
+in the blueprint). The owner asked to implement the SDK, on-device AI,
+self-host and attestation ideas, then chose the scope below for each.
+
+### 13. Engine separation first; no SDK publish and no pricing
+
+- Build the step decision 12 names as the prerequisite for an npm CLI or MCP
+  server: a framework-free engine entry point with a test proving it imports
+  nothing from React, Next/Vinext, `app/` or `components/`, and uses no
+  network API.
+- No npm package is published and no paid tier or licence is offered. The code
+  is MIT, so a licence fee is not enforceable; decision 12's "paid support:
+  not now" stands.
+- The self-host edition (decision 12) continues in `claude/selfhost`, taken
+  over by the session that recorded this entry.
+
+### 14. On-device AI: deterministic redaction first, no model yet
+
+- Improve the existing redaction tools rather than adding a new one. Detection
+  must re-check its own output and fail loudly if a secret it knows how to
+  detect remains — the same rule as decision 10.
+- Add the `local-model` execution contract and a model registry that records
+  each model's same-origin path, SHA-256 and licence. **No model file is
+  added.** A model may be added only after a licence and provenance review of
+  the exact file (ADR-004) and the owner's approval.
+- Summaries or extractions from a future model are not legal, medical or
+  financial advice and must not be presented as such.
+
+### 15. Processing attestation: measured facts only, no document hashes
+
+- A user may download a processing record after a successful job. It lists
+  only facts measured or known at build time: tool and operation, duration,
+  execution mode, the Content-Security-Policy served for the page, and the
+  network requests the page itself observed during the job.
+- It contains **no content hash, filename, file size or content** of the
+  user's document, as `docs/LOCAL_PROCESSING_ASSURANCE.md` requires.
+- It states its limits: a page-level measurement cannot see browser
+  extensions, the operating system or other devices. It never says
+  "0 file bytes uploaded" or "zero egress" unless a formal egress proof for
+  that release exists (business rule 23, decision 5).
+- The record stays on the device unless the user downloads it; it is never
+  sent to checkout, analytics or support (business rule 38).
