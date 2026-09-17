@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import {
   compressPdf,
   extractPdfPages,
+  fillPdfForm,
+  inspectPdfForm,
   hasPdfSignature,
   imagesToPdf,
   inspectPdfInputs,
@@ -391,5 +393,205 @@ describe('PDF compression engine', () => {
     await expect(compressPdf(notPdf, compressOptions)).rejects.toBeInstanceOf(
       PdfEngineError,
     );
+  });
+});
+
+/** A PDF carrying one of each fillable field type pdf-lib supports. */
+async function makeFormPdf(id = 'form'): Promise<PdfWorkerInput> {
+  const document = await PDFDocument.create();
+  const page = document.addPage([400, 500]);
+  const form = document.getForm();
+
+  const name = form.createTextField('applicant.name');
+  name.setText('');
+  name.addToPage(page, { x: 40, y: 420, width: 300, height: 24 });
+
+  const notes = form.createTextField('applicant.notes');
+  notes.enableMultiline();
+  notes.addToPage(page, { x: 40, y: 340, width: 300, height: 60 });
+
+  const agree = form.createCheckBox('agree.terms');
+  agree.addToPage(page, { x: 40, y: 300, width: 16, height: 16 });
+
+  const plan = form.createRadioGroup('plan.choice');
+  plan.addOptionToPage('monthly', page, {
+    x: 40,
+    y: 260,
+    width: 16,
+    height: 16,
+  });
+  plan.addOptionToPage('yearly', page, {
+    x: 100,
+    y: 260,
+    width: 16,
+    height: 16,
+  });
+
+  const country = form.createDropdown('address.country');
+  country.addOptions(['India', 'Singapore', 'United Kingdom']);
+  country.addToPage(page, { x: 40, y: 210, width: 200, height: 24 });
+
+  const locked = form.createTextField('reference.number');
+  locked.setText('REF-100');
+  locked.addToPage(page, { x: 40, y: 160, width: 200, height: 24 });
+  locked.enableReadOnly();
+
+  const bytes = await document.save({ addDefaultPage: false });
+  return { id, name: `${id}.pdf`, bytes: bytes.slice().buffer as ArrayBuffer };
+}
+
+/** A 2x2 PNG, enough for pdf-lib to embed as a signature stamp. */
+function signaturePng(): ArrayBuffer {
+  const base64 =
+    'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFUlEQVR4nGP8//8/AzbAxIAHDDlJAKDlAwOJQmnAAAAAAElFTkSuQmCC';
+  const binary = Buffer.from(base64, 'base64');
+  return binary.buffer.slice(
+    binary.byteOffset,
+    binary.byteOffset + binary.byteLength,
+  ) as ArrayBuffer;
+}
+
+const emptyFill = { values: {}, signature: null, flatten: false };
+
+describe('PDF form engine', () => {
+  it('describes every fillable field and its current value', async () => {
+    const { fields, pages, pageSizes } = await inspectPdfForm(
+      await makeFormPdf(),
+    );
+
+    expect(pages).toBe(1);
+    expect(pageSizes[0]).toEqual({ width: 400, height: 500 });
+
+    const byName = Object.fromEntries(fields.map((f) => [f.name, f]));
+    expect(byName['applicant.name']?.kind).toBe('text');
+    expect(byName['applicant.notes']?.multiline).toBe(true);
+    expect(byName['agree.terms']?.kind).toBe('checkbox');
+    expect(byName['agree.terms']?.value).toBe('off');
+    expect(byName['plan.choice']?.kind).toBe('radio');
+    expect(byName['plan.choice']?.options).toEqual(['monthly', 'yearly']);
+    expect(byName['address.country']?.options).toContain('Singapore');
+    expect(byName['reference.number']?.readOnly).toBe(true);
+    expect(byName['reference.number']?.value).toBe('REF-100');
+  });
+
+  it('reports no fields for a PDF that has no form, without failing', async () => {
+    const { fields, pages } = await inspectPdfForm(
+      await makePdf('plain', [200]),
+    );
+    expect(fields).toEqual([]);
+    expect(pages).toBe(1);
+  });
+
+  it('writes values back and they survive a reload', async () => {
+    const result = await fillPdfForm(await makeFormPdf(), {
+      ...emptyFill,
+      values: {
+        'applicant.name': 'Maulik Gupta',
+        'agree.terms': 'on',
+        'plan.choice': 'yearly',
+        'address.country': 'Singapore',
+      },
+    });
+
+    expect(result.fieldsFilled).toBe(4);
+    expect(result.flattened).toBe(false);
+
+    const form = (await PDFDocument.load(result.bytes)).getForm();
+    expect(form.getTextField('applicant.name').getText()).toBe('Maulik Gupta');
+    expect(form.getCheckBox('agree.terms').isChecked()).toBe(true);
+    expect(form.getRadioGroup('plan.choice').getSelected()).toBe('yearly');
+    expect(form.getDropdown('address.country').getSelected()).toEqual([
+      'Singapore',
+    ]);
+  });
+
+  it('refuses to write into a read-only field', async () => {
+    const result = await fillPdfForm(await makeFormPdf(), {
+      ...emptyFill,
+      values: { 'reference.number': 'REF-999' },
+    });
+
+    expect(result.fieldsFilled).toBe(0);
+    const form = (await PDFDocument.load(result.bytes)).getForm();
+    expect(form.getTextField('reference.number').getText()).toBe('REF-100');
+  });
+
+  it('ignores a field name the document does not have', async () => {
+    const result = await fillPdfForm(await makeFormPdf(), {
+      ...emptyFill,
+      values: { 'not.a.field': 'x', 'applicant.name': 'Kept' },
+    });
+
+    expect(result.fieldsFilled).toBe(1);
+    const form = (await PDFDocument.load(result.bytes)).getForm();
+    expect(form.getTextField('applicant.name').getText()).toBe('Kept');
+  });
+
+  it('reports the value a field would not accept, naming the field', async () => {
+    await expect(
+      fillPdfForm(await makeFormPdf(), {
+        ...emptyFill,
+        values: { 'plan.choice': 'weekly' },
+      }),
+    ).rejects.toThrow(/plan\.choice/u);
+  });
+
+  it('flattening leaves the values on the page and removes the form', async () => {
+    const result = await fillPdfForm(await makeFormPdf(), {
+      ...emptyFill,
+      values: { 'applicant.name': 'Final Answer' },
+      flatten: true,
+    });
+
+    expect(result.flattened).toBe(true);
+    const reopened = await PDFDocument.load(result.bytes);
+    expect(reopened.getForm().getFields()).toHaveLength(0);
+    expect(reopened.getPageCount()).toBe(1);
+  });
+
+  it('stamps a signature on the page that was asked for', async () => {
+    const result = await fillPdfForm(await makeFormPdf(), {
+      ...emptyFill,
+      signature: {
+        image: signaturePng(),
+        pageIndex: 0,
+        x: 40,
+        y: 60,
+        width: 120,
+      },
+    });
+
+    expect(result.signaturePlaced).toBe(true);
+    expect((await PDFDocument.load(result.bytes)).getPageCount()).toBe(1);
+  });
+
+  it('refuses a signature aimed at a page that does not exist', async () => {
+    await expect(
+      fillPdfForm(await makeFormPdf(), {
+        ...emptyFill,
+        signature: {
+          image: signaturePng(),
+          pageIndex: 7,
+          x: 0,
+          y: 0,
+          width: 100,
+        },
+      }),
+    ).rejects.toThrow(/between 1 and 1/u);
+  });
+
+  it('refuses a signature image it cannot read', async () => {
+    await expect(
+      fillPdfForm(await makeFormPdf(), {
+        ...emptyFill,
+        signature: {
+          image: new TextEncoder().encode('not a png').buffer as ArrayBuffer,
+          pageIndex: 0,
+          x: 0,
+          y: 0,
+          width: 100,
+        },
+      }),
+    ).rejects.toThrow(/could not be read/u);
   });
 });

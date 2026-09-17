@@ -114,6 +114,7 @@ describe('public canary catalog', () => {
     expect(pdf.map((destination) => destination.name)).toEqual([
       'Merge PDF',
       'Compress PDF',
+      'Sign and fill PDF',
       'Extract PDF pages',
       'Images to PDF',
       'Rotate PDF',
@@ -123,11 +124,11 @@ describe('public canary catalog', () => {
       'PDF watermark',
       'PDF metadata editor',
     ]);
-    expect(pdf).toHaveLength(10);
+    expect(pdf).toHaveLength(11);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(10);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(11);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

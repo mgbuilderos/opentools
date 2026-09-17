@@ -117,3 +117,24 @@ export async function testPhotoPdf(
   }
   return Buffer.from(await pdf.save());
 }
+
+/** A one-page PDF with a text field, a checkbox and a dropdown to fill in. */
+export async function testFormPdf() {
+  const { PDFDocument } = await import('pdf-lib');
+  const pdf = await PDFDocument.create();
+  const page = pdf.addPage([400, 500]);
+  const form = pdf.getForm();
+
+  const name = form.createTextField('applicant.name');
+  name.setText('');
+  name.addToPage(page, { x: 40, y: 420, width: 300, height: 24 });
+
+  const agree = form.createCheckBox('agree.terms');
+  agree.addToPage(page, { x: 40, y: 380, width: 16, height: 16 });
+
+  const country = form.createDropdown('address.country');
+  country.addOptions(['India', 'Singapore', 'United Kingdom']);
+  country.addToPage(page, { x: 40, y: 330, width: 200, height: 24 });
+
+  return Buffer.from(await pdf.save());
+}

@@ -1,6 +1,11 @@
 import {
   degrees,
+  PDFCheckBox,
   PDFDict,
+  PDFDropdown,
+  PDFOptionList,
+  PDFRadioGroup,
+  PDFTextField,
   PDFDocument,
   PDFName,
   PDFNumber,
@@ -25,7 +30,8 @@ export type PdfEngineErrorCode =
   | 'EXTRACT_FAILED'
   | 'TRANSFORM_FAILED'
   | 'IMAGE_TO_PDF_FAILED'
-  | 'COMPRESS_FAILED';
+  | 'COMPRESS_FAILED'
+  | 'FILL_FAILED';
 
 export class PdfEngineError extends Error {
   constructor(
@@ -684,6 +690,259 @@ export async function compressPdf(
     compressedByteLength: bytes.length,
     imagesRecompressed,
     imagesLeftAlone,
+    computeDurationMs,
+    validationDurationMs,
+  };
+}
+
+/** Describes one form field for the UI, without leaking pdf-lib types. */
+function describeField(
+  field: import('pdf-lib').PDFField,
+): import('./protocol').PdfFormField | null {
+  const name = field.getName();
+  const readOnly = field.isReadOnly();
+
+  if (field instanceof PDFTextField) {
+    return {
+      name,
+      kind: 'text',
+      options: [],
+      value: field.getText() ?? '',
+      readOnly,
+      multiline: field.isMultiline(),
+    };
+  }
+  if (field instanceof PDFCheckBox) {
+    return {
+      name,
+      kind: 'checkbox',
+      options: [],
+      value: field.isChecked() ? 'on' : 'off',
+      readOnly,
+      multiline: false,
+    };
+  }
+  if (field instanceof PDFRadioGroup) {
+    return {
+      name,
+      kind: 'radio',
+      options: field.getOptions(),
+      value: field.getSelected() ?? '',
+      readOnly,
+      multiline: false,
+    };
+  }
+  if (field instanceof PDFDropdown) {
+    return {
+      name,
+      kind: 'dropdown',
+      options: field.getOptions(),
+      value: field.getSelected()[0] ?? '',
+      readOnly,
+      multiline: false,
+    };
+  }
+  if (field instanceof PDFOptionList) {
+    return {
+      name,
+      kind: 'optionList',
+      options: field.getOptions(),
+      value: field.getSelected()[0] ?? '',
+      readOnly,
+      multiline: false,
+    };
+  }
+  // Push buttons and signature fields have nothing to fill in.
+  return null;
+}
+
+/**
+ * Reads a PDF's fillable fields and page geometry.
+ *
+ * Page sizes come back so the UI can place a signature in PDF points without
+ * shipping a renderer: the caller draws a box against these proportions.
+ */
+export async function inspectPdfForm(input: PdfWorkerInput) {
+  const document = await loadPdf(input);
+  const pages = document.getPages();
+  if (pages.length < 1) {
+    throw new PdfEngineError('EMPTY_PDF', 'This PDF has no pages.', input.id);
+  }
+
+  let fields: import('./protocol').PdfFormField[] = [];
+  try {
+    fields = document
+      .getForm()
+      .getFields()
+      .map(describeField)
+      .filter((field): field is import('./protocol').PdfFormField => !!field);
+  } catch {
+    // A PDF with no AcroForm, or one pdf-lib cannot parse, simply has no
+    // fields to offer. Signing it still works.
+    fields = [];
+  }
+
+  return {
+    pages: pages.length,
+    pageSizes: pages.map((page) => {
+      const { width, height } = page.getSize();
+      return { width, height };
+    }),
+    fields,
+  };
+}
+
+/**
+ * Writes values into a PDF's form fields and optionally stamps a signature.
+ *
+ * `flatten` bakes the values into the page and drops the form, which is what
+ * most people mean by a finished document. Without it the values stay
+ * editable, which is right when the file is still going round for review.
+ *
+ * This is a drawn signature, not a cryptographic one. Nothing here proves who
+ * signed or when, and the UI must not imply otherwise.
+ */
+export async function fillPdfForm(
+  input: PdfWorkerInput,
+  options: import('./protocol').PdfFillOptions,
+  onProgress?: (
+    phase: 'reading' | 'copying' | 'validating',
+    completed: number,
+    total: number,
+  ) => void,
+) {
+  const computeStarted = performance.now();
+  onProgress?.('reading', 0, 1);
+  const document = await loadPdf(input);
+  const pageCount = document.getPageCount();
+
+  const names = Object.keys(options.values);
+  let filled = 0;
+  if (names.length) {
+    const form = document.getForm();
+    names.forEach((name, index) => {
+      const value = options.values[name] ?? '';
+      let field;
+      try {
+        field = form.getField(name);
+      } catch {
+        // The document changed under the UI, or the name was never real.
+        // Skipping is safer than failing the whole document.
+        onProgress?.('copying', index + 1, names.length);
+        return;
+      }
+      if (field.isReadOnly()) {
+        onProgress?.('copying', index + 1, names.length);
+        return;
+      }
+
+      try {
+        if (field instanceof PDFTextField) field.setText(value);
+        else if (field instanceof PDFCheckBox) {
+          if (value === 'on') field.check();
+          else field.uncheck();
+        } else if (field instanceof PDFRadioGroup) {
+          if (value) field.select(value);
+          else field.clear();
+        } else if (field instanceof PDFDropdown) {
+          if (value) field.select(value);
+          else field.clear();
+        } else if (field instanceof PDFOptionList) {
+          if (value) field.select(value);
+          else field.clear();
+        } else {
+          onProgress?.('copying', index + 1, names.length);
+          return;
+        }
+        filled += 1;
+      } catch (error) {
+        throw new PdfEngineError(
+          'FILL_FAILED',
+          `“${name}” would not take that value: ${error instanceof Error ? error.message : 'unknown reason'}`,
+          input.id,
+        );
+      }
+      onProgress?.('copying', index + 1, names.length);
+    });
+  }
+
+  let signaturePlaced = false;
+  const signature = options.signature;
+  if (signature) {
+    if (
+      !Number.isInteger(signature.pageIndex) ||
+      signature.pageIndex < 0 ||
+      signature.pageIndex >= pageCount
+    ) {
+      throw new PdfEngineError(
+        'FILL_FAILED',
+        `Place the signature on a page between 1 and ${pageCount}.`,
+        input.id,
+      );
+    }
+    let embedded;
+    try {
+      embedded = await document.embedPng(signature.image);
+    } catch {
+      throw new PdfEngineError(
+        'FILL_FAILED',
+        'The signature image could not be read.',
+        input.id,
+      );
+    }
+    const page = document.getPage(signature.pageIndex);
+    const width = Math.max(1, signature.width);
+    const height = (embedded.height / embedded.width) * width;
+    // The UI measures from the top-left corner; PDF space starts bottom-left.
+    page.drawImage(embedded, {
+      x: signature.x,
+      y: page.getHeight() - signature.y - height,
+      width,
+      height,
+    });
+    signaturePlaced = true;
+  }
+
+  if (options.flatten) {
+    try {
+      document.getForm().flatten();
+    } catch (error) {
+      throw new PdfEngineError(
+        'FILL_FAILED',
+        `This form could not be made final: ${error instanceof Error ? error.message : 'unknown reason'}`,
+        input.id,
+      );
+    }
+  }
+
+  const bytes = await document.save({
+    addDefaultPage: false,
+    useObjectStreams: true,
+    objectsPerTick: 50,
+  });
+  const computeDurationMs = performance.now() - computeStarted;
+
+  onProgress?.('validating', 1, 1);
+  const validationStarted = performance.now();
+  const reopened = await PDFDocument.load(bytes, {
+    ignoreEncryption: false,
+    updateMetadata: false,
+  });
+  if (reopened.getPageCount() !== pageCount) {
+    throw new PdfEngineError(
+      'FILL_FAILED',
+      'The completed PDF failed its page-count check.',
+      input.id,
+    );
+  }
+  const validationDurationMs = performance.now() - validationStarted;
+
+  return {
+    bytes,
+    pageCount,
+    fieldsFilled: filled,
+    signaturePlaced,
+    flattened: options.flatten,
     computeDurationMs,
     validationDurationMs,
   };

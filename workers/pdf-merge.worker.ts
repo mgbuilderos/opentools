@@ -3,6 +3,8 @@
 import {
   compressPdf,
   extractPdfPages,
+  fillPdfForm,
+  inspectPdfForm,
   imagesToPdf,
   inspectPdfInputs,
   mergePdfInputs,
@@ -97,6 +99,37 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
             pageCount: result.pageCount,
             computeDurationMs: result.computeDurationMs,
             validationDurationMs: result.validationDurationMs,
+          },
+          [output],
+        );
+      })
+      .catch(sendError);
+    return;
+  }
+
+  if (request.type === 'inspect-form') {
+    inspectPdfForm(request.input)
+      .then((result) => send({ type: 'form', ...result }))
+      .catch(sendError);
+    return;
+  }
+
+  if (request.type === 'fill') {
+    fillPdfForm(request.input, request.options, (phase, completed, total) => {
+      send({ type: 'progress', phase, completed, total });
+    })
+      .then((result) => {
+        const output = toTransferableBuffer(result.bytes);
+        send(
+          {
+            type: 'result',
+            bytes: output,
+            pageCount: result.pageCount,
+            computeDurationMs: result.computeDurationMs,
+            validationDurationMs: result.validationDurationMs,
+            fieldsFilled: result.fieldsFilled,
+            signaturePlaced: result.signaturePlaced,
+            flattened: result.flattened,
           },
           [output],
         );

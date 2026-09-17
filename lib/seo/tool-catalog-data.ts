@@ -451,7 +451,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=sign-pdf',
+    destinationUrl: '/pdf/sign',
   },
   {
     id: 'pdf.fill-pdf-form',
@@ -465,7 +465,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=fill-pdf-form',
+    destinationUrl: '/pdf/sign',
   },
   {
     id: 'pdf.create-pdf-form',

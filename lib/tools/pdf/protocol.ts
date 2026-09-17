@@ -72,18 +72,69 @@ export type PdfCompressRequest = {
   options: PdfCompressOptions;
 };
 
+/** One fillable field, described for the UI without exposing pdf-lib types. */
+export type PdfFormField = {
+  name: string;
+  kind: 'text' | 'checkbox' | 'radio' | 'dropdown' | 'optionList';
+  /** Choices for radio, dropdown and option-list fields. */
+  options: string[];
+  value: string;
+  readOnly: boolean;
+  multiline: boolean;
+};
+
+/** A signature or initial stamped onto one page, in PDF points from top-left. */
+export type PdfSignaturePlacement = {
+  /** PNG bytes of the drawn or typed signature. */
+  image: ArrayBuffer;
+  pageIndex: number;
+  x: number;
+  y: number;
+  width: number;
+};
+
+export type PdfFillOptions = {
+  /** Field name to the value to write. Missing names are left untouched. */
+  values: Record<string, string>;
+  signature: PdfSignaturePlacement | null;
+  /**
+   * Bake the values into the page so they can no longer be edited. This also
+   * removes the form, which is what most people mean by "signed and final".
+   */
+  flatten: boolean;
+};
+
+export type PdfFormInspectRequest = {
+  type: 'inspect-form';
+  input: PdfWorkerInput;
+};
+
+export type PdfFillRequest = {
+  type: 'fill';
+  input: PdfWorkerInput;
+  options: PdfFillOptions;
+};
+
 export type PdfWorkerRequest =
   | PdfInspectRequest
   | PdfMergeRequest
   | PdfExtractRequest
   | PdfTransformRequest
   | ImagesToPdfRequest
-  | PdfCompressRequest;
+  | PdfCompressRequest
+  | PdfFormInspectRequest
+  | PdfFillRequest;
 
 export type PdfWorkerResponse =
   | {
       type: 'inspected';
       files: Array<{ id: string; pages: number }>;
+    }
+  | {
+      type: 'form';
+      pages: number;
+      pageSizes: Array<{ width: number; height: number }>;
+      fields: PdfFormField[];
     }
   | {
       type: 'progress';
@@ -102,6 +153,10 @@ export type PdfWorkerResponse =
       compressedByteLength?: number;
       imagesRecompressed?: number;
       imagesLeftAlone?: number;
+      /** Set by form filling only. */
+      fieldsFilled?: number;
+      signaturePlaced?: boolean;
+      flattened?: boolean;
     }
   | {
       type: 'error';
@@ -113,6 +168,7 @@ export type PdfWorkerResponse =
         | 'EXTRACT_FAILED'
         | 'TRANSFORM_FAILED'
         | 'COMPRESS_FAILED'
+        | 'FILL_FAILED'
         | 'IMAGE_TO_PDF_FAILED';
       message: string;
       inputId?: string;

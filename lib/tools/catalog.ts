@@ -280,6 +280,33 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-sign',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Sign and fill PDF',
+    shortDescription: 'Complete a PDF form and draw a signature onto the page.',
+    category: 'PDF',
+    aliases: [
+      'sign pdf',
+      'fill pdf form',
+      'pdf signature',
+      'esign pdf',
+      'complete pdf form',
+    ],
+    jobs: [
+      'sign a pdf without uploading it',
+      'fill in a pdf form and make it final',
+      'add a handwritten signature to a document',
+    ],
+    href: '/pdf/sign',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.acroform.fill', 'pdf.annotation.draw'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-extract',
     version: '0.1.0-canary',
     status: 'canary',
@@ -852,6 +879,7 @@ export const toolGroups: ToolGroup[] = [
     toolIds: [
       'pdf-merge',
       'pdf-compress',
+      'pdf-sign',
       'pdf-extract',
       'images-to-pdf',
       'pdf-page-tools',
@@ -966,6 +994,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
     const coreIds = new Set([
       'pdf-merge',
       'pdf-compress',
+      'pdf-sign',
       'pdf-extract',
       'images-to-pdf',
     ]);
