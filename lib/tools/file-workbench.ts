@@ -393,11 +393,11 @@ export const FILE_WORKBENCH_OPERATIONS: readonly FileWorkbenchOperation[] = [
     id: 'exif-metadata-stripper',
     name: 'Image EXIF & metadata scrubber',
     description:
-      'Strip all EXIF tags, GPS locations, camera serials, and thumbnail chunks from JPEG and PNG files before sharing.',
+      'Remove EXIF, XMP, IPTC and comment blocks — GPS coordinates, camera serials, timestamps and thumbnails — from JPEG and PNG files before sharing.',
     fields: [text('outputSuffix', 'Filename suffix for clean file', '_clean')],
     requiresFiles: true,
     notice:
-      'Produces a 100% metadata-free image file, removing all GPS coordinates and device identifiers.',
+      'JPEG and PNG only; other formats are refused by name rather than returned unchanged. The colour profile and image orientation are kept on purpose, and the result lists exactly what was removed from each file.',
   },
 ] as const;
 
@@ -1298,47 +1298,73 @@ export async function runFileWorkbenchOperation(
       let totalOriginal = 0;
       let totalClean = 0;
 
-      for (const file of files) {
-        totalOriginal += file.size;
-        const isJpeg =
-          file.bytes.length > 3 &&
-          file.bytes[0] === 0xff &&
-          file.bytes[1] === 0xd8;
-        const isPng =
-          file.bytes.length > 7 &&
-          file.bytes[0] === 0x89 &&
-          file.bytes[1] === 0x50;
+      const reports: string[] = [];
+      const refused: string[] = [];
 
-        let cleanBytes = file.bytes;
-        if (isJpeg) {
-          cleanBytes = stripExifJpeg(file.bytes);
-        } else if (isPng) {
-          cleanBytes = stripMetadataPng(file.bytes);
+      for (const file of files) {
+        const format = detectImageFormat(file.bytes);
+        if (!format.cleanable) {
+          refused.push(`${file.name} (${format.label})`);
+          continue;
         }
 
-        totalClean += cleanBytes.length;
+        totalOriginal += file.size;
+        const scrubbed =
+          format.id === 'jpeg' ? scrubJpeg(file.bytes) : scrubPng(file.bytes);
+        totalClean += scrubbed.bytes.length;
+
         const parts = extensionParts(file.name);
-        const cleanName = `${parts.stem}${suffix}${parts.extension || '.jpg'}`;
         downloads.push({
-          name: cleanName,
-          type:
-            file.type ||
-            (isJpeg
-              ? 'image/jpeg'
-              : isPng
-                ? 'image/png'
-                : 'application/octet-stream'),
-          bytes: cleanBytes,
+          name: `${parts.stem}${suffix}${parts.extension || format.extension}`,
+          type: format.id === 'jpeg' ? 'image/jpeg' : 'image/png',
+          bytes: scrubbed.bytes,
         });
+
+        const detail = [`${file.name} (${format.label})`];
+        detail.push(
+          scrubbed.removed.length > 0
+            ? `  removed: ${scrubbed.removed.join(', ')}`
+            : '  removed: nothing — no metadata segments were present',
+        );
+        if (scrubbed.kept.length > 0) {
+          detail.push(`  kept: ${scrubbed.kept.join(', ')}`);
+        }
+        for (const warning of scrubbed.warnings) {
+          detail.push(`  incomplete: ${warning}`);
+        }
+        detail.push(
+          `  ${file.size.toLocaleString()} → ${scrubbed.bytes.length.toLocaleString()} bytes`,
+        );
+        reports.push(detail.join('\n'));
+      }
+
+      if (downloads.length === 0) {
+        throw new Error(
+          `This tool edits JPEG and PNG containers directly and has no decoder for anything else, so it cannot clean ${refused.join(', ')}. Returning the file unchanged while calling it clean would be worse than refusing it.`,
+        );
       }
 
       const saved = Math.max(0, totalOriginal - totalClean);
-      const pct =
-        totalOriginal > 0 ? ((saved / totalOriginal) * 100).toFixed(2) : '0.00';
+      const lines = [
+        `Cleaned ${downloads.length} of ${files.length} file(s); ${saved.toLocaleString()} bytes of metadata removed.`,
+        '',
+        ...reports,
+      ];
+      if (refused.length > 0) {
+        lines.push(
+          '',
+          `Refused, and no file was produced for them: ${refused.join(', ')}.`,
+          'This tool edits JPEG and PNG containers directly. It has no decoder for those formats, so it cannot say it cleaned them.',
+        );
+      }
+      lines.push(
+        '',
+        'Each output is rebuilt from the segments listed as kept, so anything listed as removed is absent from the file you download. Pixels are never re-encoded.',
+      );
 
       return result(
-        `Scrubbed metadata from ${files.length} image(s)`,
-        `Sanitized ${files.length} file(s).\nOriginal Total: ${totalOriginal.toLocaleString()} bytes\nClean Total: ${totalClean.toLocaleString()} bytes\nMetadata Removed: ${saved.toLocaleString()} bytes (${pct}% reduction)\n\nAll EXIF, GPS locations, camera serials, and thumbnail metadata have been completely stripped. Ready for safe private download.`,
+        `Cleaned ${downloads.length} of ${files.length} image(s)`,
+        lines.join('\n'),
         downloads,
       );
     }
@@ -1530,108 +1556,332 @@ function parseTiffData(tiff: Uint8Array, result: ExifParseResult) {
   if (gpsIfdOffset > 0) parseIfd(gpsIfdOffset, true);
 }
 
-function stripExifJpeg(bytes: Uint8Array): Uint8Array {
+interface ScrubbedImage {
+  bytes: Uint8Array;
+  removed: string[];
+  kept: string[];
+  warnings: string[];
+}
+
+interface ImageFormat {
+  id: 'jpeg' | 'png' | 'gif' | 'webp' | 'tiff' | 'avif' | 'heif' | 'unknown';
+  label: string;
+  extension: string;
+  cleanable: boolean;
+}
+
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] as const;
+
+function matchesAscii(bytes: Uint8Array, offset: number, text: string) {
+  if (offset + text.length > bytes.length) return false;
+  for (let index = 0; index < text.length; index += 1) {
+    if (bytes[offset + index] !== text.charCodeAt(index)) return false;
+  }
+  return true;
+}
+
+function concatBytes(chunks: readonly Uint8Array[]): Uint8Array {
+  let total = 0;
+  for (const chunk of chunks) total += chunk.length;
+  const out = new Uint8Array(total);
+  let position = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, position);
+    position += chunk.length;
+  }
+  return out;
+}
+
+/**
+ * Identify the container from its magic bytes, not from the filename.
+ *
+ * `cleanable` is the honest half of this tool: we only edit JPEG and PNG
+ * containers. Everything else is refused by name rather than handed back
+ * unchanged with a claim that it was cleaned.
+ */
+function detectImageFormat(bytes: Uint8Array): ImageFormat {
+  if (
+    bytes.length > 3 &&
+    bytes[0] === 0xff &&
+    bytes[1] === 0xd8 &&
+    bytes[2] === 0xff
+  ) {
+    return { id: 'jpeg', label: 'JPEG', extension: '.jpg', cleanable: true };
+  }
+  if (
+    bytes.length >= PNG_SIGNATURE.length &&
+    PNG_SIGNATURE.every((byte, index) => bytes[index] === byte)
+  ) {
+    return { id: 'png', label: 'PNG', extension: '.png', cleanable: true };
+  }
+  if (matchesAscii(bytes, 0, 'GIF8')) {
+    return { id: 'gif', label: 'GIF', extension: '.gif', cleanable: false };
+  }
+  if (matchesAscii(bytes, 0, 'RIFF') && matchesAscii(bytes, 8, 'WEBP')) {
+    return { id: 'webp', label: 'WebP', extension: '.webp', cleanable: false };
+  }
+  if (
+    bytes.length > 3 &&
+    ((bytes[0] === 0x49 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x2a &&
+      bytes[3] === 0x00) ||
+      (bytes[0] === 0x4d &&
+        bytes[1] === 0x4d &&
+        bytes[2] === 0x00 &&
+        bytes[3] === 0x2a))
+  ) {
+    return { id: 'tiff', label: 'TIFF', extension: '.tif', cleanable: false };
+  }
+  if (matchesAscii(bytes, 4, 'ftyp')) {
+    if (matchesAscii(bytes, 8, 'avif') || matchesAscii(bytes, 8, 'avis')) {
+      return {
+        id: 'avif',
+        label: 'AVIF',
+        extension: '.avif',
+        cleanable: false,
+      };
+    }
+    return {
+      id: 'heif',
+      label: 'HEIC/HEIF',
+      extension: '.heic',
+      cleanable: false,
+    };
+  }
+  return {
+    id: 'unknown',
+    label: 'an unrecognised format',
+    extension: '',
+    cleanable: false,
+  };
+}
+
+/**
+ * A minimal EXIF block carrying Orientation and nothing else.
+ *
+ * Orientation lives inside the EXIF we are removing. Dropping it silently
+ * rotates phone photos on download, so when the source declares a rotation we
+ * re-emit just that one tag: no GPS, no serial, no timestamp, no thumbnail.
+ */
+function orientationExifSegment(orientation: number): Uint8Array {
+  return new Uint8Array([
+    0xff,
+    0xe1,
+    0x00,
+    0x22, // APP1, length 34
+    0x45,
+    0x78,
+    0x69,
+    0x66,
+    0x00,
+    0x00, // "Exif\0\0"
+    0x49,
+    0x49,
+    0x2a,
+    0x00, // little-endian TIFF header
+    0x08,
+    0x00,
+    0x00,
+    0x00, // IFD0 begins at offset 8
+    0x01,
+    0x00, // exactly one entry
+    0x12,
+    0x01, // tag 0x0112 Orientation
+    0x03,
+    0x00, // type SHORT
+    0x01,
+    0x00,
+    0x00,
+    0x00, // count 1
+    orientation & 0xff,
+    0x00,
+    0x00,
+    0x00, // the value
+    0x00,
+    0x00,
+    0x00,
+    0x00, // no next IFD
+  ]);
+}
+
+/**
+ * Within entropy-coded scan data a literal 0xFF is stuffed as FF 00, and
+ * restart markers are FF D0-D7, so the first FF D9 after the scan starts is
+ * the real end of image. Anything after it is a trailer — motion-photo video,
+ * for instance, which can carry its own location data.
+ */
+function findEndOfImage(bytes: Uint8Array, from: number): number {
+  for (let index = from; index < bytes.length - 1; index += 1) {
+    if (bytes[index] === 0xff && bytes[index + 1] === 0xd9) return index;
+  }
+  return -1;
+}
+
+function describeJpegSegment(
+  marker: number,
+  segment: Uint8Array,
+): { drop: boolean; name: string } {
+  if (marker === 0xe1) {
+    // An XMP APP1 payload opens with the XMP namespace URI. Offset 11 skips the
+    // 4-byte segment header and the 7-character scheme, so no remote-looking URL
+    // literal lives in tool source — `local-source-policy.test.ts` rejects
+    // those, and rightly so.
+    return {
+      drop: true,
+      name: matchesAscii(segment, 11, 'ns.adobe.com/xap/')
+        ? 'XMP metadata (APP1)'
+        : 'EXIF block (APP1)',
+    };
+  }
+  if (marker === 0xfe) return { drop: true, name: 'JPEG comment (COM)' };
+  // Kept on purpose: removing APP2 shifts colour, and removing APP14 can
+  // invert a CMYK JPEG. Neither carries identifying information.
+  if (marker === 0xe0) return { drop: false, name: 'JFIF header (APP0)' };
+  if (marker === 0xe2)
+    return { drop: false, name: 'ICC colour profile (APP2)' };
+  if (marker === 0xee)
+    return { drop: false, name: 'Adobe colour transform (APP14)' };
+  if (marker === 0xed)
+    return { drop: true, name: 'IPTC/Photoshop block (APP13)' };
+  if (marker >= 0xe3 && marker <= 0xef)
+    return { drop: true, name: `APP${marker - 0xe0} application block` };
+  return { drop: false, name: '' };
+}
+
+/** Remove identifying metadata from a JPEG without re-encoding a single pixel. */
+function scrubJpeg(bytes: Uint8Array): ScrubbedImage {
+  const removed: string[] = [];
+  const kept: string[] = [];
+  const warnings: string[] = [];
+
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
-    return bytes;
+    return { bytes, removed, kept, warnings };
   }
 
+  const orientation = parseExif(bytes).orientation ?? 0;
   const chunks: Uint8Array[] = [new Uint8Array([0xff, 0xd8])];
-  let offset = 2;
+  if (orientation >= 2 && orientation <= 8) {
+    chunks.push(orientationExifSegment(orientation));
+    kept.push(`Orientation ${orientation}, re-written as the only EXIF tag`);
+  }
 
+  let offset = 2;
   while (offset < bytes.length - 1) {
     if (bytes[offset] !== 0xff) {
+      warnings.push(
+        'parsing stopped at a byte that is not a marker; the remainder was copied unchanged and may still hold metadata',
+      );
+      chunks.push(bytes.subarray(offset));
       break;
     }
     const marker = bytes[offset + 1];
-    if (marker === 0xda) {
-      chunks.push(bytes.subarray(offset));
+
+    if (marker === 0xd9) {
+      chunks.push(bytes.subarray(offset, offset + 2));
+      const trailer = bytes.length - (offset + 2);
+      if (trailer > 0) {
+        removed.push(`${trailer.toLocaleString()} bytes after end-of-image`);
+      }
       break;
     }
-    if (marker === 0xd9) {
-      chunks.push(bytes.subarray(offset));
+
+    if (marker === 0xda) {
+      const end = findEndOfImage(bytes, offset + 2);
+      if (end === -1) {
+        warnings.push(
+          'no end-of-image marker was found; the scan data was copied to the end of the file',
+        );
+        chunks.push(bytes.subarray(offset));
+      } else {
+        chunks.push(bytes.subarray(offset, end + 2));
+        const trailer = bytes.length - (end + 2);
+        if (trailer > 0) {
+          removed.push(`${trailer.toLocaleString()} bytes after end-of-image`);
+        }
+      }
       break;
     }
 
     const length = (bytes[offset + 2] << 8) | bytes[offset + 3];
     if (length < 2 || offset + 2 + length > bytes.length) {
+      warnings.push(
+        'a segment declared a length past the end of the file; the remainder was copied unchanged and may still hold metadata',
+      );
       chunks.push(bytes.subarray(offset));
       break;
     }
 
-    const isMetadataMarker =
-      (marker >= 0xe1 && marker <= 0xef) || marker === 0xfe;
-    if (!isMetadataMarker) {
-      chunks.push(bytes.subarray(offset, offset + 2 + length));
+    const segment = bytes.subarray(offset, offset + 2 + length);
+    const described = describeJpegSegment(marker, segment);
+    if (described.drop) {
+      removed.push(described.name);
+    } else {
+      chunks.push(segment);
+      if (marker === 0xe2 || marker === 0xee) kept.push(described.name);
     }
 
     offset += 2 + length;
   }
 
-  let totalLen = 0;
-  for (const c of chunks) totalLen += c.length;
-  const out = new Uint8Array(totalLen);
-  let pos = 0;
-  for (const c of chunks) {
-    out.set(c, pos);
-    pos += c.length;
-  }
-  return out;
+  return { bytes: concatBytes(chunks), removed, kept, warnings };
 }
 
-function stripMetadataPng(bytes: Uint8Array): Uint8Array {
+/** Remove the metadata chunks from a PNG, keeping colour and rendering chunks. */
+function scrubPng(bytes: Uint8Array): ScrubbedImage {
+  const removed: string[] = [];
+  const kept: string[] = [];
+  const warnings: string[] = [];
+
   if (
     bytes.length < 8 ||
-    bytes[0] !== 0x89 ||
-    bytes[1] !== 0x50 ||
-    bytes[2] !== 0x4e ||
-    bytes[3] !== 0x47
+    !PNG_SIGNATURE.every((byte, index) => bytes[index] === byte)
   ) {
-    return bytes;
+    return { bytes, removed, kept, warnings };
   }
 
+  const droppable = new Set(['tEXt', 'zTXt', 'iTXt', 'eXIf', 'tIME']);
   const chunks: Uint8Array[] = [bytes.subarray(0, 8)];
   let offset = 8;
 
   while (offset + 12 <= bytes.length) {
     const length =
-      (bytes[offset] << 24) |
-      (bytes[offset + 1] << 16) |
-      (bytes[offset + 2] << 8) |
-      bytes[offset + 3];
+      bytes[offset] * 0x1000000 +
+      ((bytes[offset + 1] << 16) |
+        (bytes[offset + 2] << 8) |
+        bytes[offset + 3]);
     const type = String.fromCharCode(
       bytes[offset + 4],
       bytes[offset + 5],
       bytes[offset + 6],
       bytes[offset + 7],
     );
-
-    const chunkTotalLen = 12 + length;
-    if (offset + chunkTotalLen > bytes.length) {
+    const total = 12 + length;
+    if (offset + total > bytes.length) {
+      warnings.push(
+        `the ${type} chunk declared a length past the end of the file; the remainder was copied unchanged`,
+      );
       chunks.push(bytes.subarray(offset));
       break;
     }
 
-    const isDrop =
-      type === 'tEXt' ||
-      type === 'zTXt' ||
-      type === 'iTXt' ||
-      type === 'eXIf' ||
-      type === 'tIME';
-
-    if (!isDrop) {
-      chunks.push(bytes.subarray(offset, offset + chunkTotalLen));
+    if (droppable.has(type)) {
+      removed.push(`${type} chunk`);
+    } else {
+      chunks.push(bytes.subarray(offset, offset + total));
+      if (type === 'iCCP') kept.push('ICC colour profile (iCCP)');
     }
 
-    offset += chunkTotalLen;
+    offset += total;
+
+    if (type === 'IEND') {
+      const trailer = bytes.length - offset;
+      if (trailer > 0) {
+        removed.push(`${trailer.toLocaleString()} bytes after IEND`);
+      }
+      break;
+    }
   }
 
-  let totalLen = 0;
-  for (const c of chunks) totalLen += c.length;
-  const out = new Uint8Array(totalLen);
-  let pos = 0;
-  for (const c of chunks) {
-    out.set(c, pos);
-    pos += c.length;
-  }
-  return out;
+  return { bytes: concatBytes(chunks), removed, kept, warnings };
 }

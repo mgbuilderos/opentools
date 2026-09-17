@@ -69,6 +69,10 @@ function filesFor(id: string, sampleEnc?: LocalFileInput) {
   if (id === 'duplicate-file-finder') return [hello, helloCopy, world];
   if (id === 'hex-patch-generator') return [hello, changed];
   if (id === 'file-decrypt') return [sampleEnc ?? hello];
+  // The metadata scrubber refuses anything that is not a JPEG or PNG, so the
+  // smoke pass has to hand it a real image rather than a text file.
+  if (id === 'exif-metadata-stripper' || id === 'exif-metadata-inspector')
+    return [png];
   const operation = FILE_WORKBENCH_OPERATIONS.find((item) => item.id === id);
   return operation?.multiple ? [hello, png, empty] : [hello];
 }
@@ -372,7 +376,8 @@ describe('file workbench', () => {
       { outputSuffix: '_clean' },
       [sampleJpegWithExif],
     );
-    expect(stripped.summary).toContain('Scrubbed metadata from 1 image(s)');
+    expect(stripped.summary).toContain('Cleaned 1 of 1 image(s)');
+    expect(stripped.output).toContain('EXIF block (APP1)');
     expect(stripped.downloads[0].name).toBe('photo_clean.jpg');
     // Ensure stripped JPEG does not contain APP1 (0xFF 0xE1)
     const outBytes = stripped.downloads[0].bytes;
@@ -384,5 +389,267 @@ describe('file workbench', () => {
       }
     }
     expect(foundApp1).toBe(false);
+  });
+});
+
+describe('image metadata scrubber', () => {
+  const DQT = [0xff, 0xdb, 0x00, 0x04, 0x00, 0x00];
+  const SOS = [0xff, 0xda, 0x00, 0x02, 0x12, 0x34];
+  const EOI = [0xff, 0xd9];
+
+  function segment(marker: number, payload: readonly number[]) {
+    const length = payload.length + 2;
+    return [0xff, marker, (length >> 8) & 0xff, length & 0xff, ...payload];
+  }
+
+  function ascii(text: string) {
+    return Array.from(text, (character) => character.charCodeAt(0));
+  }
+
+  /** A real EXIF APP1 carrying exactly one tag: Orientation. */
+  function exifOrientation(orientation: number) {
+    return segment(0xe1, [
+      ...ascii('Exif'),
+      0x00,
+      0x00,
+      0x49,
+      0x49,
+      0x2a,
+      0x00,
+      0x08,
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x00, // one entry
+      0x12,
+      0x01, // Orientation
+      0x03,
+      0x00, // SHORT
+      0x01,
+      0x00,
+      0x00,
+      0x00,
+      orientation,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+    ]);
+  }
+
+  function jpegFile(name: string, ...body: number[][]) {
+    return makeFile(
+      name,
+      Uint8Array.from([0xff, 0xd8, ...body.flat(), ...DQT, ...SOS, ...EOI]),
+      'image/jpeg',
+    );
+  }
+
+  function scrub(file: LocalFileInput) {
+    return runFileWorkbenchOperation(
+      'exif-metadata-stripper',
+      { outputSuffix: '_clean' },
+      [file],
+    );
+  }
+
+  function contains(haystack: Uint8Array, needle: readonly number[]) {
+    outer: for (
+      let index = 0;
+      index <= haystack.length - needle.length;
+      index++
+    ) {
+      for (let offset = 0; offset < needle.length; offset++) {
+        if (haystack[index + offset] !== needle[offset]) continue outer;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  it.each([
+    ['photo.webp', [...ascii('RIFF'), 0, 0, 0, 0, ...ascii('WEBP')], 'WebP'],
+    ['photo.heic', [0, 0, 0, 0x18, ...ascii('ftypheic')], 'HEIC/HEIF'],
+    ['photo.avif', [0, 0, 0, 0x18, ...ascii('ftypavif')], 'AVIF'],
+    ['scan.tif', [0x49, 0x49, 0x2a, 0x00, 0, 0, 0, 0], 'TIFF'],
+    ['anim.gif', [...ascii('GIF89a'), 0, 0], 'GIF'],
+  ])(
+    'refuses %s instead of returning it unchanged',
+    async (name, bytes, label) => {
+      await expect(scrub(makeFile(name, bytes))).rejects.toThrow(label);
+    },
+  );
+
+  it('keeps the ICC profile and the Adobe marker while dropping EXIF', async () => {
+    const file = jpegFile(
+      'shot.jpg',
+      exifOrientation(1),
+      segment(0xe2, [...ascii('ICC_PROFILE'), 0x00, 0x01, 0x01]),
+      segment(0xee, [...ascii('Adobe'), 0x00, 0x64, 0x00, 0x00]),
+    );
+    const output = await scrub(file);
+    const bytes = output.downloads[0].bytes;
+
+    expect(contains(bytes, ascii('ICC_PROFILE'))).toBe(true);
+    expect(contains(bytes, ascii('Adobe'))).toBe(true);
+    expect(contains(bytes, ascii('Exif'))).toBe(false);
+    expect(output.output).toContain('ICC colour profile (APP2)');
+    expect(output.output).toContain('Adobe colour transform (APP14)');
+  });
+
+  it('preserves a rotation so the photo does not turn sideways', async () => {
+    const output = await scrub(jpegFile('rotated.jpg', exifOrientation(6)));
+    const bytes = output.downloads[0].bytes;
+
+    // The only EXIF left is the exact 36-byte Orientation segment we re-wrote:
+    // APP1, length 34, "Exif\0\0", little-endian TIFF, one SHORT tag 0x0112 = 6.
+    expect(
+      contains(bytes, [
+        0xff,
+        0xe1,
+        0x00,
+        0x22,
+        ...ascii('Exif'),
+        0x00,
+        0x00,
+        0x49,
+        0x49,
+        0x2a,
+        0x00,
+        0x08,
+        0x00,
+        0x00,
+        0x00,
+        0x01,
+        0x00,
+        0x12,
+        0x01,
+        0x03,
+        0x00,
+        0x01,
+        0x00,
+        0x00,
+        0x00,
+        0x06,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+      ]),
+    ).toBe(true);
+    // and nothing else from the original EXIF survived.
+    expect(
+      bytes.filter((byte, index) => byte === 0xff && bytes[index + 1] === 0xe1),
+    ).toHaveLength(1);
+    expect(output.output).toContain('Orientation 6');
+  });
+
+  it('drops XMP and comment blocks and names them in the report', async () => {
+    const output = await scrub(
+      jpegFile(
+        'tagged.jpg',
+        segment(0xe1, [...ascii('http://ns.adobe.com/xap/1.0/'), 0x00]),
+        segment(0xfe, ascii('camera serial 12345')),
+      ),
+    );
+
+    expect(contains(output.downloads[0].bytes, ascii('ns.adobe.com'))).toBe(
+      false,
+    );
+    expect(contains(output.downloads[0].bytes, ascii('serial'))).toBe(false);
+    expect(output.output).toContain('XMP metadata (APP1)');
+    expect(output.output).toContain('JPEG comment (COM)');
+  });
+
+  it('removes a trailer hidden after the end-of-image marker', async () => {
+    const withTrailer = makeFile(
+      'motion.jpg',
+      Uint8Array.from([
+        0xff,
+        0xd8,
+        ...DQT,
+        ...SOS,
+        ...EOI,
+        ...ascii('GPS 12.9716,77.5946'),
+      ]),
+      'image/jpeg',
+    );
+    const output = await scrub(withTrailer);
+
+    expect(contains(output.downloads[0].bytes, ascii('GPS 12.9716'))).toBe(
+      false,
+    );
+    expect(output.output).toContain('bytes after end-of-image');
+  });
+
+  it('keeps a PNG named .png and reports the chunks it removed', async () => {
+    const textChunk = [
+      0x00,
+      0x00,
+      0x00,
+      0x05,
+      ...ascii('tEXt'),
+      ...ascii('hello'),
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+    ];
+    const iend = [
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      ...ascii('IEND'),
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+    ];
+    const file = makeFile(
+      'chart.png',
+      Uint8Array.from([
+        0x89,
+        0x50,
+        0x4e,
+        0x47,
+        0x0d,
+        0x0a,
+        0x1a,
+        0x0a,
+        ...textChunk,
+        ...iend,
+      ]),
+      'image/png',
+    );
+
+    const output = await scrub(file);
+    expect(output.downloads[0].name).toBe('chart_clean.png');
+    expect(output.downloads[0].type).toBe('image/png');
+    expect(contains(output.downloads[0].bytes, ascii('hello'))).toBe(false);
+    expect(output.output).toContain('tEXt chunk');
+  });
+
+  it('cleans what it can and names what it refused in a mixed batch', async () => {
+    const output = await runFileWorkbenchOperation(
+      'exif-metadata-stripper',
+      { outputSuffix: '_clean' },
+      [
+        jpegFile('ok.jpg', segment(0xfe, ascii('comment'))),
+        makeFile('nope.webp', [...ascii('RIFF'), 0, 0, 0, 0, ...ascii('WEBP')]),
+      ],
+    );
+
+    expect(output.summary).toBe('Cleaned 1 of 2 image(s)');
+    expect(output.downloads).toHaveLength(1);
+    expect(output.output).toContain('nope.webp (WebP)');
+    expect(output.output).toContain('no file was produced');
   });
 });

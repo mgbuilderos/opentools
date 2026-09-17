@@ -195,6 +195,23 @@ const suites: readonly QcSuite[] = [
       const operation = FILE_WORKBENCH_OPERATIONS.find(
         (candidate) => candidate.id === id,
       );
+      // The metadata scrubber refuses any container it cannot actually clean,
+      // so a .txt fixture is not a valid input for it.
+      if (id === 'exif-metadata-stripper' || id === 'exif-metadata-inspector') {
+        const pngBytes = new Uint8Array(
+          Buffer.from(onePixelPng.split(',')[1], 'base64'),
+        );
+        return runFileWorkbenchOperation(id, values, [
+          {
+            name: 'pixel.png',
+            path: 'fixtures/pixel.png',
+            type: 'image/png',
+            size: pngBytes.length,
+            lastModified: Date.UTC(2026, 8, 6),
+            bytes: pngBytes,
+          },
+        ]);
+      }
       if (id === 'file-decrypt') {
         const enc = await runFileWorkbenchOperation(
           'file-encrypt',
