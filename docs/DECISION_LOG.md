@@ -114,3 +114,55 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   `lib/seo/removed-tool-redirects.test.ts` asserts that the path stays
   unredirected and that no blog post publishes that slug, so the redirect
   cannot be added back silently.
+
+## 2026-09-17 — Offline use, exact-size images, Aadhaar/PAN masking, guide consolidation, self-host edition
+
+Owner decisions, given in chat on 2026-09-17 after the growth and competitor
+research. They override plans and catalog entries like every entry above.
+
+### 8. Offline support through a service worker, with limits
+
+- A service worker may cache **only this site's own files** and must never
+  fetch from any other origin. Tool code keeps the no-network rule.
+- The site may say "works offline" **only** once an automated test turns the
+  network off and every cached tool still runs. Until that test exists and
+  passes, no page, guide, manifest or README claims offline use.
+
+### 9. Exact-size image tool: generic inputs, no named portal presets
+
+- Build the tool with user-entered values: target size in KB, exact pixels
+  and DPI. It must really produce a file that meets them, or say it could not.
+- **No named presets with numbers** (for example "SSC: 20–50 KB"). Portal
+  limits change with each notification, which breaks the evergreen-tools rule
+  (ADR-017).
+- Guide copy may describe the use case ("exam and job portal uploads") and
+  must tell users to check their portal's current notice.
+
+### 10. Aadhaar and PAN may be named as input formats only
+
+- Pages may say the tool "detects and masks Aadhaar and PAN numbers".
+- Aadhaar masking follows UIDAI's masked-Aadhaar convention: hide the first 8
+  digits, show the last 4.
+- No logos, and nothing that suggests government approval or affiliation.
+- The tool must re-check its own output and fail loudly if any number that
+  matches either format remains; a missed number is the serious failure.
+
+### 11. Consolidate thin guide pages gradually, based on Search Console data
+
+- Pull Search Console data before changing any guide URL.
+- Keep full guides for roughly 30–50 tools that earn traffic or have something
+  distinct to say. Redirect the rest to their tool page with a 301 and remove
+  them from the sitemap.
+- Reason: hundreds of near-template pages match Google's scaled-content abuse
+  policy; the site is young, so consolidating now costs little.
+
+### 12. New channels: self-host edition first
+
+- Now: a self-host edition — a GitHub release that serves the built site with
+  Docker. Publishing a release is an outward action and needs the owner's
+  go-ahead at release time.
+- Later: an npm CLI and an MCP server, once tool code is separable from the site.
+- Not now: a Chrome extension, and paid support.
+- Not decided (owner set aside): runtime `pdfjs-dist`, share links carrying
+  user input, and turning off Cloudflare error reporting / the Web Analytics
+  beacon.
