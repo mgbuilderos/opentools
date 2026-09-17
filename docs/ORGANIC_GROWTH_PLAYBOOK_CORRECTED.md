@@ -35,8 +35,8 @@ Paths marked *(blueprint root)* live above the repository, beside `apps/`; the
 rest are in this worktree.
 
 1. `ai/BUSINESS_RULES.md` (blueprint root) — numbered, binding.
-2. `docs/DECISION_LOG.md` on branch `claude/decisions` — owner decisions 1–15.
-   **Decisions 8–15 are not on `origin/main` yet**; a worktree cut from
+2. `docs/DECISION_LOG.md` on branch `claude/decisions` — owner decisions 1–16.
+   **Decisions 8–16 are not on `origin/main` yet**; a worktree cut from
    `origin/main` will show only 1–7.
 3. `research/LEARNINGS.md` (blueprint root) — items 24, 33, 35, 36 govern
    growth directly.
@@ -55,7 +55,7 @@ trade-off to be argued; it is out.
 | :-- | :--- | :--- |
 | C1 | Core outputs and filenames are never watermarked or branded. | Rule 33; Learning 36 |
 | C2 | No "0 bytes", "zero egress" or measured-privacy claim without a formal egress proof for that release. | Rule 23; Decisions 5, 15 |
-| C3 | No named portal preset carrying a number that can go stale. | Decision 9; ADR-017 |
+| C3 | A portal preset carries a source URL, a `checkedOn` date and its specific field, expires at 90 days, and never appears in cached page metadata. | Decision 16 (amends 9); ADR-017 |
 | C4 | No new family of near-template pages; thin guides are being consolidated, not multiplied. | Decision 11; Learning 24 |
 | C5 | Share objects carry the task, never the user's artifact, filename or private parameter. | Learning 35; Decision 12 ("set aside") |
 | C6 | No tracking script, no third-party origin, no client-side analytics. | `connect-src 'none'`; Decision 6 |
@@ -121,37 +121,50 @@ the product can serve.
   **This conflicts with decision 9** and must be resolved before the branch goes
   anywhere near `main`.
 
-**The preset conflict, and the way through it.** Decision 9 bans named presets
-with numbers because portal limits change without notice (ADR-017). The
-in-flight code anticipated the objection — its header argues the numbers stay
-editable and the UI says where each came from. That is a reasonable design and
-it is still the owner's call, not an agent's. Note that the code itself
-undercuts the original playbook's premise: it records **two** USCIS ceilings
-(2 MiB for evidence, 6 MiB for a completed form), so the flat "2,048 KB" the
-original hardcodes into a page title is already wrong.
+**The preset question — settled.** Decision 9 banned named presets with numbers
+because portal limits change without notice (ADR-017). On 2026-09-17 the owner
+**amended it: decision 16** on branch `claude/decisions` (`b4ba266`). Presets
+are allowed, with expiry instead of absence — a stale preset must fail loudly
+rather than sit there quietly being wrong.
 
-Three options for the owner, in the order I'd rank them:
+Every preset row must carry three things or it does not ship:
 
-1. **Generic tool, descriptive guide** (decision 9 as written). Target box is
-   user-entered. The guide names the use case — "exam and job portal uploads" —
-   and tells the reader to check their portal's current notice. Nothing goes
-   stale. Weakest search capture of the three.
-2. **Presets as dated, sourced, editable hints.** Keep `PORTAL_PRESETS`, require
-   every row to carry a source URL and a `checkedOn` date, show both in the UI,
-   and add a test that fails when any row is older than 90 days. Page titles and
-   `<h1>` stay generic; the number appears only in the app, never in metadata a
-   search engine caches. This keeps the conversion benefit and makes staleness
-   loud instead of silent. **Needs a new owner decision amending 9.**
-3. **Drop the presets entirely**, ship fit-to-size generic. Cleanest, and it
-   throws away working code.
+- `sourceUrl` — the page stating the limit, published by the portal itself. Not
+  a blog, not a forum answer, not another tool's site.
+- `checkedOn` — the ISO date a person last read the number off that page.
+- `field` — the specific form or upload the limit applies to, because a portal
+  usually has several ceilings.
+
+The number appears **in the app only**, beside its source link and date, and
+stays editable after the preset fills the box. It is barred from `<title>`,
+`<h1>`, meta description, structured data and sitemap entries — anything a
+search engine caches and keeps serving after the limit moves. A build-failing
+test rejects any row more than **90 days** old; the fix is to re-open the source
+and update the date, or delete the row. A limit that cannot be re-verified from
+the portal's own page is deleted, never guessed.
+
+**What `claude/exact-size` needs before it can merge.**
+`lib/tools/pdf/size-targets.ts` today has `portal`, `field`, `limitBytes` and
+`note` — **no `sourceUrl`, no `checkedOn`, no expiry test**. Six rows need a
+real source or removal. The `email-attachment` row ("Providers stop between 20
+and 25 MB") is a generalisation across providers rather than one authority's
+published figure, so it names one provider with one source or it comes out.
+`PORTAL_PRESETS` is currently referenced only by its own test, not by any UI, so
+this can be fixed before anything is user-visible.
+
+Note the table already undercuts the original playbook's premise: it records
+**two** USCIS ceilings (2 MiB for evidence, 6 MiB for a completed form), so the
+flat "2,048 KB" the original hardcodes into a page title is wrong on its own
+terms.
 
 **What must not happen** (either way): a page titled `Fix "File Exceeds
 2048 KB"`. It bakes a number into a cached title, it is one of two USCIS
 ceilings, and C4 makes a matrix of fifteen such pages a scaled-content risk on a
 site mid-way through de-indexing ~430 thin URLs.
 
-**Gate.** `claude/exact-size` reviewed and merged; preset question decided by
-the owner; `isLiveToolUrl()` true for the route before any guide links to it.
+**Gate.** `claude/exact-size` reviewed and merged, with the three preset fields
+and the expiry test added per decision 16; `isLiveToolUrl()` true for the route
+before any guide links to it.
 
 ---
 
@@ -369,7 +382,7 @@ Each phase gates the next. No phase starts before its gate passes.
 | 1 | AlternativeTo profile | phase 0 | C8 — outward action |
 | 2 | Processing record (`claude/attestation`) ships; board §7 request to mount it | phase 0 | review |
 | 3 | Recipe links (Pillar 3) | phase 0 | review |
-| 4 | Resolve the preset question (Pillar 1); review and merge `claude/exact-size` | phase 0 | **decision amending or confirming 9** |
+| 4 | Add `sourceUrl`, `checkedOn` and the 90-day expiry test to `size-targets.ts`; review and merge `claude/exact-size` | phase 0 | source each of the six rows (or drop it) |
 | 5 | Burst test (§5.2) | phase 4 merged | canary |
 | 6 | First bounced-upload pages — small number, each with a live tool | phase 5 | review |
 | 7 | Self-host release → `awesome-selfhosted`; `free-for-dev`, `awesome-privacy` | `claude/selfhost` ready | C8 — release + PRs |
@@ -384,9 +397,9 @@ scheduled task. Phase 4 is the one that needs a ruling.
 
 ## 8. Open questions for the owner
 
-1. **Presets** (Pillar 1) — confirm decision 9 as written, or amend it to allow
-   dated-and-sourced editable presets? The code on `claude/exact-size` assumes
-   the amendment; it cannot merge as-is under decision 9.
+1. ~~**Presets**~~ — **answered 2026-09-17: decision 16 amends decision 9.**
+   Dated, sourced, expiring presets are allowed. See Pillar 1 for what the code
+   still needs.
 2. **`claude/exact-size` provenance** — the board records this branch as
    preserved-unreviewed work with no known author, and it also modifies
    `proxy.ts`, which is Antigravity's. Who reviews it?
@@ -402,7 +415,7 @@ scheduled task. Phase 4 is the one that needs a ruling.
 | :--- | :--- |
 | `setProducer('OpenTools … getopentools.com')` in every output PDF | Rule 33: core outputs are never branded. Beyond the rule: it stamps a third-party identifier into a user's immigration or court filing without asking, which is against the interest of the person the product exists to protect. |
 | Receipt reading "0 Bytes Sent to Server" | Rule 23, decisions 5 and 15 — verbatim the string decision 15 forbids without a release egress proof. `components/audit-terminal.tsx` was deleted for precisely this. |
-| Named portal presets in page titles and metadata (`Fix "File Exceeds 2048 KB"`) | Decision 9 / ADR-017. Also factually wrong: USCIS applies at least two ceilings. |
+| Named portal presets in page titles and metadata (`Fix "File Exceeds 2048 KB"`) | Still out under decision 16, which allows the number **in the app only** and bars it from anything a search engine caches. Also factually wrong: USCIS applies at least two ceilings. |
 | A 15-page programmatic pSEO matrix, and programmatic `/compare/*` | Decision 11, Learning 24. ~430 thin URLs are being taken to 404 right now; a new generated family invites a scaled-content action. |
 | PDF or schema encrypted into a URL fragment | Decision 12 ("set aside"), Learning 35, plus the Slack-upload contradiction in Pillar 3. |
 | `npx opentools` now | Decisions 12 and 13: later, and no npm publish. |
