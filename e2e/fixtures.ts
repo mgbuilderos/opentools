@@ -77,3 +77,43 @@ export async function testPdf(pages = 3) {
   }
   return Buffer.from(await pdf.save());
 }
+
+/**
+ * Builds a photo-heavy PDF using a JPEG the browser encodes for us.
+ *
+ * Node has no JPEG encoder, and a PDF of flat colour would compress to nothing
+ * in any codec, proving nothing. The noise pattern here resists compression, so
+ * the source JPEG is genuinely large and a saving afterwards is a real saving.
+ */
+export async function testPhotoPdf(
+  page: import('@playwright/test').Page,
+  pages = 3,
+) {
+  const base64Jpeg = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1400;
+    canvas.height = 1000;
+    const context = canvas.getContext('2d')!;
+    const image = context.createImageData(canvas.width, canvas.height);
+    // A fixed generator, so the fixture is the same on every run.
+    let seed = 20260917;
+    for (let i = 0; i < image.data.length; i += 4) {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      image.data[i] = seed % 256;
+      image.data[i + 1] = (seed >> 8) % 256;
+      image.data[i + 2] = (seed >> 16) % 256;
+      image.data[i + 3] = 255;
+    }
+    context.putImageData(image, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.95).split(',')[1]!;
+  });
+
+  const { PDFDocument } = await import('pdf-lib');
+  const pdf = await PDFDocument.create();
+  const jpeg = await pdf.embedJpg(Buffer.from(base64Jpeg, 'base64'));
+  for (let index = 0; index < pages; index += 1) {
+    const page_ = pdf.addPage([600, 430]);
+    page_.drawImage(jpeg, { x: 0, y: 0, width: 600, height: 430 });
+  }
+  return Buffer.from(await pdf.save());
+}

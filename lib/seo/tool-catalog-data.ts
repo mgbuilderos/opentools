@@ -59,7 +59,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=compress-pdf',
+    destinationUrl: '/pdf/compress',
   },
   {
     id: 'pdf.rotate-pdf',

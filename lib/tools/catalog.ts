@@ -252,6 +252,34 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-compress',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Compress PDF',
+    shortDescription:
+      'Rewrite a PDF more compactly and re-encode the photos inside it.',
+    category: 'PDF',
+    aliases: [
+      'compress pdf',
+      'reduce pdf size',
+      'shrink pdf',
+      'make pdf smaller',
+      'optimize pdf',
+    ],
+    jobs: [
+      'compress a pdf without uploading it',
+      'reduce a pdf below an email attachment limit',
+      'strip document metadata from a pdf',
+    ],
+    href: '/pdf/compress',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.stream.rewrite', 'pdf.image.recompress'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-extract',
     version: '0.1.0-canary',
     status: 'canary',
@@ -820,8 +848,14 @@ export const toolGroups: ToolGroup[] = [
   {
     id: 'pdf',
     name: 'PDF',
-    shortDescription: 'Merge, split, extract, and reorder pages.',
-    toolIds: ['pdf-merge', 'pdf-extract', 'images-to-pdf', 'pdf-page-tools'],
+    shortDescription: 'Merge, compress, extract, and reorder pages.',
+    toolIds: [
+      'pdf-merge',
+      'pdf-compress',
+      'pdf-extract',
+      'images-to-pdf',
+      'pdf-page-tools',
+    ],
   },
   {
     id: 'images',
@@ -929,7 +963,12 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   const destinations = toolDestinationsForGroup(group);
 
   if (group.id === 'pdf') {
-    const coreIds = new Set(['pdf-merge', 'pdf-extract', 'images-to-pdf']);
+    const coreIds = new Set([
+      'pdf-merge',
+      'pdf-compress',
+      'pdf-extract',
+      'images-to-pdf',
+    ]);
     const layoutIds = new Set([
       'pdf-page-tools:rotate-pdf',
       'pdf-page-tools:reorder-pdf-pages',
@@ -951,7 +990,8 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       {
         id: 'core-operations',
         title: 'Core Page Operations',
-        description: 'Merge PDFs, extract pages, and turn images into a PDF.',
+        description:
+          'Merge PDFs, make one smaller, extract pages, and turn images into a PDF.',
         destinations: [...core, ...remaining],
       },
       {

@@ -1,7 +1,8 @@
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFNumber, PDFRawStream } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 
 import {
+  compressPdf,
   extractPdfPages,
   hasPdfSignature,
   imagesToPdf,
@@ -10,6 +11,7 @@ import {
   PdfEngineError,
   transformPdfPages,
 } from './engine';
+import type { JpegReencoder } from './jpeg-reencode';
 import type { PdfImageInput, PdfWorkerInput } from './protocol';
 
 async function makePdf(
@@ -220,5 +222,174 @@ describe('PDF merge engine', () => {
     });
     expect(result.pageCount).toBe(1);
     expect(result.bytes.byteLength).toBeGreaterThan(100);
+  });
+});
+
+/**
+ * Builds a PDF carrying one image XObject with the dictionary given.
+ *
+ * The bytes are filler: the compressor never decodes an image itself, it hands
+ * the stream to the re-encoder, so a test that injects its own re-encoder needs
+ * a correct dictionary and nothing more.
+ */
+async function makePdfWithImage(
+  id: string,
+  dictEntries: Record<string, unknown>,
+  contents = new Uint8Array(4096).fill(0x7f),
+): Promise<PdfWorkerInput> {
+  const document = await PDFDocument.create();
+  document.addPage([300, 400]);
+  const dict = document.context.obj({
+    Type: 'XObject',
+    Subtype: 'Image',
+    ...dictEntries,
+  });
+  document.context.register(PDFRawStream.of(dict, contents));
+  const bytes = await document.save({ addDefaultPage: false });
+  return { id, name: `${id}.pdf`, bytes: bytes.slice().buffer as ArrayBuffer };
+}
+
+const jpegImageDict = {
+  Width: 200,
+  Height: 100,
+  ColorSpace: 'DeviceRGB',
+  BitsPerComponent: 8,
+  Filter: 'DCTDecode',
+};
+
+/** Stands in for the browser canvas: always returns something half the size. */
+const halvingReencoder: JpegReencoder = async (bytes) => ({
+  bytes: new Uint8Array(Math.floor(bytes.length / 2)).fill(0x40),
+  width: 100,
+  height: 50,
+});
+
+const compressOptions = {
+  recompressImages: true,
+  imageQuality: 70,
+  maxImageDimension: 2000,
+  removeMetadata: true,
+};
+
+describe('PDF compression engine', () => {
+  it('keeps every page and reports real before and after sizes', async () => {
+    const pdf = await makePdf('lossless', [200, 300, 400]);
+    const result = await compressPdf(pdf, {
+      ...compressOptions,
+      recompressImages: false,
+    });
+
+    expect(result.pageCount).toBe(3);
+    expect(result.originalByteLength).toBe(pdf.bytes.byteLength);
+    expect(result.compressedByteLength).toBe(result.bytes.length);
+    expect(result.imagesRecompressed).toBe(0);
+    const reopened = await PDFDocument.load(result.bytes);
+    expect(reopened.getPageCount()).toBe(3);
+  });
+
+  it('clears document metadata when asked', async () => {
+    const source = await PDFDocument.create();
+    source.addPage([200, 300]);
+    source.setTitle('Quarterly figures');
+    source.setAuthor('Someone');
+    const bytes = await source.save({ addDefaultPage: false });
+    const pdf: PdfWorkerInput = {
+      id: 'meta',
+      name: 'meta.pdf',
+      bytes: bytes.slice().buffer as ArrayBuffer,
+    };
+
+    const result = await compressPdf(pdf, {
+      ...compressOptions,
+      recompressImages: false,
+    });
+    const reopened = await PDFDocument.load(result.bytes, {
+      updateMetadata: false,
+    });
+    expect(reopened.getTitle() ?? '').toBe('');
+    expect(reopened.getAuthor() ?? '').toBe('');
+  });
+
+  it('re-encodes an eligible JPEG and records its new dimensions', async () => {
+    const pdf = await makePdfWithImage('jpeg', jpegImageDict);
+    const result = await compressPdf(pdf, compressOptions, halvingReencoder);
+
+    expect(result.imagesRecompressed).toBe(1);
+    expect(result.compressedByteLength).toBeLessThan(result.originalByteLength);
+
+    const reopened = await PDFDocument.load(result.bytes);
+    const image = reopened.context
+      .enumerateIndirectObjects()
+      .map(([, object]) => object)
+      .find(
+        (object): object is PDFRawStream =>
+          object instanceof PDFRawStream &&
+          object.dict.get(PDFName.of('Subtype')) === PDFName.of('Image'),
+      );
+    expect(image).toBeDefined();
+    expect((image!.dict.get(PDFName.of('Width')) as PDFNumber).asNumber()).toBe(
+      100,
+    );
+    expect(
+      (image!.dict.get(PDFName.of('Height')) as PDFNumber).asNumber(),
+    ).toBe(50);
+    expect(image!.contents.length).toBe(2048);
+  });
+
+  it.each([
+    ['a filter it cannot rewrite', { ...jpegImageDict, Filter: 'FlateDecode' }],
+    [
+      'a colour space it cannot rewrite',
+      { ...jpegImageDict, ColorSpace: 'DeviceCMYK' },
+    ],
+    [
+      'a bit depth it cannot rewrite',
+      { ...jpegImageDict, BitsPerComponent: 4 },
+    ],
+    ['a custom decode array', { ...jpegImageDict, Decode: [1, 0, 1, 0, 1, 0] }],
+  ])('leaves an image with %s alone', async (_label, dictEntries) => {
+    const pdf = await makePdfWithImage('skip', dictEntries);
+    const result = await compressPdf(pdf, compressOptions, halvingReencoder);
+
+    expect(result.imagesRecompressed).toBe(0);
+    expect(result.imagesLeftAlone).toBeGreaterThan(0);
+  });
+
+  it('returns the original file untouched when nothing could be saved', async () => {
+    const pdf = await makePdf('already-small', [200]);
+    const result = await compressPdf(pdf, {
+      ...compressOptions,
+      recompressImages: false,
+    });
+
+    if (result.compressedByteLength === result.originalByteLength) {
+      expect(result.bytes.length).toBe(pdf.bytes.byteLength);
+      expect(result.imagesRecompressed).toBe(0);
+    }
+    // Whatever happened, the tool must never hand back a bigger file.
+    expect(result.compressedByteLength).toBeLessThanOrEqual(
+      result.originalByteLength,
+    );
+  });
+
+  it('skips the image pass when the runtime has no re-encoder', async () => {
+    const pdf = await makePdfWithImage('no-canvas', jpegImageDict);
+    const result = await compressPdf(pdf, compressOptions);
+
+    expect(result.imagesRecompressed).toBe(0);
+    const reopened = await PDFDocument.load(result.bytes);
+    expect(reopened.getPageCount()).toBe(1);
+  });
+
+  it('refuses a file that is not a PDF', async () => {
+    const notPdf: PdfWorkerInput = {
+      id: 'bad',
+      name: 'bad.pdf',
+      bytes: new TextEncoder().encode('definitely not a pdf')
+        .buffer as ArrayBuffer,
+    };
+    await expect(compressPdf(notPdf, compressOptions)).rejects.toBeInstanceOf(
+      PdfEngineError,
+    );
   });
 });

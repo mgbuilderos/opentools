@@ -56,12 +56,29 @@ export type ImagesToPdfRequest = {
   options: ImagesToPdfOptions;
 };
 
+export type PdfCompressOptions = {
+  /** Re-encode embedded JPEGs. Off means the lossless rewrite only. */
+  recompressImages: boolean;
+  /** JPEG quality, 1-100. Ignored when recompressImages is false. */
+  imageQuality: number;
+  /** Longest edge an embedded image may keep, in pixels. */
+  maxImageDimension: number;
+  removeMetadata: boolean;
+};
+
+export type PdfCompressRequest = {
+  type: 'compress';
+  input: PdfWorkerInput;
+  options: PdfCompressOptions;
+};
+
 export type PdfWorkerRequest =
   | PdfInspectRequest
   | PdfMergeRequest
   | PdfExtractRequest
   | PdfTransformRequest
-  | ImagesToPdfRequest;
+  | ImagesToPdfRequest
+  | PdfCompressRequest;
 
 export type PdfWorkerResponse =
   | {
@@ -80,6 +97,11 @@ export type PdfWorkerResponse =
       pageCount: number;
       computeDurationMs: number;
       validationDurationMs: number;
+      /** Set by compression only; every other task leaves these undefined. */
+      originalByteLength?: number;
+      compressedByteLength?: number;
+      imagesRecompressed?: number;
+      imagesLeftAlone?: number;
     }
   | {
       type: 'error';
@@ -90,6 +112,7 @@ export type PdfWorkerResponse =
         | 'MERGE_FAILED'
         | 'EXTRACT_FAILED'
         | 'TRANSFORM_FAILED'
+        | 'COMPRESS_FAILED'
         | 'IMAGE_TO_PDF_FAILED';
       message: string;
       inputId?: string;

@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
 import {
+  compressPdf,
   extractPdfPages,
   imagesToPdf,
   inspectPdfInputs,
@@ -8,6 +9,7 @@ import {
   PdfEngineError,
   transformPdfPages,
 } from '@/lib/tools/pdf/engine';
+import { reencodeJpegWithCanvas } from '@/lib/tools/pdf/jpeg-reencode';
 import type {
   PdfWorkerRequest,
   PdfWorkerResponse,
@@ -95,6 +97,36 @@ workerScope.onmessage = (event: MessageEvent<PdfWorkerRequest>) => {
             pageCount: result.pageCount,
             computeDurationMs: result.computeDurationMs,
             validationDurationMs: result.validationDurationMs,
+          },
+          [output],
+        );
+      })
+      .catch(sendError);
+    return;
+  }
+
+  if (request.type === 'compress') {
+    compressPdf(
+      request.input,
+      request.options,
+      reencodeJpegWithCanvas,
+      (phase, completed, total) => {
+        send({ type: 'progress', phase, completed, total });
+      },
+    )
+      .then((result) => {
+        const output = toTransferableBuffer(result.bytes);
+        send(
+          {
+            type: 'result',
+            bytes: output,
+            pageCount: result.pageCount,
+            computeDurationMs: result.computeDurationMs,
+            validationDurationMs: result.validationDurationMs,
+            originalByteLength: result.originalByteLength,
+            compressedByteLength: result.compressedByteLength,
+            imagesRecompressed: result.imagesRecompressed,
+            imagesLeftAlone: result.imagesLeftAlone,
           },
           [output],
         );

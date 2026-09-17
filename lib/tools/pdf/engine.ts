@@ -1,4 +1,15 @@
-import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import {
+  degrees,
+  PDFDict,
+  PDFDocument,
+  PDFName,
+  PDFNumber,
+  PDFRawStream,
+  rgb,
+  StandardFonts,
+} from 'pdf-lib';
+
+import type { JpegReencoder } from './jpeg-reencode';
 
 import type {
   ImagesToPdfOptions,
@@ -13,7 +24,8 @@ export type PdfEngineErrorCode =
   | 'MERGE_FAILED'
   | 'EXTRACT_FAILED'
   | 'TRANSFORM_FAILED'
-  | 'IMAGE_TO_PDF_FAILED';
+  | 'IMAGE_TO_PDF_FAILED'
+  | 'COMPRESS_FAILED';
 
 export class PdfEngineError extends Error {
   constructor(
@@ -491,4 +503,188 @@ export async function imagesToPdf(
   }
 
   return { bytes, pageCount, computeDurationMs, validationDurationMs };
+}
+
+/**
+ * Colour spaces whose JPEG data survives a canvas round-trip unchanged in
+ * meaning. Anything else (CMYK, Indexed, Separation, an ICC profile we would
+ * silently drop) is left alone rather than risk shifting a document's colour.
+ */
+const RECOMPRESSIBLE_COLOR_SPACES = new Set(['DeviceRGB', 'DeviceGray']);
+
+/**
+ * True only for image streams this compressor can rewrite without changing how
+ * the page renders: a single DCTDecode filter, 8 bits per component, a plain
+ * colour space, and no custom /Decode array.
+ */
+function isRecompressibleJpeg(stream: PDFRawStream) {
+  const dict = stream.dict;
+  if (dict.get(PDFName.of('Subtype')) !== PDFName.of('Image')) return false;
+  if (dict.get(PDFName.of('Filter')) !== PDFName.of('DCTDecode')) return false;
+  if (dict.has(PDFName.of('Decode'))) return false;
+  if (dict.has(PDFName.of('DecodeParms'))) return false;
+
+  const bits = dict.get(PDFName.of('BitsPerComponent'));
+  if (!(bits instanceof PDFNumber) || bits.asNumber() !== 8) return false;
+
+  const colorSpace = dict.get(PDFName.of('ColorSpace'));
+  if (!(colorSpace instanceof PDFName)) return false;
+  return RECOMPRESSIBLE_COLOR_SPACES.has(colorSpace.asString().slice(1));
+}
+
+export type PdfCompressResult = {
+  bytes: Uint8Array;
+  pageCount: number;
+  originalByteLength: number;
+  compressedByteLength: number;
+  imagesRecompressed: number;
+  imagesLeftAlone: number;
+  computeDurationMs: number;
+  validationDurationMs: number;
+};
+
+/**
+ * Makes a PDF smaller without a server.
+ *
+ * Two passes, both measured rather than estimated:
+ *
+ * 1. Always: rewrite the file with object streams and, on request, drop the
+ *    document metadata. This is lossless and changes nothing on the page.
+ * 2. Optionally: re-encode embedded JPEGs at a lower quality, downsampling any
+ *    that exceed `maxImageDimension`. Only images that pass
+ *    `isRecompressibleJpeg` are touched, and only when the new bytes are
+ *    actually smaller.
+ *
+ * If the result is not smaller than the input, the original bytes are returned
+ * unchanged and the caller is told nothing was saved. Handing back a larger
+ * file under the word "compressed" would be a lie, and a PDF that grew is worse
+ * than one that was left alone.
+ */
+export async function compressPdf(
+  input: PdfWorkerInput,
+  options: import('./protocol').PdfCompressOptions,
+  reencodeJpeg?: JpegReencoder,
+  onProgress?: (
+    phase: 'reading' | 'copying' | 'validating',
+    completed: number,
+    total: number,
+  ) => void,
+): Promise<PdfCompressResult> {
+  const originalByteLength = input.bytes.byteLength;
+  const computeStarted = performance.now();
+  onProgress?.('reading', 0, 1);
+  const document = await loadPdf(input);
+  const pageCount = document.getPageCount();
+  if (pageCount < 1) {
+    throw new PdfEngineError(
+      'EMPTY_PDF',
+      'This PDF has no pages to compress.',
+      input.id,
+    );
+  }
+
+  if (options.removeMetadata) {
+    document.setTitle('');
+    document.setAuthor('');
+    document.setSubject('');
+    document.setKeywords([]);
+    document.setProducer('');
+    document.setCreator('');
+  }
+
+  let imagesRecompressed = 0;
+  let imagesLeftAlone = 0;
+
+  if (options.recompressImages && reencodeJpeg) {
+    const streams = document.context
+      .enumerateIndirectObjects()
+      .filter(
+        (entry): entry is [(typeof entry)[0], PDFRawStream] =>
+          entry[1] instanceof PDFRawStream,
+      );
+    const candidates = streams.filter(([, stream]) =>
+      isRecompressibleJpeg(stream),
+    );
+    imagesLeftAlone = streams.length - candidates.length;
+
+    let done = 0;
+    for (const [ref, stream] of candidates) {
+      const reencoded = await reencodeJpeg(stream.contents, {
+        quality: options.imageQuality,
+        maxDimension: options.maxImageDimension,
+      });
+      done += 1;
+      onProgress?.('copying', done, candidates.length);
+
+      if (!reencoded) {
+        imagesLeftAlone += 1;
+        continue;
+      }
+
+      const dict = stream.dict as PDFDict;
+      dict.set(PDFName.of('Width'), PDFNumber.of(reencoded.width));
+      dict.set(PDFName.of('Height'), PDFNumber.of(reencoded.height));
+      // The canvas always hands back 8-bit RGB, whatever went in.
+      dict.set(PDFName.of('ColorSpace'), PDFName.of('DeviceRGB'));
+      dict.set(PDFName.of('BitsPerComponent'), PDFNumber.of(8));
+      dict.set(PDFName.of('Filter'), PDFName.of('DCTDecode'));
+      document.context.assign(ref, PDFRawStream.of(dict, reencoded.bytes));
+      imagesRecompressed += 1;
+    }
+  }
+
+  let bytes: Uint8Array;
+  try {
+    bytes = await document.save({
+      addDefaultPage: false,
+      useObjectStreams: true,
+      objectsPerTick: 50,
+    });
+  } catch {
+    throw new PdfEngineError(
+      'COMPRESS_FAILED',
+      'This PDF could not be rewritten. Your original file is unchanged.',
+      input.id,
+    );
+  }
+  const computeDurationMs = performance.now() - computeStarted;
+
+  onProgress?.('validating', 1, 1);
+  const validationStarted = performance.now();
+  const reopened = await PDFDocument.load(bytes, {
+    ignoreEncryption: false,
+    updateMetadata: false,
+  });
+  if (reopened.getPageCount() !== pageCount) {
+    throw new PdfEngineError(
+      'COMPRESS_FAILED',
+      'The compressed PDF failed its page-count check.',
+      input.id,
+    );
+  }
+  const validationDurationMs = performance.now() - validationStarted;
+
+  if (bytes.length >= originalByteLength) {
+    return {
+      bytes: new Uint8Array(input.bytes.slice(0)),
+      pageCount,
+      originalByteLength,
+      compressedByteLength: originalByteLength,
+      imagesRecompressed: 0,
+      imagesLeftAlone: imagesLeftAlone + imagesRecompressed,
+      computeDurationMs,
+      validationDurationMs,
+    };
+  }
+
+  return {
+    bytes,
+    pageCount,
+    originalByteLength,
+    compressedByteLength: bytes.length,
+    imagesRecompressed,
+    imagesLeftAlone,
+    computeDurationMs,
+    validationDurationMs,
+  };
 }

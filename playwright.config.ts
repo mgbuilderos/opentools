@@ -5,7 +5,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Capped: several specs load a 16 MB model or compress a photo-heavy PDF, and
+  // at the default worker count two browsers doing that at once starve each
+  // other into timeouts that look like product failures.
+  workers: process.env.CI ? 1 : 3,
   reporter: 'html',
   globalSetup: './e2e/global-setup.ts',
   use: {

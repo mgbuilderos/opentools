@@ -61,7 +61,10 @@ describe('sitemap', () => {
       new Set(LIVE_TOOL_CATALOG.map((tool) => `/guides/${tool.slug}`)),
     );
     expect(guides).toContain('/guides/developer-and-data-jwt-decoder');
-    expect(guides).not.toContain('/guides/pdf-compress-pdf');
+    // Compress PDF is live now that /pdf/compress runs it; the guide that used
+    // to point at a control the page tool never had is back in the sitemap.
+    expect(guides).toContain('/guides/pdf-compress-pdf');
+    expect(guides).not.toContain('/guides/video-video-to-gif');
   });
 
   it('leaves out placeholder pages and the roadmap', () => {

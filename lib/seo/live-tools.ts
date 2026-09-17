@@ -23,6 +23,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/extract-pages',
   '/pdf/images-to-pdf',
   '/pdf/page-tools',
+  '/pdf/compress',
   '/image/editor',
   '/image/background-remover',
   '/image/optimize',
