@@ -1,3 +1,6 @@
+import type { DetectionCategory } from './redaction/detectors';
+import { assertNothingRemains, redactSecrets } from './redaction/redact';
+
 export interface AdvancedDeveloperField {
   id: string;
   label: string;
@@ -884,12 +887,19 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
           { value: 'no', label: 'No — Keep IP addresses' },
           { value: 'yes', label: 'Yes — Redact IPv4 addresses' },
         ]),
+        select('scrubCards', 'Scrub Payment Card Numbers', [
+          { value: 'no', label: 'No — Keep card-like numbers' },
+          {
+            value: 'yes',
+            label: 'Yes — Redact card numbers that pass the Luhn check',
+          },
+        ]),
         select('placeholderStyle', 'Placeholder Format', [
           {
             value: 'numbered',
             label: 'Numbered tokens ([REDACTED_OPENAI_API_KEY_1])',
           },
-          { value: 'generic', label: 'Generic ([REDACTED_KEY])' },
+          { value: 'generic', label: 'Unnumbered ([REDACTED_OPENAI_API_KEY])' },
         ]),
       ],
       outputExtension: 'txt',
@@ -2488,11 +2498,14 @@ export async function runAdvancedDeveloperOperation(
     }
     case 'llm-secret-scrubber': {
       const input = required(values.input, 'Prompt / Code');
-      const scrubKeys = values.scrubKeys !== 'no';
-      const scrubEmails = values.scrubEmails !== 'no';
-      const scrubIps = values.scrubIps === 'yes';
-      const style = values.placeholderStyle || 'numbered';
-      return scrubSecretsForLlm(input, scrubKeys, scrubEmails, scrubIps, style);
+      const categories: DetectionCategory[] = ['private-key'];
+      if (values.scrubKeys !== 'no') categories.push('key');
+      if (values.scrubEmails !== 'no') categories.push('email');
+      if (values.scrubIps === 'yes') categories.push('ip');
+      if (values.scrubCards === 'yes') categories.push('card');
+      const style =
+        values.placeholderStyle === 'generic' ? 'generic' : 'numbered';
+      return scrubSecretsForLlm(input, categories, style);
     }
     case 'har-sanitizer': {
       const input = required(values.input, 'HAR content');
@@ -3060,109 +3073,22 @@ Best Practice & Tips:
 
 function scrubSecretsForLlm(
   input: string,
-  scrubKeys: boolean,
-  scrubEmails: boolean,
-  scrubIps: boolean,
-  placeholderStyle: string,
+  categories: readonly DetectionCategory[],
+  placeholderStyle: 'numbered' | 'generic',
 ): string {
-  let text = input;
-  const counts: Record<string, number> = {};
-  let tokenCounter = 1;
+  const { text, counts } = redactSecrets(input, categories, placeholderStyle);
+  // The output is re-checked with the same detectors; a secret that is still
+  // present stops the run instead of being shown as scrubbed.
+  assertNothingRemains(text, categories);
 
-  function record(category: string, count = 1) {
-    counts[category] = (counts[category] || 0) + count;
-  }
-
-  function replacePattern(regex: RegExp, category: string) {
-    let count = 0;
-    text = text.replace(regex, () => {
-      count++;
-      if (placeholderStyle === 'generic') {
-        return `[REDACTED_${category.toUpperCase().replace(/\s+/gu, '_')}]`;
-      }
-      return `[REDACTED_${category.toUpperCase().replace(/\s+/gu, '_')}_${tokenCounter++}]`;
-    });
-    if (count > 0) {
-      record(category, count);
-    }
-  }
-
-  // 1. Private keys (PEM)
-  replacePattern(
-    /-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----/gu,
-    'PRIVATE_KEY',
-  );
-
-  if (scrubKeys) {
-    // AWS Access Key ID
-    replacePattern(/\bAKIA[0-9A-Z]{16}\b/gu, 'AWS_ACCESS_KEY');
-    // AWS Secret Key
-    replacePattern(
-      /(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)\s*[:=]\s*['"]?([A-Za-z0-9/+=]{40})['"]?/gu,
-      'AWS_SECRET_KEY',
-    );
-    // OpenAI / Anthropic API keys
-    replacePattern(/\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/gu, 'OPENAI_API_KEY');
-    replacePattern(/\bsk-ant-[A-Za-z0-9_-]{20,}\b/gu, 'ANTHROPIC_API_KEY');
-    // Stripe keys
-    replacePattern(
-      /\b(?:sk|rk|pk)_(?:live|test)_[0-9a-zA-Z]{24,}\b/gu,
-      'STRIPE_KEY',
-    );
-    // GitHub Tokens
-    replacePattern(
-      /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}\b/gu,
-      'GITHUB_TOKEN',
-    );
-    replacePattern(/\bgithub_pat_[A-Za-z0-9_]{22,}\b/gu, 'GITHUB_PAT');
-    // Slack Tokens & Webhooks
-    replacePattern(
-      /\bxox[baprs]-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24,}\b/gu,
-      'SLACK_TOKEN',
-    );
-    // Database connection strings
-    replacePattern(
-      /(?:postgres|postgresql|mongodb|mongodb\+srv|mysql|redis):\/\/[^\s"']+/gu,
-      'DB_CONNECTION_STRING',
-    );
-    // Bearer / Authorization headers
-    replacePattern(/Bearer\s+[A-Za-z0-9\-._~+/]+=*/gu, 'BEARER_TOKEN');
-    // Generic passwords / secrets in key=value assignments
-    let authCount = 0;
-    text = text.replace(
-      /((?:password|passwd|secret|api_key|apikey|auth_token)\s*[:=]\s*['"])(?!\[REDACTED_)([^'"\r\n]{4,})(['"])/giu,
-      (_m, p1, _p2, p3) => {
-        authCount++;
-        const placeholder =
-          placeholderStyle === 'generic'
-            ? `[REDACTED_AUTH_SECRET]`
-            : `[REDACTED_AUTH_SECRET_${tokenCounter++}]`;
-        return `${p1}${placeholder}${p3}`;
-      },
-    );
-    if (authCount > 0) record('AUTH_SECRET', authCount);
-  }
-
-  if (scrubEmails) {
-    replacePattern(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gu, 'EMAIL');
-  }
-
-  if (scrubIps) {
-    replacePattern(
-      /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gu,
-      'IP_ADDRESS',
-    );
-  }
-
-  const entries = Object.entries(counts);
-  const totalRedactions = entries.reduce((sum, [, count]) => sum + count, 0);
+  const totalRedactions = counts.reduce((sum, [, count]) => sum + count, 0);
 
   return `/* LLM Secret Scrubber — Sanitized for AI Prompts */
 Total Redacted Secrets: ${totalRedactions}
 
 ${
-  entries.length > 0
-    ? `Redaction Summary:\n${entries.map(([category, count]) => `- ${category}: ${count}`).join('\n')}`
+  counts.length > 0
+    ? `Redaction Summary:\n${counts.map(([category, count]) => `- ${category}: ${count}`).join('\n')}`
     : 'No sensitive secrets detected.'
 }
 
