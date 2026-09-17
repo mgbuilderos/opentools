@@ -1,0 +1,35 @@
+# Installed and generated in the image, never copied from the host.
+node_modules
+dist
+.next
+.vinext
+.wrangler
+out
+output
+outputs
+work
+tmp
+release
+*.tsbuildinfo
+next-env.d.ts
+
+# Test output
+coverage
+playwright-report
+test-results
+.playwright-cli
+
+# Secrets and local settings
+.env*
+.dev.vars*
+*.pem
+
+# Repository and editor metadata
+.git
+.github
+.DS_Store
+npm-debug.log*
+
+# The image definition itself
+Dockerfile
+.dockerignore
