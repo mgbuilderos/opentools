@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
+    "@vinext/cloudflare": "1.0.0-beta.7",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "1.31.0",
@@ -39,8 +40,8 @@
     "vinext": "1.0.0-beta.9"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.54.3",
-    "@cloudflare/workers-types": "5.20260903.1",
+    "@cloudflare/vite-plugin": "1.54.11",
+    "@cloudflare/workers-types": "5.20260917.1",
     "@openai/sites-vite-plugin": "0.2.0",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "4.2.1",
@@ -57,7 +58,7 @@
     "typescript": "5.9.3",
     "vite": "8.2.2",
     "vitest": "4.1.11",
-    "wrangler": "4.128.0"
+    "wrangler": "4.133.0"
   },
   "type": "module"
 }
