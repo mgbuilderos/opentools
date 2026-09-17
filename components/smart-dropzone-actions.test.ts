@@ -27,4 +27,22 @@ describe('smart dropzone actions', () => {
       ).toBe(true);
     }
   });
+
+  it('describes true JSON capabilities without claiming schema validation', async () => {
+    const { detectInput } = await import('./smart-dropzone');
+    const dummyFile = new File(['{}'], 'data.json', {
+      type: 'application/json',
+    });
+    const fileResult = detectInput('', dummyFile);
+    expect(fileResult?.details).toBe(
+      'Format and check the JSON, or generate TypeScript types or a Zod schema from it.',
+    );
+    expect(fileResult?.details).not.toContain('validate against schema');
+
+    const textResult = detectInput('{"foo": "bar"}');
+    expect(textResult?.details).toBe(
+      'Format and check the JSON, or generate TypeScript types or a Zod schema from it.',
+    );
+    expect(textResult?.details).not.toContain('validate against schema');
+  });
 });

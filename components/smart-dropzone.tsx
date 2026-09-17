@@ -25,7 +25,7 @@ import {
 
 export type { DetectedAction };
 
-interface DetectionResult {
+export interface DetectionResult {
   category: string;
   typeLabel: string;
   summary: string;
@@ -34,7 +34,7 @@ interface DetectionResult {
   actions: readonly DetectedAction[];
 }
 
-function detectInput(text: string, file?: File): DetectionResult | null {
+export function detectInput(text: string, file?: File): DetectionResult | null {
   if (file) {
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
     const sizeKb = (file.size / 1024).toFixed(1);
@@ -84,7 +84,7 @@ function detectInput(text: string, file?: File): DetectionResult | null {
         typeLabel: 'JSON File',
         summary: `${file.name} (${sizeKb} KB)`,
         details:
-          'Format, validate against schema, or generate TypeScript/Zod models.',
+          'Format and check the JSON, or generate TypeScript types or a Zod schema from it.',
         icon: <Code2 className="size-5 text-foreground" />,
         actions: SMART_DROPZONE_ACTIONS.json,
       };
@@ -135,7 +135,8 @@ function detectInput(text: string, file?: File): DetectionResult | null {
           ? `JSON Array (${keysCount} items)`
           : `JSON Object (${keysCount} keys)`,
         summary: `Valid JSON structure with ${trimmed.length} characters`,
-        details: 'Format, validate, or generate TypeScript/Zod models in RAM.',
+        details:
+          'Format and check the JSON, or generate TypeScript types or a Zod schema from it.',
         icon: <Code2 className="size-5 text-foreground" />,
         actions: SMART_DROPZONE_ACTIONS.json,
       };
