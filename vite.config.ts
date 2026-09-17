@@ -1,4 +1,5 @@
 import { sites } from '@openai/sites-vite-plugin';
+import { kvDataAdapter } from '@vinext/cloudflare/cache/kv-data-adapter';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
@@ -15,6 +16,14 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
 const localBindingConfig = {
   main: 'vinext/server/fetch-handler',
   compatibility_flags: ['nodejs_compat'],
+  // Page cache for pre-rendered routes. Without these the Worker re-renders
+  // every page on each request, which exhausted its resources under crawl
+  // load on 2026-09-16 (1,316 `exceededResources` 503s in one hour).
+  kv_namespaces: [
+    { binding: 'VINEXT_KV_CACHE', id: 'c9cf54ced0214def91278f73f69316bd' },
+  ],
+  cache: { enabled: true },
+  version_metadata: { binding: 'CF_VERSION_METADATA' },
   d1_databases: d1
     ? [
         {
@@ -50,7 +59,18 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
-      vinext(),
+      vinext({
+        // Pages are cached in KV on first render and served from there, so
+        // the Worker stops re-rendering every page on every request -- that
+        // per-request render is what exhausted its resources under crawl load
+        // on 2026-09-16 (1,316 `exceededResources` 503s in one hour).
+        // Build-time prerender is deliberately NOT enabled: it bundles every
+        // page into the Worker script (3.0MB gzip vs 0.96MB) for no gain once
+        // the KV cache fills on the first request to each URL.
+        cache: {
+          data: kvDataAdapter({ binding: 'VINEXT_KV_CACHE' }),
+        },
+      }),
       sites(),
       cloudflare({
         viteEnvironment: { name: 'rsc', childEnvironments: ['ssr'] },

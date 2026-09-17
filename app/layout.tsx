@@ -5,6 +5,14 @@ const httpsScheme = ['https:', '//'].join('');
 const siteOrigin = `${httpsScheme}getopentools.com`;
 const schemaContext = `${httpsScheme}schema.org`;
 
+/**
+ * Every page on this site is built from static catalog data, so each one is
+ * rendered once and then served from the KV-backed ISR cache for a day. This
+ * also gives responses a real `s-maxage` policy, replacing the `no-store`
+ * that stopped Cloudflare caching HTML at the edge.
+ */
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
   title: {
