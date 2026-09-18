@@ -22,6 +22,7 @@ import {
   BUYMEACOFFEE_UNIT_USD,
   SUPPORT_CONFIG,
 } from '@/lib/support-config';
+import { drawProofCard } from '@/lib/proof-card';
 import {
   mayOfferSupport,
   supportPreference,
@@ -88,6 +89,7 @@ export function CompletionValueDialog() {
   const panel = useRef<HTMLDialogElement>(null);
   const delayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [receipt, setReceipt] = useState<CompletionDetail | null>(null);
+  const [proofUrl, setProofUrl] = useState<string>('');
   const [isIndia] = useState(() => isLikelyIndiaVisitor());
 
   const remember = (never = false) => {
@@ -161,6 +163,35 @@ export function CompletionValueDialog() {
       document.removeEventListener('click', observeDownload);
     };
   }, []);
+
+  useEffect(() => {
+    if (!receipt) return;
+    let url = '';
+    let cancelled = false;
+    drawProofCard({
+      operation: receipt.operation,
+      durationText: formatCompletionDuration(receipt.durationMs),
+      facts: receipt.metrics ?? [],
+    })
+      .then((blob) => {
+        // No blob means the browser could not draw it; the action is simply
+        // not offered rather than failing in front of someone.
+        if (!blob || cancelled) return;
+        url = URL.createObjectURL(blob);
+        setProofUrl(url);
+      })
+      .catch(() => {
+        /* Drawing a share card must never disturb the task that just finished. */
+      });
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+      // Cleared here rather than at the top of the effect: a synchronous
+      // setState in an effect body cascades renders, which the React compiler
+      // lint correctly refuses.
+      setProofUrl('');
+    };
+  }, [receipt]);
 
   useEffect(() => {
     if (!receipt) return;
@@ -247,6 +278,32 @@ export function CompletionValueDialog() {
             <dd className="mt-1 text-base font-semibold">This browser</dd>
           </div>
         </dl>
+
+        {/*
+          The one thing this product may brand, and the only growth loop its own
+          rules allow. Rule 33 keeps branding off the user's file permanently —
+          that is what it beats the incumbents on — while permitting "a public
+          proof card … explicit and removable". Learning 35 says what may go in
+          one: the task, never the artifact. `lib/proof-card.ts` enforces that
+          and drops any fact that looks like a filename rather than drawing it.
+
+          A real anchor the person clicks, never a synthesised one. This card
+          sits on top of someone's actual download, so
+          `local-source-policy.test.ts` bans synthetic clicks, event
+          cancellation and modal promotion in this file — nothing here may take
+          an action the user did not. That scan reads raw text, comments
+          included, which is why the banned calls are described rather than
+          quoted.
+        */}
+        {proofUrl && (
+          <a
+            href={proofUrl}
+            download="opentools-proof.png"
+            className="focus-ring mb-3 inline-flex h-9 items-center justify-center gap-2 rounded-lg border bg-card px-3 text-xs font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-muted active:translate-y-0 active:scale-[0.98]"
+          >
+            🖼️ Save a shareable card
+          </a>
+        )}
 
         <p className="text-xs leading-5 text-muted-foreground">
           Built by an independent developer. 100% ad-free &amp; private forever.
