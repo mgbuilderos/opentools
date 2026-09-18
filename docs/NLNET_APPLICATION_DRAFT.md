@@ -2,6 +2,26 @@
 
 **Fund:** NGI Zero Restack · **Deadline:** 3 November 2026, 12:00 CET
 **Range:** €5,000–€50,000 (max €50,000 for a first proposal)
+
+> ⚠️ **Corrected 2026-09-19 — geography is not neutral.** An earlier version of
+> this file said there was no geographic restriction. That was wrong: it
+> conflated *entity type* (individuals may apply — true) with *location*.
+> NLnet's actual position is that, given equal proposals, inhabitants of the EU
+> and Horizon Europe associated countries are **given priority**, and proposals
+> from elsewhere are eligible only with exceptional quality, unique technical
+> expertise, and **a clear European dimension** — usually a formal EU
+> connection or an EU collaborator.
+>
+> For an India-based individual with no EU tie that is a real additional
+> hurdle, and it pushes the odds below the ~14% base rate quoted below. Do not
+> submit this without either finding an EU collaborator or writing an honest
+> European-dimension argument — the strongest available one is that the
+> verification protocol is aimed at adoption by any project and that GDPR makes
+> it directly applicable to European users. Both are arguable; neither is
+> strong on its own.
+>
+> **Apply to OTF and FUTO first** — see `docs/FUTO_APPLICATION_DRAFT.md`. Both
+> are explicitly open to any nationality.
 **Scoring:** relevance/impact 40% · technical excellence & feasibility 30% ·
 cost-effectiveness 30% · must clear 5.0/7 to advance
 **Apply:** <https://nlnet.nl/restack/>
