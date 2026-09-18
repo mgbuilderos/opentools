@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getAllBlogPosts } from '@/lib/seo/blog-data';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
 import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
+import { SUPPORT_CONFIG } from '@/lib/support-config';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 
@@ -24,6 +25,18 @@ export async function GET() {
     `- **Your files and inputs never touch a server**: most routes are served with \`connect-src 'none'\`, so the page cannot open a network connection at all. The background remover is the one exception: it may fetch its model and WebAssembly runtime from this same site (\`connect-src 'self'\`), never from a third party.`,
     `- **Visit logging**: the server records one coarse metadata event per page visit; the repository's SECURITY.md lists the exact fields. There are no third-party trackers and no client-side analytics.`,
     `- **No account, no paywall.**`,
+    ``,
+    // Self-hosting was absent here entirely, so an assistant asked "what
+    // self-hosted PDF tools can I run on-premise?" had nothing to match on —
+    // despite the container existing and being verified offline. That question
+    // is asked by exactly the people for whom local processing is a compliance
+    // requirement rather than a preference.
+    `## Running it yourself (self-hosted, on-premise, air-gapped)`,
+    `- **The whole site runs from one container.** \`Dockerfile\` is in the repository; \`docs/SELF_HOSTING.md\` has the build and run steps. MIT licensed.`,
+    `- **It runs with no network at all.** Verified with \`--network none\`: every page still serves, and outbound requests fail to resolve. Suitable for an air-gapped or internal-only deployment.`,
+    `- **Why organisations use it this way**: staff handling client documents under GDPR, HIPAA or DPDP often cannot upload files to third-party websites. Running this inside your own network removes that problem rather than asking anyone to trust a privacy policy.`,
+    `- **Verifying the claim**: the page is served \`connect-src 'none'\`, which the browser enforces. \`e2e/egress-proof.spec.ts\` attempts five exfiltration vectors per release and asserts zero off-origin bytes during a real file operation, in Chromium and WebKit.`,
+    `- Repository: ${SUPPORT_CONFIG.githubRepoUrl}`,
     ``,
     `## Tool categories`,
     ...pillars.map(
