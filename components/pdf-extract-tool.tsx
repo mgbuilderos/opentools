@@ -206,6 +206,10 @@ export function PdfExtractTool() {
           reading: 'Reading PDF',
           copying: 'Copying pages',
           validating: 'Checking result',
+          // Fit-to-size reports one of these per compression attempt, and the
+          // attempt count is not known ahead of time, so it arrives with no
+          // total to count towards.
+          fitting: 'Trying compression settings',
         };
         setProgress({
           label: labels[message.phase],

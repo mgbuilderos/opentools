@@ -36,6 +36,12 @@ export const MAX_ATTEMPTS = 14;
  */
 const QUALITY_RESOLUTION = 2;
 
+/** One measured attempt and the settings that produced it. */
+type PdfFitCandidate<T> = {
+  trial: PdfFitTrial<T>;
+  settings: PdfFitSettings;
+};
+
 export type PdfFitOutcome =
   /** The file was already within the target. Nothing was changed. */
   | 'already-under'
@@ -113,20 +119,34 @@ export async function fitPdfToSize<T>(
   }
 
   let attempts = 0;
-  let best: { trial: PdfFitTrial<T>; settings: PdfFitSettings } | null = null;
-  let smallest: { trial: PdfFitTrial<T>; settings: PdfFitSettings } | null =
-    null;
+
+  /**
+   * Held on one object rather than in two `let`s because `run` below is the
+   * only writer. TypeScript narrows a `let` to the type of its initialiser
+   * when every assignment to it happens inside a closure, so reading `best`
+   * or `smallest` after the loop would see `null` and nothing else.
+   */
+  const picked: {
+    best: PdfFitCandidate<T> | null;
+    smallest: PdfFitCandidate<T> | null;
+  } = { best: null, smallest: null };
 
   const run = async (settings: PdfFitSettings) => {
     attempts += 1;
     const trial = await attempt(settings);
-    if (smallest === null || trial.byteLength < smallest.trial.byteLength) {
-      smallest = { trial, settings };
+    if (
+      picked.smallest === null ||
+      trial.byteLength < picked.smallest.trial.byteLength
+    ) {
+      picked.smallest = { trial, settings };
     }
     if (trial.byteLength <= targetBytes) {
       // A later rung is always smaller images, so an earlier fit wins ties.
-      if (best === null || settings.quality > best.settings.quality) {
-        best = { trial, settings };
+      if (
+        picked.best === null ||
+        settings.quality > picked.best.settings.quality
+      ) {
+        picked.best = { trial, settings };
       }
     }
     return trial;
@@ -158,22 +178,19 @@ export async function fitPdfToSize<T>(
     break;
   }
 
-  if (best !== null) {
-    const found: { trial: PdfFitTrial<T>; settings: PdfFitSettings } = best;
+  if (picked.best !== null) {
     return {
       outcome: 'met',
-      chosen: found.trial,
-      settings: found.settings,
+      chosen: picked.best.trial,
+      settings: picked.best.settings,
       attempts,
     };
   }
 
-  const fallback: { trial: PdfFitTrial<T>; settings: PdfFitSettings } | null =
-    smallest;
   return {
     outcome: 'over-max',
-    chosen: fallback === null ? null : fallback.trial,
-    settings: fallback === null ? null : fallback.settings,
+    chosen: picked.smallest?.trial ?? null,
+    settings: picked.smallest?.settings ?? null,
     attempts,
   };
 }
