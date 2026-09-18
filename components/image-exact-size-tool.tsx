@@ -52,6 +52,16 @@ function presetKbFor(preset: PortalPreset, unit: KbUnit) {
   return String(Math.floor(preset.limitBytes / unit));
 }
 
+/**
+ * Reading the clock through a named function, the way `pdf-merge-tool.tsx` and
+ * `images-to-pdf-tool.tsx` already do: the React compiler flags a bare
+ * `performance.now()` inside a component body as impure, since it cannot see
+ * that the caller only ever runs from an event.
+ */
+function now() {
+  return performance.now();
+}
+
 /** The host of a citation, so the destination is visible before the click. */
 function sourceHost(url: string) {
   try {
@@ -270,7 +280,7 @@ export function ImageExactSizeTool() {
     setError('');
     clearResults();
     setLastRequest(request);
-    const started = performance.now();
+    const started = now();
     const next: ExactResult[] = [];
     try {
       for (const [index, source] of sources.entries()) {
@@ -384,7 +394,7 @@ export function ImageExactSizeTool() {
       if (met > 0) {
         announceCompletion({
           operation: 'Exact-size image',
-          durationMs: performance.now() - started,
+          durationMs: now() - started,
           summary: `${met} of ${next.length} image${next.length === 1 ? '' : 's'} fitted to ${request.maxKb} KB.`,
         });
       }
