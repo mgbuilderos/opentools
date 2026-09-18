@@ -1,11 +1,62 @@
+/**
+ * Where support can actually be sent, and nothing that only looks like it can.
+ *
+ * **Every channel is env-driven and fails closed.** A channel whose environment
+ * variable is unset resolves to an empty string and `supportChannels()` leaves
+ * it out, so the UI renders nothing rather than something broken. This is not
+ * style: the production bundle shipped on 2026-09-17 carried the hardcoded
+ * fallback `mg.io.test@oksbi` to real visitors, because the fallback existed
+ * and `NEXT_PUBLIC_UPI_ID` was never set at build time. A placeholder that can
+ * ship, eventually ships. `support-config.test.ts` now fails the build if one
+ * reappears.
+ *
+ * **Buy Me a Coffee is a plain outbound link, deliberately.** Their widget
+ * script, button image and iframe are all blocked by this site's own
+ * Content-Security-Policy (`script-src 'self'`, `img-src 'self' blob: data:`,
+ * `default-src 'self'`), and embedding them would put a third-party script on
+ * the page that asks for money — against the one promise the product makes.
+ * Draw the button locally and link out.
+ */
+
+/** Values that must never reach a build. Asserted in the test. */
+export const PAYMENT_PLACEHOLDERS = [
+  'mg.io.test@oksbi',
+  'example@upi',
+  'your-upi-id',
+  'username',
+] as const;
+
+const env = (name: string) => process.env[name]?.trim() || '';
+
 export const SUPPORT_CONFIG = {
   githubRepoUrl: ['https:', '//', 'github.com/mgbuilderos/opentools'].join(''),
-  githubSponsorsUrl:
-    process.env.NEXT_PUBLIC_GITHUB_SPONSORS_URL ||
-    ['https:', '//', 'github.com/sponsors/mgbuilderos'].join(''),
-  upiId: process.env.NEXT_PUBLIC_UPI_ID || 'mg.io.test@oksbi',
-  upiPayeeName: process.env.NEXT_PUBLIC_UPI_NAME || 'OpenTools',
+  /** Empty until a Sponsors profile actually exists; see decision notes. */
+  githubSponsorsUrl: env('NEXT_PUBLIC_GITHUB_SPONSORS_URL'),
+  /** Full Buy Me a Coffee page URL, e.g. the account's own public page. */
+  buyMeACoffeeUrl: env('NEXT_PUBLIC_BUYMEACOFFEE_URL'),
+  upiId: env('NEXT_PUBLIC_UPI_ID'),
+  upiPayeeName: env('NEXT_PUBLIC_UPI_NAME') || 'OpenTools',
 };
+
+export type SupportChannel = 'upi' | 'buymeacoffee' | 'githubSponsors';
+
+/**
+ * The channels that are configured and can actually receive money, in the
+ * order they should be offered. An empty array is the honest answer when
+ * nothing is set up, and the UI must then show no payment controls at all.
+ */
+export function supportChannels(): SupportChannel[] {
+  const channels: SupportChannel[] = [];
+  if (SUPPORT_CONFIG.upiId) channels.push('upi');
+  if (SUPPORT_CONFIG.buyMeACoffeeUrl) channels.push('buymeacoffee');
+  if (SUPPORT_CONFIG.githubSponsorsUrl) channels.push('githubSponsors');
+  return channels;
+}
+
+/** True when there is at least one working way to send support. */
+export function canAcceptSupport() {
+  return supportChannels().length > 0;
+}
 
 export interface SupportTier {
   name: string;
@@ -76,7 +127,21 @@ export const SUPPORT_TIERS: SupportTier[] = [
   },
 ];
 
+/**
+ * A Buy Me a Coffee link for a whole number of "coffees", or the bare page.
+ * Carries no job facts — business rule 38 keeps receipts, filenames, tool ids
+ * and durations out of anything a payment provider sees.
+ */
+export function getBuyMeACoffeeUrl(coffees?: number): string {
+  const base = SUPPORT_CONFIG.buyMeACoffeeUrl;
+  if (!base) return '';
+  if (!coffees || !Number.isInteger(coffees) || coffees < 1) return base;
+  const separator = base.includes('?') ? '&' : '?';
+  return `${base}${separator}coffees=${coffees}`;
+}
+
 export function getUpiPaymentUrl(amountInr?: number, note?: string): string {
+  if (!SUPPORT_CONFIG.upiId) return '';
   const params = new URLSearchParams({
     pa: SUPPORT_CONFIG.upiId,
     pn: SUPPORT_CONFIG.upiPayeeName,
