@@ -79,6 +79,12 @@ description. The copy below is written to pass that.
 Read each subreddit's rules first; both allow creator posts if you are open
 about it. Post one, wait a day, then the other.
 
+**Check the flair dropdown before you hit post.** Several of these subreddits
+auto-remove unflaired posts, and a removal looks identical to a post that simply
+got no traction — you will waste days concluding the wrong thing. Pick the
+closest of `Software`, `Tool`, `Project` or `Discussion`. If a post gets zero
+views in the first hour, check whether it was removed before assuming it flopped.
+
 **Title:** `I built a set of PDF and image tools that never upload your files — the page is blocked from making network requests`
 
 **Body:**
@@ -144,6 +150,12 @@ marketing. Lead with the mechanism, not the tool list.
 >
 > MIT, no account, no ads, no paid tier.
 > https://getopentools.com
+
+**Flair: `Software`.** r/privacy requires one and the post will be auto-removed
+without it. The flairs in use are news, question, discussion, age verification,
+software and hardware — `Software` is the right bucket for a tool you built; if
+it is missing from the dropdown, use `Discussion`. Never `Question` (you are not
+asking one) or `News` (this is not an event).
 
 **Do not** claim "zero data leaks" or "military-grade" anything. This audience
 will find it and it will be the top comment.
