@@ -235,13 +235,13 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     name: 'PDF to Word',
     category: 'PDF',
     rank: 16,
-    executionMode: 'local-wasm',
+    executionMode: 'local-js',
     releaseWave: 'P1',
     riskTier: 'low',
-    validationStatus: 'backlog-candidate',
+    validationStatus: 'priority-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=pdf-to-word',
+      'Text extraction into .docx. Layout, columns, tables and images are not reproduced, and a PDF with no text layer is refused rather than converted to an empty file.',
+    destinationUrl: '/pdf/to-word',
   },
   {
     id: 'pdf.word-to-pdf',

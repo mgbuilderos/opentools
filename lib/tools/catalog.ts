@@ -280,6 +280,37 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-to-word',
+    version: '0.1.0-canary',
+    status: 'canary',
+    // Named for the job people search for, while the page itself is explicit
+    // that this recovers text and does not rebuild the PDF's layout.
+    name: 'PDF to Word',
+    shortDescription:
+      'Pull the text out of a PDF into an editable .docx. Text only — layout, tables and images are not carried across.',
+    category: 'PDF',
+    aliases: [
+      'pdf to word',
+      'pdf to docx',
+      'convert pdf to word',
+      'extract text from pdf',
+      'pdf text extractor',
+      'pdf to editable document',
+    ],
+    jobs: [
+      'get the text out of a pdf without uploading it',
+      'turn a pdf contract into an editable document',
+      'copy text from a pdf that blocks selection',
+    ],
+    href: '/pdf/to-word',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.text.extract', 'docx.write'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-sign',
     version: '0.1.0-canary',
     status: 'canary',

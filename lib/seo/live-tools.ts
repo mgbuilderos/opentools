@@ -24,6 +24,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/images-to-pdf',
   '/pdf/page-tools',
   '/pdf/compress',
+  '/pdf/to-word',
   '/pdf/sign',
   '/image/editor',
   '/image/background-remover',

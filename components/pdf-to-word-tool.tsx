@@ -1,0 +1,390 @@
+'use client';
+
+import {
+  ArrowDownToLine,
+  FileText,
+  LockKeyhole,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+
+import { AppShell } from '@/components/app-shell';
+import { Button } from '@/components/ui/button';
+import { announceCompletion } from '@/lib/completion';
+import { DOCX_MIME_TYPE } from '@/lib/tools/docx/document';
+import { convertPdfToWord } from '@/lib/tools/pdf/pdf-to-word';
+
+type Receipt = {
+  url: string;
+  name: string;
+  pageCount: number;
+  characterCount: number;
+  paragraphCount: number;
+  pagesWithoutText: number;
+  docxBytes: number;
+  sourceBytes: number;
+  durationMs: number;
+};
+
+const MAX_BYTES = 150 * 1024 * 1024;
+
+/**
+ * The PDF library runs its own worker for parsing, so the heavy work is
+ * already off the main thread. Wrapping it in a second worker of ours meant a
+ * worker inside a worker, which is where the conversion silently stalled.
+ */
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDuration(durationMs: number) {
+  return durationMs < 1000
+    ? `${durationMs.toFixed(0)} ms`
+    : `${(durationMs / 1000).toFixed(2)} s`;
+}
+
+function docxNameFor(pdfName: string) {
+  const trimmed = pdfName.replace(/\.pdf$/iu, '');
+  return `${trimmed || 'document'}.docx`;
+}
+
+export function PdfToWordTool() {
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  const receiptRef = useRef<HTMLDivElement>(null);
+  const urlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (error) errorRef.current?.focus();
+  }, [error]);
+
+  useEffect(() => {
+    if (receipt) receiptRef.current?.focus();
+  }, [receipt]);
+
+  function clearReceipt() {
+    if (urlRef.current) {
+      URL.revokeObjectURL(urlRef.current);
+      urlRef.current = null;
+    }
+    setReceipt(null);
+  }
+
+  function chooseFile(next: File | undefined) {
+    if (!next) return;
+    clearReceipt();
+    setError('');
+    if (next.size > MAX_BYTES) {
+      setError(
+        `${next.name} is ${formatBytes(next.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}.`,
+      );
+      return;
+    }
+    setFile(next);
+  }
+
+  async function convert() {
+    if (!file || busy) return;
+    setBusy(true);
+    setError('');
+    clearReceipt();
+
+    const startedAt = performance.now();
+    try {
+      const buffer = await file.arrayBuffer();
+      const response = await convertPdfToWord(new Uint8Array(buffer));
+      const durationMs = performance.now() - startedAt;
+
+      // Hand Blob a plain ArrayBuffer: a Uint8Array view is not a BlobPart
+      // once the Workers types narrow ArrayBufferLike.
+      const view = response.bytes;
+      const docxBuffer = view.buffer.slice(
+        view.byteOffset,
+        view.byteOffset + view.byteLength,
+      ) as ArrayBuffer;
+      const blob = new Blob([docxBuffer], { type: DOCX_MIME_TYPE });
+      const url = URL.createObjectURL(blob);
+      urlRef.current = url;
+      setReceipt({
+        url,
+        name: docxNameFor(file.name),
+        pageCount: response.pageCount,
+        characterCount: response.characterCount,
+        paragraphCount: response.paragraphCount,
+        pagesWithoutText: response.pagesWithoutText,
+        docxBytes: blob.size,
+        sourceBytes: file.size,
+        durationMs,
+      });
+      announceCompletion({
+        operation: 'PDF to Word',
+        durationMs,
+        summary: `${response.pageCount} ${
+          response.pageCount === 1 ? 'page' : 'pages'
+        } read in this browser; text only.`,
+        metrics: [
+          {
+            label: 'Paragraphs',
+            value: response.paragraphCount.toLocaleString(),
+          },
+          {
+            label: 'Characters',
+            value: response.characterCount.toLocaleString(),
+          },
+          { label: 'Word file', value: formatBytes(blob.size) },
+        ],
+      });
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : 'This PDF could not be converted.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <AppShell currentToolId="pdf-to-word">
+      <section
+        id="tool"
+        tabIndex={-1}
+        className="min-w-0 px-4 py-8 sm:px-8 lg:px-12 lg:py-12"
+      >
+        <div className="mx-auto max-w-5xl">
+          <div className="flex flex-col justify-between gap-5 border-b pb-8 sm:flex-row sm:items-start">
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <span>PDF</span>
+                <span aria-hidden="true">/</span>
+                <span>To Word</span>
+              </div>
+              <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+                PDF to Word
+              </h1>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+                Pull the text out of a PDF into an editable{' '}
+                <code className="rounded bg-muted px-1 py-0.5 text-sm">
+                  .docx
+                </code>{' '}
+                file. The PDF is read by this page and never sent to a server.
+              </p>
+            </div>
+            <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
+              <LockKeyhole aria-hidden="true" className="size-3.5" /> On-device
+              prototype
+            </span>
+          </div>
+
+          <div className="mt-6 rounded-xl border bg-muted/40 p-4 text-sm leading-6">
+            <p className="font-semibold">
+              What this does, and what it does not
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              It recovers the <strong>text</strong>: reading order, paragraphs,
+              page breaks, and headings where the PDF sets them in larger type.
+              It does <strong>not</strong> rebuild the page layout — columns,
+              tables as real tables, images, and fonts are not carried across.
+              If your PDF is a scan or a photo of paper it holds no text at all,
+              and this page will tell you so rather than hand you an empty
+              document.
+            </p>
+          </div>
+
+          {error ? (
+            <div
+              ref={errorRef}
+              role="alert"
+              tabIndex={-1}
+              className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
+            >
+              <div>
+                <p className="font-semibold">Couldn’t convert this PDF</p>
+                <p className="mt-1 text-muted-foreground">{error}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setError('')}
+                aria-label="Dismiss error"
+                className="focus-ring rounded-lg border p-1.5"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
+            </div>
+          ) : null}
+
+          <section className="mt-8 overflow-hidden rounded-2xl border bg-card p-5 sm:p-6">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              aria-label="Choose a PDF"
+              className="sr-only"
+              onChange={(event) => chooseFile(event.target.files?.[0])}
+            />
+
+            {file ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{file.name}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {formatBytes(file.size)}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="h-10"
+                    onClick={() => fileRef.current?.click()}
+                  >
+                    Choose another
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-10"
+                    aria-label="Remove the chosen PDF"
+                    onClick={() => {
+                      setFile(null);
+                      clearReceipt();
+                      setError('');
+                    }}
+                  >
+                    <Trash2 aria-hidden="true" className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-start gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Choose a PDF from this device to convert.
+                </p>
+                <Button
+                  className="h-11"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  <FileText aria-hidden="true" className="mr-2 size-4" />
+                  Choose a PDF
+                </Button>
+              </div>
+            )}
+
+            {file ? (
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Button
+                  className="h-11"
+                  disabled={busy}
+                  onClick={() => void convert()}
+                >
+                  {busy ? 'Converting…' : 'Convert to Word'}
+                </Button>
+                {busy ? (
+                  <output
+                    aria-live="polite"
+                    className="text-sm text-muted-foreground"
+                  >
+                    Reading the text out of every page…
+                  </output>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
+
+          {receipt ? (
+            <section
+              ref={receiptRef}
+              tabIndex={-1}
+              aria-live="polite"
+              className="focus-ring mt-6 rounded-2xl border bg-card p-5 sm:p-6"
+            >
+              <h2 className="text-lg font-semibold">
+                Done — {receipt.pageCount}{' '}
+                {receipt.pageCount === 1 ? 'page' : 'pages'} converted
+              </h2>
+              <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <dt className="text-xs text-muted-foreground">Paragraphs</dt>
+                  <dd className="mt-1 text-sm font-semibold">
+                    {receipt.paragraphCount.toLocaleString()}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Characters</dt>
+                  <dd className="mt-1 text-sm font-semibold">
+                    {receipt.characterCount.toLocaleString()}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Word file</dt>
+                  <dd className="mt-1 text-sm font-semibold">
+                    {formatBytes(receipt.docxBytes)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Took</dt>
+                  <dd className="mt-1 text-sm font-semibold">
+                    {formatDuration(receipt.durationMs)}
+                  </dd>
+                </div>
+              </dl>
+
+              {receipt.pagesWithoutText > 0 ? (
+                <p className="mt-4 rounded-lg border border-destructive/35 bg-destructive/5 p-3 text-sm">
+                  {receipt.pagesWithoutText} of {receipt.pageCount} pages held
+                  no text and contributed nothing to the Word file. Those pages
+                  are images — a scan or a photo — so there was nothing to copy.
+                </p>
+              ) : null}
+
+              <p className="mt-4 text-sm text-muted-foreground">
+                Text only. Layout, columns, tables and images from the PDF are
+                not in this file.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button
+                  nativeButton={false}
+                  className="h-11 px-5"
+                  render={
+                    <a
+                      data-receipt-download
+                      href={receipt.url}
+                      download={receipt.name}
+                      aria-label="Save Word document"
+                    />
+                  }
+                >
+                  <ArrowDownToLine aria-hidden="true" /> Save Word file
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => {
+                    setFile(null);
+                    clearReceipt();
+                  }}
+                >
+                  Convert another
+                </Button>
+              </div>
+            </section>
+          ) : null}
+        </div>
+      </section>
+    </AppShell>
+  );
+}
