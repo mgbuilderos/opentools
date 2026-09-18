@@ -1607,6 +1607,344 @@ By verifying that our served policy forbids connections and that real file workf
       'optimize-images-browser-webp-converter',
     ],
   },
+  {
+    slug: 'zip-crc32-checksum-validation-in-browser',
+    title:
+      'Why File Size Checks Miss Corruption: ZIP CRC32 Checksum Validation in Browser RAM',
+    metaDescription:
+      'Why uncompressed byte size checks fail to catch archive corruption, and how in-browser CRC32 cyclic redundancy checks verify unpacked file integrity before saving.',
+    keywords: [
+      'zip crc32 verification',
+      'in-browser zip corruption detection',
+      'crc32 cyclic redundancy check javascript',
+      'why file size check misses corruption',
+      'client side zip archive extraction',
+      'safe zip file unpacking browser',
+    ],
+    category: 'Security & Systems',
+    publishedAt: '2026-09-19',
+    readingTime: '8 min read',
+    author: 'OpenTools Archive Systems Group',
+    toolName: 'ZIP Archive Toolkit',
+    toolDestination: '/file/archive',
+    summary:
+      'Most online unzip tools verify file size and nothing else. But flipping a single byte leaves the file length unchanged. Here is why the ZIP specification stores a 32-bit CRC32 checksum and how in-browser validation catches damage before extraction.',
+    sections: [
+      {
+        id: 'the-illusion-of-size-validation',
+        heading: 'The Length Illusion: Why Size Checks Pass Corrupted Payloads',
+        content: `When unpacking an archive, conventional client tools inspect the local file header or central directory record, decompress the payload using the browser's native \`DecompressionStream('deflate-raw')\`, and compare the resulting buffer length against the declared \`uncompressedSize\`.
+        
+If you compress a 429-byte text file, decompress it, and receive 429 bytes, standard logic assumes the job succeeded.
+        
+However, length measurement is fundamentally blind to byte alteration:
+- A transmission glitch or bit-flip on disk corrupts data without changing the total byte count.
+- If byte 42 of your binary payload flips from \`0x4A\` to \`0xB5\`, the file is still exactly 429 bytes long.
+- Handing those corrupted bytes to the user risks silent data destruction—from corrupted SQLite database headers to malfunctioning binary executables.
+        
+A length check cannot detect corruption. Only an independent mathematical checksum of the original bytes can distinguish intact data from damaged storage.`,
+      },
+      {
+        id: 'the-zip-crc32-contract',
+        heading: 'The ZIP CRC-32 Architecture: Polynomial Checksums Over Bytes',
+        content: `The PKWARE ZIP specification mandates that every entry record its original uncompressed content as an IEEE 802.3 32-bit Cyclic Redundancy Check (\`crc32\`).
+        
+In \`lib/tools/archive/zip-reader.ts\`, our extraction pipeline executes a strict verification contract:
+        
+1. **Header Parsing**: The central directory provides the authoritative 32-bit CRC32 integer (\`entry.crc32\`).
+2. **Decompression**: The compressed slice is piped through \`DecompressionStream('deflate-raw')\`.
+3. **Buffer Check**: The uncompressed length is validated against \`entry.uncompressedSize\`.
+4. **CRC-32 Recomputation**: The inflated buffer is passed through the IEEE 802.3 CRC32 lookup table:
+        
+\`\`\`typescript
+const actual = crc32(data);
+if (actual !== entry.crc32) {
+  throw new Error(
+    \`"\${entry.path}" failed its checksum — the archive expects \${entry.crc32.toString(16).padStart(8, '0')} and the data gives \${actual.toString(16).padStart(8, '0')}. The file is damaged.\`
+  );
+}
+\`\`\`
+        
+If even a single byte differs, the polynomial computation yields a completely divergent 32-bit integer, immediately halting extraction.`,
+      },
+      {
+        id: 'automated-test-proof',
+        heading: 'Automated Browser Proof: Flipping Exactly One Byte',
+        content: `We do not assume this check functions—we pin it with automated browser end-to-end testing in \`e2e/archive-toolkit.spec.ts\`.
+        
+In the test named *"refuses a damaged file instead of handing it over"*:
+1. The test loads \`stored.zip\` from disk.
+2. It locates the payload byte offset of \`readme.txt\`.
+3. It performs a bitwise XOR flip on exactly one byte: \`bytes[dataStart] ^= 0xff\`.
+4. The file length remains identical.
+5. The browser loads the archive into [/file/archive](/file/archive) and clicks "Take out".
+        
+The result is deterministic: the UI immediately catches the mismatch, renders an alert reading \`failed its checksum\`, and displays **zero** download or save buttons. The user is protected from receiving damaged files.`,
+      },
+      {
+        id: 'the-zip-slip-boundary',
+        heading: 'Path Sanitization & Zip Slip Defense',
+        content: `Beyond checksum validation, local archive extraction must defend against **Zip Slip** directory traversal attacks.
+        
+A malicious archive can define an entry path such as \`../../.ssh/authorized_keys\` or \`../../../../etc/passwd\`. If extracted naively, it overwrites critical files on the operating system.
+        
+Our reader inspects every entry path before extraction:
+- Flags root-relative paths (\`/foo\`, \`C:\\foo\`).
+- Rejects entries containing folder-traversal components (\`..\`).
+- Refuses non-printable control characters that mask authentic paths.
+        
+All warnings are highlighted in the UI index before any file is saved.`,
+      },
+    ],
+    faqs: [
+      {
+        question: 'Does verifying CRC32 slow down extraction in the browser?',
+        answer:
+          'No. Modern JavaScript engines execute table-driven CRC32 calculations at hundreds of megabytes per second in browser RAM, adding negligible sub-millisecond overhead to extraction.',
+      },
+      {
+        question: 'What causes a ZIP CRC32 checksum mismatch?',
+        answer:
+          'Incomplete network downloads, bad sectors on physical storage drives, memory bit-flips, or truncated transfers during file writing.',
+      },
+      {
+        question: 'Does OpenTools upload my ZIP archives to a remote server?',
+        answer:
+          'No. All central directory parsing, decompression, and CRC32 verification execute 100% locally in your browser memory via native Web Streams and JavaScript.',
+      },
+    ],
+    relatedSlugs: [
+      'macos-utf8-zip-filename-encoding-bug',
+      'open-source-first-contributions-pure-typescript',
+      'we-tried-to-make-our-own-site-leak-your-file',
+    ],
+  },
+  {
+    slug: 'macos-utf8-zip-filename-encoding-bug',
+    title:
+      'The macOS ZIP UTF-8 Flag Bug: When Archiver Flags Lie and Bytes Tell the Truth',
+    metaDescription:
+      'Why macOS zip creates UTF-8 filenames without setting the UTF-8 bit flag, and how in-browser heuristic decoding avoids mojibake and CP437 corruption.',
+    keywords: [
+      'macos zip utf8 filename bug',
+      'zip bit 11 language encoding flag',
+      'cp437 vs utf8 zip filenames',
+      'mojibake in zip file names',
+      'decoding zip names strictly with fatal utf8',
+      'client side zip filename parser',
+    ],
+    category: 'Developer & Systems',
+    publishedAt: '2026-09-19',
+    readingTime: '8 min read',
+    author: 'OpenTools Systems Engineering Group',
+    toolName: 'ZIP Archive Toolkit',
+    toolDestination: '/file/archive',
+    summary:
+      'The ZIP specification provides a bit flag that means "these filenames are UTF-8". macOS built-in zip writes UTF-8 filenames and leaves that flag cleared. Software that trusts the flag mangles Devanagari, Japanese, and accented filenames into CP437 line-drawing glyphs. Here is how we resolve it.',
+    sections: [
+      {
+        id: 'the-flag-contract-and-reality',
+        heading: 'Bit 11: The Standard Flag That Operating Systems Ignore',
+        content: `In the PKWARE ZIP format specification, General Purpose Bit Flag bit 11 (\`0x0800\`) declares the **Language Encoding Flag (EFS)**:
+- When bit 11 is **set (1)**: The filename and comment fields must be encoded in UTF-8.
+- When bit 11 is **cleared (0)**: The filename must be encoded using historical IBM Code Page 437 (the standard MS-DOS character set).
+        
+For decades, older Windows archiving tools adhered to CP437. But modern operating systems operate in a multilingual Unicode world.
+        
+When you create a ZIP archive in macOS (using the native Finder Archive utility or the built-in \`/usr/bin/zip\` command-line utility), macOS encodes all filenames as **UTF-8**.
+        
+However, macOS frequently **does not set bit 11**. It leaves the flag as zero.
+        
+If an extraction library blindly trusts the specification flag, it reads the cleared bit, assumes CP437, and maps multibyte UTF-8 byte sequences through the CP437 codepage table. The result is catastrophic mojibake: Hindi, Devanagari, Japanese, Cyrillic, and accented Latin filenames become a chaotic mess of box-drawing characters and math symbols.`,
+      },
+      {
+        id: 'evidence-over-declarations',
+        heading: 'A Declared Encoding is a Claim; the Bytes Are the Evidence',
+        content: `This issue reflects a universal principle of file handling: **declared metadata is only a claim, but raw bytes are empirical evidence.**
+        
+Consider the identical failure mode in subtitle formats: an SRT file might claim to be ANSI or Latin-1 in an email handoff, but inspecting the byte order mark and testing UTF-8 validity reveals the true representation.
+        
+In \`lib/tools/archive/zip-reader.ts\`, our filename decoder does not trust bit 11 blindly:
+        
+\`\`\`typescript
+function decodeName(
+  bytes: Uint8Array,
+  flaggedUtf8: boolean,
+): { name: string; encoding: NameEncoding } {
+  try {
+    return {
+      name: new TextDecoder('utf-8', { fatal: true }).decode(bytes),
+      encoding: 'utf-8',
+    };
+  } catch {
+    return { name: decodeCp437(bytes), encoding: 'cp437' };
+  }
+}
+\`\`\`
+        
+The architectural strategy:
+1. Attempt decoding using \`new TextDecoder('utf-8', { fatal: true })\`.
+2. UTF-8 has strict multibyte structural rules. Invalid sequences throw immediately.
+3. If the bytes form valid UTF-8, accept the string as UTF-8—even if bit 11 was cleared!
+4. Only if the bytes violate UTF-8 grammar do we fall back to CP437.
+5. Report the actual encoding used rather than silently guessing.`,
+      },
+      {
+        id: 'browser-test-verification',
+        heading: 'End-to-End Verification with Multilingual Fixtures',
+        content: `In our test suite (\`e2e/archive-toolkit.spec.ts\`), we verify this behavior against authentic fixtures.
+        
+The test fixture \`simple.zip\` was generated on macOS without the UTF-8 flag set. Inside the archive is an entry named:
+        
+\`\`\`text
+notes/हिंदी.txt
+\`\`\`
+        
+When opened in our [ZIP Archive Toolkit](/file/archive), the filename renders cleanly as \`notes/हिंदी.txt\`. Under a naive bit-11 parser, those same bytes would render as \`notes/à¤¹à¤¿à¤à¤¦à¥.txt\` or CP437 line-drawing glyphs.
+        
+Testing bytes against mathematical validity ensures robust character preservation regardless of the operating system that packaged the archive.`,
+      },
+    ],
+    faqs: [
+      {
+        question: 'Why does macOS not set the UTF-8 bit 11 flag in ZIP files?',
+        answer:
+          'Historical backwards compatibility in BSD zip tooling caused macOS command-line utilities to retain legacy headers while writing modern UTF-8 byte streams into filename slots.',
+      },
+      {
+        question: 'Can any byte sequence be valid UTF-8?',
+        answer:
+          'No. UTF-8 is self-synchronizing and enforces strict prefix and continuation byte rules (e.g. 110xxxxx 10xxxxxx). Random binary or arbitrary legacy codepage bytes almost always fail fatal UTF-8 decoding.',
+      },
+      {
+        question: 'Does this handle accented European characters as well?',
+        answer:
+          'Yes. French, Spanish, German, and Nordic characters encoded in UTF-8 or CP437 are resolved cleanly without garbled characters.',
+      },
+    ],
+    relatedSlugs: [
+      'zip-crc32-checksum-validation-in-browser',
+      'why-subtitles-drift-frame-rate-arithmetic',
+      'open-source-first-contributions-pure-typescript',
+    ],
+  },
+  {
+    slug: 'open-source-first-contributions-pure-typescript',
+    title:
+      'Contributing to OpenTools: 4 Pure-TypeScript First Tasks with Zero Framework Overhead',
+    metaDescription:
+      'Explore 4 bite-sized, pure TypeScript open source contributions: ZIP64 headers, TTML subtitles, SCC closed captions, and WebKit dropzone handoffs.',
+    keywords: [
+      'good first issue typescript open source',
+      'pure typescript contributions',
+      'contribute to opentools',
+      'zip64 parser typescript',
+      'ttml subtitle parser open source',
+      'browser local first engineering',
+    ],
+    category: 'Developer & Systems',
+    publishedAt: '2026-09-19',
+    readingTime: '9 min read',
+    author: 'OpenTools Core Engineering',
+    toolName: 'OpenTools Repository',
+    toolDestination: '/developer/advanced?tool=json-to-zod-schema',
+    summary:
+      'Looking for a clean open-source contribution? OpenTools is built on pure functions over raw bytes: zero framework glue, zero network mocks, and comprehensive test suites. Here are 4 genuinely open tasks with exact files, line numbers, and passing test criteria.',
+    sections: [
+      {
+        id: 'the-shape-of-the-codebase',
+        heading:
+          'Why Contributing Here is Different: Pure Functions Over Bytes',
+        content: `Most web repositories require hours of environment setup: configuring cloud accounts, seeding local databases, mocking microservices, and untangling complex state management layers.
+        
+OpenTools takes a radically different architectural stance: **every tool engine is a pure TypeScript function over bytes**.
+        
+- **No network calls**: Tools run in browser tabs with \`connect-src 'none'\`.
+- **No databases or servers**: Inputs are \`Uint8Array\` buffers or strings; outputs are transformed buffers or strings.
+- **Zero mocking required**: Tests feed real file fixtures into pure functions and inspect the results.
+- **Instant feedback**: Run \`npm test\`, change one function, and watch your tests pass.
+        
+Here is the codebase reality by the numbers:
+- \`lib/tools/subtitles/core.ts\` — **561 lines**, 59 unit tests.
+- \`lib/tools/archive/zip-reader.ts\` — **413 lines**, 21 unit tests.
+- \`lib/tools/audio/mp3-frames.ts\` — **354 lines**, 14 unit tests.
+        
+Below are four genuinely open, bite-sized tasks ready for contributors.`,
+      },
+      {
+        id: 'open-task-register',
+        heading: 'The 4 Genuinely Open First-Contribution Tasks',
+        content: `### 1. ZIP64 Archive Reader Support
+- **Where it starts**: \`lib/tools/archive/zip-reader.ts:214\`
+- **Current behavior**: Throws an explicit error: \`"This is a ZIP64 archive — over 4 GB or over 65,535 files. This page reads standard ZIP archives only."\`
+- **The task**: Parse the ZIP64 End of Central Directory locator and record, and read extra field \`0x0001\` for 64-bit offsets and uncompressed lengths.
+- **Why it is a great starter**: Pure binary parsing from the public PKWARE specification. The refusal error is already written and tested; making it return valid entries turns the refusal into capability.
+        
+---
+        
+### 2. TTML / DFXP Subtitle Format Parser
+- **Where it starts**: \`lib/tools/subtitles/core.ts:11\`
+- **Current behavior**: \`SubtitleFormat\` supports \`'srt' | 'vtt' | 'sbv' | 'lrc' | 'ass'\`.
+- **The task**: Add TTML (Timed Text Markup Language / DFXP XML) to the format union. Parse XML timing cues and text into standard \`Cue\` objects.
+- **Why it is approachable**: TTML is XML, making it straightforward to parse in TypeScript. Adding it automatically lights up all 14 subtitle workbench operations (sync, retiming, conversion) for TTML files simultaneously.
+        
+---
+        
+### 3. SCC Closed Caption Decoder
+- **Where it starts**: \`lib/tools/subtitles/core.ts:11\`
+- **The task**: Implement an SCC (Scenarist Closed Caption) parser.
+- **Difficulty**: Stretch item. SCC uses hex-encoded CEA-608 words and requires drop-frame timecode arithmetic. A rewarding challenge for developers interested in broadcast video standards.
+        
+---
+        
+### 4. iPhone Safari Dropzone File Handoff
+- **Where it starts**: \`docs/DROPZONE_FILE_HANDOFF.md\`
+- **Current behavior**: Dropping a file on the homepage carries it to the destination tool on Chromium (Chrome/Edge/Android), but WebKit (Safari/iOS) fails to hydrate the target input.
+- **The task**: Solve the WebKit file transfer issue documented in \`docs/DROPZONE_FILE_HANDOFF.md\`.
+- **Why it is outstanding**: **The failing tests are already written and committed**, marked \`test.skip\` on WebKit in \`e2e/dropzone-handoff.spec.ts\`. A contributor does not have to guess what success means: you unskip the tests and make them green. All dead ends and hypotheses are already documented.`,
+      },
+      {
+        id: 'how-to-submit-pr',
+        heading: 'How to Get Started & Run Verification',
+        content: `Getting up and running takes two commands:
+        
+\`\`\`bash
+git clone https://github.com/mgbuilderos/opentools.git
+cd opentools
+npm install
+npm test
+\`\`\`
+        
+Our rule is simple: **the tests are the specification.** If you pick an item, implement the parser, add unit tests for valid and malformed files, and \`npm run qc\` passes 8/8 gates, your contribution is technically sound.
+        
+Explore our repository [CONTRIBUTING.md](https://github.com/mgbuilderos/opentools/blob/main/CONTRIBUTING.md) guide and issue templates to claim an item!`,
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Do I need experience with Cloudflare Workers or Next.js to contribute?',
+        answer:
+          'No. Tool logic lives in pure TypeScript modules in lib/tools/. If you understand JavaScript arrays, byte buffers, and regular expressions, you can build tools without touching framework code.',
+      },
+      {
+        question: 'What license is OpenTools distributed under?',
+        answer:
+          'OpenTools is licensed under the permissive MIT License. All contributions remain free and open source.',
+      },
+      {
+        question:
+          'Where can I find the test suite for subtitle or archive tools?',
+        answer:
+          'Unit tests sit directly beside the source files, such as lib/tools/subtitles/core.test.ts and lib/tools/archive/zip-reader.test.ts.',
+      },
+    ],
+    relatedSlugs: [
+      'zip-crc32-checksum-validation-in-browser',
+      'macos-utf8-zip-filename-encoding-bug',
+      'how-to-convert-json-to-zod-schema-offline',
+    ],
+  },
 ];
 
 export function getAllBlogPosts(): readonly BlogPost[] {

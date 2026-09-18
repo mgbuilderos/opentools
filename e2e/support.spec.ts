@@ -17,7 +17,7 @@ test.describe('Support page', () => {
         'What your support pays for — transparent infrastructure costs',
       ),
     ).toBeVisible();
-    await expect(page.getByText('Cloudflare Workers Paid')).toBeVisible();
+    await expect(page.getByText('Edge Hosting & Uptime')).toBeVisible();
     await expect(page.getByText('$5 / month')).toBeVisible();
     await expect(page.getByText('Domain & DNS')).toBeVisible();
     await expect(page.getByText('$12 / year')).toBeVisible();

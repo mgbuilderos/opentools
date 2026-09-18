@@ -78,14 +78,14 @@ export default function SupportPage() {
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border bg-muted/20 p-3.5 sm:p-4">
               <div className="flex items-center justify-between font-mono text-sm font-bold text-foreground">
-                <span>Cloudflare Workers Paid</span>
+                <span>Edge Hosting &amp; Uptime</span>
                 <span>$5 / month</span>
               </div>
               <p className="mt-1.5 text-xs leading-normal text-muted-foreground">
-                Unlocks 1,000,000 monthly edge KV cache writes (up from the free
-                tier's ~1,000/day limit). This allows all 645+ sitemap URLs to
-                stay permanently warm and load in milliseconds under crawler
-                traffic without exhausting Worker CPU limits.
+                Funds independent edge infrastructure and development time. All
+                645+ pages operate under an optimized cache budget (&lt;125
+                writes/day) so tools load instantly worldwide without commercial
+                sponsors.
               </p>
             </div>
 

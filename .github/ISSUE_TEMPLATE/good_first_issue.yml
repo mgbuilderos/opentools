@@ -1,0 +1,35 @@
+name: Good first issue contribution
+description: Propose work or open a PR on one of the pure TypeScript starter tasks.
+labels: [good first issue, help wanted, pure-typescript]
+body:
+  - type: dropdown
+    id: starter_task
+    attributes:
+      label: Which starter item are you working on?
+      options:
+        - '1. ZIP64 archive reading (lib/tools/archive/zip-reader.ts:214)'
+        - '2. TTML / DFXP subtitle parsing (lib/tools/subtitles/core.ts:11)'
+        - '3. SCC closed caption parsing (lib/tools/subtitles/core.ts:11)'
+        - '4. iPhone Safari dropzone handoff (docs/DROPZONE_FILE_HANDOFF.md)'
+        - 'Other bite-sized pure function task'
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Implementation summary
+      description: Describe your proposed pure function parser, type additions, or WebKit fix.
+      placeholder: Adding TTML XML cue extraction to SubtitleDocument with unit tests covering cues and style attributes.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Contributor checklist
+      options:
+        - label: 'My code is written in pure TypeScript with zero network calls or server dependencies.'
+          required: true
+        - label: 'I have added unit tests for valid, empty, and malformed inputs.'
+          required: true
+        - label: 'All 8/8 quality gates pass (npm run qc).'
+          required: true

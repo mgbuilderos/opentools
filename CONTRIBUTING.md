@@ -35,6 +35,26 @@ npm run qc         # full quality gate — must pass before opening a PR
 
 Requires Node.js >= 22.13.0.
 
+## Good first contributions (genuinely open)
+
+All core tool engines are pure functions over bytes: no framework glue, no
+database, and no network mocking. **The tests are the specification.** A change
+that keeps them green is a change that works.
+
+Here are 4 open starter tasks:
+
+1. **ZIP64 archives** (`lib/tools/archive/zip-reader.ts:214`): Parse ZIP64 end of
+   central directory and extra field `0x0001` to unpack archives > 4 GB or >
+   65,535 files.
+2. **TTML / DFXP subtitles** (`lib/tools/subtitles/core.ts:11`): Add TTML XML
+   parsing to `SubtitleFormat` so all 14 subtitle operations work with broadcast
+   subtitles at once.
+3. **SCC closed captions** (`lib/tools/subtitles/core.ts:11`): Scenarist Closed
+   Caption CEA-608 parsing with drop-frame timecode arithmetic (stretch item).
+4. **iPhone Safari dropzone file handoff** (`docs/DROPZONE_FILE_HANDOFF.md`):
+   Failing tests are already written and skipped in WebKit. Make them pass so
+   files dropped on mobile follow the user into the tool.
+
 ## Adding a tool
 
 1. Add or extend a manifest in `lib/tools/catalog.ts`.

@@ -338,8 +338,8 @@ export function SupportDualView() {
               </h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 Cards, Apple Pay, Google Pay, and PayPal. A single $5 coffee
-                funds one month of Workers Paid ($5/mo), unlocking 1M KV writes
-                so all 645+ pages stay cached.
+                funds a full month of domain and edge hosting operations to keep
+                every tool fast and free for everyone.
               </p>
             </div>
           </div>
