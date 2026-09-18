@@ -8,25 +8,68 @@ never drafted. This is that draft.
 > pitch. The version below deliberately leads with one thing and lets the other
 > 549 tools be context.
 
-> ## 🚫 BLOCKED — do not send this yet
+> ## ✅ UNBLOCKED 2026-09-19 — the blocker below is resolved
 >
-> The strongest paragraph in this application is about **metadata removal**, and
-> the tool that does it is currently **making a false claim**. Capsule §9.4 /
-> board queue C5, confirmed 2026-09-17: for **WebP, HEIC, AVIF, TIFF and GIF**
-> the EXIF scrubber returns the bytes **unchanged** while telling the user
-> *"All EXIF, GPS locations, camera serials… completely stripped"*. For JPEG it
-> also drops APP2 ICC and APP14 Adobe and the Orientation tag, and keeps data
-> after EOI — where motion-photo trailers can still carry location.
+> **In plain words: the tool is no longer lying, so the application can go.**
+> It was fixed two days before anyone noticed, and the ticket was simply never
+> closed. No new work was needed here.
 >
-> **An application to a funder whose applicants include journalists and human
-> rights defenders must not rest on a tool that silently fails to strip location
-> data from a phone photo.** If OTF ever checked — and OTF is exactly the funder
-> who would — the application is dead and so is the project's credibility with
-> them.
+> **Verified independently by this lane on 2026-09-19**, against the code and
+> against the JavaScript the live site actually ships — not by trusting another
+> lane's log:
 >
-> **Unblock condition:** C5 fixed and covered by a test, for every format the UI
-> claims. Then this draft can go. It is written now so that it is ready the day
-> that lands, not started from scratch then.
+> | Check | Result |
+> |---|---|
+> | `d5ba913` *"stop the metadata scrubber claiming work it did not do (C5)"* | exists, dated 2026-09-17 |
+> | Is it an ancestor of `origin/main`? | **yes** |
+> | Is it an ancestor of `00c9e25`, the deployed commit? | **yes** — so it has been live since the 2026-09-18 deploy |
+> | `detectImageFormat` in the **live** bundle (`app-shell-C4hZPgqm.js`, fetched from getopentools.com) | `cleanable:!0` for **JPEG and PNG only**; `cleanable:!1` for **GIF, WebP, TIFF, AVIF, HEIC/HEIF** and for any unrecognised format |
+> | The consuming loop, live | `if(!n.cleanable){s.push(…);continue}` — a refused file produces **no output file at all** |
+> | *"Returning the file unchanged while calling it clean would be worse than refusing it."* | present in the **live** bundle |
+> | *"… no file was produced for them"* | present in the **live** bundle |
+> | The false claim *"All EXIF, GPS locations, camera serials… completely stripped"* | **absent from every live chunk** — 0 occurrences |
+> | `npx vitest run lib/tools/file-workbench.test.ts` | **PASS (24) FAIL (0)**, re-run today |
+>
+> **Read how it was fixed, because it changes what this application should ask
+> for.** The claim was narrowed to match the capability; the capability was not
+> widened to match the claim. The scrubber cleans **JPEG and PNG**, and refuses
+> everything else **by name, producing no file**. That is honest, and it is
+> fail-closed — an unrecognised format is refused rather than passed through.
+>
+> **But HEIC is the default camera format on every recent iPhone.** An activist
+> stripping location from a protest photo shot on an iPhone gets a clear refusal
+> today, not a clean file and not a silent failure. That gap is real, it is the
+> gap that matters most to OTF's own users, and this draft now states it plainly
+> and asks for the work rather than papering over it. See *"What the money would
+> be for"*, item 1.
+>
+> <details>
+> <summary>The original blocker, kept for the record — do not delete</summary>
+>
+> > ~~## 🚫 BLOCKED — do not send this yet~~
+> >
+> > ~~The strongest paragraph in this application is about **metadata removal**,
+> > and the tool that does it is currently **making a false claim**. Capsule
+> > §9.4 / board queue C5, confirmed 2026-09-17: for **WebP, HEIC, AVIF, TIFF
+> > and GIF** the EXIF scrubber returns the bytes **unchanged** while telling the
+> > user *"All EXIF, GPS locations, camera serials… completely stripped"*. For
+> > JPEG it also drops APP2 ICC and APP14 Adobe and the Orientation tag, and
+> > keeps data after EOI — where motion-photo trailers can still carry
+> > location.~~
+> >
+> > ~~**An application to a funder whose applicants include journalists and human
+> > rights defenders must not rest on a tool that silently fails to strip
+> > location data from a phone photo.**~~
+> >
+> > ~~**Unblock condition:** C5 fixed and covered by a test, for every format the
+> > UI claims.~~
+>
+> **Why the condition is met.** "Every format the UI claims" is now exactly
+> JPEG and PNG — the UI stopped claiming the other five. Both are handled and
+> both are tested. The condition was written to stop a false claim reaching a
+> funder, and there is no longer a false claim to reach one.
+>
+> </details>
 
 ---
 
@@ -181,14 +224,30 @@ proposals; the ones that stand out are usually the ones that did not pretend.
 
 Write this as work, not as salary, and ask for what it costs.
 
-1. **Harden the at-risk subset.** The document tools that people in this
-   position actually need — redaction that removes rather than covers, metadata
-   removal that is complete across every image format the tool accepts, ID
-   masking — audited format by format, each with a test that proves the bytes
-   changed. *(This is the C5 work. It is the blocker at the top of this file,
-   and it is also the most fundable item here: "we found our own tool making a
-   false claim and fixed it" is a stronger story than "our tools are perfect",
-   provided it is fixed before you say it.)*
+1. **Metadata removal for the formats phones actually produce.** This is the
+   specific ask, and it is worth stating exactly rather than generally.
+
+   Today the scrubber cleans **JPEG and PNG**. It refuses **HEIC, AVIF, WebP,
+   TIFF and GIF** by name and produces no file for them, because the tool edits
+   those containers directly and has no decoder for the rest. That refusal is
+   deliberate — it replaced a version that returned those files unchanged while
+   calling them clean (fixed at `d5ba913`, 2026-09-17, verified live).
+
+   **The gap that matters to your applicants: HEIC is the default camera format
+   on every recent iPhone.** Someone stripping location from a photo they just
+   took gets an honest refusal, not a clean file. Closing that — HEIC, AVIF and
+   WebP, each with a test that proves the GPS bytes are gone rather than
+   asserting it — is the single most useful thing funding could buy here, and
+   it is work, not salary.
+
+   Alongside it: redaction that removes rather than covers, and ID masking,
+   audited format by format on the same standard of proof.
+
+   *(Worth saying out loud in the application: the false claim above was found
+   and fixed by this project, on itself, before any funder asked. "We audited
+   our own tool, found it overstating what it did, and narrowed the claim rather
+   than the truth" is a stronger thing to be able to say than "our tools are
+   perfect" — and it is the reason the refusal path exists at all.)*
 2. **Publish the verification protocol so others can use it.** Today it is one
    test file in one repository. As a documented method plus a runnable harness,
    any project claiming local-only processing could demonstrate it instead of
@@ -239,8 +298,10 @@ honest ask from a solo applicant is a strength, not a weakness.
 
 ## Before sending
 
-- [ ] **C5 is fixed and tested.** The blocker at the top of this file. Nothing
-      else on this list matters until this is done.
+- [x] ~~**C5 is fixed and tested.** The blocker at the top of this file.~~
+      **DONE — verified 2026-09-19** against the code, against the live
+      JavaScript bundle, and by re-running the suite (24 pass, 0 fail). See the
+      unblock table at the top of this file. **This no longer blocks sending.**
 - [ ] Confirm on `opentech.fund` which fund is open and whether a concept note
       comes first.
 - [ ] Re-measure the traffic figure and update it. It is dated 2026-09-18; a
@@ -254,7 +315,9 @@ honest ask from a solo applicant is a strength, not a weakness.
 
 1. **FUTO** — ready now, needs only the two `[YOU]` sections.
    `docs/FUTO_APPLICATION_DRAFT.md`. Send to `grantapps@futo.org`.
-2. **OTF** — this file, blocked on C5.
+2. **OTF** — this file. **No longer blocked** (C5 verified fixed and live,
+   2026-09-19). Remaining before send: confirm on `opentech.fund` which fund is
+   open, and the two `[YOU]` sections.
 3. **NLnet** — drafted, but see the geography warning at the top of
    `docs/NLNET_APPLICATION_DRAFT.md`. Weakest odds of the three for a non-EU
    individual; apply last, not first.

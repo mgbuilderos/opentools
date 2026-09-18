@@ -218,7 +218,7 @@ export function NoticeBar() {
               <span className="opacity-40" aria-hidden="true">·</span>
               <span className="inline-flex items-center gap-1.5">
                 <span aria-hidden="true">🛡️</span>
-                <span>100% Private &amp; Offline-Ready</span>
+                <span>100% Private &amp; Zero-Upload</span>
               </span>
               <span className="opacity-40" aria-hidden="true">·</span>
               <span className="inline-flex items-center gap-1.5">

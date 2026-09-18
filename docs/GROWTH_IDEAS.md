@@ -151,14 +151,53 @@ completion card and the proof card now do.
 | Date | Change | Why it matters |
 | :--- | :--- | :--- |
 | 18 Sep | Proof card (`lib/proof-card.ts`) | The only share loop the rules permit — brands our artifact, never the user's file. Drops anything resembling a filename. |
-| 19 Sep | **PWA: service worker + install prompt** | The manifest was already correct; a missing service worker meant Chrome offered installation to nobody. Now installable, and the tools work with no network — which no server-side competitor can match. |
+| 19 Sep | **PWA: service worker + install prompt** | ~~The manifest was already correct; a missing service worker meant Chrome offered installation to nobody. Now installable, and the tools work with no network — which no server-side competitor can match.~~ **⚠️ VOID 2026-09-19.** That service worker was the P0: it broke every navigation after the first for every visitor. Route 1 fixes it by having the worker step aside for navigations, which **ends offline support**. Installability may survive; working-with-no-network does not. See the block below. |
 | 19 Sep | New mark, classical O | The old icon was "OT" in a square: a monogram that says nothing, for a contested name, illegible at 16px. `scripts/generate-icons.py` regenerates every size from one set of proportions. |
 
-**Why the PWA matters beyond retention.** At current traffic there is little to
-retain, and install prompts convert in single digits. Its real value is as a
-*launch* asset: "works with no internet" is a stronger hook for Hacker News and
-r/selfhosted than anything else available, and it is ready for whenever traffic
-arrives rather than being built after it.
+> ## ⚠️ VOID 2026-09-19 — the launch hook below no longer exists
+>
+> **In plain English: the single best headline we had for launch day has been
+> taken away, and there is no replacement of equal strength.** This is the real
+> marketing cost of the Route 1 fix, and it is worth stating plainly rather than
+> quietly deleting the paragraph.
+>
+> ~~**Why the PWA matters beyond retention.** At current traffic there is little
+> to retain, and install prompts convert in single digits. Its real value is as
+> a *launch* asset: "works with no internet" is a stronger hook for Hacker News
+> and r/selfhosted than anything else available, and it is ready for whenever
+> traffic arrives rather than being built after it.~~
+>
+> **Why it is void.** The service worker that delivered "works with no network"
+> is the same code that broke the site. `/sw.js` is served `connect-src 'none'`;
+> a service worker inherits the CSP of its own script; so the worker's `fetch()`
+> always threw and its `.catch()` showed *"You are offline and this page has not
+> been opened before"* to every visitor, on every click after their first, while
+> their internet was working. The owner approved **Route 1** on 2026-09-19: the
+> worker steps aside for navigations. That fixes the bug and **gives up offline
+> support** as the price.
+>
+> **What this costs, in order of size:**
+>
+> 1. **"Works with no internet" cannot be said anywhere any more** — not on Hacker
+>    News, not on r/selfhosted, not in the install banner, not in a store listing,
+>    not in a grant application. Every place it currently appears is listed in
+>    `docs/REVENUE_OPERATIONS.md` §A0.
+> 2. **The r/selfhosted angle loses its sharpest line**, though not the post: the
+>    **container** still runs with `--network none`, verified, and that claim is
+>    untouched by Route 1. Offline *self-hosting* survives; offline *browsing of
+>    the hosted site* does not. Keep those two apart — collapsing them is how the
+>    false claim gets written again.
+> 3. **The claim that actually differentiates is unaffected**, and it was always
+>    the stronger one: **the page cannot upload your file**, enforced by
+>    `connect-src 'none'` and demonstrated by `e2e/egress-proof.spec.ts` on every
+>    release. No server-side tool can match that either, and unlike "works
+>    offline" it survives the fix. **Launch on this instead.**
+>
+> **What replaces it as the launch hook:** nothing new is needed. Lead with
+> zero-egress-you-can-verify-in-thirty-seconds, which is what
+> `docs/LAUNCH_KIT.md` already leads with. The PWA drops from a headline feature
+> to a convenience — "one tap from your home screen" — and should not be
+> mentioned in launch copy at all.
 
 ---
 

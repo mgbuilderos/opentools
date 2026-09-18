@@ -28,6 +28,24 @@ const DISMISSED_KEY = 'opentools-install-dismissed-v1';
  * It is dismissible and the dismissal is remembered. The product's whole
  * argument is that it does not nag or gate; an install banner that cannot be
  * closed would contradict that for a feature nobody is obliged to want.
+ *
+ * **Do not put an offline claim back into this banner.** It said "Works
+ * offline afterwards" and "every tool keeps working — even with no internet"
+ * until 2026-09-19. Those were removed deliberately, not for brevity.
+ *
+ * The service worker used to serve navigations from its cache, which is what
+ * made the site usable with the network off. That same code path was the P0:
+ * `/sw.js` is served `connect-src 'none'`, a worker inherits the CSP of its
+ * own script, so the worker's `fetch()` always threw and every navigation
+ * after the first showed "You are offline" to people whose internet was fine.
+ * The fix (Route 1, approved by the owner 2026-09-19) has the worker step
+ * aside for navigations. That ends the bug and it also ends offline support —
+ * a trade the owner accepted knowingly.
+ *
+ * So installing is still worth offering: it opens in its own window, one tap
+ * away, no browser chrome. It just does not work without a network, and
+ * saying otherwise would be a false claim in the product's most prominent
+ * banner. See `docs/REVENUE_OPERATIONS.md` §A0.
  */
 export function InstallPrompt() {
   const [deferred, setDeferred] = useState<Event | null>(null);
@@ -109,10 +127,10 @@ export function InstallPrompt() {
             <>
               Tap <Share aria-hidden="true" className="inline size-3" /> Share,
               then <strong className="font-semibold">Add to Home Screen</strong>
-              . Works offline afterwards.
+              . Opens in its own window, without browser chrome.
             </>
           ) : (
-            'Install it and every tool keeps working — even with no internet.'
+            'Opens in its own window, one tap from your home screen.'
           )}
         </p>
       </div>

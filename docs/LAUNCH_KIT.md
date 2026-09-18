@@ -57,7 +57,12 @@ description. The copy below is written to pass that.
 - **URL:** https://getopentools.com
 - **Licence:** Open Source · MIT · Free
 - **Platforms:** Web, Self-Hosted (once that ships)
-- **Tags:** `pdf`, `privacy`, `offline`, `no-registration`, `client-side`, `image-optimization`
+- **Tags:** `pdf`, `privacy`, `no-registration`, `client-side`, `image-optimization`
+  <!-- The `offline` tag was removed 2026-09-19. Route 1 gives up offline
+       support for the hosted site, so the tag would attract exactly the people
+       the site then disappoints. Do not add it back for the hosted listing.
+       The self-hosted container still runs with --network none; if a listing
+       is ever made for the CONTAINER specifically, `offline` is honest there. -->
 
 **Description:**
 

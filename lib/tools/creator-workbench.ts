@@ -677,7 +677,7 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
       text(
         'tagline',
         'Headline / Benefit Tagline',
-        'Private Offline Utilities in Your Pocket',
+        'Private Utilities That Never Upload Your Files',
       ),
       text(
         'subheadline',
