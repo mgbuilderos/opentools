@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { HandedOverFile } from '@/components/handed-over-file';
 
 const httpsScheme = ['https:', '//'].join('');
 const siteOrigin = `${httpsScheme}getopentools.com`;
@@ -184,7 +185,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(rootJsonLd) }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Collects a file handed over by the smart dropzone. Renders nothing. */}
+        <HandedOverFile />
+      </body>
     </html>
   );
 }

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
+import { offerFile } from '@/lib/file-handoff';
 import { isLiveToolUrl } from '@/lib/seo/live-tools';
 import { cn } from '@/lib/utils';
 import {
@@ -281,6 +282,10 @@ export function SmartDropzone() {
   const [dragOver, setDragOver] = useState(false);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [inputText, setInputText] = useState('');
+  // The dropped file itself, not just its name. Without this the box reads a
+  // filename to guess a tool and then throws the file away, so picking a tool
+  // lands you on an empty page with the file still on your desk.
+  const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -300,8 +305,33 @@ export function SmartDropzone() {
     if (detection) {
       setResult(detection);
       setInputText(file.name);
+      setDroppedFile(file);
     }
   }, []);
+
+  /**
+   * Hands the file to the tool page before going there. Every link in this app
+   * is a full page load, so the file has to be put somewhere the next page can
+   * reach — see `lib/file-handoff.ts`. If that fails the navigation still
+   * happens and the tool opens empty, which is what it always did.
+   */
+  const goToTool = useCallback(
+    async (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      if (!droppedFile) return;
+      if (
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.button !== 0
+      ) {
+        return; // opening in a new tab is the reader's business, not ours
+      }
+      event.preventDefault();
+      await offerFile(droppedFile);
+      window.location.href = href;
+    },
+    [droppedFile],
+  );
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -318,6 +348,8 @@ export function SmartDropzone() {
       const text = e.dataTransfer.getData('text');
       if (text) {
         setInputText(text.slice(0, 100));
+        setDroppedFile(null);
+        setDroppedFile(null);
         const detection = detectInput(text);
         if (detection) {
           setResult(detection);
@@ -337,6 +369,7 @@ export function SmartDropzone() {
     const text = e.clipboardData.getData('text');
     if (text) {
       setInputText(text.slice(0, 100));
+      setDroppedFile(null);
       const detection = detectInput(text);
       if (detection) {
         setResult(detection);
@@ -472,6 +505,7 @@ export function SmartDropzone() {
               onClick={() => {
                 setResult(null);
                 setInputText('');
+                setDroppedFile(null);
               }}
               className="flex size-7 items-center justify-center rounded-md border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Clear detection result"
@@ -493,6 +527,7 @@ export function SmartDropzone() {
                 <a
                   key={act.label}
                   href={act.href}
+                  onClick={(event) => void goToTool(event, act.href)}
                   className={cn(
                     buttonVariants({
                       variant: act.isPrimary ? 'default' : 'outline',
