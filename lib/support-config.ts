@@ -133,7 +133,7 @@ export const GITHUB_SPONSORS_PENDING = {
   /** Shown verbatim. Says what is true: it is waiting, not live. */
   status: 'Waiting on GitHub approval',
   description:
-    'Sponsoring through GitHub is not open yet — the profile is still under review by GitHub. Until it is approved, the two options above are the ways to send support.',
+    'Not open yet — GitHub is still reviewing the profile. Until it clears, the two options above are the ways to help.',
 } as const;
 
 export interface SupportTier {
@@ -169,10 +169,10 @@ export const SUPPORT_TIERS: SupportTier[] = [
     amountInr: '₹420',
     usdValue: 5,
     inrValue: 420,
-    description: 'Goes toward the domain and the hosting that serves the site.',
+    description: 'Covers the domain and the hosting.',
     features: [
       'No ads, no third-party trackers, no client-side analytics',
-      'Every tool stays free, with no signup and no watermark',
+      'Every tool stays free — no signup, no watermark',
       'Nothing in return — support is voluntary',
     ],
   },
@@ -182,10 +182,10 @@ export const SUPPORT_TIERS: SupportTier[] = [
     amountInr: '₹840',
     usdValue: 10,
     inrValue: 840,
-    description: 'Goes toward keeping the tools that are already here working.',
+    description: 'Keeps the tools that are already here working.',
     features: [
-      'Fixes and maintenance on the tools on this site today',
-      'Output checks that catch a bad file before you download it',
+      'Fixes and maintenance on the tools here today',
+      'Checks that catch a bad file before you download it',
       'Nothing in return — support is voluntary',
     ],
   },
@@ -195,8 +195,7 @@ export const SUPPORT_TIERS: SupportTier[] = [
     amountInr: '₹2,100',
     usdValue: 25,
     inrValue: 2100,
-    description:
-      'Goes toward longer work: building tools, and the tests behind them.',
+    description: 'Buys time for new tools, and the tests behind them.',
     features: [
       'Time to build and test new tools',
       'The code stays MIT-licensed and open to read',

@@ -9,11 +9,7 @@ import {
   Copy,
   ExternalLink,
   GitBranch,
-  Globe,
-  Heart,
-  QrCode,
   ShieldCheck,
-  Sparkles,
   Star,
   Zap,
 } from 'lucide-react';
@@ -29,6 +25,18 @@ import {
 } from '@/lib/support-config';
 
 type SupportTab = 'upi' | 'international' | 'github';
+
+/**
+ * Amounts, small enough to read at 375px. The label is what the amount buys in
+ * ordinary terms, not a tier — nothing here is bought and nothing is returned.
+ */
+const UPI_AMOUNTS = [
+  { amt: 29, label: '☕ Chai' },
+  { amt: 59, label: '⚡ Coffee' },
+  { amt: 99, label: '🍕 Lunch' },
+  { amt: 299, label: '💖 Patron' },
+  { amt: 999, label: '🚀 Sponsor' },
+] as const;
 
 export function SupportDualView() {
   const [activeTab, setActiveTab] = useState<SupportTab>('international');
@@ -49,10 +57,10 @@ export function SupportDualView() {
     const isIndia = isLikelyIndiaVisitor();
     if (isIndia && upiReady) {
       setActiveTab('upi');
-      setDetectedRegion('India (UPI Recommended)');
+      setDetectedRegion('India 🇮🇳');
     } else {
       setActiveTab('international');
-      setDetectedRegion('International (Buy Me a Coffee)');
+      setDetectedRegion('outside India 🌍');
     }
   }, []);
 
@@ -108,25 +116,32 @@ export function SupportDualView() {
    * that tab and has to be readable at every width.
    */
   const tabClass = (tab: SupportTab) =>
-    `flex flex-1 min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
+    `flex flex-1 min-w-0 items-center justify-center gap-1 sm:gap-1.5 rounded-lg px-1.5 py-2 sm:px-2 sm:py-2.5 text-[13px] sm:text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
       activeTab === tab
         ? 'bg-card text-foreground shadow-xs'
         : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
     }`;
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-3 sm:space-y-4">
+      {/*
+        One line, not two columns. At 375px the old two-column version wrapped
+        into a squashed three-line block above the tabs it was describing.
+      */}
       {detectedRegion && (
-        <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-          <span className="flex items-center gap-1.5 font-medium">
-            <span className="size-2 rounded-full bg-success" />
-            Auto-selected for your region:{' '}
-            <strong className="text-foreground">{detectedRegion}</strong>
+        <p className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
+          <span
+            aria-hidden="true"
+            className="size-1.5 shrink-0 rounded-full bg-success"
+          />
+          <span className="truncate">
+            Looks like you're in{' '}
+            <strong className="font-semibold text-foreground">
+              {detectedRegion}
+            </strong>{' '}
+            — switch any time.
           </span>
-          <span className="text-[11px] text-muted-foreground/80">
-            Switch tab anytime
-          </span>
-        </div>
+        </p>
       )}
 
       {/* Navigation Tabs */}
@@ -137,11 +152,11 @@ export function SupportDualView() {
             onClick={() => setActiveTab('upi')}
             className={tabClass('upi')}
           >
-            <span className="text-base">🇮🇳</span>
+            <span aria-hidden="true">🇮🇳</span>
             <span className="sm:hidden">UPI</span>
             <span className="hidden sm:inline">India (UPI)</span>
             <span className="hidden lg:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
-              0% Fee
+              0% fee
             </span>
           </button>
         )}
@@ -150,7 +165,7 @@ export function SupportDualView() {
           onClick={() => setActiveTab('international')}
           className={tabClass('international')}
         >
-          <Globe className="size-4 shrink-0" />
+          <span aria-hidden="true">☕</span>
           <span className="sm:hidden">Coffee</span>
           <span className="hidden sm:inline">Buy Me a Coffee</span>
           <span className="hidden lg:inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
@@ -167,9 +182,9 @@ export function SupportDualView() {
           onClick={() => setActiveTab('github')}
           className={tabClass('github')}
         >
-          <GitBranch className="size-4 shrink-0" />
+          <span aria-hidden="true">⏳</span>
           <span>GitHub</span>
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+          <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:px-2">
             Soon
           </span>
         </button>
@@ -177,52 +192,27 @@ export function SupportDualView() {
 
       {/* Tab 1: UPI India */}
       {activeTab === 'upi' && upiReady && (
-        <div className="rounded-2xl border bg-card p-6 sm:p-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
-            <div>
-              <div className="flex items-center gap-2 text-success font-semibold text-sm">
-                <ShieldCheck className="size-4" />
-                Direct Bank-to-Bank Transfer
+        <div className="space-y-4 rounded-2xl border bg-card p-4 sm:space-y-6 sm:p-8">
+          <div className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-6">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-success sm:text-sm">
+                <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
+                Straight to the bank · 0% fee
               </div>
-              <h3 className="text-xl font-bold mt-1">Scan with any UPI App</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                Google Pay, PhonePe, Paytm, BHIM, Cred, Amazon Pay or any
+              <h3 className="mt-1 text-lg font-bold sm:text-xl">
+                Pick an amount ☕
+              </h3>
+              <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
+                Works with GPay, PhonePe, Paytm, BHIM, Cred, Amazon Pay or your
                 banking app.
               </p>
             </div>
-            <div className="shrink-0 flex items-center gap-2 bg-muted/60 px-3 py-2 rounded-xl border">
-              <span className="font-mono text-xs sm:text-sm font-medium">
-                {SUPPORT_CONFIG.upiId}
-              </span>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={copyUpiId}
-                className="h-7 px-2 text-xs"
-              >
-                {copiedUpi ? (
-                  <Check className="size-3.5 text-success mr-1" />
-                ) : (
-                  <Copy className="size-3.5 mr-1" />
-                )}
-                {copiedUpi ? 'Copied' : 'Copy'}
-              </Button>
-            </div>
           </div>
 
-          {/* Amount selector presets */}
+          {/* Amount presets — three across on a phone so five fit in two rows. */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-              Select Support Amount
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              {[
-                { amt: 29, label: '☕ Chai', popular: false },
-                { amt: 59, label: '⚡ Coffee', popular: false },
-                { amt: 99, label: '🍕 Lunch', popular: false },
-                { amt: 299, label: '💖 Patron', popular: false },
-                { amt: 999, label: '🚀 Sponsor', popular: false },
-              ].map(({ amt, label }) => {
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+              {UPI_AMOUNTS.map(({ amt, label }) => {
                 const isSelected =
                   currentAmount === amt && customInrAmount === '';
                 return (
@@ -233,43 +223,91 @@ export function SupportDualView() {
                       setSelectedInrAmount(amt);
                       setCustomInrAmount('');
                     }}
-                    className={`rounded-xl border p-2.5 sm:p-3 text-center transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
+                    className={`rounded-xl border p-2 text-center transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] sm:p-3 ${
                       isSelected
-                        ? 'border-success bg-success/10 text-foreground ring-2 ring-success/20 font-bold shadow-xs'
+                        ? 'border-success bg-success/10 font-bold text-foreground shadow-xs ring-2 ring-success/20'
                         : 'bg-card text-muted-foreground hover:border-foreground/30 hover:bg-muted/40 hover:text-foreground'
                     }`}
                   >
                     <div className="text-base sm:text-lg">
                       ₹{amt.toLocaleString('en-IN')}
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <div className="mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-[10px] text-muted-foreground sm:text-[11px]">
                       {label}
                     </div>
                   </button>
                 );
               })}
             </div>
-            <div className="mt-3">
-              <input
-                type="number"
-                placeholder="Or enter custom amount in ₹"
-                value={customInrAmount}
-                onChange={(e) => setCustomInrAmount(e.target.value)}
-                className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-success/30 font-mono"
-              />
-            </div>
+            <input
+              type="number"
+              placeholder="Or type your own amount ₹"
+              value={customInrAmount}
+              onChange={(e) => setCustomInrAmount(e.target.value)}
+              className="mt-2 w-full rounded-xl border bg-background px-4 py-2.5 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-success/30"
+            />
           </div>
 
-          {/* QR Code and Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-4">
-            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border shadow-sm">
+          {/*
+            The action comes first on a phone and the QR second.
+
+            A QR on the screen you are holding cannot be scanned by that same
+            phone, so shipping it above the button meant ~450px of dead space
+            between choosing an amount and being able to pay. It is still here —
+            people do screenshot it, or scan it from a second device — just
+            after the thing that actually works on the device in your hand.
+          */}
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:justify-center sm:gap-8 sm:pt-2">
+            <div className="order-1 w-full space-y-2 text-center sm:order-2 sm:max-w-xs sm:space-y-3 sm:pt-6 sm:text-left">
+              <Button
+                className="w-full rounded-xl bg-success py-5 font-semibold text-white shadow-sm hover:bg-success"
+                render={
+                  <a href={upiUrl} target="_blank" rel="noopener noreferrer" />
+                }
+              >
+                <Zap aria-hidden="true" className="mr-2 size-4" />
+                Pay ₹{currentAmount.toLocaleString('en-IN')}
+              </Button>
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Opens your UPI app with ₹{currentAmount.toLocaleString('en-IN')}{' '}
+                already filled in. ✅
+              </p>
+              {/*
+                Pasting the id by hand is the fallback for anyone whose UPI app
+                does not open from a link, so it belongs with the other fallback
+                rather than above the button that works.
+              */}
+              <div className="flex items-center justify-between gap-2 rounded-xl border bg-muted/60 px-3 py-1.5">
+                <span className="truncate font-mono text-xs font-medium">
+                  {SUPPORT_CONFIG.upiId}
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={copyUpiId}
+                  className="h-7 shrink-0 px-2 text-xs"
+                >
+                  {copiedUpi ? (
+                    <Check
+                      aria-hidden="true"
+                      className="mr-1 size-3.5 text-success"
+                    />
+                  ) : (
+                    <Copy aria-hidden="true" className="mr-1 size-3.5" />
+                  )}
+                  {copiedUpi ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
+            </div>
+
+            <div className="order-2 flex flex-col items-center rounded-2xl border bg-white p-3 shadow-sm sm:order-1 sm:p-4">
               {qrSvg ? (
                 <div
-                  className="size-52 rounded-lg flex items-center justify-center [&>svg]:size-full"
+                  className="flex size-40 items-center justify-center rounded-lg [&>svg]:size-full sm:size-52"
                   dangerouslySetInnerHTML={{ __html: qrSvg }}
                 />
               ) : (
-                <div className="size-52 flex items-center justify-center bg-muted rounded-lg animate-pulse text-xs text-muted-foreground">
+                <div className="flex size-40 animate-pulse items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground sm:size-52">
                   Generating QR...
                 </div>
               )}
@@ -277,174 +315,144 @@ export function SupportDualView() {
                 <span className="text-xs font-bold text-gray-800">
                   ₹{currentAmount.toLocaleString('en-IN')}
                 </span>
-                <span className="text-[10px] text-gray-500 block">
-                  Scan to Pay
+                <span className="block text-[10px] text-gray-500">
+                  Scan from another device
                 </span>
-              </div>
-            </div>
-
-            <div className="space-y-4 text-center sm:text-left max-w-xs">
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">On your Mobile Phone?</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Tap below to directly launch your default UPI app with the
-                  exact amount prefilled.
-                </p>
-              </div>
-
-              <Button
-                className="w-full bg-success hover:bg-success text-white font-semibold py-5 rounded-xl shadow-sm"
-                render={
-                  <a href={upiUrl} target="_blank" rel="noopener noreferrer" />
-                }
-              >
-                <Zap className="mr-2 size-4" />
-                Pay ₹{currentAmount.toLocaleString('en-IN')} via UPI App
-              </Button>
-
-              <div className="text-[11px] text-muted-foreground flex items-center justify-center sm:justify-start gap-1.5 pt-1">
-                <Check className="size-3.5 text-success" />
-                Goes to keeping these tools running
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Tab 2: International GitHub Sponsors */}
+      {/* Tab 2: Buy Me a Coffee (international) */}
       {activeTab === 'international' && (
-        <div className="space-y-6">
-          <div className="rounded-2xl border bg-card p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
-              <div>
-                <div className="flex items-center gap-2 text-success font-semibold text-sm">
-                  <ShieldCheck className="size-4" />
-                  Buy Me a Coffee
-                </div>
-                <h3 className="text-xl font-bold mt-1">
-                  Global support, one coffee at a time
-                </h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Supports Apple Pay, Google Pay, Visa, MasterCard, Amex &amp;
-                  PayPal worldwide.
-                </p>
+        <div className="rounded-2xl border bg-card p-4 sm:p-8">
+          <div className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-6">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-success sm:text-sm">
+                <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
+                Open now · worldwide
               </div>
-              <div className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
-                  <ShieldCheck className="size-3.5" />
-                  Open now
-                </span>
-              </div>
+              <h3 className="mt-1 text-lg font-bold sm:text-xl">
+                Buy me a coffee ☕
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+                Apple Pay, Google Pay, cards and PayPal. 💳
+              </p>
             </div>
+          </div>
 
-            {/* Status notice */}
-            <div className="mt-6 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-start gap-2.5">
-                <Star className="size-4 shrink-0 text-muted-foreground mt-0.5" />
+          {/* Tiers Grid */}
+          <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-3 sm:gap-4">
+            {SUPPORT_TIERS.map((tier) => (
+              <div
+                key={tier.name}
+                className={`flex flex-col justify-between rounded-xl border p-4 sm:p-5 ${
+                  tier.popular
+                    ? 'border-border bg-muted/20 shadow-sm'
+                    : 'bg-card'
+                }`}
+              >
                 <div>
-                  <p className="font-semibold text-foreground">
-                    Starring the repository is free
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h4 className="text-sm font-semibold sm:text-base">
+                      {tier.name}
+                    </h4>
+                    <span className="font-mono text-xl font-bold sm:hidden">
+                      {tier.amountUsd}
+                    </span>
+                  </div>
+                  <div className="mt-2 hidden font-mono text-2xl font-bold sm:block">
+                    {tier.amountUsd}
+                    <span className="text-xs font-normal text-muted-foreground">
+                      {' '}
+                      / one-time
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground sm:mt-2">
+                    {tier.description}
                   </p>
-                  <p className="mt-0.5 text-muted-foreground">
-                    It costs nothing and helps other people find the project,
-                    which is worth as much as a coffee.
-                  </p>
+
+                  {/*
+                    The commitments, in full, from `sm` up. On a phone they are
+                    replaced by the single line under this grid: the same three
+                    promises repeated on all three cards is nine lines of text
+                    standing between someone and a payment button.
+                  */}
+                  <ul className="mt-4 hidden space-y-2 border-t pt-4 text-xs text-muted-foreground sm:block">
+                    {tier.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <Check
+                          aria-hidden="true"
+                          className="mt-0.5 size-3.5 shrink-0 text-success"
+                        />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-              <Button
-                size="sm"
-                className="shrink-0 text-xs font-semibold"
-                render={
+
+                <div className="mt-3 sm:mt-6">
                   <a
-                    href={SUPPORT_CONFIG.githubRepoUrl}
+                    href={getBuyMeACoffeeUrl(
+                      coffeesFor(tier.usdValue) ?? undefined,
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
-                  />
-                }
-              >
-                <Star className="mr-1.5 size-3.5 fill-current" />
-                Star on GitHub
-                <ExternalLink className="ml-1.5 size-3" />
-              </Button>
-            </div>
-
-            {/* Tiers Grid */}
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {SUPPORT_TIERS.map((tier) => (
-                <div
-                  key={tier.name}
-                  className={`flex flex-col justify-between rounded-xl border p-5 ${
-                    tier.popular
-                      ? 'border-border bg-muted/20 shadow-sm'
-                      : 'bg-card'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-base">{tier.name}</h4>
-                      {tier.popular && (
-                        <span className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-bold text-background">
-                          Popular
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-2 text-2xl font-bold font-mono">
-                      {tier.amountUsd}
-                      <span className="text-xs font-normal text-muted-foreground">
-                        {' '}
-                        / one-time
-                      </span>
-                    </div>
-                    <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                      {tier.description}
-                    </p>
-
-                    <ul className="mt-4 space-y-2 border-t pt-4 text-xs text-muted-foreground">
-                      {tier.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <Check className="size-3.5 text-success shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="mt-6">
-                    <a
-                      href={getBuyMeACoffeeUrl(
-                        coffeesFor(tier.usdValue) ?? undefined,
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="focus-ring inline-flex h-9 w-full items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
-                    >
-                      Send {tier.amountUsd} on Buy Me a Coffee
-                    </a>
-                  </div>
+                    className="focus-ring inline-flex h-9 w-full items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
+                  >
+                    Send {tier.amountUsd} ☕
+                  </a>
                 </div>
-              ))}
-            </div>
-
-            {/* Custom Amount CTA */}
-            <div className="mt-6 rounded-xl bg-muted/40 border p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-              <div>
-                <h5 className="text-sm font-semibold">
-                  Want to contribute a custom amount?
-                </h5>
-                <p className="text-xs text-muted-foreground">
-                  Pick any number of coffees, or set up a monthly membership, on
-                  the Buy Me a Coffee page.
-                </p>
               </div>
-              <a
-                href={getBuyMeACoffeeUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="focus-ring inline-flex h-9 shrink-0 items-center justify-center rounded-lg border px-3 text-xs font-semibold transition-colors hover:bg-muted"
-              >
-                Choose an amount
-              </a>
-            </div>
+            ))}
+          </div>
+
+          <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground sm:hidden">
+            ☕ $5 = one coffee · no ads, no trackers · nothing in return
+          </p>
+
+          {/* Custom Amount CTA */}
+          <div className="mt-4 flex flex-col items-center justify-between gap-3 rounded-xl border bg-muted/40 p-4 text-center sm:mt-6 sm:flex-row sm:gap-4 sm:text-left">
+            <p className="text-xs text-muted-foreground sm:text-sm">
+              Want a different amount, or monthly? 💚
+            </p>
+            <a
+              href={getBuyMeACoffeeUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="focus-ring inline-flex h-9 w-full shrink-0 items-center justify-center rounded-lg border bg-card px-3 text-xs font-semibold transition-colors hover:bg-muted sm:w-auto"
+            >
+              Choose an amount
+            </a>
+          </div>
+
+          {/* Free, works today, and not a payment. */}
+          <div className="mt-3 flex flex-col items-start justify-between gap-3 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground sm:mt-4 sm:flex-row sm:items-center">
+            <p>
+              <span className="font-semibold text-foreground">
+                ⭐ Or star the repo — it's free
+              </span>{' '}
+              and helps other people find it.
+            </p>
+            <Button
+              size="sm"
+              className="w-full shrink-0 text-xs font-semibold sm:w-auto"
+              render={
+                <a
+                  href={SUPPORT_CONFIG.githubRepoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+            >
+              <Star
+                aria-hidden="true"
+                className="mr-1.5 size-3.5 fill-current"
+              />
+              Star on GitHub
+              <ExternalLink aria-hidden="true" className="ml-1.5 size-3" />
+            </Button>
           </div>
         </div>
       )}
@@ -459,81 +467,83 @@ export function SupportDualView() {
         is free. See `GITHUB_SPONSORS_PENDING`.
       */}
       {activeTab === 'github' && (
-        <div className="rounded-2xl border bg-card p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
-            <div>
-              <div className="flex items-center gap-2 text-muted-foreground font-semibold text-sm">
-                <GitBranch className="size-4" />
+        <div className="rounded-2xl border bg-card p-4 sm:p-8">
+          <div className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-6">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground sm:text-sm">
+                <GitBranch aria-hidden="true" className="size-4 shrink-0" />
                 {GITHUB_SPONSORS_PENDING.name}
               </div>
-              <h3 className="text-xl font-bold mt-1">Not open yet</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              <h3 className="mt-1 text-lg font-bold sm:text-xl">
+                Not open yet ⏳
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 {GITHUB_SPONSORS_PENDING.description}
               </p>
             </div>
             <div className="shrink-0">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
-                <Clock className="size-3.5" />
+                <Clock aria-hidden="true" className="size-3.5" />
                 {GITHUB_SPONSORS_PENDING.status}
               </span>
             </div>
           </div>
 
           {/* The two channels that can actually take money right now. */}
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-2 sm:mt-6 sm:grid-cols-2 sm:gap-3">
             {upiReady && (
               <button
                 type="button"
                 onClick={() => setActiveTab('upi')}
-                className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-4 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99]"
+                className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-3.5 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99] sm:p-4"
               >
                 <span>
                   <span className="flex items-center gap-2 text-sm font-semibold">
-                    <span className="text-base">🇮🇳</span>
+                    <span aria-hidden="true">🇮🇳</span>
                     Pay by UPI
                   </span>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
                     Any UPI app, in India. Open now.
                   </span>
                 </span>
-                <Zap className="size-4 shrink-0 text-success" />
+                <Zap
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-success"
+                />
               </button>
             )}
             <button
               type="button"
               onClick={() => setActiveTab('international')}
-              className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-4 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99]"
+              className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-3.5 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99] sm:p-4"
             >
               <span>
                 <span className="flex items-center gap-2 text-sm font-semibold">
-                  <Globe className="size-4" />
+                  <span aria-hidden="true">☕</span>
                   Buy Me a Coffee
                 </span>
                 <span className="mt-0.5 block text-xs text-muted-foreground">
-                  Cards, Apple Pay, Google Pay, PayPal. Open now.
+                  Cards, Apple Pay, Google Pay, PayPal.
                 </span>
               </span>
-              <Zap className="size-4 shrink-0 text-success" />
+              <Zap
+                aria-hidden="true"
+                className="size-4 shrink-0 text-success"
+              />
             </button>
           </div>
 
           {/* Free, works today, and not a payment. */}
-          <div className="mt-6 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-start gap-2.5">
-              <Star className="size-4 shrink-0 text-muted-foreground mt-0.5" />
-              <div>
-                <p className="font-semibold text-foreground">
-                  Starring the repository is free
-                </p>
-                <p className="mt-0.5">
-                  It costs nothing and helps other people find the project,
-                  which is worth as much as a coffee.
-                </p>
-              </div>
-            </div>
+          <div className="mt-3 flex flex-col items-start justify-between gap-3 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground sm:mt-6 sm:flex-row sm:items-center">
+            <p>
+              <span className="font-semibold text-foreground">
+                ⭐ Or star the repo — it's free
+              </span>{' '}
+              and helps other people find it.
+            </p>
             <Button
               size="sm"
-              className="shrink-0 text-xs font-semibold"
+              className="w-full shrink-0 text-xs font-semibold sm:w-auto"
               render={
                 <a
                   href={SUPPORT_CONFIG.githubRepoUrl}
@@ -542,9 +552,12 @@ export function SupportDualView() {
                 />
               }
             >
-              <Star className="mr-1.5 size-3.5 fill-current" />
+              <Star
+                aria-hidden="true"
+                className="mr-1.5 size-3.5 fill-current"
+              />
               Star on GitHub
-              <ExternalLink className="ml-1.5 size-3" />
+              <ExternalLink aria-hidden="true" className="ml-1.5 size-3" />
             </Button>
           </div>
         </div>

@@ -1,12 +1,6 @@
 /* oxlint-disable jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label, jsx-a11y/anchor-is-valid, react/no-unescaped-entities */
 import type { Metadata } from 'next';
-import {
-  ArrowLeft,
-  Cpu,
-  HeartHandshake,
-  LockKeyhole,
-  ShieldCheck,
-} from 'lucide-react';
+import { ArrowLeft, HeartHandshake, ShieldCheck } from 'lucide-react';
 import { SupportDualView } from '@/components/support-dual-view';
 
 export const metadata: Metadata = {
@@ -17,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function SupportPage() {
   return (
-    <main className="min-h-screen bg-muted/30 px-4 py-10 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-muted/30 px-4 py-5 sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-4xl">
-        <nav className="mb-6">
+        <nav className="mb-3 sm:mb-6">
           <a
             href="/"
             className="focus-ring inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
@@ -29,74 +23,72 @@ export default function SupportPage() {
           </a>
         </nav>
 
-        {/* Header */}
-        <section className="rounded-2xl border bg-card p-6 sm:p-10 mb-8">
+        {/*
+          Header, deliberately short.
+
+          It used to carry two paragraphs — 76 words — before the first payment
+          control. Measured at 375px that pushed the pay button to y=1805 on an
+          812px screen: two and a bit screens of scrolling to give money on a
+          page whose only job is to make that easy. The prose was not wrong, so
+          it was moved below `SupportDualView` rather than deleted.
+        */}
+        <section className="rounded-2xl border bg-card p-5 sm:p-8 mb-4 sm:mb-6">
           <div className="flex items-center gap-3">
-            <span className="grid size-12 place-items-center rounded-xl border bg-muted">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl border bg-muted sm:size-12">
               <HeartHandshake
                 aria-hidden="true"
-                className="size-6 text-foreground"
+                className="size-5 text-foreground sm:size-6"
               />
             </span>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Independent & Open Source
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Independent &amp; open source
               </p>
-              <h1 className="mt-1 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Keep useful tools free for everyone
+              <h1 className="mt-0.5 text-2xl font-semibold tracking-[-0.04em] sm:text-4xl">
+                Keep these tools free 🙌
               </h1>
             </div>
           </div>
 
-          <p className="mt-5 text-base leading-7 text-muted-foreground sm:text-lg">
-            These tools are 100% free with no ads, no third-party trackers, no
-            paywalls, and no corporate investors. Every single tool runs
-            directly inside your browser tab on your own device, using
-            JavaScript and Web Workers, and WebAssembly for a few tools that
-            need a local model. Your files and inputs never touch a server.
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:mt-4 sm:text-base sm:leading-7">
+            No ads, no signup, no trackers. 🔒 Chip in only if a tool here saved
+            you time. 💚
           </p>
-
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            If our fast offline utilities saved you valuable time today,
-            consider supporting future development so we can keep adding more
-            daily tools.
-          </p>
-
-          <div className="mt-6 flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground">
-            <span className="flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1">
-              <ShieldCheck
-                aria-hidden="true"
-                className="size-3.5 text-success"
-              />
-              Runs in your browser
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1">
-              <Cpu aria-hidden="true" className="size-3.5" />
-              100% Client-Side Compute
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1">
-              <LockKeyhole aria-hidden="true" className="size-3.5" />
-              Free, with no signup
-            </span>
-          </div>
         </section>
 
         {/* UPI (India) and Buy Me a Coffee (international) take money today;
             GitHub Sponsors is shown as pending and takes none. */}
-        <section className="mb-8">
+        <section className="mb-4 sm:mb-6">
           <SupportDualView />
         </section>
 
+        {/* The long version, now that the options are out of its way. */}
+        <section className="rounded-xl border bg-card p-5 text-sm leading-6 text-muted-foreground sm:p-6">
+          <h2 className="text-base font-semibold text-foreground">
+            Why these tools are free
+          </h2>
+          <p className="mt-2">
+            There are no ads, no third-party trackers, no paywalls and no
+            corporate investors. Every tool runs directly inside your browser
+            tab on your own device, using JavaScript and Web Workers, and
+            WebAssembly for a few tools that need a local model. Your files and
+            inputs never touch a server.
+          </p>
+          <p className="mt-2">
+            Support keeps the domain, the hosting and the time to build the next
+            tool. It is the only thing paying for any of it.
+          </p>
+        </section>
+
         {/* Privacy Boundary Guarantee */}
-        <footer className="rounded-xl border bg-muted/40 p-5 text-xs leading-6 text-muted-foreground">
+        <footer className="mt-4 rounded-xl border bg-muted/40 p-4 text-xs leading-6 text-muted-foreground sm:p-5">
           <p className="flex items-center gap-2 font-semibold text-foreground">
             <ShieldCheck aria-hidden="true" className="size-4 text-success" />
-            Strict Privacy Boundary
+            Strict privacy boundary
           </p>
           <p className="mt-1">
-            Support is 100% voluntary. All utilities remain completely free
-            forever. Your filenames, inputs, and compute receipts are never
-            attached to any support transaction.
+            Support is 100% voluntary and every tool stays free. Your filenames,
+            inputs and compute receipts are never attached to a payment.
           </p>
         </footer>
       </div>
