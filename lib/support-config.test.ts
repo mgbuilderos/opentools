@@ -42,6 +42,18 @@ describe('support config', () => {
     }
   });
 
+  it('points Buy Me a Coffee at a real page, not a placeholder', () => {
+    const url = SUPPORT_CONFIG.buyMeACoffeeUrl;
+    expect(url).toMatch(
+      /^https:\/\/(?:www\.)?buymeacoffee\.com\/[A-Za-z0-9_-]+$/u,
+    );
+    // A whole number of coffees is appended as a query, and nothing else is.
+    expect(getBuyMeACoffeeUrl(3)).toBe(`${url}?coffees=3`);
+    expect(getBuyMeACoffeeUrl(0)).toBe(url);
+    expect(getBuyMeACoffeeUrl(1.5)).toBe(url);
+    expect(getBuyMeACoffeeUrl(-2)).toBe(url);
+  });
+
   it('lists only channels that can actually receive money', () => {
     const channels = supportChannels();
     expect(channels.includes('upi')).toBe(Boolean(SUPPORT_CONFIG.upiId));
