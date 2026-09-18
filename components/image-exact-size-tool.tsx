@@ -16,6 +16,11 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import {
+  PORTAL_PRESETS,
+  findPreset,
+  type PortalPreset,
+} from '@/lib/portal-presets';
 import { publicTools } from '@/lib/tools/catalog';
 import {
   QUALITY_FLOOR,
@@ -37,6 +42,24 @@ import {
   type FitResult,
   type KbUnit,
 } from '@/lib/tools/exact-size';
+
+/**
+ * Whole KB at or below a preset's ceiling, expressed in whatever a KB means to
+ * this user. Flooring means the box never asks for more than the portal allows
+ * under either reading.
+ */
+function presetKbFor(preset: PortalPreset, unit: KbUnit) {
+  return String(Math.floor(preset.limitBytes / unit));
+}
+
+/** The host of a citation, so the destination is visible before the click. */
+function sourceHost(url: string) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return 'the portal';
+  }
+}
 
 type SourceImage = {
   id: string;
@@ -146,6 +169,7 @@ export function ImageExactSizeTool() {
   const [results, setResults] = useState<ExactResult[]>([]);
   const [lastRequest, setLastRequest] = useState<ExactSizeRequest | null>(null);
   const [maxKb, setMaxKb] = useState('50');
+  const [presetId, setPresetId] = useState('');
   const [minKb, setMinKb] = useState('');
   const [kbUnit, setKbUnit] = useState<KbUnit>(1024);
   const [width, setWidth] = useState('');
@@ -396,6 +420,38 @@ export function ImageExactSizeTool() {
       setter(value);
     };
 
+  const selectedPreset = presetId === '' ? null : findPreset(presetId);
+
+  const applyPreset = (preset: PortalPreset) => {
+    clearResults();
+    setPresetId(preset.id);
+    setMaxKb(presetKbFor(preset, kbUnit));
+  };
+
+  /**
+   * Typing over the number drops the attribution with it: the box no longer
+   * holds the figure the source states, so naming that source would be a
+   * claim about a number nobody published.
+   */
+  const maxKbEdited = (value: string) => {
+    clearResults();
+    setPresetId('');
+    setMaxKb(value);
+  };
+
+  /**
+   * A portal's ceiling is a byte count, so changing what KB means re-expresses
+   * the same limit rather than invalidating it. The attribution survives.
+   */
+  const kbUnitChanged = (unit: KbUnit) => {
+    clearResults();
+    setKbUnit(unit);
+    const preset = presetId === '' ? null : findPreset(presetId);
+    if (preset !== null) {
+      setMaxKb(presetKbFor(preset, unit));
+    }
+  };
+
   const requestedWidth = optionalNumber(width);
   const requestedHeight = optionalNumber(height);
   const shapeMayDiffer =
@@ -547,6 +603,41 @@ export function ImageExactSizeTool() {
                 <h2 id={`${formId}-settings`} className="sr-only">
                   Target settings
                 </h2>
+                <fieldset className="mb-3 flex flex-wrap items-center gap-2">
+                  <legend className="sr-only">Published upload limits</legend>
+                  <span aria-hidden="true" className="text-xs font-semibold">
+                    Known limits
+                  </span>
+                  {PORTAL_PRESETS.map((preset) => (
+                    <Button
+                      key={preset.id}
+                      type="button"
+                      size="sm"
+                      variant={preset.id === presetId ? 'secondary' : 'outline'}
+                      aria-pressed={preset.id === presetId}
+                      disabled={busy}
+                      onClick={() => applyPreset(preset)}
+                    >
+                      {preset.portal} · {formatKb(preset.limitBytes, kbUnit)}
+                    </Button>
+                  ))}
+                </fieldset>
+                {selectedPreset === null ? null : (
+                  <p className="mb-3 text-xs leading-5 text-muted-foreground">
+                    {selectedPreset.portal}: {selectedPreset.field}.{' '}
+                    {selectedPreset.note} Read from{' '}
+                    <a
+                      href={selectedPreset.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      {sourceHost(selectedPreset.sourceUrl)}
+                    </a>{' '}
+                    on {selectedPreset.checkedOn}. Portals change limits without
+                    announcing it — check yours before you rely on this.
+                  </p>
+                )}
                 <div className="grid grid-cols-2 gap-3">
                   <label className="text-xs font-semibold">
                     Maximum size (KB)
@@ -558,9 +649,7 @@ export function ImageExactSizeTool() {
                       required
                       value={maxKb}
                       disabled={busy}
-                      onChange={(event) =>
-                        changed(setMaxKb)(event.target.value)
-                      }
+                      onChange={(event) => maxKbEdited(event.target.value)}
                       className={inputClass}
                     />
                   </label>
@@ -586,7 +675,7 @@ export function ImageExactSizeTool() {
                     value={kbUnit}
                     disabled={busy}
                     onChange={(event) =>
-                      changed(setKbUnit)(Number(event.target.value) as KbUnit)
+                      kbUnitChanged(Number(event.target.value) as KbUnit)
                     }
                     className={inputClass}
                   >

@@ -163,4 +163,48 @@ test.describe('Resize image to exact KB', () => {
     expect(readDpi(new Uint8Array(saved.bytes))).toBe(200);
     expect(errors, `page errors: ${errors.join(' | ')}`).toEqual([]);
   });
+
+  /**
+   * Owner decision 16: a preset may carry a portal's number only alongside the
+   * page it came from and the date it was read, and only as a starting point
+   * the user can type over. These assert the number the box ends up holding,
+   * not the label on the button.
+   */
+  test('fills the target from a published limit, cited and editable', async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await page.goto('/image/exact-size');
+
+    const maximum = page.getByLabel('Maximum size (KB)');
+    const uscis = page.getByRole('button', { name: /^USCIS/u });
+
+    // USCIS publishes one 12MB ceiling. Read as decimal MB and floored to
+    // whole KiB, that is 11,718 KB — and 11,718 KiB is under 12,000,000 bytes
+    // on either reading of "MB".
+    await uscis.click();
+    await expect(maximum).toHaveValue('11718');
+    expect(11_718 * 1024).toBeLessThanOrEqual(12 * 1_000_000);
+    await expect(uscis).toHaveAttribute('aria-pressed', 'true');
+
+    const citation = page.getByText(/Read from www\.uscis\.gov on 2026-/u);
+    await expect(citation).toBeVisible();
+    await expect(
+      citation.getByRole('link', { name: 'www.uscis.gov' }),
+    ).toHaveAttribute('rel', 'noopener noreferrer');
+
+    // The same ceiling, re-expressed: 1 KB = 1,000 bytes keeps the citation.
+    await page.getByLabel('What 1 KB means').selectOption('1000');
+    await expect(maximum).toHaveValue('11999');
+    expect(11_999 * 1000).toBeLessThanOrEqual(12 * 1_000_000);
+    await expect(citation).toBeVisible();
+
+    // Typing over the number drops the attribution with it.
+    await maximum.fill('40');
+    await expect(citation).toBeHidden();
+    await expect(uscis).toHaveAttribute('aria-pressed', 'false');
+    await expect(maximum).toHaveValue('40');
+
+    expect(errors, `page errors: ${errors.join(' | ')}`).toEqual([]);
+  });
 });
