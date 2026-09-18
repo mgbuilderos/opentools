@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Can this page upload your file?",
+  "version": "0.1.0",
+  "description": "Tells you whether the page you are on is capable of transmitting the files you give it. Reads the site's own security policy \u2014 nothing is sent anywhere.",
+  "permissions": [
+    "webRequest",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Can this page upload your file?",
+    "default_icon": {
+      "32": "icons/icon-32.png",
+      "192": "icons/icon-192.png"
+    }
+  },
+  "icons": {
+    "32": "icons/icon-32.png",
+    "192": "icons/icon-192.png"
+  }
+}
