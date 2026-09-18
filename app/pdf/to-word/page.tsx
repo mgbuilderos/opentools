@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { PdfToWordTool } from '@/components/pdf-to-word-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'PDF to Word without uploading it',
   description:

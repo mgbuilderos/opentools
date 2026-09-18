@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { HomeWorkspace } from '@/components/home-workspace';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'OpenTools — 100% Free & Private Browser Utilities',
   description:

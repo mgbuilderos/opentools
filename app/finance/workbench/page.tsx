@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { FinanceBusinessWorkbenchTool } from '@/components/finance-business-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Finance & Business Scenario Workbench',
   description:

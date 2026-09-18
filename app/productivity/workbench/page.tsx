@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { ProductivityWorkbenchTool } from '@/components/productivity-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Planning & Productivity Workbench',
   description:

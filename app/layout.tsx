@@ -11,7 +11,9 @@ const schemaContext = `${httpsScheme}schema.org`;
  * also gives responses a real `s-maxage` policy, replacing the `no-store`
  * that stopped Cloudflare caching HTML at the edge.
  */
-export const revalidate = 86400;
+// Caching is opted into per page, not set here for all 649 of them. See
+// docs/CACHE_BUDGET.md: the free Cloudflare KV allowance is ~1,000 writes a
+// day and a blanket setting spends ~1,298 of them without ever serving a hit.
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),

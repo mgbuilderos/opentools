@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { QrBarcodeWorkbenchTool } from '@/components/qr-barcode-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'QR Code & Barcode Generator Workbench',
   description:

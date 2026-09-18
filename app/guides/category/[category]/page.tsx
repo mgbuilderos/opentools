@@ -18,6 +18,8 @@ import {
 } from '@/lib/seo/internal-linking-graph';
 import { getLiveToolsByCategory } from '@/lib/seo/live-tools';
 
+export const revalidate = 86400;
+
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
 }

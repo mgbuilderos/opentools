@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { FileWorkbenchTool } from '@/components/file-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Private File Workbench',
   description:

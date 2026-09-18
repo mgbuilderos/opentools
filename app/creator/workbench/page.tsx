@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { CreatorWorkbenchTool } from '@/components/creator-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Creator & Social Workbench',
   description:

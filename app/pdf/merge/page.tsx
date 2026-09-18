@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { PdfMergeTool } from '@/components/pdf-merge-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Merge PDF',
   description:

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { WebWorkbenchTool } from '@/components/web-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Web & SEO Workbench',
   description:

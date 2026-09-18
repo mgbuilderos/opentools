@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { ImagesToPdfTool } from '@/components/images-to-pdf-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Images to PDF',
   description:

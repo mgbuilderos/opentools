@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { Mp3ToolkitTool } from '@/components/mp3-toolkit-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'MP3 Cutter, Joiner and Tag Editor',
   description:

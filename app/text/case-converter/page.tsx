@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { ToolWorkspace } from '@/components/tool-workspace';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Text Case Converter',
   description:

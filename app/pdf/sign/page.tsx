@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { PdfSignTool } from '@/components/pdf-sign-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Sign and fill a PDF without uploading it',
   description:

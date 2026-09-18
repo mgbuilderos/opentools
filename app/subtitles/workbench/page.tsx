@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { SubtitleWorkbenchTool } from '@/components/subtitle-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Subtitle Converter, Sync and Caption Checker',
   description:

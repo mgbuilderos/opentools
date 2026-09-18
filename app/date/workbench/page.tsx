@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { DateWorkbenchTool } from '@/components/date-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Date & Time Workbench',
   description:

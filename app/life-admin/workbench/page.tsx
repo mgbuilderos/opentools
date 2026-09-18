@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { LifeAdminWorkbenchTool } from '@/components/life-admin-workbench-tool';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'India & Life-Admin Workbench',
   description:

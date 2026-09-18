@@ -16,6 +16,8 @@ const httpsScheme = ['https:', '//'].join('');
 const httpsOrigin = `${httpsScheme}getopentools.com`;
 const schemaContext = `${httpsScheme}schema.org`;
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Tool Guides — every OpenTools utility, step by step',
   description:

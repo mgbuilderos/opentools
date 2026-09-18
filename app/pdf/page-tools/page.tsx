@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 
 import { PdfPageTools } from '@/components/pdf-page-tools';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Organize and Edit PDF Pages',
   description:
