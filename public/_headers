@@ -7,6 +7,19 @@
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 
+# Build output is content-addressed: every filename under here carries a content
+# hash (`framework-DTZGTDtF.js`, `layout.BusCenFg.css`) or sits inside a
+# build-id directory that changes on every build. A new build produces new
+# names, so a cached copy can never go stale — yet these were being served with
+# `max-age=0, must-revalidate`, which makes the browser re-check roughly fifteen
+# files on every single page view. Measured 2026-09-18 on the live site.
+#
+# Verified before applying: all 69 files under this prefix are hashed or
+# build-scoped; the only two unhashed files, `_buildManifest.js` and
+# `_ssgManifest.js`, live inside the build-id directory.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /image/background-remover
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
