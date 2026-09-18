@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -193,5 +193,57 @@ describe('claims the build cannot back', () => {
         true,
       );
     }
+  });
+});
+
+/**
+ * No competitor is named in shipped code, ever.
+ *
+ * Owner decision, 2026-09-18: "let us not take any competitor name, hardcode it
+ * never we will do it in the tool." A measurement script briefly shipped a list
+ * of rival products as its default targets. Two reasons that was wrong, and the
+ * second is the one that matters commercially:
+ *
+ * 1. A claim about a named company baked into a repository goes stale the
+ *    moment they change a header, and a stale claim about someone else is the
+ *    one unrecoverable mistake here.
+ * 2. It reads as an attack from a rival rather than as a measurement. A reader
+ *    who runs the check against a site they chose reaches the conclusion
+ *    themselves, which is worth far more than being told it.
+ *
+ * File-format references are not competitor mentions — `xmlns:adobe` in SVG
+ * cleanup and `ns.adobe.com/xap/` in XMP parsing are specification names, and
+ * removing them would break real tools.
+ */
+describe('no competitor is named in shipped code', () => {
+  const brands =
+    /\b(smallpdf|ilovepdf|pdf24|tinypng|sejda|pdf2go|stirlingpdf|acrobat)\b/iu;
+
+  // Declared separately rather than inline: a named function expression handed
+  // to flatMap is called with a `this` of undefined, which TypeScript rejects.
+  const walk = (dir: string): string[] => {
+    const here = path.join(appRoot, dir);
+    if (!existsSync(here)) return [];
+    return readdirSync(here, { withFileTypes: true }).flatMap((entry) => {
+      const next = path.join(dir, entry.name);
+      if (entry.isDirectory()) return walk(next);
+      return /\.(tsx?|mjs)$/u.test(entry.name) && !/\.test\./u.test(entry.name)
+        ? [next]
+        : [];
+    });
+  };
+  const files = ['app', 'components', 'scripts', 'workers'].flatMap(walk);
+
+  it('scans a meaningful number of files', () => {
+    expect(files.length).toBeGreaterThan(20);
+  });
+
+  it.each(files)('%s names no competitor', (relative) => {
+    const source = readFileSync(path.join(appRoot, relative), 'utf8');
+    const hit = source.match(brands);
+    expect(
+      hit?.[0],
+      `${relative} hardcodes "${hit?.[0]}" — measure by argument, never by a baked-in list`,
+    ).toBeUndefined();
   });
 });

@@ -2,15 +2,16 @@
 /**
  * Measure whether a page is *capable* of transmitting what you give it.
  *
- * This is the engine behind the comparison. It exists as a script rather than a
- * hand-written table for one reason: a table of claims about named companies
- * goes stale and cannot be checked, while a script can be re-run by a sceptic —
- * including by the companies themselves — and will disagree with us out loud if
- * we ever get it wrong.
+ * A script rather than a written comparison, for one reason: a table of claims
+ * about named companies goes stale and cannot be checked, while a script can be
+ * re-run by anyone — including by the companies themselves — and will disagree
+ * with us out loud if we ever get it wrong. It names no one but us.
  *
- *   node scripts/measure-csp.mjs                 # the default comparison set
- *   node scripts/measure-csp.mjs https://x.com   # any URL
- *   node scripts/measure-csp.mjs --json          # machine-readable
+ *   node scripts/measure-csp.mjs https://any.site   # measure whatever you like
+ *   node scripts/measure-csp.mjs --json             # machine-readable
+ *
+ * With no arguments it measures only this site. It ships no list of other
+ * people's products — see the note on DEFAULT_TARGETS.
  *
  * What it reports, and the distinction that matters:
  *
@@ -34,17 +35,21 @@
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36';
 
-/** Tool pages, not marketing home pages — the CSP can differ between them. */
-const DEFAULT_TARGETS = [
-  'https://getopentools.com/pdf/compress',
-  'https://smallpdf.com/compress-pdf',
-  'https://www.ilovepdf.com/compress_pdf',
-  'https://www.pdf24.org/en/',
-  'https://tinypng.com/',
-  'https://www.sejda.com/compress-pdf',
-  'https://www.pdf2go.com/compress-pdf',
-  'https://stirlingpdf.io/',
-];
+/**
+ * Only our own site is named here, and that is a rule rather than an oversight.
+ *
+ * Hardcoding competitors would bake a claim about a named company into the
+ * repository, where it goes stale the moment they change a header — and a
+ * stale claim about someone else is the one unrecoverable mistake this tool
+ * could make. It also makes the output read as an attack from a rival rather
+ * than as a measurement, which is weaker: a reader who runs the check on a
+ * site they chose reaches the conclusion themselves, and that is worth far
+ * more than being told.
+ *
+ * Pass whatever URLs you want to measure. `lib/seo/live-tools.test.ts` fails
+ * the build if a competitor name reappears in this file.
+ */
+const DEFAULT_TARGETS = ['https://getopentools.com/pdf/compress'];
 
 async function measure(url) {
   const started = Date.now();
