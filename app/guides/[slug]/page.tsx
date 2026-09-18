@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cacheLife } from 'next/cache';
 import {
   ArrowRight,
   CheckCircle2,
@@ -12,7 +13,7 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getGuideBySlug } from '@/lib/seo/guide-content';
-import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
+import { CACHED_GUIDE_SLUGS, isCachedGuide } from '@/lib/seo/cached-guides';
 
 interface GuidePageProps {
   params: Promise<{ slug: string }>;
@@ -21,9 +22,7 @@ interface GuidePageProps {
 const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 
 export async function generateStaticParams() {
-  return LIVE_TOOL_CATALOG.filter((t) => t.releaseWave === 'P0' || t.rank <= 5)
-    .slice(0, 50)
-    .map((tool) => ({ slug: tool.slug }));
+  return CACHED_GUIDE_SLUGS.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -53,6 +52,12 @@ export default async function GuidePage({ params }: GuidePageProps) {
   const { slug } = await params;
   const guide = getGuideBySlug(slug);
   if (!guide) notFound();
+
+  // Opt this one page into the KV cache, per request, rather than declaring
+  // `export const revalidate` — which would apply to all 550 guides and spend
+  // more than a day's write allowance in a single crawl. See
+  // `lib/seo/cached-guides.ts` for why the list is what it is.
+  if (isCachedGuide(slug)) cacheLife({ revalidate: 86400, expire: 86400 });
 
   const categoryPillarHref =
     guide.categoryPillar?.href ??
