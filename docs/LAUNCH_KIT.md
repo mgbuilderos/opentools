@@ -20,7 +20,7 @@ in an afternoon, the site goes dark mid-launch, and HN traffic does not return.
 | :-- | :--- | :--- | :--- |
 | 1 | **AlternativeTo** | Submit and forget. **Free queue is months long** — see below. | none |
 | 2 | **r/degoogle**, **r/pdf** | Small, forgiving, real feedback. A capacity test. | none |
-| 3 | **r/privacy** | Bigger. Watch the Cloudflare dashboard during. | survived #2 |
+| 3 | **r/SideProject**, **r/opensource**, **r/coolgithubprojects** | Permit self-promotion. r/privacy does **not** — see §3. | survived #2 |
 | 4 | **Show HN** | One shot. Highest ceiling. | **§3 resolved** |
 | 5 | awesome-selfhosted | Needs a published release — see the note at the bottom. | self-host ships |
 
@@ -121,44 +121,117 @@ which is your strongest one:**
 
 ---
 
-## 3. r/privacy — once #2 survived
+## 3. r/privacy is CLOSED — do not post there
 
-Same substance, but this audience cares about the proof and is allergic to
-marketing. Lead with the mechanism, not the tool list.
+**Corrected 2026-09-18.** r/privacy bans self-promotion; posts asking people to
+look at your own app are removed. The post that used to sit here would have
+been taken down.
 
-**Title:** `A CSP directive (connect-src 'none') is a much stronger privacy claim than "we don't store your files" — so I built a tool site around it`
+**That was my mistake and it is worth naming, because it is the failure mode of
+this whole document:** Reddit is unreachable from the environment these posts
+were written in, so the subreddit rules were never read. Advice written without
+reading the rules is a guess wearing a confident voice.
+
+**So run this 60-second check before every post below.** It is not optional:
+
+1. Open the subreddit. Read the sidebar rules end to end.
+2. Search the sub for "self promotion" and for "I built" — see whether posts
+   like yours survive, and whether they carry a flair.
+3. Look for a scheduled thread ("Showoff Saturday", "Self-Promo Monday"). Many
+   subs that ban self-promotion in the main feed allow it there, and that is
+   the compliant way in.
+4. Check whether the sub requires flair. An auto-removed post looks identical
+   to one nobody upvoted.
+
+If a sub bans it, **do not post anyway**. A removal costs nothing; a ban costs
+the channel permanently.
+
+### What to do about r/privacy instead
+
+It is the best-matched audience you have, so it is worth earning rather than
+abandoning. That is a months-long play, not a launch:
+
+- Answer questions there where the tool is genuinely the right answer, without
+  linking it. Build a real comment history.
+- Once you have one, a "I made this, here is the CSP proof" post from a known
+  contributor is received completely differently — and you may still need to
+  ask a moderator first.
+- Never link-drop. That is what the rule exists to stop, and this audience
+  spots it instantly.
+
+---
+
+## 3b. Where to actually post — subs that permit it
+
+Ordered by how confident I am that self-promotion is allowed. **Still run the
+60-second check on each** — I could not read these rules either.
+
+| Sub | Self-promo | Format |
+| :--- | :--- | :--- |
+| **r/SideProject** | Built for it | Self-post, casual |
+| **r/coolgithubprojects** | Built for it | Link to the GitHub repo, not the site |
+| **r/somethingimade** | Built for it | Self-post |
+| **r/opensource** | Limited, allowed | Lead with MIT and the repo |
+| **r/InternetIsBeautiful** | Check first | Link post, descriptive title, no "I built" |
+| **r/degoogle**, **r/pdf** | Check first | Self-post |
+| **r/selfhosted** | Blocked | Needs a real self-host release |
+
+### r/SideProject and r/somethingimade
+
+**Title:** `I built PDF and image tools that are physically blocked from uploading your files`
 
 **Body:**
 
-> Every "private" file tool says it deletes your uploads. You cannot verify
-> that. You are trusting a sentence on a marketing page about what happens on a
-> server you cannot see.
+> Kept needing to compress a PDF and not wanting to hand the file to a random
+> website, so I built tools that do it in the browser tab instead.
 >
-> There is a version of this that is checkable. If a page is served with
-> `connect-src 'none'`, the browser refuses every fetch, XHR, WebSocket and
-> `sendBeacon` it attempts. The file physically cannot go anywhere, and you can
-> confirm the header yourself rather than believing me.
+> The bit I am actually pleased with: the pages are served with
+> `connect-src 'none'`, a Content-Security-Policy directive that makes the
+> browser refuse every fetch, XHR, WebSocket and beacon the page attempts. So
+> "we don't upload your files" stops being a promise and becomes something you
+> can check in devtools in ten seconds. There is a test that tries five
+> different ways to exfiltrate data on every release and fails the build if any
+> get through.
 >
-> I built a set of PDF/image/text tools on that basis. All processing is in the
-> tab. On every release, a test actively tries to exfiltrate data five different
-> ways and fails the build if anything gets through, then runs a real file
-> through a real tool and asserts zero off-origin bytes.
+> ~30 tools — merge/compress/split/sign PDF, PDF to Word, image optimise, EXIF
+> stripping, secret scrubbing for logs, JSON/CSV, QR codes. MIT, no account, no
+> ads, no paid tier. One person, free.
 >
-> Two things I will not claim, because I cannot prove them: that there are no
-> bugs, and that this covers every browser and device. The evidence covers
-> Chromium and WebKit on the deployed build. The write-up is in the repo.
->
-> MIT, no account, no ads, no paid tier.
 > https://getopentools.com
 
-**Flair: `Software`.** r/privacy requires one and the post will be auto-removed
-without it. The flairs in use are news, question, discussion, age verification,
-software and hardware — `Software` is the right bucket for a tool you built; if
-it is missing from the dropdown, use `Discussion`. Never `Question` (you are not
-asking one) or `News` (this is not an event).
+### r/opensource and r/coolgithubprojects
 
-**Do not** claim "zero data leaks" or "military-grade" anything. This audience
-will find it and it will be the top comment.
+Lead with the licence and the repo; these audiences care about the code, not
+the landing page. **Link the GitHub repo, not the site**, for
+r/coolgithubprojects.
+
+**Title:** `OpenTools — MIT-licensed browser utilities that can't upload your files (connect-src 'none', with a test that proves it)`
+
+**Body:**
+
+> A set of client-side PDF/image/text utilities. Everything runs in the tab.
+>
+> The interesting part is the enforcement rather than the tools: pages ship
+> `connect-src 'none'`, so the browser blocks all network egress from the page.
+> `e2e/egress-proof.spec.ts` attempts five exfiltration vectors on every
+> release, then pushes a real file through a real tool and asserts no
+> off-origin response and zero off-origin bytes, in Chromium and WebKit.
+>
+> Two gotchas I hit writing it, in case they save someone time:
+> a CSP-blocked `navigator.sendBeacon` still returns `true` (the spec returns
+> true once queued and the policy refuses it after), and Chromium fires a
+> request event for a request it is about to block where WebKit fires nothing —
+> so asserting "nothing was attempted" fails a clean page on Chromium.
+>
+> MIT. No account, no telemetry, no paid tier.
+> https://github.com/mgbuilderos/opentools
+
+### r/InternetIsBeautiful
+
+Different format: a **link post** with a descriptive title, written about the
+site rather than about you. Check their rules on self-submission first.
+
+**Title:** `A set of PDF and image tools where the browser itself blocks the page from uploading your files`
 
 ---
 
@@ -241,8 +314,12 @@ from that repo is one of the few durable fixes for the authority problem in
 - **Never claim what is not proven.** "Zero data leaks" was removed from the
   product for this reason (`docs/EGRESS_PROOF.md`). Claiming it in a post
   invites exactly the person who will check.
-- **Say you built it, in the first line.** Every one of these communities
-  tolerates creators and bans people who pretend not to be one.
+- **Verify the sub allows self-promotion before writing a word.** r/privacy
+  does not, and that was discovered only after a post had been drafted for it.
+  The 60-second check is in §3.
+- **Say you built it, in the first line** — in the subs that permit it. They
+  tolerate creators and ban people who pretend not to be one. In subs that
+  don't permit it, the answer is not to disguise it; it is to not post.
 - **Answer every comment for the first six hours.** This matters more than the
   post.
 - **Never ask for money in the post.** The support page exists; linking the
