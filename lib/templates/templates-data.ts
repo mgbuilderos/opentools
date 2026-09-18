@@ -983,6 +983,138 @@ Use this pre-flight verification checklist before publishing video captions or u
       },
     ],
   },
+  {
+    slug: 'podcast-episode-release-and-show-notes-pack',
+    title: 'Podcast Episode Release & Show Notes Master Pack',
+    category: 'Developer Runbooks',
+    format: 'Obsidian & Markdown',
+    badge: 'Audio Pack',
+    description:
+      'Pre-flight release checklist and structured show-notes template for podcast creators: lossless MP3 cut verification, frame-boundary timing checks, bit reservoir window tolerances, and chapter markers.',
+    metaDescription:
+      'Free podcast episode release checklist and show notes template. Pre-flight QA for lossless MP3 cutting, ~26.12 ms frame boundaries, bit reservoir tolerances, and chapter markers.',
+    keywords: [
+      'podcast release checklist',
+      'podcast show notes template',
+      'lossless mp3 cutting checklist',
+      'podcast chapter markers template',
+      'audio pre-flight qa checklist',
+    ],
+    features: [
+      'Pre-flight audio QA checklist (MPEG version, sample rate, and channel count validation)',
+      'Lossless MP3 cut boundary verification (~26.12 ms frame increments at 44.1 kHz)',
+      'Bit reservoir window tolerance checks (first ~61.8 ms decode boundary)',
+      'Standardized show notes template with guest bio, sponsor links, and key takeaways',
+      'Formatted chapter markers template (00:00:00 timestamp syntax for podcast players)',
+    ],
+    targetAudience:
+      'Podcast Creators, Audio Engineers, Show Producers, and Content Operations Teams',
+    downloadFilename: 'podcast-episode-release-and-show-notes-pack.md',
+    relatedToolName: 'Lossless MP3 Toolkit',
+    relatedToolHref: '/audio/mp3-toolkit',
+    contentMarkdown: `# Podcast Episode Release & Show Notes Master Pack
+
+A production-grade pre-flight checklist and Markdown show notes template for podcast audio publishing. Designed for creators who cut or join MP3 files losslessly and need repeatable QA before distribution.
+
+---
+
+## 🎧 Phase 1: Lossless Audio Pre-Flight Checklist
+
+Before distributing episode files or uploading to your podcast host (e.g. Megaphone, Transistor, RSS.com), verify these format constraints:
+
+### 1. Header & Format Uniformity (For File Joins)
+- [ ] **MPEG Version Alignment**: All joined segments (intro, interview, outro) share the exact same MPEG version (e.g., MPEG-1 Layer III).
+- [ ] **Sample Rate Consistency**: All audio segments share the same sampling rate (e.g., 44.1 kHz or 48 kHz). Joining mismatched sample rates causes playback pitch and speed shifts.
+- [ ] **Channel Layout**: Stereo and mono segments are not mixed without standardizing. Channels must match across all spliced files.
+
+### 2. Lossless Cut Boundaries & Bit Reservoir
+- [ ] **Frame Boundary Accuracy**: Cuts align with whole MPEG frame boundaries (1,152 samples per frame, or **~26.12 ms** at 44.1 kHz). Cuts land within ±13 ms of target edits.
+- [ ] **Bit Reservoir Window Tolerances**: The first **~61.8 ms** following a cut may reference up to 511 bytes of borrowed bit reservoir data from discarded preceding frames. Check that the opening moment has no transient click or audible artifact.
+- [ ] **Silence Padding**: Include 100–200 ms of lead-in room before spoken audio starts so that frame boundary cuts do not truncate the first consonant.
+
+### 3. Metadata & Tagging
+- [ ] **ID3v2 Metadata Tags**: Title, Artist/Host, Episode Number, Album/Show, and Year are populated.
+- [ ] **Embedded Cover Art**: Front cover JPEG/PNG is attached (minimum 1400x1400, maximum 3000x3000 at 72 dpi).
+- [ ] **Clean Tag Stripping**: Extraneous DAW temp tags or conflicting ID3v1 tags are cleaned or synchronized.
+
+---
+
+## 📝 Phase 2: Episode Show Notes Template
+
+Copy the markdown structure below into your episode draft or publishing dashboard:
+
+\`\`\`markdown
+# [Episode Number]: [Episode Title]
+
+**Publish Date**: [YYYY-MM-DD]  
+**Host**: [Host Name]  
+**Guest**: [Guest Name] ([Guest Title / Org])  
+**Audio Duration**: [HH:MM:SS]  
+
+---
+
+### 🎙️ Episode Overview
+[2-3 sentences summarizing the core problem discussed, the guest's unique angle, and the single biggest takeaway for listeners.]
+
+---
+
+### ⏱️ Chapter Markers
+00:00:00 - Introduction & Welcome  
+00:02:45 - Guest Background & Origin Story  
+00:10:15 - [Topic Deep Dive 1: The Core Breakthrough]  
+00:22:30 - [Topic Deep Dive 2: Tactical Implementation & Pitfalls]  
+00:35:10 - [Topic Deep Dive 3: Future Projections & Industry Shift]  
+00:48:20 - Rapid Fire Questions & Closing Recommendations  
+00:54:00 - Outro & Next Week Preview  
+
+---
+
+### 🔑 Key Takeaways
+1. **[Key Insight 1]**: [Summary of takeaway and actionable context]
+2. **[Key Insight 2]**: [Summary of takeaway and actionable context]
+3. **[Key Insight 3]**: [Summary of takeaway and actionable context]
+
+---
+
+### 🔗 Mentioned Links & Resources
+- [Resource / Book Title](https://example.com) — [Brief note on context]
+- [Guest's Project or Personal Site](https://example.com)
+- [Follow Guest on X/LinkedIn](https://example.com)
+
+---
+
+### 💼 Sponsor Acknowledgments
+- **[Sponsor Name]**: [1-2 sentence description and value proposition]. Use code \`PODCAST\` at [sponsor.com/offer](https://example.com) for 20% off.
+\`\`\`
+
+---
+
+## 🚀 Phase 3: Final RSS & Feed Distribution Verification
+
+- [ ] File name follows convention: \`show_ep[NN]_[slug].mp3\` with no spaces or special characters.
+- [ ] RSS enclosure URL is HTTPS and returns \`Content-Type: audio/mpeg\` with \`Accept-Ranges: bytes\`.
+- [ ] Chapters validate cleanly in standard podcast players (Apple Podcasts, Overcast, Pocket Casts).`,
+    faqs: [
+      {
+        question:
+          'Why does lossless MP3 cutting happen in ~26.12 ms increments?',
+        answer:
+          'Lossless MP3 cutting operates by copying whole MPEG Layer III frames without decoding and re-encoding. An MPEG-1 Layer III frame contains exactly 1,152 audio samples. At standard 44.1 kHz sampling rate, 1,152 samples divided by 44,100 samples per second yields approximately 26.12 ms per frame.',
+      },
+      {
+        question:
+          'What is the bit reservoir window, and why does the first ~61.8 ms matter?',
+        answer:
+          'The MP3 specification allows frames to borrow up to 511 bytes of unused data capacity from preceding frames (the bit reservoir). When you cut an MP3 losslessly, the first frames after the cut point may lack the borrowed data from discarded frames, affecting decode state over roughly the first 61.8 ms.',
+      },
+      {
+        question:
+          'Can I join MP3 files with different sample rates or channel counts losslessly?',
+        answer:
+          'No. Lossless joining copies MPEG frames directly into a single stream. If the sample rate or channel layout changes midway, standard MP3 decoders will either crash or play subsequent frames at incorrect pitch and speed. Differing files must be standardized prior to lossless joining.',
+      },
+    ],
+  },
 ];
 
 export function getAllTemplates(): readonly TemplateItem[] {
