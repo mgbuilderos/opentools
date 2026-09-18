@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useHandoffFile } from '@/lib/handoff';
 import { publicTools } from '@/lib/tools/catalog';
 import { parsePageSelection } from '@/lib/tools/pdf/page-selection';
 import type {
@@ -148,6 +149,9 @@ export function PdfPageTools() {
       setError('The browser could not read that file.');
     }
   };
+
+  // A PDF dropped into the smart dropzone on another page arrives here.
+  useHandoffFile((file) => void choosePdf(file));
 
   const run = async () => {
     if (!source || status === 'processing') return;

@@ -22,6 +22,7 @@ import {
   type TextOperationId,
   type TextOperationOptions,
 } from '@/lib/tools/text-workbench';
+import { useHandoffText } from '@/lib/handoff';
 
 const TEXT_LIMIT = 2_000_000;
 
@@ -70,15 +71,22 @@ export function TextWorkbenchTool() {
     [operationId],
   );
 
+  // The URL decides which operation is open, and it has to keep deciding
+  // after hydration. In production Cloudflare injects its analytics beacon
+  // into the HTML at the edge, so the served markup is not what React
+  // rendered; when React recovers from that it rebuilds the tree, and a
+  // one-shot selection scheduled in an effect is thrown away with it.
+  // Re-applying whenever the URL and the state disagree converges rather
+  // than racing, and costs nothing once they agree.
+  // oxlint-disable-next-line react/react-compiler -- this effect exists to
+  // synchronise React state to an external system, the address bar, which is
+  // what the rule's own guidance says an effect is for.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get('tool');
-    if (TEXT_OPERATIONS.some((item) => item.id === requested)) {
-      const frame = requestAnimationFrame(() =>
-        setOperationId(requested as TextOperationId),
-      );
-      return () => cancelAnimationFrame(frame);
-    }
-  }, []);
+    if (!requested || requested === operationId) return;
+    if (!TEXT_OPERATIONS.some((item) => item.id === requested)) return;
+    setOperationId(requested as TextOperationId);
+  }, [operationId]);
 
   useEffect(() => {
     if (error) errorRef.current?.focus();
@@ -89,6 +97,9 @@ export function TextWorkbenchTool() {
     setSummary('');
     setError('');
   };
+
+  // Text pasted into the smart dropzone on another page arrives here.
+  useHandoffText((text) => setInput(text));
 
   const selectOperation = (next: TextOperationId) => {
     setOperationId(next);

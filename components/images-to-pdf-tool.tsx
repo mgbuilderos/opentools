@@ -25,6 +25,7 @@ import type {
   PdfWorkerRequest,
   PdfWorkerResponse,
 } from '@/lib/tools/pdf/protocol';
+import { useHandoffFile } from '@/lib/handoff';
 
 type ImageItem = { id: string; file: File };
 type Receipt = {
@@ -135,6 +136,9 @@ export function ImagesToPdfTool() {
       ...valid.map((file) => ({ id: crypto.randomUUID(), file })),
     ]);
   };
+
+  // A file dropped into the smart dropzone on another page arrives here.
+  useHandoffFile((file) => addImages([file]));
 
   const move = (index: number, direction: -1 | 1) => {
     clearResult();

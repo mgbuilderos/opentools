@@ -24,6 +24,7 @@ import type {
   PdfWorkerRequest,
   PdfWorkerResponse,
 } from '@/lib/tools/pdf/protocol';
+import { useHandoffFile } from '@/lib/handoff';
 
 type PdfFileItem = {
   id: string;
@@ -227,6 +228,9 @@ export function PdfMergeTool() {
       setError('The PDF inspector could not start. Your files are unchanged.');
     }
   };
+
+  // A file dropped into the smart dropzone on another page arrives here.
+  useHandoffFile((file) => void addFiles([file]));
 
   const mergeFiles = async () => {
     if (files.length < 2 || status === 'processing') return;

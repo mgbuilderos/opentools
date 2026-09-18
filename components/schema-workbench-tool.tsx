@@ -19,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useHandoff } from '@/lib/handoff';
 
 interface WorkbenchField {
   id: string;
@@ -40,6 +41,14 @@ interface WorkbenchOperation {
   outputExtension?: string;
   /** Field id whose value is the extension, for multi-format operations. */
   outputExtensionField?: string;
+}
+
+/** Where a block of handed-over text belongs in an operation's form. */
+function textTarget(fields: readonly WorkbenchField[]) {
+  return (
+    fields.find((field) => field.type === 'textarea') ??
+    fields.find((field) => field.type === 'text')
+  );
 }
 
 interface SchemaWorkbenchToolProps {
@@ -176,6 +185,28 @@ export function SchemaWorkbenchTool({
     });
     reader.readAsDataURL(file);
   };
+
+  // A file or a block of text handed over by the smart dropzone fills this
+  // operation's first matching field. The payload arrives asynchronously, so
+  // it lands after the `?tool=` effect above has settled on an operation, and
+  // the auto-run below then works on it.
+  useHandoff((payload) => {
+    if (payload.file) {
+      const fileField = operation.fields.find((field) => field.type === 'file');
+      if (fileField) {
+        updateFile(fileField, payload.file);
+        return;
+      }
+      const target = textTarget(operation.fields);
+      if (!target) return;
+      const dropped = payload.file;
+      void dropped.text().then((contents) => update(target.id, contents));
+      return;
+    }
+    if (!payload.text) return;
+    const target = textTarget(operation.fields);
+    if (target) update(target.id, payload.text);
+  });
 
   const execute = async () => {
     const started = performance.now();
@@ -334,7 +365,11 @@ export function SchemaWorkbenchTool({
               <div className="grid gap-4 sm:grid-cols-2">
                 {operation.fields.map((field) => (
                   <label
-                    key={field.id}
+                    // Keyed by operation as well as field: switching tools
+                    // resets every value, and without a new key React keeps
+                    // the old DOM node, so a file control went on displaying
+                    // a file the tool no longer held.
+                    key={`${operation.id}:${field.id}`}
                     className={`text-sm font-semibold ${field.type === 'textarea' ? 'sm:col-span-2' : ''}`}
                   >
                     {field.label}

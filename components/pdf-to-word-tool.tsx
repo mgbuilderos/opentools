@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useHandoffFile } from '@/lib/handoff';
 import { DOCX_MIME_TYPE } from '@/lib/tools/docx/document';
 import { convertPdfToWord } from '@/lib/tools/pdf/pdf-to-word';
 
@@ -96,6 +97,9 @@ export function PdfToWordTool() {
     }
     setFile(next);
   }
+
+  // A PDF dropped into the smart dropzone on another page arrives here.
+  useHandoffFile(chooseFile);
 
   async function convert() {
     if (!file || busy) return;
@@ -262,6 +266,10 @@ export function PdfToWordTool() {
                       setFile(null);
                       clearReceipt();
                       setError('');
+                      // Without this the control keeps the old file, so
+                      // choosing the same PDF again fires no change event
+                      // and the page looks stuck.
+                      if (fileRef.current) fileRef.current.value = '';
                     }}
                   >
                     <Trash2 aria-hidden="true" className="size-4" />
@@ -376,6 +384,7 @@ export function PdfToWordTool() {
                   onClick={() => {
                     setFile(null);
                     clearReceipt();
+                    if (fileRef.current) fileRef.current.value = '';
                   }}
                 >
                   Convert another

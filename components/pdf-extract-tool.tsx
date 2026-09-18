@@ -23,6 +23,7 @@ import type {
   PdfWorkerRequest,
   PdfWorkerResponse,
 } from '@/lib/tools/pdf/protocol';
+import { useHandoffFile } from '@/lib/handoff';
 
 type SourcePdf = { id: string; file: File; pages: number };
 type Receipt = {
@@ -165,6 +166,9 @@ export function PdfExtractTool() {
       setError('The PDF inspector could not start.');
     }
   };
+
+  // A file dropped into the smart dropzone on another page arrives here.
+  useHandoffFile((file) => void choosePdf(file));
 
   const extract = async () => {
     if (!source || status === 'processing') return;

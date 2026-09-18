@@ -23,6 +23,7 @@ import {
   supportedRasterTypes,
   type RasterFormat,
 } from '@/lib/tools/image';
+import { useHandoffFile } from '@/lib/handoff';
 
 type SourceImage = { file: File; url: string; width: number; height: number };
 type ImageReceipt = {
@@ -150,6 +151,9 @@ export function ImageOptimizeTool() {
       );
     }
   };
+
+  // A file dropped into the smart dropzone on another page arrives here.
+  useHandoffFile((file) => void chooseImage(file));
 
   const run = async () => {
     if (!source || busy) return;

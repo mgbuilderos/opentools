@@ -23,6 +23,7 @@ import {
   transformJson,
   type JsonTransformMode,
 } from '@/lib/tools/structured';
+import { useHandoff, useHandoffText } from '@/lib/handoff';
 
 type TextReceipt = {
   durationMs: number;
@@ -265,6 +266,7 @@ function EditorPair({
 
 export function JsonTool() {
   const [input, setInput] = useState('');
+  useHandoffText(setInput);
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState<JsonTransformMode>('pretty');
   const [error, setError] = useState('');
@@ -434,6 +436,20 @@ export function CsvToJsonTool() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [sourceName, setSourceName] = useState('');
+  // A CSV chosen in the smart dropzone arrives as a file; text arrives as
+  // text. Both fill the same box, so both are accepted here.
+  useHandoff((payload) => {
+    if (payload.text) {
+      setInput(payload.text);
+      return;
+    }
+    if (!payload.file) return;
+    const dropped = payload.file;
+    void dropped.text().then((contents) => {
+      setInput(contents);
+      setSourceName(dropped.name);
+    });
+  });
   const [error, setError] = useState('');
   const [receipt, setReceipt] = useState<TextReceipt | null>(null);
   const [copied, setCopied] = useState(false);

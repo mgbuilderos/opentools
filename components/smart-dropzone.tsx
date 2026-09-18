@@ -17,6 +17,11 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
+import {
+  type HandoffPayload,
+  stashHandoff,
+  withHandoffParam,
+} from '@/lib/handoff';
 import { isLiveToolUrl } from '@/lib/seo/live-tools';
 import { cn } from '@/lib/utils';
 import {
@@ -277,10 +282,17 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
   };
 }
 
+/** How much of a pasted block the preview field shows. */
+const PREVIEW_LIMIT = 100;
+
 export function SmartDropzone() {
   const [dragOver, setDragOver] = useState(false);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [inputText, setInputText] = useState('');
+  // What the chosen tool page will be handed. Detection alone used to be kept
+  // here, so choosing a tool navigated away and left the file behind.
+  const [payload, setPayload] = useState<HandoffPayload | null>(null);
+  const [opening, setOpening] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -297,10 +309,10 @@ export function SmartDropzone() {
 
   const handleProcessFile = useCallback((file: File) => {
     const detection = detectInput('', file);
-    if (detection) {
-      setResult(detection);
-      setInputText(file.name);
-    }
+    if (!detection) return;
+    setResult(detection);
+    setInputText(file.name);
+    setPayload({ file });
   }, []);
 
   const handleDrop = useCallback(
@@ -317,7 +329,8 @@ export function SmartDropzone() {
 
       const text = e.dataTransfer.getData('text');
       if (text) {
-        setInputText(text.slice(0, 100));
+        setInputText(text.slice(0, PREVIEW_LIMIT));
+        setPayload({ text });
         const detection = detectInput(text);
         if (detection) {
           setResult(detection);
@@ -331,12 +344,17 @@ export function SmartDropzone() {
     if (e.target.files && e.target.files.length > 0) {
       handleProcessFile(e.target.files[0]);
     }
+    // The file is held in state now, so clearing the control lets the same
+    // file be chosen again after Clear. Without this the second pick of an
+    // unchanged file fires no change event and looks broken.
+    e.target.value = '';
   };
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const text = e.clipboardData.getData('text');
     if (text) {
-      setInputText(text.slice(0, 100));
+      setInputText(text.slice(0, PREVIEW_LIMIT));
+      setPayload({ text });
       const detection = detectInput(text);
       if (detection) {
         setResult(detection);
@@ -347,8 +365,36 @@ export function SmartDropzone() {
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInputText(val);
+    setPayload(val.trim() ? { text: val } : null);
     const detection = detectInput(val);
     setResult(detection);
+  };
+
+  // A tool link is a plain anchor, so choosing one is a full document
+  // navigation and this component's state does not survive it. Park the file
+  // or text first, then navigate with the id that lets the tool page pick it
+  // up. Modified clicks and middle clicks are left alone so "open in new tab"
+  // keeps working; that tab opens the tool with its own picker, as before.
+  const openAction = async (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    action: DetectedAction,
+  ) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    if (!payload || opening) return;
+    event.preventDefault();
+    setOpening(action.label);
+    const id = await stashHandoff(payload);
+    window.location.assign(
+      id ? withHandoffParam(action.href, id) : action.href,
+    );
   };
 
   const sampleInputs = [
@@ -436,6 +482,7 @@ export function SmartDropzone() {
                 type="button"
                 onClick={() => {
                   setInputText(sample.value);
+                  setPayload({ text: sample.value });
                   setResult(detectInput(sample.value));
                 }}
                 className="rounded-md border bg-muted/40 px-2 py-0.5 font-mono text-[10px] text-foreground hover:bg-muted hover:border-foreground/40 transition-colors"
@@ -472,6 +519,9 @@ export function SmartDropzone() {
               onClick={() => {
                 setResult(null);
                 setInputText('');
+                setPayload(null);
+                setOpening(null);
+                if (fileInputRef.current) fileInputRef.current.value = '';
               }}
               className="flex size-7 items-center justify-center rounded-md border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Clear detection result"
@@ -488,20 +538,30 @@ export function SmartDropzone() {
             <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
               Recommended On-Device Actions:
             </p>
+            {payload ? (
+              <p className="text-[11px] text-muted-foreground">
+                {payload.file
+                  ? 'The tool opens with this file already loaded — no second upload.'
+                  : 'The tool opens with this text already in place.'}
+              </p>
+            ) : null}
             <div className="flex flex-wrap items-center gap-2">
               {result.actions.map((act) => (
                 <a
                   key={act.label}
                   href={act.href}
+                  onClick={(event) => void openAction(event, act)}
+                  aria-busy={opening === act.label}
                   className={cn(
                     buttonVariants({
                       variant: act.isPrimary ? 'default' : 'outline',
                       size: 'sm',
                     }),
                     'h-8 text-xs font-semibold gap-1.5',
+                    opening && opening !== act.label && 'opacity-60',
                   )}
                 >
-                  {act.label}
+                  {opening === act.label ? 'Opening…' : act.label}
                   <ArrowRight className="size-3" />
                 </a>
               ))}

@@ -29,6 +29,7 @@ import {
   type HashAlgorithm,
   type PercentageMode,
 } from '@/lib/tools/utility';
+import { useHandoffFile, useHandoffText } from '@/lib/handoff';
 
 const TEXT_LIMIT = 2_000_000;
 const HASH_FILE_LIMIT = 500 * 1024 * 1024;
@@ -217,6 +218,7 @@ function Result({
 
 function TextTransformTool({ mode }: { mode: 'encode' | 'decode' }) {
   const [input, setInput] = useState('');
+  useHandoffText(setInput);
   const [output, setOutput] = useState('');
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState('');
@@ -377,6 +379,7 @@ export function UuidGeneratorTool() {
 
 export function TimestampTool() {
   const [input, setInput] = useState('');
+  useHandoffText(setInput);
   const [output, setOutput] = useState('');
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState('');
@@ -681,6 +684,8 @@ export function AgeCalculatorTool() {
 export function FileHashTool() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  // A file dropped into the smart dropzone on another page arrives here.
+  useHandoffFile(setFile);
   const [algorithm, setAlgorithm] = useState<HashAlgorithm>('SHA-256');
   const [output, setOutput] = useState('');
   const [elapsed, setElapsed] = useState(0);
