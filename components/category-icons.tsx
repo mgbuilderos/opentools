@@ -1,5 +1,6 @@
 /* oxlint-disable */
 import {
+  AudioLines,
   Braces,
   BriefcaseBusiness,
   Calculator,
@@ -39,6 +40,7 @@ export const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   calculators: Calculator,
   'web-seo': Globe2,
   'qr-barcode': QrCode,
+  audio: AudioLines,
 };
 
 export function destinationIcon(

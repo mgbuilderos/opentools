@@ -23,7 +23,8 @@ export interface ToolManifest {
     | 'Science'
     | 'Finance'
     | 'Life Admin'
-    | 'QR & Barcode';
+    | 'QR & Barcode'
+    | 'Audio';
   aliases: string[];
   jobs: string[];
   searchEntries?: Array<{

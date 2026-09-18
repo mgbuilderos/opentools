@@ -28,6 +28,32 @@ function searchEntries(
   }));
 }
 
+export const MP3_TOOLKIT_OPERATIONS = [
+  {
+    id: 'mp3-cut',
+    name: 'MP3 cutter',
+    description:
+      'Trim a clip out of an MP3 on frame boundaries, with no re-encoding.',
+  },
+  {
+    id: 'mp3-join',
+    name: 'MP3 joiner',
+    description:
+      'Join MP3s that share a sample rate and channel count, end to end.',
+  },
+  {
+    id: 'mp3-tags',
+    name: 'MP3 tag editor',
+    description: 'Read, replace or remove ID3 tags without touching the audio.',
+  },
+  {
+    id: 'mp3-inspect',
+    name: 'MP3 inspector',
+    description:
+      'Measure bitrate, sample rate, frame count and tags in an MP3.',
+  },
+] as const;
+
 export const PDF_PAGE_OPERATIONS = [
   {
     id: 'rotate-pdf',
@@ -402,6 +428,46 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['pdf.pagegraph.transform', 'pdf.annotation.draw'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'mp3-toolkit',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'MP3 toolkit',
+    shortDescription:
+      'Cut, join, tag and inspect MP3s by copying frames — no re-encoding.',
+    category: 'Audio',
+    aliases: [
+      'mp3 cutter',
+      'mp3 trimmer',
+      'audio cutter',
+      'mp3 joiner',
+      'mp3 merger',
+      'id3 tag editor',
+      'ringtone maker',
+    ],
+    jobs: [
+      'cut an mp3',
+      'trim a song',
+      'make a ringtone',
+      'join mp3 files',
+      'merge audio files',
+      'edit mp3 tags',
+      'remove mp3 tags',
+      'check mp3 bitrate',
+    ],
+    searchEntries: searchEntries('/audio/mp3-toolkit', MP3_TOOLKIT_OPERATIONS),
+    href: '/audio/mp3-toolkit',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'audio.mpeg.parse',
+        'audio.mpeg.frame-copy',
+        'audio.id3.read-write',
+      ],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -896,7 +962,8 @@ export interface ToolGroup {
     | 'developer-files'
     | 'calculators'
     | 'web-seo'
-    | 'qr-barcode';
+    | 'qr-barcode'
+    | 'audio';
   name: string;
   shortDescription: string;
   toolIds: string[];
@@ -921,6 +988,13 @@ export const toolGroups: ToolGroup[] = [
     name: 'Image',
     shortDescription: 'Compress, resize, convert, crop, and adjust images.',
     toolIds: ['image-optimize', 'image-editor'],
+  },
+  {
+    id: 'audio',
+    name: 'Audio',
+    shortDescription:
+      'Cut, join, tag and inspect MP3 files without re-encoding.',
+    toolIds: ['mp3-toolkit'],
   },
   {
     id: 'text-data',
@@ -1290,7 +1364,7 @@ export const NAVIGATION_MAJOR_SECTIONS: NavMajorSection[] = [
   {
     id: 'primary-workspaces',
     title: 'Workspaces',
-    groupCategoryIds: ['pdf', 'images'],
+    groupCategoryIds: ['pdf', 'images', 'audio'],
   },
   {
     id: 'engineering-data',

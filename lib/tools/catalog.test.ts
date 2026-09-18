@@ -93,13 +93,14 @@ describe('public canary catalog', () => {
       toolsForGroup(group).map((tool) => tool.id),
     );
 
-    expect(toolGroups).toHaveLength(7);
+    expect(toolGroups).toHaveLength(8);
   });
 
   it('keeps the evidence-weighted launch order explicit', () => {
     expect(toolGroups.map((group) => group.id)).toEqual([
       'pdf',
       'images',
+      'audio',
       'text-data',
       'developer-files',
       'calculators',
@@ -135,7 +136,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(628);
+    expect(entries).toHaveLength(632);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

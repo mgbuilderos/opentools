@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   IMAGE_EDITOR_OPERATIONS,
+  MP3_TOOLKIT_OPERATIONS,
   PDF_PAGE_OPERATIONS,
   publicTools,
 } from './catalog';
@@ -398,7 +399,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 628 operation-level tool destinations', () => {
+  it('accounts for all 632 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -407,6 +408,9 @@ describe('exhaustive workbench input/output QC', () => {
       ),
       ...TEXT_OPERATIONS.map(
         (operation) => `/text/workbench?tool=${operation.id}`,
+      ),
+      ...MP3_TOOLKIT_OPERATIONS.map(
+        (operation) => `/audio/mp3-toolkit?tool=${operation.id}`,
       ),
       ...PDF_PAGE_OPERATIONS.map(
         (operation) => `/pdf/page-tools?tool=${operation.id}`,
@@ -421,7 +425,7 @@ describe('exhaustive workbench input/output QC', () => {
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(628);
+    expect(expectedDestinations).toHaveLength(632);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });

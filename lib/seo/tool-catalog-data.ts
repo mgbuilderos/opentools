@@ -20,6 +20,34 @@ export interface ToolCatalogEntry {
 
 export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
   {
+    id: 'audio.mp3-cutter',
+    slug: 'audio-mp3-cutter',
+    name: 'MP3 Cutter',
+    category: 'Audio',
+    rank: 1,
+    executionMode: 'local-js',
+    releaseWave: 'P0',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Cuts on MPEG frame boundaries and copies the compressed frames, so the clip keeps the original bitrate and is never re-encoded.',
+    destinationUrl: '/audio/mp3-toolkit',
+  },
+  {
+    id: 'audio.mp3-joiner',
+    slug: 'audio-mp3-joiner',
+    name: 'MP3 Joiner',
+    category: 'Audio',
+    rank: 2,
+    executionMode: 'local-js',
+    releaseWave: 'P0',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Joins MP3s by concatenating frames. Files must share a sample rate, channel count and MPEG version; mismatches are refused by name.',
+    destinationUrl: '/audio/mp3-toolkit',
+  },
+  {
     id: 'pdf.merge-pdf',
     slug: 'pdf-merge-pdf',
     name: 'Merge PDF',
@@ -3167,7 +3195,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=id3-tag-editor',
+    destinationUrl: '/audio/mp3-toolkit',
   },
   {
     id: 'audio.album-art-extractor',

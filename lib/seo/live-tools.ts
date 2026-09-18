@@ -29,6 +29,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/image/editor',
   '/image/background-remover',
   '/image/optimize',
+  '/audio/mp3-toolkit',
   '/data/csv-to-json',
   '/data/json',
   '/file/hash-calculator',
@@ -82,6 +83,10 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>([
   ['/pdf/page-tools', new Set(PDF_PAGE_TOOL_OPERATION_IDS)],
   ['/image/editor', imageEditorIds],
   ['/image/background-remover', imageEditorIds],
+  [
+    '/audio/mp3-toolkit',
+    new Set(['mp3-cut', 'mp3-join', 'mp3-tags', 'mp3-inspect']),
+  ],
 ]);
 
 /** Every route that renders a working tool. */
