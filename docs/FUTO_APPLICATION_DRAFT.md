@@ -56,9 +56,12 @@ challenge the tech oligopoly"* — past grantees include Signal, Tor and Blender
 >    of the truth: a CSP-blocked `navigator.sendBeacon` still returns `true`,
 >    and Chromium raises a request event for a request it is about to block
 >    where WebKit raises nothing.
-> 3. **Hosting and the time to keep it running.** I'm one person; the site is
->    currently on a free tier that is causing intermittent errors on the
->    content pages.
+> 3. **Hosting and the time to keep it running.** I'm one person, and the site
+>    runs on a free tier whose page-cache write allowance a single day of
+>    normal development exhausts. Once it is gone every page is served
+>    uncached, and under crawl load the worker starts returning 503s on the
+>    content pages. It costs $5 a month to remove that entirely; I have been
+>    unwilling to spend it before the project earns anything.
 >
 > It's early and small — real traffic is in the dozens per day, and the
 > repository has almost no stars. I'm not going to dress that up. What exists is
@@ -95,10 +98,51 @@ challenge the tech oligopoly"* — past grantees include Signal, Tor and Blender
 - **It's short.** A microgrant request that reads like a corporate proposal
   signals the wrong thing.
 
-## Before sending
+## Before sending — verified 2026-09-18
 
-- Make the GHCR container package **public**. A reviewer who tries the
-  self-host instructions and gets a 404 has learned something.
-- Re-read the two **[YOU]** sections. Generic answers there undo the rest.
-- Do not attach anything. Links are enough, and attachments from strangers
+Everything a reviewer can click has been checked:
+
+| Claim in the email | Checked | Result |
+|---|---|---|
+| Container pulls anonymously | anonymous token → manifest | **HTTP 200** — public |
+| Repository is public and MIT | GitHub API | public, `MIT` |
+| `docs/EGRESS_PROOF.md` exists at that path | raw.githubusercontent | **HTTP 200** |
+| "almost no stars" | GitHub API | 1 star — the email is accurate |
+
+(The first `curl` to ghcr.io returns 401. That is the registry's standard auth
+challenge, not a private package; the real pull flow issues an anonymous token
+and then succeeds. Do not "fix" it.)
+
+Two things still to do, both yours:
+
+- **Re-read the two [YOU] sections.** Generic answers there undo the rest.
+- **Do not attach anything.** Links are enough, and attachments from strangers
   don't get opened.
+
+## One thing to decide before you send
+
+If FUTO replies, they may ask technical questions — that is what their
+reviewers do. You have said you are not from an IT background and cannot
+explain the implementation. That is not disqualifying and it is not something
+to hide; what matters is that you answer honestly and quickly rather than
+guessing. Two workable options:
+
+1. **Say nothing about it now** and handle questions when they come, asking for
+   help drafting the reply. Most likely outcome: fine.
+2. **Say it plainly in your [YOU] paragraph** — that you are not an engineer,
+   that you built this because you wanted the tools to exist, and that the
+   verification method is the part you care about. Some reviewers respond well
+   to that; it also sets expectations so a technical reply is not a surprise.
+
+Either is defensible. What is not defensible is answering a technical question
+with something you have not checked — that is the one thing that would cost you
+the application.
+
+## Also worth doing (not a blocker)
+
+The repository description reads **"All-in-one micro tools"**, which says
+nothing about the property the whole email rests on. A reviewer clicking
+through from the email lands on that first. Something closer to *"550 browser
+tools that are provably unable to upload your files — MIT, no server, no
+account"* would carry the argument. It is your repository, so change it
+yourself if you agree.
