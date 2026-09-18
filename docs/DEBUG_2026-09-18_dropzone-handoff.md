@@ -26,6 +26,7 @@ is written so somebody who was not in the session can check every claim.
 | 5 | Workbench file control kept showing a file the tool no longer held | Medium | **Fixed** |
 | 6 | `/pdf/page-tools?tool=…` and `/image/editor?tool=…` promise tools those pages do not have | Medium | **Open — needs an owner decision** |
 | 7 | Base UI logs an error on every page load | Low | **Open — shared/Antigravity files, request filed** |
+| 8 | The e2e suite can silently run against another worktree's build | Medium | **Open — shared file, request filed** |
 
 Bugs 1–3 are one story: **nothing the visitor gave the dropzone survived the
 trip to the tool page.** Bug 4 is the same production defect that was found and
@@ -298,6 +299,50 @@ and `components/app-shell.tsx` is Antigravity-owned, per §2 of `AGENT_BOARD.md`
 A request is filed on the board.
 
 ---
+
+## Bug 8 — OPEN: the e2e suite can silently test the wrong branch
+
+Found while trying to run the suite for this change.
+
+`playwright.config.ts` hardcodes port **8788** and sets
+`reuseExistingServer: !process.env.CI`, so locally it attaches to whatever is
+already listening there. `e2e/global-setup.ts` exists to stop exactly this
+going wrong — its comment records the incident where a different project on
+port 3000 made 628 tests pass while proving nothing — but its check is:
+
+```ts
+if (!html.includes('OpenTools')) { throw ... }
+```
+
+**This machine currently has 18 worktrees of this repo.** When
+`apps/claude-worktree`'s preview server holds 8788, it answers with OpenTools,
+the guard is satisfied, and the whole suite runs green **against a different
+branch's build**. That is the original failure with a costume on: a passing
+run that proves nothing about the code under test.
+
+What happened here: the first run failed only by luck — Playwright tried to
+start its own server, hit `Address already in use (127.0.0.1:8788)`, and
+aborted. Had it taken the reuse path instead, it would have reported a clean
+pass for code it never loaded.
+
+Suggested fix, for whoever owns the shared config: have `global-setup.ts`
+assert the *commit* as well as the product — the server already exposes a
+version through `CF_VERSION_METADATA`, or a build id could be written into the
+HTML — and fail when it does not match `git rev-parse HEAD`.
+
+**Not fixed here.** `playwright.config.ts` and `e2e/**` are not assigned to
+Claude Code in §2 of `AGENT_BOARD.md`; a request is filed on the board.
+
+### How this branch's suite was actually run
+
+Against this branch's own production server on port 8791, with a throwaway
+config that changes only `baseURL`, `testDir` and `globalSetup` paths:
+
+```bash
+npm run build && npm start -- --port 8791     # this branch's build
+npx playwright test --config=<throwaway pointing at 8791>
+```
+
 
 ## Observations, not filed as bugs
 
