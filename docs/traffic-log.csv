@@ -1,7 +1,8 @@
-date,unique_visitors,page_views,requests,support_views,notes
-2026-09-13,1,0,3,,"partial - zone analytics begin"
-2026-09-14,98,454,1137,,"baseline"
-2026-09-15,259,679,2418,,"baseline"
-2026-09-16,321,7744,36025,,"request spike is our own cache-warming, not visitors"
-2026-09-17,234,2022,3775,11,"baseline day used for all arithmetic in REVENUE_OPERATIONS.md"
-2026-09-18,158,2806,4297,36,"PARTIAL UTC day. Launch day: mobile support page + header Support button + share card + IndexNow (631 URLs) + 3 Reddit posts. /support share 1.82% vs 0.6% on 17 Sep - BUT this day includes agent verification traffic to /support; treat 19 Sep as the first clean read."
+date,unique_visitors,external_visitors,page_views,requests,support_views,notes
+2026-09-13,1,,0,3,,"partial - zone analytics begin"
+2026-09-14,98,,454,1137,,"baseline"
+2026-09-15,259,,679,2418,,"baseline"
+2026-09-16,321,,7744,36025,,"request spike is our own cache-warming, not visitors"
+2026-09-17,234,,2022,3775,11,"baseline day used for all arithmetic in REVENUE_OPERATIONS.md"
+2026-09-18,158,,2806,4297,36,"PARTIAL UTC day. Launch day: mobile support page + header Support button + share card + IndexNow (631 URLs) + 3 Reddit posts. /support share 1.82% vs 0.6% on 17 Sep - BUT this day includes agent verification traffic to /support; treat 19 Sep as the first clean read."
+2026-09-18-NOTE,,,,,,"30-day audit: of 56.52k requests, 35.72k (63%) came from one owner IP; ChromeHeadless 20.66k (e2e suite), curl 5.04k, plus an OpenTools-* warmer. GoogleBot 852 = real crawler signal. external_visitors is blank before this date because it was never separated; do not backfill it with the raw figure."
