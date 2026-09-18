@@ -45,6 +45,85 @@ give; nothing measures it here yet, so these are **scenarios, not facts**:
 **The constraint is traffic, not the payment page.** A perfect funnel on 230
 visitors still yields a few dollars a day.
 
+## 2b. The uncomfortable part: donations alone probably do not reach $100/day
+
+Run the arithmetic to its conclusion rather than stopping at "we need more
+traffic".
+
+$100/day is $3,000/month, or twenty $5 coffees every single day. Donation rates
+for a free tool with a support page sit around **0.05%–0.2%** of visitors.
+Wikipedia manages roughly 0.1% with sitewide banners nobody can miss; a quiet
+support link does worse, not better.
+
+| Donation rate | Visitors/day needed | vs today's ~230 |
+| :--- | ---: | ---: |
+| 0.5% (implausible) | 4,000 | 17× |
+| 0.2% (very good) | 10,000 | 43× |
+| 0.1% (Wikipedia-with-banners) | 20,000 | 87× |
+| 0.05% (typical) | 40,000 | **174×** |
+
+**So the realistic donation target is 20,000–40,000 visitors a day.** That is
+roughly a million visits a month, on a domain that was not indexed at all a day
+ago, with ~1 GitHub star, against iLovePDF and SmallPDF and their millions of
+backlinks. It is a multi-year project, and it may simply never arrive.
+
+This is not an argument to stop. Free traffic compounds, costs nothing, and
+every visitor is also a candidate for the path below. It **is** an argument that
+optimising the donation funnel cannot be the whole plan, because the arithmetic
+does not close.
+
+### The same $3,000/month, counted differently
+
+| Path | What it takes |
+| :--- | :--- |
+| Donations | ~1,000,000 visits/month |
+| **Self-hosted deployments** | **30 organisations at $100/month** — or 6 at $500, or 3 at $1,000 |
+
+Thirty customers versus a million visits. Both are hard. One is about a hundred
+times more tractable, and the asset for it **already exists and is verified**:
+`claude/selfhost` builds a two-stage container that runs under `--network none`
+with every page serving `connect-src 'none'` and outbound requests failing to
+resolve (AGENT_BOARD §8, 2026-09-17). It was never published.
+
+**Why this fits rather than compromises the product.** The entire thesis — files
+never leave the device — is not a nice-to-have for law firms, clinics,
+accountants, government departments and anyone under GDPR, HIPAA or DPDP. It is
+a compliance requirement they are currently failing, because their staff upload
+client documents to random free websites anyway. A self-hosted instance inside
+their network is the fix, and it is worth real money to them.
+
+**It does not touch decision 13 or rule 35.** Those govern the public site: no
+paid tier, nothing gated, no differential treatment by donation amount. All of
+that stays exactly as it is — every tool free forever. MIT means the software
+cannot be licence-fee'd, and it is not: what an organisation pays for is
+deployment, support and maintenance. That is the ordinary open-source model and
+it is the one this repo's own memory already names ("code is MIT — no licence
+fees; sell support").
+
+**The two paths feed each other.** Free traffic is how a compliance officer
+finds the tool in the first place; the self-host page is what converts them.
+Nothing above changes the free-traffic work — it changes what that traffic is
+*for*.
+
+### What this implies, concretely
+
+1. **Publish the self-host release.** The container is built and verified; it
+   needs a tagged release and a published image. This is the single highest
+   revenue-leverage item on this page.
+2. It **unblocks awesome-selfhosted**, which is also the best durable fix for
+   the authority problem in §4. One action, two payoffs.
+3. **Write one page for organisations** — "run OpenTools inside your network" —
+   stating what it is, that the software is free and MIT, and that paid help
+   with deployment and support exists. That page is what a compliance officer
+   forwards to their manager.
+4. Keep every free-traffic action in §4 running unchanged.
+
+**This is a strategy decision, not an implementation detail, so it is the
+owner's to make.** It is recorded here because the arithmetic in §2 does not
+close without it, and a plan whose arithmetic does not close should say so.
+
+---
+
 ## 3. ⚠️ The infrastructure ceiling — read before driving any traffic
 
 **The account is on the Cloudflare free tier.** Verified 2026-09-18, not
