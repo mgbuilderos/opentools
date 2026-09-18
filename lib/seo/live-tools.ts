@@ -12,6 +12,7 @@ import { PRODUCTIVITY_OPERATIONS } from '../tools/productivity-workbench';
 import { QR_BARCODE_OPERATIONS } from '../tools/qr-barcode-workbench';
 import { SCIENCE_OPERATIONS } from '../tools/science-education-workbench';
 import { SPREADSHEET_OPERATIONS } from '../tools/spreadsheet-workbench';
+import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
@@ -77,6 +78,7 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>([
   ['/productivity/workbench', ids(PRODUCTIVITY_OPERATIONS)],
   ['/qr/workbench', ids(QR_BARCODE_OPERATIONS)],
   ['/science/workbench', ids(SCIENCE_OPERATIONS)],
+  ['/subtitles/workbench', ids(SUBTITLE_OPERATIONS)],
   ['/text/workbench', ids(TEXT_OPERATIONS)],
   ['/text/writing', ids(WRITING_OPERATIONS)],
   ['/web/workbench', ids(WEB_OPERATIONS)],

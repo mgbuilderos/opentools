@@ -21,6 +21,12 @@ export interface StandardOperation {
   fields: readonly StandardField[];
   notice?: string;
   outputExtension?: string;
+  /**
+   * Id of a field whose value is the file extension to save under, for
+   * operations that can write more than one format. The field's values must be
+   * the extensions themselves. Falls back to `outputExtension`.
+   */
+  outputExtensionField?: string;
 }
 
 export const text = (

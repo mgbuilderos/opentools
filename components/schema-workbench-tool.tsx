@@ -38,6 +38,8 @@ interface WorkbenchOperation {
   fields: readonly WorkbenchField[];
   notice?: string;
   outputExtension?: string;
+  /** Field id whose value is the extension, for multi-format operations. */
+  outputExtensionField?: string;
 }
 
 interface SchemaWorkbenchToolProps {
@@ -195,8 +197,19 @@ export function SchemaWorkbenchTool({
     }
   };
 
+  // An operation that can write more than one format names the field holding
+  // the choice, so the button says the same extension the file is saved with.
+  const chosenExtension = operation.outputExtensionField
+    ? values[operation.outputExtensionField]
+    : undefined;
+  const extension =
+    (/^[a-z0-9]{1,5}$/u.test(chosenExtension ?? '')
+      ? chosenExtension
+      : undefined) ??
+    operation.outputExtension ??
+    'txt';
+
   const download = () => {
-    const extension = operation.outputExtension ?? 'txt';
     if (output.startsWith('data:')) {
       const anchor = document.createElement('a');
       anchor.href = output;
@@ -438,7 +451,7 @@ export function SchemaWorkbenchTool({
                     data-receipt-download
                     variant="ghost"
                     size="icon"
-                    aria-label={`Download result as .${operation.outputExtension ?? 'txt'}`}
+                    aria-label={`Download result as .${extension}`}
                     onClick={download}
                   >
                     <Download aria-hidden="true" />

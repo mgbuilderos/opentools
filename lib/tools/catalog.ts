@@ -12,6 +12,7 @@ import { PRODUCTIVITY_OPERATIONS } from './productivity-workbench';
 import { QR_BARCODE_OPERATIONS } from './qr-barcode-workbench';
 import { SCIENCE_OPERATIONS } from './science-education-workbench';
 import { SPREADSHEET_OPERATIONS } from './spreadsheet-workbench';
+import { SUBTITLE_OPERATIONS } from './subtitle-workbench';
 import { TEXT_OPERATIONS } from './text-workbench';
 import { WEB_OPERATIONS } from './web-workbench';
 import { WRITING_OPERATIONS } from './writing-workbench';
@@ -885,6 +886,46 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'subtitle-workbench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Subtitle workbench',
+    shortDescription:
+      'Convert, resync, join, trim and check SRT, WebVTT, SBV and LRC subtitles.',
+    category: 'Creator',
+    aliases: [
+      'srt to vtt',
+      'vtt to srt',
+      'subtitle converter',
+      'subtitle sync',
+      'caption converter',
+      'srt editor',
+      'subtitle timing',
+    ],
+    jobs: [
+      'convert srt to vtt',
+      'convert vtt to srt',
+      'fix out of sync subtitles',
+      'shift subtitle timing',
+      'join subtitle files',
+      'turn subtitles into a transcript',
+      'check caption reading speed',
+    ],
+    searchEntries: searchEntries('/subtitles/workbench', SUBTITLE_OPERATIONS),
+    href: '/subtitles/workbench',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'subtitle.parse',
+        'subtitle.format',
+        'subtitle.retime',
+        'text.encoding.detect',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'creator-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1007,6 +1048,7 @@ export const toolGroups: ToolGroup[] = [
       'json-format',
       'csv-to-json',
       'spreadsheet-workbench',
+      'subtitle-workbench',
     ],
   },
   {

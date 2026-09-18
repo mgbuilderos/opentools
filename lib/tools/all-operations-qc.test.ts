@@ -51,6 +51,10 @@ import {
   runSpreadsheetOperation,
 } from './spreadsheet-workbench';
 import {
+  runSubtitleOperation,
+  SUBTITLE_OPERATIONS,
+} from './subtitle-workbench';
+import {
   TEXT_OPERATIONS,
   runTextOperation,
   type TextOperationOptions,
@@ -132,6 +136,34 @@ function isAudioFileField(field: QcOperation['fields'][number]) {
   return /wav|audio/iu.test(`${field.label} ${accept}`);
 }
 
+function isSubtitleFileField(field: QcOperation['fields'][number]) {
+  const accept = (field as { accept?: string }).accept ?? '';
+  return /\.srt|\.vtt|subtitle/iu.test(`${field.label} ${accept}`);
+}
+
+/**
+ * A real, minimal SubRip file, so a subtitle field gets subtitles. It spans
+ * ten seconds because the split and trim defaults need cues on both sides of
+ * their default times — those operations refuse to produce an empty file.
+ */
+function tinySrt() {
+  const srt = [
+    '1',
+    '00:00:01,000 --> 00:00:03,000',
+    'First line.',
+    '',
+    '2',
+    '00:00:04,000 --> 00:00:06,000',
+    'Second line.',
+    '',
+    '3',
+    '00:00:08,000 --> 00:00:10,000',
+    'Third line.',
+    '',
+  ].join('\n');
+  return `data:text/plain;base64,${Buffer.from(srt, 'utf8').toString('base64')}`;
+}
+
 function defaultValues(operation: QcOperation) {
   return Object.fromEntries(
     operation.fields.map((field) => [
@@ -139,7 +171,9 @@ function defaultValues(operation: QcOperation) {
       field.type === 'file'
         ? isAudioFileField(field)
           ? tinyPcmWav()
-          : onePixelPng
+          : isSubtitleFileField(field)
+            ? tinySrt()
+            : onePixelPng
         : field.defaultValue,
     ]),
   );
@@ -175,6 +209,19 @@ const suites: readonly QcSuite[] = [
     route: '/creator/workbench',
     operations: CREATOR_OPERATIONS,
     run: runCreatorOperation,
+  },
+  {
+    name: 'subtitle',
+    route: '/subtitles/workbench',
+    operations: SUBTITLE_OPERATIONS,
+    run: (id, values) =>
+      runSubtitleOperation(id, {
+        ...values,
+        // Joining needs a second file; the default is deliberately empty so
+        // the page asks for one rather than inventing it.
+        second:
+          values.second || '1\n00:00:00,500 --> 00:00:02,000\nSecond file.',
+      }),
   },
   {
     name: 'date',
@@ -297,7 +344,7 @@ describe('exhaustive workbench input/output QC', () => {
   it('keeps every field contract complete and internally valid', () => {
     const allOperations = suites.flatMap((suite) => suite.operations);
 
-    expect(allOperations).toHaveLength(582);
+    expect(allOperations).toHaveLength(596);
     for (const suite of suites) {
       expect(new Set(suite.operations.map(({ id }) => id)).size).toBe(
         suite.operations.length,
@@ -399,7 +446,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 632 operation-level tool destinations', () => {
+  it('accounts for all 646 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -425,7 +472,7 @@ describe('exhaustive workbench input/output QC', () => {
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(632);
+    expect(expectedDestinations).toHaveLength(646);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });
