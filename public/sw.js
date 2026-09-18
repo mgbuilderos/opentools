@@ -1,47 +1,55 @@
 /**
- * Service worker — what makes this installable, and what makes it work offline.
+ * Service worker — deliberately minimal, and the reason is worth reading before
+ * anyone makes it do more.
  *
- * Chrome will not offer to install a site without a service worker that has a
- * fetch handler, so this file is the difference between "add to home screen"
- * being available to most visitors and being available to none of them.
+ * **A service worker here cannot fetch anything.** Every response on this site
+ * carries `connect-src 'none'`, `/sw.js` included, and a worker inherits the
+ * policy delivered with its own script. `connect-src` governs `fetch()` inside
+ * a worker exactly as it does inside a page. So every `fetch()` this file could
+ * make is refused by the browser before it reaches the network.
  *
- * Offline matters more here than it does for most sites: the tools already run
- * entirely in the browser, so once the page is cached there is genuinely
- * nothing left that needs a network. Compressing a PDF on a plane works. That
- * is not a claim a server-side competitor can make at any price.
+ * That is not a bug in the policy. `connect-src 'none'` is the product's one
+ * real promise — the page cannot upload your file because the browser will not
+ * let it — and it is enforced, measured and worth more than offline support.
  *
- * Two rules keep it honest:
+ * It does mean caching is impossible from here, and the previous version of
+ * this file learned that the hard way. It was written network-first with an
+ * offline notice as the last resort:
  *
- * 1. **HTML is network-first.** A cached page that outlives a deploy shows
- *    people a stale tool and stale copy, and this project ships several times a
- *    day. The network wins whenever it is available; the cache is the fallback,
- *    not the source of truth.
- * 2. **Hashed assets are cache-first and never revalidated.** Everything under
- *    `/_next/static/` carries a content hash, so a cached copy can never be
- *    wrong — a new build produces new URLs. This is the same reasoning behind
- *    their `immutable` Cache-Control header.
+ *     fetch(request).then(...).catch(() => "You are offline")
  *
- * Nothing a user processes is ever cached. This stores the application, never
- * the work: no file, no input, no result passes through here. Only GET requests
- * for this origin are touched at all.
+ * Since `fetch` always rejected, every navigation took the `catch`, and the
+ * cache it looked in first was empty for the same reason. The result on the
+ * live site was that the first page loaded, this worker activated and claimed
+ * the page, and **every navigation after that showed "You are offline" while
+ * the network was perfectly healthy.** The site was one click deep for everyone
+ * who had ever visited it.
+ *
+ * The rule that follows, and the one thing to keep if this file changes again:
+ * **never call `respondWith` unless there is something real to respond with.**
+ * Stepping aside leaves the browser to load the page normally, which is always
+ * correct. Responding with a failure replaces a working page with a broken one.
+ *
+ * Why keep the file at all: a registered worker with a fetch handler is what
+ * makes a browser offer "install this site", and that is the whole reason it
+ * was added. It needs to exist and to listen. It does not need to answer.
+ *
+ * **To get real offline support**, `/sw.js` would have to be served with
+ * `connect-src 'self'` while pages keep `connect-src 'none'`. That is a change
+ * to the security posture and to a claim the project makes in public, so it is
+ * an owner decision and not a quiet edit. See docs/SERVICE_WORKER.md.
  */
 
-// Bump on any change to this file's behaviour. `activate` deletes every cache
-// that is not in this list, so a stale worker cannot leave orphans behind.
-const VERSION = 'opentools-v1';
-const SHELL = `${VERSION}-shell`;
-const ASSETS = `${VERSION}-assets`;
-const KEEP = [SHELL, ASSETS];
+// Bumped from v1, whose caches are deleted on activate below. v1 could never
+// populate them, but a browser that cached anything under the old names should
+// not be left holding it.
+const VERSION = 'opentools-v2';
+const KEEP = [`${VERSION}-assets`, `${VERSION}-shell`];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches
-      .open(SHELL)
-      // A failed precache must not abort the install, or one 503 on a guide
-      // page leaves the visitor with no service worker at all.
-      .then((cache) => cache.add('/').catch(() => undefined))
-      .then(() => self.skipWaiting()),
-  );
+self.addEventListener('install', () => {
+  // No precache: `cache.add` performs a fetch, which is refused. Activating
+  // immediately is what lets this version replace the one that broke the site.
+  void self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -49,76 +57,33 @@ self.addEventListener('activate', (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(
-          keys.filter((k) => !KEEP.includes(k)).map((k) => caches.delete(k)),
-        ),
+        Promise.all(keys.filter((key) => !KEEP.includes(key)).map((key) => caches.delete(key))),
       )
-      .then(() => self.clients.claim()),
+      // Claim straight away so open tabs stop being controlled by the old
+      // worker without needing to be closed and reopened.
+      .then(() => self.clients.claim())
+      .catch(() => undefined),
   );
 });
 
-const isHashedAsset = (url) =>
-  url.pathname.startsWith('/_next/static/') ||
-  url.pathname.startsWith('/assets/') ||
-  /\.(?:woff2|ttf)$/u.test(url.pathname);
-
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  if (request.method !== 'GET') return;
-
-  const url = new URL(request.url);
-  // Same-origin only. Nothing third-party is touched, and a request this worker
-  // does not recognise is left entirely alone.
-  if (url.origin !== self.location.origin) return;
-
-  // Content-addressed: a hit can never be stale, so never go to the network.
-  if (isHashedAsset(url)) {
-    event.respondWith(
-      caches.match(request).then(
-        (hit) =>
-          hit ??
-          fetch(request).then((response) => {
-            if (response.ok) {
-              const copy = response.clone();
-              // Not awaited on purpose: the response goes back to the page
-              // now, and the cache write finishes behind it.
-              void caches
-                .open(ASSETS)
-                .then((cache) => cache.put(request, copy))
-                .catch(() => undefined);
-            }
-            return response;
-          }),
-      ),
-    );
-    return;
-  }
-
-  // Pages: network first, so a deploy is visible immediately. The cached copy
-  // exists only to answer when there is no network at all.
-  if (request.mode === 'navigate' || request.destination === 'document') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            void caches
-              .open(SHELL)
-              .then((cache) => cache.put(request, copy))
-              .catch(() => undefined);
-          }
-          return response;
-        })
-        .catch(async () => {
-          const cached = await caches.match(request);
-          if (cached) return cached;
-          const home = await caches.match('/');
-          if (home) return home;
-          return new Response(
-            'You are offline and this page has not been opened before.',
-            { status: 503, headers: { 'Content-Type': 'text/plain' } },
-          );
-        }),
-    );
-  }
+/**
+ * Present so the browser will offer to install the site, and silent by design.
+ *
+ * It listens and does nothing else. `respondWith` is never called, so every
+ * request is loaded by the browser exactly as it would be with no worker at
+ * all — which is the only behaviour that cannot make things worse.
+ *
+ * It is tempting to serve cache hits here "just in case", and the first draft
+ * of this rewrite did exactly that: `caches.match(request).then(hit => hit ??
+ * fetch(request))`. That reintroduces the original bug. `respondWith` has to be
+ * called synchronously, before the cache can be consulted, so the promise is
+ * already committed — and when the cache misses, the `fetch` fallback inside it
+ * is refused by `connect-src 'none'` and the committed promise rejects, which
+ * shows the reader a browser error page instead of their tool.
+ *
+ * There is nothing to serve from anyway: no cache on this origin can ever be
+ * filled while fetching is refused.
+ */
+self.addEventListener('fetch', () => {
+  // Intentionally empty. See above: answering is what broke the site.
 });
