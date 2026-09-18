@@ -168,6 +168,58 @@ Free mitigations worth trying first, in order (none verified yet — see §8):
   they bypass a Worker route needs verifying before being relied on.
 - Cut the sitemap's 558 near-dormant guides out of the warm set.
 
+## 3a. The 503s — why Google is being told to crawl less
+
+Measured 2026-09-18: **76 × 503 in one day, every single one on `/guides/*`.**
+Not one on a tool page. Meanwhile GoogleBot is actively crawling (393 requests,
+plus ~1.4k from `66.249.79.x`).
+
+That combination is the problem. Google reads repeated 503s as a struggling
+origin and **throttles crawl rate** — so the site is currently teaching Google
+to crawl it less, at the exact moment it started crawling at all. Every SEO,
+AEO and GEO improvement is downstream of this: a page that 503s cannot be
+indexed, and cannot be cited by an answer engine.
+
+**The chain, measured end to end:**
+
+1. **Nothing is prerendered.** `find dist -name "*.html"` returns **zero**. Every
+   route builds as `?` or `ƒ`, so all 558 guides render in the Worker on every
+   request. `generateStaticParams()` exists in the guides route and produces no
+   files.
+2. The KV page cache would absorb that, and does not — see §3.
+3. Guides are the heaviest pages on the site (~3,250 words plus `HowTo`,
+   `FAQPage` and `BreadcrumbList` JSON-LD), so a cold render exceeds the
+   free-tier Worker CPU budget.
+4. 503.
+
+**Both escape routes are closed by the free tier, and this is the important
+part.** `vite.config.ts` records why prerender is off, and the reasoning was
+sound when written:
+
+> Build-time prerender is deliberately NOT enabled: it bundles every page into
+> the Worker script (3.0MB gzip vs 0.96MB) for no gain once the KV cache fills
+> on the first request to each URL.
+
+The premise — *"once the KV cache fills"* — is no longer true. It never fills,
+because free KV allows 1,000 writes/day against ~1,262 needed to warm the site.
+And the alternative collides with the other free limit: **a 3.0MB gzip Worker
+script is at or over the free-plan script-size ceiling** (verify the current
+number before attempting it; paid is far higher).
+
+So: the KV route is blocked by the KV write cap, and the prerender route is
+blocked by the script-size cap. **On the free plan the 503s are structural, not
+a bug to fix.** That is the strongest argument yet for §3's conclusion, and it
+now costs crawl rate rather than just speed.
+
+Free things still worth trying first, in order:
+- Cut guide render cost below the CPU budget (fewer JSON-LD blocks, lighter
+  markup). Unproven, and guides are the pages whose schema you least want to
+  thin.
+- Prerender **only** the ~40 tool pages and leave guides dynamic, if vinext
+  supports partial prerender — keeps the bundle small. Unverified.
+
+---
+
 ## 3b. Discovery — the site was not indexed at all
 
 Measured 2026-09-18. `site:getopentools.com` returned **no pages from the
