@@ -61,6 +61,7 @@ trade-off to be argued; it is out.
 | C6 | No tracking script, no third-party origin, no client-side analytics. | `connect-src 'none'`; Decision 6 |
 | C7 | A tool link is live only if `isLiveToolUrl()` returns true; no page ships ahead of its tool. | Board protocol §1.7 |
 | C8 | Outward actions — npm publish, GitHub release, a PR to another repo, a directory listing — need the owner's go-ahead at the time. | Decision 12; Board §1.6 |
+| C9 | **No spend up front.** A tactic that needs a paid tool, a listing fee, an agency, a backlink, or an ad is out — not deferred. Growth is earned or it does not happen. | Owner, stated 2026-09-17 and again 2026-09-18 |
 
 ---
 
@@ -331,7 +332,9 @@ failures at 110 establishes nothing about 8,666.
    `s-maxage=86400` on the second.
 2. A synthetic burst at or above the volume that broke it, against a canary, not
    production.
-3. Restore the daily 503 watcher. The deleted task's prompt and registry entry
+3. Count the KV writes the burst produces, against the 1,000/day free cap
+   (§5b).
+4. Restore the daily 503 watcher. The deleted task's prompt and registry entry
    are preserved at
    `~/.claude/backups/scheduled-tasks-deleted/opentools-crawl-503-check-20260917/`.
    Cloudflare's `workersInvocationsAdaptive` dataset retains roughly three days,
@@ -341,6 +344,53 @@ Nothing in §4 ships before item 1 passes. Pillars 1 and 5 — the search-facing
 ones — do not ship before items 2 and 3.
 
 ---
+
+## 5b. What this costs
+
+C9 is a hard constraint, so it is worth being exact rather than reassuring.
+
+**Free, and stays free.** Every pillar in §4: the AlternativeTo listing, the
+awesome-list PRs, a GitHub release and its GHCR image, Search Console,
+hand-written comparison pages, the processing record, recipe links, and the
+tool itself. No pillar in this document has a price attached, and none is
+waiting on one.
+
+**The one place money can appear is infrastructure, and only if this works.**
+The site runs on Cloudflare Workers with a KV-backed ISR cache. Checked on
+2026-09-18:
+
+| Free-plan limit | Figure |
+| :--- | :--- |
+| Workers requests | 100,000 per day |
+| KV reads | 100,000 per day |
+| **KV writes to different keys** | **1,000 per day** |
+| KV storage | 1 GB |
+
+The request and read caps are comfortable: 100,000 visitors a month averages
+about 3,300 a day. **The write cap is the near wall.** `revalidate = 86400`
+means each page writes its cache entry roughly once a day, and the last release
+measured **626 sitemap URLs** — so a day on which every page is crawled or
+visited once sits around 60% of the free write allowance, before this plan adds
+a single page. Every new page is a permanent daily write.
+
+That has three consequences worth planning around:
+
+1. **Page count is a cost decision, not only an SEO decision.** It is another
+   argument for §4's few hand-written pages over the original's generated
+   matrix, independently of the scaled-content risk.
+2. **Measure writes per request before scaling, not after.** How many KV writes
+   vinext's adapter makes per revalidation is an assumption here, not a
+   measurement — fold it into §5's burst test, which is the natural place to
+   count them.
+3. **Confirm which plan the account is on.** I have not verified whether this
+   account is on Workers Free or Paid. If it is already Paid, the caps above do
+   not bind and this section is precautionary; if it is Free, the write cap is
+   the first thing growth will hit, and it will look like a caching failure
+   rather than a billing one.
+
+None of this is an upfront cost, and none of it changes a tactic in §4. It is
+the honest answer to "what could ever cost money": **success, at a threshold
+worth knowing in advance rather than discovering from an error rate.**
 
 ## 6. Measurement, within the rules
 
