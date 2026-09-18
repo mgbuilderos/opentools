@@ -37,6 +37,17 @@ const KEY = 'file';
  * the tool page opens empty exactly as it did before.
  */
 const SESSION_KEY = 'opentools-handoff-file';
+
+/**
+ * A cheap synchronous marker saying a file is waiting.
+ *
+ * Without it, every page load on the whole site opened IndexedDB just to
+ * discover there was nothing there. Measured: in WebKit that stalled unrelated
+ * pages — `e2e/pdf-sign.spec.ts` went from 14/14 in 13s to two tests timing out
+ * at three minutes each, purely from mounting the collector. Checking a flag
+ * first means a normal page load touches no storage at all.
+ */
+const WAITING_KEY = 'opentools-handoff-waiting';
 export const SESSION_FALLBACK_MAX_BYTES = 3 * 1024 * 1024;
 
 /** A file nobody collected is not worth keeping. */
@@ -47,17 +58,26 @@ interface StoredHandoff {
   storedAt: number;
 }
 
+/** Storage that never answers is storage that is not available. */
+const OPEN_TIMEOUT_MS = 2000;
+
 function openDatabase(): Promise<IDBDatabase | null> {
   return new Promise((resolve) => {
+    // `indexedDB.open` can hang rather than fail. Never let it hold anything up.
+    const giveUp = setTimeout(() => resolve(null), OPEN_TIMEOUT_MS);
+    const settle = (value: IDBDatabase | null) => {
+      clearTimeout(giveUp);
+      resolve(value);
+    };
     if (typeof indexedDB === 'undefined') {
-      resolve(null);
+      settle(null);
       return;
     }
     let request: IDBOpenDBRequest;
     try {
       request = indexedDB.open(DATABASE, 1);
     } catch {
-      resolve(null);
+      settle(null);
       return;
     }
     request.onupgradeneeded = () => {
@@ -66,9 +86,9 @@ function openDatabase(): Promise<IDBDatabase | null> {
         database.createObjectStore(STORE);
       }
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => resolve(null);
-    request.onblocked = () => resolve(null);
+    request.onsuccess = () => settle(request.result);
+    request.onerror = () => settle(null);
+    request.onblocked = () => settle(null);
   });
 }
 
@@ -135,7 +155,26 @@ function takeFromSession(): File | null {
   }
 }
 
+function markWaiting() {
+  try {
+    sessionStorage?.setItem(WAITING_KEY, '1');
+  } catch {
+    // Without the marker the file simply is not collected. Nothing breaks.
+  }
+}
+
+function clearWaiting(): boolean {
+  try {
+    const waiting = sessionStorage?.getItem(WAITING_KEY) === '1';
+    sessionStorage?.removeItem(WAITING_KEY);
+    return waiting;
+  } catch {
+    return false;
+  }
+}
+
 export async function offerFile(file: File): Promise<boolean> {
+  markWaiting();
   const database = await openDatabase();
   if (!database) return offerViaSession(file);
 
@@ -171,6 +210,9 @@ export async function offerFile(file: File): Promise<boolean> {
  * storage is unavailable.
  */
 export async function takeOfferedFile(): Promise<File | null> {
+  // Nothing was handed over, which is almost every page load. Touch no storage.
+  if (!clearWaiting()) return null;
+
   const database = await openDatabase();
   if (!database) return takeFromSession();
 

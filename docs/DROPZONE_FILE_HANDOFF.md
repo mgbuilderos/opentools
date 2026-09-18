@@ -72,6 +72,30 @@ Measured inside WebKit on this site:
   freshly built server; that trap did produce one earlier false negative, so
   **kill any `wrangler dev` before trusting a WebKit result.**
 
+### A regression this nearly shipped, and the design change it forced
+
+Mounting the collector site-wide meant **every page load on the whole site
+opened IndexedDB just to find nothing there**. In WebKit that stalled unrelated
+pages: `e2e/pdf-sign.spec.ts` went from **14/14 in 13 seconds to two tests
+timing out at three minutes each**, purely from mounting the collector. Proved
+by removing it and watching them pass again.
+
+So `indexedDB.open` in WebKit on this site does not merely fail — it can hang,
+returning neither success nor error. That is almost certainly the same reason
+the handoff itself does not work there.
+
+Two changes came out of it, and both are worth keeping whatever happens next:
+
+1. **`offerFile` leaves a cheap synchronous marker in `sessionStorage`, and the
+   collector checks that before touching any storage.** On a normal page load —
+   which is nearly all of them — nothing is opened at all.
+2. **`openDatabase` is raced against a 2-second timeout**, so storage that never
+   answers can never hold anything up.
+
+**The lesson worth carrying:** a component mounted in the root layout runs on
+every page, so its worst case is the whole site's worst case. Anything mounted
+there must do nothing, cheaply, in the common case.
+
 ### Where to look next
 
 1. Instrument the live page rather than inferring: have `HandedOverFile` write
