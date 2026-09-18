@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
+import { isLiveToolUrl } from '@/lib/seo/live-tools';
 import { cn } from '@/lib/utils';
 import { TemplateClientCustomizer } from '@/components/templates/template-client-customizer';
 import {
@@ -179,7 +180,14 @@ export default async function TemplateDetailPage({
           </header>
 
           {/* Target Audience & Key Features Box */}
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div
+            className={cn(
+              'grid gap-6',
+              isLiveToolUrl(template.relatedToolHref)
+                ? 'sm:grid-cols-2'
+                : 'sm:grid-cols-1',
+            )}
+          >
             <div className="rounded-2xl border bg-card p-6 shadow-sm space-y-3">
               <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
                 <Users className="size-4 text-muted-foreground" />
@@ -190,27 +198,29 @@ export default async function TemplateDetailPage({
               </p>
             </div>
 
-            <div className="rounded-2xl border bg-card p-6 shadow-sm space-y-3">
-              <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
-                <Sparkles className="size-4 text-muted-foreground" />
-                <span>Companion OpenTools Utility</span>
+            {isLiveToolUrl(template.relatedToolHref) ? (
+              <div className="rounded-2xl border bg-card p-6 shadow-sm space-y-3">
+                <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+                  <Sparkles className="size-4 text-muted-foreground" />
+                  <span>Companion OpenTools Utility</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {template.relatedToolName}
+                  </span>
+                  <a
+                    href={template.relatedToolHref}
+                    className={cn(
+                      buttonVariants({ variant: 'outline', size: 'sm' }),
+                      'h-8 px-3 text-xs gap-1',
+                    )}
+                  >
+                    Open Tool
+                    <ArrowRight className="size-3" />
+                  </a>
+                </div>
               </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs text-muted-foreground">
-                  {template.relatedToolName}
-                </span>
-                <a
-                  href={template.relatedToolHref}
-                  className={cn(
-                    buttonVariants({ variant: 'outline', size: 'sm' }),
-                    'h-8 px-3 text-xs gap-1',
-                  )}
-                >
-                  Open Tool
-                  <ArrowRight className="size-3" />
-                </a>
-              </div>
-            </div>
+            ) : null}
           </div>
 
           {/* Key Features List */}

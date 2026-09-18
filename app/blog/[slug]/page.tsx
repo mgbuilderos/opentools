@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
+import { isLiveToolUrl } from '@/lib/seo/live-tools';
 import { cn } from '@/lib/utils';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/seo/blog-data';
 
@@ -382,37 +383,39 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </p>
           </header>
 
-          {/* Interactive Tool Launcher Callout Box */}
-          <div className="rounded-2xl border bg-card p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Sparkles className="size-4 text-foreground" />
-                  <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Try The Interactive Tool Now
-                  </span>
+          {/* Interactive Tool Launcher Callout Box (Only displayed when tool is live) */}
+          {isLiveToolUrl(post.toolDestination) ? (
+            <div className="rounded-2xl border bg-card p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="size-4 text-foreground" />
+                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Try The Interactive Tool Now
+                    </span>
+                  </div>
+                  <h3 className="mt-1 text-lg font-bold text-foreground">
+                    {post.toolName}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    100% In-browser execution. Zero server uploads, instant
+                    results, free forever.
+                  </p>
                 </div>
-                <h3 className="mt-1 text-lg font-bold text-foreground">
-                  {post.toolName}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  100% In-browser execution. Zero server uploads, instant
-                  results, free forever.
-                </p>
+                <a
+                  href={post.toolDestination}
+                  aria-label={`Open interactive ${post.toolName}`}
+                  className={cn(
+                    buttonVariants({ variant: 'default', size: 'sm' }),
+                    'h-10 px-5 text-xs font-semibold shrink-0 gap-2',
+                  )}
+                >
+                  Open Workbench
+                  <ArrowRight className="size-4" />
+                </a>
               </div>
-              <a
-                href={post.toolDestination}
-                aria-label={`Open interactive ${post.toolName}`}
-                className={cn(
-                  buttonVariants({ variant: 'default', size: 'sm' }),
-                  'h-10 px-5 text-xs font-semibold shrink-0 gap-2',
-                )}
-              >
-                Open Workbench
-                <ArrowRight className="size-4" />
-              </a>
             </div>
-          </div>
+          ) : null}
 
           {/* Table of Contents */}
           <div className="rounded-xl border bg-muted/30 p-5">
@@ -530,28 +533,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           ) : null}
 
           {/* Bottom Call to Action */}
-          <div className="rounded-2xl border bg-muted/40 p-8 text-center space-y-4">
-            <h3 className="text-xl font-bold text-foreground">
-              Ready to use {post.toolName}?
-            </h3>
-            <p className="max-w-xl mx-auto text-sm text-muted-foreground">
-              Execute this workflow privately on your device right now without
-              creating an account or paying for cloud API credits.
-            </p>
-            <div>
-              <a
-                href={post.toolDestination}
-                aria-label={`Launch ${post.toolName}`}
-                className={cn(
-                  buttonVariants({ variant: 'default', size: 'lg' }),
-                  'h-11 px-6 text-sm font-semibold gap-2',
-                )}
-              >
-                Launch {post.toolName}
-                <ArrowRight className="size-4" />
-              </a>
+          {isLiveToolUrl(post.toolDestination) ? (
+            <div className="rounded-2xl border bg-muted/40 p-8 text-center space-y-4">
+              <h3 className="text-xl font-bold text-foreground">
+                Ready to use {post.toolName}?
+              </h3>
+              <p className="max-w-xl mx-auto text-sm text-muted-foreground">
+                Execute this workflow privately on your device right now without
+                creating an account or paying for cloud API credits.
+              </p>
+              <div>
+                <a
+                  href={post.toolDestination}
+                  aria-label={`Launch ${post.toolName}`}
+                  className={cn(
+                    buttonVariants({ variant: 'default', size: 'lg' }),
+                    'h-11 px-6 text-sm font-semibold gap-2',
+                  )}
+                >
+                  Launch {post.toolName}
+                  <ArrowRight className="size-4" />
+                </a>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </article>
     </AppShell>

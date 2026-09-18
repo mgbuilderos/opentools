@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
+import { isLiveToolUrl } from '@/lib/seo/live-tools';
 import { cn } from '@/lib/utils';
 import {
   type DetectedAction,
@@ -87,6 +88,48 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
           'Format and check the JSON, or generate TypeScript types or a Zod schema from it.',
         icon: <Code2 className="size-5 text-foreground" />,
         actions: SMART_DROPZONE_ACTIONS.json,
+      };
+    }
+
+    if (
+      ['srt', 'vtt', 'sbv', 'lrc', 'ass', 'ssa'].includes(ext) &&
+      isLiveToolUrl('/subtitles/workbench')
+    ) {
+      return {
+        category: 'Subtitles & Captions',
+        typeLabel: `${ext.toUpperCase()} Subtitle File`,
+        summary: `${file.name} (${sizeKb} KB)`,
+        details:
+          'Ready for subtitle conversion, two-point sync, retiming, and caption validation.',
+        icon: <FileText className="size-5 text-foreground" />,
+        actions: [
+          {
+            label: 'Subtitle workbench',
+            href: '/subtitles/workbench',
+            isPrimary: true,
+          },
+        ],
+      };
+    }
+
+    if (
+      (file.type === 'audio/mpeg' || ext === 'mp3') &&
+      isLiveToolUrl('/audio/mp3-toolkit')
+    ) {
+      return {
+        category: 'Audio',
+        typeLabel: 'MP3 Audio',
+        summary: `${file.name} (${sizeKb} KB)`,
+        details:
+          'Ready for lossless cutting, joining, ID3 tagging, and frame-accurate inspection.',
+        icon: <FileText className="size-5 text-foreground" />,
+        actions: [
+          {
+            label: 'MP3 toolkit',
+            href: '/audio/mp3-toolkit',
+            isPrimary: true,
+          },
+        ],
       };
     }
 

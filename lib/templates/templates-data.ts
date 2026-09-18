@@ -813,6 +813,176 @@ Maintain high code quality and operational discipline as your engineering organi
       },
     ],
   },
+  {
+    slug: 'broadcast-captioning-subtitle-style-guide',
+    title: 'Broadcast Captioning & Subtitle Style Guide',
+    category: 'Developer Runbooks',
+    format: 'Obsidian & Markdown',
+    badge: 'Creator Pack',
+    description:
+      'Standard broadcast subtitle and captioning specifications: 2-line maximum, ~42 characters per line limit, <21 cps reading speed, and 700 ms minimum duration rules.',
+    metaDescription:
+      'Standard broadcast captioning and subtitle style guide template. Line length, reading speed limits, minimum screen durations, and natural break rules.',
+    keywords: [
+      'subtitle style guide template',
+      'captioning standards broadcast',
+      'subtitle line length limit',
+      'caption reading speed cps',
+      'subtitles characters per second',
+      'caption timing guidelines',
+    ],
+    features: [
+      'Maximum 2 lines per subtitle event to preserve video visibility',
+      'Line length constraint: maximum ~42 characters per line (84 characters total)',
+      'Reading speed threshold: maintain pacing below 21 characters per second (CPS)',
+      'Minimum screen display duration: at least 700 ms per subtitle event',
+      'Linguistic line break rules (keeping noun phrases and prepositional phrases intact)',
+    ],
+    targetAudience:
+      'Video Editors, Translators, Subtitle Authors, and Content Creators',
+    downloadFilename: 'broadcast-subtitle-style-guide.md',
+    relatedToolName: 'Writing & Text Workbench',
+    relatedToolHref: '/text/writing',
+    contentMarkdown: `# Broadcast Captioning & Subtitle Style Guide
+
+A production standard for clean, accessible, and legible video subtitles and closed captions across broadcast and streaming media.
+
+---
+
+## 📏 Core Structural Limits
+
+Adhere strictly to industry broadcast constraints to ensure viewers can comfortably read cues without obscuring visual content:
+
+| Metric | Target Specification | Hard Maximum / Limit |
+| :--- | :--- | :--- |
+| **Lines per Subtitle** | 1 to 2 lines | **At most 2 lines** |
+| **Line Length** | 35 to 40 characters | **About 42 characters per line** |
+| **Reading Speed** | 15 to 17 characters/sec | **Under about 21 characters a second** |
+| **Display Duration** | 1.5 to 4.0 seconds | **At least 700 ms minimum** |
+
+---
+
+## ✂️ Line Break Principles
+
+Never divide text arbitrarily based on character counts alone. Subtitle breaks should align with natural speech cadences and syntactic units:
+
+1. **Keep prepositional phrases together**:
+   - *Poor:* We went into the / room quietly.
+   - *Preferred:* We went / into the room quietly.
+2. **Do not separate auxiliary verbs from principal verbs**:
+   - *Poor:* She has / completed the full inspection.
+   - *Preferred:* She has completed / the full inspection.
+3. **Keep proper nouns and compound names on a single line**:
+   - *Poor:* We consulted Dr. / Evelyn Wright on Friday.
+   - *Preferred:* We consulted Dr. Evelyn Wright / on Friday.
+
+---
+
+## ⏱️ Timing & Pacing Guidelines
+
+- **Shot Changes**: When dialogue continues across a hard video cut, place the subtitle in point either directly on the cut or at least 2 frames before/after. Avoid hanging a subtitle across a cut for fewer than 3 frames.
+- **Minimum Gap**: Maintain a minimum gap of at least 2 to 4 frames (approx. 80–160 ms) between consecutive subtitle events to allow viewers to register cue transitions.
+- **Synchronicity**: Dialogue cues should appear within 100 ms of the first acoustic onset of speech.`,
+    faqs: [
+      {
+        question: 'Why is there a strict limit of 42 characters per line?',
+        answer:
+          'Standard broadcast and web video players calibrate font sizing so that 42 characters fill approximately 80% of safe title area without clipping on mobile displays.',
+      },
+      {
+        question:
+          'What happens if reading speed exceeds 21 characters per second?',
+        answer:
+          'Speeds above 21 cps strain comprehension for viewers, requiring either dialogue condensation or extending the display duration past speech cessation.',
+      },
+      {
+        question: 'Why must a subtitle stay on screen for at least 700 ms?',
+        answer:
+          'Eye-tracking studies demonstrate that the human visual system requires approximately 700 ms to acquire a subtitle line, register the characters, and return focus to the visual action.',
+      },
+    ],
+  },
+  {
+    slug: 'video-caption-subtitle-release-checklist',
+    title: 'Video Caption & Subtitle QA Release Checklist',
+    category: 'Developer Runbooks',
+    format: 'Obsidian & Markdown',
+    badge: 'Creator Pack',
+    description:
+      'Pre-flight quality assurance checklist for video subtitles: character encoding validation, reading speed limits, two-point synchronization, and player compatibility.',
+    metaDescription:
+      'Free pre-flight QA checklist for subtitle and caption releases. Verify sync, character encoding, 42-char line lengths, and reading speed limits.',
+    keywords: [
+      'subtitle qa checklist',
+      'closed caption release checklist',
+      'srt vtt quality assurance',
+      'subtitle drift verification',
+      'caption pre-flight check',
+    ],
+    features: [
+      'Character encoding verification (UTF-8 encoding with BOM handling)',
+      'Timing sync check across first and last dialogue marks (two-point verification)',
+      'Line length validation ensuring cues do not exceed ~42 characters',
+      'Reading speed ceiling check (verifying pace stays under ~21 characters/sec)',
+      'Minimum screen duration verification (at least 700 ms)',
+    ],
+    targetAudience:
+      'Post-Production Supervisors, Video Producers, Localization Teams, and Creators',
+    downloadFilename: 'subtitle-caption-release-checklist.md',
+    relatedToolName: 'Writing & Text Workbench',
+    relatedToolHref: '/text/writing',
+    contentMarkdown: `# Video Caption & Subtitle QA Release Checklist
+
+Use this pre-flight verification checklist before publishing video captions or uploading subtitle sidecars (.srt, .vtt) to hosting platforms.
+
+---
+
+## 📋 Phase 1: File Format & Encoding Integrity
+
+- [ ] **Encoding Standard**: File is encoded in **UTF-8** (without unexpected Windows-1252 or Latin-1 byte corruption).
+- [ ] **BOM Handling**: Byte Order Mark (BOM) is stripped or properly handled if targeting strict web players.
+- [ ] **Sequential Indexing**: Cue numbers in .srt files increment strictly sequentially with no gaps or duplicates.
+- [ ] **Timestamp Format**: Timestamps follow exact format specifications (e.g. \`00:00:00,000\` for SRT, \`00:00:00.000\` for WebVTT).
+
+---
+
+## ⏱️ Phase 2: Synchronization & Timing Accuracy
+
+- [ ] **First Line Anchor**: First spoken dialogue event syncs within 100 ms of the spoken audio onset.
+- [ ] **End-of-Video Anchor**: Final spoken cue lines up accurately with the end of dialogue (confirms zero frame-rate drift).
+- [ ] **Minimum Cue Duration**: Every subtitle event displays for **at least 700 ms**.
+- [ ] **Scene Cut Alignment**: Subtitles do not bleed across scene cuts for brief fractional frames.
+
+---
+
+## 👁️ Phase 3: Legibility & Reading Speed Compliance
+
+- [ ] **Line Count Limit**: No subtitle cue exceeds **2 lines**.
+- [ ] **Line Length Limit**: Lines do not exceed **about 42 characters** in width.
+- [ ] **Reading Speed Ceiling**: Reading speed remains **under about 21 characters a second** across all cues.
+- [ ] **Natural Break Structure**: Line breaks preserve prepositional phrases, verb phrases, and proper nouns.
+
+---
+
+## 🚀 Phase 4: Player Validation
+
+- [ ] Rendered preview verified in target player (e.g. Web player, VLC, YouTube studio).
+- [ ] Subtitles render legibly against both bright and dark background scenes.`,
+    faqs: [
+      {
+        question:
+          'How do I check if my subtitle file has drifted before publishing?',
+        answer:
+          'Play the first 30 seconds of the video to check initial sync, then jump directly to the final 2 minutes. If the offset grew over the duration, the file requires two-point synchronization to fix a frame-rate mismatch.',
+      },
+      {
+        question:
+          'Why should I check character encoding before releasing captions?',
+        answer:
+          'Subtitles authored on Windows often use Windows-1252 (CP1252). When played in modern web browsers expecting UTF-8, accented characters and typographic quotes render as broken symbols (mojibake).',
+      },
+    ],
+  },
 ];
 
 export function getAllTemplates(): readonly TemplateItem[] {
