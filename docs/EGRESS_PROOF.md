@@ -91,16 +91,28 @@ reports where bytes went, never that no flaw remains. This is exactly why
 `zero data leaks` was removed from the product rather than re-justified:
 no egress proof can support a security guarantee.
 
-## Open item for the owner
+## Closed: the third-party beacon is gone at source
 
-Cloudflare injects its analytics beacon (`static.cloudflareinsights.com/
-beacon.min.js`, with a `data-cf-beacon` token) into the HTML at the edge. **The
-site's own CSP blocks it** — `transferSize: 0`, `duration: 0`, and none of its
-globals ever appear, so nothing is collected today. But the tag is in the DOM,
-and the claim survives only because the CSP catches it. It should be switched
-off at source: Cloudflare dashboard → the zone → **Speed → Optimization →
-Browser Insights / Web Analytics**, turn off automatic beacon injection. Until
-then this is a third-party tracker that one CSP relaxation away from being live.
+Cloudflare was injecting its Web Analytics beacon
+(`static.cloudflareinsights.com/beacon.min.js`, with a `data-cf-beacon` token)
+into the HTML at the edge. The site's own CSP blocked it — `transferSize: 0`,
+no globals ever present, so nothing was ever collected — but the claim rested
+on one directive catching it rather than on the tag being absent.
+
+**Disabled at source 2026-09-19** via Web Analytics → Manage site → Real User
+Measurements → **Disable**. Verified with browser-shaped requests (a bare
+`User-Agent: Mozilla/5.0` is not enough — Cloudflare only injected for requests
+that looked like a real browser asking for HTML, so a weaker check returns a
+false all-clear):
+
+```bash
+curl -s "https://getopentools.com/?cb=$(date +%s)" \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36' \
+  -H 'Accept: text/html' | grep -c cloudflareinsights
+```
+
+`0` on `/`, `/pdf/compress` and `/support`. "No third-party trackers" no longer
+depends on the CSP to be true.
 
 ---
 
