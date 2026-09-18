@@ -126,3 +126,72 @@ describe('sitemap', () => {
     }
   });
 });
+
+/**
+ * Claims the product cannot back, kept out of the surfaces a visitor reads.
+ *
+ * On 2026-09-18 the shipped bundle carried "zero data leaks", "zero cloud
+ * uploads" and "Prevented accidental data leaks" on the card shown after every
+ * completed task, while `ai/KNOWN_ISSUES.md` recorded the egress proof
+ * protocol as "not empirically complete" and `implementation/ARCHITECTURE.md`
+ * said that because of it "the UI says proof is pending". It did not.
+ *
+ * `e2e/egress-proof.spec.ts` now supplies that proof per release, so the
+ * *egress* claim is earned. These two are not, and no proof can earn them:
+ *
+ * - A **security guarantee** ("zero data leaks", "prevented data leaks") is an
+ *   assertion about every vulnerability that does not exist. Egress evidence
+ *   says where bytes went, never that no flaw remains.
+ * - A **claim about the reader's money** ("saved you paid subscriptions") is an
+ *   invented number by another name — board §1.7.
+ */
+describe('claims the build cannot back', () => {
+  const surfaces = [
+    'components/completion-value-dialog.tsx',
+    'components/milestone-modal.tsx',
+    'components/app-shell.tsx',
+    'app/support/page.tsx',
+  ];
+
+  const forbidden: Array<[RegExp, string]> = [
+    [
+      /zero[- ]?data[- ]?leaks?/iu,
+      'a security guarantee no proof can establish',
+    ],
+    [
+      /prevented\s+(accidental\s+)?data[- ]?leaks?/iu,
+      'claims a breach was averted',
+    ],
+    [/saved you paid/iu, "a claim about the reader's money"],
+    [
+      /\b0 bytes uploaded\b/iu,
+      'rule 23 — needs the egress proof named explicitly',
+    ],
+  ];
+
+  it.each(surfaces)('%s makes no unbackable claim', (relative) => {
+    const file = path.join(appRoot, relative);
+    if (!existsSync(file)) return;
+    // Comments may quote a removed claim in order to explain why it went.
+    const code = readFileSync(file, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//gu, '')
+      .replace(/\{\/\*[\s\S]*?\*\/\}/gu, '')
+      .replace(/\/\/[^\n]*/gu, '');
+    for (const [pattern, why] of forbidden) {
+      expect(code, `${relative}: ${why}`).not.toMatch(pattern);
+    }
+  });
+
+  it('keeps the egress proof wired to the claim it backs', () => {
+    // If the dialog names the mechanism, the test that verifies it must exist.
+    const dialog = readFileSync(
+      path.join(appRoot, 'components/completion-value-dialog.tsx'),
+      'utf8',
+    );
+    if (/connect-src/iu.test(dialog)) {
+      expect(existsSync(path.join(appRoot, 'e2e/egress-proof.spec.ts'))).toBe(
+        true,
+      );
+    }
+  });
+});

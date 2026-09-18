@@ -28,9 +28,26 @@ import {
   SUPPORT_PREFERENCE_KEY,
 } from '@/lib/support-preference';
 
+/**
+ * What the tool just did, in words a sceptic can check.
+ *
+ * These lines used to promise things no build can prove. "Zero data leaks" is
+ * a security guarantee, not an egress measurement — nobody can promise the
+ * absence of every vulnerability. "Saved you paid software subscriptions" is a
+ * claim about someone else's finances. Business rule 23 permits a measured
+ * egress claim only for a build that passed the egress proof protocol, and
+ * `ai/KNOWN_ISSUES.md` recorded that protocol as not empirically complete,
+ * while these shipped anyway.
+ *
+ * `e2e/egress-proof.spec.ts` is now that protocol, and it runs on every
+ * release in both engines. What it establishes is narrower and far stronger
+ * than what was here before: the page is served `connect-src 'none'`, five
+ * deliberate exfiltration attempts are refused by policy, and a real file
+ * through a real tool produces no off-origin response and zero off-origin
+ * bytes. These lines say that and nothing beyond it.
+ */
 function getReliefHeadline(operation?: string): string {
-  if (!operation)
-    return 'Kept your files 100% on your device with zero cloud uploads.';
+  if (!operation) return 'Handled in this tab, on your device.';
   const op = operation.toLowerCase();
   if (
     op.includes('secret') ||
@@ -40,14 +57,14 @@ function getReliefHeadline(operation?: string): string {
     op.includes('sanitize') ||
     op.includes('mask')
   ) {
-    return 'Prevented accidental data leaks and protected sensitive credentials.';
+    return 'Scrubbed in this tab — nothing was sent anywhere to do it.';
   }
   if (
     op.includes('compress') ||
     op.includes('size') ||
     op.includes('optimize')
   ) {
-    return 'Target size achieved. Ready for upload portals with zero data leaks.';
+    return 'Compressed in this tab, ready for that upload portal.';
   }
   if (
     op.includes('pdf') ||
@@ -55,12 +72,12 @@ function getReliefHeadline(operation?: string): string {
     op.includes('merge') ||
     op.includes('split')
   ) {
-    return 'Saved you paid software subscriptions and kept documents 100% private.';
+    return 'Handled in this tab. Your document never left the browser.';
   }
   if (op.includes('ocr') || op.includes('audio') || op.includes('speech')) {
-    return 'Fast offline AI processing with zero third-party cloud uploads.';
+    return 'The model ran here on your device, not in a cloud.';
   }
-  return 'Saved you paid software subscriptions and kept data 100% on your device.';
+  return 'Handled in this tab, on your device.';
 }
 
 /** A non-modal receipt after download/copy intent; the original action is never blocked or delayed. */
@@ -196,6 +213,20 @@ export function CompletionValueDialog() {
           className="mt-1.5 text-sm leading-relaxed text-muted-foreground"
         >
           {receipt.summary ?? `${receipt.operation} is complete.`}
+        </p>
+
+        {/*
+          The mechanism, named, because it is checkable in a way an adjective
+          is not: this page is served with `connect-src 'none'`, so the browser
+          itself refuses to let it open a connection. Verified per release by
+          `e2e/egress-proof.spec.ts` in Chromium and WebKit.
+        */}
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+          Your browser blocks this page from uploading anything —{' '}
+          <code className="font-mono text-[11px]">
+            connect-src &apos;none&apos;
+          </code>
+          .
         </p>
 
         <dl className="my-4 grid grid-cols-2 gap-3 border-y py-3">
