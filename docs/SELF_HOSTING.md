@@ -16,7 +16,7 @@ everything else, so the runtime stage carries the Worker runtime and the built
 site and nothing from the toolchain. The base image is pinned by digest
 (`node:22.23.2-bookworm-slim`); workerd needs glibc, so Alpine is not an option.
 
-The resulting image is about 681 MB.
+The resulting image is about 692 MB (measured 2026-09-18; it grows as pages are added, so re-check rather than trust this).
 
 ## Run
 

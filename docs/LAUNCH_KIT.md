@@ -453,7 +453,7 @@ will be someone reporting that `docker run` 404s.
 >     docker exec ot node -e "fetch('http://127.0.0.1:8796/').then(r=>console.log(r.status))"
 >
 > Honest about what it is not: no TLS, no auth, single process, no clustering.
-> Put it behind your reverse proxy like everything else. Image is ~681 MB
+> Put it behind your reverse proxy like everything else. Image is ~692 MB
 > because workerd needs glibc.
 >
 > MIT, no paid tier, nothing held back. Happy to take issues or PRs.
