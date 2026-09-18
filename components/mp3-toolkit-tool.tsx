@@ -147,12 +147,14 @@ export function Mp3ToolkitTool() {
     // Read client-side so the route stays static and cacheable.
     const requested = new URLSearchParams(window.location.search).get('tool');
     const match = MODES.find((entry) => `mp3-${entry.id}` === requested);
-    if (!match) return;
-    // Deferred by a frame, the pattern the other workbenches use: setting state
-    // synchronously inside an effect cascades an extra render.
-    const frame = requestAnimationFrame(() => setMode(match.id));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+    if (!match || match.id === mode) return;
+    // Applied directly rather than deferred to a frame: in production
+    // Cloudflare injects a beacon into the HTML at the edge, React rebuilds the
+    // tree when hydration disagrees, and a deferred selection is lost with it.
+    // Synchronising state to the address bar, which is an external system.
+    // oxlint-disable-next-line react/react-compiler
+    setMode(match.id);
+  }, [mode]);
 
   useEffect(() => {
     if (error) errorRef.current?.focus();
