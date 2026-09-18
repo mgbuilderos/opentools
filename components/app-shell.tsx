@@ -24,6 +24,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { groupIcons } from '@/components/category-icons';
 import { CompletionValueDialog } from '@/components/completion-value-dialog';
+import { InstallPrompt } from '@/components/install-prompt';
 import { SUPPORT_CONFIG } from '@/lib/support-config';
 import {
   NAVIGATION_MAJOR_SECTIONS,
@@ -351,6 +352,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-background">
+      <InstallPrompt />
       <CompletionValueDialog />
       <a
         href="#tool"
