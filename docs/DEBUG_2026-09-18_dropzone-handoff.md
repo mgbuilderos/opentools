@@ -372,6 +372,9 @@ Result on this branch:
 - `vitest run` — **906 passed, 0 failed** (897 before, plus 9 new)
 - `npm run qc` — **PASS, 8/8 mandatory gates**
 - `npm run build` — exit 0
+- Playwright, Chromium and WebKit — **1,440 passed / 0 failed in 6.5 min**,
+  plus `egress-proof.spec.ts` **6/6** run separately (see below): **1,446 of
+  1,446**, the whole suite
 
 Manual checks done in a real browser at 375×812 (iPhone-sized), dark mode:
 
@@ -404,6 +407,50 @@ Measured values on that run: `showsEmptyPicker: false`, `showsFileName: true`,
 `pageCount: "3 pages"`, no error text on the page.
 
 ---
+
+## Running the suite on this machine, and what it nearly hid
+
+Getting an honest e2e number here took four attempts. Recording it, because the
+first result was worse than useless — it was confidently wrong.
+
+**Attempt 1 — the shared config could not start.** `playwright.config.ts`
+hardcodes port 8788 and `apps/claude-worktree`'s preview server held it:
+`Address already in use`. That abort was luck. `reuseExistingServer` is on
+locally, so on the other path it would have attached to that server and tested
+**a different branch**, green — see Bug 8.
+
+**Attempt 2 — 800 failures, all fictitious.** Run against this branch's own
+server on 8791, that server **died at test 641 of 1,440**. 640 passed; every
+test after it failed `ERR_CONNECTION_REFUSED`. Reporting those 800 as failures
+would have been reporting the code for the harness's collapse.
+
+**What actually killed it: three Playwright suites on one machine.** Two more
+were running from `apps/web-ui-ux-worktree`, each with its own `workerd`. Free
+memory was about 390 MB. Run alone, `all-tools-smoke.spec.ts` finished
+**664/664 in 1.1 minutes with zero connection errors** — so the server is fine
+and the crash was contention.
+
+**Attempt 3 — the egress proof cannot move ports.**
+`e2e/egress-proof.spec.ts:31` hardcodes `const SAME_ORIGIN = 'localhost:8788'`
+and line 85 filters on the same string, so on any other port **every
+same-origin request is counted as a leak** and the proof fails by construction.
+Confirmed by a throwaway edit pointing the constant at the port actually in
+use: **6/6 passed**, immediately. The edit was reverted and is not committed.
+This belongs with Bug 8 — the port is not a detail, it is baked into the proof.
+
+**Attempt 4 — clean.** Once the machine was quiet, on a port checked free
+first: **1,440 passed, 0 failed, 6.5 minutes**, Chromium and WebKit.
+
+Two results are worth naming on their own, because they are what this change
+could plausibly have broken:
+
+- `tool-deep-links.spec.ts` — **14/14**, including
+  *"survives the served HTML differing from what React rendered"*, the
+  regression test for the Cloudflare-beacon hydration failure. That is the
+  test that proves the Bug 4 fixes work the way the shipped one does.
+- `egress-proof.spec.ts` — **6/6**. The important one: this change adds
+  IndexedDB, and the proof confirms nothing new goes on the wire.
+
 
 ## How to check the handoff store yourself
 
