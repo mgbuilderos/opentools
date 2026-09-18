@@ -18,7 +18,7 @@ in an afternoon, the site goes dark mid-launch, and HN traffic does not return.
 
 | # | Channel | Why here | Prerequisite |
 | :-- | :--- | :--- | :--- |
-| 1 | **AlternativeTo** | No spike. Pure compounding. Safe to do today. | none |
+| 1 | **AlternativeTo** | Submit and forget. **Free queue is months long** — see below. | none |
 | 2 | **r/degoogle**, **r/pdf** | Small, forgiving, real feedback. A capacity test. | none |
 | 3 | **r/privacy** | Bigger. Watch the Cloudflare dashboard during. | survived #2 |
 | 4 | **Show HN** | One shot. Highest ceiling. | **§3 resolved** |
@@ -27,12 +27,31 @@ in an afternoon, the site goes dark mid-launch, and HN traffic does not return.
 Between each, check `Workers → Requests` in the Cloudflare dashboard. If you
 approach 100k in a day, stop and fix the cache before going further.
 
+**What actually moves traffic this week is #2 and #3, not #1.** AlternativeTo is
+a months-long queue; the subreddits are same-day. Submit AlternativeTo because
+it costs ten minutes and compounds, then go straight to the Reddit posts.
+
 ---
 
-## 1. AlternativeTo — do this today
+## 1. AlternativeTo — submit and forget
 
-Submit at `alternativeto.net/manage/new-app/`. Listed as an alternative to:
-**Smallpdf**, **iLovePDF**, **PDF24**, **TinyPNG**.
+**Set expectations honestly: this is not a traffic source this month.** Checked
+2026-09-18 against their FAQ — a new app "usually sits in the backlog for at
+least a few months before anyone looks at it". There is a $5 priority option
+that gets review in 1–2 business days; at no spend, take the free queue and
+forget about it. It is still worth doing on day one precisely because the clock
+only starts when you submit.
+
+**There is no listing for OpenTools today** — confirmed by checking the
+Smallpdf alternatives page, so this is a clean first submission.
+
+**How:** register, then click the **user icon, top right → "Suggest new
+application"**. (There is no public deep link; the form is behind sign-in.)
+Listed as an alternative to: **Smallpdf**, **iLovePDF**, **PDF24**, **TinyPNG**.
+
+Read their "Why wasn't my software approved?" page before submitting — the
+common rejection is a listing that reads like marketing rather than a
+description. The copy below is written to pass that.
 
 - **Name:** OpenTools
 - **URL:** https://getopentools.com
