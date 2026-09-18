@@ -236,3 +236,27 @@ from that repo is one of the few durable fixes for the authority problem in
 - **Never ask for money in the post.** The support page exists; linking the
   tool is enough. Asking converts worse and reads badly in all four places.
 - **One link per post.** Multiple links reads as spam to automod.
+
+---
+
+## The schedule — now actually scheduled
+
+Created 2026-09-18 as real scheduled tasks, not a list to remember. They run
+while the Claude desktop app is open; if it is closed when one is due, it runs
+at next launch. Manage them under **Scheduled** in the sidebar.
+
+| Task | When | What it does |
+| :--- | :--- | :--- |
+| `opentools-traffic-snapshot` | **daily 09:00** | Pulls yesterday's traffic and appends to `docs/traffic-log.csv`. **The important one** — Cloudflare's free plan keeps only ~5 days, so every missed day destroys that data permanently. |
+| `opentools-launch-day-1` | 19 Sep, 10:00 | Capacity check, then AlternativeTo + the first subreddit post. |
+| `opentools-launch-day-4` | 22 Sep, 10:00 | Measures what Day 1 did, then the second subreddit — or says why the first one flopped. |
+| `opentools-launch-day-8-rprivacy` | 26 Sep, 10:00 | r/privacy, gated on headroom against the 100k/day ceiling. |
+| `opentools-weekly-revenue-review` | **Mondays 10:00** | Traffic, funnel, revenue, capacity, and the single best next action. Amends `REVENUE_OPERATIONS.md`. |
+
+Show HN is deliberately **not** scheduled. It is one shot and it stays blocked
+until the free-tier ceiling in `REVENUE_OPERATIONS.md` §3 is resolved; putting a
+date on it would invite firing it early.
+
+Each launch task hands over the post text and the reasoning — none of them post
+anything. Posting is an outward action under the owner's identity, in
+communities that ban accounts for looking automated.
