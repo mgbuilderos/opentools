@@ -7,10 +7,10 @@
 [getopentools.com](https://getopentools.com) · [Report a bug](https://github.com/mgbuilderos/opentools/issues/new/choose) · [Security](.github/SECURITY.md) · [Sponsor](https://getopentools.com/support)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
-[![Zero Server Egress](https://img.shields.io/badge/Server%20Egress-0%20bytes-2ea44f.svg)](.github/SECURITY.md)
+[![Runs in your browser](https://img.shields.io/badge/Processing-in%20your%20browser-2ea44f.svg)](.github/SECURITY.md)
 [![Tests](https://img.shields.io/badge/Tests-317%20passing-2ea44f.svg)](#local-development--quality-control)
 [![Client-Side WebAssembly](https://img.shields.io/badge/Runtime-Client--Side%20WASM-654ff0.svg)](#the-zero-egress-privacy-promise)
-[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/opentools)
+[![Buy Me a Coffee](https://img.shields.io/badge/Support-Buy%20Me%20a%20Coffee-ffdd00.svg?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/codebuilder)
 
 </div>
 
@@ -82,12 +82,13 @@ and an explicit privacy boundary.
 
 OpenTools is free forever. There are no paid tiers and no result is ever gated.
 The project is sustained entirely by voluntary support from people who find it
-useful. Both channels charge **0% platform fees**, so the whole contribution
-funds development, security audits, and hosting.
+useful. UPI charges no platform fee, so the whole contribution arrives; Buy Me
+a Coffee takes a platform cut of each transaction, which is part of why UPI is
+offered first to supporters in India.
 
 | Channel                                                         | For                      | Methods                                                    |
 | --------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
-| 🌍 **[GitHub Sponsors](https://github.com/sponsors/opentools)** | International supporters | Credit/debit card, Apple Pay, Google Pay, PayPal           |
+| 🌍 **[Buy Me a Coffee](https://buymeacoffee.com/codebuilder)** | International supporters | Credit/debit card, Apple Pay, Google Pay, PayPal           |
 | 🇮🇳 **UPI**                                                      | Supporters in India      | Any UPI app via QR code or `upi://pay` deep link on mobile |
 
 The [`/support`](https://getopentools.com/support) page picks the right

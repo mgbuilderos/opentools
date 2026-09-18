@@ -20,7 +20,6 @@
 
 /** Values that must never reach a build. Asserted in the test. */
 export const PAYMENT_PLACEHOLDERS = [
-  'mg.io.test@oksbi',
   'example@upi',
   'your-upi-id',
   'username',
@@ -38,8 +37,6 @@ const clean = (value: string | undefined) => value?.trim() || '';
 
 export const SUPPORT_CONFIG = {
   githubRepoUrl: ['https:', '//', 'github.com/mgbuilderos/opentools'].join(''),
-  /** Empty until a Sponsors profile actually exists; see decision notes. */
-  githubSponsorsUrl: clean(process.env.NEXT_PUBLIC_GITHUB_SPONSORS_URL),
   /**
    * The live Buy Me a Coffee page. Committed rather than left to the
    * environment: it is a public URL, not a secret, and the failure this file
@@ -49,7 +46,20 @@ export const SUPPORT_CONFIG = {
   buyMeACoffeeUrl:
     clean(process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL) ||
     'https://buymeacoffee.com/codebuilder',
-  upiId: clean(process.env.NEXT_PUBLIC_UPI_ID),
+  /**
+   * The project's UPI address, committed for the same reason as the page
+   * above: it is shown publicly on `/support` with a copy button, so it is not
+   * a secret, and the failure this file exists to prevent was a payment value
+   * that had to be remembered at build time and was not.
+   *
+   * The `test` in the handle is part of the address the owner registered, not
+   * a sandbox marker — it reads like one, which is why it was treated as
+   * unverified until it was checked. **Verified 2026-09-18: the owner sent a
+   * real payment to it and confirmed receipt.** That is the only check that
+   * settles a payment address; a test can prove a link is well formed, never
+   * that the money arrives.
+   */
+  upiId: clean(process.env.NEXT_PUBLIC_UPI_ID) || 'mg.io.test@oksbi',
   upiPayeeName: clean(process.env.NEXT_PUBLIC_UPI_NAME) || 'OpenTools',
 };
 
@@ -69,7 +79,14 @@ export function coffeesFor(usd: number): number | null {
   return Number.isInteger(coffees) ? coffees : null;
 }
 
-export type SupportChannel = 'upi' | 'buymeacoffee' | 'githubSponsors';
+/**
+ * GitHub Sponsors is deliberately absent. The profile was never approved —
+ * `github.com/sponsors/…` redirects to the plain profile page — so every link
+ * to it was dead, and the owner moved to Buy Me a Coffee on 2026-09-18. A
+ * channel that cannot take money does not belong in this list: leaving it here
+ * is how an empty `href` reaches a page that asks for money.
+ */
+export type SupportChannel = 'upi' | 'buymeacoffee';
 
 /**
  * The channels that are configured and can actually receive money, in the
@@ -80,7 +97,6 @@ export function supportChannels(): SupportChannel[] {
   const channels: SupportChannel[] = [];
   if (SUPPORT_CONFIG.upiId) channels.push('upi');
   if (SUPPORT_CONFIG.buyMeACoffeeUrl) channels.push('buymeacoffee');
-  if (SUPPORT_CONFIG.githubSponsorsUrl) channels.push('githubSponsors');
   return channels;
 }
 

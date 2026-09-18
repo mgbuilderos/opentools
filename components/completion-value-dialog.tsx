@@ -17,7 +17,9 @@ import {
 } from '@/lib/completion';
 import {
   isLikelyIndiaVisitor,
+  getBuyMeACoffeeUrl,
   getUpiPaymentUrl,
+  BUYMEACOFFEE_UNIT_USD,
   SUPPORT_CONFIG,
 } from '@/lib/support-config';
 import {
@@ -258,13 +260,13 @@ export function CompletionValueDialog() {
           ) : (
             <>
               <a
-                href={SUPPORT_CONFIG.githubSponsorsUrl}
+                href={getBuyMeACoffeeUrl(1)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border bg-muted/60 px-3 text-xs font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-muted hover:border-foreground/25 active:translate-y-0 active:scale-[0.98]"
-                aria-label="Buy a $3 Coffee on GitHub Sponsors"
+                aria-label={`Buy one coffee, $${BUYMEACOFFEE_UNIT_USD}, on Buy Me a Coffee`}
               >
-                ☕ $3 Coffee
+                ☕ ${BUYMEACOFFEE_UNIT_USD} Coffee
               </a>
               <a
                 href={SUPPORT_CONFIG.githubRepoUrl}

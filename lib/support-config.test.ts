@@ -47,11 +47,7 @@ describe('support config', () => {
       .replace(/\/\*[\s\S]*?\*\//gu, '')
       .replace(/\/\/[^\n]*/gu, '');
     expect(code).not.toMatch(/process\.env\s*\[/u);
-    for (const name of [
-      'NEXT_PUBLIC_UPI_ID',
-      'NEXT_PUBLIC_BUYMEACOFFEE_URL',
-      'NEXT_PUBLIC_GITHUB_SPONSORS_URL',
-    ]) {
+    for (const name of ['NEXT_PUBLIC_UPI_ID', 'NEXT_PUBLIC_BUYMEACOFFEE_URL']) {
       expect(code).toContain(`process.env.${name}`);
     }
   });
@@ -105,9 +101,8 @@ describe('support config', () => {
     expect(channels.includes('buymeacoffee')).toBe(
       Boolean(SUPPORT_CONFIG.buyMeACoffeeUrl),
     );
-    expect(channels.includes('githubSponsors')).toBe(
-      Boolean(SUPPORT_CONFIG.githubSponsorsUrl),
-    );
+    // GitHub Sponsors was never approved, so it is not a channel at all.
+    expect(channels).not.toContain('githubSponsors');
     expect(canAcceptSupport()).toBe(channels.length > 0);
   });
 
