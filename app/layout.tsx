@@ -43,12 +43,29 @@ export const metadata: Metadata = {
     siteName: 'OpenTools',
     locale: 'en_US',
     type: 'website',
+    /**
+     * The share card. `twitter.card` was already `summary_large_image`, which
+     * reserves a full-width image slot, while no image was ever declared — so
+     * every share on X, LinkedIn, Slack, Discord, Reddit and WhatsApp rendered
+     * an empty one. Regenerate with `scripts/generate-og-image.py`; it reads
+     * the dark theme tokens out of `app/globals.css` so the card cannot drift
+     * away from the site it represents.
+     */
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'OpenTools — your files never leave your browser.',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'OpenTools — Fast, Private Browser Utilities',
     description:
       '100% in-browser, zero-upload private utilities for PDF, image, audio, video, text, developer, and structured data tasks.',
+    images: ['/og.png'],
   },
   robots: {
     index: true,
