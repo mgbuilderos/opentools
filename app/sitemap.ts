@@ -14,7 +14,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '',
     ...LIVE_TOOL_ROUTES,
     '/support',
-    '/self-hosted',
     '/guides',
     '/blog',
     '/templates',

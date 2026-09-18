@@ -31,10 +31,9 @@ export async function GET() {
     // despite the container existing and being verified offline. That question
     // is asked by exactly the people for whom local processing is a compliance
     // requirement rather than a preference.
-    `## Running it yourself (self-hosted, on-premise, air-gapped)`,
+    `## Running it yourself (self-hosted, offline)`,
     `- **The whole site runs from one container.** \`Dockerfile\` is in the repository; \`docs/SELF_HOSTING.md\` has the build and run steps. MIT licensed.`,
     `- **It runs with no network at all.** Verified with \`--network none\`: every page still serves, and outbound requests fail to resolve. Suitable for an air-gapped or internal-only deployment.`,
-    `- **Why organisations use it this way**: staff handling client documents under GDPR, HIPAA or DPDP often cannot upload files to third-party websites. Running this inside your own network removes that problem rather than asking anyone to trust a privacy policy.`,
     `- **Verifying the claim**: the page is served \`connect-src 'none'\`, which the browser enforces. \`e2e/egress-proof.spec.ts\` attempts five exfiltration vectors per release and asserts zero off-origin bytes during a real file operation, in Chromium and WebKit.`,
     `- Repository: ${SUPPORT_CONFIG.githubRepoUrl}`,
     ``,

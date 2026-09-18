@@ -124,6 +124,48 @@ close without it, and a plan whose arithmetic does not close should say so.
 
 ---
 
+## 2c. B2B is dropped — owner decision, 2026-09-18
+
+**Do not resurrect this without the owner raising it first.** The reasoning is
+not that the model is wrong; it is that it does not fit who is running it.
+
+§2b argued for selling deployment and support to organisations, and the
+arithmetic there still holds. What it quietly assumed was a technical services
+business: a support subscription means answering "our reverse proxy is dropping
+the CSP header" at 9pm, a deployment engagement means working inside someone
+else's infrastructure, bespoke tools means writing them. **The owner is
+non-technical and working alone**, so none of that is deliverable, and a page
+inviting organisations to deploy creates an obligation that cannot be met.
+
+Removed: `app/self-hosted/page.tsx` and its sitemap entry, and the
+organisational/compliance framing in `llms.txt`.
+
+**Deliberately kept**, because these are traffic assets rather than commercial
+ones: the `Dockerfile`, `docs/SELF_HOSTING.md`, `docker-compose.yml`, the
+published container, and a factual mention of self-hosting in `llms.txt`.
+r/selfhosted and awesome-selfhosted are discovery channels and both need the
+capability to exist — they do not need a sales page.
+
+`lib/security/self-host-auth.ts` stays too, with 22 passing tests, but it is
+**wired to nothing** (zero references in `proxy.ts`) and therefore ships no
+behaviour. Left in place rather than deleted because it is correct and cheap to
+keep; do not wire it up without a reason that has nothing to do with B2B.
+
+**What this leaves.** The monetisation paths that need no live technical
+conversation, which is the real constraint:
+
+| Path | Live technical conversation needed |
+| :--- | :--- |
+| Donations | None |
+| The NLnet grant | None — a written application |
+| ~~Support contracts~~ | Ongoing technical delivery |
+| ~~Deployment work~~ | Hands-on infrastructure |
+
+So traffic is now the entire game rather than half of it: every remaining path
+converts visitors, not conversations.
+
+---
+
 ## 3. ⚠️ The infrastructure ceiling — read before driving any traffic
 
 **The account is on the Cloudflare free tier.** Verified 2026-09-18, not
