@@ -7,6 +7,13 @@
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
 
+# The share card is fetched by every social scraper that sees a link, and it
+# only changes when someone regenerates it. It was being served
+# `max-age=0, must-revalidate` like the rest of `public/`. A day is short
+# enough that a regenerated card propagates on its own.
+/og.png
+  Cache-Control: public, max-age=86400
+
 # Build output is content-addressed: every filename under here carries a content
 # hash (`framework-DTZGTDtF.js`, `layout.BusCenFg.css`) or sits inside a
 # build-id directory that changes on every build. A new build produces new

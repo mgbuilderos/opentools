@@ -2,7 +2,8 @@
 
 **Owner goal:** $100/day in voluntary support, organic only, no paid spend.
 **Status:** not started in earnest. The blocker is traffic, by roughly 30x.
-**Last updated:** 2026-09-18 by Claude Code (session `eeb46cb4`).
+**Last updated:** 2026-09-18 by Claude Code (session `eeb46cb4`). See also
+`docs/LAUNCH_KIT.md` and `docs/EGRESS_PROOF.md`.
 
 > **If you are a new agent session picking this up cold, read this file first,
 > then `AGENT_BOARD.md` §1–§3 at the blueprint root.** Everything below is
@@ -88,6 +89,37 @@ Free mitigations worth trying first, in order (none verified yet — see §8):
   they bypass a Worker route needs verifying before being relied on.
 - Cut the sitemap's 558 near-dormant guides out of the warm set.
 
+## 3b. Discovery — the site was not indexed at all
+
+Measured 2026-09-18. `site:getopentools.com` returned **no pages from the
+site**, and a search for one of its own exact page titles ("Compress a PDF
+without uploading it") found nothing in Bing. 631 URLs, none discoverable.
+
+**Acted on:** `public/<key>.txt` + `scripts/submit-indexnow.mjs`, and **631 URLs
+submitted to IndexNow, HTTP 200**, reaching Bing, Yandex, Seznam and Naver in
+one call. Bing matters beyond Bing — it backs DuckDuckGo, Copilot and ChatGPT
+search. Re-run with `npm run indexnow` after a deploy that adds or materially
+changes pages; the protocol discourages resubmitting unchanged URLs, so use the
+explicit-path form (`node scripts/submit-indexnow.mjs /pdf/merge`) for small
+changes.
+
+**Still open — Google.** No verification tag is being served at all:
+`google-site-verification`, `msvalidate.01` and `yandex-verification` are all
+unset, so Search Console is very likely not verified and the sitemap has never
+been submitted to the largest engine. The plumbing exists in `app/layout.tsx`
+(`NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and friends); it needs the token from
+Search Console and a rebuild. **Owner action, and the single highest-value one
+on this page after §3.**
+
+**Brand note, load-bearing for keyword choice:** "OpenTools" is heavily
+contested — `opentools.com` is a YC company (LLM tool-use API) and
+`opentools.io` is another free-tools site. **Do not spend effort ranking for the
+brand name.** Everything goes into task queries where the wedge is the
+differentiator: "compress pdf without uploading", "merge pdf offline",
+"strip exif online private". The existing page titles already do this well.
+
+---
+
 ## 4. Where traffic comes from — and where it does not
 
 The technical SEO foundation is **good**, which surprised an earlier read of
@@ -109,7 +141,8 @@ terms belong to iLovePDF and SmallPDF with millions of backlinks.
 | Channel | Realistic first hit | Why it fits | Effort |
 | :--- | :--- | :--- | :--- |
 | **Show HN** | 10k–60k in 24h | Highest free single-day ceiling. **One shot** — do not fire before §3 is fixed. | One post |
-| **awesome-selfhosted, awesome-privacy, free-for-dev** | steady + backlinks | Durable, and the backlinks are the only realistic fix for the authority problem. | A PR each |
+| **awesome-selfhosted** | steady + backlinks | Durable, and the only realistic fix for the authority problem. **Blocked:** requires a genuine self-host release; `claude/selfhost` is unmerged and Docker Hub 404s for `mgbuilderos/opentools`. | ship self-host first |
+| ~~free-for-dev~~ | — | **Ruled out 2026-09-18.** Its contributing guide scopes the list to SaaS with free tiers for DevOps practitioners. Browser utilities are out of scope; a PR would be rejected. | don't |
 | **r/selfhosted, r/privacy, r/degoogle** | 2k–15k per post | Ideologically aligned and donation-friendly. | One post each |
 | **AlternativeTo, Product Hunt** | steady | Listed as the local alternative to SmallPDF. Compounds for years. | A listing each |
 | **More guide pages** | ≈ 0 | Measured at 0.5 views/day each; decision 11 says consolidate, not multiply. | **Don't** |
@@ -126,6 +159,8 @@ arrives, and that the launch does not get torn apart.
 | 18 Sep | Egress proof made executable | `6fa3515a` | `e2e/egress-proof.spec.ts`, 6/6 Chromium + WebKit. Unearnable claims removed. See `docs/EGRESS_PROOF.md` |
 | 18 Sep | Support button in header at every width | `2754c388` | 0 → 1 support links on the mobile first screen; sticky across scroll |
 | 18 Sep | Open Graph share card | `a52ba99a` | `twitter:card` was `summary_large_image` with **no image** — every share rendered blank |
+| 18 Sep | Immutable caching for hashed assets | `2a215238` | 69 files served `max-age=0, must-revalidate`; ~15 revalidations per page view removed |
+| 18 Sep | IndexNow submission | `129a5601` | Site was unindexed; 631 URLs pushed to Bing/Yandex/Seznam/Naver, HTTP 200 |
 
 ## 6. Measurement — what exists and what does not
 
@@ -174,10 +209,14 @@ ACCT=00f21e5724f9ebf7b1ab0cb42ae76b1e
 2. **Rung 0 — read the actual revenue.** Owner action, one evening.
 3. **Turn off the Cloudflare analytics beacon** at source — it is edge-injected
    and currently blocked only by our CSP. See `docs/EGRESS_PROOF.md`.
-4. **Launch kit** — Show HN text, subreddit posts, three awesome-list PRs.
-   Drafted on request; **fires only after item 1**.
-5. Verify the free cache mitigations in §3 before assuming any of them work.
-6. Re-check Search Console for rows (~mid-Oct 2026), which unblocks decision 11.
+4. **Launch kit — written, see `docs/LAUNCH_KIT.md`.** AlternativeTo and the
+   smaller subreddits are safe to fire today; **Show HN is gated on item 1**,
+   because an HN front page exceeds the free ceiling in an afternoon and that
+   traffic does not come back.
+5. **Verify Google Search Console** and submit the sitemap — see §3b. No
+   verification tag is currently served.
+6. Verify the free cache mitigations in §3 before assuming any of them work.
+7. Re-check Search Console for rows (~mid-Oct 2026), which unblocks decision 11.
 
 ---
 

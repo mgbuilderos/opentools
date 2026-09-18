@@ -7,6 +7,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "indexnow": "node scripts/submit-indexnow.mjs",
     "dev": "vinext dev",
     "prebuild": "npm run design:qc",
     "build": "vinext build",
