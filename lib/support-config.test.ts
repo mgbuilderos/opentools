@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
   BUYMEACOFFEE_UNIT_USD,
   PAYMENT_PLACEHOLDERS,
+  GITHUB_SPONSORS_PENDING,
   SUPPORT_CONFIG,
   SUPPORT_TIERS,
   canAcceptSupport,
@@ -104,6 +105,28 @@ describe('support config', () => {
     // GitHub Sponsors was never approved, so it is not a channel at all.
     expect(channels).not.toContain('githubSponsors');
     expect(canAcceptSupport()).toBe(channels.length > 0);
+  });
+
+  it('announces GitHub Sponsors without making it payable', () => {
+    // The owner asked for GitHub to stay visible as "coming soon". Visible and
+    // payable are different things: the profile is still under review, and
+    // github.com/sponsors/… currently redirects to a plain profile page, so a
+    // link to it would be a dead end on a page that asks for money.
+    const channels = supportChannels();
+    expect(channels).not.toContain('github');
+    expect(channels).not.toContain('githubSponsors');
+    expect(canAcceptSupport()).toBe(channels.length > 0);
+
+    // It has to say it is waiting, in the copy that actually renders.
+    expect(GITHUB_SPONSORS_PENDING.status).toMatch(/waiting|review|soon/iu);
+    expect(GITHUB_SPONSORS_PENDING.description).toMatch(/not open|review/iu);
+
+    // Nothing on it may be a link, or be named like one. This is the assertion
+    // that matters: the moment a URL lands here, a button will point at it.
+    for (const [key, value] of Object.entries(GITHUB_SPONSORS_PENDING)) {
+      expect(key).not.toMatch(/url|href|link/iu);
+      expect(String(value)).not.toMatch(/https?:\/\/|\bwww\.|github\.com/iu);
+    }
   });
 
   it('never promises anything in return for money', () => {

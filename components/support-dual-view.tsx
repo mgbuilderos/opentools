@@ -8,6 +8,7 @@ import {
   Clock,
   Copy,
   ExternalLink,
+  GitBranch,
   Globe,
   Heart,
   QrCode,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
+  GITHUB_SPONSORS_PENDING,
   SUPPORT_CONFIG,
   SUPPORT_TIERS,
   coffeesFor,
@@ -26,10 +28,10 @@ import {
   isLikelyIndiaVisitor,
 } from '@/lib/support-config';
 
+type SupportTab = 'upi' | 'international' | 'github';
+
 export function SupportDualView() {
-  const [activeTab, setActiveTab] = useState<'upi' | 'international'>(
-    'international',
-  );
+  const [activeTab, setActiveTab] = useState<SupportTab>('international');
   const [detectedRegion, setDetectedRegion] = useState<string | null>(null);
   const [selectedInrAmount, setSelectedInrAmount] = useState<number>(59);
   const [customInrAmount, setCustomInrAmount] = useState<string>('');
@@ -99,6 +101,19 @@ export function SupportDualView() {
     }
   };
 
+  /**
+   * Three tabs have to fit 375px. The labels shorten below `sm` and the
+   * trailing badges only appear at `lg`, so nothing wraps or overflows on a
+   * phone; the "Soon" badge is the exception, because it is the whole point of
+   * that tab and has to be readable at every width.
+   */
+  const tabClass = (tab: SupportTab) =>
+    `flex flex-1 min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
+      activeTab === tab
+        ? 'bg-card text-foreground shadow-xs'
+        : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
+    }`;
+
   return (
     <div className="w-full space-y-4">
       {detectedRegion && (
@@ -120,15 +135,12 @@ export function SupportDualView() {
           <button
             type="button"
             onClick={() => setActiveTab('upi')}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
-              activeTab === 'upi'
-                ? 'bg-card text-foreground shadow-xs'
-                : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
-            }`}
+            className={tabClass('upi')}
           >
             <span className="text-base">🇮🇳</span>
-            <span>India (Instant UPI)</span>
-            <span className="hidden sm:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
+            <span className="sm:hidden">UPI</span>
+            <span className="hidden sm:inline">India (UPI)</span>
+            <span className="hidden lg:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
               0% Fee
             </span>
           </button>
@@ -136,16 +148,29 @@ export function SupportDualView() {
         <button
           type="button"
           onClick={() => setActiveTab('international')}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
-            activeTab === 'international'
-              ? 'bg-card text-foreground shadow-xs'
-              : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
-          }`}
+          className={tabClass('international')}
         >
-          <Globe className="size-4" />
-          <span>International (Coffee)</span>
-          <span className="hidden sm:inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+          <Globe className="size-4 shrink-0" />
+          <span className="sm:hidden">Coffee</span>
+          <span className="hidden sm:inline">Buy Me a Coffee</span>
+          <span className="hidden lg:inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             Cards &amp; PayPal
+          </span>
+        </button>
+        {/*
+          Pending, not payable. The tab opens a panel that explains the wait and
+          offers no payment control — see `GITHUB_SPONSORS_PENDING`. It is styled
+          muted rather than disabled so it can still be read.
+        */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('github')}
+          className={tabClass('github')}
+        >
+          <GitBranch className="size-4 shrink-0" />
+          <span>GitHub</span>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            Soon
           </span>
         </button>
       </div>
@@ -420,6 +445,107 @@ export function SupportDualView() {
                 Choose an amount
               </a>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/*
+        Tab 3: GitHub Sponsors — announced, not open.
+
+        There is no payment control anywhere in this panel and no link to a
+        sponsors URL, because the profile is still under review and that URL
+        currently redirects to a plain profile page. The only actions offered
+        are the two channels that work today and starring the repository, which
+        is free. See `GITHUB_SPONSORS_PENDING`.
+      */}
+      {activeTab === 'github' && (
+        <div className="rounded-2xl border bg-card p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
+            <div>
+              <div className="flex items-center gap-2 text-muted-foreground font-semibold text-sm">
+                <GitBranch className="size-4" />
+                {GITHUB_SPONSORS_PENDING.name}
+              </div>
+              <h3 className="text-xl font-bold mt-1">Not open yet</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                {GITHUB_SPONSORS_PENDING.description}
+              </p>
+            </div>
+            <div className="shrink-0">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+                <Clock className="size-3.5" />
+                {GITHUB_SPONSORS_PENDING.status}
+              </span>
+            </div>
+          </div>
+
+          {/* The two channels that can actually take money right now. */}
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {upiReady && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('upi')}
+                className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-4 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99]"
+              >
+                <span>
+                  <span className="flex items-center gap-2 text-sm font-semibold">
+                    <span className="text-base">🇮🇳</span>
+                    Pay by UPI
+                  </span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">
+                    Any UPI app, in India. Open now.
+                  </span>
+                </span>
+                <Zap className="size-4 shrink-0 text-success" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setActiveTab('international')}
+              className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-4 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99]"
+            >
+              <span>
+                <span className="flex items-center gap-2 text-sm font-semibold">
+                  <Globe className="size-4" />
+                  Buy Me a Coffee
+                </span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  Cards, Apple Pay, Google Pay, PayPal. Open now.
+                </span>
+              </span>
+              <Zap className="size-4 shrink-0 text-success" />
+            </button>
+          </div>
+
+          {/* Free, works today, and not a payment. */}
+          <div className="mt-6 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              <Star className="size-4 shrink-0 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground">
+                  Starring the repository is free
+                </p>
+                <p className="mt-0.5">
+                  It costs nothing and helps other people find the project,
+                  which is worth as much as a coffee.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              className="shrink-0 text-xs font-semibold"
+              render={
+                <a
+                  href={SUPPORT_CONFIG.githubRepoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+            >
+              <Star className="mr-1.5 size-3.5 fill-current" />
+              Star on GitHub
+              <ExternalLink className="ml-1.5 size-3" />
+            </Button>
           </div>
         </div>
       )}

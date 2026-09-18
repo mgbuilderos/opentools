@@ -105,6 +105,37 @@ export function canAcceptSupport() {
   return supportChannels().length > 0;
 }
 
+/**
+ * GitHub Sponsors, announced as not open yet.
+ *
+ * Deliberately **not** a `SupportChannel`. `supportChannels()` answers one
+ * question — where can money actually go — and this cannot take any: the
+ * profile is still waiting on GitHub's approval, and until it is granted
+ * `github.com/sponsors/mgbuilderos` redirects to a plain profile page. Keeping
+ * the two apart is what stops a pending channel from being rendered as a
+ * payable one, so `canAcceptSupport()` and every payment control stay blind to
+ * it.
+ *
+ * It is shown anyway because the owner asked for it to be visible: people who
+ * would rather sponsor through GitHub can see it is coming instead of assuming
+ * it will never exist. That is an announcement, not an offer, so this object
+ * carries **no sponsors URL and no amount** — there is nothing here for a
+ * button to point at. The one action offered alongside it is starring the
+ * repository, which is free and works today.
+ *
+ * When GitHub approves the profile: add `githubSponsors` back to
+ * `SupportChannel`, read the URL from `NEXT_PUBLIC_GITHUB_SPONSORS_URL`, and
+ * delete this. The channel list is the only place that should ever decide
+ * whether a payment control renders.
+ */
+export const GITHUB_SPONSORS_PENDING = {
+  name: 'GitHub Sponsors',
+  /** Shown verbatim. Says what is true: it is waiting, not live. */
+  status: 'Waiting on GitHub approval',
+  description:
+    'Sponsoring through GitHub is not open yet — the profile is still under review by GitHub. Until it is approved, the two options above are the ways to send support.',
+} as const;
+
 export interface SupportTier {
   name: string;
   amountUsd: string;

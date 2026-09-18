@@ -81,7 +81,8 @@ export default function SupportPage() {
           </div>
         </section>
 
-        {/* Dual Support Section: UPI (India) & GitHub Sponsors (International) */}
+        {/* UPI (India) and Buy Me a Coffee (international) take money today;
+            GitHub Sponsors is shown as pending and takes none. */}
         <section className="mb-8">
           <SupportDualView />
         </section>
