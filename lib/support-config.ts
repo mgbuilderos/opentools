@@ -32,8 +32,15 @@ export const SUPPORT_CONFIG = {
   githubRepoUrl: ['https:', '//', 'github.com/mgbuilderos/opentools'].join(''),
   /** Empty until a Sponsors profile actually exists; see decision notes. */
   githubSponsorsUrl: env('NEXT_PUBLIC_GITHUB_SPONSORS_URL'),
-  /** Full Buy Me a Coffee page URL, e.g. the account's own public page. */
-  buyMeACoffeeUrl: env('NEXT_PUBLIC_BUYMEACOFFEE_URL'),
+  /**
+   * The live Buy Me a Coffee page. Committed rather than left to the
+   * environment: it is a public URL, not a secret, and the failure this file
+   * exists to prevent was a payment value that had to be remembered at build
+   * time and was not. The env var stays as an override for staging.
+   */
+  buyMeACoffeeUrl:
+    env('NEXT_PUBLIC_BUYMEACOFFEE_URL') ||
+    'https://buymeacoffee.com/codebuilder',
   upiId: env('NEXT_PUBLIC_UPI_ID'),
   upiPayeeName: env('NEXT_PUBLIC_UPI_NAME') || 'OpenTools',
 };
