@@ -502,6 +502,10 @@ started at all.** A PR today is closed publicly with that exact message.
 > **Therefore: create a GitHub Release for `v0.1.0` today.** Nothing else starts
 > the clock, it costs two minutes, and every day it is not created is a day
 > added to the earliest submission date. Released today → eligible **2027-01-19**.
+>
+> **⚠️ Re-measured 2026-09-19, 20:52Z: still zero releases.** The clock is still
+> at zero and the earliest eligible date has already moved. Step-by-step
+> instructions and a table of what each day of delay costs are in §11.
 
 ### The decision: the one-shot channels are held
 
@@ -625,8 +629,8 @@ three are all owner actions that take minutes.
 | **A0** | ~~Decide which of DEBUG's two routes fixes the service worker~~ **DECIDED: Route 1.** ⭐ **Now: let the fix deploy.** | **Half of this is done.** You chose Route 1 on 2026-09-19 (*"route 1, run the checks and get it ready"*). The fix is being prepared and is **NOT live** — it still needs your go-ahead to deploy. Until it deploys, the site is still unusable past the first page view (red block at the top), every visitor this lane attracts is still wasted, and no revenue work can be evaluated. **What Route 1 costs is in §9 — read it, because it is a marketing cost, not just a technical one.** | one go-ahead |
 | **A1** | **Open the Claude desktop app daily so `opentools-traffic-snapshot` fires**, or run `node analytics/collect-daily.mjs` by hand | `analytics/daily.jsonl` has **one line**. On the free plan Cloudflare discards the detail after a few days, so a day not collected is a day **permanently lost** — and every future decision here is made against this history. | 1 min/day |
 | **A2** | **Send the FUTO email to `grantapps@futo.org`.** The whole email is written. **You need to write two short bits yourself — see §10 for exactly what they are, in plain words.** | **Near-term revenue is grants, not donations.** §2 shows donations yield about $4/day at today's traffic. A grant is $1,000–$5,000. The draft is finished and every link in it has been checked. It is waiting only on two paragraphs nobody else can write. | 20 min |
-| **A3** | **Create a GitHub Release for `v0.1.0`** | The awesome-selfhosted four-month clock has **not started** — there is a tag but no Release. See §4a. Every day this is not done adds a day to the earliest submission date. | 2 min |
-| **A4** | **Rewrite the repo description** (currently "All-in-one micro tools") | It is the first thing anyone clicking any link — including a grant reviewer — sees, and it says nothing about the one property every pitch rests on. Suggested wording in `docs/FUTO_APPLICATION_DRAFT.md`. | 1 min |
+| **A3** | **Create a GitHub Release for `v0.1.0`.** ⚠️ **Re-measured 2026-09-19 (20:52Z): still not done — the API reports zero releases.** | The awesome-selfhosted four-month clock has **not started** — there is a tag (`v0.1.0`, `9850a8e8`) but no Release object, and only a Release starts the clock. **Every day this is not done adds a day to the earliest submission date**, which is the only thing standing between this project and the one directory that would fix its authority problem. GitHub → Releases → Draft a new release → choose the existing `v0.1.0` tag → Publish. See §4a. | 2 min |
+| **A4** | **Fix the repository's front door — description *and* topics.** Both are on the same settings panel, one visit. ⚠️ **Re-measured 2026-09-19: neither is done.** | See §11 — it has the exact text to paste. The description still reads *"All-in-one micro tools"*, which is the first thing a grant reviewer or anyone following any link sees, and it says nothing about the one property every pitch rests on. **New finding: the repo's topics are `apps` and `tools`** — the two most crowded, least specific tags on GitHub. Topics are how people *browse* GitHub, and this is a free, reversible, non-one-shot discovery channel that is currently switched off. | 3 min |
 | **A5** | **Check Search Console → Indexing → Pages** | 651 URLs submitted, nobody has looked at how many are *indexed*. Search is the only channel that reaches thousands/day; this is the only instrument that shows whether it is working. Also unblocks decision 11. | 5 min |
 | **A6** | **Rung 0 — read the actual revenue.** Open the Buy Me a Coffee dashboard and the UPI history and write down what has arrived | Nothing records revenue. Until that number exists, every projection here is navigating blind. | 30 min |
 | **A7** | **Decide on Workers Paid, $5/month** | Standing answer is no spend until it earns, which is legitimate. §3 and `docs/CACHE_BUDGET.md` exist so the cost of that answer stays visible rather than being rediscovered each time the cache goes quiet. | — |
@@ -797,6 +801,70 @@ it is the corrected ~27/day, not the old wrong 230. Nothing else is outstanding.
 
 **The same two paragraphs unlock OTF**, which is now unblocked (§8). Write them
 once and they serve both applications.
+
+---
+
+## 11. The repository front door — exact text to paste (A3, A4)
+
+**Why this is worth three minutes of your time.** The GitHub repository is where
+every grant reviewer, every Reddit reader and every directory moderator lands
+after clicking any link we send them. Right now it says *"All-in-one micro
+tools"* and is filed under *"apps"* and *"tools"*. Nothing about it tells anyone
+what this project is, and the four-month clock that gates the single best
+directory listing has not started ticking.
+
+**Re-measured 2026-09-19, 20:52Z, from the GitHub API** — all three still open:
+
+```
+created_at        2026-09-15T12:45:40Z    (the public repo is 4 days old)
+description       "All-in-one micro tools"
+topics            ['apps', 'tools']
+releases          0                        <- the clock has NOT started
+tags              v0.1.0  9850a8e8         <- a tag is not a Release
+stars             1
+license           MIT
+homepage          https://getopentools.com/
+```
+
+### 1. Description — paste this
+
+> `550 browser tools that are provably unable to upload your files — MIT, no server, no account`
+
+It is your repository, so change the wording if you prefer. The one thing to
+keep is the verifiable claim; that is what every application, post and listing
+rests on.
+
+### 2. Topics — replace `apps`, `tools` with these
+
+> `privacy` `privacy-tools` `client-side` `browser-tools` `webassembly`
+> `pdf-tools` `image-processing` `self-hosted` `docker` `no-tracking`
+
+Same settings panel as the description. Topics are reversible at any time and
+cost nothing.
+
+> **⚠️ Do not add the topic `local-first`, even though it looks like a perfect
+> fit.** In developer usage "local-first" means *works offline and syncs later*.
+> After Route 1 that is exactly what this site no longer does (§9), so it would
+> quietly reintroduce the claim we have just spent this session removing — in the
+> one place nobody would think to check. Noted here because it is a trap, not an
+> oversight.
+
+### 3. Release — GitHub → Releases → Draft a new release → tag `v0.1.0` → Publish
+
+**This is the one with a clock.** `awesome-selfhosted` requires a first release
+**more than four months old**, and their own wording is that the count *"initiates
+only after a release has been created"*. There is a tag but no Release, so as of
+today the count stands at **zero days**.
+
+| If the Release is published on | Earliest eligible submission |
+| :--- | :--- |
+| Today, 2026-09-19 | **2027-01-19** |
+| A week from now | 2027-01-26 |
+| A month from now | 2027-02-19 |
+
+Nothing else about the project changes this date, and no amount of later work
+brings it forward. It is two minutes, today, for four months of waiting that is
+already running in the background.
 
 ---
 
