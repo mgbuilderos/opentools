@@ -109,10 +109,10 @@ export function InstallPrompt() {
             <>
               Tap <Share aria-hidden="true" className="inline size-3" /> Share,
               then <strong className="font-semibold">Add to Home Screen</strong>
-              . Works offline afterwards.
+              .
             </>
           ) : (
-            'Install it and every tool keeps working — even with no internet.'
+            'Install it and the tools open straight from your home screen.'
           )}
         </p>
       </div>
