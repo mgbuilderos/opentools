@@ -61,16 +61,18 @@ description. The copy below is written to pass that.
 
 **Description:**
 
-> OpenTools is a set of PDF, image, text and developer utilities that run
-> entirely inside your browser tab. Your files are never uploaded — the page is
+> OpenTools is a set of 550 utilities across 18 categories — PDF, image, data,
+> text, developer, QR, calculators and more — that run entirely inside your
+> browser tab. Your files are never uploaded — the page is
 > served with `connect-src 'none'`, so the browser itself blocks it from
 > opening a network connection, which you can verify in devtools in a few
 > seconds.
 >
 > No account, no upload, no watermark, no ads, no third-party trackers. Merge,
-> compress, split and sign PDFs, convert PDF to Word, optimise images, strip
-> EXIF metadata, scrub secrets from logs, and around thirty other jobs. MIT
-> licensed. Free with no paid tier — support is voluntary.
+> compress, split and sign PDFs, convert PDF to Word, optimise images, reshape
+> CSV and JSON, strip EXIF metadata, scrub secrets from logs, generate QR
+> codes, and hundreds of other everyday jobs. MIT licensed. Free with no paid
+> tier — support is voluntary.
 
 ---
 
@@ -85,7 +87,9 @@ got no traction — you will waste days concluding the wrong thing. Pick the
 closest of `Software`, `Tool`, `Project` or `Discussion`. If a post gets zero
 views in the first hour, check whether it was removed before assuming it flopped.
 
-**Title:** `I built a set of PDF and image tools that never upload your files — the page is blocked from making network requests`
+**Title:** `I built 550 small tools that run entirely in your browser — the page is blocked from making network requests`
+
+*(For r/pdf specifically, swap the title for: `PDF tools that run in your browser — the page is physically blocked from uploading your file`. That sub is PDF-only, so lead with PDF there and nowhere else.)*
 
 **Body:**
 
@@ -100,9 +104,11 @@ views in the first hour, check whether it was removed before assuming it flopped
 > five different ways to exfiltrate data on every release and fails the build if
 > any of them get through.
 >
-> Around thirty tools: merge/compress/split/sign PDF, PDF to Word, image
-> optimise and convert, EXIF stripping, secret scrubbing for logs, JSON/CSV
-> work, QR codes.
+> 550 tools across 18 categories, and that breadth is the point — PDF and
+> image work, yes, but also CSV and JSON reshaping, text and writing helpers,
+> developer conversions, QR and barcodes, unit and finance calculators, EXIF
+> stripping, secret scrubbing for logs, date arithmetic. Every one of them runs
+> the same way: in your tab, on your device.
 >
 > MIT licensed, no account, no upload, no ads, no paid tier. I am one person and
 > it is free — there is a support page if it saves you time, but nothing is
@@ -250,7 +256,7 @@ Ordered by how confident I am that self-promotion is allowed. **Still run the
 
 ### r/SideProject and r/somethingimade
 
-**Title:** `I built PDF and image tools that are physically blocked from uploading your files`
+**Title:** `I built 550 tools that all run in your browser — none of them can upload your files`
 
 **Body:**
 
@@ -265,9 +271,10 @@ Ordered by how confident I am that self-promotion is allowed. **Still run the
 > different ways to exfiltrate data on every release and fails the build if any
 > get through.
 >
-> ~30 tools — merge/compress/split/sign PDF, PDF to Word, image optimise, EXIF
-> stripping, secret scrubbing for logs, JSON/CSV, QR codes. MIT, no account, no
-> ads, no paid tier. One person, free.
+> 550 tools across 18 categories: PDF, images, CSV and JSON, text, developer
+> conversions, QR codes, unit and finance calculators, dates, EXIF stripping,
+> secret scrubbing. All free, no account, no ads, no paid tier, nothing gated.
+> One person.
 >
 > https://getopentools.com
 
@@ -277,11 +284,12 @@ Lead with the licence and the repo; these audiences care about the code, not
 the landing page. **Link the GitHub repo, not the site**, for
 r/coolgithubprojects.
 
-**Title:** `OpenTools — MIT-licensed browser utilities that can't upload your files (connect-src 'none', with a test that proves it)`
+**Title:** `550 MIT-licensed browser tools that can't upload your files — connect-src 'none', with a test that proves it`
 
 **Body:**
 
-> A set of client-side PDF/image/text utilities. Everything runs in the tab.
+> 550 client-side utilities across 18 categories — PDF, image, data, text,
+> developer, calculators. Everything runs in the tab.
 >
 > The interesting part is the enforcement rather than the tools: pages ship
 > `connect-src 'none'`, so the browser blocks all network egress from the page.
@@ -313,7 +321,7 @@ Post Tue–Thu, around 09:00–11:00 ET. Then stay at the keyboard for six hours
 and answer every comment. HN rewards the author being present more than it
 rewards the product.
 
-**Title:** `Show HN: Browser tools where the page is blocked from uploading your files`
+**Title:** `Show HN: 550 browser tools where the page is blocked from uploading your files`
 
 *(Keep it under 80 chars. No exclamation marks. "Show HN:" prefix is required.)*
 
@@ -342,7 +350,8 @@ rewards the product.
 > bytes, in both engines. I also checked the detector is not vacuous — pointed
 > at a page that does load a cross-origin resource, it fails.
 >
-> ~30 tools. MIT, no account, no ads, no paid tier, one person.
+> 550 tools across 18 categories. MIT, no account, no ads, no paid tier,
+> nothing gated, one person.
 >
 > Things it is not: it does not prove the absence of bugs, and the evidence
 > covers two engines on one build, not every browser and device.
@@ -431,17 +440,19 @@ violation. **Still run the §3 rule check first.**
 **Prerequisite:** the image must be published *and public*, or the first comment
 will be someone reporting that `docker run` 404s.
 
-**Title:** `Self-hosted PDF/image tools that run with no network access at all — one container, MIT`
+**Title:** `550 self-hosted browser tools in one container that runs with no network access at all`
 
 **Body:**
 
-> I wanted PDF and image tools I could run on my own box without handing files
-> to a website, so I built a set and packaged the whole thing as one container.
+> I wanted a set of everyday tools I could run on my own box without handing
+> files to a website, so I built them and packaged the whole lot as one
+> container.
 >
 >     docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:latest
 >
-> ~30 tools — merge/compress/split/sign PDF, PDF to Word, image optimise and
-> convert, EXIF stripping, secret scrubbing for logs, JSON/CSV, QR codes.
+> 550 tools across 18 categories — PDF, images, CSV/JSON, text, developer
+> conversions, QR codes, unit and finance calculators, EXIF stripping, secret
+> scrubbing for logs.
 >
 > The part this sub might actually care about: it runs with `--network none`
 > and everything still works. Not "we don't upload your files" as a promise —
@@ -468,6 +479,13 @@ and this crowd respects it.
 ---
 
 ## Rules that apply everywhere
+
+- **Lead with the breadth, not with PDF.** 550 tools across 18 categories is
+  the differentiator; PDF is one example of it. Every competitor worth naming
+  is single-category, so framing this as a PDF site compares it to the
+  strongest opponent it has, in the one place that opponent is strongest. The
+  only exception is a PDF-specific sub, where PDF is the reason people are
+  there.
 
 - **Never claim what is not proven.** "Zero data leaks" was removed from the
   product for this reason (`docs/EGRESS_PROOF.md`). Claiming it in a post
