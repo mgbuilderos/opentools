@@ -474,6 +474,46 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'audio-convert',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Audio to WAV converter',
+    shortDescription:
+      'Convert M4A, FLAC, OGG, AIFF or MP3 to WAV, with trimming, fades and levelling.',
+    category: 'Audio',
+    aliases: [
+      'audio converter',
+      'm4a to wav',
+      'flac to wav',
+      'ogg to wav',
+      'aiff to wav',
+      'mp3 to wav',
+      'convert audio to wav',
+      'audio file converter',
+    ],
+    jobs: [
+      'convert m4a to wav',
+      'convert flac to wav',
+      'convert a voice memo to wav',
+      'turn audio into wav',
+      'make an audio file mono',
+      'change the sample rate of audio',
+      'normalise the volume of a recording',
+      'fade audio in and out',
+    ],
+    href: '/audio/convert',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'audio.container.probe',
+        'audio.decode.webaudio',
+        'audio.wav.write',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'image-optimize',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1070,8 +1110,8 @@ export const toolGroups: ToolGroup[] = [
     id: 'audio',
     name: 'Audio',
     shortDescription:
-      'Cut, join, tag and inspect MP3 files without re-encoding.',
-    toolIds: ['mp3-toolkit'],
+      'Cut, join and tag MP3s without re-encoding, and convert other audio to WAV.',
+    toolIds: ['mp3-toolkit', 'audio-convert'],
   },
   {
     id: 'text-data',

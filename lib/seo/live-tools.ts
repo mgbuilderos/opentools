@@ -31,6 +31,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/image/background-remover',
   '/image/optimize',
   '/audio/mp3-toolkit',
+  '/audio/convert',
   '/data/csv-to-json',
   '/data/json',
   '/file/hash-calculator',
