@@ -363,21 +363,107 @@ who has written a CSP test, and they establish that you actually did the work.
 
 ---
 
-## 5. awesome-selfhosted — blocked, and here is why
+## 5. awesome-selfhosted — four months away, and I must not write it
 
-Checked 2026-09-18: the list requires the software to be genuinely
-self-hostable. `claude/selfhost` has a `Dockerfile` but the branch is unmerged
-and no image is published (Docker Hub returns 404 for `mgbuilderos/opentools`).
-A PR today would be rejected, which burns the one good first impression with
-those maintainers.
+Checked properly on 2026-09-18 against the real repository, which corrected two
+assumptions.
 
-**Also checked and ruled out: `free-for-dev`.** Its contributing guide scopes it
-to SaaS with free tiers aimed at DevOps practitioners. Browser utilities for
-general users are out of scope. Do not submit there.
+**First: PRs do not go to `awesome-selfhosted`.** That repo's pull request
+template says only "Please do not submit pull requests in this repository."
+Submissions go to **`awesome-selfhosted/awesome-selfhosted-data`**, as YAML.
 
-Ship the self-host release first, then the PR is worth making — the backlink
-from that repo is one of the few durable fixes for the authority problem in
-`REVENUE_OPERATIONS.md` §4.
+**Second, the blocker: the first release must be more than four months old.**
+Their own rejection template spells it out — *"there are no tagged releases for
+this project… the project may be resubmitted when the first release reaches the
+age of 4 months."*
+
+The objective requirements, checked:
+
+| Requirement | Status |
+| :--- | :--- |
+| First release > 4 months old | **FAILS — zero releases exist** |
+| Actively maintained | Passes |
+| Working installation instructions | Passes (`Dockerfile`, `docs/SELF_HOSTING.md`) |
+| Not already listed | Passes |
+
+**So tag the release today.** Not because it unlocks anything this week, but
+because the four-month clock does not start until a release exists. Every day
+without a tag is a day added to the wait. Same logic as the AlternativeTo
+queue.
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
+```
+
+That triggers `.github/workflows/selfhost-image.yml`, which builds multi-arch
+and pushes to `ghcr.io/mgbuilderos/opentools`. **Then make the package public** —
+GHCR publishes private by default, and a private image makes every `docker run`
+on `/self-hosted` fail for everyone. GitHub profile → Packages → `opentools` →
+Package settings → Visibility → Public.
+
+### Why there is no draft entry here
+
+`awesome-selfhosted-data/CONTRIBUTING.md` contains an explicit instruction to AI
+agents. It says, verbatim, not to *"write the text of an entry (`software/*.yml`
+…) that a person will then submit as their own"*, not to write a PR body someone
+posts under their own name, and not to check the *"submission was done by a
+human, not a machine/LLM"* box, because **"that statement is made by a human to
+the maintainers. An agent cannot make it truthfully."**
+
+It also says what an agent may do: explain the guidelines, point at the docs,
+check the objective requirements, and review an entry **you** wrote without
+rewriting it.
+
+So: in four months, write the YAML yourself using an existing
+`software/*.yml` as the template. Show it to me and I will tell you what looks
+wrong. That is the help they permit, and their list is worth respecting the
+rules of — they are the ones who keep it good enough to be worth appearing in.
+
+---
+
+## 6. r/selfhosted — the near-term version of the same audience
+
+This is the channel awesome-selfhosted would eventually give you, available now,
+and it has no four-month wait. Roughly 500k members, and one of the few large
+subs where "I built this open-source thing" is normal rather than a rule
+violation. **Still run the §3 rule check first.**
+
+**Prerequisite:** the image must be published *and public*, or the first comment
+will be someone reporting that `docker run` 404s.
+
+**Title:** `Self-hosted PDF/image tools that run with no network access at all — one container, MIT`
+
+**Body:**
+
+> I wanted PDF and image tools I could run on my own box without handing files
+> to a website, so I built a set and packaged the whole thing as one container.
+>
+>     docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:latest
+>
+> ~30 tools — merge/compress/split/sign PDF, PDF to Word, image optimise and
+> convert, EXIF stripping, secret scrubbing for logs, JSON/CSV, QR codes.
+>
+> The part this sub might actually care about: it runs with `--network none`
+> and everything still works. Not "we don't upload your files" as a promise —
+> the container has no network and the pages are served `connect-src 'none'`,
+> so the browser refuses any request the page could make. Both are checkable in
+> about a minute:
+>
+>     docker run --rm -d --network none --name ot ghcr.io/mgbuilderos/opentools:latest
+>     docker exec ot node -e "fetch('http://127.0.0.1:8796/').then(r=>console.log(r.status))"
+>
+> Honest about what it is not: no TLS, no auth, single process, no clustering.
+> Put it behind your reverse proxy like everything else. Image is ~681 MB
+> because workerd needs glibc.
+>
+> MIT, no paid tier, nothing held back. Happy to take issues or PRs.
+>
+> https://github.com/mgbuilderos/opentools
+
+**Expect and prepare for:** "why a container for a static site?" — the honest
+answer is that it runs workerd, the same runtime as production, so the headers
+and cache behave identically rather than approximately. That is a real answer
+and this crowd respects it.
 
 ---
 
