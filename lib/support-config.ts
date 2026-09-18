@@ -26,12 +26,20 @@ export const PAYMENT_PLACEHOLDERS = [
   'username',
 ] as const;
 
-const env = (name: string) => process.env[name]?.trim() || '';
+/**
+ * Each variable is read as a **literal** `process.env.NAME`, never
+ * `process.env[name]`. Bundlers substitute build-time values only for the
+ * literal form; a computed key survives into the client as a runtime lookup
+ * against an object that is empty in the browser, so the variable would
+ * silently never apply. `support-config.test.ts` fails if the computed form
+ * reappears here.
+ */
+const clean = (value: string | undefined) => value?.trim() || '';
 
 export const SUPPORT_CONFIG = {
   githubRepoUrl: ['https:', '//', 'github.com/mgbuilderos/opentools'].join(''),
   /** Empty until a Sponsors profile actually exists; see decision notes. */
-  githubSponsorsUrl: env('NEXT_PUBLIC_GITHUB_SPONSORS_URL'),
+  githubSponsorsUrl: clean(process.env.NEXT_PUBLIC_GITHUB_SPONSORS_URL),
   /**
    * The live Buy Me a Coffee page. Committed rather than left to the
    * environment: it is a public URL, not a secret, and the failure this file
@@ -39,11 +47,27 @@ export const SUPPORT_CONFIG = {
    * time and was not. The env var stays as an override for staging.
    */
   buyMeACoffeeUrl:
-    env('NEXT_PUBLIC_BUYMEACOFFEE_URL') ||
+    clean(process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL) ||
     'https://buymeacoffee.com/codebuilder',
-  upiId: env('NEXT_PUBLIC_UPI_ID'),
-  upiPayeeName: env('NEXT_PUBLIC_UPI_NAME') || 'OpenTools',
+  upiId: clean(process.env.NEXT_PUBLIC_UPI_ID),
+  upiPayeeName: clean(process.env.NEXT_PUBLIC_UPI_NAME) || 'OpenTools',
 };
+
+/**
+ * One "coffee" on the Buy Me a Coffee page, in USD. **This must match the
+ * coffee price set on that page** — it was $5.00 when checked on 2026-09-18.
+ * Every offered amount is a whole number of coffees, so nobody clicks $10 and
+ * lands on a page asking for something else; `support-config.test.ts` fails the
+ * build if a tier stops dividing evenly.
+ */
+export const BUYMEACOFFEE_UNIT_USD = 5;
+
+/** Whole coffees for a USD amount, or null when it does not divide evenly. */
+export function coffeesFor(usd: number): number | null {
+  if (!Number.isFinite(usd) || usd < BUYMEACOFFEE_UNIT_USD) return null;
+  const coffees = usd / BUYMEACOFFEE_UNIT_USD;
+  return Number.isInteger(coffees) ? coffees : null;
+}
 
 export type SupportChannel = 'upi' | 'buymeacoffee' | 'githubSponsors';
 
@@ -93,11 +117,11 @@ export interface SupportTier {
  */
 export const SUPPORT_TIERS: SupportTier[] = [
   {
-    name: '☕ Quick Coffee',
-    amountUsd: '$3',
-    amountInr: '₹150',
-    usdValue: 3,
-    inrValue: 150,
+    name: '☕ One Coffee',
+    amountUsd: '$5',
+    amountInr: '₹420',
+    usdValue: 5,
+    inrValue: 420,
     description: 'Goes toward the domain and the hosting that serves the site.',
     features: [
       'No ads, no third-party trackers, no client-side analytics',
@@ -106,11 +130,11 @@ export const SUPPORT_TIERS: SupportTier[] = [
     ],
   },
   {
-    name: '⚡ Tool Backer',
+    name: '⚡ Two Coffees',
     amountUsd: '$10',
-    amountInr: '₹500',
+    amountInr: '₹840',
     usdValue: 10,
-    inrValue: 500,
+    inrValue: 840,
     description: 'Goes toward keeping the tools that are already here working.',
     features: [
       'Fixes and maintenance on the tools on this site today',
@@ -119,11 +143,11 @@ export const SUPPORT_TIERS: SupportTier[] = [
     ],
   },
   {
-    name: '💖 Patron',
+    name: '💖 Five Coffees',
     amountUsd: '$25',
-    amountInr: '₹1,500',
+    amountInr: '₹2,100',
     usdValue: 25,
-    inrValue: 1500,
+    inrValue: 2100,
     description:
       'Goes toward longer work: building tools, and the tests behind them.',
     features: [
