@@ -3,10 +3,12 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import {
+  BUYMEACOFFEE_UNIT_USD,
   PAYMENT_PLACEHOLDERS,
   SUPPORT_CONFIG,
   SUPPORT_TIERS,
   canAcceptSupport,
+  coffeesFor,
   getBuyMeACoffeeUrl,
   getUpiPaymentUrl,
   supportChannels,
@@ -32,6 +34,28 @@ describe('support config', () => {
     }
   });
 
+  it('reads every environment variable as a literal, not a computed key', () => {
+    // process.env[name] is not substituted at build time: it ships as a runtime
+    // lookup against an object that is empty in the browser, so setting the
+    // variable would silently do nothing. Only process.env.NAME is replaced.
+    const source = readFileSync(
+      path.join(import.meta.dirname, 'support-config.ts'),
+      'utf8',
+    );
+    // Prose may describe the wrong form; only code is being judged here.
+    const code = source
+      .replace(/\/\*[\s\S]*?\*\//gu, '')
+      .replace(/\/\/[^\n]*/gu, '');
+    expect(code).not.toMatch(/process\.env\s*\[/u);
+    for (const name of [
+      'NEXT_PUBLIC_UPI_ID',
+      'NEXT_PUBLIC_BUYMEACOFFEE_URL',
+      'NEXT_PUBLIC_GITHUB_SPONSORS_URL',
+    ]) {
+      expect(code).toContain(`process.env.${name}`);
+    }
+  });
+
   it('produces no payment link for a channel that is not configured', () => {
     if (!SUPPORT_CONFIG.upiId) {
       expect(getUpiPaymentUrl(29)).toBe('');
@@ -52,6 +76,27 @@ describe('support config', () => {
     expect(getBuyMeACoffeeUrl(0)).toBe(url);
     expect(getBuyMeACoffeeUrl(1.5)).toBe(url);
     expect(getBuyMeACoffeeUrl(-2)).toBe(url);
+  });
+
+  it('offers only amounts that are whole coffees', () => {
+    // Someone who clicks $10 must land on a page asking for $10. If the coffee
+    // price on the Buy Me a Coffee page changes, BUYMEACOFFEE_UNIT_USD has to
+    // change with it and this is what catches the drift.
+    for (const tier of SUPPORT_TIERS) {
+      const coffees = coffeesFor(tier.usdValue);
+      expect(coffees).not.toBeNull();
+      expect(coffees! * BUYMEACOFFEE_UNIT_USD).toBe(tier.usdValue);
+      expect(tier.amountUsd).toBe(`$${tier.usdValue}`);
+    }
+  });
+
+  it('rejects an amount that is not a whole number of coffees', () => {
+    expect(coffeesFor(3)).toBeNull();
+    expect(coffeesFor(7)).toBeNull();
+    expect(coffeesFor(0)).toBeNull();
+    expect(coffeesFor(Number.NaN)).toBeNull();
+    expect(coffeesFor(5)).toBe(1);
+    expect(coffeesFor(25)).toBe(5);
   });
 
   it('lists only channels that can actually receive money', () => {

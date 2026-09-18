@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button';
 import {
   SUPPORT_CONFIG,
   SUPPORT_TIERS,
+  coffeesFor,
+  getBuyMeACoffeeUrl,
   getUpiPaymentUrl,
   isLikelyIndiaVisitor,
 } from '@/lib/support-config';
@@ -34,14 +36,21 @@ export function SupportDualView() {
   const [qrSvg, setQrSvg] = useState<string>('');
   const [copiedUpi, setCopiedUpi] = useState<boolean>(false);
 
+  /**
+   * A channel with no configured id cannot take money, so it is not offered at
+   * all. Showing a dead QR and a link to nowhere is worse than showing one
+   * working option.
+   */
+  const upiReady = Boolean(SUPPORT_CONFIG.upiId);
+
   useEffect(() => {
     const isIndia = isLikelyIndiaVisitor();
-    if (isIndia) {
+    if (isIndia && upiReady) {
       setActiveTab('upi');
       setDetectedRegion('India (UPI Recommended)');
     } else {
       setActiveTab('international');
-      setDetectedRegion('International (GitHub Recommended)');
+      setDetectedRegion('International (Buy Me a Coffee)');
     }
   }, []);
 
@@ -57,6 +66,12 @@ export function SupportDualView() {
 
   useEffect(() => {
     let isMounted = true;
+    // No configured UPI id means no link to encode. Rendering nothing is the
+    // honest result; asking the encoder for an empty string only logs an error.
+    if (!upiUrl) {
+      setQrSvg('');
+      return;
+    }
     QRCode.toString(upiUrl, {
       type: 'svg',
       margin: 1,
@@ -101,21 +116,23 @@ export function SupportDualView() {
 
       {/* Navigation Tabs */}
       <div className="flex rounded-xl border bg-muted/50 p-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab('upi')}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
-            activeTab === 'upi'
-              ? 'bg-card text-foreground shadow-xs'
-              : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
-          }`}
-        >
-          <span className="text-base">🇮🇳</span>
-          <span>India (Instant UPI)</span>
-          <span className="hidden sm:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
-            0% Fee
-          </span>
-        </button>
+        {upiReady && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('upi')}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] active:scale-[0.99] ${
+              activeTab === 'upi'
+                ? 'bg-card text-foreground shadow-xs'
+                : 'text-muted-foreground hover:bg-card/40 hover:text-foreground'
+            }`}
+          >
+            <span className="text-base">🇮🇳</span>
+            <span>India (Instant UPI)</span>
+            <span className="hidden sm:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
+              0% Fee
+            </span>
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setActiveTab('international')}
@@ -126,15 +143,15 @@ export function SupportDualView() {
           }`}
         >
           <Globe className="size-4" />
-          <span>International (GitHub)</span>
+          <span>International (Coffee)</span>
           <span className="hidden sm:inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-            Cards & PayPal
+            Cards &amp; PayPal
           </span>
         </button>
       </div>
 
       {/* Tab 1: UPI India */}
-      {activeTab === 'upi' && (
+      {activeTab === 'upi' && upiReady && (
         <div className="rounded-2xl border bg-card p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
             <div>
@@ -176,7 +193,7 @@ export function SupportDualView() {
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {[
                 { amt: 29, label: '☕ Chai', popular: false },
-                { amt: 59, label: '⚡ Coffee (Popular)', popular: true },
+                { amt: 59, label: '⚡ Coffee', popular: false },
                 { amt: 99, label: '🍕 Lunch', popular: false },
                 { amt: 299, label: '💖 Patron', popular: false },
                 { amt: 999, label: '🚀 Sponsor', popular: false },
@@ -262,7 +279,7 @@ export function SupportDualView() {
 
               <div className="text-[11px] text-muted-foreground flex items-center justify-center sm:justify-start gap-1.5 pt-1">
                 <Check className="size-3.5 text-success" />
-                100% of funds go to local browser tools
+                Goes to keeping these tools running
               </div>
             </div>
           </div>
@@ -277,10 +294,10 @@ export function SupportDualView() {
               <div>
                 <div className="flex items-center gap-2 text-success font-semibold text-sm">
                   <ShieldCheck className="size-4" />
-                  Official GitHub Sponsors Platform
+                  Buy Me a Coffee
                 </div>
                 <h3 className="text-xl font-bold mt-1">
-                  Global Support via GitHub
+                  Global support, one coffee at a time
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                   Supports Apple Pay, Google Pay, Visa, MasterCard, Amex &amp;
@@ -288,9 +305,9 @@ export function SupportDualView() {
                 </p>
               </div>
               <div className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
-                  <Clock className="size-3.5" />
-                  Approval in Progress
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
+                  <ShieldCheck className="size-3.5" />
+                  Open now
                 </span>
               </div>
             </div>
@@ -298,16 +315,14 @@ export function SupportDualView() {
             {/* Status notice */}
             <div className="mt-6 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-start gap-2.5">
-                <Clock className="size-4 shrink-0 text-muted-foreground mt-0.5" />
+                <Star className="size-4 shrink-0 text-muted-foreground mt-0.5" />
                 <div>
                   <p className="font-semibold text-foreground">
-                    GitHub Sponsors Review Pending
+                    Starring the repository is free
                   </p>
                   <p className="mt-0.5 text-muted-foreground">
-                    Our official GitHub Sponsors profile is currently under
-                    review by GitHub and will activate shortly. In the meantime,
-                    starring our repository is the best free way to support
-                    OpenTools!
+                    It costs nothing and helps other people find the project,
+                    which is worth as much as a coffee.
                   </p>
                 </div>
               </div>
@@ -370,14 +385,16 @@ export function SupportDualView() {
                   </div>
 
                   <div className="mt-6">
-                    <Button
-                      disabled
-                      className="w-full text-xs font-semibold opacity-70 cursor-not-allowed"
-                      variant="outline"
+                    <a
+                      href={getBuyMeACoffeeUrl(
+                        coffeesFor(tier.usdValue) ?? undefined,
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="focus-ring inline-flex h-9 w-full items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
                     >
-                      <Clock className="mr-1.5 size-3.5" />
-                      Coming Soon ({tier.amountUsd})
-                    </Button>
+                      Send {tier.amountUsd} on Buy Me a Coffee
+                    </a>
                   </div>
                 </div>
               ))}
@@ -390,18 +407,18 @@ export function SupportDualView() {
                   Want to contribute a custom amount?
                 </h5>
                 <p className="text-xs text-muted-foreground">
-                  Custom recurring and one-time sponsorship tiers will be
-                  available as soon as GitHub completes review.
+                  Pick any number of coffees, or set up a monthly membership, on
+                  the Buy Me a Coffee page.
                 </p>
               </div>
-              <Button
-                disabled
-                variant="outline"
-                className="shrink-0 text-xs font-semibold opacity-70 cursor-not-allowed"
+              <a
+                href={getBuyMeACoffeeUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring inline-flex h-9 shrink-0 items-center justify-center rounded-lg border px-3 text-xs font-semibold transition-colors hover:bg-muted"
               >
-                <Clock className="mr-1.5 size-3.5" />
-                Coming Soon
-              </Button>
+                Choose an amount
+              </a>
             </div>
           </div>
         </div>

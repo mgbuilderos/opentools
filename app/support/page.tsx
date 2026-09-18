@@ -68,7 +68,7 @@ export default function SupportPage() {
                 aria-hidden="true"
                 className="size-3.5 text-success"
               />
-              Zero Server Egress
+              Runs in your browser
             </span>
             <span className="flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1">
               <Cpu aria-hidden="true" className="size-3.5" />
@@ -76,7 +76,7 @@ export default function SupportPage() {
             </span>
             <span className="flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1">
               <LockKeyhole aria-hidden="true" className="size-3.5" />
-              Free Forever Guarantee
+              Free, with no signup
             </span>
           </div>
         </section>
