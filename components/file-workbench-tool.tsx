@@ -80,10 +80,17 @@ export function FileWorkbenchTool() {
     const selected = FILE_WORKBENCH_OPERATIONS.find(
       (item) => item.id === requested,
     );
-    if (!selected) return;
+    if (!selected) {
+      // Match SchemaWorkbenchTool: a URL must not claim an operation the
+      // page is not showing.
+      const url = new URL(window.location.href);
+      url.searchParams.set('tool', initial.id);
+      window.history.replaceState(null, '', `${url.pathname}${url.search}`);
+      return;
+    }
     setOperationId(selected.id);
     setValues(defaults(selected));
-  }, [operationId]);
+  }, [operationId, initial.id]);
 
   useEffect(() => {
     inputRef.current?.toggleAttribute(
@@ -185,7 +192,10 @@ export function FileWorkbenchTool() {
     anchor.href = url;
     anchor.download = generated.name;
     anchor.click();
-    URL.revokeObjectURL(url);
+    // Deferred by a tick, like every other download helper in this app: a
+    // blob URL revoked in the same tick as the click can be gone before the
+    // browser has fetched it.
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
 
   const selectedBytes = files.reduce((sum, file) => sum + file.size, 0);
@@ -284,7 +294,7 @@ export function FileWorkbenchTool() {
                       setResult(null);
                       setError('');
                     }}
-                    className="focus-ring mx-auto mt-3 block max-w-full text-xs"
+                    className="focus-ring mx-auto mt-3 block min-h-11 max-w-full py-2 text-xs file:mr-3 file:min-h-7 file:rounded-md file:border-0 file:bg-muted file:px-3 file:font-semibold"
                   />
                 </label>
               ) : null}

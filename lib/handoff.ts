@@ -23,6 +23,34 @@ import { useEffect, useRef } from 'react';
 
 export const HANDOFF_PARAM = 'handoff';
 export const HANDOFF_MAX_AGE_MS = 5 * 60 * 1000;
+/**
+ * How long to wait for the browser's storage before giving up and navigating
+ * without the file. IndexedDB can block indefinitely -- another tab holding an
+ * upgrade, a device under storage pressure -- and a tool button stuck on
+ * "Opening…" forever is worse than one that opens an empty picker.
+ */
+export const HANDOFF_TIMEOUT_MS = 5000;
+
+function withTimeout<T>(work: Promise<T>, fallback: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    let settled = false;
+    const finish = (value: T) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+    const timer = setTimeout(() => finish(fallback), HANDOFF_TIMEOUT_MS);
+    void work
+      .then((value) => {
+        clearTimeout(timer);
+        finish(value);
+      })
+      .catch(() => {
+        clearTimeout(timer);
+        finish(fallback);
+      });
+  });
+}
 
 const DATABASE_NAME = 'opentools-handoff';
 const DATABASE_VERSION = 1;
@@ -111,7 +139,11 @@ function purgeExpired(store: IDBObjectStore, now: number) {
  * navigates without a handoff and the tool page shows its own file picker,
  * which is exactly the behaviour that existed before.
  */
-export async function stashHandoff(
+export function stashHandoff(payload: HandoffPayload): Promise<string | null> {
+  return withTimeout(stashHandoffUnbounded(payload), null);
+}
+
+async function stashHandoffUnbounded(
   payload: HandoffPayload,
 ): Promise<string | null> {
   if (!payload.file && !payload.text) return null;
@@ -150,7 +182,13 @@ export async function stashHandoff(
  * Reads a payload once and deletes it in the same transaction, so a reload of
  * the tool page never replays a file the visitor has already moved on from.
  */
-export async function claimHandoff(id: string): Promise<HandoffPayload | null> {
+export function claimHandoff(id: string): Promise<HandoffPayload | null> {
+  return withTimeout(claimHandoffUnbounded(id), null);
+}
+
+async function claimHandoffUnbounded(
+  id: string,
+): Promise<HandoffPayload | null> {
   const database = await openDatabase();
   if (!database) return null;
 

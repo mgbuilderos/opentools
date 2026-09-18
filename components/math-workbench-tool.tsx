@@ -64,7 +64,14 @@ export function MathWorkbenchTool() {
     const requested = new URLSearchParams(window.location.search).get('tool');
     if (!requested || requested === operationId) return;
     const selected = MATH_OPERATIONS.find((item) => item.id === requested);
-    if (!selected) return;
+    if (!selected) {
+      // Match SchemaWorkbenchTool: a URL must not claim an operation the
+      // page is not showing.
+      const url = new URL(window.location.href);
+      url.searchParams.set('tool', MATH_OPERATIONS[0].id);
+      window.history.replaceState(null, '', `${url.pathname}${url.search}`);
+      return;
+    }
     setOperationId(selected.id);
     setValues(defaults(selected));
   }, [operationId]);
