@@ -355,6 +355,17 @@ hand-written comparison pages, the processing record, recipe links, and the
 tool itself. No pillar in this document has a price attached, and none is
 waiting on one.
 
+**CONFIRMED 2026-09-18 — this section's warning has come true, and it is now
+the site's live failure.** The KV write cap predicted below is exactly what
+broke: a write is refused with `free usage limit for this operation for today`
+(code 10048), nothing is being cached, and every page is rebuilt for every
+visitor. The 87 `exceededResources` 503s in the 05:00Z hour are that. So the
+figure below is no longer a precaution — **Workers Paid at $5/month, including
+1M KV writes, is a prerequisite for the growth plan, not an optional upgrade.**
+A site that fails under a traffic spike cannot convert a traffic spike, and the
+whole plan is a machine for producing traffic spikes. Note the pleasing
+symmetry: **one recurring supporter at $5/month pays for it.**
+
 **The one place money can appear is infrastructure, and only if this works.**
 The site runs on Cloudflare Workers with a KV-backed ISR cache. Checked on
 2026-09-18:
