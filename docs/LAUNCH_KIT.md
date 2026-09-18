@@ -146,7 +146,79 @@ reading the rules is a guess wearing a confident voice.
 If a sub bans it, **do not post anyway**. A removal costs nothing; a ban costs
 the channel permanently.
 
-### What to do about r/privacy instead
+### The compliant r/privacy post — a contribution, not a pitch
+
+There **is** a post that belongs in r/privacy, and it is not about the product.
+It teaches the community to verify *any* file tool's privacy claim, including
+tools that are not yours. **No link, no product mention, nothing to remove.**
+
+The test it passes: *would this still be worth posting if you had no product?*
+Yes — which is exactly why it is allowed and why it will land.
+
+**Flair:** `Discussion` or `Guide` — **not** `Software`. It is not about software
+you made.
+
+**Title:**
+
+`You can verify a "we never upload your files" claim yourself in about 10 seconds — here's how`
+
+**Body:**
+
+> Every browser-based file tool says it processes things locally. Almost always
+> you are trusting a sentence on a marketing page about what happens on a
+> server you cannot see.
+>
+> There is a Content-Security-Policy directive that makes it checkable instead:
+> `connect-src 'none'`. When a page is served with it, the browser refuses every
+> fetch, XMLHttpRequest, WebSocket, EventSource and `sendBeacon` the page tries
+> to open. Not "the site promises not to" — the browser will not let it.
+>
+> **To check any site:**
+>
+> 1. Open devtools, Network tab, and reload.
+> 2. Click the document request (the first one, the HTML itself).
+> 3. Response Headers, find `content-security-policy`.
+>
+> If it contains `connect-src 'none'`, that page cannot open a network
+> connection at all. If it says `connect-src 'self'`, or there is no
+> `connect-src` line, it can — which does not mean it does, but you are back to
+> trusting a sentence.
+>
+> From a terminal, same thing:
+>
+>     curl -sI https://example.com | grep -i content-security-policy
+>
+> **What it does not prove**, because this gets oversold:
+>
+> - Nothing about bugs. It governs where bytes may go, not whether the code is
+>   sound.
+> - Nothing about tomorrow. A site can ship a different CSP whenever it likes,
+>   so this is a check you repeat, not a certificate.
+> - Nothing about native apps or extensions, which are not bound by page CSP.
+>
+> **Two gotchas if you go testing this yourself**, both of which will quietly
+> give you the wrong answer:
+>
+> 1. **A blocked `sendBeacon` still returns `true`.** The spec returns true once
+>    the beacon is queued; the policy refuses it afterwards. Checking that
+>    return value tells you nothing at all.
+> 2. **Chromium raises a request event for a request it is about to block** —
+>    `transferSize: 0`, failure reason `csp` — where WebKit raises nothing. So
+>    "no request was attempted" is the wrong thing to assert; it fails a page
+>    that is behaving perfectly. Assert that nothing received a *response* and
+>    that zero bytes were transferred.
+>
+> Small thing, but it turns a promise into something you can check.
+
+**If someone asks in the comments whether any tools actually do this** — answer
+honestly, say you built one, and link it then. A direct question is not
+self-promotion. **Do not** volunteer it, do not edit the link into the post, and
+do not have it ready in the first comment. If nobody asks, the post still did
+its job: it is the same audience, and the name will be familiar next time.
+
+### The longer game
+
+
 
 It is the best-matched audience you have, so it is worth earning rather than
 abandoning. That is a months-long play, not a launch:
