@@ -1,5 +1,34 @@
 # OpenTools Organic Growth & Traffic Engineering Playbook (Top 0.1% Edition)
 
+> ## ⛔ READ THIS BEFORE BUILDING ANYTHING FROM THIS DOCUMENT
+>
+> **Added 2026-09-19.** This playbook was written as a menu of ideas, before
+> several of them had been ruled out. **Three items in it are decided-and-closed
+> and must not be built.** They are marked `⛔ REJECTED` where they appear, but
+> they are listed here too because a reader who skims will otherwise implement
+> one and have it bounced by a test or by the owner.
+>
+> | Item | Where | Why it is closed |
+> |---|---|---|
+> | `/compare/...` routes naming competitors | Pillar 5, item 2 | Owner: **"never"**. Competitor names are banned in shipped code and guarded by `lib/seo/live-tools.test.ts` and `lib/tools/local-source-policy.test.ts` — building this fails the build. |
+> | "Subtly branded" embeddable widgets | Pillar 6 | Output branding is banned outright. Unbranded embeds are fine; branded ones are not. |
+> | Gating output behind a share or a GitHub star | anywhere it appears | Proposed once and withdrawn by the owner: *"okay..let us not build it"*. Core output is never delayed, degraded, watermarked or gated. |
+>
+> Also closed, and not from this document: the **B2B / self-hosted business**
+> (owner: *"that is a distraction"*), and **India vernacular pages** (deferred).
+>
+> **The competitor-name rule has a gap worth knowing about:** the guard tests
+> scan `app`, `components`, `scripts` and `workers` only. They do **not** scan
+> `docs/`. That is why the names below still exist in this file and why this
+> banner is necessary — the test cannot catch a bad idea written in prose.
+>
+> **On the objective below.** "100,000+ monthly organic visitors" is the right
+> ambition and the wrong yardstick for judging a week's work. Measured
+> 2026-09-18, the site draws **821 unique visitors in 30 days (~27/day)** and the
+> public repository is **four days old**. See `docs/REVENUE_OPERATIONS.md` §1
+> and §4a for the real baseline and the current channel status, which supersede
+> anything implied here.
+
 > **Document Classification**: Strategic Architecture & Implementation Blueprint  
 > **Audience**: Product Owner, Claude Code, Antigravity, Engineering  
 > **Objective**: Scale OpenTools (`getopentools.com`) to 100,000+ monthly organic visitors and drive maximum conversion with **$0 paid marketing spend**, strictly honoring the system's non-negotiable invariants (100% local, zero cloud egress, zero fake claims, no paywalls).

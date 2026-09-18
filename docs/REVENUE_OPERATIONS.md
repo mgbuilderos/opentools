@@ -14,6 +14,51 @@ See §1 for the corrected baseline and §2 for the corrected arithmetic.
 
 ---
 
+> # 🔴 EVERY CONVERSION CONCLUSION IN THIS FILE IS VOID
+>
+> **Established 2026-09-19 by the DEBUG lane, proven and independently
+> re-verified. This is the most important thing on this page.**
+>
+> **The site has been unusable past the first page view.** `/sw.js` is served
+> with `connect-src 'none'`. A service worker inherits the CSP of its own
+> script's response headers, so the worker's navigate branch calls `fetch()`,
+> the fetch is blocked, it throws, and the `.catch()` returns
+> *"You are offline and this page has not been opened before."*
+>
+> So the sequence every visitor experienced was: **first page loads fine → the
+> service worker installs and takes control → every navigation after that shows
+> an offline error while their internet is working perfectly.** Measured on
+> production in desktop Chrome, desktop Safari, and an emulated iPhone.
+>
+> **What that means for this document.** Nobody has been able to reach a tool, a
+> guide, or `/support` after their first page view. Therefore:
+>
+> - **Zero voluntary support is fully explained by a broken product** — not by
+>   weak copy, weak channels, a badly placed Support button, or weak conversion
+>   mechanics. Every hour spent on funnel optimisation was spent on a site that
+>   did not work.
+> - **Every sentence in this file that reasons about conversion rate, funnel
+>   behaviour, or supporter behaviour was measuring that broken site, and is
+>   void.** They are marked **⚠️ VOID (2026-09-19)** where they appear. They are
+>   *not deleted* — a record of what was wrongly concluded, and why, is worth
+>   more than a clean page.
+> - **The traffic numbers are unaffected.** §1's 27 visitors/day stands. The
+>   failure happened inside the visitor's browser and **never reached
+>   Cloudflare**, so it is in no log and no analytics. The data is not wrong; it
+>   simply never saw this.
+> - **"Traffic is the blocker" is still true, and is no longer the whole truth.**
+>   27 visitors who can use the site are worth more than 27 who cannot, and every
+>   Reddit post and indexed guide so far sent people to a site that failed on
+>   their second click. Fixing this is a prerequisite to the traffic work, not a
+>   competitor with it.
+>
+> **The fix is written and rescued but NOT deployed** — it needs an owner
+> decision between two routes first. **Do not assume it is live**, and do not
+> re-open any conversion conclusion until it is live and a real visitor can
+> reach `/support` on their second click.
+
+---
+
 ## 1. The measured baseline
 
 > **Corrected 2026-09-19.** This section said **~230 unique visitors/day**. That
@@ -33,7 +78,7 @@ See §1 for the corrected baseline and §2 for the corrected arithmetic.
 | …of which from a **named browser** | **749 (12.5%)** | same snapshot |
 | 503 responses / 24h | **75** | same snapshot — see §3 |
 | 404 responses / 24h | 946 | deliberate de-index |
-| `/support` views / day | **11** — 0.6% of page requests | 2026-09-17, unchanged |
+| `/support` views / day | ~~11 — 0.6% of page requests~~ **⚠️ VOID (2026-09-19)** | measured 2026-09-17 on a site where most visitors *could not reach `/support` at all* — see the red block above. Not a conversion signal. |
 | Guides | 558 pages | catalogue, not traffic — see the warning below |
 | Revenue | **Unknown.** Nothing records it. See §6. | — |
 
@@ -104,6 +149,20 @@ donation rate is about **$4/day, not $100**. Whoever repeats "we are roughly
 right. A perfect funnel on 27 visitors yields cents. But the corrected
 multiples change what follows from it: see §2b, whose conclusion the new
 numbers strengthen rather than overturn.
+
+> **⚠️ Amended 2026-09-19.** "The constraint is traffic, not the payment page"
+> was used in this file to mean *the mechanics are fine, only the volume is
+> missing*. The first half of that is now known to be false: the mechanics were
+> not fine, because **most visitors could not reach the payment page at all**
+> (see the red block at the top). The sentence survives as arithmetic — volume
+> genuinely is the binding constraint on the $100/day goal — but it must no
+> longer be read as evidence that the product side is done. There are now two
+> constraints, and the product one is cheaper to fix.
+>
+> **The rates in the tables above and in §2b are external benchmarks** (what
+> donation rates look like for free tools generally). Those are unaffected by
+> our bug and remain the right planning assumptions. What is void is any
+> inference drawn from *our own* observed behaviour.
 
 ## 2b. The uncomfortable part: donations alone probably do not reach $100/day
 
@@ -380,12 +439,111 @@ terms belong to iLovePDF and SmallPDF with millions of backlinks.
 
 | Channel | Realistic first hit | Why it fits | Effort |
 | :--- | :--- | :--- | :--- |
-| **Show HN** | 10k–60k in 24h | Highest free single-day ceiling. **One shot** — do not fire before §3 is fixed. | One post |
-| **awesome-selfhosted** | steady + backlinks | Durable, and the only realistic fix for the authority problem. **Blocked:** requires a genuine self-host release; `claude/selfhost` is unmerged and Docker Hub 404s for `mgbuilderos/opentools`. | ship self-host first |
+| **Show HN** | 10k–60k in 24h | Highest free single-day ceiling. **One shot.** ⛔ **HELD — see §4a.** | One post |
+| **awesome-selfhosted** | steady + backlinks | Durable, and the only realistic fix for the authority problem. ⛔ **Still blocked, but not for the reason stated here before — see §4a.** | see §4a |
 | ~~free-for-dev~~ | — | **Ruled out 2026-09-18.** Its contributing guide scopes the list to SaaS with free tiers for DevOps practitioners. Browser utilities are out of scope; a PR would be rejected. | don't |
-| **r/selfhosted, r/privacy, r/degoogle** | 2k–15k per post | Ideologically aligned and donation-friendly. | One post each |
-| **AlternativeTo, Product Hunt** | steady | Listed as the local alternative to SmallPDF. Compounds for years. | A listing each |
+| **r/selfhosted, r/privacy, r/degoogle** | 2k–15k per post | Ideologically aligned and donation-friendly. ⛔ **HELD — see §4a.** r/privacy also blocks self-promotion. | One post each |
+| **AlternativeTo, Product Hunt** | steady | Compounds for years. Product Hunt is one-shot and **HELD**; AlternativeTo is a listing, not an event, and is not held. | A listing each |
 | **More guide pages** | ≈ 0 | Measured at 0.5 views/day each; decision 11 says consolidate, not multiply. | **Don't** |
+
+## 4a. Channel status, re-measured 2026-09-19 — two corrections and one decision
+
+Everything here was measured in this session, not carried forward.
+
+### The site is four days old, and that reframes the rest
+
+```
+GET https://api.github.com/repos/mgbuilderos/opentools
+  created_at : 2026-09-15T12:45:40Z      ← the public repository is 4 days old
+  stars      : 1 · license: MIT · private: false
+  description: "All-in-one micro tools"
+```
+
+27 visitors/day and 1 star on a four-day-old site is not an underperforming
+business; it is a site that has barely been discovered. §2's arithmetic is still
+true and still uncomfortable, but read it against this: nothing has had time to
+compound, and search — the only channel that plausibly reaches thousands a day —
+pays out over months.
+
+### Correction 1 — the container is public; that line was stale
+
+```
+ghcr.io anonymous token → issued
+GET /v2/mgbuilderos/opentools/manifests/latest → HTTP 200
+```
+The image is on GHCR and pulls anonymously. "Docker Hub 404s" no longer applies.
+
+### Correction 2 — awesome-selfhosted is blocked by *time*, not by the release
+
+This is the useful finding, and it saves a public rejection.
+
+**The submission process moved.** The main repository refuses PRs outright:
+`.github/PULL_REQUEST_TEMPLATE.md` reads *"Please do not submit pull requests in
+this repository. Use .../awesome-selfhosted-data instead."* Following the old
+plan means opening a PR in the wrong repo.
+
+**The requirement we fail** — `awesome-selfhosted-data/CONTRIBUTING.md` line 21:
+*"first release more than four months old, actively maintained, working
+installation instructions, not already listed elsewhere"*, and line 152:
+*"This count initiates only after a release has been created."*
+
+**Our position:** `GET /repos/mgbuilderos/opentools/releases` → **no releases**.
+There is a tag `v0.1.0` but no Release object, **so the four-month clock has not
+started at all.** A PR today is closed publicly with that exact message.
+
+> **Therefore: create a GitHub Release for `v0.1.0` today.** Nothing else starts
+> the clock, it costs two minutes, and every day it is not created is a day
+> added to the earliest submission date. Released today → eligible **2027-01-19**.
+
+### The decision: the one-shot channels are held
+
+Show HN, Product Hunt and the large subreddits are **single-use**. Their value is
+spent on the day they fire, whatever the site does that day.
+
+Measured this session, twice, with a full browser UA:
+
+```
+GET https://getopentools.com/pdf/merge
+  HTTP/2 200 · cf-cache-status: BYPASS
+  cache-control: no-store, must-revalidate · x-vinext-cache: MISS  (both)
+```
+
+Every request re-renders uncached. That is precisely the condition that produced
+**1,316 `exceededResources` 503s in one hour** on 2026-09-16, and 75 503s were
+still recorded in the 24h to 2026-09-18. A Show HN front page is 10k–60k visits
+in a day.
+
+**Firing a one-shot channel into an uncached site does not fail gracefully — it
+converts the largest free traffic event available into an outage, and the
+channel does not come back.**
+
+**And there is now a second, worse reason to hold — the decisive one.** DEBUG
+proved on 2026-09-19 that the service worker shows *"You are offline"* on
+**every navigation after a visitor's first page view** (see the red block at the
+top of this file). A Show HN front page sent to that site does not produce an
+outage; it produces 30,000 people who click one thing, get an error, and never
+return. **That is worse than not posting at all**, and it is the clearest
+possible argument for holding: the ammunition would be spent showing the largest
+technical audience available a broken site.
+
+**Held until all three are true:**
+
+1. The service-worker fix is **deployed and verified on production** — a real
+   second click reaches a tool and `/support`. *(DEBUG; fix written, not
+   deployed, owner must choose between two routes.)*
+2. `x-vinext-cache: HIT` on a second request — capsule §9.3's bar. *(TECH.)*
+3. Capsule §9.1 formally closed.
+
+This lane's job is to have everything ready for that day and not to spend the
+ammunition early.
+
+*(From the same measurement, and consistent with DEBUG's diagnosis: the **served
+HTML is correct** — 60,614 bytes, `<title>Merge PDF · OpenTools`, and **zero**
+occurrences of "You are offline". The offline text is generated by the service
+worker inside the visitor's browser, which is why it never appeared in any
+server log, in Cloudflare analytics, or in `analytics/daily.jsonl`. Our traffic
+data is not wrong — it simply never saw this failure. `/robots.txt` allows all
+major and AI crawlers, and `/sitemap.xml` serves 651 URLs.)*
 
 ## 5. What has shipped toward this goal
 
@@ -444,19 +602,49 @@ ACCT=00f21e5724f9ebf7b1ab0cb42ae76b1e
 
 ## 8. Open, in priority order
 
-1. **Fix the §3 ceiling.** Owner decision: $5/month Workers Paid, or accept that
-   the goal is capped. Everything else is downstream of this.
-2. **Rung 0 — read the actual revenue.** Owner action, one evening.
-3. **Turn off the Cloudflare analytics beacon** at source — it is edge-injected
-   and currently blocked only by our CSP. See `docs/EGRESS_PROOF.md`.
-4. **Launch kit — written, see `docs/LAUNCH_KIT.md`.** AlternativeTo and the
-   smaller subreddits are safe to fire today; **Show HN is gated on item 1**,
-   because an HN front page exceeds the free ceiling in an afternoon and that
-   traffic does not come back.
-5. **Verify Google Search Console** and submit the sitemap — see §3b. No
-   verification tag is currently served.
-6. Verify the free cache mitigations in §3 before assuming any of them work.
-7. Re-check Search Console for rows (~mid-Oct 2026), which unblocks decision 11.
+**Rewritten 2026-09-19.** Items 3 and 5 of the previous list are **done** (the
+Cloudflare beacon is off at source and verified gone; the sitemap is submitted
+and serving 651 URLs). The order below is what is actually open, and the top
+three are all owner actions that take minutes.
+
+### Owner actions — nothing here needs technical knowledge
+
+| # | Action | Why it is above everything else | Time |
+| :--- | :--- | :--- | :--- |
+| **A0** | **Decide which of DEBUG's two routes fixes the service worker, and let it deploy.** | ⭐ **This outranks everything else on this page, including the grant.** The site is unusable past the first page view (red block at the top). Until it is fixed, every visitor this lane attracts is wasted, every channel fired is burned, and no revenue work can be evaluated. It is also the cheapest win available: the fix is already written. | one decision |
+| **A1** | **Open the Claude desktop app daily so `opentools-traffic-snapshot` fires**, or run `node analytics/collect-daily.mjs` by hand | `analytics/daily.jsonl` has **one line**. On the free plan Cloudflare discards the detail after a few days, so a day not collected is a day **permanently lost** — and every future decision here is made against this history. | 1 min/day |
+| **A2** | **Send the FUTO email to `grantapps@futo.org`** — fill the two `[YOU]` sections in `docs/FUTO_APPLICATION_DRAFT.md` | **Near-term revenue is grants, not donations.** §2 shows donations yield about $4/day at today's traffic. A grant is 10k-scale. The draft is finished and verified; it is waiting only on two paragraphs nobody else can write. | 30 min |
+| **A3** | **Create a GitHub Release for `v0.1.0`** | The awesome-selfhosted four-month clock has **not started** — there is a tag but no Release. See §4a. Every day this is not done adds a day to the earliest submission date. | 2 min |
+| **A4** | **Rewrite the repo description** (currently "All-in-one micro tools") | It is the first thing anyone clicking any link — including a grant reviewer — sees, and it says nothing about the one property every pitch rests on. Suggested wording in `docs/FUTO_APPLICATION_DRAFT.md`. | 1 min |
+| **A5** | **Check Search Console → Indexing → Pages** | 651 URLs submitted, nobody has looked at how many are *indexed*. Search is the only channel that reaches thousands/day; this is the only instrument that shows whether it is working. Also unblocks decision 11. | 5 min |
+| **A6** | **Rung 0 — read the actual revenue.** Open the Buy Me a Coffee dashboard and the UPI history and write down what has arrived | Nothing records revenue. Until that number exists, every projection here is navigating blind. | 30 min |
+| **A7** | **Decide on Workers Paid, $5/month** | Standing answer is no spend until it earns, which is legitimate. §3 and `docs/CACHE_BUDGET.md` exist so the cost of that answer stays visible rather than being rediscovered each time the cache goes quiet. | — |
+
+### Blocked on other lanes — do not spend these early
+
+1. **The one-shot channels (Show HN, Product Hunt, the large subreddits) are
+   HELD.** Measured 2026-09-19: the cache serves MISS on every request. Firing a
+   single-use channel into an uncached site turns the largest free traffic event
+   available into an outage, permanently. Release condition: `x-vinext-cache:
+   HIT` on a second request, and capsule §9.1 closed. See §4a.
+2. **The guide cache allowlist is written, green and UNPROVEN.** See
+   `docs/CACHE_BUDGET.md` — including the finding that trimming the allowlist
+   cannot fix the write quota at any size, because at the observed deploy rate
+   the allowance affords fewer pages than are already cached. The lever is the
+   build id, which is the TECH lane's.
+3. **The OTF application is drafted and BLOCKED on board queue C5** — the EXIF
+   scrubber returns bytes unchanged for WebP, HEIC, AVIF, TIFF and GIF while
+   telling the user everything was stripped. An application to a funder whose
+   applicants include journalists must not rest on that. See
+   `docs/OTF_APPLICATION_DRAFT.md`.
+
+### Standing
+
+- **NLnet last**, and keep the geography warning in
+  `docs/NLNET_APPLICATION_DRAFT.md` intact: EU / Horizon inhabitants are
+  prioritised and others need "a clear European dimension". **Do not restate
+  that it has no geographic restriction** — that error has been made once.
+- **Do not build more guide pages.** Measured at 0.5 views/day each.
 
 ---
 
