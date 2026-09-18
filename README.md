@@ -40,8 +40,12 @@ These are app assets, like JavaScript or fonts — they never contain your data.
 Background removal loads U²-Net (lite) and the ONNX Runtime WebAssembly binary
 from this site only (`/models/`, `/ort/`).
 
-You don't have to trust us: open DevTools → Network, go offline, and run a
-tool. See [SECURITY.md](.github/SECURITY.md#verifying-the-promise-yourself).
+You don't have to trust us: **load a tool first**, then open DevTools → Network,
+go offline, and run it. The work happens in the page, so it completes with the
+network off — which is the proof. (Load the page first and don't reload while
+offline: the site itself needs the network to *fetch* a page, it just never
+needs one to *process* your file.) See
+[SECURITY.md](.github/SECURITY.md#verifying-the-promise-yourself).
 
 ### What the server logs
 

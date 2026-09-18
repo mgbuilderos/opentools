@@ -52,10 +52,18 @@ See §1 for the corrected baseline and §2 for the corrected arithmetic.
 >   their second click. Fixing this is a prerequisite to the traffic work, not a
 >   competitor with it.
 >
-> **The fix is written and rescued but NOT deployed** — it needs an owner
-> decision between two routes first. **Do not assume it is live**, and do not
+> **Status 2026-09-19: the route is chosen, the fix is NOT deployed.** ~~it needs
+> an owner decision between two routes first~~ — the owner chose **Route 1**
+> (*"route 1, run the checks and get it ready"*). The fix is being prepared and
+> checked now. **It is not live.** **Do not assume it is live**, and do not
 > re-open any conversion conclusion until it is live and a real visitor can
 > reach `/support` on their second click.
+>
+> **Route 1 has a marketing price, and it is now this lane's problem, not
+> DEBUG's:** the worker steps aside for navigations, which fixes the bug and
+> **gives up offline support**. Every claim that the website works with no
+> internet is now false. They have been found and dealt with — **see §9 for the
+> complete list and the one decision it leaves you.**
 
 ---
 
@@ -529,8 +537,11 @@ technical audience available a broken site.
 **Held until all three are true:**
 
 1. The service-worker fix is **deployed and verified on production** — a real
-   second click reaches a tool and `/support`. *(DEBUG; fix written, not
-   deployed, owner must choose between two routes.)*
+   second click reaches a tool and `/support`. *(DEBUG; **Route 1 chosen
+   2026-09-19**, being prepared and checked, ~~owner must choose between two
+   routes~~ — still **not deployed**, and the deploy is the owner's call.)*
+   **When the launch copy is written, remember Route 1 removed "works offline"
+   from the pitch — §9.**
 2. `x-vinext-cache: HIT` on a second request — capsule §9.3's bar. *(TECH.)*
 3. Capsule §9.1 formally closed.
 
@@ -611,9 +622,9 @@ three are all owner actions that take minutes.
 
 | # | Action | Why it is above everything else | Time |
 | :--- | :--- | :--- | :--- |
-| **A0** | **Decide which of DEBUG's two routes fixes the service worker, and let it deploy.** | ⭐ **This outranks everything else on this page, including the grant.** The site is unusable past the first page view (red block at the top). Until it is fixed, every visitor this lane attracts is wasted, every channel fired is burned, and no revenue work can be evaluated. It is also the cheapest win available: the fix is already written. | one decision |
+| **A0** | ~~Decide which of DEBUG's two routes fixes the service worker~~ **DECIDED: Route 1.** ⭐ **Now: let the fix deploy.** | **Half of this is done.** You chose Route 1 on 2026-09-19 (*"route 1, run the checks and get it ready"*). The fix is being prepared and is **NOT live** — it still needs your go-ahead to deploy. Until it deploys, the site is still unusable past the first page view (red block at the top), every visitor this lane attracts is still wasted, and no revenue work can be evaluated. **What Route 1 costs is in §9 — read it, because it is a marketing cost, not just a technical one.** | one go-ahead |
 | **A1** | **Open the Claude desktop app daily so `opentools-traffic-snapshot` fires**, or run `node analytics/collect-daily.mjs` by hand | `analytics/daily.jsonl` has **one line**. On the free plan Cloudflare discards the detail after a few days, so a day not collected is a day **permanently lost** — and every future decision here is made against this history. | 1 min/day |
-| **A2** | **Send the FUTO email to `grantapps@futo.org`** — fill the two `[YOU]` sections in `docs/FUTO_APPLICATION_DRAFT.md` | **Near-term revenue is grants, not donations.** §2 shows donations yield about $4/day at today's traffic. A grant is 10k-scale. The draft is finished and verified; it is waiting only on two paragraphs nobody else can write. | 30 min |
+| **A2** | **Send the FUTO email to `grantapps@futo.org`.** The whole email is written. **You need to write two short bits yourself — see §10 for exactly what they are, in plain words.** | **Near-term revenue is grants, not donations.** §2 shows donations yield about $4/day at today's traffic. A grant is $1,000–$5,000. The draft is finished and every link in it has been checked. It is waiting only on two paragraphs nobody else can write. | 20 min |
 | **A3** | **Create a GitHub Release for `v0.1.0`** | The awesome-selfhosted four-month clock has **not started** — there is a tag but no Release. See §4a. Every day this is not done adds a day to the earliest submission date. | 2 min |
 | **A4** | **Rewrite the repo description** (currently "All-in-one micro tools") | It is the first thing anyone clicking any link — including a grant reviewer — sees, and it says nothing about the one property every pitch rests on. Suggested wording in `docs/FUTO_APPLICATION_DRAFT.md`. | 1 min |
 | **A5** | **Check Search Console → Indexing → Pages** | 651 URLs submitted, nobody has looked at how many are *indexed*. Search is the only channel that reaches thousands/day; this is the only instrument that shows whether it is working. Also unblocks decision 11. | 5 min |
@@ -632,11 +643,24 @@ three are all owner actions that take minutes.
    cannot fix the write quota at any size, because at the observed deploy rate
    the allowance affords fewer pages than are already cached. The lever is the
    build id, which is the TECH lane's.
-3. **The OTF application is drafted and BLOCKED on board queue C5** — the EXIF
+3. ~~**The OTF application is drafted and BLOCKED on board queue C5** — the EXIF
    scrubber returns bytes unchanged for WebP, HEIC, AVIF, TIFF and GIF while
-   telling the user everything was stripped. An application to a funder whose
-   applicants include journalists must not rest on that. See
-   `docs/OTF_APPLICATION_DRAFT.md`.
+   telling the user everything was stripped.~~
+   **✅ UNBLOCKED 2026-09-19. It was never still broken — it was fixed on
+   2026-09-17 and nobody closed the ticket.** Verified in this lane against the
+   code *and* against the JavaScript the live site actually serves: the scrubber
+   now cleans JPEG and PNG and **refuses HEIC, AVIF, WebP, TIFF and GIF by name,
+   producing no file for them**, and the sentence *"All EXIF, GPS locations,
+   camera serials… completely stripped"* appears nowhere on the live site.
+   24 of 24 tests pass.
+   **Note what "fixed" means here, because it changes the application:** the
+   claim was narrowed to match what the tool can do, not the other way round.
+   **HEIC is the default camera format on every recent iPhone**, so someone
+   stripping location from a phone photo gets an honest refusal rather than a
+   clean file. The OTF draft now asks for funding to close exactly that gap
+   instead of implying it is already closed. See `docs/OTF_APPLICATION_DRAFT.md`
+   — remaining before sending: confirm on `opentech.fund` which fund is open,
+   and the same two `[YOU]` paragraphs as FUTO.
 
 ### Standing
 
@@ -645,6 +669,134 @@ three are all owner actions that take minutes.
   prioritised and others need "a clear European dimension". **Do not restate
   that it has no geographic restriction** — that error has been made once.
 - **Do not build more guide pages.** Measured at 0.5 views/day each.
+
+---
+
+## 9. Route 1 and the offline claims — added 2026-09-19
+
+### What this costs you, in one paragraph
+
+**You approved the right fix, and it has a price in marketing that nobody had
+written down yet.** Route 1 repairs the bug that made the site unusable after
+one click. The way it does that is by switching off the part that let the site
+work with your internet turned off. So from the moment it deploys, **"works
+offline" is no longer true of the website, and every place we said it becomes a
+false claim.** That is not a reason to reconsider — a site that works only
+online beats a site that doesn't work at all — but the claims have to come down
+with it, and this section is the list.
+
+**The good news, and it is genuinely good:** the claim that actually sells this
+project is untouched. *Your files are never uploaded, and you can check that
+yourself in thirty seconds* is enforced by the browser, proven on every release,
+and completely unaffected by Route 1. It was always the stronger line. Launch on
+it.
+
+### Two different things are both called "offline" — keep them apart
+
+Collapsing these is how the false claim gets written again, so it is worth
+thirty seconds:
+
+| | Does Route 1 break it? |
+| :--- | :--- |
+| **"The website loads and works with your internet off."** The installed-app / PWA promise. | **YES — dead.** Remove every instance. |
+| **"Your file is processed on your own machine and never uploaded."** Zero-egress. | **No.** Untouched, still enforced by `connect-src 'none'`, still proven per release. |
+| **"The self-hosted container runs with no network at all."** (`--network none`) | **No.** Untouched and still verified. Offline *self-hosting* survives. |
+
+### The complete list — every place that claimed the website works offline
+
+Swept 2026-09-19 across the whole repository, not just this lane's files.
+
+**Fixed in this session** (claims removed, each with the reason recorded beside
+it in the file so nobody restores it):
+
+| Where | What it said | Now |
+| :--- | :--- | :--- |
+| `components/install-prompt.tsx` — **the banner real visitors see** | "Works offline afterwards" (iPhone) and "Install it and every tool keeps working — even with no internet." (Chrome/Android) | "Opens in its own window, one tap from your home screen." Still a real benefit, and true. |
+| `docs/GROWTH_IDEAS.md` — **the launch plan** | *"'works with no internet' is a stronger hook for Hacker News and r/selfhosted than anything else available"* | Struck through, marked VOID. **This was our best launch headline and there is no equal replacement.** |
+| `docs/GROWTH_IDEAS.md` — changelog row | "Now installable, and the tools work with no network — which no server-side competitor can match" | Struck through, marked VOID |
+| `docs/LAUNCH_KIT.md` — **the store listing** | `offline` in the tag list | Tag removed |
+| `CLAUDE_CODE_OPENSOURCE_AND_SUPPORT_PROMPT.md` | "100% Private & Offline-Ready" badge | "100% Private & Zero-Upload" |
+| `lib/tools/writing-workbench.ts` | sample document asserting OpenTools "Works offline" | Replaced with a verification row that is true |
+| `lib/tools/creator-workbench.ts` | mockup default tagline "Private Offline Utilities in Your Pocket" | "Private Utilities That Never Upload Your Files" |
+| `README.md` | "go offline, and run a tool" — true, but a reader who *reloaded* while offline would think we were lying | Made precise: load the tool first, don't reload while offline |
+
+**Not this lane's to touch — someone else has to do these:**
+
+| Where | What | Whose |
+| :--- | :--- | :--- |
+| `public/sw.js` | The worker's own *"You are offline and this page has not been opened before."* — the sentence at the centre of the whole bug | **DEBUG**, as part of Route 1 |
+| `app/support/page.tsx` line 126 | "offline PDF page operations" — ambiguous. It reads as "PDF work done locally", which stays true, so it is **not urgent**; it is listed only so the sweep is complete. | **Antigravity** owns `/support`. Needs your word in chat before anyone edits it. |
+
+**A decision for you — I deliberately did not change these on my own:**
+
+These are **search keywords**, not sentences a visitor reads. Removing them
+costs traffic, which is the one thing this project cannot spare; keeping them is
+a small honesty risk, because someone searching "offline pdf tools" may want a
+tool that works with the internet off.
+
+| Where | What |
+| :--- | :--- |
+| `app/layout.tsx` | keywords `offline pdf tools`, `pdf merge offline` |
+| `lib/seo/blog-data.ts` | keywords `combine pdf offline`, `developer base64 tool offline`, `typescript zod generator offline`, and the live URL slug `how-to-convert-json-to-zod-schema-offline` |
+
+**Recommendation: keep them.** In this niche "offline tool" is how people search
+for *"doesn't upload my file"*, which is exactly what we are. The keyword tag
+itself is invisible to visitors and has been ignored by Google since 2009, and
+the slug is a live indexed URL — changing it throws away the indexing we are
+trying to build. **The rule that matters is the one already applied above: never
+make the offline claim in a sentence a human reads.** Say so if you disagree and
+it is a five-minute change.
+
+**Checked and deliberately left alone — these are TRUE and say something else:**
+
+`app/llms.txt/route.ts` (the container runs with `--network none`),
+`docs/SELF_HOSTING.md`, `docs/NLNET_APPLICATION_DRAFT.md` line 82,
+`.github/SECURITY.md` line 80 (the egress proof, correctly ordered),
+`lib/tools/document-workbench.ts` (processing is client-side, which stays true),
+`lib/tools/qr-barcode-workbench.ts` (describes the *output file*),
+`lib/templates/templates-data.ts` (about Obsidian, not this site),
+`components/smart-dropzone.tsx` (sample JSON), and
+`docs/SYSTEMS_ARCHITECTURE_AND_PRE_MORTEM.md` (`OfflineAudioContext`, a browser
+API name).
+
+**Nothing to do, verified clean:** `public/site.webmanifest` and
+`extension/manifest.json` make no offline claim; all **39** tools in
+`lib/tools/catalog.ts` are already marked `offlineReady: false`; the **FUTO and
+OTF grant drafts contain no offline claim at all**. `dist/**` is build output and
+regenerates.
+
+---
+
+## 10. The two things only you can write — for the FUTO email (A2)
+
+**Plain version: the email is finished. Two short bits are marked `[YOU]` in
+`docs/FUTO_APPLICATION_DRAFT.md`, and they are the two bits that cannot be
+ghostwritten. Neither is technical. Send to `grantapps@futo.org`.**
+
+**1. Who you are and why you built this** — one or two sentences, near the end
+of the email (line 75).
+
+Not a CV, not a company, not a pitch. They fund people. Something in the shape
+of: *who you are, and the reason these tools exist.* If the honest reason is "I
+wanted these tools to exist and did not want to upload my files to anyone", that
+is a good answer — it is the same reason FUTO exists.
+
+**You do not have to claim to be an engineer, and you should not.** The draft
+(`docs/FUTO_APPLICATION_DRAFT.md`, "Will they ask a technical question?") makes
+the case that saying plainly you are not from an IT background is a legitimate
+choice and some reviewers respond well to it. What would cost you the
+application is answering a technical question with a guess. If one arrives,
+bring it here and it gets answered properly before you reply.
+
+**2. Your name and an email address you actually check** — the sign-off (line
+80). That is all. It is a real application; they will reply to that address.
+
+**Before you hit send**, two things are already done and need nothing from you:
+every link in the email has been clicked and verified, and the traffic figure in
+it is the corrected ~27/day, not the old wrong 230. Nothing else is outstanding.
+
+**The same two paragraphs unlock OTF**, which is now unblocked (§8). Write them
+once and they serve both applications.
 
 ---
 
