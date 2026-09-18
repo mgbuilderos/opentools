@@ -245,6 +245,9 @@ export function MathWorkbenchTool() {
                   variant="ghost"
                   size="icon"
                   aria-label="Copy result"
+                  /* The completion card is offered off this click. Copying is
+                     this tool's "download": it has no file to save. */
+                  data-receipt-download=""
                   onClick={() => {
                     navigator.clipboard
                       .writeText(output)

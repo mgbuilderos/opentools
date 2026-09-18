@@ -394,6 +394,12 @@ export function TimestampTool() {
         operation: 'Unix timestamp converter',
         durationMs: completedIn,
         summary: 'UTC, Unix seconds, and Unix milliseconds are ready.',
+        // CompletionValueDialog requires at least one metric; without this the
+        // completion is announced and then silently dropped.
+        metrics: [
+          { label: 'UTC', value: result.iso },
+          { label: 'Unix seconds', value: String(result.unixSeconds) },
+        ],
       });
     } catch (caught) {
       setOutput('');
@@ -565,13 +571,15 @@ function DatePairTool({ age }: { age: boolean }) {
     const started = performance.now();
     try {
       if (!first || !second) throw new Error('Choose both calendar dates.');
+      let produced: string;
       if (age) {
         const result = calendarAge(first, second);
-        const next = `${result.years} years, ${result.months} months, ${result.days} days\n${result.totalDays.toLocaleString()} total days`;
-        setOutput(next);
+        produced = `${result.years} years, ${result.months} months, ${result.days} days\n${result.totalDays.toLocaleString()} total days`;
+        setOutput(produced);
       } else {
         const days = dateDifference(first, second);
-        setOutput(`${days.toLocaleString()} ${days === 1 ? 'day' : 'days'}`);
+        produced = `${days.toLocaleString()} ${days === 1 ? 'day' : 'days'}`;
+        setOutput(produced);
       }
       const completedIn = performance.now() - started;
       setElapsed(completedIn);
@@ -582,6 +590,13 @@ function DatePairTool({ age }: { age: boolean }) {
         summary: age
           ? 'Your calendar age result is ready.'
           : 'The exact calendar-day difference is ready.',
+        // See the note above: no metrics means no completion card.
+        metrics: [
+          {
+            label: age ? 'Calendar age' : 'Difference',
+            value: produced.replace('\n', ' · '),
+          },
+        ],
       });
     } catch (caught) {
       setOutput('');

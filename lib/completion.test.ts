@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { readFileSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+
 import {
   COMPLETION_EVENT,
   announceCompletion,
@@ -69,4 +72,60 @@ describe('completion value receipt', () => {
     ]);
     vi.unstubAllGlobals();
   });
+});
+
+/**
+ * The support ask is the only thing on the site that asks for money inside a
+ * tool, and it is offered from one place: `CompletionValueDialog` listens for a
+ * completion, then waits for a click on `[data-receipt-download]`. It drops the
+ * offer silently unless **both** hold — `detail.metrics` is non-empty, and the
+ * element clicked carries the receipt attribute.
+ *
+ * Silently is the problem. On 2026-09-18 an audit of the shipped bundle found
+ * `math-workbench-tool.tsx` announcing completions with no receipt element
+ * anywhere in the file, and two of the six calls in `utility-tools.tsx` passing
+ * no metrics. Those tools could never ask, and nothing failed to say so. This
+ * is the check that would have caught it.
+ */
+describe('every tool that announces a completion can actually offer support', () => {
+  const componentsDir = path.join(import.meta.dirname, '..', 'components');
+  const files = readdirSync(componentsDir)
+    .filter((name) => name.endsWith('.tsx'))
+    .map((name) => ({
+      name,
+      source: readFileSync(path.join(componentsDir, name), 'utf8'),
+    }))
+    .filter(({ source }) => source.includes('announceCompletion('));
+
+  it('finds the tools that announce completions', () => {
+    // A guard that silently matches nothing is worse than no guard.
+    expect(files.length).toBeGreaterThan(10);
+  });
+
+  it.each(files.map((f) => f.name))(
+    '%s passes metrics on every announceCompletion call',
+    (name) => {
+      const { source } = files.find((f) => f.name === name)!;
+      // Each call spans from `announceCompletion(` to its closing `});`.
+      const calls = source.split('announceCompletion(').slice(1);
+      for (const call of calls) {
+        const body = call.slice(0, call.indexOf('});'));
+        expect(
+          body,
+          `a call in ${name} omits metrics, so it can never offer`,
+        ).toContain('metrics:');
+      }
+    },
+  );
+
+  it.each(files.map((f) => f.name))(
+    '%s marks something with data-receipt-download',
+    (name) => {
+      const { source } = files.find((f) => f.name === name)!;
+      expect(
+        source,
+        `${name} announces a completion the dialog can never act on`,
+      ).toContain('data-receipt-download');
+    },
+  );
 });
