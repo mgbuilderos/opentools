@@ -61,13 +61,23 @@ function formatElapsed(durationMs: number) {
 
 function formatWhen(date: Date | null) {
   if (!date) return '—';
-  return date.toISOString().slice(0, 16).replace('T', ' ');
+  // A ZIP stores a wall-clock time with no time zone attached, and the reader
+  // builds the Date from those parts locally. Rendering it through
+  // toISOString() converts to UTC and shifts it — a 1980-01-01 archive showed
+  // as 1979-12-31 to anyone east of Greenwich. Read the same parts back.
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate(),
+  )} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function ratio(entry: ZipArchiveEntry) {
   if (!entry.uncompressedSize) return '—';
   const saved = 1 - entry.compressedSize / entry.uncompressedSize;
-  return saved <= 0 ? '0%' : `${Math.round(saved * 100)}%`;
+  if (saved <= 0) return '0%';
+  // Floor rather than round: 99.7% saved is not 100%, and "100%" reads as
+  // though the file compressed to nothing at all.
+  return `${Math.min(99, Math.floor(saved * 100))}%`;
 }
 
 export function ArchiveToolkitTool() {
