@@ -1,0 +1,72 @@
+# Run OpenTools on your own machine or inside your own network.
+#
+#   docker compose up -d      then open http://localhost:8796
+#
+# This pulls a published image, so there is no build and no toolchain needed.
+# To build from source instead, comment out `image:` and uncomment `build: .`
+# — see docs/SELF_HOSTING.md.
+#
+# MIT licensed. No account, no licence key, no phone-home.
+
+services:
+  opentools:
+    image: ghcr.io/mgbuilderos/opentools:latest
+    # build: .
+    container_name: opentools
+    restart: unless-stopped
+
+    ports:
+      # Bound to loopback on purpose. The image ships no TLS and no
+      # authentication, so anyone who can reach the port gets the whole site.
+      # To serve it to your network, put a reverse proxy in front and change
+      # this to "8796:8796" only once that proxy terminates TLS and handles
+      # access control.
+      - '127.0.0.1:8796:8796'
+
+    environment:
+      # Port inside the container. Change the left-hand side of `ports` above
+      # rather than this, unless you have a reason.
+      PORT: '8796'
+      # Where the page cache is persisted. Paired with the volume below so it
+      # survives a restart; without a volume the cache starts empty each time,
+      # which is correct but slower on first request after every restart.
+      OPENTOOLS_STATE_DIR: /var/lib/opentools
+      WRANGLER_LOG_LEVEL: info
+
+    volumes:
+      - opentools-state:/var/lib/opentools
+
+    # The image already defines a healthcheck that fetches /robots.txt from
+    # inside itself; this only shortens the startup grace period.
+    healthcheck:
+      start_period: 40s
+
+    # Nothing here needs to reach the internet at runtime. Keeping these on
+    # means a compromised dependency has materially less to work with, and it
+    # matches the claim the product makes about itself.
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      # Wrangler writes a temporary bundle next to its config, and its logs and
+      # miniflare registry are redirected to /tmp by the image.
+      - /tmp
+      - /app/dist/server
+
+volumes:
+  opentools-state:
+
+# --- Running it with no network at all -------------------------------------
+#
+# The image needs nothing at runtime, which you can check rather than trust:
+#
+#   docker run --rm -d --network none --name opentools-airgap \
+#     ghcr.io/mgbuilderos/opentools:latest
+#   docker exec opentools-airgap \
+#     node -e "fetch('http://127.0.0.1:8796/').then(r=>console.log(r.status))"
+#
+# That prints 200 with no network available to the container. Compose cannot
+# express `--network none` alongside a published port, so this stays a docker
+# run — the point is the check, not the deployment.
