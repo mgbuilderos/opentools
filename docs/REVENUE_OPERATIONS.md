@@ -1,9 +1,11 @@
 # Revenue operations — the road to $100/day
 
 **Owner goal:** $100/day in voluntary support, organic only, no paid spend.
-**Status:** not started in earnest. The blocker is traffic, by roughly 30x.
-**Last updated:** 2026-09-18 by Claude Code (session `eeb46cb4`). See also
-`docs/LAUNCH_KIT.md` and `docs/EGRESS_PROOF.md`.
+**Status:** not started in earnest. The blocker is traffic, by **roughly 700x**
+at a typical donation rate — *not* the 30x this line claimed until 2026-09-19.
+See §1 for the corrected baseline and §2 for the corrected arithmetic.
+**Last updated:** 2026-09-19 by Claude Code (lane `Mar`). Previously 2026-09-18
+(session `eeb46cb4`). See also `docs/LAUNCH_KIT.md` and `docs/EGRESS_PROOF.md`.
 
 > **If you are a new agent session picking this up cold, read this file first,
 > then `AGENT_BOARD.md` §1–§3 at the blueprint root.** Everything below is
@@ -14,36 +16,94 @@
 
 ## 1. The measured baseline
 
-Cloudflare zone analytics, `getopentools.com`, complete days 14–17 Sept 2026.
-Free plan retains about five days, so this window is all that exists — re-pull
-before trusting it (query in §7).
+> **Corrected 2026-09-19.** This section said **~230 unique visitors/day**. That
+> was a real measurement of the wrong population and it overstated the audience
+> by about 8x. The corrected figure is **27/day**. Everything downstream of it —
+> §2, §2b, and the "30x" in the header — was wrong in the optimistic direction.
+> The old number is left visible below rather than quietly deleted, because the
+> reason it was wrong is the same reason it will go wrong again.
 
-| Metric | Value |
-| :--- | :--- |
-| Unique visitors / day | **~230** (98, 259, 321, 234) |
-| Page requests / day | ~1,727 (17 Sept) |
-| `/support` views / day | **11** — 0.6% of page requests |
-| Guides | 558 pages drawing 293 views/day between them |
-| Revenue | **Unknown.** Nothing records it. See §6. |
+**Headline, measured 2026-09-18, zone-only:**
 
-Traffic leans international (Germany, Canada, Brazil, Spain lead), so Buy Me a
-Coffee at $5 is the realistic channel and UPI is the smaller one. A visible
-slice of page requests are vulnerability scanners hitting `/xmlrpc.php` and
-`/wp-login`, so the true human number is somewhat under 230.
+| Metric | Value | Measured |
+| :--- | :--- | :--- |
+| **Unique visitors / 30 days** | **821** | 2026-09-18, 30-day zone audit |
+| **Unique visitors / day** | **27.4** (821 ÷ 30) | derived from the above |
+| Requests / 24h | 5,997 | `analytics/daily.jsonl`, window `2026-09-17T07:41:30Z → 2026-09-18T07:40:30Z` |
+| …of which from a **named browser** | **749 (12.5%)** | same snapshot |
+| 503 responses / 24h | **75** | same snapshot — see §3 |
+| 404 responses / 24h | 946 | deliberate de-index |
+| `/support` views / day | **11** — 0.6% of page requests | 2026-09-17, unchanged |
+| Guides | 558 pages | catalogue, not traffic — see the warning below |
+| Revenue | **Unknown.** Nothing records it. See §6. | — |
+
+**Why the old ~230 was wrong.** It was the mean of four daily `unique_visitors`
+counts in `docs/traffic-log.csv` (98, 259, 321, 234 — mean exactly 228.0). The
+audit row `2026-09-18-NOTE` in that same file records what those counts
+contained: of 56.52k requests over 30 days, **35.72k (63%) came from a single
+owner IP**, plus ChromeHeadless 20.66k (our own e2e suite), curl 5.04k, and an
+`OpenTools-*` cache warmer. GoogleBot's 852 was the only real crawler signal.
+
+**Why 230/day and 27/day can both be correct measurements.** A *daily* unique
+count counts the owner's laptop, CI and the warmer once **every day**. A *30-day*
+unique count counts each of them **once in total**. So adding up daily uniques
+inflates the number by roughly the number of days; the 30-day zone figure does
+not. **Use the 30-day figure. Never average daily uniques to get a visitor rate.**
+
+**Two traps that produced wrong numbers here before (capsule §10, items 6 and 9):**
+
+1. **Raw request counts are not visitors.** 5,997 requests, 749 from a browser —
+   quoting the big number makes the site look 8x busier than it is. Use
+   `estimatedBrowserRequests`, or zone unique visitors. Never `requests`.
+2. **There is no per-page traffic data.** `docs/traffic-log.csv` is zone-level
+   daily totals only, and the guides are barely indexed. "Top guides by traffic"
+   **cannot be computed today.** Do not invent a ranking; the catalogue rank in
+   `lib/seo/cached-guides.ts` is what the site actually uses, and it is a
+   catalogue ordering, not a traffic ordering.
+
+Traffic leans international (US 2,412 and IN 2,254 lead by request count, then
+DE, NL, SG, CA), so Buy Me a Coffee at $5 is the realistic channel and UPI is
+the smaller one. A visible slice of requests are vulnerability scanners hitting
+`/config/.env`, `/admin/.env` and `/config/mail.php` — they are in the 946 404s.
+
+**⚠️ This baseline is one day old and cannot currently be refreshed.**
+`analytics/daily.jsonl` holds **one line**. The scheduled task
+`opentools-traffic-snapshot` only fires while the Claude desktop app is open,
+and Cloudflare discards the detail after a few days on the free plan — so
+**every day the collector does not run is a day permanently lost.** How to
+re-pull: §7. Owner action: §8 item 0.
 
 ## 2. The arithmetic
 
 $100/day is twenty $5 coffees a day. The unknown is what share of visitors
-give; nothing measures it here yet, so these are **scenarios, not facts**:
+give; nothing measures it here yet, so these are **scenarios, not facts**.
+Recomputed 2026-09-19 against the corrected 27.4 visitors/day:
 
-| Assumed conversion | Visitors/day needed | Multiple of today |
+| Assumed donation rate | Visitors/day needed | Multiple of today | *(old, vs the wrong 230)* |
+| :--- | ---: | ---: | ---: |
+| 0.5% (implausible) | 4,000 | **146×** | ~~17×~~ |
+| 0.2% (very good) | 10,000 | **365×** | ~~43×~~ |
+| 0.1% (Wikipedia-with-banners) | 20,000 | **731×** | ~~87×~~ |
+| 0.05% (typical for a quiet link) | 40,000 | **1,462×** | ~~174×~~ |
+
+And the same arithmetic run forwards — what today's traffic is actually worth:
+
+| Donation rate | $/day at 27.4 visitors | $/month |
 | :--- | ---: | ---: |
-| 0.5% (excellent) | 4,000 | 17× |
-| 0.2% (good) | 10,000 | 43× |
-| 0.1% (typical) | 20,000 | 87× |
+| 0.5% | $0.68 | $20.53 |
+| 0.2% | $0.27 | $8.21 |
+| **0.1%** | **$0.14** | **$4.11** |
+| 0.05% | $0.07 | $2.05 |
 
-**The constraint is traffic, not the payment page.** A perfect funnel on 230
-visitors still yields a few dollars a day.
+**The "30x" that headed this file until 2026-09-19 was wrong by more than
+twenty-fold.** 30× of 27/day is ~820 visitors/day, which at a typical 0.1%
+donation rate is about **$4/day, not $100**. Whoever repeats "we are roughly
+30x away" is quoting a number that no longer exists.
+
+**The constraint is traffic, not the payment page** — that part was always
+right. A perfect funnel on 27 visitors yields cents. But the corrected
+multiples change what follows from it: see §2b, whose conclusion the new
+numbers strengthen rather than overturn.
 
 ## 2b. The uncomfortable part: donations alone probably do not reach $100/day
 
@@ -55,17 +115,24 @@ for a free tool with a support page sit around **0.05%–0.2%** of visitors.
 Wikipedia manages roughly 0.1% with sitewide banners nobody can miss; a quiet
 support link does worse, not better.
 
-| Donation rate | Visitors/day needed | vs today's ~230 |
+| Donation rate | Visitors/day needed | vs today's **27** *(was: vs ~230)* |
 | :--- | ---: | ---: |
-| 0.5% (implausible) | 4,000 | 17× |
-| 0.2% (very good) | 10,000 | 43× |
-| 0.1% (Wikipedia-with-banners) | 20,000 | 87× |
-| 0.05% (typical) | 40,000 | **174×** |
+| 0.5% (implausible) | 4,000 | **146×** *(~~17×~~)* |
+| 0.2% (very good) | 10,000 | **365×** *(~~43×~~)* |
+| 0.1% (Wikipedia-with-banners) | 20,000 | **731×** *(~~87×~~)* |
+| 0.05% (typical) | 40,000 | **1,462×** *(~~174×~~)* |
 
 **So the realistic donation target is 20,000–40,000 visitors a day.** That is
 roughly a million visits a month, on a domain that was not indexed at all a day
-ago, with ~1 GitHub star, against iLovePDF and SmallPDF and their millions of
-backlinks. It is a multi-year project, and it may simply never arrive.
+ago, with ~1 GitHub star, and their millions of backlinks. It is a multi-year
+project, and it may simply never arrive.
+
+> **Corrected 2026-09-19.** The multiples above were computed against the wrong
+> ~230/day baseline; against the real 27/day they are **8.5× larger than
+> stated**. The conclusion of this section was already that "the arithmetic does
+> not close" — the corrected numbers make that conclusion considerably stronger,
+> not weaker. Nothing in §2b's reasoning had to be reversed; only its
+> optimism.
 
 This is not an argument to stop. Free traffic compounds, costs nothing, and
 every visitor is also a candidate for the path below. It **is** an argument that
