@@ -34,6 +34,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/data/csv-to-json',
   '/data/json',
   '/file/hash-calculator',
+  '/file/archive',
   '/text/case-converter',
   '/developer/base64-encoder',
   '/developer/base64-decoder',
