@@ -592,10 +592,22 @@ export function AppShell({
             <span>Blog</span>
           </Button>
 
+          {/*
+            Visible at every width, unlike the rest of this nav row.
+
+            Templates, Guides and Blog collapse into the category drawer on a
+            phone, which is right for them. Support cannot: measured on the live
+            site at 375px, the header held only the menu, the logo and the theme
+            toggle, and there was no link to /support anywhere on the first
+            screen — the only one on a phone was inside a drawer nobody opens.
+            It sits beside the theme toggle so it lands under the thumb, and it
+            keeps a border below `sm` so it reads as a control rather than as
+            another muted nav word.
+          */}
           <Button
             variant="ghost"
-            className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
-            render={<a href="/support" />}
+            className="group flex h-10 shrink-0 items-center gap-2 rounded-lg border border-success/30 bg-success/5 px-2.5 text-sm font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98] sm:border-transparent sm:bg-transparent sm:px-3 sm:text-muted-foreground"
+            render={<a href="/support" aria-label="Support OpenTools" />}
           >
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
