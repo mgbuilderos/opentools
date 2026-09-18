@@ -202,9 +202,9 @@ export function SupportDualView() {
               <h3 className="mt-1 text-lg font-bold sm:text-xl">
                 Pick an amount ☕
               </h3>
-              <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
-                Works with GPay, PhonePe, Paytm, BHIM, Cred, Amazon Pay or your
-                banking app.
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+                Direct to developer · 0% platform fee. ₹59 or ₹99 helps cover
+                our domain registration ($12/year) and edge hosting.
               </p>
             </div>
           </div>
@@ -337,7 +337,9 @@ export function SupportDualView() {
                 Buy me a coffee ☕
               </h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                Apple Pay, Google Pay, cards and PayPal. 💳
+                Cards, Apple Pay, Google Pay, and PayPal. A single $5 coffee
+                funds one month of Workers Paid ($5/mo), unlocking 1M KV writes
+                so all 645+ pages stay cached.
               </p>
             </div>
           </div>

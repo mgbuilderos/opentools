@@ -51,8 +51,10 @@ export default function SupportPage() {
           </div>
 
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:mt-4 sm:text-base sm:leading-7">
-            No ads, no signup, no trackers. 🔒 Chip in only if a tool here saved
-            you time. 💚
+            Zero ads, zero accounts, zero tracking cookies. Every tool executes
+            strictly inside your browser tab. Voluntary contributions fund our
+            real domain and edge hosting costs so the project stays independent
+            and fast for everyone.
           </p>
         </section>
 
@@ -62,21 +64,75 @@ export default function SupportPage() {
           <SupportDualView />
         </section>
 
-        {/* The long version, now that the options are out of its way. */}
+        {/* Transparent Infrastructure Breakdown: What Support Actually Pays For */}
         <section className="rounded-xl border bg-card p-5 text-sm leading-6 text-muted-foreground sm:p-6">
           <h2 className="text-base font-semibold text-foreground">
-            Why these tools are free
+            What your support pays for — transparent infrastructure costs
           </h2>
-          <p className="mt-2">
-            There are no ads, no third-party trackers, no paywalls and no
-            corporate investors. Every tool runs directly inside your browser
-            tab on your own device, using JavaScript and Web Workers, and
-            WebAssembly for a few tools that need a local model. Your files and
-            inputs never touch a server.
+          <p className="mt-2 text-sm text-muted-foreground">
+            OpenTools is entirely self-funded and operates with no venture
+            backing or ad networks. Here is the exact breakdown of our operating
+            costs:
           </p>
-          <p className="mt-2">
-            Support keeps the domain, the hosting and the time to build the next
-            tool. It is the only thing paying for any of it.
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border bg-muted/20 p-3.5 sm:p-4">
+              <div className="flex items-center justify-between font-mono text-sm font-bold text-foreground">
+                <span>Cloudflare Workers Paid</span>
+                <span>$5 / month</span>
+              </div>
+              <p className="mt-1.5 text-xs leading-normal text-muted-foreground">
+                Unlocks 1,000,000 monthly edge KV cache writes (up from the free
+                tier's ~1,000/day limit). This allows all 645+ sitemap URLs to
+                stay permanently warm and load in milliseconds under crawler
+                traffic without exhausting Worker CPU limits.
+              </p>
+            </div>
+
+            <div className="rounded-lg border bg-muted/20 p-3.5 sm:p-4">
+              <div className="flex items-center justify-between font-mono text-sm font-bold text-foreground">
+                <span>Domain &amp; DNS</span>
+                <span>$12 / year</span>
+              </div>
+              <p className="mt-1.5 text-xs leading-normal text-muted-foreground">
+                Annual renewal for{' '}
+                <code className="text-foreground">getopentools.com</code>. Keeps
+                the site running on a clean, independent domain without
+                third-party sponsorship banners.
+              </p>
+            </div>
+
+            <div className="rounded-lg border bg-muted/20 p-3.5 sm:p-4">
+              <div className="flex items-center justify-between font-mono text-sm font-bold text-foreground">
+                <span>Cloud File Ingestion &amp; Storage</span>
+                <span className="text-success">$0 / forever</span>
+              </div>
+              <p className="mt-1.5 text-xs leading-normal text-muted-foreground">
+                Zero dollars spent on file processing servers. Because tools run
+                locally via JavaScript, Web Workers, and WebAssembly with a
+                strict{' '}
+                <code className="text-foreground">connect-src 'none'</code>{' '}
+                Content Security Policy, your files never reach a server.
+              </p>
+            </div>
+
+            <div className="rounded-lg border bg-muted/20 p-3.5 sm:p-4">
+              <div className="flex items-center justify-between font-mono text-sm font-bold text-foreground">
+                <span>Independent Tool Engineering</span>
+                <span>Pure Code</span>
+              </div>
+              <p className="mt-1.5 text-xs leading-normal text-muted-foreground">
+                Writing zero-dependency client-side engines: whole MPEG frame
+                MP3 cutting, subtitle two-point synchronization, offline PDF
+                page operations, and local schema formatters.
+              </p>
+            </div>
+          </div>
+
+          <p className="mt-4 border-t pt-3 text-xs text-muted-foreground">
+            No paid tiers, no premium paywalls, no feature gating. Support is
+            100% voluntary; if you choose not to contribute, every tool remains
+            equally and completely free.
           </p>
         </section>
 
