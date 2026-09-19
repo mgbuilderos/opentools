@@ -25,6 +25,8 @@ const httpsScheme = ['https:', '//'].join('');
 const httpsOrigin = `${httpsScheme}getopentools.com`;
 const schemaContext = `${httpsScheme}schema.org`;
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
   return getAllBlogPosts().map((post) => ({ slug: post.slug }));
 }

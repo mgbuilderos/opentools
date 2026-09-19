@@ -9,6 +9,8 @@ const httpsScheme = ['https:', '//'].join('');
 const httpsOrigin = `${httpsScheme}getopentools.com`;
 const schemaContext = `${httpsScheme}schema.org`;
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Blog & Engineering Playbooks — 100% Private In-Browser Tools',
   description:

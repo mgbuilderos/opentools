@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { ArrowLeft, HeartHandshake, ShieldCheck } from 'lucide-react';
 import { SupportDualView } from '@/components/support-dual-view';
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Support OpenTools — 100% Free & Local Utilities',
   description:

@@ -2,6 +2,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { getAllTemplates } from '../templates/templates-data';
+import { getAllBlogPosts } from './blog-data';
 import { getAllCategoryPillars } from './internal-linking-graph';
 import { LIVE_TOOL_CATALOG } from './live-tools';
 
@@ -31,6 +33,8 @@ const WRITE_BUDGET = 900;
 const DYNAMIC_PAGE_COUNTS: Record<string, () => number> = {
   'guides/category/[category]': () => getAllCategoryPillars().length,
   'guides/[slug]': () => LIVE_TOOL_CATALOG.length,
+  'blog/[slug]': () => getAllBlogPosts().length,
+  'templates/[slug]': () => getAllTemplates().length,
 };
 
 function pageFiles(
