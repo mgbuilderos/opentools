@@ -99,6 +99,11 @@ export function SchemaWorkbenchTool({
   const [copied, setCopied] = useState(false);
   const [receiptCopied, setReceiptCopied] = useState(false);
   const [running, setRunning] = useState(false);
+  // Whether the visitor has changed anything yet. The auto-run below fires on
+  // mount, so an operation whose required field starts empty opened with a red
+  // error box the visitor had not caused -- and the error effect moves
+  // keyboard focus onto it. Measured on 3 advertised routes.
+  const [touched, setTouched] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
 
   // The URL decides which operation is open, and it has to keep deciding after
@@ -135,10 +140,10 @@ export function SchemaWorkbenchTool({
   useEffect(() => {
     const timer = setTimeout(() => {
       // Auto-run if we have values and aren't already running
-      if (!running) void execute();
+      if (!running) void execute({ silent: !touched });
     }, 250);
     return () => clearTimeout(timer);
-  }, [values, operation.id]);
+  }, [values, operation.id, touched]);
 
   const selectOperation = (nextId: string) => {
     const next = operations.find((item) => item.id === nextId) ?? operations[0];
@@ -146,16 +151,19 @@ export function SchemaWorkbenchTool({
     setValues(defaults(next));
     setOutput('');
     setError('');
+    setTouched(false);
     const url = new URL(window.location.href);
     url.searchParams.set('tool', next.id);
     window.history.replaceState(null, '', `${url.pathname}${url.search}`);
   };
 
   const update = (id: string, value: string) => {
+    setTouched(true);
     setValues((current) => ({ ...current, [id]: value }));
   };
 
   const updateFile = (field: WorkbenchField, file?: File) => {
+    setTouched(true);
     if (!file) {
       setValues((current) => ({ ...current, [field.id]: '' }));
       return;
@@ -177,7 +185,7 @@ export function SchemaWorkbenchTool({
     reader.readAsDataURL(file);
   };
 
-  const execute = async () => {
+  const execute = async ({ silent = false } = {}) => {
     const started = performance.now();
     setRunning(true);
     try {
@@ -197,10 +205,14 @@ export function SchemaWorkbenchTool({
       });
     } catch (caught) {
       setOutput('');
+      // A failure the visitor has not caused yet is an empty state, not an
+      // error. Pressing the action button is never silent.
       setError(
-        caught instanceof Error
-          ? caught.message
-          : 'The operation could not be completed.',
+        silent
+          ? ''
+          : caught instanceof Error
+            ? caught.message
+            : 'The operation could not be completed.',
       );
     } finally {
       setRunning(false);
@@ -243,7 +255,10 @@ export function SchemaWorkbenchTool({
     anchor.href = url;
     anchor.download = `${operation.id}.${extension}`;
     anchor.click();
-    URL.revokeObjectURL(url);
+    // Deferred by a tick, like every other download helper in this app: a
+    // blob URL revoked in the same tick as the click can be gone before the
+    // browser has fetched it.
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
     window.dispatchEvent(new CustomEvent('tool-downloaded'));
   };
 
@@ -334,7 +349,11 @@ export function SchemaWorkbenchTool({
               <div className="grid gap-4 sm:grid-cols-2">
                 {operation.fields.map((field) => (
                   <label
-                    key={field.id}
+                    // Keyed by operation as well as field: switching tools
+                    // resets every value, and without a new key React keeps
+                    // the old DOM node, so a file control went on displaying
+                    // a file the tool no longer held.
+                    key={`${operation.id}:${field.id}`}
                     className={`text-sm font-semibold ${field.type === 'textarea' ? 'sm:col-span-2' : ''}`}
                   >
                     {field.label}

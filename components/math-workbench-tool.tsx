@@ -50,17 +50,31 @@ export function MathWorkbenchTool() {
   const [copied, setCopied] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
 
+  // The URL decides which operation is open, and it has to keep deciding
+  // after hydration. In production Cloudflare injects its analytics beacon
+  // into the HTML at the edge, so the served markup is not what React
+  // rendered; when React recovers from that it rebuilds the tree, and a
+  // one-shot selection scheduled in an effect is thrown away with it.
+  // Re-applying whenever the URL and the state disagree converges rather
+  // than racing, and costs nothing once they agree. Same fix as
+  // SchemaWorkbenchTool; these three were missed by it.
+  // oxlint-disable-next-line react/react-compiler -- this effect exists to
+  // synchronise React state to an external system, the address bar, which is
+  // what the rule's own guidance says an effect is for.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get('tool');
+    if (!requested || requested === operationId) return;
     const selected = MATH_OPERATIONS.find((item) => item.id === requested);
-    if (selected) {
-      const frame = requestAnimationFrame(() => {
-        setOperationId(selected.id);
-        setValues(defaults(selected));
-      });
-      return () => cancelAnimationFrame(frame);
+    if (!selected) {
+      // A URL must not claim an operation the page is not showing.
+      const url = new URL(window.location.href);
+      url.searchParams.set('tool', MATH_OPERATIONS[0].id);
+      window.history.replaceState(null, '', `${url.pathname}${url.search}`);
+      return;
     }
-  }, []);
+    setOperationId(selected.id);
+    setValues(defaults(selected));
+  }, [operationId]);
 
   useEffect(() => {
     if (error) errorRef.current?.focus();

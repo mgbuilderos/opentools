@@ -788,7 +788,7 @@ export function ImageExactSizeTool() {
                       ).map(([value, label]) => (
                         <label
                           key={value}
-                          className="flex items-center gap-2 text-sm"
+                          className="flex min-h-11 cursor-pointer items-center gap-2 text-sm"
                         >
                           <input
                             type="radio"
@@ -797,7 +797,7 @@ export function ImageExactSizeTool() {
                             checked={fit === value}
                             disabled={busy}
                             onChange={() => changed(setFit)(value)}
-                            className="accent-foreground"
+                            className="size-5 shrink-0 cursor-pointer accent-foreground"
                           />
                           {label}
                         </label>
@@ -829,7 +829,7 @@ export function ImageExactSizeTool() {
                   </p>
                 ) : null}
 
-                <label className="mt-4 flex items-start gap-2 text-sm">
+                <label className="mt-4 flex min-h-11 cursor-pointer items-start gap-2 text-sm">
                   <input
                     type="checkbox"
                     checked={allowSmaller}
@@ -837,7 +837,7 @@ export function ImageExactSizeTool() {
                     onChange={(event) =>
                       changed(setAllowSmaller)(event.target.checked)
                     }
-                    className="mt-1 accent-foreground"
+                    className="mt-1 size-5 shrink-0 cursor-pointer accent-foreground"
                   />
                   <span>
                     Allow smaller pixels

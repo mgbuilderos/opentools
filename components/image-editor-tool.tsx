@@ -57,11 +57,15 @@ function loadImage(url: string) {
 }
 
 /** Runs U²-Net inference in a disposable worker; the image never leaves the tab. */
-function removeBackgroundLocally(image: Blob) {
+function removeBackgroundLocally(
+  image: Blob,
+  register?: (worker: Worker | null) => void,
+) {
   const worker = new Worker(
     new URL('../workers/background-removal.worker.ts', import.meta.url),
     { type: 'module', name: 'background-removal-engine' },
   );
+  register?.(worker);
   return new Promise<Blob>((resolve, reject) => {
     worker.onmessage = (event: MessageEvent<BackgroundRemovalResponse>) => {
       if (event.data.type === 'done') resolve(event.data.image);
@@ -70,7 +74,10 @@ function removeBackgroundLocally(image: Blob) {
     worker.onerror = () =>
       reject(new Error('The local background removal engine failed to load.'));
     worker.postMessage({ type: 'remove', image });
-  }).finally(() => worker.terminate());
+  }).finally(() => {
+    worker.terminate();
+    register?.(null);
+  });
 }
 
 function encodeCanvas(
@@ -111,6 +118,9 @@ export function ImageEditorTool({
   const sourceRef = useRef<SourceImage | null>(null);
   const resultRef = useRef<Result | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  // Leaving the page mid-inference must not leave a worker holding the ~16MB
+  // U2-Net model and burning a core on work nobody is waiting for.
+  const backgroundWorkerRef = useRef<Worker | null>(null);
   const [source, setSource] = useState<SourceImage | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0, width: 1, height: 1 });
@@ -176,6 +186,14 @@ export function ImageEditorTool({
     run();
   };
 
+  useEffect(
+    () => () => {
+      backgroundWorkerRef.current?.terminate();
+      backgroundWorkerRef.current = null;
+    },
+    [],
+  );
+
   const chooseImage = async (file?: File) => {
     if (!file || busy) return;
     clearResult();
@@ -228,7 +246,9 @@ export function ImageEditorTool({
       const safeCrop = validateCrop(crop, source.width, source.height);
       let activeSourceUrl = source.url;
       if (removeBackground && removeBackgroundMode === 'ai') {
-        const aiBlob = await removeBackgroundLocally(source.file);
+        const aiBlob = await removeBackgroundLocally(source.file, (worker) => {
+          backgroundWorkerRef.current = worker;
+        });
         activeSourceUrl = URL.createObjectURL(aiBlob);
       }
       const decoded = await loadImage(activeSourceUrl);
@@ -600,7 +620,7 @@ export function ImageEditorTool({
                           ),
                         )
                       }
-                      className="mt-2 w-full accent-foreground"
+                      className="mt-2 h-6 w-full cursor-pointer accent-foreground"
                     />
                   </label>
                 ))}
@@ -616,7 +636,7 @@ export function ImageEditorTool({
                           if (event.target.checked) setFormat('image/png');
                         })
                       }
-                      className="mt-0.5 size-4 accent-foreground"
+                      className="mt-0.5 size-5 shrink-0 accent-foreground"
                     />
                     <span>
                       Remove background
@@ -627,8 +647,10 @@ export function ImageEditorTool({
                   </label>
                   {removeBackground ? (
                     <div className="mt-4 space-y-4 border-t pt-4">
-                      <div className="flex gap-4 mb-4">
-                        <label className="flex items-center gap-2 text-sm">
+                      {/* Wraps and keeps a 44px row: at 375px these two
+                          sat side by side as 13px radios. */}
+                      <div className="mb-4 flex flex-wrap gap-x-4 gap-y-1">
+                        <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm">
                           <input
                             type="radio"
                             name="bgMode"
@@ -637,11 +659,11 @@ export function ImageEditorTool({
                               change(() => setRemoveBackgroundMode('ai'))
                             }
                             disabled={!source || busy}
-                            className="accent-foreground"
+                            className="size-5 shrink-0 cursor-pointer accent-foreground"
                           />
                           AI Subject (Smart)
                         </label>
-                        <label className="flex items-center gap-2 text-sm">
+                        <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm">
                           <input
                             type="radio"
                             name="bgMode"
@@ -650,7 +672,7 @@ export function ImageEditorTool({
                               change(() => setRemoveBackgroundMode('solid'))
                             }
                             disabled={!source || busy}
-                            className="accent-foreground"
+                            className="size-5 shrink-0 cursor-pointer accent-foreground"
                           />
                           Solid Color
                         </label>
@@ -705,7 +727,7 @@ export function ImageEditorTool({
                                   ),
                                 )
                               }
-                              className="mt-2 w-full accent-foreground"
+                              className="mt-2 h-6 w-full cursor-pointer accent-foreground"
                             />
                           </label>
                           <label className="block text-xs font-semibold">
@@ -724,7 +746,7 @@ export function ImageEditorTool({
                                   setEdgeSoftness(Number(event.target.value)),
                                 )
                               }
-                              className="mt-2 w-full accent-foreground"
+                              className="mt-2 h-6 w-full cursor-pointer accent-foreground"
                             />
                           </label>
                         </>
@@ -780,7 +802,7 @@ export function ImageEditorTool({
                       onChange={(event) =>
                         change(() => setQuality(Number(event.target.value)))
                       }
-                      className="mt-3 w-full accent-foreground"
+                      className="mt-3 h-6 w-full cursor-pointer accent-foreground"
                     />
                   </label>
                 </div>

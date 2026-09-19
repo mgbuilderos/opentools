@@ -44,3 +44,6 @@ next-env.d.ts
 /tmp/
 /playwright-report/
 /test-results/
+
+# forensic audit output (regenerate with playwright.audit.config.ts)
+/audit-out/

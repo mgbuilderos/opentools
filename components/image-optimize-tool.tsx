@@ -439,7 +439,7 @@ export function ImageOptimizeTool() {
                       clearResult();
                       setQuality(Number(event.target.value));
                     }}
-                    className="mt-2 w-full accent-foreground"
+                    className="mt-2 h-6 w-full cursor-pointer accent-foreground"
                   />
                 </label>
                 <Button
