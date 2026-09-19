@@ -1115,6 +1115,316 @@ Copy the markdown structure below into your episode draft or publishing dashboar
       },
     ],
   },
+  {
+    slug: 'court-exhibit-binder-assembly-checklist',
+    title: 'Court Exhibit Binder & Legal Document Assembly Checklist',
+    category: 'Legal & Business',
+    format: 'Legal PDF & Markdown',
+    badge: 'Legal Pack',
+    description:
+      'Step-by-step litigation document assembly checklist: discovery page extraction, exhibit bundling, electronic filing file-size targets, and signature placement.',
+    metaDescription:
+      'Free legal exhibit binder assembly checklist for paralegals and attorneys. Pre-filing QA for PDF page extraction, exhibit merging, compression, and signing.',
+    keywords: [
+      'court exhibit binder checklist',
+      'legal document assembly checklist',
+      'pdf exhibit merge litigation',
+      'court filing pdf size check',
+      'paralegal trial binder preparation',
+      'electronic court filing checklist',
+    ],
+    features: [
+      'Pre-filing disclosure page extraction protocol (/pdf/extract-pages)',
+      'Multi-document exhibit consolidation and sequencing (/pdf/merge)',
+      'Electronic filing court portal size compression targets (/pdf/compress)',
+      'Filing declaration signature placement verification (/pdf/sign)',
+      'Editable text extraction for litigation pleading references (/pdf/to-word)',
+    ],
+    targetAudience:
+      'Litigation Attorneys, Paralegals, Legal Assistants, and Court Clerks',
+    downloadFilename: 'court-exhibit-binder-assembly-checklist.md',
+    relatedToolName: 'PDF Merge & Bundle Assembly',
+    relatedToolHref: '/pdf/merge',
+    interactiveFields: [
+      {
+        id: 'matterTitle',
+        label: 'Matter / Case Caption',
+        placeholder: 'e.g. Apex Corp v. Summit Technologies',
+        defaultValue: 'In re Estate & Commercial Trust Filings',
+      },
+      {
+        id: 'courtJurisdiction',
+        label: 'Court / Filing Jurisdiction',
+        placeholder: 'e.g. U.S. District Court, Northern District',
+        defaultValue: 'Commercial Division / High Court Registry',
+      },
+      {
+        id: 'filingDeadline',
+        label: 'Filing Date / Deadline',
+        placeholder: 'YYYY-MM-DD',
+        defaultValue: '2026-09-30',
+      },
+      {
+        id: 'exhibitCount',
+        label: 'Total Number of Exhibits',
+        placeholder: 'e.g. 14 Exhibits (A through N)',
+        defaultValue: '8 Exhibits (Exhibits A through H)',
+      },
+    ],
+    contentMarkdown: `# Court Exhibit Binder & Legal Document Assembly Checklist
+
+A standard operating protocol for paralegals and attorneys preparing electronic court binders, motion exhibits, and client signature packages. Every step maps directly to a privacy-preserving in-browser tool that operates under strict client-side isolation without external server transmission.
+
+---
+
+## 📑 Phase 1: Intake & Discovery Extraction
+
+- [ ] **Document Review**: Open and review incoming disclosures and production files in [/pdf/page-tools](/pdf/page-tools) to verify page orientations, legibility, and page ranges.
+- [ ] **Page Extraction**: Extract required motion exhibits from multi-hundred-page productions using [/pdf/extract-pages](/pdf/extract-pages) without saving unwanted discovery pages.
+- [ ] **Confidentiality Check**: Verify that protective order materials are segregated and marked according to local court sealing rules.
+
+---
+
+## 📂 Phase 2: Exhibit Sequencing & Bundle Merging
+
+- [ ] **Index Alignment**: Organize filings in exact order (Notice of Motion → Supporting Declaration → Exhibit Tabs A through N).
+- [ ] **Consolidated Merging**: Combine individual exhibit files and pleadings into a unified electronic PDF binder using [/pdf/merge](/pdf/merge).
+- [ ] **Pleading Text Extraction**: When quoting deposition transcripts in moving papers, extract verified text into editable format using [/pdf/to-word](/pdf/to-word).
+
+---
+
+## ⚖️ Phase 3: Portal Size Targets & Execution
+
+- [ ] **Filing Portal File Size Compliance**: Check total binder file size against court upload ceilings (e.g. 12 MB or 25 MB). Compress oversized exhibits with [/pdf/compress](/pdf/compress).
+- [ ] **Execution & Signature Placement**: Affix party signatures and filing dates with verifiable coordinates using [/pdf/sign](/pdf/sign).
+- [ ] **Final Visual Inspection**: Verify in [/pdf/page-tools](/pdf/page-tools) that all exhibit slip-sheets remain in sequence prior to docket transmission.`,
+    faqs: [
+      {
+        question:
+          'Why is client-side PDF processing important for court exhibits?',
+        answer:
+          'Court documents often contain confidential client information, proprietary trade secrets, or unredacted personal details. In-browser processing ensures documents remain in local memory without uploading to third-party servers.',
+      },
+      {
+        question: 'How do I satisfy electronic court filing file-size limits?',
+        answer:
+          'Most court electronic filing systems impose strict file size caps (such as 12 MB or 25 MB). Use the PDF compression tool to reduce file size while maintaining document legibility.',
+      },
+      {
+        question: 'Does this checklist replace formal court rules?',
+        answer:
+          'No. Always consult your specific jurisdiction local court rules for formatting, margins, indexing, and filing guidelines.',
+      },
+    ],
+  },
+  {
+    slug: 'client-asset-export-preflight-checklist',
+    title: 'Digital Asset Export & Creative Client Handoff Checklist',
+    category: 'Developer Runbooks',
+    format: 'Obsidian & Markdown',
+    badge: 'Design Pack',
+    description:
+      'Pre-flight quality assurance checklist for graphic designers: image compression, WebP/PNG conversion, background isolation, and client proof sheet generation.',
+    metaDescription:
+      'Free digital asset handoff checklist for graphic designers and creative agencies. Step-by-step pre-flight QA for image optimization, transparency, and proof PDFs.',
+    keywords: [
+      'graphic design asset handoff checklist',
+      'client asset export preflight',
+      'image optimization design checklist',
+      'designer proof pdf assembly',
+      'transparent png background preflight',
+      'creative deliverable qa checklist',
+    ],
+    features: [
+      'Multi-format asset compression and WebP conversion (/image/optimize)',
+      'Canvas framing, rotation, and dimension adjustments (/image/editor)',
+      'Transparent background isolation verification (/image/background-remover)',
+      'Multi-image proof sheet assembly for client review (/pdf/images-to-pdf)',
+      'Selective page extraction from existing client brand guides (/pdf/extract-pages)',
+    ],
+    targetAudience:
+      'Graphic Designers, Art Directors, Brand Specialists, and Visual Artists',
+    downloadFilename: 'client-asset-export-preflight-checklist.md',
+    relatedToolName: 'Image Optimizer & Format Converter',
+    relatedToolHref: '/image/optimize',
+    interactiveFields: [
+      {
+        id: 'clientName',
+        label: 'Client / Brand Name',
+        placeholder: 'e.g. Horizon Labs Inc.',
+        defaultValue: 'Studio Brand Handoff Deliverables',
+      },
+      {
+        id: 'assetDeliverable',
+        label: 'Deliverable Type',
+        placeholder: 'e.g. Brand Identity & Social Kit',
+        defaultValue: 'Website & Digital Campaign Assets',
+      },
+      {
+        id: 'targetResolution',
+        label: 'Target Web Resolution',
+        placeholder: 'e.g. 2x Retina (2560x1440) & 1x Web',
+        defaultValue: 'Standard Web 1920x1080 (WebP / PNG)',
+      },
+      {
+        id: 'maxFileWeight',
+        label: 'Target File Size Ceiling',
+        placeholder: 'e.g. < 250 KB per web asset',
+        defaultValue: '< 300 KB for web heroes, < 100 KB for cards',
+      },
+    ],
+    contentMarkdown: `# Digital Asset Export & Creative Client Handoff Checklist
+
+A pre-flight verification checklist for graphic designers and agencies packaging visual assets for client delivery. Every step links to a privacy-first browser tool running in local tab memory.
+
+---
+
+## 🎨 Phase 1: Asset Preparation & Canvas Adjustments
+
+- [ ] **Framing & Aspect Ratio**: Check aspect ratios and canvas boundaries for hero banners, social cards, and thumbnails using [/image/editor](/image/editor).
+- [ ] **Orientation & Crop**: Verify 90-degree rotations and precise pixel cropping on client-supplied photography with [/image/editor](/image/editor).
+- [ ] **Background Isolation**: Remove distracting backdrops and verify clean transparency alpha channels on product photography using [/image/background-remover](/image/background-remover).
+
+---
+
+## ⚡ Phase 2: Format Conversion & Compression Optimization
+
+- [ ] **Modern Web Formats**: Convert raw graphics into lightweight WebP and optimized PNGs using [/image/optimize](/image/optimize).
+- [ ] **File Size Budgets**: Confirm that hero images remain under ~300 KB and inline cards stay under ~100 KB to maintain fast webpage loading speeds.
+- [ ] **Transparency Integrity**: Confirm that PNG and WebP assets with transparent backgrounds retain crisp edges without halos or jagged pixel fringe.
+
+---
+
+## 📑 Phase 3: Client Review & Proof Distribution
+
+- [ ] **PDF Proof Sheet Assembly**: Compile exported brand variations, colorways, and layout mockups into a single presentation proof using [/pdf/images-to-pdf](/pdf/images-to-pdf).
+- [ ] **Style Guide Extraction**: Extract specific typography or icon pages from larger agency brand guidelines with [/pdf/extract-pages](/pdf/extract-pages).
+- [ ] **Client Handoff Package**: Package finalized raster assets, proof sheets, and release notes into a clean deliverable folder.`,
+    faqs: [
+      {
+        question: 'Why convert client assets to WebP instead of standard JPEG?',
+        answer:
+          'WebP provides 25% to 35% smaller file sizes than comparable JPEG images at equivalent visual quality, while also supporting alpha transparency.',
+      },
+      {
+        question: 'Does in-browser background removal reduce asset resolution?',
+        answer:
+          'The background remover processes the full image canvas locally in your browser without uploading to external APIs, preserving your image dimensions.',
+      },
+      {
+        question:
+          'How do I assemble multiple design mockups into a single review document?',
+        answer:
+          'Use the Images to PDF converter at /pdf/images-to-pdf to combine JPEG, PNG, or WebP exports into a paginated PDF proof document.',
+      },
+    ],
+  },
+  {
+    slug: 'digital-marketing-campaign-launch-checklist',
+    title: 'Omnichannel Campaign Launch & Data Hygiene Checklist',
+    category: 'Developer Runbooks',
+    format: 'Obsidian & Markdown',
+    badge: 'Marketing Pack',
+    description:
+      'Pre-launch verification checklist for digital marketers: customer data hygiene, privacy-safe CSV conversion, social video trimming, and tracking QR codes.',
+    metaDescription:
+      'Free campaign launch and data hygiene checklist for digital marketers. In-browser QA for customer list privacy, CSV transforms, QR codes, and video trimming.',
+    keywords: [
+      'digital marketing launch checklist',
+      'customer data hygiene checklist',
+      'privacy csv to json marketing',
+      'campaign qr code verification',
+      'social video trim preflight',
+      'marketing asset preflight checklist',
+    ],
+    features: [
+      'Customer list data sanitization and column inspection (/data/workbench)',
+      'Privacy-preserving CSV to JSON transform for webhook payloads (/data/csv-to-json)',
+      'Display ad and landing page image optimization (/image/optimize)',
+      'High-contrast scannable QR code generation for physical collateral (/qr/workbench)',
+      'Social campaign video trimming and clean audio extraction (/video/trim)',
+      'Video subtitle and caption timing synchronization (/subtitles/workbench)',
+    ],
+    targetAudience:
+      'Digital Marketers, Growth Managers, Campaign Leads, and Content Operations',
+    downloadFilename: 'digital-marketing-campaign-launch-checklist.md',
+    relatedToolName: 'CSV to JSON Data Converter',
+    relatedToolHref: '/data/csv-to-json',
+    interactiveFields: [
+      {
+        id: 'campaignTitle',
+        label: 'Campaign Name',
+        placeholder: 'e.g. Q4 Global Product Launch',
+        defaultValue: 'Growth Marketing Multi-Channel Launch',
+      },
+      {
+        id: 'targetChannels',
+        label: 'Marketing Channels',
+        placeholder: 'e.g. Email, Social Video, Paid Search, Print',
+        defaultValue: 'Email Newsletter, Paid Social, Event Collateral',
+      },
+      {
+        id: 'launchDate',
+        label: 'Target Launch Date',
+        placeholder: 'YYYY-MM-DD',
+        defaultValue: '2026-10-01',
+      },
+      {
+        id: 'audienceSegment',
+        label: 'Target Audience Segment',
+        placeholder: 'e.g. Enterprise Leads & Product Qualified Users',
+        defaultValue: 'Subscribed Newsletter Audience (CSV Format)',
+      },
+    ],
+    contentMarkdown: `# Omnichannel Campaign Launch & Data Hygiene Checklist
+
+A comprehensive pre-launch checklist for digital marketers coordinating multi-channel campaign releases. Focuses on data hygiene, privacy-safe audience file transformation, social video preparation, and collateral tracking.
+
+---
+
+## 🔒 Phase 1: Audience Data Hygiene & Privacy (CSV Only)
+
+- [ ] **Format Validation**: Ensure customer contact exports are formatted as clean **CSV text files** (note: OpenTools processes CSV, not binary .xlsx files).
+- [ ] **Privacy-Safe In-Browser Transform**: Inspect and clean lead lists in [/data/workbench](/data/workbench) to verify column headers, phone formatting, and character encodings.
+- [ ] **Webhook & Payload Conversion**: Convert audience segments into structured developer payloads via [/data/csv-to-json](/data/csv-to-json) without uploading subscriber PII to remote cloud services.
+- [ ] **Opt-Out Compliance**: Ensure contact lists have removed unsubscribed or opted-out email addresses before queueing campaign sends.
+
+---
+
+## 📹 Phase 2: Creative Assets & Social Video Preparation
+
+- [ ] **Campaign Video Trimming**: Trim intro and outro fluff or cut teasers for social ads losslessly using [/video/trim](/video/trim).
+- [ ] **Mute Background Audio**: Mute noisy raw footage or extract clean voiceover audio tracks using [/video/trim](/video/trim).
+- [ ] **Subtitle Synchronization**: Retime and verify WebVTT or SRT subtitle sidecars for social video accessibility in [/subtitles/workbench](/subtitles/workbench).
+- [ ] **Web & Ad Asset Optimization**: Compress display banners and landing page photography with [/image/optimize](/image/optimize) to ensure fast webpage loading.
+
+---
+
+## 📲 Phase 3: Tracking, Collateral & Launch Verification
+
+- [ ] **Print & Event Tracking QR Codes**: Generate high-contrast, verifiable QR codes for event flyers and direct mail in [/qr/workbench](/qr/workbench).
+- [ ] **Destination Link Audit**: Scan test QR codes on real mobile devices to confirm they open the correct landing page with appropriate tracking parameters.
+- [ ] **Final Deployment Checklist**: Confirm creative assets, email templates, social media video cuts, and tracking links are synchronized across all campaign channels.`,
+    faqs: [
+      {
+        question:
+          'Why should I convert customer CSV lists locally rather than using a cloud utility?',
+        answer:
+          'Customer lists contain personal email addresses and telephone numbers. Uploading them to random web utilities risks data leakage and regulatory violations. In-browser transformation keeps the data in local RAM.',
+      },
+      {
+        question:
+          'Does OpenTools support uploading Microsoft Excel (.xlsx) audience files?',
+        answer:
+          'No. OpenTools supports plain text CSV files only. Save or export your Excel spreadsheet as CSV before processing.',
+      },
+      {
+        question: 'How fast is in-browser video trimming for campaign clips?',
+        answer:
+          'Because /video/trim copies MP4 container frames directly without re-encoding, trimming a video takes fractions of a second regardless of video resolution.',
+      },
+    ],
+  },
 ];
 
 export function getAllTemplates(): readonly TemplateItem[] {

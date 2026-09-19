@@ -1,3 +1,5 @@
+import { LIVE_TOOL_ROUTES } from './live-tools';
+
 export interface BlogSection {
   id: string;
   heading: string;
@@ -1943,6 +1945,443 @@ Explore our repository [CONTRIBUTING.md](https://github.com/mgbuilderos/opentool
       'zip-crc32-checksum-validation-in-browser',
       'macos-utf8-zip-filename-encoding-bug',
       'how-to-convert-json-to-zod-schema-offline',
+    ],
+  },
+  {
+    slug: 'legal-document-workflow-in-browser-privacy',
+    title:
+      'In-Browser Legal Document Workflows: Privilege, Document Assembly, and the Unbuilt Gaps',
+    metaDescription:
+      'How legal professionals process discovery bundles, exhibits, and contracts in local browser memory. A step-by-step workflow audit, privacy mechanisms, and unbuilt gaps.',
+    keywords: [
+      'legal document workflow browser',
+      'confidential pdf merge legal',
+      'local browser pdf bundle assembly',
+      'legal discovery document privacy',
+      'lawyer pdf tools no upload',
+      'in-browser contract document prep',
+    ],
+    category: 'Legal & Business',
+    publishedAt: '2026-09-19',
+    readingTime: '9 min read',
+    author: 'OpenTools Architecture Group',
+    toolName: 'PDF Merge & Bundle Assembly',
+    toolDestination: '/pdf/merge',
+    summary:
+      'For legal professionals handling client files, avoiding third-party server uploads is a professional duty of privilege rather than a casual preference. We map the six steps this platform covers today alongside the four critical gaps that remain unbuilt.',
+    sections: [
+      {
+        id: 'privilege-and-the-upload-problem',
+        heading:
+          'Confidentiality as a Professional Duty: Why Server Uploads Pose Exposure Risks',
+        content: `In standard commercial office workflows, avoiding file uploads to third-party web utilities is usually a matter of personal preference or general operational hygiene. For a practicing attorney, barrister, or legal operations team, however, the calculus is fundamentally different. Documents handled during active litigation, discovery, contract negotiation, or regulatory disclosures are subject to attorney-client privilege and strict professional confidentiality obligations.
+
+Handing sensitive client disclosures, unredacted deposition transcripts, or proprietary business terms over to an anonymous third-party web utility to combine or convert pages creates immediate professional exposure. Even if an external service promises automated file deletion after processing, transmitting confidential data across the public network creates a copy outside the law firm's custody.
+
+On this site, the operational model is governed by architectural constraints rather than terms-of-service promises. The browser page enforces a strict Content Security Policy with connect-src 'none'. When you open a PDF or Word document here, the browser isolate executes the file-parsing logic entirely in local memory. The browser environment itself refuses any network connection attempt, meaning files cannot be transmitted off the device.`,
+      },
+      {
+        id: 'the-six-supported-workflow-steps',
+        heading:
+          'The Live Workflow: Six Document Assembly Steps Handled Locally Today',
+        content: `Across the ${LIVE_TOOL_ROUTES.length} live tool routes available on this site, legal document preparation follows a defined sequence from initial intake through final filing:
+
+1. **Intake and Document Review**: Opening and inspecting multi-page documents without server-side processing via [/pdf/page-tools](/pdf/page-tools).
+2. **Page Extraction & Disclosure Separation**: Slicing dense production files into discrete exhibits or removing non-responsive materials using [/pdf/extract-pages](/pdf/extract-pages).
+3. **Exhibit Bundle Assembly**: Merging disparate court filings, declarations, and numbered exhibits into a consolidated PDF portfolio using [/pdf/merge](/pdf/merge).
+4. **Email & Portal File-Size Optimization**: Compressing oversized document bundles to satisfy court filing portal limits and electronic service ceilings via [/pdf/compress](/pdf/compress).
+5. **Form Execution & Signature Placement**: Completing required fields and applying signatures with placement coordinates via [/pdf/sign](/pdf/sign).
+6. **Editable Draft Conversion**: Extracting readable body text and paragraph structures into editable documents with [/pdf/to-word](/pdf/to-word).
+
+Because all six operations execute locally in the client tab, legal teams can assemble and format discovery bundles without transmitting documents across external infrastructure.`,
+      },
+      {
+        id: 'the-unbuilt-legal-gaps',
+        heading:
+          'Honest Gap Analysis: Four Capabilities OpenTools Does Not Offer Today',
+        content: `A complete legal workflow requires more than document merging and extraction. To maintain technical honesty, we document the four major legal workflow steps that OpenTools does not currently support:
+
+- **Bates Numbering**: Court submissions routinely require sequential alphanumeric Bates stamps across hundreds of pages and multi-file exhibit runs. We do not currently have a dedicated Bates stamping tool.
+- **DOCX Metadata Scrubbing**: Microsoft Word documents carry latent revision histories, author usernames, inline comments, and edit timestamps embedded in their underlying XML structures. Sending an unscrubbed DOCX to opposing counsel creates severe exposure. While we have tested ZIP and XML readers, we do not yet offer an automated DOCX metadata scrubber.
+- **True Character-Level Redaction**: Drawing a visual black box over sensitive text in a PDF leaves the underlying character glyphs searchable and extractable. True redaction requires permanently stripping the text stream and font mappings from the PDF content stream. We do not currently ship an in-browser redaction tool on the live site.
+- **Scanned Document OCR**: Digitizing paper discovery scans into searchable text requires optical character recognition. Providing reliable in-browser OCR requires hosting and loading approximately 11 MB of language trained data, which is currently unbuilt on our live routes.
+
+Where these four steps are required, teams must use dedicated local desktop software or existing enterprise discovery infrastructure.`,
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Does OpenTools provide legal advice or legal compliance guarantees?',
+        answer:
+          'No. OpenTools provides browser-based file-processing utilities. We describe the technical behavior and network isolation of our software, not legal advice or professional-conduct compliance standards.',
+      },
+      {
+        question:
+          'How can legal teams verify that files do not leave the local computer?',
+        answer:
+          'You can inspect the browser developer tools network panel during any operation. The site operates under a strict connect-src none Content Security Policy, which instructs the browser to block any outbound connection.',
+      },
+      {
+        question:
+          'Can OpenTools stamp Bates numbers across a multi-file court exhibit bundle?',
+        answer:
+          'Not today. Page numbering is available for individual documents on /pdf/page-tools, but automated multi-document Bates numbering across an entire production run is currently unbuilt.',
+      },
+    ],
+    relatedSlugs: [
+      'how-to-merge-pdf-contracts-privately',
+      'mutual-nda-generator-free-legal-playbook',
+      'we-tried-to-make-our-own-site-leak-your-file',
+    ],
+  },
+  {
+    slug: 'graphic-design-asset-workflow-in-browser',
+    title:
+      "The Graphic Designer's Asset Pipeline: In-Browser Optimization, Proofing, and Format Gaps",
+    metaDescription:
+      'A practical review of client asset workflows for graphic designers: image compression, format conversion, background removal, and the honest format limitations of in-browser tooling.',
+    keywords: [
+      'graphic designer workflow browser',
+      'client asset proofing pdf tools',
+      'local image optimizer webp png',
+      'in-browser background removal design',
+      'designer format conversion limitations',
+      'heic svg gaps browser tools',
+    ],
+    category: 'Design & Creative',
+    publishedAt: '2026-09-19',
+    readingTime: '8 min read',
+    author: 'OpenTools Architecture Group',
+    toolName: 'Image Optimizer & Format Converter',
+    toolDestination: '/image/optimize',
+    summary:
+      'Graphic designers juggle incoming client assets across inconsistent formats and resolutions. We audit the asset pipeline steps covered by local browser tools, alongside format hurdles like HEIC and SVG optimization that remain unbuilt.',
+    sections: [
+      {
+        id: 'the-creative-asset-pipeline',
+        heading:
+          'Asset Production & Delivery: Navigating Resolution, Color, and Container Formats',
+        content: `The daily production routine of an independent graphic designer or creative studio centers on asset intake, refinement, and client handoff. High-resolution photography arrives from clients, brand assets need format normalization, visual compositions require iterative background isolation, and final proofs must be bundled into clean deliverable files.
+
+Because creative files often feature unpublished brand identities, embargoed product photography, and sensitive client proofs, routing high-resolution master assets through external cloud converters introduces unnecessary data handling risks. Local in-browser utilities allow designers to execute critical optimization steps directly on the local machine canvas without uploading source files to remote servers.`,
+      },
+      {
+        id: 'design-steps-handled-in-browser',
+        heading:
+          'What Works Today: Five Asset Pipeline Steps Running in Browser Memory',
+        content: `Today, five key stages of the graphic design asset preparation workflow run locally on this platform:
+
+1. **Asset Optimization & Format Conversion**: Recompressing raw client deliverables into modern web formats (WebP, PNG, JPEG) and resizing master dimensions using [/image/optimize](/image/optimize).
+2. **Canvas Transformations**: Performing fast visual cropping, 90-degree rotations, aspect ratio adjustments, and lighting corrections directly in the browser via [/image/editor](/image/editor).
+3. **Local Background Isolation**: Isolating foreground subjects and generating transparent PNG cutouts entirely on-device using [/image/background-remover](/image/background-remover).
+4. **Client Proof Sheet Generation**: Combining individual raster exports into an organized, paginated PDF proof document with [/pdf/images-to-pdf](/pdf/images-to-pdf).
+5. **Document Extraction & Vector Adjustments**: Slicing specific artwork boards or proof annotations from existing PDF presentations using [/pdf/extract-pages](/pdf/extract-pages).
+
+These steps execute inside the user's browser runtime using HTML5 Canvas and local Web Workers, avoiding cloud upload latencies and maintaining asset privacy.`,
+      },
+      {
+        id: 'format-limitations-and-unbuilt-tools',
+        heading:
+          'Critical Format Hurdles: The Six Tools Designers Need That We Do Not Have',
+        content: `Despite solid coverage for standard raster optimization and proofing, our industry map identifies six prominent gaps where OpenTools cannot fulfill a graphic designer's needs:
+
+- **Client iPhone HEIC Photos**: Clients frequently send mobile photography captured in Apple HEIC containers. We currently cannot open or convert HEIC files in the browser. Reading HEIC requires complex container parsing and patent-encumbered decoders under licensing structures that are incompatible with our MIT-licensed codebase.
+- **EXIF Metadata Viewing & Stripping**: Cameras and mobile phones embed capture timestamps, GPS coordinates, and camera serial numbers into image headers. While designers routinely need to strip this metadata before client handoff or publication, an automated EXIF metadata viewer and scrubber is not yet built on our live routes.
+- **SVG Optimization and SVG-to-PNG**: Vector graphics are essential for digital design. Currently, SVG handling exists on this site only as an export target for QR codes. We do not provide an SVG cleanup utility or SVG-to-raster rendering workbench.
+- **Color Space Conversions (HEX / RGB / CMYK) and Palette Extraction**: Designers constantly translate between digital RGB hex values and print CMYK profiles, or extract dominant palettes from mood boards. Dedicated color conversion and palette generation tools are not yet implemented.
+- **Simultaneous Multi-Size Batch Export**: Delivering icon sets and social banners requires exporting one master asset into multiple predefined pixel dimensions simultaneously. Our image optimizer currently processes target dimensions one configuration at a time.
+- **Web Font Conversion (TTF to WOFF2)**: Converting desktop typography into compressed web fonts requires Brotli compression algorithms and specialized table sanitization, which are not currently available here.`,
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can I convert client HEIC photos to JPEG or PNG on OpenTools?',
+        answer:
+          'No. In-browser HEIC decoding is currently unsupported due to licensing and patent constraints. You will need to use native desktop tools or phone settings to convert HEIC files prior to optimization.',
+      },
+      {
+        question:
+          'Does the background remover upload my photography to an AI cloud API?',
+        answer:
+          'No. The background removal tool runs a local machine-learning model directly inside your browser tab using WebAssembly and Web Workers. The image never leaves your computer.',
+      },
+      {
+        question:
+          'Does OpenTools support CMYK print color profiles for PDF proofing?',
+        answer:
+          'No. In-browser rendering utilities operate within sRGB color spaces. For certified CMYK press preparation and spot-color separation, designers should rely on professional desktop publishing software.',
+      },
+    ],
+    relatedSlugs: [
+      'optimize-images-browser-webp-converter',
+      'local-ai-image-background-removal-wasm',
+      'modern-css-gradient-studio-guide',
+    ],
+  },
+  {
+    slug: 'digital-marketer-data-and-asset-workflow',
+    title:
+      'Digital Marketing Workflows in Browser: Customer List Sensitivity, Social Assets, and Spreadsheet Limits',
+    metaDescription:
+      'Audit of digital marketing workflows: customer list privacy, social media asset preparation, video trimming, and the reality of CSV vs Excel file limits in browser.',
+    keywords: [
+      'digital marketing workflow browser',
+      'customer list privacy csv tools',
+      'marketer lead list data hygiene',
+      'in-browser social video trimming',
+      'csv to json marketing data',
+      'marketing file tools privacy',
+    ],
+    category: 'Data & Analytics',
+    publishedAt: '2026-09-19',
+    readingTime: '9 min read',
+    author: 'OpenTools Architecture Group',
+    toolName: 'CSV to JSON Data Converter',
+    toolDestination: '/data/csv-to-json',
+    summary:
+      'A customer email and phone list is the most sensitive data in modern operations. We examine the marketing workflows covered by client-side browser tools and state plainly where our spreadsheet and video capabilities currently stop.',
+    sections: [
+      {
+        id: 'the-stakes-of-customer-data',
+        heading:
+          'Why Customer Contact Lists Are the Most Sensitive Files in Digital Operations',
+        content: `In digital marketing operations, campaign managers and growth leads regularly handle lead exports, audience synchronization lists, and customer event logs. These files contain thousands of real individuals' full names, verified email addresses, mobile telephone numbers, and purchase histories.
+
+Uploading a customer database export to an unknown third-party conversion website is a severe security and regulatory exposure. If that server retains or logs the uploaded file, thousands of individuals' personally identifiable information (PII) is needlessly exposed outside your CRM and email service provider boundaries.
+
+When converting and structuring data on this platform, the data never leaves your browser's local sandbox. The execution model is enforced through browser architecture and Content Security Policy connect-src 'none' restrictions. Files are parsed, cleaned, and transformed strictly in memory, ensuring that proprietary customer records remain entirely on your local machine.`,
+      },
+      {
+        id: 'marketing-tools-live-today',
+        heading:
+          'Live Marketing Workflows: Six Asset and Data Operations Ready Today',
+        content: `Today, six common digital marketing campaign tasks can be executed securely in-browser:
+
+1. **Lead and Audience Data Conversion**: Transforming structured audience exports into clean developer-ready payloads using [/data/csv-to-json](/data/csv-to-json).
+2. **Tabular Data Inspection & Sanitization**: Filtering, reordering columns, and inspecting raw tabular text in [/data/workbench](/data/workbench).
+3. **Web & Display Ad Asset Compression**: Shrinking campaign graphics and banner ads into lightweight WebP and optimized JPEG formats via [/image/optimize](/image/optimize).
+4. **Print and Event Tracking QR Codes**: Generating high-contrast vector and raster QR codes for physical collateral and event signage using [/qr/workbench](/qr/workbench).
+5. **Social Video Caption Synchronization**: Generating and retiming SubRip and WebVTT caption sidecars for accessible video campaigns via [/subtitles/workbench](/subtitles/workbench).
+6. **Video Trimming & Audio Extraction**: Trimming clip runtimes, muting background noise, or pulling clean audio tracks from campaign MP4/MOV files using [/video/trim](/video/trim).
+
+Each of these utilities operates without account registration, file watermarks, or server-side transmission.`,
+      },
+      {
+        id: 'the-marketer-gaps',
+        heading:
+          'Spreadsheet Realities and the Five Unbuilt Marketing Capabilities',
+        content: `While our current toolset handles core CSV transforms and media trimming, digital marketers should understand our five explicit technical boundaries:
+
+- **No Excel (.xlsx) Support**: Ad platforms, payment gateways, and CRM systems frequently export data as binary Microsoft Excel workbooks (.xlsx). **OpenTools does not yet read or write .xlsx files**—we support plain CSV text files only. Marketers must export or save spreadsheets as CSV before using our data tools.
+- **Customer List Deduplication and Merging**: Comparing two subscriber lists, removing duplicate email entries, or merging segmented campaign audiences requires specialized list reconciliation logic that is not yet implemented.
+- **File-to-HTML Conversion**: Converting campaign briefs or markdown copy into newsletter-compatible HTML is not currently built. In email marketing, inlining image assets into HTML often leads to stripped assets in major clients like Gmail and Outlook, requiring separate asset hosting.
+- **Vertical Video Re-Framing for Social**: While [/video/trim](/video/trim) cuts video clips losslessly by copying container frames, it cannot crop horizontal 16:9 video to vertical 9:16 reels because that operation requires video decoding and pixel re-encoding.
+- **Campaign UTM Parameter Builder**: A dedicated form for assembling error-free UTM tracking links (source, medium, campaign, term, content) is a simple utility that is not yet part of our live catalogue.`,
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can I upload an Excel workbook (.xlsx) to OpenTools for data conversion?',
+        answer:
+          'No. OpenTools currently processes plain CSV text files only. To work with spreadsheet data here, export or save your workbook as a CSV file first.',
+      },
+      {
+        question:
+          'Are my customer email lists transmitted to an external server when converting CSV to JSON?',
+        answer:
+          'No. The CSV parser runs entirely in your browser tab. Your customer records are transformed in client RAM and never touch any server or analytics endpoint.',
+      },
+      {
+        question:
+          'Can the video trimmer convert widescreen videos to vertical 9:16 Instagram Reels or TikToks?',
+        answer:
+          'No. The video trimmer copies compressed video frames directly without re-encoding, which preserves exact visual quality. Reframing or cropping aspect ratios requires a full video transcoding pipeline, which we do not offer.',
+      },
+    ],
+    relatedSlugs: [
+      'clean-csv-transform-to-json-browser',
+      'why-subtitles-drift-frame-rate-arithmetic',
+      'optimize-images-browser-webp-converter',
+    ],
+  },
+  {
+    slug: 'audio-to-wav-conversion-silent-resampling-trap',
+    title:
+      'Building an In-Browser Audio Converter: The Silent Resampling Trap in decodeAudioData',
+    metaDescription:
+      'Why standard Web Audio decodeAudioData silently resamples audio files, how header probing preserves native sample rates, and the engineering behind in-browser WAV conversion.',
+    keywords: [
+      'decodeaudiodata silent resampling trap',
+      'in-browser audio to wav converter',
+      'offlineaudiocontext sample rate probe',
+      'lossless wav conversion web audio',
+      'peak normalization vs lufs browser',
+      'audio converter no mp3 encoder',
+    ],
+    category: 'Audio & Media',
+    publishedAt: '2026-09-19',
+    readingTime: '9 min read',
+    author: 'OpenTools Engineering Group',
+    toolName: 'Audio to WAV Converter',
+    toolDestination: '/audio/convert',
+    summary:
+      'Standard Web Audio decodeAudioData quietly resamples any decoded file to the AudioContext rate with no indication in the output buffer. We explain how our converter probes container headers first to preserve original fidelity, why output is strictly WAV, and the limits of browser decoding.',
+    sections: [
+      {
+        id: 'the-decodeaudiodata-silent-resampling-trap',
+        heading:
+          'The Hidden Trap: Why decodeAudioData Quietly Alters Sample Rates',
+        content: `When engineers build in-browser audio tools using the HTML5 Web Audio API, the standard approach is straightforward: instantiate an AudioContext, pass an ArrayBuffer to decodeAudioData(), and manipulate the resulting AudioBuffer.
+
+However, decodeAudioData() harbors a silent behavioral trap: **it automatically resamples the decoded audio to the sample rate of the AudioContext it was invoked on, without any flag, warning, or record in the returned AudioBuffer.**
+
+For example, if a user loads a pristine 44,100 Hz recording into an AudioContext initialized on a system running at 48,000 Hz, decodeAudioData() silently resamples the entire recording to 48,000 Hz. Nothing in the returned object indicates that a sample rate conversion took place—the original 44.1 kHz rate is entirely erased. A naive web audio converter will quietly resample every file it processes, and then market the resulting output as "lossless".
+
+To prevent this silent alteration, our converter architecture in [/audio/convert](/audio/convert) separates inspection from decoding. In lib/tools/audio/probe.ts, our code reads the genuine native sample rate directly out of the file's container headers before invoking Web Audio:
+- For FLAC, it inspects the 20-bit sample rate field located in the STREAMINFO metadata block.
+- For AIFF, it extracts and decodes the 80-bit IEEE 754 extended float holding the sample frequency.
+- For MP4/M4A containers, it parses the size-then-type box hierarchy to find the audio sample entry.
+- For WAV, it reads the 32-bit sample rate field in the RIFF fmt chunk.
+
+Once the source rate is extracted, an OfflineAudioContext is instantiated at that exact frequency. No resampling occurs unless the user explicitly requests a sample rate modification. Where a format change is structurally enforced by an underlying codec—such as Opus, which always decodes at 48,000 Hz regardless of the container rate—the UI explicitly flags the discrepancy rather than concealing it.`,
+      },
+      {
+        id: 'why-wav-only-and-no-mp3-encoder',
+        heading:
+          'Format Decisions: Why Output Is Strictly WAV and Why We Do Not Ship an MP3 Encoder',
+        content: `A central design decision of [/audio/convert](/audio/convert) is that it writes uncompressed WAV files and intentionally does not include an MP3 encoder.
+
+This is not a temporary oversight; it is an architectural commitment:
+1. **Avoiding Lossy-to-Lossy Degradation**: Re-encoding lossy source material (such as AAC, OGG Vorbis, or MP3) into another lossy MP3 format always introduces compounding quantization noise and generation loss. Converting to uncompressed linear PCM in a WAV container preserves every sample decoded by the browser.
+2. **No Bloated Third-Party Dependencies**: Packaging an MP3 encoder would require shipping heavy WebAssembly binaries (often 1 MB or more) and reviewing complex patent and licensing restrictions against our MIT repository.
+3. **Universal Compatibility**: WAV files with 16-bit or 24-bit PCM can be opened and edited across every digital audio workstation (DAW), operating system, and media player without codec negotiation.
+
+The tool interface states this policy outright under the file selector, and our automated tests assert that this honest explanation remains present.`,
+      },
+      {
+        id: 'browser-codec-dependencies-and-normalization',
+        heading:
+          'Browser Realities: Decoder Variance and Peak vs Loudness Normalization',
+        content: `Because [/audio/convert](/audio/convert) uses the host browser's native media decoders, which audio files can be opened depends on the reader's browser runtime:
+- **Format Discrepancies**: Modern Chromium builds lacking proprietary system decoders may reject certain AAC or AIFF containers, whereas WebKit (Safari) natively handles them. To ensure consistent behavior, we implemented custom AIFF decoding logic in pure TypeScript.
+- **Universal Baselines**: Standard WAV and FLAC containers round-trip reliably across both Chromium and WebKit.
+- **Peak vs Loudness Normalization**: The tool offers peak normalization, which scales audio samples so the single loudest instant reaches a specified decibel ceiling (e.g. 0 dBFS or -1 dBFS). Peak normalization does **not** equal perceived loudness normalization (such as EBU R128 or ITU-R BS.1770 LUFS). Making two recordings sound equally loud requires psychoacoustic filtering and gating algorithms that we do not implement here.
+
+The engine is covered by 74 unit tests across pure modules (19 in wav.test.ts, 22 in probe.test.ts, 33 in pcm.test.ts) and 12 browser e2e tests driving Chromium and WebKit. Memory boundaries are strictly enforced: input files are capped at 100 MB and output generation at 500 MB to prevent tab memory exhaustion.`,
+      },
+    ],
+    faqs: [
+      {
+        question: 'Why does decodeAudioData resample audio without notice?',
+        answer:
+          'The Web Audio API specification binds decodeAudioData to the destination AudioContext sampleRate to optimize playback through system hardware. For web audio synthesis this is convenient, but for file conversion it introduces silent resampling unless the context rate is deliberately configured to match the file headers.',
+      },
+      {
+        question:
+          'Does peak normalization make all converted tracks sound equally loud?',
+        answer:
+          'No. Peak normalization matches the single highest amplitude peak to a ceiling. It does not measure or adjust perceived integrated loudness (LUFS).',
+      },
+      {
+        question: 'Can I export an MP3 file using this converter?',
+        answer:
+          'No. The converter writes uncompressed WAV files only. We do not bundle an MP3 encoder, avoiding lossy re-encoding artifacts and third-party WebAssembly dependencies.',
+      },
+    ],
+    relatedSlugs: [
+      'what-lossless-mp3-cutting-actually-means',
+      'why-subtitles-drift-frame-rate-arithmetic',
+      'we-tried-to-make-our-own-site-leak-your-file',
+    ],
+  },
+  {
+    slug: 'lossless-video-trimming-without-codecs-mp4',
+    title:
+      'Video Editing Without a Codec: Lossless MP4 Trimming and the Scrambled Frames Bug',
+    metaDescription:
+      'How to trim, mute, and extract audio from MP4 and MOV videos in-browser without transcoding. Container sample table surgery, keyframe snapping, and the ctts display ordering bug.',
+    keywords: [
+      'lossless video trimming in-browser',
+      'mp4 container surgery no codec',
+      'keyframe snap video trim browser',
+      'ctts composition time offset bug',
+      'extract audio from mp4 without transcoding',
+      'web video editor no ffmpeg wasm',
+    ],
+    category: 'Video & Media',
+    publishedAt: '2026-09-19',
+    readingTime: '9 min read',
+    author: 'OpenTools Engineering Group',
+    toolName: 'Lossless Video Trimmer',
+    toolDestination: '/video/trim',
+    summary:
+      'Three of the four most common video tasks—trimming, muting, and audio extraction—require no video codec at all. We explain how our video trimmer manipulates MP4 container sample tables to copy frames byte-for-byte, and how a subtle ctts display ordering bug was caught and resolved.',
+    sections: [
+      {
+        id: 'container-surgery-vs-re-encoding',
+        heading:
+          'Container Surgery vs Transcoding: Editing Video Without an Encoder',
+        content: `The conventional route to editing video in a web application is compiling a full multimedia framework like ffmpeg to WebAssembly. However, shipping a 30 MB WebAssembly payload introduces significant network weight, patent licensing questions, and slow CPU-intensive re-encoding.
+
+When we investigated video operations in docs/VIDEO_SPIKE.md, the engineering team confirmed a crucial principle: **three of the four operations people need most require no codec at all:**
+- **Trimming**: Slicing a range of video requires selecting a subset of existing compressed frames and updating the container index.
+- **Muting**: Removing audio simply means excluding the audio track and its sample tables from the output file.
+- **Audio Extraction**: Pulling audio requires writing a new container holding only the audio track's compressed packets.
+- **GIF Conversion**: Converting video to GIF is the only common task that genuinely requires decoding video frames and re-encoding with an LZW palette engine.
+
+Because trimming, muting, and audio extraction are container operations rather than transcoding tasks, our tool at [/video/trim](/video/trim) executes them in fractions of a second without re-encoding. In automated test suites, the first frame of a trimmed MP4 file decodes to bytes that are bit-for-bit identical to the source video at that timestamp (matching length and CRC32 checksums).`,
+      },
+      {
+        id: 'the-scrambled-frames-bug',
+        heading:
+          'The Bug That Nearly Shipped: B-Frames, DTS vs PTS, and the Omitted ctts Box',
+        content: `During the development of the MP4 writer (lib/tools/video/writer.ts), the first working implementation produced files that played back with severely scrambled, jittering video frames when tested in independent media players.
+
+The cause was a subtle discrepancy between **decode time** and **display time**:
+- In modern video encoding (such as H.264/AVC), video frames are not stored in the order they are shown. Bi-directional predictive frames (B-frames) depend on both preceding and subsequent anchor frames. Consequently, a B-frame must be decoded *after* the future frame it references, but displayed *before* it.
+- In the ISO base media file format (MP4), the stts atom records the Decode Time-to-Sample (DTS), while the **ctts** (Composition Time to Sample) atom records the offset between DTS and Presentation Time (PTS).
+
+Our initial writer omitted the ctts atom when assembling the trimmed sample tables. Without ctts, media players played back the frames in raw decode order rather than presentation order, causing video to stutter back and forth rapidly.
+
+Critically, **the audio-only extraction path passed every test during this time** because audio packets do not utilize B-frame reordering. Had we only verified the simpler audio extraction feature, we would have shipped a completely broken video editor. Incorporating ctts support with both version 0 (unsigned) and version 1 (signed offsets) restored proper presentation synchronization.`,
+      },
+      {
+        id: 'keyframe-boundaries-and-honest-limits',
+        heading:
+          'Honest Mechanical Limits: Keyframe Snapping and Format Boundaries',
+        content: `Manipulating video without re-encoding imposes physical constraints that the user interface discloses plainly:
+- **Keyframe Boundary Snapping**: In compressed video, inter-frames (P-frames and B-frames) store only pixel differences relative to preceding reference frames. A video cut cannot begin on an arbitrary inter-frame; it **must begin on an instantaneous decoder refresh keyframe (IDR frame)**. If a user requests a cut at 1.5 seconds in a file with keyframes spaced every 1.0 second, the trimmer snaps the start point to 1.0 second. The tool page reports both the requested timestamp and the actual keyframe cut point, clearly displaying the time delta.
+- **Supported Containers**: The trimmer operates on ISO BMFF containers: **MP4 and MOV only**. Non-compliant formats like WebM and Matroska (MKV) are refused by name.
+- **No GIF Export**: Because animated GIF creation requires full video frame decoding and palette quantization, [/video/trim](/video/trim) does not offer GIF conversion rather than providing a poor approximation.
+- **Verbatim Codec Descriptions**: The tool copies the stsd (Sample Description) atom verbatim, ensuring that codec initialization parameters (avcC for H.264 and esds for AAC) remain completely unaltered.`,
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Why does the video trimmer snap my cut time to an earlier second?',
+        answer:
+          'Because the video is trimmed losslessly without re-encoding, cuts can only start on a keyframe (I-frame). Starting on an inter-frame would result in missing reference pixels and corrupted playback. The UI reports the exact keyframe timestamp used.',
+      },
+      {
+        question:
+          'Does trimming a video reduce its visual quality or resolution?',
+        answer:
+          'No. The compressed H.264 and AAC sample frames are copied byte-for-byte from the original container into the new file. There is zero compression artifacting or generational loss.',
+      },
+      {
+        question: 'Can I export a GIF from my video clip using this tool?',
+        answer:
+          'No. Creating an animated GIF requires a full video decoding pipeline and color quantization encoder. The trimmer is dedicated to fast, codec-free MP4/MOV container operations.',
+      },
+    ],
+    relatedSlugs: [
+      'what-lossless-mp3-cutting-actually-means',
+      'why-subtitles-drift-frame-rate-arithmetic',
+      'optimize-images-browser-webp-converter',
     ],
   },
 ];
