@@ -182,7 +182,6 @@ export default function BlogDirectoryPage() {
                       <a
                         href={`/blog/${post.slug}`}
                         className="hover:underline"
-                        aria-label={`Read ${post.title}`}
                       >
                         {post.title}
                       </a>

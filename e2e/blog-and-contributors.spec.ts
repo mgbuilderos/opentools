@@ -10,21 +10,24 @@ test.describe('Blog & Contributor On-ramp', () => {
       page.getByRole('heading', { name: /OpenTools Engineering Blog/i }),
     ).toBeVisible();
 
-    // Verify presence of all three new Brief 4 articles
+    // Each title appears in exactly one heading: the featured post is
+    // sliced out of the list below it, so a heading is unambiguous where a
+    // link is not -- every card also carries a "Read Article" button to the
+    // same URL.
     await expect(
-      page.getByRole('link', {
+      page.getByRole('heading', {
         name: /Why File Size Checks Miss Corruption: ZIP CRC32 Checksum Validation/i,
       }),
     ).toBeVisible();
 
     await expect(
-      page.getByRole('link', {
+      page.getByRole('heading', {
         name: /The macOS ZIP UTF-8 Flag Bug: When Archiver Flags Lie/i,
       }),
     ).toBeVisible();
 
     await expect(
-      page.getByRole('link', {
+      page.getByRole('heading', {
         name: /Contributing to OpenTools: 4 Pure-TypeScript First Tasks/i,
       }),
     ).toBeVisible();
