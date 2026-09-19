@@ -1,0 +1,117 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.0.0",
+
+  "entity": {
+    "type": "individual",
+    "role": "owner",
+    "name": "Maulik Gupta",
+    "email": "mg.io.test@gmail.com",
+    "description": "Independent maintainer based in India. I am not a professional programmer — I work in analytics and build and maintain OpenTools alone, unpaid, alongside a full-time job, using AI coding agents together with a written decision log and release gates. OpenTools is an MIT-licensed suite of everyday browser tools that never uploads the user's files.",
+    "webpageUrl": {
+      "url": "https://getopentools.com"
+    }
+  },
+
+  "projects": [
+    {
+      "guid": "opentools",
+      "name": "OpenTools",
+      "description": "A free, MIT-licensed suite of everyday document, image, text and developer tools that run entirely inside the browser. Merging PDFs, compressing scans, converting and optimising images, removing backgrounds, hashing, QR codes, unit conversion and text formatting — 43 tool pages covering more than 400 individual operations. Almost every free tool for these jobs requires the user to upload their file to a third-party server first; the documents involved are tax records, bank statements, ID scans, medical reports and salary slips. OpenTools does the same work locally using WebAssembly, WebCrypto, Canvas, OffscreenCanvas and Web Workers. The guarantee is enforced rather than promised: production ships a Content-Security-Policy containing connect-src 'none', which makes the page structurally incapable of issuing any network request, and loosening it on a tool route is classified in SECURITY.md as a security vulnerability rather than a feature request. No accounts, no quotas, no watermarks, no paywalls, no advertising and no third-party scripts.",
+      "webpageUrl": {
+        "url": "https://getopentools.com"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/mgbuilderos/opentools"
+      },
+      "licenses": ["spdx:MIT"],
+      "tags": [
+        "privacy",
+        "local-first",
+        "webassembly",
+        "pdf",
+        "image-processing",
+        "browser",
+        "zero-egress",
+        "utilities",
+        "productivity",
+        "india"
+      ]
+    }
+  ],
+
+  "funding": {
+    "channels": [
+      {
+        "guid": "upi",
+        "type": "payment-provider",
+        "address": "mg.io.test@oksbi",
+        "description": "UPI, for supporters in India. Payment identity is kept technically unjoinable to any tool job, file or result."
+      },
+      {
+        "guid": "bmc",
+        "type": "payment-provider",
+        "address": "https://buymeacoffee.com/codebuilder",
+        "description": "Buy Me a Coffee, for supporters outside India. Linked as a plain outbound link only — the site's own Content-Security-Policy blocks third-party scripts and widgets."
+      },
+      {
+        "guid": "grant",
+        "type": "bank",
+        "description": "Bank transfer, for grant disbursement. Details supplied directly to a funder on request."
+      }
+    ],
+
+    "plans": [
+      {
+        "guid": "development-machine",
+        "status": "active",
+        "name": "Development machine",
+        "description": "A capable development machine. The current hardware is the single largest brake on how quickly tools ship and how much can be tested locally before release.",
+        "amount": 2500,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": ["grant", "bmc", "upi"]
+      },
+      {
+        "guid": "egress-verification",
+        "status": "active",
+        "name": "Independent egress verification",
+        "description": "Instrumented measurement of the deployed site under real workloads, proving that no file content leaves the browser, with the methodology published so anyone can reproduce it and other projects can copy it. Today the guarantee is enforced by Content-Security-Policy and covered by the test suite, but it has not been measured in production — so the site deliberately does not print the stronger claim.",
+        "amount": 3000,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": ["grant"]
+      },
+      {
+        "guid": "maintenance-year",
+        "status": "active",
+        "name": "One year of sustained maintenance and development",
+        "description": "Roughly nine months of sustained part-time work at a rate that allows paid work to be cut back rather than added to, plus twelve months of domain, infrastructure and testing costs.",
+        "amount": 12000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["grant"]
+      },
+      {
+        "guid": "any",
+        "status": "active",
+        "name": "Any amount",
+        "description": "Voluntary support of any size, asked for only after the user already has their finished file, and never before.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": ["upi", "bmc"]
+      }
+    ],
+
+    "history": [
+      {
+        "year": 2026,
+        "income": 0,
+        "expenses": 100,
+        "currency": "USD",
+        "description": "Domain and infrastructure only. No revenue: the project takes voluntary support exclusively and has earned close to nothing from it. All development work to date has been unpaid."
+      }
+    ]
+  }
+}
