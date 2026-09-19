@@ -37,7 +37,17 @@ import { writeMp4, type TrackPlan } from './writer';
  * a player show frames in the wrong order. Audio passed throughout, which is
  * exactly why testing only the easy track would have shipped the bug.
  *
- * Re-run that check after any change here.
+ * **That run is now frozen as golden files** — `golden-trim-from-1s.mp4` and
+ * `golden-audio-only.m4a`, compared byte for byte by `golden.test.ts` on every
+ * machine with nothing installed. The earlier instruction here was "re-run the
+ * ffmpeg check after any change", which nobody without ffmpeg could follow; the
+ * guarantee would have decayed quietly as the tests only ever compared this code
+ * against itself.
+ *
+ * So: change the writer, and `golden.test.ts` fails and shows what moved. If the
+ * change is intended, re-earn the files with `node scripts/verify-media.mjs`
+ * (which needs ffmpeg and says so plainly when it is absent) and regenerate them
+ * deliberately.
  */
 const fixtures = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
