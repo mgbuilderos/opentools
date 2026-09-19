@@ -177,6 +177,13 @@ describe('finance and business workbench', () => {
         variable: '750',
       }),
     ).toContain('Profit: 750');
+    expect(
+      runFinanceOperation('profit-calculator', {
+        revenue: '0',
+        fixed: '500',
+        variable: '750',
+      }),
+    ).toContain('Profit margin: not defined (revenue is zero)');
   });
 
   it('calculates operating metrics from explicitly supplied definitions', () => {

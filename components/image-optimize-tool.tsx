@@ -230,8 +230,8 @@ export function ImageOptimizeTool() {
           { label: 'Before', value: formatBytes(source.file.size) },
           { label: 'After', value: formatBytes(blob.size) },
           {
-            label: 'Saved',
-            value: `${Math.max(0, Math.round((1 - blob.size / source.file.size) * 100))}%`,
+            label: blob.size <= source.file.size ? 'Saved' : 'Larger',
+            value: `${Math.abs(Math.round((1 - blob.size / source.file.size) * 100))}%`,
           },
         ],
       });

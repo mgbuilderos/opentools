@@ -1027,7 +1027,10 @@ export function runFinanceOperation(
     case 'profit-calculator': {
       const revenue = finite(values, 'revenue');
       const costs = finite(values, 'fixed', 0) + finite(values, 'variable', 0);
-      return `Profit: ${currency(revenue - costs)}\nTotal costs: ${currency(costs)}\nProfit margin: ${revenue ? format(((revenue - costs) / revenue) * 100) : 'undefined'}%`;
+      const margin = revenue
+        ? `${format(((revenue - costs) / revenue) * 100)}%`
+        : 'not defined (revenue is zero)';
+      return `Profit: ${currency(revenue - costs)}\nTotal costs: ${currency(costs)}\nProfit margin: ${margin}`;
     }
     case 'discount-calculator': {
       const price = finite(values, 'price', 0);

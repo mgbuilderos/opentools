@@ -26,23 +26,25 @@ npm run dev
 npm run format
 npm run test:operations
 npm run qc
+npm run qc:preflight
 npm run qc:release
 ```
 
-`npm run qc` is the fail-fast local gate: format check, the full unit suite,
-all 548 operation input/output contracts, typecheck, lint with warnings denied,
-production build, checked-in SBOM drift check, and blueprint verification.
-`qc:release` additionally queries dependency advisories. The automated pass is
-necessary but does not replace browser/device, accessibility, corpus,
-independent-decoder, formal egress, license, or human release sign-off. See
+`npm run qc` and `qc:preflight` are the fail-fast local source gate: format,
+lint, typecheck, the full unit suite, a default-input contract smoke for all 548
+operation links, production build, checked-in SBOM and implementation-registry
+drift checks, and blueprint verification. `qc:release` additionally queries
+dependency advisories and then fails closed unless every external release stage
+and human approval has current artifact-bound evidence. A source-preflight pass
+does not replace browser/device, accessibility, corpus, independent-decoder,
+formal egress, license, or human release sign-off. See
 [`../../implementation/ZERO_COMPROMISE_OUTPUT_QC.md`](../../implementation/ZERO_COMPROMISE_OUTPUT_QC.md).
 
 The compact home catalog separates 12 numbered categories, shows canonical
 workspaces and direct subtool shortcuts, and labels action counts separately
-from route counts. Every implemented tool family emits the same local
-completion dialog with measured duration, bounded output facts, an explicit
-privacy boundary, and optional open-source support language. No result is
-gated and no payment provider is connected.
+from route counts. Validated results remain visible inline without a modal or
+support prompt blocking access. No result is gated and no payment provider is
+connected.
 
 ## Privacy state
 

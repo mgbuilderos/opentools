@@ -61,6 +61,7 @@ export function FileWorkbenchTool() {
   const [running, setRunning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const runSequenceRef = useRef(0);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get('tool');
@@ -88,6 +89,8 @@ export function FileWorkbenchTool() {
   }, [error]);
 
   const selectOperation = (nextId: string) => {
+    runSequenceRef.current += 1;
+    setRunning(false);
     const next =
       FILE_WORKBENCH_OPERATIONS.find((item) => item.id === nextId) ?? initial;
     setOperationId(next.id);
@@ -102,16 +105,23 @@ export function FileWorkbenchTool() {
   };
 
   const execute = async () => {
+    const sequence = ++runSequenceRef.current;
+    const selectedOperation = operation;
+    const selectedValues = { ...values };
+    const selectedFiles = [...files];
     setRunning(true);
     setError('');
-    const started = Date.now();
+    const started = performance.now();
     try {
-      if (files.some((file) => file.size > 256 * 1024 * 1024))
+      if (selectedFiles.some((file) => file.size > 256 * 1024 * 1024))
         throw new Error('Each selected file must be 256 MiB or smaller.');
-      if (files.reduce((sum, file) => sum + file.size, 0) > 512 * 1024 * 1024)
+      if (
+        selectedFiles.reduce((sum, file) => sum + file.size, 0) >
+        512 * 1024 * 1024
+      )
         throw new Error('Selected files must total 512 MiB or less.');
       const inputs = await Promise.all(
-        files.map(async (file) => {
+        selectedFiles.map(async (file) => {
           const bytes = new Uint8Array(await file.arrayBuffer());
           return {
             name: file.name,
@@ -124,25 +134,32 @@ export function FileWorkbenchTool() {
         }),
       );
       const nextResult = await runFileWorkbenchOperation(
-        operation.id,
-        values,
+        selectedOperation.id,
+        selectedValues,
         inputs,
       );
-      const completedIn = Date.now() - started;
-      const inputBytes = files.reduce((sum, file) => sum + file.size, 0);
+      if (sequence !== runSequenceRef.current) return;
+      if (!nextResult.summary.trim() || !nextResult.output.trim())
+        throw new Error('The operation returned no usable output.');
+      const completedIn = performance.now() - started;
+      const inputBytes = selectedFiles.reduce(
+        (sum, file) => sum + file.size,
+        0,
+      );
       setResult(nextResult);
       setDuration(completedIn);
       announceCompletion({
-        operation: operation.name,
+        operation: selectedOperation.name,
         durationMs: completedIn,
         summary: nextResult.summary,
         metrics: [
-          { label: 'Files', value: String(files.length) },
+          { label: 'Files', value: String(selectedFiles.length) },
           { label: 'Input', value: fileSize(inputBytes) },
           { label: 'Downloads', value: String(nextResult.downloads.length) },
         ],
       });
     } catch (caught) {
+      if (sequence !== runSequenceRef.current) return;
       setResult(null);
       setError(
         caught instanceof Error
@@ -150,7 +167,7 @@ export function FileWorkbenchTool() {
           : 'The file operation could not be completed.',
       );
     } finally {
-      setRunning(false);
+      if (sequence === runSequenceRef.current) setRunning(false);
     }
   };
 
@@ -164,7 +181,7 @@ export function FileWorkbenchTool() {
     anchor.href = url;
     anchor.download = generated.name;
     anchor.click();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
 
   const selectedBytes = files.reduce((sum, file) => sum + file.size, 0);
@@ -188,7 +205,8 @@ export function FileWorkbenchTool() {
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
                 Inspect, hash, split, join, rename, encode, and package selected
-                bytes inside this browser tab. Originals are never overwritten.
+                bytes with browser APIs. Formal runtime egress proof is pending,
+                and originals are never overwritten.
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -197,8 +215,8 @@ export function FileWorkbenchTool() {
             </span>
           </header>
 
-          <div className="mt-5 grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
-            <section className="rounded-xl border bg-card p-4">
+          <div className="mt-5 grid min-w-0 gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
+            <section className="min-w-0 rounded-xl border bg-card p-4">
               <label htmlFor="file-operation" className="text-sm font-semibold">
                 File tool
               </label>
@@ -206,7 +224,7 @@ export function FileWorkbenchTool() {
                 id="file-operation"
                 value={operation.id}
                 onChange={(event) => selectOperation(event.target.value)}
-                className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 text-sm"
+                className="focus-ring mt-2 h-11 w-full min-w-0 max-w-full rounded-lg border bg-background px-3 text-sm"
               >
                 {FILE_WORKBENCH_OPERATIONS.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -228,7 +246,7 @@ export function FileWorkbenchTool() {
               </div>
             </section>
 
-            <section className="rounded-xl border bg-card p-4 sm:p-5">
+            <section className="min-w-0 rounded-xl border bg-card p-4 sm:p-5">
               {error ? (
                 <div
                   ref={errorRef}
@@ -252,18 +270,20 @@ export function FileWorkbenchTool() {
                         : 'Choose one file'}
                   </span>
                   <span className="mt-1 block text-xs text-muted-foreground">
-                    256 MiB each · 512 MiB combined · files stay in this tab
+                    256 MiB each · 512 MiB combined · browser processing
                   </span>
                   <input
                     ref={inputRef}
                     type="file"
                     multiple={operation.multiple || operation.directory}
                     onChange={(event) => {
+                      runSequenceRef.current += 1;
+                      setRunning(false);
                       setFiles(Array.from(event.target.files ?? []));
                       setResult(null);
                       setError('');
                     }}
-                    className="focus-ring mx-auto mt-3 block max-w-full text-xs"
+                    className="focus-ring mx-auto mt-3 block w-full min-w-0 max-w-full text-xs"
                   />
                 </label>
               ) : null}
@@ -300,12 +320,15 @@ export function FileWorkbenchTool() {
                     {field.type === 'select' ? (
                       <select
                         value={values[field.id] ?? field.defaultValue}
-                        onChange={(event) =>
+                        onChange={(event) => {
+                          runSequenceRef.current += 1;
+                          setRunning(false);
+                          setResult(null);
                           setValues((current) => ({
                             ...current,
                             [field.id]: event.target.value,
-                          }))
-                        }
+                          }));
+                        }}
                         className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 text-sm"
                       >
                         {field.options?.map((option) => (
@@ -318,12 +341,15 @@ export function FileWorkbenchTool() {
                       <textarea
                         value={values[field.id] ?? ''}
                         rows={6}
-                        onChange={(event) =>
+                        onChange={(event) => {
+                          runSequenceRef.current += 1;
+                          setRunning(false);
+                          setResult(null);
                           setValues((current) => ({
                             ...current,
                             [field.id]: event.target.value,
-                          }))
-                        }
+                          }));
+                        }}
                         className="focus-ring mt-2 min-h-32 w-full resize-y rounded-lg border bg-background px-3 py-2 font-mono text-sm leading-6"
                       />
                     ) : (
@@ -331,12 +357,15 @@ export function FileWorkbenchTool() {
                         type={field.type}
                         value={values[field.id] ?? ''}
                         inputMode={field.type === 'number' ? 'numeric' : 'text'}
-                        onChange={(event) =>
+                        onChange={(event) => {
+                          runSequenceRef.current += 1;
+                          setRunning(false);
+                          setResult(null);
                           setValues((current) => ({
                             ...current,
                             [field.id]: event.target.value,
-                          }))
-                        }
+                          }));
+                        }}
                         className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 font-mono text-sm"
                       />
                     )}

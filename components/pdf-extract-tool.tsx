@@ -229,7 +229,7 @@ export function PdfExtractTool() {
         announceCompletion({
           operation: 'PDF page extraction',
           durationMs: completedIn,
-          summary: `${message.pageCount.toLocaleString()} selected ${message.pageCount === 1 ? 'page' : 'pages'} saved as a new PDF.`,
+          summary: `${message.pageCount.toLocaleString()} selected ${message.pageCount === 1 ? 'page' : 'pages'} prepared as a new PDF.`,
           metrics: [
             { label: 'Pages', value: message.pageCount.toLocaleString() },
             {

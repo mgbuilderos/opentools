@@ -364,7 +364,7 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
       area(
         'content',
         'Document text',
-        'Private browser tools keep small jobs local.\n\nThis document never leaves the tab.',
+        'Private browser tools can process small jobs in the tab.\n\nReview the result before downloading.',
       ),
       number('wordsPerMinute', 'Reading words per minute', '225'),
     ],

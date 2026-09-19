@@ -17,9 +17,9 @@ const gates = [
     cwd: appRoot,
   },
   {
-    name: 'UNIT + ALL-OPERATION I/O',
+    name: 'LINT',
     command: 'npm',
-    args: ['test'],
+    args: ['run', 'lint', '--', '--deny-warnings'],
     cwd: appRoot,
   },
   {
@@ -29,12 +29,11 @@ const gates = [
     cwd: appRoot,
   },
   {
-    name: 'LINT',
+    name: 'UNIT + ALL-OPERATION I/O',
     command: 'npm',
-    args: ['run', 'lint', '--', '--deny-warnings'],
+    args: ['test'],
     cwd: appRoot,
   },
-  { name: 'BUILD', command: 'npm', args: ['run', 'build'], cwd: appRoot },
   {
     name: 'SBOM INVENTORY',
     command: 'npm',
@@ -42,18 +41,33 @@ const gates = [
     cwd: appRoot,
   },
   {
+    name: 'IMPLEMENTATION REGISTRY DRIFT',
+    command: process.execPath,
+    args: ['scripts/generate_implementation_status.mjs', '--check'],
+    cwd: blueprintRoot,
+  },
+  {
     name: 'BLUEPRINT INTEGRITY',
     command: process.execPath,
     args: ['scripts/verify_blueprint.mjs'],
     cwd: blueprintRoot,
   },
+  { name: 'BUILD', command: 'npm', args: ['run', 'build'], cwd: appRoot },
 ];
 
 if (releaseMode)
-  gates.splice(5, 0, {
+  gates.splice(4, 0, {
     name: 'DEPENDENCY ADVISORIES',
     command: 'npm',
     args: ['audit', '--audit-level=high'],
+    cwd: appRoot,
+  });
+
+if (releaseMode)
+  gates.push({
+    name: 'RELEASE EVIDENCE + HUMAN AUTHORIZATION',
+    command: process.execPath,
+    args: ['scripts/check-release-readiness.mjs'],
     cwd: appRoot,
   });
 
@@ -81,9 +95,15 @@ for (const gate of gates) {
 }
 
 const elapsedSeconds = ((performance.now() - started) / 1_000).toFixed(2);
-process.stdout.write(
-  `\n[QC] PASS — ${gates.length} mandatory automated gates completed in ${elapsedSeconds}s.\n`,
-);
-process.stdout.write(
-  '[QC] This pass covers the exact local source/build. Human, cross-browser, corpus, and formal egress sign-offs remain separate release requirements.\n',
-);
+if (releaseMode) {
+  process.stdout.write(
+    `\n[QC] RELEASE-AUTHORIZATION PASS — ${gates.length} gates completed in ${elapsedSeconds}s. This command does not deploy.\n`,
+  );
+} else {
+  process.stdout.write(
+    `\n[QC] SOURCE PREFLIGHT PASS — ${gates.length} automated gates completed in ${elapsedSeconds}s.\n`,
+  );
+  process.stdout.write(
+    '[QC] RELEASE STATUS: BLOCKED until the remaining property/fuzz, integration, security, license, performance, runtime privacy, cross-browser, accessibility, staging, smoke, human-approval, and canary evidence is current and approved.\n',
+  );
+}

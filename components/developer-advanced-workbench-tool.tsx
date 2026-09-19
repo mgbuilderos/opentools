@@ -12,7 +12,7 @@ export function DeveloperAdvancedWorkbenchTool() {
       currentToolId="developer-advanced-workbench"
       eyebrow="Developer & data"
       title="Advanced developer workbench"
-      introduction="Inspect structured data, create secure local tokens, calculate networks, and generate common project configuration without sending inputs away."
+      introduction="Inspect structured data, create secure local tokens, calculate networks, and generate common project configuration in this browser tab. Formal runtime egress proof is pending."
       selectorLabel="Developer tool"
       actionLabel="Run locally"
       methodLabel="Bounded browser APIs and deterministic parsers"

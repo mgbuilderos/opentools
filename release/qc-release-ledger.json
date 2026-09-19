@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "candidateCommit": null,
+  "artifactSha256": null,
+  "stages": {
+    "PROPERTY/FUZZ": { "status": "NOT RUN", "evidence": [] },
+    "INTEGRATION": { "status": "NOT RUN", "evidence": [] },
+    "SECURITY": { "status": "BLOCKED", "evidence": [] },
+    "LICENSE/SBOM": { "status": "BLOCKED", "evidence": [] },
+    "PERFORMANCE": { "status": "NOT RUN", "evidence": [] },
+    "PRIVACY-NETWORK": { "status": "BLOCKED", "evidence": [] },
+    "CROSS-BROWSER": { "status": "NOT RUN", "evidence": [] },
+    "ACCESSIBILITY": { "status": "NOT RUN", "evidence": [] },
+    "STAGING": { "status": "NOT RUN", "evidence": [] },
+    "SMOKE": { "status": "NOT RUN", "evidence": [] },
+    "HUMAN APPROVAL": { "status": "BLOCKED", "evidence": [] },
+    "CANARY": { "status": "NOT RUN", "evidence": [] }
+  }
+}

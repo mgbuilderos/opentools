@@ -94,6 +94,7 @@ export function SchemaWorkbenchTool({
   const [copied, setCopied] = useState(false);
   const [running, setRunning] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
+  const runSequenceRef = useRef(0);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get('tool');
@@ -112,6 +113,8 @@ export function SchemaWorkbenchTool({
   }, [error]);
 
   const selectOperation = (nextId: string) => {
+    runSequenceRef.current += 1;
+    setRunning(false);
     const next = operations.find((item) => item.id === nextId) ?? operations[0];
     setOperationId(next.id);
     setValues(defaults(next));
@@ -123,12 +126,16 @@ export function SchemaWorkbenchTool({
   };
 
   const update = (id: string, value: string) => {
+    runSequenceRef.current += 1;
+    setRunning(false);
     setValues((current) => ({ ...current, [id]: value }));
     setOutput('');
     setError('');
   };
 
   const updateFile = (field: WorkbenchField, file?: File) => {
+    const inputRevision = ++runSequenceRef.current;
+    setRunning(false);
     setOutput('');
     setError('');
     if (!file) {
@@ -144,33 +151,49 @@ export function SchemaWorkbenchTool({
     }
     const reader = new FileReader();
     reader.addEventListener('load', () => {
-      if (typeof reader.result === 'string') update(field.id, reader.result);
+      if (
+        inputRevision === runSequenceRef.current &&
+        typeof reader.result === 'string'
+      ) {
+        setValues((current) => ({
+          ...current,
+          [field.id]: reader.result as string,
+        }));
+      }
     });
     reader.addEventListener('error', () => {
-      setError('The selected file could not be read in this browser.');
+      if (inputRevision === runSequenceRef.current)
+        setError('The selected file could not be read in this browser.');
     });
     reader.readAsDataURL(file);
   };
 
   const execute = async () => {
+    const sequence = ++runSequenceRef.current;
+    const selectedOperation = operation;
+    const selectedValues = { ...values };
     const started = performance.now();
     setRunning(true);
     try {
-      const nextOutput = await run(operation.id, values);
+      const nextOutput = await run(selectedOperation.id, selectedValues);
+      if (sequence !== runSequenceRef.current) return;
+      if (typeof nextOutput !== 'string' || !nextOutput.trim())
+        throw new Error('The operation returned no usable output.');
       const completedIn = performance.now() - started;
       setOutput(nextOutput);
       setDuration(completedIn);
       setError('');
       announceCompletion({
-        operation: operation.name,
+        operation: selectedOperation.name,
         durationMs: completedIn,
-        summary: operation.description,
+        summary: selectedOperation.description,
         metrics: [
           { label: 'Result', value: 'Ready' },
           { label: 'Method', value: methodLabel },
         ],
       });
     } catch (caught) {
+      if (sequence !== runSequenceRef.current) return;
       setOutput('');
       setError(
         caught instanceof Error
@@ -178,7 +201,7 @@ export function SchemaWorkbenchTool({
           : 'The operation could not be completed.',
       );
     } finally {
-      setRunning(false);
+      if (sequence === runSequenceRef.current) setRunning(false);
     }
   };
 
@@ -200,7 +223,7 @@ export function SchemaWorkbenchTool({
     anchor.href = url;
     anchor.download = `${operation.id}.${extension}`;
     anchor.click();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
 
   return (
@@ -229,8 +252,8 @@ export function SchemaWorkbenchTool({
             </span>
           </header>
 
-          <div className="mt-5 grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
-            <section className="rounded-xl border bg-card p-4">
+          <div className="mt-5 grid min-w-0 gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
+            <section className="min-w-0 rounded-xl border bg-card p-4">
               <label
                 htmlFor={`${currentToolId}-operation`}
                 className="text-sm font-semibold"
@@ -241,7 +264,7 @@ export function SchemaWorkbenchTool({
                 id={`${currentToolId}-operation`}
                 value={operation.id}
                 onChange={(event) => selectOperation(event.target.value)}
-                className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3 text-sm"
+                className="focus-ring mt-2 h-11 w-full min-w-0 max-w-full rounded-lg border bg-background px-3 text-sm"
               >
                 {operations.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -263,7 +286,7 @@ export function SchemaWorkbenchTool({
               </div>
             </section>
 
-            <section className="rounded-xl border bg-card p-4 sm:p-5">
+            <section className="min-w-0 rounded-xl border bg-card p-4 sm:p-5">
               {error ? (
                 <div
                   ref={errorRef}
@@ -309,7 +332,7 @@ export function SchemaWorkbenchTool({
                         />
                         <span className="mt-1 block text-xs font-normal text-muted-foreground">
                           {values[field.id]
-                            ? 'Selected and held only in this tab'
+                            ? 'Selected for this operation'
                             : 'No file selected'}
                         </span>
                       </>
@@ -447,8 +470,8 @@ export function SchemaWorkbenchTool({
           ) : null}
 
           <footer className="mt-7 border-t py-5 text-xs leading-5 text-muted-foreground">
-            Local JavaScript · Inputs remain in this browser tab · Tool-specific
-            assumptions and limits are stated before execution
+            Browser execution surface · Formal runtime egress proof pending ·
+            Tool-specific assumptions and limits are stated before execution
           </footer>
         </div>
       </section>

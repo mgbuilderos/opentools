@@ -26,6 +26,7 @@ describe('completion value receipt', () => {
         { label: ' Files ', value: ' 2 ' },
         { label: 'Input', value: '1 MB' },
         { label: 'Output', value: '500 KB' },
+        { label: '', value: 'Do not display' },
         { label: 'Ignored', value: 'Extra' },
       ],
     });
@@ -42,6 +43,28 @@ describe('completion value receipt', () => {
         { label: 'Output', value: '500 KB' },
       ],
     });
+    vi.unstubAllGlobals();
+  });
+
+  it('removes control characters and bounds every displayed field', () => {
+    const dispatchEvent = vi.fn();
+    vi.stubGlobal('window', { dispatchEvent });
+
+    announceCompletion({
+      operation: `\0 ${'A'.repeat(140)}`,
+      durationMs: Number.POSITIVE_INFINITY,
+      summary: `First\nsecond ${'B'.repeat(260)}`,
+      metrics: [{ label: ' Rows\n', value: '  12\titems  ' }],
+    });
+
+    const event = dispatchEvent.mock.calls[0][0] as CustomEvent;
+    expect(event.detail.operation).toHaveLength(120);
+    expect(event.detail.operation).not.toContain('\0');
+    expect(event.detail.summary).toHaveLength(240);
+    expect(event.detail.metrics).toEqual([
+      { label: 'Rows', value: '12 items' },
+    ]);
+    expect(event.detail.durationMs).toBe(0);
     vi.unstubAllGlobals();
   });
 });

@@ -64,6 +64,10 @@ describe('local tool source policy', () => {
       /Nothing (?:was|is) uploaded/iu,
       /0\s*(?:B|bytes?)\s+(?:of\s+)?(?:file\s+)?(?:data\s+)?uploaded/iu,
       /0\s+file bytes uploaded/iu,
+      /never leaves? (?:this|the) tab/iu,
+      /(?:inputs?|files?) (?:remain|stay|stayed) (?:only )?(?:in|with) (?:this|the) (?:browser )?tab/iu,
+      /without sending inputs away/iu,
+      /held only in (?:this|the) tab/iu,
     ];
     const violations = guardedFiles.flatMap((file) => {
       const source = readFileSync(file, 'utf8');

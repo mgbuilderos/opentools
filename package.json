@@ -17,6 +17,7 @@
     "test:operations": "vitest run lib/tools/all-operations-qc.test.ts",
     "typecheck": "tsc --noEmit",
     "qc": "node scripts/run-qc.mjs",
+    "qc:preflight": "node scripts/run-qc.mjs",
     "qc:release": "node scripts/run-qc.mjs --release"
   },
   "dependencies": {
