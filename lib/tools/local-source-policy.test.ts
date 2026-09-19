@@ -178,6 +178,36 @@ describe('local tool source policy', () => {
     expect(source).toContain('rel="noopener noreferrer"');
   });
 
+  /**
+   * The milestone card is the second surface that can ask for money, and it
+   * drifted precisely because no test named it. It opened a full-screen modal
+   * out of the `tool-executed` handler — the same call that dispatches the
+   * receipt's event — so on the fiftieth run it covered the page before the
+   * person could click Save, and it ignored the preference the receipt
+   * writes, asking people who had said "don't ask again". Both are checked
+   * here, against the same rules the receipt is held to.
+   */
+  it('leaves the page usable during the milestone ask, and shares its budget', () => {
+    const source = readFileSync(
+      path.join(projectRoot, 'components/milestone-modal.tsx'),
+      'utf8',
+    );
+    expect(source).not.toContain('preventDefault()');
+    expect(source).not.toContain('stopPropagation()');
+    expect(source).not.toContain('showModal()');
+    expect(source).not.toContain('.click()');
+    expect(source).toContain('aria-modal="false"');
+    // A full-bleed backdrop is how the blocking version covered the page.
+    expect(source).not.toContain('fixed inset-0');
+    // Deciding on the completion event is what stole the receipt's moment.
+    expect(source).not.toContain("'tool-executed'");
+    expect(source).toContain('mayOfferSupport');
+    expect(source).toContain('SUPPORT_PREFERENCE_KEY');
+    expect(source).toContain('rel="noopener noreferrer"');
+    // Lint was disabled for this whole file while it carried all of the above.
+    expect(source).not.toContain('oxlint-disable');
+  });
+
   it('keeps focus and success product chrome monochrome', () => {
     const styles = readFileSync(
       path.join(projectRoot, 'app/globals.css'),

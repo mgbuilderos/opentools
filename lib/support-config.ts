@@ -72,6 +72,18 @@ export const SUPPORT_CONFIG = {
  */
 export const BUYMEACOFFEE_UNIT_USD = 5;
 
+/**
+ * The one rupee amount offered outside the `/support` page, for a visitor the
+ * browser's own locale places in India.
+ *
+ * It sits between the receipt's chai and its patron amounts on purpose: a
+ * surface that interrupts nobody and asks once should ask for a middle figure
+ * rather than the smallest one. `completion-value-dialog.tsx` still writes its
+ * three chip amounts inline; when that surface is next touched they belong
+ * here, so the numbers a person can be shown have one home.
+ */
+export const SUPPORT_QUICK_INR = 149;
+
 /** Whole coffees for a USD amount, or null when it does not divide evenly. */
 export function coffeesFor(usd: number): number | null {
   if (!Number.isFinite(usd) || usd < BUYMEACOFFEE_UNIT_USD) return null;
