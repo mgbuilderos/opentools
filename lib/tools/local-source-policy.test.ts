@@ -204,6 +204,17 @@ describe('local tool source policy', () => {
     expect(source).toContain('mayOfferSupport');
     expect(source).toContain('SUPPORT_PREFERENCE_KEY');
     expect(source).toContain('rel="noopener noreferrer"');
+    /*
+     * The deferring runs one way (owner decision, 2026-09-19): a milestone
+     * yields to a recent receipt ask, and never costs the receipt one. The
+     * receipt converts better, so writing `lastOffered` here would trade the
+     * stronger surface for the weaker one. Being shown once ever is what
+     * stops this card repeating, and that is the celebrated list. The single
+     * permitted write records someone pressing "Don't ask again", which is an
+     * instruction to both surfaces rather than a budget this one spent.
+     */
+    expect(source.match(/supportPreference\(/gu) ?? []).toHaveLength(1);
+    expect(source).toContain('supportPreference(Date.now(), true)');
     // Lint was disabled for this whole file while it carried all of the above.
     expect(source).not.toContain('oxlint-disable');
   });

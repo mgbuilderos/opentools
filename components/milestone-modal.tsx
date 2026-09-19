@@ -42,8 +42,18 @@ import {
  *
  * It ignored `mayOfferSupport`, so someone who had already said "don't ask
  * again" on the receipt was asked anyway, by a modal they could not work
- * around. It now reads that preference and writes it, which means the two
- * surfaces share one budget and cannot both ask inside the cooldown.
+ * around. It now reads that preference — the opt-out is honoured, and a
+ * milestone stays quiet while a receipt ask is still recent.
+ *
+ * It deliberately does **not** write `lastOffered` (owner decision,
+ * 2026-09-19). The deferring runs one way: a milestone yields to the receipt
+ * and never costs it an ask. The receipt converts better — it arrives at
+ * relief, with the job's own facts — so spending a week of its cooldown on
+ * one of these would trade the stronger surface for the weaker one. Being
+ * shown once ever is what stops this repeating, and that is `celebrated`, not
+ * the support preference. The one time this file writes that preference is
+ * when someone presses "Don't ask again", which is their instruction to both
+ * surfaces rather than a budget this one spent.
  *
  * And it offered a bare `/support` link while the receipt offered real rails.
  * It now offers the one rail the visitor can actually use, chosen by the same
@@ -94,19 +104,14 @@ export function MilestoneModal() {
     // Settle first. The state is set from a timer rather than the effect body
     // for two reasons: a synchronous setState here cascades renders, which the
     // React compiler lint refuses, and a card that paints in the same frame as
-    // the page reads as an interruption rather than an aside. Recording that
-    // the ask happened waits for the same tick, so someone who leaves before
-    // it appears has not spent a milestone they never saw.
+    // the page reads as an interruption rather than an aside. Marking the
+    // milestone waits for the same tick, so someone who leaves before it
+    // appears has not spent a milestone they never saw.
     const timer = setTimeout(() => {
       try {
         localStorage.setItem(
           CELEBRATED_KEY,
           JSON.stringify([...celebrated, ...reached]),
-        );
-        // This is an ask, so it spends from the same budget the receipt does.
-        localStorage.setItem(
-          SUPPORT_PREFERENCE_KEY,
-          supportPreference(Date.now()),
         );
       } catch {
         /* Shown once this session either way; storage is best effort. */
