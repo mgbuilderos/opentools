@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { getAllTemplates } from '../templates/templates-data';
+import { CACHED_GUIDE_SLUGS } from './cached-guides';
 import { getAllBlogPosts } from './blog-data';
 import { getAllCategoryPillars } from './internal-linking-graph';
 import { LIVE_TOOL_CATALOG } from './live-tools';
@@ -35,6 +36,7 @@ const DYNAMIC_PAGE_COUNTS: Record<string, () => number> = {
   'guides/[slug]': () => LIVE_TOOL_CATALOG.length,
   'blog/[slug]': () => getAllBlogPosts().length,
   'templates/[slug]': () => getAllTemplates().length,
+  'guides-cached/[slug]': () => CACHED_GUIDE_SLUGS.length,
 };
 
 function pageFiles(

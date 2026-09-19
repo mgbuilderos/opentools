@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 
 import type { NextConfig } from 'next';
 
+import { CACHED_GUIDE_SLUGS } from './lib/seo/cached-guides';
 import {
   contentSecurityPolicy,
   LOCAL_MODEL_SOURCES,
@@ -52,6 +53,25 @@ function resolvePinnedBuildId(): string | null {
 }
 
 const nextConfig: NextConfig = {
+  /**
+   * Serve the 50 cacheable guides from `/guides-cached/:slug`, while the public
+   * URL stays `/guides/:slug`. A rewrite is internal -- no redirect, no address
+   * change, nothing for search engines to re-learn.
+   *
+   * **Unlike `headers()` below, these DO ship on Cloudflare.** That was not
+   * assumed: a probe rewrite was added, built, and found in the deployed Worker
+   * bundle (`dist/server/index.js`), which iterates `configRewrites.beforeFiles`
+   * at request time. `headers()` has no such entry, which is exactly why
+   * `X-Frame-Options` reached nobody until it was copied into `public/_headers`.
+   *
+   * The list is literal strings for a reason -- see `lib/seo/cached-guides.ts`.
+   */
+  async rewrites() {
+    return CACHED_GUIDE_SLUGS.map((slug) => ({
+      source: `/guides/${slug}`,
+      destination: `/guides-cached/${slug}`,
+    }));
+  },
   generateBuildId: resolvePinnedBuildId,
   productionBrowserSourceMaps: false,
   /**
