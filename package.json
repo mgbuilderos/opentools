@@ -22,6 +22,7 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "design:qc": "node scripts/design-system-qc.mjs",
+    "predeploy": "node scripts/predeploy.mjs",
     "qc": "node scripts/run-qc.mjs",
     "qc:release": "node scripts/run-qc.mjs --release"
   },
