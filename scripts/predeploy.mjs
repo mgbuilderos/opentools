@@ -3,11 +3,11 @@
  * Asks one question before a deploy: can today's KV write allowance afford it?
  *
  * WHY THIS EXISTS. The page cache is paid for in KV writes, and the free plan
- * allows about 1,000 a day. A full re-warm costs 206 (103 opted-in pages, two
+ * allows about 1,000 a day. A full re-warm costs 306 (153 opted-in pages, two
  * writes each — see docs/CACHE_BUDGET.md). That leaves room for eight deploys a
  * day. On 2026-09-18 there were nine, the allowance ran out, and the site served
  * 503s from an empty cache. Nothing in the repo noticed: cache-budget.test.ts
- * checks the per-deploy cost (206 < 900) and cannot see the deploy count, so it
+ * checks the per-deploy cost (306 < 900) and cannot see the deploy count, so it
  * stays green while the real spend is ten times over. This script is the part
  * that can see it.
  *
@@ -34,12 +34,12 @@ const ACCOUNT = '00f21e5724f9ebf7b1ab0cb42ae76b1e';
 const DAILY_ALLOWANCE = 1000;
 /**
  * Ceiling, not a bill: a page costs its two writes only when someone actually
- * requests it, so a quiet day spends a fraction of this. 103 opted-in pages x 2
+ * requests it, so a quiet day spends a fraction of this. 153 opted-in pages x 2
  * keys, as of 2026-09-19. KEEP IN SYNC with `lib/seo/cache-budget.test.ts` --
  * opting a route in there without changing this makes every verdict below
  * optimistic. `WRITE_BUDGET = 1` in that test prints the current count.
  */
-const FULL_REWARM = 206;
+const FULL_REWARM = 306;
 const ROOT = path.resolve(import.meta.dirname, '..');
 const STATE = path.join(ROOT, '.predeploy-state.json');
 
