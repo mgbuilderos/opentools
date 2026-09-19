@@ -119,8 +119,11 @@ the product can serve.
   is exactly what C7 requires.
 - That same branch also contains `lib/tools/pdf/size-targets.ts`, a
   `PORTAL_PRESETS` table naming USCIS, Schengen and Workday with byte limits.
-  **This conflicts with decision 9** and must be resolved before the branch goes
-  anywhere near `main`.
+  ~~This conflicts with decision 9 and must be resolved before the branch goes
+  anywhere near `main`.~~ **RESOLVED AND MERGED 2026-09-19.** Presets carry
+  `sourceUrl`, `checkedOn` and `field` with a 90-day expiry gate, live in
+  `lib/portal-presets.ts` with 17/17 tests. Pillar 1 is built and awaiting
+  deploy — see `STATUS.md` §4.
 
 **The preset question — settled.** Decision 9 banned named presets with numbers
 because portal limits change without notice (ADR-017). On 2026-09-17 the owner
