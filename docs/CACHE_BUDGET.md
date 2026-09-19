@@ -44,18 +44,43 @@ sets no `revalidate` at all; each page that should be cached exports its own.
 |---|---|---|
 | Tool pages, homepage, hubs (static) | 43 | 86 |
 | `/guides/category/:category` | 18 | 36 |
-| **Total** | **61** | **122** |
+| Blog index + posts | 27 | 54 |
+| `/templates/:slug` | 15 | 30 |
+| `/support` | 1 | 2 |
+| `/guides-cached/:slug` — the 50 in `lib/seo/cached-guides.ts` | 50 | 100 |
+| **Total** | **153** | **306** |
 
-122 writes against ~1,000 leaves room for **eight** full re-warms a day, so a
-deploy no longer has to be rationed.
+**Updated 2026-09-19.** Was 61 pages / 122 writes. `app/templates/page.tsx` is
+excluded because it is a `'use client'` component and route segment config
+cannot be exported from one.
+
+306 writes against ~1,000 still leaves room for three full re-warms a day — but
+that ceiling stopped being the binding constraint on 2026-09-19, when the build
+id was pinned to the commit (`next.config.ts`). A redeploy of identical code now
+keeps its cache and costs **zero** writes; only changed code re-warms. The nine
+deploys of 2026-09-18 would cost nothing today.
+
+**Cost is demand-paced, not billed on deploy.** A page costs its two writes only
+when someone actually requests it, so 306 is a ceiling reached only if every
+opted-in page is visited in a day. `npm run predeploy` reads the real figure from
+Cloudflare before each deploy; its `FULL_REWARM` constant must be kept in step
+with this table.
 
 ## What is deliberately not cached, and why
 
-**The 550 `/guides/:slug` pages.** At two writes each they are 1,100 writes —
-they do not fit inside a 1,000-write allowance *on their own*, at any setting.
-There is no arrangement of the free plan that caches them. They render on
-demand, which is what every page did before this change, so nothing is worse
-than it was.
+**The other 500 `/guides/:slug` pages.** At two writes each all 550 are 1,100
+writes — they do not fit inside a 1,000-write allowance *on their own*, at any
+setting. They render on demand and cost no writes at all.
+
+**Fifty of them ARE cached, as of 2026-09-19, without changing a single URL.**
+`export const revalidate` is module-level and governs a whole route, so a subset
+is not expressible on one route. `next.config.ts` therefore rewrites
+`/guides/:slug` to `app/guides-cached/[slug]` for the 50 slugs in
+`lib/seo/cached-guides.ts`; that route opts in, the original does not. A rewrite
+is internal — no redirect, no URL change, canonical still `/guides/:slug`, and
+the sitemap never mentions `guides-cached`. **Do not add `noindex` to that
+route:** the rewrite means the tag would be served on `/guides/:slug` and
+deindex the 50 best guides on the site.
 
 Verified locally: a guide page returns `x-vinext-cache: MISS` on every request
 and never becomes a `HIT`, which means it is never stored and therefore **costs
