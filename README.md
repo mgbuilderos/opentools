@@ -49,18 +49,19 @@ When a page (not a static asset) is requested, the edge handler in
 [`proxy.ts`](proxy.ts) writes one `tool_impression` event to Cloudflare Workers
 Logs. It records:
 
-- Country, region, and city, from Cloudflare's IP geolocation headers.
+- Country, from Cloudflare's `cf-ipcountry` header. Coarse country level only:
+  region and city are not logged.
 - The page path, and the `tool` query parameter if present.
 - Device type (mobile, tablet, or desktop), derived from the user agent. The
   user agent itself is not stored.
-- Primary browser language.
-- The referring site's category (for example Google, GitHub, Reddit) and the
-  first 120 characters of the referrer URL, when another site sends one.
+- Primary browser language, truncated to 10 characters.
+- The referring site's category (for example Google, GitHub, Reddit). The raw
+  referrer URL is not stored.
 - A timestamp.
 
-This event does not include your IP address, cookies, files, file names,
-pasted text, or results — tools run in the browser, so the server never
-receives them. Logs are retained under Cloudflare's Workers Logs retention.
+This event does not include your IP address, city, region, raw referrer,
+cookies, files, file names, pasted text, or results — tools run in the browser,
+so the server never receives them. Logs are retained under Cloudflare's Workers Logs retention.
 Cloudflare may also record standard request metadata for its platform logs.
 
 ## Core Tool Suite
