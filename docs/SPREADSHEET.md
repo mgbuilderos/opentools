@@ -1,6 +1,6 @@
 # Reading and writing `.xlsx`
 
-Branch `claude/xlsx`, started 2026-09-19. **Reader done, writer not started.**
+Branch `claude/xlsx`, 2026-09-19. **Complete: reader, writer, page and tests.**
 Owner: *"let us deploy excel tools"*, and *"deploy everything together after
 excel is done tomorrow."*
 
@@ -22,8 +22,9 @@ and writer shipped on 2026-09-18 with CRC verification already in them.
 | Date conversion | `excel-date.ts` | 13 | yes |
 | XML scanning | `xml.ts` | via the others | yes |
 | Reader | `xlsx-reader.ts` | 21 | yes |
-| Writer | `xlsx-writer.ts` | — | **not started** |
-| UI, route, catalogue, e2e | — | — | **not started** |
+| Writer | `xlsx-writer.ts` | 22 | yes |
+| CSV | `csv.ts` | 17 | yes |
+| Page | `components/excel-tool.tsx`, `app/data/excel` | 22 e2e | yes |
 
 QC 8/8, 1,111 unit tests overall.
 
@@ -121,12 +122,14 @@ branch; it is eight small XML strings in a ZIP.
    once, confirm openpyxl reads it, commit those bytes, and compare against them
    from then on. **Do not leave the guarantee as "re-run openpyxl by hand".**
 
-1. **The writer.** CSV → `.xlsx`. Needs `[Content_Types].xml`, `_rels/.rels`,
+1. ~~The writer.~~ **Done**, and its output is frozen as `golden-written.xlsx`.
+   CSV → `.xlsx`. Needs `[Content_Types].xml`, `_rels/.rels`,
    `xl/workbook.xml`, its rels, `xl/styles.xml` and a sheet. Shared strings are
    optional for writing — inline is simpler and openpyxl proves it is accepted —
    but a date column needs a style with a date `numFmtId` or it writes as a
    number. `createZip` from `lib/tools/docx/zip.ts` does the container.
-2. **No UI, no route, no catalogue rows, no e2e.**
+2. ~~No UI, no route, no catalogue rows, no e2e.~~ **Live at `/data/excel`**, two
+   directions in one page, 22 browser tests in Chromium and WebKit.
 3. **No `.xls` support** (the pre-2007 binary format). Detected by its OLE
    signature and refused by name, which is the right behaviour.
 4. **Formulas are not evaluated**, only their cached results shown. A file saved
@@ -135,5 +138,7 @@ branch; it is eight small XML strings in a ZIP.
    inspected, which is what produced the shared-strings finding, but running the
    reader over one was blocked as a personal-file read — correctly. Worth doing
    with a file the owner nominates before launch.
-6. **Very large sheets are not streamed.** The whole workbook is parsed into
+6. **Preview is capped at 50 rows and 20 columns.** Everything is converted; only
+   the drawing is cut, and the caption says so.
+7. **Very large sheets are not streamed.** The whole workbook is parsed into
    memory. A 100k-row sheet will be slow and should be measured before launch.
