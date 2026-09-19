@@ -43,9 +43,21 @@ And the strongest single result: **the trimmed file's first frame decodes to byt
 identical to the original decoded at 1.0s** — same length, same CRC32. Nothing
 was re-encoded.
 
-`ffmpeg` is not a dependency of this project, so those checks were run by hand.
-**Re-run them after any change to `writer.ts`** — the unit tests only prove the
-reader and writer agree with each other.
+`ffmpeg` is not a dependency of this project and must not become one: the whole
+unit suite has to pass on a machine with nothing installed, which was checked by
+removing ffmpeg from `PATH` and watching all 1,111 tests still pass.
+
+**That run above is frozen as golden files.** `golden-trim-from-1s.mp4` and
+`golden-audio-only.m4a` hold the exact bytes ffmpeg approved, and
+`lib/tools/video/golden.test.ts` compares the writer against them everywhere,
+with nothing installed.
+
+This replaced an instruction that could not be followed — "re-run the ffmpeg
+check after any change" — on any machine without ffmpeg. The guarantee would have
+decayed silently, because the remaining tests only ever compared this code
+against itself. Now a change to the writer fails loudly and names what moved; if
+it was intended, re-earn the files with `node scripts/verify-media.mjs`, which
+skips with an explanation when ffmpeg is absent and never fails for its absence.
 
 ## The bug the spike caught, which is the reason to spike
 

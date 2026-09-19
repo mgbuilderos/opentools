@@ -112,6 +112,15 @@ branch; it is eight small XML strings in a ZIP.
 
 ## Not done
 
+0. **Golden files for the writer, on the same rule as the video one.** openpyxl
+   is installed here and is **not** installed everywhere — and LibreOffice was
+   assumed present on this machine and turned out to be a dangling symlink, which
+   is exactly how this kind of assumption fails. So the writer's verified output
+   must be committed as bytes and compared by a test that needs nothing
+   installed, the way `lib/tools/video/golden.test.ts` does. Write the `.xlsx`
+   once, confirm openpyxl reads it, commit those bytes, and compare against them
+   from then on. **Do not leave the guarantee as "re-run openpyxl by hand".**
+
 1. **The writer.** CSV → `.xlsx`. Needs `[Content_Types].xml`, `_rels/.rels`,
    `xl/workbook.xml`, its rels, `xl/styles.xml` and a sheet. Shared strings are
    optional for writing — inline is simpler and openpyxl proves it is accepted —
