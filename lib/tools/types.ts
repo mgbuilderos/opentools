@@ -24,7 +24,8 @@ export interface ToolManifest {
     | 'Finance'
     | 'Life Admin'
     | 'QR & Barcode'
-    | 'Audio';
+    | 'Audio'
+    | 'Video';
   aliases: string[];
   jobs: string[];
   searchEntries?: Array<{

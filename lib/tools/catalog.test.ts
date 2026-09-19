@@ -93,7 +93,7 @@ describe('public canary catalog', () => {
       toolsForGroup(group).map((tool) => tool.id),
     );
 
-    expect(toolGroups).toHaveLength(8);
+    expect(toolGroups).toHaveLength(9);
   });
 
   it('keeps the evidence-weighted launch order explicit', () => {
@@ -106,6 +106,11 @@ describe('public canary catalog', () => {
       'calculators',
       'qr-barcode',
       'web-seo',
+      // Video is last deliberately. The order above is evidence-weighted, and
+      // nothing is known yet about how the video tool performs — it shipped
+      // with one operation on 2026-09-19. Claiming a higher position would be
+      // claiming evidence that does not exist.
+      'video',
     ]);
     expect(toolsForGroup(toolGroups[0]!)[0]?.id).toBe('pdf-merge');
   });

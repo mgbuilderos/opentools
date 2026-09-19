@@ -1,7 +1,9 @@
 # Video editing without a codec — spike result
 
 Branch `claude/video`, 2026-09-19. **Verdict: it works, for three of the four
-operations, with no new dependency.** Engine only — no route, no UI yet.
+operations, with no new dependency.** The tool shipped the same day at
+`/video/trim`; this document is the record of *why* the approach was chosen and
+what it cannot do.
 
 ## The question the spike had to answer
 
@@ -91,7 +93,11 @@ as the input did because those are the input's own bytes.
 
 ## What is not done
 
-1. **No UI.** No route, no component, nothing a person can use yet.
+*Updated 2026-09-19 after the tool shipped.*
+
+1. ~~No UI.~~ **Shipped** at `/video/trim` — trim, mute and extract-audio, with
+   `lib/tools/video/edit.ts` as the pure layer between the engine and the page.
+   12 browser tests, green in Chromium and WebKit.
 2. **GIF is not started.** It needs real decoding — `VideoDecoder` from WebCodecs
    for the frames, plus a GIF encoder (LZW, writable by hand, a few hundred
    lines). This is the only part that needs WebCodecs, and therefore the only

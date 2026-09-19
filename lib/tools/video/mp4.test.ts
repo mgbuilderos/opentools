@@ -134,7 +134,7 @@ describe('reading an MP4 written by ffmpeg', () => {
   });
 
   it('refuses a file that is not an MP4', () => {
-    expect(() => readMp4(new Uint8Array(64))).toThrow(/not an MP4/u);
+    expect(() => readMp4(new Uint8Array(64))).toThrow(/not an MP4 or MOV/u);
     expect(() => readMp4(new Uint8Array(4))).toThrow(/too small/u);
   });
 

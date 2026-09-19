@@ -514,6 +514,40 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'video-trim',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video trimmer',
+    shortDescription:
+      'Cut, mute or extract the audio from an MP4 or MOV without re-encoding it.',
+    category: 'Video',
+    aliases: [
+      'video trimmer',
+      'video cutter',
+      'trim mp4',
+      'cut video online',
+      'mute video',
+      'remove audio from video',
+      'extract audio from video',
+      'video to mp3',
+    ],
+    jobs: [
+      'trim a video',
+      'cut the start off a video',
+      'mute a video',
+      'remove sound from a video',
+      'extract the audio from a video',
+      'shorten a clip for social media',
+    ],
+    href: '/video/trim',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['video.mp4.demux', 'video.mp4.mux', 'video.sample.copy'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'image-optimize',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1080,7 +1114,8 @@ export interface ToolGroup {
     | 'calculators'
     | 'web-seo'
     | 'qr-barcode'
-    | 'audio';
+    | 'audio'
+    | 'video';
   name: string;
   shortDescription: string;
   toolIds: string[];
@@ -1166,6 +1201,13 @@ export const toolGroups: ToolGroup[] = [
     name: 'Web & SEO',
     shortDescription: 'Metadata, URLs, CSS, HTML, and accessibility checks.',
     toolIds: ['web-workbench'],
+  },
+  {
+    id: 'video',
+    name: 'Video',
+    shortDescription:
+      'Trim, mute and extract audio from MP4 and MOV without re-encoding.',
+    toolIds: ['video-trim'],
   },
 ];
 

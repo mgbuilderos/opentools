@@ -14,6 +14,7 @@ import {
   FileText,
   FlaskConical,
   FileStack,
+  Film,
   FlipHorizontal2,
   Globe2,
   Hash,
@@ -41,6 +42,7 @@ export const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   'web-seo': Globe2,
   'qr-barcode': QrCode,
   audio: AudioLines,
+  video: Film,
 };
 
 export function destinationIcon(

@@ -432,8 +432,22 @@ export function readMp4(input: Uint8Array): Mp4File {
   if (input.length < 16)
     throw new Error('This file is too small to be an MP4.');
   const view = new DataView(input.buffer, input.byteOffset, input.byteLength);
+
+  // Name the format rather than saying "not an MP4" to a real video file. WebM
+  // and Matroska are EBML, a completely different container with no box tree and
+  // no sample tables, so nothing here could read them.
+  if (
+    input[0] === 0x1a &&
+    input[1] === 0x45 &&
+    input[2] === 0xdf &&
+    input[3] === 0xa3
+  ) {
+    throw new Error(
+      'This is a WebM or Matroska file. It stores its index in a different format entirely, so this page cannot read it — MP4 and MOV only.',
+    );
+  }
   if (fourcc(input, 4) !== 'ftyp') {
-    throw new Error('This is not an MP4 file.');
+    throw new Error('This is not an MP4 or MOV file.');
   }
 
   const top = boxes(input, view, 0, input.length);
