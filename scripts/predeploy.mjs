@@ -159,6 +159,44 @@ function readState() {
   }
 }
 
+/**
+ * Every worktree holding uncommitted work.
+ *
+ * Three times this repository has nearly lost finished work sitting unrecorded
+ * in a worktree nobody was looking at -- the service-worker fix in
+ * claude-archive, 18 files in apps/web, 20 more in claude-guides including a
+ * whole guide-consolidation feature. All three were found by accident.
+ *
+ * This warns rather than blocks: a stray `.playwright-cli/` would otherwise
+ * stop every deploy, and a check people switch off is worse than no check.
+ * Paths are taken as the whole remainder of the line because this repository
+ * lives under "All In One" -- splitting on whitespace silently reports every
+ * worktree clean, which is exactly how the claude-guides work was nearly
+ * deleted.
+ */
+function dirtyWorktrees() {
+  const listing = git('worktree list --porcelain');
+  if (!listing) return [];
+
+  const out = [];
+  for (const line of listing.split('\n')) {
+    if (!line.startsWith('worktree ')) continue;
+    const dir = line.slice('worktree '.length);
+    try {
+      const status = execSync('git status --porcelain', {
+        cwd: dir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      });
+      const files = status.split('\n').filter((l) => l.trim()).length;
+      if (files > 0) out.push({ dir: dir.replace(/^.*\//, ''), files });
+    } catch {
+      // A worktree whose directory is gone. `git worktree prune` clears these.
+    }
+  }
+  return out;
+}
+
 function checkGuards() {
   const config = existsSync(path.join(ROOT, 'next.config.ts'))
     ? readFileSync(path.join(ROOT, 'next.config.ts'), 'utf8')
@@ -166,9 +204,21 @@ function checkGuards() {
   const layout = existsSync(path.join(ROOT, 'app/layout.tsx'))
     ? readFileSync(path.join(ROOT, 'app/layout.tsx'), 'utf8')
     : '';
+  // `wrangler deploy` ships whatever sits in dist/ and never rebuilds, so a
+  // stale artifact silently deploys a commit nobody chose. The pin makes this
+  // detectable: a build from a clean tree stamps BUILD_ID with its commit.
+  const builtId = existsSync(path.join(ROOT, 'dist/server/BUILD_ID'))
+    ? readFileSync(path.join(ROOT, 'dist/server/BUILD_ID'), 'utf8').trim()
+    : null;
+  const head = git('rev-parse HEAD');
+
   return {
     buildIdPinned: /generateBuildId/.test(config),
     blanketRevalidate: /^\s*export\s+const\s+revalidate/m.test(layout),
+    builtId,
+    head,
+    staleDist: Boolean(builtId && head && builtId !== head),
+    dirty: dirtyWorktrees(),
   };
 }
 
@@ -230,10 +280,43 @@ async function main() {
     }`,
   );
 
+  console.log(
+    `  ${guards.staleDist ? 'STOP' : 'ok  '} dist/ ${
+      guards.staleDist
+        ? `holds ${guards.builtId?.slice(0, 7)}, HEAD is ${guards.head?.slice(0, 7)}`
+        : 'was built from the checked-out commit'
+    }`,
+  );
+  if (guards.dirty.length > 0) {
+    console.log(
+      `  WARN ${plural(guards.dirty.length, 'worktree')} holding uncommitted work:`,
+    );
+    for (const { dir, files } of guards.dirty) {
+      console.log(`         ${dir} (${plural(files, 'file')})`);
+    }
+  } else {
+    console.log('  ok   every worktree is committed');
+  }
+
   console.log('\n  VERDICT');
   let blocked = false;
 
-  if (guards.blanketRevalidate) {
+  if (guards.staleDist) {
+    console.log(
+      '  STOP. dist/ was not built from the commit you have checked out,',
+    );
+    console.log(
+      '  and `wrangler deploy` ships dist/ without rebuilding — so this',
+    );
+    console.log(
+      '  would deploy a commit nobody chose. Run `npm run build` first.',
+    );
+    console.log(
+      '  (A random-looking build id means the tree was dirty when it was',
+    );
+    console.log('  built; commit, then rebuild.)');
+    blocked = true;
+  } else if (guards.blanketRevalidate) {
     console.log(
       '  STOP. A blanket revalidate is back in app/layout.tsx. That alone',
     );
