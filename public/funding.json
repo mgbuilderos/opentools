@@ -21,7 +21,7 @@
       },
       "repositoryUrl": {
         "url": "https://github.com/mgbuilderos/opentools",
-        "wellKnown": "https://raw.githubusercontent.com/mgbuilderos/opentools/main/.well-known/funding-manifest-urls"
+        "wellKnown": "https://github.com/mgbuilderos/opentools/raw/main/.well-known/funding-manifest-urls"
       },
       "licenses": [
         "spdx:MIT"
