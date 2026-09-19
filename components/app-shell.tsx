@@ -17,9 +17,16 @@ import {
   Newspaper,
   HeartHandshake,
   FolderGit2,
+  Download,
 } from 'lucide-react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 
 import { Button } from '@/components/ui/button';
 import { groupIcons } from '@/components/category-icons';
@@ -34,6 +41,12 @@ import {
   type ToolGroup,
 } from '@/lib/tools/catalog';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
+import {
+  canInstall,
+  canInstallOnServer,
+  showInstallDialog,
+  subscribeInstall,
+} from '@/lib/pwa-install';
 import { MilestoneModal } from './milestone-modal';
 import { ReviewModal } from './review-modal';
 
@@ -58,6 +71,16 @@ export function AppShell({
   const [activeResultIndex, setActiveResultIndex] = useState(-1);
   const [isDark, setIsDark] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  /**
+   * The banner in `InstallPrompt` can be dismissed permanently, and Chrome's
+   * own omnibox button is easy to miss — without this entry, dismissing once
+   * left a visitor with no way to install from the site at all.
+   */
+  const installable = useSyncExternalStore(
+    subscribeInstall,
+    canInstall,
+    canInstallOnServer,
+  );
   const [reviewOpen, setReviewOpen] = useState(false);
   const [domainLocked, setDomainLocked] = useState(false);
 
@@ -309,6 +332,22 @@ export function AppShell({
             </span>
           </span>
         </a>
+        {installable && (
+          <button
+            type="button"
+            onClick={() => void showInstallDialog()}
+            title="Install OpenTools as an app on this device"
+            className="category-link group focus-ring flex h-9 w-full items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
+          >
+            <Download
+              aria-hidden="true"
+              className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
+            />
+            <span className="category-label min-w-0 flex-1 truncate text-left">
+              Install app
+            </span>
+          </button>
+        )}
       </div>
     </nav>
   );

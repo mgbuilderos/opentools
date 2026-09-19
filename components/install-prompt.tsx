@@ -1,8 +1,14 @@
 /* oxlint-disable */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Download, Share, X } from 'lucide-react';
+import {
+  canInstall,
+  canInstallOnServer,
+  showInstallDialog,
+  subscribeInstall,
+} from '@/lib/pwa-install';
 
 const DISMISSED_KEY = 'opentools-install-dismissed-v1';
 
@@ -30,7 +36,14 @@ const DISMISSED_KEY = 'opentools-install-dismissed-v1';
  * closed would contradict that for a feature nobody is obliged to want.
  */
 export function InstallPrompt() {
-  const [deferred, setDeferred] = useState<Event | null>(null);
+  // Captured at module scope in `@/lib/pwa-install`, not here: Chrome fires
+  // `beforeinstallprompt` once and can fire it before React hydrates, so a
+  // listener added in an effect below could miss it outright.
+  const deferred = useSyncExternalStore(
+    subscribeInstall,
+    canInstall,
+    canInstallOnServer,
+  );
   const [showIosHint, setShowIosHint] = useState(false);
   const [dismissed, setDismissed] = useState(true);
 
@@ -57,21 +70,11 @@ export function InstallPrompt() {
 
     setDismissed(false);
 
-    const onPrompt = (event: Event) => {
-      // Chrome shows its own mini-infobar unless this is prevented; we want the
-      // dialog to open from a deliberate tap instead.
-      event.preventDefault();
-      setDeferred(event);
-    };
-    window.addEventListener('beforeinstallprompt', onPrompt);
-
     // iOS never fires that event. Detect it directly, and exclude installed
     // and in-app browsers where Add to Home Screen is unavailable anyway.
     const ua = navigator.userAgent;
     const iOS = /iPad|iPhone|iPod/u.test(ua) && !/CriOS|FxiOS|EdgiOS/u.test(ua);
     if (iOS) setShowIosHint(true);
-
-    return () => window.removeEventListener('beforeinstallprompt', onPrompt);
   }, []);
 
   const close = () => {
@@ -84,11 +87,7 @@ export function InstallPrompt() {
   };
 
   const install = async () => {
-    const event = deferred as (Event & { prompt?: () => Promise<void> }) | null;
-    if (!event?.prompt) return;
-    await event.prompt();
-    setDeferred(null);
-    close();
+    if (await showInstallDialog()) close();
   };
 
   if (dismissed) return null;
