@@ -355,16 +355,21 @@ hand-written comparison pages, the processing record, recipe links, and the
 tool itself. No pillar in this document has a price attached, and none is
 waiting on one.
 
-**CONFIRMED 2026-09-18 — this section's warning has come true, and it is now
-the site's live failure.** The KV write cap predicted below is exactly what
-broke: a write is refused with `free usage limit for this operation for today`
-(code 10048), nothing is being cached, and every page is rebuilt for every
-visitor. The 87 `exceededResources` 503s in the 05:00Z hour are that. So the
-figure below is no longer a precaution — **Workers Paid at $5/month, including
-1M KV writes, is a prerequisite for the growth plan, not an optional upgrade.**
-A site that fails under a traffic spike cannot convert a traffic spike, and the
-whole plan is a machine for producing traffic spikes. Note the pleasing
-symmetry: **one recurring supporter at $5/month pays for it.**
+**RESOLVED 2026-09-19.** This section's warning did come true on 2026-09-18:
+KV writes were refused with `free usage limit for this operation for today`
+(code 10048), nothing was cached, every page was rebuilt for every visitor, and
+the 87 `exceededResources` 503s in the 05:00Z hour were that. But the cause was
+not the free plan's write allowance — it was a random build id that discarded
+the entire page cache on every deploy. With the build id pinned, the site serves
+HITs site-wide while *over* that allowance.
+
+So: **Workers Paid at $5/month is not a prerequisite for anything in this
+document, and the figures below are a precaution again rather than a bill.**
+It stays true that a site which fails under a traffic spike cannot convert one,
+and that this plan is a machine for producing spikes — which is an argument for
+keeping the cache healthy, not for buying headroom it does not need.
+**Do not re-raise the $5.** It has been re-derived more than once by agents
+reading the sentence this paragraph replaced.
 
 **The one place money can appear is infrastructure, and only if this works.**
 The site runs on Cloudflare Workers with a KV-backed ISR cache. Checked on
