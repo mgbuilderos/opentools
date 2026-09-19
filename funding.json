@@ -1,7 +1,6 @@
 {
   "$schema": "https://fundingjson.org/schema/v1.1.0.json",
   "version": "v1.0.0",
-
   "entity": {
     "type": "individual",
     "role": "owner",
@@ -12,7 +11,6 @@
       "url": "https://getopentools.com"
     }
   },
-
   "projects": [
     {
       "guid": "opentools",
@@ -22,9 +20,12 @@
         "url": "https://getopentools.com"
       },
       "repositoryUrl": {
-        "url": "https://github.com/mgbuilderos/opentools"
+        "url": "https://github.com/mgbuilderos/opentools",
+        "wellKnown": "https://raw.githubusercontent.com/mgbuilderos/opentools/main/.well-known/funding-manifest-urls"
       },
-      "licenses": ["spdx:MIT"],
+      "licenses": [
+        "spdx:MIT"
+      ],
       "tags": [
         "privacy",
         "local-first",
@@ -39,7 +40,6 @@
       ]
     }
   ],
-
   "funding": {
     "channels": [
       {
@@ -60,7 +60,6 @@
         "description": "Bank transfer, for grant disbursement. Details supplied directly to a funder on request."
       }
     ],
-
     "plans": [
       {
         "guid": "development-machine",
@@ -70,7 +69,11 @@
         "amount": 2500,
         "currency": "USD",
         "frequency": "one-time",
-        "channels": ["grant", "bmc", "upi"]
+        "channels": [
+          "grant",
+          "bmc",
+          "upi"
+        ]
       },
       {
         "guid": "egress-verification",
@@ -80,7 +83,9 @@
         "amount": 3000,
         "currency": "USD",
         "frequency": "one-time",
-        "channels": ["grant"]
+        "channels": [
+          "grant"
+        ]
       },
       {
         "guid": "maintenance-year",
@@ -90,7 +95,9 @@
         "amount": 12000,
         "currency": "USD",
         "frequency": "yearly",
-        "channels": ["grant"]
+        "channels": [
+          "grant"
+        ]
       },
       {
         "guid": "any",
@@ -100,10 +107,12 @@
         "amount": 0,
         "currency": "USD",
         "frequency": "one-time",
-        "channels": ["upi", "bmc"]
+        "channels": [
+          "upi",
+          "bmc"
+        ]
       }
     ],
-
     "history": [
       {
         "year": 2026,
