@@ -98,9 +98,12 @@ and the person already knows it.
 
 Tips convert at the point of gratitude, not on a pricing page. That point is the
 completed task — which is why `completion-value-dialog.tsx` matters more than
-`/support`, and why the receipt must carry the job's own facts (see the board
-request; `announceCompletion` already measures them and the dialog discards
-them).
+`/support`, and why the receipt must carry the job's own facts. **Built as of
+2026-09-19:** `announceCompletion` measures them, the dialog gates the offer on
+them and waits 400ms after the save click, and `lib/proof-card.ts` draws them
+onto a shareable 1200x630 card. Per-tool wiring is the remaining work — a tool
+that passes no metrics silently never asks, which `lib/completion.test.ts` now
+fails the build over.
 
 The strongest tip context this product has is the **bounced upload**: someone
 rejected by a portal, who just got unstuck. Their gratitude is real and
@@ -189,13 +192,17 @@ nothing above it can happen until it is done.
 
 ## 7. What is blocking this today
 
-1. **No working payment channel.** The live bundle carries `mg.io.test@oksbi`;
-   every international button reads "Coming Soon". Every visitor who wants to
-   pay right now cannot. Code for BMC and fail-closed channels is on
-   `claude/support-copy` (`e66d5f8`); it needs the URL and the env vars set.
-2. **The ask surfaces are wasted.** The receipt discards the job facts that
-   convert, and the 50-use milestone shows a generic link. Both are
-   Antigravity's files; both are filed as board requests.
+1. ~~No working payment channel.~~ **RESOLVED 2026-09-19.** Both rails are live
+   and verified by the owner: UPI (`mg.io.test@oksbi` — a real id, despite how
+   it reads) and Buy Me a Coffee at `buymeacoffee.com/codebuilder` with 1/2/5
+   presets. **Do not re-raise this.** It has been re-investigated more than once
+   by agents reading this line and finding it stale.
+2. ~~The ask surfaces are wasted.~~ **The receipt half is RESOLVED 2026-09-19.**
+   `completion-value-dialog.tsx` now takes the job facts from
+   `announceCompletion`, gates the offer on them, and draws them onto a
+   shareable proof card; `lib/completion.test.ts` fails the build for any tool
+   that announces without them. **Do not re-raise the receipt.** Still open: the
+   50-use milestone shows a generic link.
 3. **Engine A has no door until the self-host edition ships.**
 4. **Nothing is measured.** Support conversion cannot be measured at all under
    `connect-src 'none'` — see growth playbook §6. The only honest signal is
