@@ -8,7 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Runs in your browser](https://img.shields.io/badge/Processing-in%20your%20browser-2ea44f.svg)](.github/SECURITY.md)
-[![Tests](https://img.shields.io/badge/Tests-317%20passing-2ea44f.svg)](#local-development--quality-control)
+[![Tests](https://img.shields.io/badge/Tests-1077%20passing-2ea44f.svg)](#local-development--quality-control)
 [![Client-Side WebAssembly](https://img.shields.io/badge/Runtime-Client--Side%20WASM-654ff0.svg)](#the-zero-egress-privacy-promise)
 [![Buy Me a Coffee](https://img.shields.io/badge/Support-Buy%20Me%20a%20Coffee-ffdd00.svg?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/codebuilder)
 
@@ -16,10 +16,11 @@
 
 ---
 
-OpenTools is a free, open-source collection of PDF, image, developer, data,
-text, math, and QR utilities that run **entirely inside your browser**. No
-account, no upload, no watermark, no ads, no third-party tracking. The server
-keeps one visit log per page view — see [What the server logs](#what-the-server-logs).
+OpenTools is a free, open-source collection of PDF, image, audio, video,
+subtitle, developer, data, text, math, and QR utilities that run **entirely
+inside your browser**. No account, no upload, no watermark, no ads, no
+third-party tracking. The server keeps one visit log per page view — see
+[What the server logs](#what-the-server-logs).
 
 ## The Zero-Egress Privacy Promise
 
@@ -30,7 +31,7 @@ happens in-memory on your device.
 | Layer            | How it stays local                                                                                                                                                                                                                                  |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Input**        | Files are read as in-memory `File` / `ArrayBuffer` objects. Nothing is written to a server or to persistent storage.                                                                                                                                |
-| **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. Background removal runs **WebAssembly** model inference in a Web Worker. Hashing uses **WebCrypto**. |
+| **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. Background removal runs **WebAssembly** model inference in a Web Worker. Audio and video edits copy compressed samples at the container level — no codec, no re-encode. Hashing uses **WebCrypto**. |
 | **Output**       | Results are handed back as temporary `blob:` URLs and revoked on clear, cancel, or unmount.                                                                                                                                                         |
 | **Enforcement**  | Production responses ship `Content-Security-Policy: connect-src 'none'`, and the test suite rejects direct network primitives in local engine code.                                                                                                 |
 | **Visit log**    | No analytics, session replay, advertising, or payment SDK is loaded in the browser. The server logs one metadata event per page visit, never your files or inputs — see [What the server logs](#what-the-server-logs). |
@@ -66,18 +67,29 @@ Cloudflare may also record standard request metadata for its platform logs.
 
 ## Core Tool Suite
 
-| Suite                      | Tools                                                                                                                                          | Routes                                                                      |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| 📄 **Document & PDF**      | Merge, extract pages, rotate & page tools, images → PDF                                                                                        | `/pdf/merge`, `/pdf/extract-pages`, `/pdf/page-tools`, `/pdf/images-to-pdf` |
-| 🖼️ **Image & Media**       | Background removal, optimizer (resize/compress/convert), editor · _OCR and video compression in development_                                   | `/image/*`                                                                  |
-| ⚡ **Developer Utilities** | JSON formatter, Base64 encoder/decoder, UNIX timestamp, UUID generator, file hash (SHA-256/384/512) · _SQL visualizer in development_          | `/developer/*`, `/data/json`, `/file/hash-calculator`                       |
-| 📊 **Data & Spreadsheets** | CSV ↔ JSON transformer, delimiter conversion                                                                                                   | `/data/csv-to-json`, `/data/workbench`                                      |
-| 🔤 **Text & Writing**      | Word count, case converter, regex find & replace                                                                                               | `/text/case-converter`, `/text/workbench`                                   |
-| 🧮 **Math & Science**      | Unit converter, percentage calculator, date difference, age calculator                                                                         | `/math/*`, `/science/workbench`, `/date/*`                                  |
-| 📱 **QR & Barcode**        | Vector QR generator (URL, Wi-Fi, vCard, MeCard, social), barcode tools                                                                         | `/qr/workbench`                                                             |
+42 live tool routes, covering 553 catalogued tools. Every tool shows a
+completion receipt with measured duration, output facts, and an explicit
+privacy boundary.
 
-Every tool shows a completion receipt with measured duration, output facts,
-and an explicit privacy boundary.
+| Suite | Tools | Routes |
+| --- | --- | --- |
+| 📄 **Document & PDF** | Merge, extract pages, rotate/reorder/delete/number/watermark/metadata, images → PDF, compress, PDF → Word, fill & sign, document generators (README, changelog, invoice, receipt) | `/pdf/merge`, `/pdf/extract-pages`, `/pdf/page-tools`, `/pdf/images-to-pdf`, `/pdf/compress`, `/pdf/to-word`, `/pdf/sign`, `/documents/workbench` |
+| 🖼️ **Image** | Background removal (WebAssembly model inference), optimizer (resize/compress/convert), editor | `/image/background-remover`, `/image/optimize`, `/image/editor` |
+| 🎵 **Audio & Video** | MP3 cut/join/tag/inspect, M4A · FLAC · OGG · AIFF → WAV, video trim/mute/extract audio without re-encoding | `/audio/mp3-toolkit`, `/audio/convert`, `/video/trim` |
+| 💬 **Subtitles** | SRT / VTT / SBV / LRC conversion, shift, two-point resync | `/subtitles/workbench` |
+| ⚡ **Developer** | JSON formatter, Base64 encoder/decoder, UNIX timestamp, UUID generator, file hash (SHA-256/384/512), SQL formatter, minifier and ER diagram | `/developer/*`, `/data/json`, `/file/hash-calculator` |
+| 📊 **Data & Spreadsheets** | CSV ↔ JSON transformer, delimiter conversion, CSV → SQL | `/data/csv-to-json`, `/data/workbench` |
+| 🗄️ **Files & Archives** | Open and make ZIP files, split and join, checksum verify, duplicate finder, signature inspector | `/file/archive`, `/file/workbench` |
+| 🔤 **Text & Writing** | Word count, case converter, regex find & replace, Markdown ↔ HTML, diff and merge | `/text/case-converter`, `/text/workbench`, `/text/writing` |
+| 🧮 **Math, Science & Finance** | Unit converter, percentage calculator, formula calculators (results only, never advice), business and finance math | `/math/percentage-calculator`, `/math/workbench`, `/science/workbench`, `/finance/workbench` |
+| 📅 **Dates & Productivity** | Age calculator, date difference, planners and prioritisation matrices, India life-admin formatters and maskers | `/date/age-calculator`, `/date/date-difference`, `/date/workbench`, `/productivity/workbench`, `/life-admin/workbench` |
+| 📱 **QR & Barcode** | Vector QR generator (URL, Wi-Fi, vCard, MeCard, social), barcode tools | `/qr/workbench` |
+| 🌐 **Web, SEO & Creator** | Meta / Open Graph / Twitter card generators, robots.txt, SERP preview, YouTube and social formatting | `/web/workbench`, `/creator/workbench` |
+
+The route list is not hand-maintained prose: `LIVE_TOOL_ROUTES` in
+[`lib/seo/live-tools.ts`](lib/seo/live-tools.ts) is the single source of truth,
+and a route only counts as live when the code that renders it really runs the
+operation.
 
 ## Sponsorship & Patronage
 
@@ -106,7 +118,8 @@ job data, or results.
 ### Prerequisites
 
 - **Node.js >= 22.13.0**
-- npm 10+
+- npm 11.12.1 (the SBOM gate compares against the version that
+  generated the checked-in SBOM; other npm majors emit different output)
 
 ### Commands
 
@@ -120,7 +133,8 @@ npm run build      # production build (Cloudflare Workers output in dist/)
 `npm run qc` runs the fail-fast gates in order:
 
 1. **Format** — `oxfmt --check`
-2. **Unit + all-operation I/O** — 317 Vitest tests, including local-source zero-egress policy checks
+2. **Unit + all-operation I/O** — 1,077 Vitest tests across 67 files, including
+   local-source zero-egress policy checks
 3. **Type check** — `tsc --noEmit`
 4. **Lint** — OxLint with warnings denied
 5. **Design system contract** — semantic Tailwind tokens only
