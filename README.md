@@ -8,7 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Runs in your browser](https://img.shields.io/badge/Processing-in%20your%20browser-2ea44f.svg)](.github/SECURITY.md)
-[![Tests](https://img.shields.io/badge/Tests-1077%20passing-2ea44f.svg)](#local-development--quality-control)
+[![Tests](https://img.shields.io/badge/Tests-1%2C100%2B%20passing-2ea44f.svg)](#local-development--quality-control)
 [![Client-Side WebAssembly](https://img.shields.io/badge/Runtime-Client--Side%20WASM-654ff0.svg)](#the-zero-egress-privacy-promise)
 [![Buy Me a Coffee](https://img.shields.io/badge/Support-Buy%20Me%20a%20Coffee-ffdd00.svg?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/codebuilder)
 
@@ -133,8 +133,8 @@ npm run build      # production build (Cloudflare Workers output in dist/)
 `npm run qc` runs the fail-fast gates in order:
 
 1. **Format** — `oxfmt --check`
-2. **Unit + all-operation I/O** — 1,077 Vitest tests across 67 files, including
-   local-source zero-egress policy checks
+2. **Unit + all-operation I/O** — 1,100+ Vitest tests, including local-source
+   zero-egress policy checks. `npm run qc` prints the exact count for your tree
 3. **Type check** — `tsc --noEmit`
 4. **Lint** — OxLint with warnings denied
 5. **Design system contract** — semantic Tailwind tokens only
