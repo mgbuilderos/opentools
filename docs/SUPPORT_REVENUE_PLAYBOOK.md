@@ -77,14 +77,29 @@ is the entry ticket to `awesome-selfhosted` and r/selfhosted, which are where
 that audience actually is. **Ship self-host, and Engine A has a door. Without
 it, Engine A is knocking on a wall.**
 
-**The ask surface already exists and is being wasted.** `milestone-modal.tsx`
-fires at 10, 50 and 100 completed tasks, counted in `localStorage` — device
-local, no server, no tracking, fully compliant. Someone who has used the site
-**fifty times** is the best membership prospect the product will ever have, and
-the modal currently shows them a generic "Support our development" link to
-`/support`.
+**The ask surface exists, and as of 2026-09-19 it is used.**
+`milestone-modal.tsx` fires at 10, 50 and 100 completed tasks, counted in
+`localStorage` — device local, no server, no tracking, fully compliant. Someone
+who has used the site **fifty times** is the best membership prospect the
+product will ever have.
 
-That moment should carry the recurring ask, specifically:
+~~The modal shows them a generic "Support our development" link.~~ **RESOLVED
+2026-09-19.** It names the count, and offers the rail the visitor can actually
+use — UPI for a visitor the browser's own locale places in India, Buy Me a
+Coffee otherwise. Two things it used to do were worse than the generic link and
+are also gone: it opened a full-screen modal from the completion event, landing
+over the receipt's moment before the person could click Save, and it ignored
+the support preference, so someone who had said "don't ask again" was asked
+anyway. It now decides once per page load and never mid-task, and it reads that
+preference without spending it, so a milestone never costs the receipt an ask.
+**Do not re-raise the generic link.**
+
+**What is still unbuilt is the recurring ask, not the surface.** The copy below
+asks for $5 a month and there is no recurring rail: UPI and Buy Me a Coffee
+both take one-off amounts today, and nothing here can bill anyone monthly.
+Turning this moment into a membership therefore waits on Engine A having a
+door at all, which is the self-host point above — not on the modal, which is
+now ready to carry whatever ask it is given:
 
 > **You've used this 50 times.**
 > No account, no uploads, no ads — and it stays that way.
@@ -132,9 +147,10 @@ Ordered by cost-to-first-supporter, cheapest first.
 
 | Channel | Engine | Prerequisite |
 | :--- | :--- | :--- |
-| BMC page live and linked everywhere | both | **owner supplies the URL** |
-| `milestone-modal` recurring ask | A | Antigravity edit |
-| Receipt facts in the completion dialog | B | Antigravity edit |
+| BMC page live and linked everywhere | both | **done** — committed in `support-config.ts`, not env-dependent |
+| `milestone-modal` one-off ask | B | **done 2026-09-19** |
+| `milestone-modal` *recurring* ask | A | a recurring rail — none exists yet |
+| Receipt facts in the completion dialog | B | **done 2026-09-19** |
 | AlternativeTo profile | B | none — do it now |
 | r/selfhosted, r/privacy, r/opensource | A | self-host edition shipped |
 | `awesome-selfhosted`, `free-for-dev`, `awesome-privacy` | A | self-host edition; then a PR each |
@@ -197,12 +213,15 @@ nothing above it can happen until it is done.
    it reads) and Buy Me a Coffee at `buymeacoffee.com/codebuilder` with 1/2/5
    presets. **Do not re-raise this.** It has been re-investigated more than once
    by agents reading this line and finding it stale.
-2. ~~The ask surfaces are wasted.~~ **The receipt half is RESOLVED 2026-09-19.**
-   `completion-value-dialog.tsx` now takes the job facts from
-   `announceCompletion`, gates the offer on them, and draws them onto a
-   shareable proof card; `lib/completion.test.ts` fails the build for any tool
-   that announces without them. **Do not re-raise the receipt.** Still open: the
-   50-use milestone shows a generic link.
+2. ~~The ask surfaces are wasted.~~ **RESOLVED 2026-09-19, both of them.** The
+   receipt takes the job facts from `announceCompletion`, gates the offer on
+   them and draws them onto a shareable card, and `lib/completion.test.ts`
+   fails the build for any tool that announces without them. The milestone
+   names the count and offers a real rail, asks once, no longer fires mid-task,
+   and reads the support preference without spending it. `local-source-policy`
+   holds both files to the same rules. **Do not re-raise either.** What is left
+   is the *recurring* ask, which has no rail to run on — that is item 3, not
+   this one.
 3. **Engine A has no door until the self-host edition ships.**
 4. **Nothing is measured.** Support conversion cannot be measured at all under
    `connect-src 'none'` — see growth playbook §6. The only honest signal is
