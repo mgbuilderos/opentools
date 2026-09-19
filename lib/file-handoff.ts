@@ -53,8 +53,33 @@ export const SESSION_FALLBACK_MAX_BYTES = 3 * 1024 * 1024;
 /** A file nobody collected is not worth keeping. */
 export const HANDOFF_MAX_AGE_MS = 5 * 60 * 1000;
 
+/**
+ * The file is stored as **bytes plus its name and type**, not as a `File`.
+ *
+ * WebKit refuses to put a `Blob` or a `File` into IndexedDB on this site: the
+ * write transaction errors, `tx.error` is `null`, `put()` throws nothing, and
+ * the write simply never lands. A string, an `ArrayBuffer` and a typed array
+ * all store fine in the same database and the same kind of transaction.
+ * Measured per value kind, each in its own transaction, against the production
+ * build:
+ *
+ *   WebKit    string stored · ArrayBuffer stored · Uint8Array stored
+ *             Blob  TX ERROR · File        TX ERROR
+ *   Chromium  all five stored
+ *
+ * That is why this handoff worked in Chrome and not on an iPhone. It is also
+ * why the `sessionStorage` fallback never helped: it is reached only when
+ * IndexedDB is *unavailable*, and here IndexedDB opens perfectly well — it is
+ * the write that fails.
+ *
+ * An older record holding a `File` fails the `instanceof ArrayBuffer` check
+ * below and is discarded like any other unusable record, so no migration is
+ * needed.
+ */
 interface StoredHandoff {
-  file: File;
+  bytes: ArrayBuffer;
+  name: string;
+  type: string;
   storedAt: number;
 }
 
@@ -175,6 +200,21 @@ function clearWaiting(): boolean {
 
 export async function offerFile(file: File): Promise<boolean> {
   markWaiting();
+
+  // Read the bytes before opening anything. An IndexedDB transaction commits
+  // as soon as it goes idle, so it cannot survive an `await` in the middle.
+  let payload: StoredHandoff;
+  try {
+    payload = {
+      bytes: await file.arrayBuffer(),
+      name: file.name,
+      type: file.type,
+      storedAt: Date.now(),
+    };
+  } catch {
+    return offerViaSession(file);
+  }
+
   const database = await openDatabase();
   if (!database) return offerViaSession(file);
 
@@ -187,7 +227,6 @@ export async function offerFile(file: File): Promise<boolean> {
       resolve(false);
       return;
     }
-    const payload: StoredHandoff = { file, storedAt: Date.now() };
     transaction.objectStore(STORE).put(payload, KEY);
     transaction.oncomplete = () => {
       finish(database);
@@ -234,10 +273,12 @@ export async function takeOfferedFile(): Promise<File | null> {
     request.onsuccess = () => {
       const stored = request.result as StoredHandoff | undefined;
       if (
-        stored?.file instanceof File &&
+        stored?.bytes instanceof ArrayBuffer &&
         Date.now() - stored.storedAt <= HANDOFF_MAX_AGE_MS
       ) {
-        taken = stored.file;
+        taken = new File([stored.bytes], stored.name || 'file', {
+          type: stored.type || 'application/octet-stream',
+        });
       }
     };
     transaction.oncomplete = () => {

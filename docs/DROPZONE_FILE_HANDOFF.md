@@ -45,6 +45,69 @@ only, so a file must be base64'd — a third larger, against a ~5 MB cap. A
 `sessionStorage` fallback exists for engines that refuse IndexedDB, limited to
 3 MB.
 
+## RESOLVED 2026-09-19 — it was the `File`, not the open
+
+**WebKit refuses to put a `Blob` or a `File` into IndexedDB on this site.** The
+write transaction errors: `tx.error` is `null`, `put()` throws nothing, and the
+write never lands. A string, an `ArrayBuffer` and a typed array all store fine,
+in the same database, in the same kind of transaction.
+
+Measured per value kind, each in its own transaction, against the production
+build — `apps/claude-dropzone/e2e-audit/webkit-which-kind.spec.ts`:
+
+| Value put into IndexedDB | WebKit | Chromium |
+|---|---|---|
+| `'plain string'` | **stored** | stored |
+| `ArrayBuffer(5)` | **stored** | stored |
+| `Uint8Array(5)` | **stored** | stored |
+| `new Blob([bytes])` | **transaction error** | stored |
+| `new File([bytes], 'x.pdf')` | **transaction error** | stored |
+
+`offerFile` stored `{ file, storedAt }`. That is the whole bug.
+
+**The fix:** `lib/file-handoff.ts` now stores `{ bytes, name, type, storedAt }`
+and rebuilds the `File` on collection. The bytes are read *before* the
+transaction opens, because an IndexedDB transaction commits as soon as it goes
+idle and cannot span an `await`. An older record holding a `File` fails the
+`instanceof ArrayBuffer` check and is discarded like any other unusable record,
+so there is no migration.
+
+The four e2e tests in `e2e/dropzone-handoff.spec.ts` **no longer skip WebKit**,
+and pass in both engines.
+
+### Corrections to what is written below
+
+Everything below this section is the original write-up, kept because its
+measurements are real and its reasoning is worth reading. Two of its
+conclusions are wrong, and both are instructive:
+
+1. **"`indexedDB.open` in WebKit on this site does not merely fail — it can
+   hang… That is almost certainly the same reason the handoff itself does not
+   work there."** The hang is real, but it is a *separate* problem, caused by
+   mounting the collector in the root layout so every page opened IndexedDB on
+   load — diagnosed and fixed here at the time. It is not why the handoff
+   failed. `indexedDB.open` succeeds normally, measured on both the page that
+   writes and the page that reads.
+
+2. **"A `sessionStorage` fallback… added, did not change the result."** It
+   could not have. The fallback is reached only when IndexedDB is
+   *unavailable*; here IndexedDB opens perfectly well and it is the *write*
+   that fails, so the fallback never ran.
+
+### Why this was easy to miss
+
+A single bad value aborts the whole transaction. A probe that writes a string
+**and** a Blob together loses both — which reads as "IndexedDB does not persist
+across a navigation in WebKit", and is not true.
+
+**When narrowing storage behaviour: one value kind per transaction, and assert
+on whether the value comes back, not on an error name.** `tx.error` is `null`
+here, so anything keyed off the error name sees nothing wrong.
+
+Full write-up: `apps/claude-dropzone/docs/WEBKIT_BLOB_INDEXEDDB.md`.
+
+---
+
 ## What is fixed, and what is not
 
 **Fixed and tested in Chromium** — so Chrome, Edge and Android Chrome. Four e2e

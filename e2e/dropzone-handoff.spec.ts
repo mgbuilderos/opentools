@@ -14,18 +14,12 @@ async function dropPdf(page: Page, bytes: Buffer, name = 'statement.pdf') {
 }
 
 test.describe('the file follows you to the tool you picked', () => {
-  // WebKit does not yet carry the file across. The fix works in Chromium — and
-  // so in Chrome, Edge and Android Chrome — and on WebKit the tool page opens
-  // empty exactly as it did before, so nothing regressed there. Ruled out so
-  // far: DataTransfer and IndexedDB are both available and `input.files` can be
-  // set (measured in WebKit), a sessionStorage fallback for when IndexedDB is
-  // refused, and waiting up to 5s for the tool's input to hydrate. Tracked as
-  // open; see docs/DROPZONE_FILE_HANDOFF.md. Skipped rather than deleted so the
-  // gap stays visible and the moment it works these turn green.
-  test.skip(
-    ({ browserName }) => browserName === 'webkit',
-    'WebKit handoff unresolved — see docs/DROPZONE_FILE_HANDOFF.md',
-  );
+  // These ran in Chromium only until 2026-09-19, because the handoff did not
+  // work in WebKit and therefore not on an iPhone. The cause was that the file
+  // was stored as a `File`, and WebKit refuses to put a `Blob` or a `File`
+  // into IndexedDB on this site — the write transaction errors silently.
+  // `lib/file-handoff.ts` stores the bytes instead, and the skip is gone.
+  // See docs/WEBKIT_BLOB_INDEXEDDB.md.
 
   test('a PDF dropped on the home page arrives at the PDF tool', async ({
     page,
