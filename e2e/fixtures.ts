@@ -335,6 +335,9 @@ export async function testStaticXfaPdf() {
   );
   // pdf-lib's own appearance pass would strip the XFA from the fixture.
   return Buffer.from(await pdf.save({ updateFieldAppearances: false }));
+}
+
+/**
  * A detailed PNG the browser encodes for us: smooth gradients with noise on
  * top. A flat image would fit any KB limit at full quality and prove nothing
  * about the quality search; this one needs real compression to fit.

@@ -392,10 +392,32 @@ export function ImageExactSizeTool() {
         `${met} of ${next.length} image${next.length === 1 ? '' : 's'} met every requirement.`,
       );
       if (met > 0) {
+        // The receipt is the only place this tool can offer support, and the
+        // dialog drops the offer unless these facts come with it. They are the
+        // measured job: what went in, and the biggest file that came out —
+        // the one the ceiling actually had to hold.
+        const fittedResults = next.filter((result) =>
+          result.checks.every((check) => check.pass),
+        );
+        const inputBytes = sources.reduce(
+          (total, source) => total + source.file.size,
+          0,
+        );
+        const largestOutput = Math.max(
+          ...fittedResults.map((result) => result.fit.attempt.bytes.length),
+        );
         announceCompletion({
           operation: 'Exact-size image',
           durationMs: now() - started,
           summary: `${met} of ${next.length} image${next.length === 1 ? '' : 's'} fitted to ${request.maxKb} KB.`,
+          metrics: [
+            { label: 'Images', value: `${met} of ${next.length}` },
+            { label: 'Input', value: formatKb(inputBytes, request.kbUnit) },
+            {
+              label: 'Largest output',
+              value: formatKb(largestOutput, request.kbUnit),
+            },
+          ],
         });
       }
       requestAnimationFrame(() => resultsHeadingRef.current?.focus());
