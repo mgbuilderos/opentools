@@ -25,45 +25,19 @@ const MAX_DESCRIPTION = 160;
 const MIN_WORDS = 600;
 
 /**
- * Posts that were published thin and have not been rewritten yet.
+ * Posts still under the word floor.
  *
- * This is a debt list, not an exemption: the test below fails both when a post
- * NOT on this list is thin (no new thin pages) and when a post ON it has been
- * fixed (the list must shrink, never rot). Remove a slug the moment its post
- * is expanded past the threshold.
+ * **This list is empty, and the test below keeps it that way.** It fails when
+ * a post lands under the threshold and is not listed here, and it fails again
+ * when a listed post rises above it — so the list can only ever shrink.
  *
- * Measured 2026-09-20: 24 of 31 posts are under the threshold and twelve are
- * under 100 words of body copy — the thinnest, `how-to-build-frosted-
- * glassmorphism-css`, has 43. Those twelve are stubs wearing the furniture of
- * an article, and the honest options are to write them properly or to take
- * them down; padding them is the one option that helps nobody.
+ * It held 24 slugs on 2026-09-20. Every one of those posts was a stub wearing
+ * the furniture of an article: the thinnest, `how-to-build-frosted-
+ * glassmorphism-css`, carried 43 words of body copy under a "7 min read"
+ * label. All 24 were rewritten rather than padded or deleted; the blog now
+ * runs from 606 to 1,888 words per post.
  */
-const KNOWN_THIN: readonly string[] = [
-  'agile-user-story-acceptance-criteria-gherkin',
-  'clean-csv-transform-to-json-browser',
-  'contractor-timesheet-overtime-calculator-guide',
-  'convert-unix-epoch-timestamp-utc-local',
-  'cryptographically-secure-uuidv4-generation',
-  'digital-marketer-data-and-asset-workflow',
-  'free-freelance-invoice-generator-no-signup',
-  'generate-sql-er-diagram-from-ddl-private',
-  'gpu-accelerated-css-keyframe-animations',
-  'how-to-build-frosted-glassmorphism-css',
-  'how-to-merge-pdf-contracts-privately',
-  'how-to-write-operator-grade-sops',
-  'local-ai-image-background-removal-wasm',
-  'macos-utf8-zip-filename-encoding-bug',
-  'markdown-to-pdf-academic-print-guide',
-  'modern-css-gradient-studio-guide',
-  'mutual-nda-generator-free-legal-playbook',
-  'neumorphism-soft-ui-css-shadow-guide',
-  'open-source-first-contributions-pure-typescript',
-  'optimize-images-browser-webp-converter',
-  'safe-base64-encode-decode-developer-guide',
-  'style-linkedin-x-posts-unicode-text',
-  'why-subtitles-drift-frame-rate-arithmetic',
-  'zip-crc32-checksum-validation-in-browser',
-];
+const KNOWN_THIN: readonly string[] = [];
 
 function bodyOf(post: (typeof BLOG_POSTS)[number]) {
   return [
