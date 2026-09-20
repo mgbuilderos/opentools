@@ -134,7 +134,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'developer-files',
     name: 'Developer',
     shortDescription: 'Base64, UUIDs, timestamps, regex, and schema tools.',
-    destinationCount: 103,
+    destinationCount: 104,
     toolIds: [
       'base64-encode',
       'base64-decode',
@@ -195,7 +195,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'creator',
     name: 'Creator & social',
     shortDescription: 'Captions, subtitles, thumbnails, and social formats.',
-    destinationCount: 62,
+    destinationCount: 63,
     toolIds: ['creator-workbench', 'subtitle-workbench'],
   },
   {
