@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import type {
   ImagesToPdfOptions,
   PdfImageInput,
@@ -88,7 +88,7 @@ export function ImagesToPdfTool() {
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [error, setError] = useState('');
-  const manifest = publicTools.find((tool) => tool.id === 'images-to-pdf')!;
+  const manifest = toolMeta('images-to-pdf');
 
   useEffect(
     () => () => {

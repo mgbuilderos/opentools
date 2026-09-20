@@ -17,7 +17,7 @@ import { editVideo, keyframeSeconds } from '@/lib/tools/video/edit';
 import { extractFrames } from '@/lib/tools/video/frames';
 import { encodeGif } from '@/lib/tools/video/gif';
 import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 
 /**
  * Nothing is decoded here, so memory is roughly twice the file rather than the
@@ -90,7 +90,7 @@ export function VideoTrimTool() {
   const [gifColors, setGifColors] = useState(128);
   const [gifDither, setGifDither] = useState(false);
 
-  const manifest = publicTools.find((tool) => tool.id === 'video-trim')!;
+  const manifest = toolMeta('video-trim');
 
   useEffect(() => {
     savedRef.current = saved;

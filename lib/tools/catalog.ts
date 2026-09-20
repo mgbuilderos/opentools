@@ -1,4 +1,5 @@
 import type { ToolManifest } from './types';
+import type { NavGroupId } from './navigation';
 import { CREATOR_OPERATIONS } from './creator-workbench';
 import { DATE_OPERATIONS } from './date-workbench';
 import { ADVANCED_DEVELOPER_OPERATIONS } from './developer-advanced-workbench';
@@ -1439,27 +1440,12 @@ export const publicTools: ToolManifest[] = [
 ];
 
 export interface ToolGroup {
-  // Listed in sidebar order. Each id is also a public URL (`/?category=<id>`),
-  // so an id is added or kept, never renamed -- `home-workspace.tsx` answers an
-  // unknown category with PDF instead of saying the link is dead.
-  id:
-    | 'pdf'
-    | 'images'
-    | 'audio'
-    | 'video'
-    | 'documents'
-    | 'files'
-    | 'text-data'
-    | 'spreadsheets'
-    | 'developer-files'
-    | 'web-seo'
-    | 'calculators'
-    | 'dates'
-    | 'finance'
-    | 'science'
-    | 'qr-barcode'
-    | 'creator'
-    | 'life-admin';
+  // The union lives in `navigation.ts` so the sidebar and the catalogue cannot
+  // disagree about which groups exist. Each id is also a public URL
+  // (`/?category=<id>`), so an id is added or kept, never renamed --
+  // `home-workspace.tsx` answers an unknown category with PDF instead of
+  // saying the link is dead.
+  id: NavGroupId;
   name: string;
   shortDescription: string;
   toolIds: string[];
@@ -1849,48 +1835,12 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   ];
 }
 
-export interface NavMajorSection {
-  id: string;
-  title: string;
-  groupCategoryIds: ToolGroup['id'][];
-}
-
-// The headings a visitor reads before they read a category name, so they say
-// what the visitor has or wants -- not how the codebase is organised. The three
-// they replace ("Workspaces", "Engineering & Data", "Utilities & Design") were
-// internal language: nobody searches for a workspace, and calling PDF/Image/Audio
-// workspaces implied the other eleven categories were something lesser.
-//
-// Every group id in `toolGroups` must appear here exactly once. A group listed
-// nowhere is invisible in the sidebar however complete its tools are, which is
-// what happened to `video`; `catalog.test.ts` now fails if it happens again.
-export const NAVIGATION_MAJOR_SECTIONS: NavMajorSection[] = [
-  {
-    id: 'files-you-have',
-    title: 'Files you have',
-    groupCategoryIds: ['pdf', 'images', 'audio', 'video', 'documents', 'files'],
-  },
-  {
-    id: 'text-data-code',
-    title: 'Text, data & code',
-    groupCategoryIds: [
-      'text-data',
-      'spreadsheets',
-      'developer-files',
-      'web-seo',
-    ],
-  },
-  {
-    id: 'work-it-out',
-    title: 'Work it out',
-    groupCategoryIds: ['calculators', 'dates', 'finance', 'science'],
-  },
-  {
-    id: 'everyday',
-    title: 'Everyday',
-    groupCategoryIds: ['qr-barcode', 'creator', 'life-admin'],
-  },
-];
+// Both now live in `navigation.ts`, which the sidebar imports on its own so it
+// never pulls this file's eighteen operation modules into the shell chunk.
+// Re-exported here because callers that already hold the catalogue should not
+// have to learn a second import path.
+export type { NavSection as NavMajorSection } from './navigation';
+export { NAVIGATION_MAJOR_SECTIONS } from './navigation';
 
 const normalizeToken = (token: string) =>
   token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;

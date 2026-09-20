@@ -20,26 +20,20 @@ import {
   Download,
 } from 'lucide-react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { groupIcons } from '@/components/category-icons';
 import { CompletionValueDialog } from '@/components/completion-value-dialog';
 import { InstallPrompt } from '@/components/install-prompt';
 import { SUPPORT_CONFIG } from '@/lib/support-config';
+import type { ToolManifest } from '@/lib/tools/types';
 import {
   NAVIGATION_MAJOR_SECTIONS,
-  searchTools,
-  toolDestinationsForGroup,
-  toolGroups,
-  type ToolGroup,
-} from '@/lib/tools/catalog';
+  NAV_GROUPS,
+  type NavGroup,
+  type NavGroupId,
+} from '@/lib/tools/navigation';
 import { moveSearchSelection } from '@/lib/tools/search-navigation';
 import {
   canInstall,
@@ -57,9 +51,9 @@ export function AppShell({
   onCategorySelect,
 }: {
   currentToolId: string;
-  currentGroupId?: ToolGroup['id'];
+  currentGroupId?: NavGroupId;
   children: ReactNode;
-  onCategorySelect?: (groupId: ToolGroup['id']) => void;
+  onCategorySelect?: (groupId: NavGroupId) => void;
 }) {
   const searchRef = useRef<HTMLInputElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -103,7 +97,35 @@ export function AppShell({
     return () => window.removeEventListener('tool-downloaded', handleDownload);
   }, []);
 
-  const results = useMemo(() => searchTools(query), [query]);
+  // The catalogue is ~600 KB of operation names and descriptions -- everything
+  // `searchTools` scores against. It used to be imported here, which put all of
+  // it in the shell chunk on every page view, for the majority of visitors who
+  // never type in this box. It is fetched on the first keystroke instead.
+  const [results, setResults] = useState<ToolManifest[]>([]);
+  const [resultsQuery, setResultsQuery] = useState('');
+  const catalogRef = useRef<typeof import('@/lib/tools/catalog') | null>(null);
+
+  useEffect(() => {
+    if (!query) {
+      setResults([]);
+      setResultsQuery('');
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      catalogRef.current ??= await import('@/lib/tools/catalog');
+      if (cancelled) return;
+      setResults(catalogRef.current.searchTools(query));
+      setResultsQuery(query);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
+
+  // True only once the results on screen are the results for what was typed, so
+  // a slow first fetch shows "Searching" rather than "no tool matches".
+  const resultsReady = resultsQuery === query;
   const searchOpen = query.length > 0;
   const activeResult =
     activeResultIndex >= 0 ? results[activeResultIndex] : undefined;
@@ -167,7 +189,7 @@ export function AppShell({
 
   const activeGroupId =
     currentGroupId ??
-    toolGroups.find((group) => group.toolIds.includes(currentToolId))?.id;
+    NAV_GROUPS.find((group) => group.toolIds.includes(currentToolId))?.id;
 
   if (domainLocked) {
     return (
@@ -203,8 +225,8 @@ export function AppShell({
     <nav aria-label="Tool categories" className="space-y-2 p-2">
       {NAVIGATION_MAJOR_SECTIONS.map((section, sectionIdx) => {
         const groups = section.groupCategoryIds
-          .map((id) => toolGroups.find((g) => g.id === id))
-          .filter((g): g is ToolGroup => Boolean(g));
+          .map((id) => NAV_GROUPS.find((g) => g.id === id))
+          .filter((g): g is NavGroup => Boolean(g));
 
         return (
           <div key={section.id} className="space-y-0.5">
@@ -219,7 +241,7 @@ export function AppShell({
             </div>
             {groups.map((group) => {
               const Icon = groupIcons[group.id];
-              const count = toolDestinationsForGroup(group).length;
+              const count = group.destinationCount;
               return (
                 <a
                   key={group.id}
@@ -547,7 +569,14 @@ export function AppShell({
                 aria-label="Matching tools"
                 className="absolute inset-x-0 top-[calc(100%+8px)] rounded-xl border bg-popover p-2 shadow-[0_18px_50px_rgb(0_0_0/10%)]"
               >
-                {results.length ? (
+                {!resultsReady ? (
+                  <div className="px-3 py-4">
+                    <p className="text-sm font-medium">Searching…</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Loading the tool index.
+                    </p>
+                  </div>
+                ) : results.length ? (
                   results.map((tool, index) => (
                     <a
                       key={tool.resultId ?? tool.id}
@@ -585,7 +614,7 @@ export function AppShell({
               </div>
             ) : null}
             <p className="sr-only" aria-live="polite">
-              {query
+              {query && resultsReady
                 ? `${results.length} working ${results.length === 1 ? 'tool' : 'tools'} found.`
                 : ''}
             </p>

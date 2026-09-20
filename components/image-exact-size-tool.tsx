@@ -21,7 +21,7 @@ import {
   findPreset,
   type PortalPreset,
 } from '@/lib/portal-presets';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import {
   QUALITY_FLOOR,
   MIN_SHRINK_EDGE,
@@ -191,7 +191,7 @@ export function ImageExactSizeTool() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('');
-  const manifest = publicTools.find((tool) => tool.id === 'image-exact-size')!;
+  const manifest = toolMeta('image-exact-size');
 
   useEffect(() => {
     sourcesRef.current = sources;

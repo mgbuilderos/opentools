@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import type {
   PdfWorkerInput,
   PdfWorkerRequest,
@@ -103,7 +103,7 @@ export function PdfMergeTool() {
     total: 0,
   });
   const [receipt, setReceipt] = useState<MergeReceipt | null>(null);
-  const manifest = publicTools.find((tool) => tool.id === 'pdf-merge')!;
+  const manifest = toolMeta('pdf-merge');
 
   useEffect(
     () => () => {

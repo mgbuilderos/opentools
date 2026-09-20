@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import {
   countWords,
   textCaseOptions,
@@ -42,9 +42,7 @@ export function ToolWorkspace() {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
-  const manifest = publicTools.find(
-    (tool) => tool.id === 'text-case-converter',
-  )!;
+  const manifest = toolMeta('text-case-converter');
 
   const runTransform = () => {
     if (!input) return;

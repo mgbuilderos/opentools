@@ -22,7 +22,7 @@ import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import type { BackgroundRemovalResponse } from '@/lib/tools/background-removal/protocol';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import {
   canvasFilter,
   extensionForRasterType,
@@ -146,7 +146,7 @@ export function ImageEditorTool({
   const [quality, setQuality] = useState(90);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const manifest = publicTools.find((tool) => tool.id === 'image-editor')!;
+  const manifest = toolMeta('image-editor');
 
   useEffect(() => {
     sourceRef.current = source;

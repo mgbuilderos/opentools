@@ -25,7 +25,7 @@ import {
   type ZipArchiveEntry,
 } from '@/lib/tools/archive/zip-reader';
 import { createZip } from '@/lib/tools/docx/zip';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 
 type Mode = 'open' | 'create';
 
@@ -93,7 +93,7 @@ export function ArchiveToolkitTool() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const manifest = publicTools.find((tool) => tool.id === 'archive-toolkit')!;
+  const manifest = toolMeta('archive-toolkit');
 
   useEffect(() => {
     savedRef.current = saved;

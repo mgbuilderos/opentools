@@ -20,7 +20,7 @@ import {
   type Workbook,
 } from '@/lib/tools/spreadsheet/xlsx-reader';
 import { writeXlsx } from '@/lib/tools/spreadsheet/xlsx-writer';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 
 const MAX_BYTES = 50 * 1024 * 1024;
 /** How much of a sheet to draw. Everything is converted; only the preview is cut. */
@@ -73,7 +73,7 @@ export function ExcelTool() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
 
-  const manifest = publicTools.find((tool) => tool.id === 'excel-converter')!;
+  const manifest = toolMeta('excel-converter');
 
   useEffect(() => {
     savedRef.current = saved;

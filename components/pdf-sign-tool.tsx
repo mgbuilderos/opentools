@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import type {
   PdfFillOptions,
   PdfFormDocumentInfo,
@@ -463,7 +463,7 @@ export function PdfSignTool() {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [errorState, setErrorState] = useState<ErrorState | null>(null);
   const error = errorState?.message ?? '';
-  const manifest = publicTools.find((tool) => tool.id === 'pdf-sign')!;
+  const manifest = toolMeta('pdf-sign');
 
   const busy = status === 'inspecting' || status === 'processing';
   const blocked =

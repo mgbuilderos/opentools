@@ -29,7 +29,7 @@ import {
   retagMp3,
   sliceMp3,
 } from '@/lib/tools/audio/mp3';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 
 type Mode = 'cut' | 'join' | 'tags' | 'inspect';
 
@@ -126,7 +126,7 @@ export function Mp3ToolkitTool() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const manifest = publicTools.find((tool) => tool.id === 'mp3-toolkit')!;
+  const manifest = toolMeta('mp3-toolkit');
   const primary = loaded[0] ?? null;
 
   useEffect(() => {

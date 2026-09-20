@@ -219,7 +219,51 @@ function checkGuards() {
     head,
     staleDist: Boolean(builtId && head && builtId !== head),
     dirty: dirtyWorktrees(),
+    coverage: staticCoverage(),
   };
+}
+
+/**
+ * The question this script is really asking: can this build write to KV at all?
+ *
+ * A page costs two KV writes when it RENDERS. A page with a file in
+ * dist/client/ is served as an asset and never renders, so it never writes.
+ * So the honest cost of a deploy is the number of public URLs that have no
+ * file -- not a constant.
+ *
+ * This replaced `FULL_REWARM`, which priced re-warming 163 ISR pages. Those
+ * pages became files when prerendering shipped on 2026-09-20, and the constant
+ * did not follow: the verdict read WAIT on every deploy no matter what, and was
+ * overridden by hand three times in one day. Measured on the `acdeb49` build,
+ * all 687 sitemap URLs had a file and two consecutive deploys moved the day's
+ * write counter by zero.
+ *
+ * Returns null when there is nothing to measure, and the caller falls back to
+ * the old constant rather than guessing that an unbuilt tree is safe.
+ */
+function staticCoverage() {
+  const client = path.join(ROOT, 'dist/client');
+  const sitemap = path.join(client, 'sitemap.xml');
+  if (!existsSync(sitemap)) return null;
+
+  const urls = [
+    ...readFileSync(sitemap, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g),
+  ].map((match) => match[1]);
+  if (!urls.length) return null;
+
+  const uncovered = urls.filter((url) => {
+    const route = url.replace(/^https?:\/\/[^/]+/, '') || '/';
+    const clean = route.split(/[?#]/)[0].replace(/\/$/, '');
+    const candidates =
+      clean === ''
+        ? ['index.html']
+        : [`${clean}.html`, `${clean}/index.html`, clean.slice(1)];
+    return !candidates.some((candidate) =>
+      existsSync(path.join(client, candidate.replace(/^\//, ''))),
+    );
+  });
+
+  return { total: urls.length, uncovered };
 }
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
@@ -246,7 +290,14 @@ async function main() {
   // random cache key, so the whole cache is orphaned and re-warmed every time.
   const codeChanged = state.lastDeployedCommit !== commit;
   const invalidates = !guards.buildIdPinned || codeChanged;
-  const cost = invalidates ? FULL_REWARM : 0;
+  // Measured from the build when there is one; the old constant only when
+  // there is not. Two writes per page that still has to render: one for the
+  // body, one for its metadata (docs/CACHE_BUDGET.md).
+  const cost = !invalidates
+    ? 0
+    : guards.coverage
+      ? guards.coverage.uncovered.length * 2
+      : FULL_REWARM;
 
   console.log('\n  BEFORE YOU DEPLOY\n  ' + '-'.repeat(52));
   console.log(`  Commit             ${commit ?? 'unknown'}`);
@@ -280,6 +331,15 @@ async function main() {
     }`,
   );
 
+  console.log(
+    guards.coverage
+      ? `  ${guards.coverage.uncovered.length ? 'WARN' : 'ok  '} ${
+          guards.coverage.uncovered.length
+            ? `${plural(guards.coverage.uncovered.length, 'public URL')} of ${guards.coverage.total} still render, so this deploy can write to KV`
+            : `all ${guards.coverage.total} public URLs are prerendered files — nothing can write to KV`
+        }`
+      : '  WARN no build to measure — falling back to the old flat estimate',
+  );
   console.log(
     `  ${guards.staleDist ? 'STOP' : 'ok  '} dist/ ${
       guards.staleDist
@@ -325,6 +385,16 @@ async function main() {
     );
     console.log('  budget and caches nothing. Remove it before deploying.');
     blocked = true;
+  } else if (cost === 0 && guards.coverage && invalidates) {
+    console.log(
+      `  GO. All ${guards.coverage.total} public URLs are files in dist/client/, so no page`,
+    );
+    console.log(
+      '  renders and no page writes to KV. This deploy costs nothing, and the',
+    );
+    console.log(
+      `  day's allowance (${used === null ? 'unknown' : `${used} of ${DAILY_ALLOWANCE}`}) does not apply to it.`,
+    );
   } else if (cost === 0) {
     console.log(
       '  GO. This commit is already deployed and the build ID is pinned, so',
@@ -348,6 +418,20 @@ async function main() {
     console.log(
       `  WAIT. ${plural(DAILY_ALLOWANCE - used, 'write')} left, this needs ${cost}.`,
     );
+    if (guards.coverage?.uncovered.length) {
+      console.log(
+        `  ${plural(guards.coverage.uncovered.length, 'URL')} still render rather than being served as a file:`,
+      );
+      for (const url of guards.coverage.uncovered.slice(0, 5)) {
+        console.log(`    ${url}`);
+      }
+      if (guards.coverage.uncovered.length > 5) {
+        console.log(`    ...and ${guards.coverage.uncovered.length - 5} more`);
+      }
+      console.log(
+        '  Prerendering those is what makes this deploy free, not waiting.',
+      );
+    }
     console.log(`  The allowance resets in about ${plural(hours, 'hour')}.`);
     console.log(
       '  Deploying now spends what is left and still leaves the cache cold,',

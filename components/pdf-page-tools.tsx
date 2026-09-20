@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import { parsePageSelection } from '@/lib/tools/pdf/page-selection';
 import type {
   PdfPageTransformOptions,
@@ -87,7 +87,7 @@ export function PdfPageTools() {
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [error, setError] = useState('');
-  const manifest = publicTools.find((tool) => tool.id === 'pdf-page-tools')!;
+  const manifest = toolMeta('pdf-page-tools');
 
   useEffect(
     () => () => {

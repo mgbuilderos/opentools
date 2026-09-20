@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { publicTools } from '@/lib/tools/catalog';
+import { toolMeta } from '@/lib/tools/tool-meta';
 import {
   csvToJson,
   transformJson,
@@ -270,7 +270,7 @@ export function JsonTool() {
   const [error, setError] = useState('');
   const [receipt, setReceipt] = useState<TextReceipt | null>(null);
   const [copied, setCopied] = useState(false);
-  const manifest = publicTools.find((tool) => tool.id === 'json-format')!;
+  const manifest = toolMeta('json-format');
 
   const run = () => {
     const started = performance.now();
@@ -437,7 +437,7 @@ export function CsvToJsonTool() {
   const [error, setError] = useState('');
   const [receipt, setReceipt] = useState<TextReceipt | null>(null);
   const [copied, setCopied] = useState(false);
-  const manifest = publicTools.find((tool) => tool.id === 'csv-to-json')!;
+  const manifest = toolMeta('csv-to-json');
 
   const run = () => {
     const started = performance.now();
