@@ -24,14 +24,17 @@ export const revalidate = 86400;
   architecture, not against a company.)
 
   Constraint C2 (rule 23, decisions 5 and 15) allows a measured-egress claim
-  only for a build that passed the protocol. So every number here is attributed
-  to a dated run against a named build, and the "what this does not prove"
-  section is not a disclaimer to be trimmed later — it is the reason the rest
-  is believable.
-*/
+  only for a build that passed the protocol, so the protocol is re-run against
+  the production build of every release that repeats these figures, and that
+  run gates the release. The "what this does not prove" section is not a
+  disclaimer to be trimmed later — it is the reason the rest is believable.
 
-const TESTED_BUILD = '9d6e1af2';
-const TESTED_ON = '18 September 2026';
+  A git commit hash is deliberately not printed. The page cannot name the
+  commit that contains it, and a visitor could not check one anyway; the date
+  is what they can hold us to. The commit each run executed against is recorded
+  in docs/agent_ledger.jsonl.
+*/
+const TESTED_ON = '20 September 2026';
 
 /*
   `lib/tools/local-source-policy.test.ts` scans every file under app/ and
@@ -273,11 +276,10 @@ export default function ProofPage() {
 
           <p className="mt-5 rounded-xl border bg-muted/50 p-3.5 text-sm leading-6 sm:p-4 sm:leading-7">
             <strong>Result: 6 of 6 checks passed</strong>, in both Chromium and
-            WebKit, run {TESTED_ON} against build{' '}
-            <code className="text-[0.9em]">{TESTED_BUILD}</code> and repeated
-            against the deployed site. The detector is not vacuous: pointed at a
-            page that genuinely loads a cross-origin resource, it fails and
-            catches the response.
+            WebKit, run {TESTED_ON} against the production build of this
+            release. The detector is not vacuous: pointed at a page that
+            genuinely loads a cross-origin resource, it fails and catches the
+            response.
           </p>
         </section>
 
@@ -349,8 +351,9 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                The figures above belong to the dated build named above. A later
-                release is covered only once the protocol is re-run against it.
+                The figures above belong to the release dated above. A later
+                release is covered only once the protocol is re-run against it,
+                which is a condition of shipping one.
               </span>
             </li>
           </ul>
@@ -430,9 +433,8 @@ export default function ProofPage() {
         </section>
 
         <p className="mt-6 text-center text-xs leading-5 text-muted-foreground sm:text-sm">
-          Protocol run {TESTED_ON} against build{' '}
-          <code className="text-[0.9em]">{TESTED_BUILD}</code>. Every figure on
-          this page comes from that run.
+          Protocol run {TESTED_ON} against the production build of this release.
+          Every figure on this page comes from that run.
         </p>
       </div>
     </main>
