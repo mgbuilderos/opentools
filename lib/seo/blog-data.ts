@@ -677,41 +677,162 @@ A Standard Operating Procedure (SOP) or Technical Runbook provides an unambiguou
       'Formulate precise user stories with persona narratives, Given/When/Then testable acceptance criteria, and comprehensive Definition of Done verification.',
     sections: [
       {
-        id: 'the-cost-of-vague-requirements',
-        heading: 'Why Vague Agile Tickets Cause Sprint Delays and Bugs',
-        content: `When product requirements are ambiguous, developers make unvalidated assumptions and QA engineers struggle to write automated test suites. 
+        id: 'what-gherkin-is-for',
+        heading: 'Gherkin Exists to Make Ambiguity Visible',
+        content: `Gherkin is the structured language behind behaviour-driven development, expressing behaviour as **Given / When / Then**:
 
-Formatting agile requirements using the industry-standard **Gherkin Behavior-Driven Development (BDD)** framework aligns engineering, product management, and QA around clear, testable acceptance criteria.`,
+\`\`\`gherkin
+Scenario: Password reset link expires after 24 hours
+  Given a password reset was requested 25 hours ago
+  When the user opens the reset link
+  Then they see "This link has expired"
+  And they are offered a way to request a new one
+\`\`\`
+
+The value is not the syntax. It is that the format makes vagueness impossible to hide. "The reset link should expire reasonably quickly" survives a specification document; it cannot survive a \`Given\` step, because someone has to write a number.
+
+The three keywords carry distinct meanings and conflating them is the most common mistake:
+
+- **Given** — the state of the world before the behaviour. Preconditions, not actions. Past or present tense.
+- **When** — the single action under test. One event, expressed in the user's terms.
+- **Then** — the observable outcome. What changed that someone could verify.
+
+\`And\` and \`But\` continue the previous keyword. A step list with five \`Given\`s is fine; a scenario with three \`When\`s almost always means three scenarios have been merged.`,
       },
       {
-        id: 'structuring-bdd-criteria',
-        heading: 'Formulating Testable User Stories and Gherkin Scenarios',
-        content: `A complete user story contains three synchronized layers:
+        id: 'declarative-not-imperative',
+        heading: 'Write Declaratively, or the Scenarios Rot',
+        content: `The difference between a Gherkin suite that survives two years and one abandoned after six months is almost entirely this distinction.
 
-1. **The User Story Narrative**:
-   - *As a* \`[persona/role]\`
-   - *I want* \`[system capability]\`
-   - *So that* \`[business benefit]\`
+**Imperative** scenarios describe interface mechanics:
 
-2. **Gherkin BDD Acceptance Scenarios**:
-   - **Given**: The initial system state or precondition.
-   - **When**: The user action or event occurs.
-   - **Then**: The expected observable outcome.
+\`\`\`gherkin
+When I click the "Account" dropdown
+And I click "Settings"
+And I clear the "Email" field
+And I type "new@example.com"
+And I click "Save"
+\`\`\`
 
-3. **Definition of Done (DoD) Checklist**: Verification criteria covering unit tests, code review, zero console warnings, privacy compliance, and documentation.`,
+**Declarative** scenarios describe intent:
+
+\`\`\`gherkin
+When the user changes their email address to "new@example.com"
+\`\`\`
+
+Both may drive the same automation. The difference is what happens when the interface changes. The imperative version breaks when the dropdown becomes a sidebar, and it breaks in the specification document that non-technical stakeholders read — so a visual redesign generates specification churn that communicates nothing.
+
+The declarative version does not change, because the intent did not change. Only the step definition underneath is updated, in one place.
+
+A reliable test: **if your scenario mentions a button, a field, a URL or a CSS class, it is too low-level.** Those belong in step definitions. The feature file should read as though written by someone describing what the product does, not by someone narrating a screen recording.`,
+      },
+      {
+        id: 'acceptance-criteria-that-work',
+        heading: 'Acceptance Criteria That Actually Close a Story',
+        content: `Acceptance criteria define "done" for a user story, and most are too vague to serve that purpose. "Login should work" cannot be tested; it can only be argued about.
+
+Good criteria share four properties:
+
+1. **Testable.** Someone can determine pass or fail without a judgement call.
+2. **Specific about values.** Not "quickly" but "within 2 seconds". Not "a strong password" but the actual rule.
+3. **Independent.** Each criterion stands alone.
+4. **Inclusive of failure.** The unhappy paths are where defects live.
+
+For every happy path, ask three questions that consistently surface missing requirements: *What if the input is invalid? What if the user lacks permission? What if the external dependency is unavailable?*
+
+Applied to a password reset:
+
+\`\`\`gherkin
+Scenario: Reset requested for an unregistered address
+  Given no account exists for "ghost@example.com"
+  When a password reset is requested for that address
+  Then the response is identical to a successful request
+  And no email is sent
+\`\`\`
+
+That scenario encodes a real security decision — not revealing whether an account exists — which a "login should work" criterion would never have surfaced. This is the mechanism by which Gherkin earns its cost: the format forces the conversation that finds the requirement.`,
+      },
+      {
+        id: 'scenario-outlines-and-backgrounds',
+        heading: 'Scenario Outlines, Backgrounds, and Where They Turn Harmful',
+        content: `**Scenario Outline** parameterises a scenario across an Examples table:
+
+\`\`\`gherkin
+Scenario Outline: Password strength rules
+  When the user sets their password to "<password>"
+  Then the result is "<outcome>"
+
+  Examples:
+    | password        | outcome                       |
+    | short           | rejected: too short           |
+    | alllowercase123 | rejected: needs an uppercase  |
+    | Valid-Pass-123  | accepted                      |
+\`\`\`
+
+This is the correct tool for the same behaviour across different inputs. It is the wrong tool for different behaviours that happen to look similar, which produces a table with columns that only apply to some rows — a reliable sign the outline should be separate scenarios.
+
+**Background** runs steps before every scenario in a feature:
+
+\`\`\`gherkin
+Background:
+  Given a registered user "asha@example.com"
+\`\`\`
+
+Backgrounds are useful and frequently overused. Once a Background exceeds three or four steps, individual scenarios become unreadable, because understanding one means scrolling to the top of the file and holding a dozen preconditions in mind. If a scenario needs elaborate setup, put the setup in a single well-named step — \`Given a user with an expired subscription\` — and let the step definition do the work.
+
+The guiding constraint: **a scenario should be comprehensible in isolation.** If a reader must reconstruct state from elsewhere in the file, the abstraction is in the wrong place.`,
+      },
+      {
+        id: 'keeping-the-suite-alive',
+        heading: 'Keeping a Gherkin Suite From Becoming a Liability',
+        content: `BDD suites fail in a predictable way. They are adopted enthusiastically, grow to several hundred scenarios, become slow and flaky, and are eventually ignored — at which point they are worse than nothing, because they carry authority without accuracy.
+
+What prevents it:
+
+**Keep the suite small and high-value.** Gherkin scenarios are expensive: they need step definitions, they run slowly, and they are read by non-technical stakeholders. Reserve them for behaviour that matters to the business. Exhaustive input validation belongs in unit tests, which are faster by orders of magnitude.
+
+**One behaviour per scenario.** A scenario testing three things fails ambiguously and is hard to name.
+
+**Name scenarios as sentences describing the rule.** "Reset link expires after 24 hours", not "Test reset 3". The name appears in failure output and is the first thing anyone reads.
+
+**Delete scenarios for removed behaviour immediately.** A feature file describing something the product no longer does actively misleads.
+
+**Treat flakiness as a defect, not an inconvenience.** One scenario that fails intermittently teaches the team to ignore red builds, and that habit generalises to the whole suite.
+
+The OpenTools [user story builder](/documents/workbench?tool=user-story-acceptance-criteria-builder) drafts stories and Given/When/Then criteria in the browser. Requirements documents routinely contain unreleased roadmap detail and customer names, which is reason enough not to draft them in a tool that transmits their contents.`,
       },
     ],
     faqs: [
       {
-        question:
-          'Can these Gherkin scenarios be copied into Cucumber, Playwright, or Cypress?',
+        question: 'What is Gherkin syntax?',
         answer:
-          'Yes. The output conforms to standard Gherkin syntax and can be plugged directly into automated BDD test runners.',
+          'Gherkin is the structured language used in behaviour-driven development to express behaviour as Given, When and Then steps. Given describes the state of the world before the behaviour, When describes the single action under test, and Then describes the observable outcome. And and But continue the previous keyword. Its value is that vague requirements cannot survive the format, because each step forces a concrete statement.',
       },
       {
-        question: 'Is my project backlog data stored on any server?',
+        question:
+          'What is the difference between declarative and imperative Gherkin?',
         answer:
-          'No. All story generation occurs in local browser RAM and your inputs never touch a server.',
+          'Imperative scenarios describe interface mechanics such as clicking a dropdown and typing into a field. Declarative scenarios describe intent, such as the user changing their email address. Declarative scenarios survive interface redesigns because the intent does not change, while imperative ones break and generate specification churn. If a scenario mentions a button, field, URL or CSS class it is too low-level and that detail belongs in a step definition.',
+      },
+      {
+        question: 'What makes a good acceptance criterion?',
+        answer:
+          'It must be testable without a judgement call, specific about values rather than saying quickly or strong, independent of other criteria, and inclusive of failure paths. For every happy path ask what happens when the input is invalid, when the user lacks permission, and when an external dependency is unavailable. Those three questions consistently surface requirements that would otherwise be missed.',
+      },
+      {
+        question: 'When should I use a Scenario Outline?',
+        answer:
+          'Use it when the same behaviour is exercised with different inputs, such as a set of password strength rules checked against an Examples table. It is the wrong tool for different behaviours that merely look similar, and the warning sign is an Examples table with columns that apply to only some rows, which means the outline should be separate scenarios.',
+      },
+      {
+        question: 'How many steps should a Background have?',
+        answer:
+          'Three or four at most. Beyond that, individual scenarios stop being comprehensible on their own because a reader must scroll to the top of the file and hold many preconditions in mind. If a scenario needs elaborate setup, express it as a single well-named step such as Given a user with an expired subscription and let the step definition do the work.',
+      },
+      {
+        question: 'Why do BDD test suites get abandoned?',
+        answer:
+          'They grow to several hundred scenarios, become slow and flaky, and are eventually ignored, at which point they are worse than nothing because they carry authority without accuracy. Keeping them small and reserved for business-critical behaviour, putting exhaustive validation in unit tests instead, testing one behaviour per scenario, deleting scenarios for removed features, and treating flakiness as a defect all prevent this.',
       },
     ],
     relatedSlugs: [
@@ -741,25 +862,124 @@ Formatting agile requirements using the industry-standard **Gherkin Behavior-Dri
       'Create professional client invoices with line-item arithmetic, subtotal calculations, payment instructions, and one-click PDF printing with zero financial data logging.',
     sections: [
       {
-        id: 'the-invoice-saas-problem',
-        heading:
-          'Why Freelancers and Agencies Are Moving Away from Invoicing SaaS',
-        content: `Traditional online invoicing platforms force freelancers into monthly subscriptions, impose transaction limits, and collect sensitive billing rates, bank details, and customer information.
+        id: 'what-makes-an-invoice-valid',
+        heading: 'What Actually Makes an Invoice an Invoice',
+        content: `An invoice is a demand for payment, and in most jurisdictions it is also a tax document. Getting the fields right is not formatting — it is what determines whether your client's accounts payable system can process it and whether either party can claim the tax.
 
-The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-generator) provides a 100% private, client-side alternative. All calculations, tax additions, discount subtractions, and print rendering happen inside your browser tab.`,
+The fields that are required almost everywhere:
+
+- **The word "Invoice"**, unambiguously. A document headed "Statement" or "Quote" may be routed differently or ignored entirely.
+- **A unique invoice number**, sequential and never reused.
+- **Issue date**, and separately the **due date**.
+- **Your full legal name or trading name, and address.** For a sole trader this is your own name, not only a brand.
+- **The client's legal entity name and address** — the entity that owes the money, which may differ from the team that hired you.
+- **A line-item description** of what was supplied, with quantity and unit price.
+- **The total due**, and the currency, stated explicitly.
+
+Jurisdiction-specific additions matter more than people expect. In the **UK**, a VAT-registered business must show its VAT number, the VAT rate applied and the VAT amount separately. In **India**, a GST invoice requires the supplier's GSTIN, the recipient's GSTIN for B2B supplies, the HSN or SAC code for the goods or services, and the place of supply — which determines whether CGST plus SGST or IGST applies. In the **EU**, cross-border B2B invoices generally require both VAT numbers and a reverse-charge notation.
+
+If you are registered for a sales tax anywhere, confirm your local requirements before relying on a generic template. This article describes common practice and is not tax or legal advice.`,
+      },
+      {
+        id: 'invoice-numbering',
+        heading:
+          'Invoice Numbering: Boring, and the Thing Auditors Check First',
+        content: `Invoice numbers must be **unique and sequential with no gaps**. Auditors and tax authorities treat a missing number as a potentially suppressed sale, and being unable to explain one is a genuine problem.
+
+Three schemes work in practice:
+
+**Plain sequential.** \`1, 2, 3…\`. Simple and correct. The drawback is that \`INV-0003\` tells a client you have had three customers, which some freelancers would rather not advertise. Starting at a higher number is harmless.
+
+**Year-prefixed.** \`2026-001\`, \`2026-002\`. Restarts annually, sorts correctly, and makes locating a document by year trivial. This is the most common professional choice.
+
+**Client-prefixed.** \`ACME-001\`, \`ACME-002\`. Convenient for you, but it creates multiple parallel sequences, which is precisely what makes gap-checking hard. Avoid it unless you have a real reason.
+
+Two rules regardless of scheme. **Never reuse a number**, even for a document that was never sent — void it and move on, keeping the record. And **never renumber retrospectively**, which breaks every reference in your accounts and in your client's.
+
+If you cancel an invoice after issuing it, the correct instrument is a **credit note** carrying its own number and referencing the original, not a deletion. Deleting an issued invoice is the step that turns a clerical error into an accounting problem.`,
+      },
+      {
+        id: 'payment-terms',
+        heading: 'Payment Terms That Actually Get You Paid',
+        content: `Terms are the part freelancers most often leave vague, and vagueness is expensive.
+
+**State a due date, not a period.** "Net 30" requires the reader to calculate; "Due 19 February 2026" does not. Invoices with an explicit calendar date are paid measurably sooner, because they can be entered into a payment run without interpretation.
+
+**Shorten the period.** Net 30 is conventional and net 14 is entirely acceptable for freelance work. The period is negotiable and is usually accepted as offered.
+
+**Put payment details on the invoice itself.** Bank name, account number, sort code or IFSC, SWIFT for international, and the exact account holder name. Every email exchanged to obtain these adds days. For Indian freelancers a UPI ID alongside bank details removes friction for domestic clients entirely.
+
+**Reference your purchase order number** if the client issued one. Many accounts payable systems will not process an invoice without it, and the rejection is often silent.
+
+**State a late-payment consequence** where you have a legal basis for one. In the UK, the Late Payment of Commercial Debts (Interest) Act 1998 entitles a business to statutory interest at 8% above the Bank of England base rate, plus a fixed recovery charge, on overdue commercial invoices. In the EU, Directive 2011/7/EU provides a comparable right. Citing the applicable instrument on the invoice is more effective than an invented penalty rate, which may be unenforceable.
+
+**Send it to accounts payable, not only your contact.** The person who commissioned the work frequently cannot pay it.`,
+      },
+      {
+        id: 'why-no-signup',
+        heading: 'The Case Against Signing Up to Send an Invoice',
+        content: `Invoicing SaaS follows a consistent pattern: free for the first few invoices, then a monthly fee that persists whether you invoice that month or not. For someone sending three invoices a month, the annual cost is substantial relative to what the software does, which is arithmetic and a PDF.
+
+There is also a data consideration that is rarely spelled out. An invoicing account accumulates your complete client list, your rates, your revenue timeline and your bank details — a precise picture of your business, held by a third party, and a common target. Several invoicing and accounting providers have disclosed breaches exposing exactly this category of data.
+
+A browser-based generator avoids both. The OpenTools [invoice generator](/finance/workbench?tool=invoice-generator) builds the document in the page: the client's details, your rates and your bank information are used to render the PDF and are not transmitted anywhere.
+
+The honest limits of this approach, so you can decide properly:
+
+- **No stored history.** The tool does not keep a record of what you have sent. Keep your own copies — which you should be doing regardless, since you are legally required to retain invoices for several years in most jurisdictions.
+- **No automatic numbering across sessions.** You track the sequence yourself.
+- **No payment reconciliation or reminders.** If chasing is a significant part of your workload, dedicated software genuinely earns its fee.
+
+For a freelancer sending a handful of invoices a month, none of these outweigh the saving. For an agency sending two hundred, they do.`,
+      },
+      {
+        id: 'common-mistakes',
+        heading: 'The Mistakes That Delay Payment',
+        content: `Most late payments are not disputes. They are documents that could not be processed.
+
+**Billing the wrong entity.** "Acme" is not a legal entity; "Acme Technologies Private Limited" is. An invoice addressed to a brand or a department may fail entity matching and be returned or held.
+
+**Missing the PO number.** In any organisation using purchase orders, an invoice without one is frequently rejected without notice.
+
+**Vague line items.** "Consulting — October" invites a query. "Website redesign: 24 hours at ₹3,500/hour (1–31 October)" does not. Specificity reduces the chance a reviewer needs to ask a question, and every question adds a payment cycle.
+
+**Wrong or absent tax treatment.** Charging tax you are not registered to charge, or omitting a required reverse-charge notation on a cross-border supply, sends the invoice to a finance queue rather than a payment queue.
+
+**Rounding inconsistently.** Line items that do not sum to the stated total, usually from rounding each line and then rounding the sum, will be rejected by automated checks. Round once, at the end.
+
+**No due date.** An invoice without one has no date on which it becomes overdue, which removes any basis for chasing it.`,
       },
     ],
     faqs: [
       {
-        question:
-          'Are my billing rates or customer bank details uploaded to any server?',
+        question: 'What must a freelance invoice include?',
         answer:
-          'No. All calculations run strictly in ephemeral browser memory. Zero financial data is sent to external databases.',
+          'It must be clearly headed Invoice, carry a unique sequential number, show both an issue date and a due date, give your full legal or trading name and address, name the client legal entity and address, itemise what was supplied with quantity and unit price, and state the total and currency explicitly. If you are registered for VAT or GST you must also show your registration number and the tax applied separately.',
       },
       {
-        question: 'Can I print or save the invoice as a PDF?',
+        question: 'How should I number my invoices?',
         answer:
-          'Yes. The tool formats the document with dedicated print CSS media queries for clean, publication-ready PDF export.',
+          'Use a unique sequential scheme with no gaps, because a missing number is something auditors and tax authorities treat as a potentially suppressed sale. Year-prefixed numbering such as 2026-001 is the most common professional choice since it restarts annually and sorts correctly. Never reuse a number and never renumber retrospectively; cancel an issued invoice with a credit note rather than deleting it.',
+      },
+      {
+        question: 'What payment terms should a freelancer use?',
+        answer:
+          'State an explicit calendar due date rather than a period like Net 30, since invoices with a concrete date can enter a payment run without interpretation. Net 14 is entirely acceptable for freelance work and is usually accepted as offered. Include full bank details and any purchase order number on the invoice itself, and send it to accounts payable rather than only to the person who commissioned the work.',
+      },
+      {
+        question: 'Can I charge interest on a late invoice?',
+        answer:
+          'In many jurisdictions yes, under a statutory right rather than a rate you invent. In the UK the Late Payment of Commercial Debts (Interest) Act 1998 entitles a business to interest at 8% above the Bank of England base rate plus a fixed recovery charge on overdue commercial invoices, and EU Directive 2011/7 provides a comparable right. Citing the applicable instrument is more effective than an arbitrary penalty, which may be unenforceable.',
+      },
+      {
+        question: 'Do I need invoicing software as a freelancer?',
+        answer:
+          'Not for a handful of invoices a month. Invoicing software charges a recurring fee whether you invoice or not, and the account accumulates your client list, rates, revenue timeline and bank details in one place. A browser-based generator produces the same document without a subscription or that data transfer. Dedicated software earns its fee once volume is high or chasing payment is a significant part of your workload.',
+      },
+      {
+        question: 'Why do clients delay paying my invoices?',
+        answer:
+          'Most delays are processing failures rather than disputes. The usual causes are billing a brand rather than the legal entity, omitting a purchase order number the client system requires, vague line items that prompt a query, incorrect tax treatment on a cross-border supply, line items that do not sum to the stated total because each was rounded separately, and no due date at all.',
       },
     ],
     relatedSlugs: [
@@ -789,16 +1009,118 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Accurately calculate regular hours versus overtime multipliers and export signed contractor timesheet receipts with zero cloud tracking.',
     sections: [
       {
-        id: 'accurate-time-tracking',
-        heading: 'Accurate Time Tracking for Freelancers and Contractors',
-        content: `Calculating split shifts, unpaid lunch breaks, and overtime rules by hand frequently leads to payroll discrepancies. The OpenTools [Weekly Timesheet Calculator](/finance/workbench?tool=timesheet-calculator) automates time arithmetic across all 7 days of the work week with configurable standard work limits (e.g. 40 hours) and overtime rates.`,
+        id: 'overtime-is-a-legal-calculation',
+        heading: 'Overtime Is a Legal Calculation, Not a Preference',
+        content: `Weekly hours arithmetic looks trivial until you notice that the threshold, the multiplier and even the definition of a week are set by law and differ substantially by jurisdiction.
+
+In the **United States**, the Fair Labor Standards Act requires non-exempt employees to be paid at least **1.5× the regular rate for hours worked beyond 40 in a workweek**. The FLSA workweek is a fixed, recurring period of 168 consecutive hours — seven consecutive 24-hour periods — which the employer designates and which does not have to start on Monday or at midnight. Crucially, **the FLSA has no daily overtime requirement**; a 12-hour day is not overtime federally if the week stays at or under 40 hours.
+
+Several states impose more. **California** requires 1.5× beyond 8 hours in a day and beyond 40 in a week, **2× beyond 12 hours in a day**, and additional rules for a seventh consecutive day worked.
+
+In **India**, the Factories Act 1948 sets 9 hours a day and 48 hours a week, with overtime at **twice the ordinary rate**. Shops and establishments legislation varies by state.
+
+In the **EU**, the Working Time Directive caps the average working week at 48 hours including overtime, averaged over a reference period, but leaves premium rates to member states and collective agreements.
+
+Two consequences follow for anyone building or using a calculator: **the weekly threshold must be configurable**, and **daily and weekly rules can both apply at once**, with the daily calculation performed first so the same hour is not counted twice.`,
+      },
+      {
+        id: 'the-regular-rate',
+        heading: 'The Regular Rate Is Not the Hourly Rate',
+        content: `The most expensive error in overtime calculation is multiplying the base hourly wage instead of the **regular rate of pay**.
+
+Under the FLSA the regular rate includes nearly all remuneration for employment, not just the stated hourly figure. Non-discretionary bonuses, shift differentials, commissions and production bonuses must be included; the regular rate is total straight-time compensation divided by total hours worked in the week.
+
+A worked example makes the difference concrete. An employee earns £12/hour, works 45 hours, and receives a £50 attendance bonus:
+
+- Straight-time pay: 45 × £12 = £540
+- Plus the bonus: £540 + £50 = £590
+- Regular rate: £590 ÷ 45 = **£13.11/hour**
+- Overtime premium owed: 5 hours × £13.11 × 0.5 = **£32.78**
+
+Calculating on the £12 base instead gives £30.00 — an underpayment on a single week, repeated across a workforce and a year.
+
+What is **excluded** from the regular rate: genuinely discretionary bonuses, gifts, reimbursed expenses, and payments for time not worked such as holiday or sick pay. The line between a discretionary and a non-discretionary bonus is narrower than employers usually assume — a bonus announced in advance to encourage performance is non-discretionary.`,
+      },
+      {
+        id: 'what-counts-as-hours-worked',
+        heading: 'What Counts as Hours Worked',
+        content: `Disputes are more often about which minutes count than about the arithmetic applied to them.
+
+**Unpaid meal breaks** must be genuine. Under FLSA guidance a break of 30 minutes or more can be unpaid only if the employee is **completely relieved of duty**. Eating at a desk while covering the phone is compensable working time. Short breaks of roughly 5–20 minutes are counted as hours worked and must be paid.
+
+**Travel between job sites during the workday is working time.** The ordinary commute from home to the first site and back from the last is not.
+
+**Preparatory and concluding activities** that are integral to the job — setting up equipment, mandatory security screening in some rulings, shift handover — generally count.
+
+**Rounding is permitted but must be neutral.** Rounding to the nearest quarter hour is lawful only if it does not systematically favour the employer over time. A system that always rounds clock-in up and clock-out down is unlawful even if each individual adjustment is small.
+
+**On-call time** depends on constraint. An employee required to remain on premises is working; one free to use the time for their own purposes, subject to being reachable, generally is not.
+
+Record-keeping is a legal obligation in itself. Under the FLSA employers must keep payroll records for **three years** and the time records underlying wage computations for **two**.`,
+      },
+      {
+        id: 'doing-the-arithmetic-correctly',
+        heading: 'Doing the Arithmetic Without Introducing Errors',
+        content: `Three mechanical mistakes account for most incorrect timesheets.
+
+**Decimal hours versus hours and minutes.** 7 hours 30 minutes is **7.5** hours, not 7.30. Adding times in the \`h.mm\` form silently understates every entry containing more than 30 minutes. Convert to decimal once, at entry: \`hours + minutes / 60\`.
+
+**Overnight shifts.** A shift from 22:00 to 06:00 subtracts to negative eight hours if handled naively. The end time must be recognised as falling on the next day. Any calculator that cannot express a shift crossing midnight will be wrong for a large proportion of shift workers.
+
+**Rounding at the wrong point.** Round once, at the end of the week, not per day. Rounding each day to two decimals and summing compounds the error across seven entries.
+
+A reliable order of operations:
+
+1. Convert every clock entry to minutes since midnight, handling day rollover.
+2. Subtract unpaid break minutes **per shift**.
+3. Sum to weekly minutes; convert to decimal hours once.
+4. Apply daily overtime rules first, where the jurisdiction has them.
+5. Apply the weekly threshold to the remaining straight-time hours.
+6. Compute the regular rate including qualifying additional pay.
+7. Apply multipliers and round the currency amount once, at the end.`,
+      },
+      {
+        id: 'why-local',
+        heading: 'Why a Timesheet Should Not Leave Your Device',
+        content: `A timesheet is personal data about identifiable workers: names, shift patterns, and by inference their location and availability. Under the UK GDPR and the EU GDPR it is personal data, and payroll information attracts particular care.
+
+Uploading a staff timesheet to an online calculator is a transfer of that personal data to a third party. For an employer it may be a processing activity requiring a lawful basis and a data processing agreement. For a contractor submitting their own hours, it discloses a working pattern to a service with no relationship to the engagement.
+
+The arithmetic needs no server. The OpenTools [timesheet calculator](/finance/workbench?tool=timesheet-calculator) runs in the page, so entries, names and rates stay on the device.
+
+Whatever tool you use, two habits matter: **keep the source records** — the raw clock entries, not only the computed totals, since those are what a wage claim turns on — and **check the calculator's assumptions against your jurisdiction** before relying on it. A calculator that hard-codes a 40-hour threshold is wrong in India, wrong in California for daily overtime, and wrong under many collective agreements. This article describes common statutory positions and is not legal advice.`,
       },
     ],
     faqs: [
       {
         question: 'How is overtime calculated?',
         answer:
-          'Hours worked beyond your standard weekly limit (default: 40 hrs) are automatically partitioned into an overtime bucket with a 1.5x (or custom) pay multiplier.',
+          'Under the US Fair Labor Standards Act, non-exempt employees receive at least 1.5 times the regular rate for hours beyond 40 in a fixed 168-hour workweek, and there is no federal daily overtime requirement. Several states add more: California requires 1.5 times beyond 8 hours in a day and double time beyond 12. India sets 9 hours daily and 48 weekly under the Factories Act with overtime at twice the ordinary rate. Any calculator must let you configure the threshold.',
+      },
+      {
+        question: 'What is the regular rate of pay?',
+        answer:
+          'It is total straight-time compensation divided by total hours worked in the week, and it is not the same as the base hourly wage. Non-discretionary bonuses, shift differentials and commissions must be included. An employee on 12 per hour working 45 hours with a 50 attendance bonus has a regular rate of 13.11, not 12, and calculating overtime on the base rate underpays them.',
+      },
+      {
+        question: 'Do unpaid meal breaks count as working time?',
+        answer:
+          'Only if the employee is completely relieved of duty. A 30-minute break during which someone eats at their desk while covering the phone is compensable working time under FLSA guidance. Short breaks of roughly 5 to 20 minutes count as hours worked and must be paid regardless.',
+      },
+      {
+        question: 'How do I calculate hours for an overnight shift?',
+        answer:
+          'Recognise that the end time falls on the following day, otherwise a shift from 22:00 to 06:00 subtracts to negative eight hours. Convert both clock entries to minutes since midnight, add 1,440 minutes to the end time when it is earlier than the start, then subtract. Convert to decimal hours only once, remembering that 7 hours 30 minutes is 7.5 and not 7.30.',
+      },
+      {
+        question: 'Is it legal to round timesheet entries?',
+        answer:
+          'Rounding to the nearest quarter hour is permitted provided it is neutral over time and does not systematically favour the employer. A system that always rounds clock-in up and clock-out down is unlawful even though each individual adjustment is small. Round once at the end of the period rather than per day, since daily rounding compounds across entries.',
+      },
+      {
+        question: 'Should I upload staff timesheets to an online calculator?',
+        answer:
+          'Timesheets are personal data identifying workers and their working patterns, and payroll information attracts particular care under the UK and EU GDPR. Uploading one transfers that data to a third party and may require a lawful basis and a processing agreement. The arithmetic needs no server, so a calculator that runs in your browser avoids the transfer entirely.',
       },
     ],
     relatedSlugs: [
@@ -828,16 +1150,120 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Draft standardized corporate mutual NDAs with standard non-disclosure clauses and corporate signature lines directly on your device with complete privacy.',
     sections: [
       {
-        id: 'protecting-confidential-information',
-        heading: 'Protecting Trade Secrets and Proprietary Discussions',
-        content: `Before exploring partnerships, vendor relationships, or investment discussions, executing a standard Mutual Non-Disclosure Agreement (NDA) ensures both parties can share proprietary architectures and commercial strategies safely.`,
+        id: 'mutual-versus-one-way',
+        heading: 'Mutual or One-Way: The Choice That Shapes Everything Else',
+        content: `A **one-way** (unilateral) NDA protects one party's information. A **mutual** (bilateral) NDA protects both. The choice is not politeness — it changes which obligations you are accepting.
+
+Use a mutual NDA when both sides will actually disclose: partnership discussions, merger or acquisition talks, technical integrations, most vendor relationships where you must describe your own systems to receive a useful proposal.
+
+Use a one-way NDA when disclosure genuinely runs in one direction: engaging a contractor who will see your systems but reveal nothing of their own, or briefing an agency on an unannounced launch.
+
+The practical reason mutual agreements are often preferred is symmetry of incentive. When both parties bear the same obligations, terms tend to settle at something reasonable — because each clause you push will also bind you. A one-way NDA drafted by the disclosing party's counsel frequently contains obligations that would be rejected instantly if reciprocal.
+
+One caution that catches people out: signing a one-way NDA as the *receiving* party while intending to describe your own approach means your disclosures are **unprotected**. If you expect to say anything sensitive in the meeting, the agreement needs to be mutual before the meeting, not after.
+
+This article explains common drafting practice. It is not legal advice, and an agreement with material commercial consequences should be reviewed by a qualified lawyer in the relevant jurisdiction.`,
+      },
+      {
+        id: 'defining-confidential-information',
+        heading:
+          'Defining Confidential Information: Too Narrow and Too Broad Both Fail',
+        content: `The definition clause is where most NDAs are won or lost.
+
+**Too narrow** — limiting protection to material stamped "Confidential" — fails because real conversations are not labelled. The most valuable disclosure in a meeting is usually spoken, and a marking requirement excludes it entirely. Where a marking requirement is imposed, it should be paired with a provision that orally disclosed information is protected if confirmed in writing within a stated window, commonly 15 or 30 days.
+
+**Too broad** — "all information disclosed by either party" — fails differently. Courts in several jurisdictions have declined to enforce definitions so sweeping that the receiving party could not reasonably know what was restricted, and an unworkably broad definition makes the whole agreement harder to enforce rather than easier.
+
+The workable middle ground describes categories with enough specificity to be recognisable: technical data, source code, business plans, customer lists, pricing, unreleased product information, and information a reasonable person would understand to be confidential given its nature and the circumstances of disclosure.
+
+Equally important are the **standard exclusions**, which nearly every enforceable NDA contains. Information is not confidential if it:
+
+- was already public, or becomes public through no fault of the receiving party;
+- was already known to the receiving party without a duty of confidence;
+- is independently developed without reference to the disclosed information;
+- is lawfully received from a third party free to disclose it.
+
+Omitting these makes an agreement more likely to be read down or struck. They protect the receiving party from being held liable for knowing something they were entitled to know.`,
+      },
+      {
+        id: 'term-and-survival',
+        heading: 'Term, Survival, and the Distinction People Miss',
+        content: `Two different clocks run in an NDA, and conflating them is a common drafting error.
+
+The **term** is how long disclosures made under the agreement are covered — the window during which new information becomes protected. Typically one to three years.
+
+**Survival** is how long the confidentiality obligation persists *after* the agreement ends. This is frequently longer than the term, and for good reason: information disclosed in month eleven should not lose protection in month thirteen.
+
+A common structure is a two-year term with a **three to five year survival** for general confidential information, and **indefinite survival for trade secrets specifically**. That last distinction matters: in jurisdictions with trade-secret statutes, protection can last as long as the information remains secret and reasonable steps are taken to keep it so. A fixed expiry on trade secrets can actively undermine that status, because it suggests the owner did not intend to protect it indefinitely.
+
+Watch for **perpetual obligations on everything**. A blanket "in perpetuity" on all confidential information is common in first drafts and is a heavy obligation to accept, since it requires indefinite record-keeping and indefinite exposure. Negotiating a finite period for general information while leaving trade secrets indefinite is standard and usually accepted.`,
+      },
+      {
+        id: 'the-clauses-that-matter',
+        heading: 'The Clauses That Decide What Happens When Things Go Wrong',
+        content: `Beyond the definition, a small number of clauses do most of the work.
+
+**Permitted disclosure.** The receiving party will need to share information with employees, professional advisers and sometimes affiliates. The clause should permit disclosure on a need-to-know basis to people bound by equivalent obligations, and make the receiving party responsible for their compliance.
+
+**Compelled disclosure.** If a court or regulator orders disclosure, the agreement should permit it while requiring prompt notice to the disclosing party — so they can seek a protective order — and limiting disclosure to what is legally required. Without this, a party can be caught between a court order and a contract.
+
+**Return or destruction.** On termination, confidential material should be returned or destroyed. Two carve-outs are now standard and reasonable: copies retained in automated backup systems, and one archival copy retained for legal compliance. Both remain subject to the confidentiality obligation.
+
+**Governing law and jurisdiction.** Name a specific law and a specific forum. An NDA without them invites a dispute about where the dispute happens, which is expensive and decided before anyone reaches the substance.
+
+**No licence granted.** Disclosure creates no ownership or licence in intellectual property. Worth stating explicitly.
+
+**Remedies.** Damages are often an inadequate remedy for disclosed confidential information, because the harm cannot be undone. Agreements commonly acknowledge that injunctive relief is appropriate. Note that such an acknowledgement does not bind a court, which decides on the facts.`,
+      },
+      {
+        id: 'signing-and-storing',
+        heading: 'Executing the Document, and Keeping It Somewhere Sensible',
+        content: `A few practical points determine whether the document is usable when it is needed.
+
+**Sign as the correct entity.** An agreement signed in a personal name when the business is a limited company may bind the individual rather than the company, or may not bind the intended party at all. Use the full registered name.
+
+**Date it, and state an effective date** if disclosures began before signature. Backdating a signature is improper; an explicit "effective from" clause achieves the same result honestly.
+
+**Initial the schedules.** Where an annexe lists specific materials, initialled pages reduce later argument about what was attached.
+
+**Keep both the signed copy and the negotiation record.** Which clauses were amended, and when, is often the evidence that matters.
+
+On generating the document: an NDA draft contains both parties' legal names, the nature of the transaction, and frequently the subject matter of the confidential information itself. Preparing it in a tool that uploads the content transmits precisely the facts the agreement exists to protect — including, often, that two named companies are in discussions at all, which is itself market-sensitive.
+
+The OpenTools [NDA generator](/documents/workbench?tool=legal-nda-generator) assembles the document in the browser, so the parties, the subject matter and the terms are not transmitted. A generated template is a starting point for review by a qualified lawyer, not a substitute for one.`,
       },
     ],
     faqs: [
       {
-        question: 'Are the generated NDAs ready to print and sign?',
+        question: 'What is the difference between a mutual and a one-way NDA?',
         answer:
-          'Yes. The generator produces a publication-ready 2-page legal document with dual corporate representative signature lines.',
+          'A one-way or unilateral NDA protects the information of one party only, while a mutual or bilateral NDA protects both. Use mutual when both sides will actually disclose, which covers most partnership, acquisition and vendor discussions. Signing a one-way NDA as the receiving party while intending to describe your own approach leaves your disclosures unprotected, so the agreement must be mutual before the meeting rather than after.',
+      },
+      {
+        question: 'How should confidential information be defined in an NDA?',
+        answer:
+          'Specifically enough to be recognisable but not so broadly that the receiving party cannot know what is restricted, since courts have declined to enforce sweeping definitions. Name categories such as technical data, source code, business plans, customer lists and pricing, and include information a reasonable person would understand to be confidential from its nature and circumstances. Requiring a Confidential marking excludes everything said aloud unless oral disclosures are confirmed in writing within a stated window.',
+      },
+      {
+        question: 'What exclusions should every NDA contain?',
+        answer:
+          'Information that was already public or becomes public through no fault of the receiving party, was already known to them without a duty of confidence, was independently developed without reference to the disclosure, or was lawfully received from a third party free to disclose it. These exclusions protect the receiving party from liability for knowing what they were entitled to know, and their absence makes an agreement more likely to be read down.',
+      },
+      {
+        question: 'How long should an NDA last?',
+        answer:
+          'Distinguish the term from the survival period. The term is how long new disclosures are covered, typically one to three years. Survival is how long the obligation persists afterwards, commonly three to five years for general confidential information. Trade secrets are usually given indefinite survival, because a fixed expiry can undermine trade-secret status by suggesting the owner did not intend to protect the information indefinitely.',
+      },
+      {
+        question:
+          'What happens if a court orders disclosure of confidential information?',
+        answer:
+          'A well-drafted NDA contains a compelled disclosure clause permitting it, while requiring prompt notice to the disclosing party so they can seek a protective order, and limiting the disclosure to what is legally required. Without such a clause a party can be caught between a court order and a contractual obligation.',
+      },
+      {
+        question: 'Is it safe to prepare an NDA in an online generator?',
+        answer:
+          'Only if it runs locally. An NDA draft contains both parties legal names, the nature of the transaction and often the subject matter of the confidential information, so a tool that uploads the content transmits exactly what the agreement exists to protect. The fact that two named companies are in discussions at all can itself be market-sensitive. A generated template is a starting point for review by a qualified lawyer, not a substitute for one.',
       },
     ],
     relatedSlugs: [
