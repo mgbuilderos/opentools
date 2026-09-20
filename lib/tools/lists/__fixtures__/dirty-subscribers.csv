@@ -1,0 +1,7 @@
+First Name,Last Name,Email Address,Phone Number,Plan,Status
+ Alice , Smith , alice.smith@acme.corp , (555) 019-2831 , Enterprise , Active 
+Bob,Jones,bob@jones-law.com,+1-555-019-2832,Starter,Active
+alice,smith,ALICE.SMITH@ACME.CORP,555 019 2831,Enterprise,Renewed
+CHARLIE,BROWN,charlie.b@peanuts.org,+1 (555) 019-2834,Pro,Active
+David,Miller,david.miller@fintech.io,555.019.2835,Pro,Churned
+Bob,Jones,BOB@JONES-LAW.COM,5550192832,Starter,Inactive

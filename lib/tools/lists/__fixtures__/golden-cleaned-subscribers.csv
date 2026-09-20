@@ -1,0 +1,5 @@
+﻿First Name,Last Name,Email Address,Phone Number,Plan,Status
+Alice,Smith,alice.smith@acme.corp,5550192831," Enterprise "," Active "
+Bob,Jones,bob@jones-law.com,+15550192832,Starter,Active
+Charlie,Brown,charlie.b@peanuts.org,+15550192834,Pro,Active
+David,Miller,david.miller@fintech.io,5550192835,Pro,Churned
