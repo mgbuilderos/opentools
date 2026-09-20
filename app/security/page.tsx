@@ -48,7 +48,7 @@ const TREATED_AS_VULNERABILITIES = [
   'Any server-side logging beyond the published visit log, or a visit log recording more than is published.',
   'Any silent fallback from local processing to a remote service.',
   'A support or payment flow that receives file, job or result data, or that withholds a local result.',
-  "A content-security-policy regression on a tool route — loosening connect-src, for example.",
+  'A content-security-policy regression on a tool route — loosening connect-src, for example.',
   'Classic web vulnerabilities: cross-site scripting, injection, unsafe cross-document messaging, supply-chain compromise or malicious dependencies.',
 ];
 
@@ -112,10 +112,13 @@ export default function SecurityPage() {
           <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
             This page is written for whoever has to decide whether other people
             may use this site for documents that must not be uploaded. The
-            product rests on one rule: <strong>files, file names, text inputs
-            and results never leave the browser.</strong> Below is how that rule
-            is enforced, who enforces it, where it stops, and how to tell us
-            when it fails.
+            product rests on one rule:{' '}
+            <strong>
+              files, file names, text inputs and results never leave the
+              browser.
+            </strong>{' '}
+            Below is how that rule is enforced, who enforces it, where it stops,
+            and how to tell us when it fails.
           </p>
         </section>
 
@@ -224,7 +227,9 @@ export default function SecurityPage() {
             </h2>
           </div>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-            <strong>Please do not open a public issue for a security report.</strong>{' '}
+            <strong>
+              Please do not open a public issue for a security report.
+            </strong>{' '}
             Use GitHub&rsquo;s{' '}
             <a
               href={ADVISORY}
@@ -251,9 +256,7 @@ export default function SecurityPage() {
               <span aria-hidden="true" className="text-muted-foreground">
                 &bull;
               </span>
-              <span className="text-muted-foreground">
-                Steps to reproduce.
-              </span>
+              <span className="text-muted-foreground">Steps to reproduce.</span>
             </li>
             <li className="flex gap-2.5">
               <span aria-hidden="true" className="text-muted-foreground">

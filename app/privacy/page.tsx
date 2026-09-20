@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
-import { ArrowLeft, Database, FileLock2, Radio, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  Database,
+  FileLock2,
+  Radio,
+  ShieldCheck,
+} from 'lucide-react';
 import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 export const revalidate = 86400;
@@ -35,10 +41,22 @@ export const metadata: Metadata = {
    with .github/SECURITY.md. Adding a field to one without the other is the
    failure this table is meant to make obvious. */
 const LOGGED = [
-  ['Country', "From Cloudflare's country header. Coarse only — no region, no city."],
-  ['Device type', 'Mobile, tablet or desktop, derived from the user agent. The user agent itself is not stored.'],
-  ['Referrer category', 'Search engine, social platform or direct. The raw referring URL is not stored.'],
-  ['Page path', 'Which page was requested, and the tool parameter if the URL carried one.'],
+  [
+    'Country',
+    "From Cloudflare's country header. Coarse only — no region, no city.",
+  ],
+  [
+    'Device type',
+    'Mobile, tablet or desktop, derived from the user agent. The user agent itself is not stored.',
+  ],
+  [
+    'Referrer category',
+    'Search engine, social platform or direct. The raw referring URL is not stored.',
+  ],
+  [
+    'Page path',
+    'Which page was requested, and the tool parameter if the URL carried one.',
+  ],
   ['Browser language', 'Your primary language only.'],
   ['Timestamp', 'When the request arrived.'],
 ] as const;
@@ -362,7 +380,9 @@ export default function PrivacyPage() {
               </p>
             </div>
             <div>
-              <h3 className="font-semibold">Are children&rsquo;s data collected?</h3>
+              <h3 className="font-semibold">
+                Are children&rsquo;s data collected?
+              </h3>
               <p className="mt-1 text-muted-foreground">
                 No data is collected from any visitor of any age beyond the
                 visit event above, which identifies nobody.

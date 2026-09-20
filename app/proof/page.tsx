@@ -61,7 +61,10 @@ const VECTORS: readonly (readonly [string, string])[] = [
 ];
 
 const DIRECTIVES = [
-  ["connect-src 'none'", 'fetch, XHR, WebSocket, EventSource and sendBeacon, together'],
+  [
+    "connect-src 'none'",
+    'fetch, XHR, WebSocket, EventSource and sendBeacon, together',
+  ],
   ["default-src 'self'", 'everything not named below stays same-origin'],
   ["form-action 'none'", 'no form can post anywhere'],
   ["object-src 'none'", 'no plugin surface'],
@@ -262,7 +265,8 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                The file&rsquo;s name appears in <strong>no request URL</strong>.
+                The file&rsquo;s name appears in <strong>no request URL</strong>
+                .
               </span>
             </li>
           </ul>
@@ -297,8 +301,8 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                The run covers the tools and the two browser engines named
-                above &mdash; not every tool, every browser, or every device.
+                The run covers the tools and the two browser engines named above
+                &mdash; not every tool, every browser, or every device.
               </span>
             </li>
             <li className="flex gap-2.5">
@@ -307,9 +311,13 @@ export default function ProofPage() {
               </span>
               <span>
                 One route is deliberately not{' '}
-                <code className="text-[0.9em]">connect-src &apos;none&apos;</code>
+                <code className="text-[0.9em]">
+                  connect-src &apos;none&apos;
+                </code>
                 . The background remover is served{' '}
-                <code className="text-[0.9em]">connect-src &apos;self&apos;</code>{' '}
+                <code className="text-[0.9em]">
+                  connect-src &apos;self&apos;
+                </code>{' '}
                 so it can fetch its model and WebAssembly runtime from this same
                 site &mdash; never from a third party, and never carrying your
                 image.
@@ -372,14 +380,16 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                <strong>There is one server-side log, and this is all of it.</strong>{' '}
-                Each page request writes a single event recording: country
-                (from Cloudflare&rsquo;s country header, no region or city),
-                device type, the referring site&rsquo;s <em>category</em>, the
-                page path, primary browser language and a timestamp. It records
-                no IP address, no raw referrer, no user agent, no cookie, and
-                no file, filename, pasted text or result. Static assets are not
-                logged at all.
+                <strong>
+                  There is one server-side log, and this is all of it.
+                </strong>{' '}
+                Each page request writes a single event recording: country (from
+                Cloudflare&rsquo;s country header, no region or city), device
+                type, the referring site&rsquo;s <em>category</em>, the page
+                path, primary browser language and a timestamp. It records no IP
+                address, no raw referrer, no user agent, no cookie, and no file,
+                filename, pasted text or result. Static assets are not logged at
+                all.
               </span>
             </li>
             <li className="flex gap-2.5">
@@ -387,10 +397,10 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                No analytics script and no third-party origin. Cloudflare&rsquo;s
-                own Web Analytics beacon was switched off at source on 19
-                September 2026, so the absence of trackers no longer depends on
-                the content-security policy catching one.
+                No analytics script and no third-party origin.
+                Cloudflare&rsquo;s own Web Analytics beacon was switched off at
+                source on 19 September 2026, so the absence of trackers no
+                longer depends on the content-security policy catching one.
               </span>
             </li>
             <li className="flex gap-2.5">
@@ -410,10 +420,10 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                Allow-listing <code className="text-[0.9em]">getopentools.com</code>{' '}
-                grants no outbound path for file contents: the served policy
-                blocks fetch, XHR, WebSocket, EventSource, sendBeacon and form
-                posts alike.
+                Allow-listing{' '}
+                <code className="text-[0.9em]">getopentools.com</code> grants no
+                outbound path for file contents: the served policy blocks fetch,
+                XHR, WebSocket, EventSource, sendBeacon and form posts alike.
               </span>
             </li>
           </ul>

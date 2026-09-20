@@ -125,8 +125,8 @@ export default function AboutPage() {
             Two consequences follow, and both are the point. Your document never
             travels, so there is nothing to intercept or retain. And there is no
             round trip, so the work finishes at the speed of your own machine
-            rather than the speed of someone&rsquo;s queue. The measured evidence
-            for the first is on the{' '}
+            rather than the speed of someone&rsquo;s queue. The measured
+            evidence for the first is on the{' '}
             <a
               href="/proof"
               className="focus-ring font-semibold text-foreground underline underline-offset-4"
@@ -222,14 +222,14 @@ export default function AboutPage() {
           </h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
             A rule the project holds to, because breaking it is the ordinary way
-            a site like this becomes untrustworthy: <strong>no claim ships
-            unless code or a test proves it.</strong> Tool counts come from the
-            catalogue rather than from memory. A tool is listed only when the
-            page behind the link genuinely runs it. Speed and privacy statements
-            are measured, dated and tied to the build they were measured on, and
-            when a claim cannot be supported it is removed rather than
-            rephrased &mdash; which is how several confident-sounding lines came
-            off this site rather than onto it.
+            a site like this becomes untrustworthy:{' '}
+            <strong>no claim ships unless code or a test proves it.</strong>{' '}
+            Tool counts come from the catalogue rather than from memory. A tool
+            is listed only when the page behind the link genuinely runs it.
+            Speed and privacy statements are measured, dated and tied to the
+            build they were measured on, and when a claim cannot be supported it
+            is removed rather than rephrased &mdash; which is how several
+            confident-sounding lines came off this site rather than onto it.
           </p>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
             If you find something on any page here that is not true, that is
