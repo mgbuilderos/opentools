@@ -28,6 +28,10 @@ import {
   type TrackedChangesPolicy,
 } from '@/lib/tools/docx/metadata';
 
+// Our own guard, not a limit the browser imposes. A .docx is a ZIP and the
+// whole thing is read into memory to inspect it, so this keeps a very large
+// file from locking the tab up. Say so plainly below rather than blaming the
+// browser for a number we picked.
 const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50 MB
 
 interface LoadedDocx {
@@ -90,7 +94,7 @@ export function DocxMetadataTool() {
 
     if (file.size > MAX_FILE_BYTES) {
       setError(
-        `File is too large (${formatBytes(file.size)}). The browser limit is ${formatBytes(MAX_FILE_BYTES)}.`,
+        `File is too large (${formatBytes(file.size)}). This tool reads the whole document into memory, so it stops at ${formatBytes(MAX_FILE_BYTES)} to keep the page responsive.`,
       );
       errorRef.current?.focus();
       return;
