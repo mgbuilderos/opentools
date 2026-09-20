@@ -152,7 +152,9 @@ You can copy this generated snippet directly into your codebase and immediately 
 | **Processing Speed** | **In-memory AST parse (No network wait)** | Network roundtrip latency |
 | **String Refinements** | **Automatic (Email, UUID, ISO Date, URL)** | Basic generic strings only |
 | **TypeScript Inference** | **Included (\`z.infer\` export)** | Often missing or paywalled |
-| **Usage Limits & Ads** | **100% Free Forever (0 limits, 0 ads)** | Rate limits, captchas, and paywalls |`,
+| **Usage Limits & Ads** | **100% Free Forever (0 limits, 0 ads)** | Rate limits, captchas, and paywalls |
+
+The [JSON to Zod schema generator](/developer/advanced?tool=json-to-zod-schema) runs this inference in the page, so a payload containing real customer records is never transmitted. If you are working with the same data as CSV, the [CSV to JSON converter](/data/csv-to-json) handles that conversion locally too.`,
       },
     ],
     faqs: [
@@ -650,7 +652,9 @@ Finally, \`background-clip: text\` makes gradient text, and it needs care: the e
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-\`\`\``,
+\`\`\`
+
+The [CSS gradient studio](/web/workbench?tool=css-gradient-studio) previews all three functions with live colour stops and copies the rule out. For surfaces that sit over a gradient, the [glassmorphism generator](/web/workbench?tool=css-glassmorphism-generator) pairs with it directly.`,
       },
     ],
     faqs: [
@@ -1740,7 +1744,9 @@ For browsers without support, the failure mode is not a broken layout — it is 
 
 Written this way, a browser that cannot blur shows a solid, legible card, and only browsers that can blur opt into translucency. This ordering is the opposite of what most snippets do, and it is the reason those snippets break on older devices.
 
-One further consideration: users who enable **Reduce Transparency** in their operating system are asking, explicitly, for less of this. There is no dedicated media query for it, but \`prefers-reduced-transparency\` is shipping in current browsers and is worth honouring where available.`,
+One further consideration: users who enable **Reduce Transparency** in their operating system are asking, explicitly, for less of this. There is no dedicated media query for it, but \`prefers-reduced-transparency\` is shipping in current browsers and is worth honouring where available.
+
+The [glassmorphism generator](/web/workbench?tool=css-glassmorphism-generator) emits the blur, tint, border and shadow together with the \`@supports\` fallback described above. For the backdrop underneath it, the [gradient studio](/web/workbench?tool=css-gradient-studio) is the companion tool.`,
       },
     ],
     faqs: [
@@ -1937,7 +1943,9 @@ In dark themes the light shadow should be weaker and the dark shadow stronger th
 
 Routing every value through custom properties is what makes the style maintainable. The shadow colours are derived from the surface, the surface appears in exactly one place per theme, and a theme change is three values rather than an audit of every component.
 
-Finally, respect \`prefers-reduced-motion\` if you animate between raised and pressed. The transition is short and subtle, but it is still motion, and the setting exists to be honoured.`,
+Finally, respect \`prefers-reduced-motion\` if you animate between raised and pressed. The transition is short and subtle, but it is still motion, and the setting exists to be honoured.
+
+The [neumorphism studio](/web/workbench?tool=css-neumorphism-generator) derives both shadow colours from the surface you choose, which is the step most hand-written soft UI gets wrong. If the surface needs to animate between raised and pressed, see the [CSS animation generator](/web/workbench?tool=css-animation-generator).`,
       },
     ],
     faqs: [
@@ -2135,7 +2143,9 @@ Open the browser's performance profiler, record while the animation runs, and lo
 
 Chromium's rendering panel adds two checkboxes worth knowing. **Paint flashing** highlights repainted regions in green — a well-built animation should show almost none. **Layer borders** draws the boundaries of compositing layers, which makes it immediately obvious whether promotion is happening and whether far too many layers exist.
 
-The most common single finding: an animation that is correctly written with transforms but sits inside a container whose \`box-shadow\` or \`filter\` is also transitioning, forcing a repaint of the whole area every frame regardless.`,
+The most common single finding: an animation that is correctly written with transforms but sits inside a container whose \`box-shadow\` or \`filter\` is also transitioning, forcing a repaint of the whole area every frame regardless.
+
+The [CSS animation generator](/web/workbench?tool=css-animation-generator) builds keyframes using transform and opacity by default, which is the distinction this article is about. For the surfaces being animated, the [gradient studio](/web/workbench?tool=css-gradient-studio) and [glassmorphism generator](/web/workbench?tool=css-glassmorphism-generator) produce the backgrounds.`,
       },
     ],
     faqs: [
@@ -3406,7 +3416,9 @@ Subtitle files inherit whichever version they were timed against, which is why a
 | 25 | 23.976 | 1.0427 |
 | 23.976 | 25 | 0.9590 |
 | 30 | 29.97 | 1.001 |
-| 24 | 23.976 | 1.001 |`,
+| 24 | 23.976 | 1.001 |
+
+The [subtitle workbench](/subtitles/workbench) applies the two-point scale and offset described here, and converts between frame rates directly. Since subtitle files are frequently distributed inside archives, the [ZIP archive toolkit](/file/archive) opens them without extracting to disk.`,
       },
     ],
     faqs: [
@@ -3513,7 +3525,9 @@ ffmpeg -ss [start] -to [end] -i input.mp3 -c copy output.mp3
 
 While \`-c copy\` preserves bitstream audio fidelity, uploading your voice recordings, unreleased podcasts, or private meeting audio to a remote server exposes personal data to network egress risks, remote disk caching, and external storage liabilities.
 
-Because lossless cutting operates purely on binary frame boundaries and header offsets without needing complex DSP transforms, the entire byte-slicing process can execute locally within client browser memory. You get identical bitstream preservation without uploading your audio files.`,
+Because lossless cutting operates purely on binary frame boundaries and header offsets without needing complex DSP transforms, the entire byte-slicing process can execute locally within client browser memory. You get identical bitstream preservation without uploading your audio files.
+
+The [MP3 toolkit](/audio/mp3-toolkit) performs these frame-boundary cuts without re-encoding. If the audio came from video, [/video/trim](/video/trim) extracts the track losslessly before you cut it.`,
       },
     ],
     faqs: [
@@ -4108,7 +4122,9 @@ Before writing code, comment on the issue saying what you intend to do and how. 
 
 **Does the description explain why?** What was wrong, what changed, how it was verified. A maintainer reading twenty pull requests is choosing which to engage with, and a clear description moves yours up the queue.
 
-One further point of etiquette that matters more than it should: if a maintainer requests changes, make them or say why not. A pull request abandoned after review consumed the scarcest resource the project has, which is maintainer attention.`,
+One further point of etiquette that matters more than it should: if a maintainer requests changes, make them or say why not. A pull request abandoned after review consumed the scarcest resource the project has, which is maintainer attention.
+
+Every task listed here is pure TypeScript with no framework knowledge required. The engines live beside the tools they power — the [ZIP archive toolkit](/file/archive), the [subtitle workbench](/subtitles/workbench) and the [MP3 toolkit](/audio/mp3-toolkit) are the three most approachable places to start reading.`,
       },
     ],
     faqs: [

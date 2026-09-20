@@ -93,6 +93,38 @@ describe('the prose renders as prose', () => {
   });
 });
 
+describe('every post gives the reader somewhere to go next', () => {
+  // WHY. Measured 19 Sep 2026: 40 distinct visitors opened a blog post and
+  // every single one read one page and left. Eight of the 31 posts contained
+  // no in-body link at all, against 567 live guides they could have pointed
+  // at — so neither a reader nor a crawler had a path onward. Volume was never
+  // the constraint; the absence of paths between pages was.
+  it('links somewhere from the body of every post', () => {
+    const orphans = BLOG_POSTS.filter(
+      (post) =>
+        [
+          ...post.sections
+            .map((section) => section.content)
+            .join('\n')
+            .matchAll(/\]\((\/[^)\s]+)\)/g),
+        ].length === 0,
+    ).map((post) => post.slug);
+    expect(orphans, 'these posts are dead ends').toEqual([]);
+  });
+
+  it('links to its own tool, not only to other articles', () => {
+    const missing: string[] = [];
+    for (const post of BLOG_POSTS) {
+      const body = post.sections.map((section) => section.content).join('\n');
+      const hrefs = [...body.matchAll(/\]\((\/[^)\s]+)\)/g)].map((m) => m[1]);
+      if (!hrefs.some((href) => !href.startsWith('/blog'))) {
+        missing.push(post.slug);
+      }
+    }
+    expect(missing, 'these link only to other blog posts').toEqual([]);
+  });
+});
+
 describe('the blog does not claim more than it delivers', () => {
   it('states a reading time the words actually support', () => {
     // Derived rather than typed, so this asserts the derivation stays honest
