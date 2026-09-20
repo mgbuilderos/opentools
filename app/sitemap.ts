@@ -9,6 +9,15 @@ const baseUrl = ['https:', '//', 'getopentools.com'].join('');
 // Only pages for tools that work are listed. Tools that are not built yet,
 // placeholder pages and the roadmap stay out until they ship. No lastModified
 // is set where the content has no real edit date.
+/**
+ * Googlebot fetches this more than any other path, so it must never be rebuilt
+ * per request. This directive settles that for the Node/Docker self-host path.
+ * It does NOT make vinext emit a file -- vinext's prerender skips `sitemap.ts`
+ * entirely -- so on Cloudflare the file comes from the capture step in
+ * `scripts/prerender-to-assets.mjs`, which saves what this returns.
+ */
+export const dynamic = 'force-static';
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const coreRoutes: MetadataRoute.Sitemap = [
     '',

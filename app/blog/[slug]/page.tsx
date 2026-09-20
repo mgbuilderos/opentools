@@ -27,6 +27,11 @@ const schemaContext = `${httpsScheme}schema.org`;
 
 export const revalidate = 86400;
 
+/** A slug outside `generateStaticParams` is a 404, not a render. Without this,
+ * any unknown URL -- a typo, a stale link, a crawler probing -- starts a React
+ * render on a Worker with a 10ms CPU budget. */
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return getAllBlogPosts().map((post) => ({ slug: post.slug }));
 }

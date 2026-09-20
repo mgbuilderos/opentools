@@ -26,6 +26,11 @@ interface CategoryPageProps {
 
 const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 
+/** A slug outside `generateStaticParams` is a 404, not a render. Without this,
+ * any unknown URL -- a typo, a stale link, a crawler probing -- starts a React
+ * render on a Worker with a 10ms CPU budget. */
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return getAllCategoryPillars().map((p) => ({ category: p.slug }));
 }

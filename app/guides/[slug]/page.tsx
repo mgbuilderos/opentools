@@ -25,6 +25,11 @@ const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 // 10ms CPU, which is what returned 503 to Google: 183 of 670 live URLs on
 // 2026-09-20, 177 of them guides. Keep this in step with `app/sitemap.ts`,
 // which enumerates the same catalog.
+/** A slug outside `generateStaticParams` is a 404, not a render. Without this,
+ * any unknown URL -- a typo, a stale link, a crawler probing -- starts a React
+ * render on a Worker with a 10ms CPU budget. */
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return LIVE_TOOL_CATALOG.map((tool) => ({ slug: tool.slug }));
 }
