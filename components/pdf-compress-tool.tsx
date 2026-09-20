@@ -13,6 +13,11 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
@@ -78,6 +83,49 @@ async function toWorkerInput(source: { id: string; file: File }) {
   } satisfies PdfWorkerInput;
 }
 
+async function compressPdfFile(
+  file: File,
+  options: PdfCompressOptions,
+  signal: AbortSignal,
+) {
+  const input = await toWorkerInput({ id: crypto.randomUUID(), file });
+  if (signal.aborted) throw new DOMException('Batch cancelled.', 'AbortError');
+  const worker = createWorker();
+
+  return new Promise<Blob>((resolve, reject) => {
+    const cleanup = () => {
+      signal.removeEventListener('abort', handleAbort);
+      worker.terminate();
+    };
+    const handleAbort = () => {
+      cleanup();
+      reject(new DOMException('Batch cancelled.', 'AbortError'));
+    };
+    signal.addEventListener('abort', handleAbort, { once: true });
+    worker.onmessage = (event: MessageEvent<PdfWorkerResponse>) => {
+      const message = event.data;
+      if (message.type === 'result') {
+        cleanup();
+        resolve(new Blob([message.bytes], { type: 'application/pdf' }));
+      } else if (message.type === 'error') {
+        cleanup();
+        reject(new Error(message.message));
+      }
+    };
+    worker.onerror = () => {
+      cleanup();
+      reject(new Error('PDF compression stopped unexpectedly.'));
+    };
+    const request: PdfWorkerRequest = { type: 'compress', input, options };
+    worker.postMessage(request, [input.bytes]);
+  });
+}
+
+function compressedFileName(fileName: string) {
+  const base = fileName.replace(/\.pdf$/i, '') || 'document';
+  return `${base}_compressed.pdf`;
+}
+
 export function PdfCompressTool() {
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -94,6 +142,8 @@ export function PdfCompressTool() {
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [error, setError] = useState('');
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
   const manifest = publicTools.find((tool) => tool.id === 'pdf-compress')!;
 
   useEffect(
@@ -153,6 +203,32 @@ export function PdfCompressTool() {
       setStatus('error');
       setError('The browser could not read that file.');
     }
+  };
+
+  const choosePdfs = (files?: FileList | File[]) => {
+    const selected = Array.from(files ?? []);
+    if (
+      selected.length === 0 ||
+      status === 'processing' ||
+      status === 'inspecting' ||
+      batch.running
+    ) {
+      return;
+    }
+    if (selected.length === 1) {
+      batch.reset();
+      setBatchFiles([]);
+      void choosePdf(selected[0]);
+      return;
+    }
+    workerRef.current?.terminate();
+    workerRef.current = null;
+    clearResult();
+    setSource(null);
+    setError('');
+    setStatus('idle');
+    batch.reset();
+    setBatchFiles(selected);
   };
 
   const run = async () => {
@@ -233,6 +309,8 @@ export function PdfCompressTool() {
   };
 
   const clear = () => {
+    batch.reset();
+    setBatchFiles([]);
     workerRef.current?.terminate();
     workerRef.current = null;
     clearResult();
@@ -240,6 +318,29 @@ export function PdfCompressTool() {
     setError('');
     setStatus('idle');
     if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const startBatch = () => {
+    setError('');
+    const options: PdfCompressOptions = {
+      recompressImages,
+      imageQuality,
+      maxImageDimension,
+      removeMetadata,
+    };
+    void batch.start(batchFiles, async (file, _index, signal) => {
+      if (file.size > MAX_BYTES) {
+        return { status: 'skipped', reason: 'The 150 MB limit was exceeded.' };
+      }
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        return { status: 'skipped', reason: 'Only PDF files are supported.' };
+      }
+      const blob = await compressPdfFile(file, options, signal);
+      return {
+        status: 'done',
+        output: { blob, fileName: compressedFileName(file.name) },
+      };
+    });
   };
 
   const percent = progress.total
@@ -307,10 +408,11 @@ export function PdfCompressTool() {
             <input
               ref={fileRef}
               type="file"
+              multiple
               accept="application/pdf,.pdf"
               aria-label="Choose source PDF"
               className="sr-only"
-              onChange={(event) => void choosePdf(event.target.files?.[0])}
+              onChange={(event) => choosePdfs(event.target.files ?? [])}
             />
 
             {source ? (
@@ -327,6 +429,7 @@ export function PdfCompressTool() {
                 <Button
                   variant="outline"
                   className="h-10"
+                  disabled={batch.running}
                   onClick={() => fileRef.current?.click()}
                 >
                   Choose another
@@ -337,6 +440,7 @@ export function PdfCompressTool() {
                 type="button"
                 aria-label="Choose a PDF to compress"
                 onClick={() => fileRef.current?.click()}
+                disabled={batch.running}
                 className="focus-ring grid min-h-52 w-full place-items-center rounded-xl border border-dashed bg-muted/45 p-6 text-center"
               >
                 <span>
@@ -354,14 +458,16 @@ export function PdfCompressTool() {
                 </span>
               </button>
             )}
+            <BatchLocalPromise />
 
-            {source ? (
+            {source || batchFiles.length > 1 ? (
               <div className="mt-5 space-y-5">
                 <label className="flex items-start gap-3 text-sm">
                   <input
                     type="checkbox"
                     aria-label="Re-encode photos inside the PDF"
                     checked={recompressImages}
+                    disabled={batch.running}
                     onChange={(event) => {
                       setRecompressImages(event.target.checked);
                       clearResult();
@@ -393,6 +499,7 @@ export function PdfCompressTool() {
                       min="40"
                       max="95"
                       value={imageQuality}
+                      disabled={batch.running}
                       aria-label="Photo quality"
                       onChange={(event) => {
                         setImageQuality(Number(event.target.value));
@@ -405,6 +512,7 @@ export function PdfCompressTool() {
                     <span className="font-medium">Largest photo edge</span>
                     <select
                       value={maxImageDimension}
+                      disabled={batch.running}
                       aria-label="Largest photo edge"
                       onChange={(event) => {
                         setMaxImageDimension(Number(event.target.value));
@@ -426,6 +534,7 @@ export function PdfCompressTool() {
                     type="checkbox"
                     aria-label="Clear title, author and producer"
                     checked={removeMetadata}
+                    disabled={batch.running}
                     onChange={(event) => {
                       setRemoveMetadata(event.target.checked);
                       clearResult();
@@ -443,26 +552,28 @@ export function PdfCompressTool() {
                   </span>
                 </label>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-                  <Button
-                    variant="ghost"
-                    className="h-11"
-                    disabled={status === 'processing'}
-                    onClick={clear}
-                  >
-                    <Trash2 aria-hidden="true" /> Clear
-                  </Button>
-                  <Button
-                    className="h-11 min-w-44"
-                    disabled={status === 'processing'}
-                    onClick={() => void run()}
-                  >
-                    <Minimize2 aria-hidden="true" />
-                    {status === 'processing'
-                      ? 'Working locally…'
-                      : 'Compress PDF'}
-                  </Button>
-                </div>
+                {source ? (
+                  <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                    <Button
+                      variant="ghost"
+                      className="h-11"
+                      disabled={status === 'processing'}
+                      onClick={clear}
+                    >
+                      <Trash2 aria-hidden="true" /> Clear
+                    </Button>
+                    <Button
+                      className="h-11 min-w-44"
+                      disabled={status === 'processing'}
+                      onClick={() => void run()}
+                    >
+                      <Minimize2 aria-hidden="true" />
+                      {status === 'processing'
+                        ? 'Working locally…'
+                        : 'Compress PDF'}
+                    </Button>
+                  </div>
+                ) : null}
 
                 {status === 'processing' && progress.total > 0 ? (
                   <div aria-live="polite">
@@ -481,6 +592,17 @@ export function PdfCompressTool() {
               </div>
             ) : null}
           </section>
+
+          {batchFiles.length > 1 ? (
+            <BatchRunnerPanel
+              files={batchFiles}
+              runner={batch}
+              startLabel="Compress all"
+              zipName="compressed-pdfs.zip"
+              onStart={startBatch}
+              onClear={clear}
+            />
+          ) : null}
 
           {receipt ? (
             <section className="mt-5 overflow-hidden rounded-2xl border bg-card">
