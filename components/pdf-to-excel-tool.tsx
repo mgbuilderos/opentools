@@ -19,8 +19,24 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
+import { PdfGridOverlay } from '@/components/pdf-grid-overlay';
 import { announceCompletion } from '@/lib/completion';
-import { readPdfText } from '@/lib/tools/pdf/pdf-text';
+import {
+  flagCells,
+  summariseFlags,
+  type CellFlag,
+  type ColumnRole,
+} from '@/lib/tools/pdf/cell-flags';
+import { extractTableFromGrids } from '@/lib/tools/pdf/lattice';
+import {
+  readPdfGeometry,
+  type PdfPageGeometry,
+} from '@/lib/tools/pdf/pdf-geometry';
+import {
+  buildGridFromRulings,
+  segmentsToRulings,
+  type RuledGrid,
+} from '@/lib/tools/pdf/rulings';
 import {
   detectDateFormatForColumn,
   detectNumberConvention,
@@ -31,18 +47,14 @@ import {
   type ReconciledTransaction,
   type StatementReconciliationReport,
 } from '@/lib/tools/pdf/statement-values';
-import { extractTableFromPdfPages } from '@/lib/tools/pdf/tables';
+import {
+  extractTableFromPdfPages,
+  type ExtractedTableResult,
+} from '@/lib/tools/pdf/tables';
 import { toCsv } from '@/lib/tools/spreadsheet/csv';
 import { writeXlsx, type WriteCell } from '@/lib/tools/spreadsheet/xlsx-writer';
 
-export type ColumnRole =
-  | 'date'
-  | 'description'
-  | 'debit'
-  | 'credit'
-  | 'amount'
-  | 'balance'
-  | 'ignore';
+export type { ColumnRole };
 
 const ROLE_LABELS: Record<ColumnRole, string> = {
   date: 'Date',
@@ -161,6 +173,15 @@ export function PdfToExcelTool() {
     null,
   );
 
+  // The page view, and the grid the user can correct.
+  const [pdfBytes, setPdfBytes] = useState<Uint8Array | null>(null);
+  const [geometry, setGeometry] = useState<PdfPageGeometry[] | null>(null);
+  const [pageGrids, setPageGrids] = useState<(RuledGrid | null)[]>([]);
+  const [overlayPage, setOverlayPage] = useState(1);
+  const [columnSource, setColumnSource] = useState<'rules' | 'spacing'>(
+    'spacing',
+  );
+
   // Download links
   const [xlsxUrl, setXlsxUrl] = useState<string | null>(null);
   const [csvUrl, setCsvUrl] = useState<string | null>(null);
@@ -182,6 +203,11 @@ export function PdfToExcelTool() {
     setIsScannedRefusal(false);
     setScannedFileName('');
     setPageCount(0);
+    setPdfBytes(null);
+    setGeometry(null);
+    setPageGrids([]);
+    setOverlayPage(1);
+    setColumnSource('spacing');
     setHeaders([]);
     setRows([]);
     setColumnRoles([]);
@@ -211,7 +237,10 @@ export function PdfToExcelTool() {
 
       try {
         const buffer = await uploadedFile.arrayBuffer();
-        const pages = await readPdfText(new Uint8Array(buffer));
+        const bytes = new Uint8Array(buffer);
+        const pages = await readPdfGeometry(bytes);
+        setPdfBytes(bytes);
+        setGeometry(pages);
         setPageCount(pages.length);
 
         // Check if PDF has 0 readable text items (Guardrail G7: Refusal)
@@ -223,8 +252,23 @@ export function PdfToExcelTool() {
           return;
         }
 
-        // Extract 2D Table structure
-        const table = extractTableFromPdfPages(pages);
+        // Prefer the table the PDF drew over the one we would infer. Where a
+        // page carries real ruling lines the column boundaries are stated, not
+        // guessed, and `extractTableFromGrids` returns null rather than force
+        // a grid onto a page that has none.
+        const grids = pages.map((page) =>
+          buildGridFromRulings(segmentsToRulings(page.segments)),
+        );
+        setPageGrids(grids);
+        const ruled = extractTableFromGrids(
+          pages.map((page, index) => ({
+            items: page.items,
+            grid: grids[index] ?? null,
+          })),
+        );
+        setColumnSource(ruled ? 'rules' : 'spacing');
+        const table: ExtractedTableResult =
+          ruled ?? extractTableFromPdfPages(pages);
         if (table.rows.length === 0) {
           setErrorMessage(
             `No tabular statement data could be extracted from "${uploadedFile.name}". Please verify the document contains structured tabular rows.`,

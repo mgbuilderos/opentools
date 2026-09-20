@@ -620,8 +620,70 @@ function isContinuationRow(
  * Main table extraction pipeline.
  * Accepts pages of text items and extracts a structured, normalized table with multi-line rows merged.
  */
+/**
+ * Build columns from boundaries the user set by hand on the page view.
+ *
+ * Their dividers are not a hint to be refined — they are the answer. So the
+ * header text is read out of whatever now falls inside each band rather than
+ * the bands being re-derived from the header, which is the opposite of what
+ * `detectColumns` does.
+ */
+function columnsFromEdges(
+  edges: readonly number[],
+  headerLine: LineSegments | null,
+  bodyLines: readonly LineSegments[],
+): ColumnDefinition[] {
+  const columns: ColumnDefinition[] = [];
+  const within = (
+    segments: readonly TextSegment[],
+    left: number,
+    right: number,
+  ): TextSegment[] =>
+    segments.filter(
+      (segment) => segment.left >= left - 1.5 && segment.left < right + 1.5,
+    );
+
+  for (let i = 0; i < edges.length - 1; i += 1) {
+    const left = edges[i]!;
+    const right = edges[i + 1]!;
+    const inside = within(headerLine?.segments ?? [], left, right);
+    const header = inside
+      .map((segment) => segment.text)
+      .join(' ')
+      .trim();
+
+    // Alignment comes from the DATA, never the header. A header is a word —
+    // "Amount", "Balance" — so it is never numeric, and reading alignment off
+    // it makes every column left-aligned including the money.
+    let numeric = 0;
+    let counted = 0;
+    for (const line of bodyLines) {
+      if (line === headerLine) continue;
+      for (const segment of within(line.segments, left, right)) {
+        counted += 1;
+        if (segment.isNumeric) numeric += 1;
+      }
+    }
+    const alignment =
+      counted > 0 && numeric * 2 >= counted
+        ? ('right' as const)
+        : ('left' as const);
+    columns.push({
+      id: `col-${i}`,
+      index: i,
+      header,
+      left,
+      right,
+      alignment,
+      detectedRole: detectRoleFromHeader(header),
+    });
+  }
+  return columns;
+}
+
 export function extractTableFromPdfPages(
   pages: readonly PdfPageText[],
+  options: { columnEdges?: readonly number[] } = {},
 ): ExtractedTableResult {
   let totalCharacters = 0;
   for (const page of pages) {
@@ -671,7 +733,15 @@ export function extractTableFromPdfPages(
 
   // Flatten all lines across pages to determine global column layout
   const allLines = pagesLines.flat();
-  const columns = detectColumns(allLines, headerInfo?.line ?? null);
+  // Boundaries the user dragged win over anything we would infer.
+  const columns =
+    options.columnEdges && options.columnEdges.length >= 2
+      ? columnsFromEdges(
+          options.columnEdges,
+          headerInfo?.line ?? null,
+          allLines,
+        )
+      : detectColumns(allLines, headerInfo?.line ?? null);
   const headers = columns.map((col) => col.header);
 
   const rows: ExtractedTableRow[] = [];

@@ -410,4 +410,70 @@ describe('lib/tools/pdf/tables', () => {
     expect(result.refusalReason).toContain('scanned document');
     expect(result.refusalReason).toContain('CSV/OFX/QIF');
   });
+
+  describe('column boundaries set by hand on the page view', () => {
+    function page(): PdfPageText {
+      const item = (
+        text: string,
+        x: number,
+        y: number,
+        width: number,
+      ): PdfTextItem => ({ text, x, y, width, fontSize: 9, bold: false });
+      return {
+        items: [
+          item('Date', 40, 200, 20),
+          item('Description', 110, 200, 50),
+          item('Amount', 300, 200, 30),
+          item('01/04/2026', 40, 180, 45),
+          item('RENT PAYMENT', 110, 180, 60),
+          item('1,100.00', 300, 180, 35),
+          item('02/04/2026', 40, 160, 45),
+          item('CARD PURCHASE', 110, 160, 65),
+          item('82.15', 320, 160, 25),
+        ],
+      };
+    }
+
+    it('uses the boundaries it is given instead of inferring its own', () => {
+      const table = extractTableFromPdfPages([page()], {
+        columnEdges: [35, 105, 295, 400],
+      });
+      expect(table.columns).toHaveLength(3);
+      expect(table.columns.map((column) => column.left)).toEqual([
+        35, 105, 295,
+      ]);
+      expect(table.headers).toEqual(['Date', 'Description', 'Amount']);
+      expect(table.rows[0]!.cells).toEqual([
+        '01/04/2026',
+        'RENT PAYMENT',
+        '1,100.00',
+      ]);
+    });
+
+    it('merges two columns when the user removes the divider between them', () => {
+      // The same page with the Date/Description divider taken out.
+      const table = extractTableFromPdfPages([page()], {
+        columnEdges: [35, 295, 400],
+      });
+      expect(table.columns).toHaveLength(2);
+      expect(table.rows[0]!.cells[0]).toBe('01/04/2026 RENT PAYMENT');
+      expect(table.rows[0]!.cells[1]).toBe('1,100.00');
+    });
+
+    it('reads a column of figures as right-aligned', () => {
+      const table = extractTableFromPdfPages([page()], {
+        columnEdges: [35, 105, 295, 400],
+      });
+      expect(table.columns[2]!.alignment).toBe('right');
+      expect(table.columns[1]!.alignment).toBe('left');
+    });
+
+    it('falls back to inferring them when given too few to be a table', () => {
+      const withEdges = extractTableFromPdfPages([page()], {
+        columnEdges: [35],
+      });
+      const withNone = extractTableFromPdfPages([page()]);
+      expect(withEdges.columns.length).toBe(withNone.columns.length);
+    });
+  });
 });
