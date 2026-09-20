@@ -23,12 +23,22 @@ import { testPng } from './fixtures';
  * are `input[type=number]`, whose role is `spinbutton`, not `textbox`.
  */
 
+/**
+ * Attach the file, retrying the click if the chooser event is missed.
+ *
+ * Observed flaking roughly one run in ten: the click lands before the
+ * filechooser listener is attached and the wait then times out. Wrapping the
+ * pair in toPass retries the whole handshake, which is the idiom
+ * `pdf-compress.spec.ts` already uses here for the same reason.
+ */
 async function chooseImage(page: Page, name = 'source.png') {
-  const chooser = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: /choose (an )?image$/iu }).click();
-  await (
-    await chooser
-  ).setFiles({ name, mimeType: 'image/png', buffer: testPng(64) });
+  await expect(async () => {
+    const chooser = page.waitForEvent('filechooser', { timeout: 5_000 });
+    await page.getByRole('button', { name: /choose (an )?image$/iu }).click();
+    await (
+      await chooser
+    ).setFiles({ name, mimeType: 'image/png', buffer: testPng(64) });
+  }).toPass({ timeout: 45_000 });
 }
 
 async function savedImageBytes(page: Page) {
