@@ -25,6 +25,26 @@ Three things are gated, and they are the same three at both companies:
 2. **File size**
 3. **Number of jobs per day** — Smallpdf allows *two*
 
+### The same pattern, at fifty times the price
+
+This was checked again in a completely different market and came back
+identical. **Bluebeam Revu** is the drawing tool for architects, engineers and
+quantity surveyors. It sells four tiers, and the three things it refuses to put
+in the $260 entry tier are:
+
+1. **Measurement** (perimeter, area, volume, count)
+2. **Compare / overlay** two revisions
+3. **Batch stamping** — gated all the way to the $440 top tier
+
+Two vendors, two industries, an order of magnitude apart in price, and **both
+put batch behind the paywall**. Smallpdf and iLovePDF meter it because their
+servers pay for it. Bluebeam meters it because doing a hundred sheets at once
+is where the value is.
+
+That is not my inference about what people will pay for. It is two pricing
+committees, with decades of data each, telling us which capabilities carry the
+willingness to pay — and batch is on both lists.
+
 ## Why this matters more than it looks
 
 **Every one of those three limits exists because they pay for servers.**
