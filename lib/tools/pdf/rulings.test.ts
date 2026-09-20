@@ -64,7 +64,11 @@ describe('matrix helpers', () => {
 
 describe('pathDataToSegments', () => {
   it('reads a stroked line into one segment in page coordinates', () => {
-    const segments = pathDataToSegments(line(30, 200, 370, 200), IDENTITY_MATRIX, 0.75);
+    const segments = pathDataToSegments(
+      line(30, 200, 370, 200),
+      IDENTITY_MATRIX,
+      0.75,
+    );
     expect(segments).toEqual([
       { x1: 30, y1: 200, x2: 370, y2: 200, thickness: 0.75 },
     ]);
@@ -134,7 +138,11 @@ describe('segmentsToRulings', () => {
     ]);
     expect(rulings.horizontal).toHaveLength(1);
     expect(rulings.vertical).toHaveLength(1);
-    expect(rulings.horizontal[0]).toMatchObject({ position: 200, from: 30, to: 370 });
+    expect(rulings.horizontal[0]).toMatchObject({
+      position: 200,
+      from: 30,
+      to: 370,
+    });
   });
 
   it('joins a rule that was drawn once per cell back into one border', () => {
@@ -172,7 +180,9 @@ describe('segmentsToRulings', () => {
   });
 
   it('drops a mark too short to be a border', () => {
-    expect(segmentsToRulings([horizontal(200, 30, 34)]).horizontal).toHaveLength(0);
+    expect(
+      segmentsToRulings([horizontal(200, 30, 34)]).horizontal,
+    ).toHaveLength(0);
   });
 
   it('drops a fat band, which is a shaded header and not a rule', () => {

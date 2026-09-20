@@ -59,7 +59,8 @@ async function ensurePdfWorker(pdfjs: {
   if (pdfjs.GlobalWorkerOptions.workerSrc) return;
   if (typeof Worker === 'undefined') return;
   try {
-    const workerModule = await import('pdfjs-dist/legacy/build/pdf.worker.mjs?url');
+    const workerModule =
+      await import('pdfjs-dist/legacy/build/pdf.worker.mjs?url');
     if (workerModule.default) {
       pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default;
     }
@@ -98,7 +99,9 @@ export async function readPdfGeometry(
   onPage?: (pageNumber: number, pageCount: number) => void,
 ): Promise<PdfPageGeometry[]> {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  await ensurePdfWorker(pdfjs as unknown as Parameters<typeof ensurePdfWorker>[0]);
+  await ensurePdfWorker(
+    pdfjs as unknown as Parameters<typeof ensurePdfWorker>[0],
+  );
   const OPS = pdfjs.OPS;
 
   const copy = new Uint8Array(bytes.length);
@@ -245,11 +248,7 @@ export function closedRectangle(
   }
 
   // A repeated final point is the explicit return to the start.
-  if (
-    xs.length === 5 &&
-    xs[4] === xs[0] &&
-    ys[4] === ys[0]
-  ) {
+  if (xs.length === 5 && xs[4] === xs[0] && ys[4] === ys[0]) {
     xs.pop();
     ys.pop();
   }

@@ -155,7 +155,9 @@ function bezierPoint(
   t: number,
 ): number {
   const u = 1 - t;
-  return u * u * u * p0 + 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t * p3;
+  return (
+    u * u * u * p0 + 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t * p3
+  );
 }
 
 function quadraticPoint(p0: number, p1: number, p2: number, t: number): number {
@@ -190,7 +192,7 @@ export function pathDataToSegments(
     segments.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, thickness });
   };
 
-  for (let i = 0; i < data.length; ) {
+  for (let i = 0; i < data.length;) {
     const op = data[i++];
     if (op === DRAW_MOVE_TO) {
       currentX = data[i++] ?? 0;
@@ -286,11 +288,23 @@ export function rectangleToSegment(
 
   if (h <= MAX_RULE_THICKNESS && w > h && w >= MIN_RULE_LENGTH) {
     const mid = (top + bottom) / 2;
-    return { x1: left, y1: mid, x2: right, y2: mid, thickness: Math.max(h, 0.1) };
+    return {
+      x1: left,
+      y1: mid,
+      x2: right,
+      y2: mid,
+      thickness: Math.max(h, 0.1),
+    };
   }
   if (w <= MAX_RULE_THICKNESS && h > w && h >= MIN_RULE_LENGTH) {
     const mid = (left + right) / 2;
-    return { x1: mid, y1: bottom, x2: mid, y2: top, thickness: Math.max(w, 0.1) };
+    return {
+      x1: mid,
+      y1: bottom,
+      x2: mid,
+      y2: top,
+      thickness: Math.max(w, 0.1),
+    };
   }
   return null;
 }
