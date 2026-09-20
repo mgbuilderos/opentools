@@ -199,7 +199,21 @@ export function HomeWorkspace() {
           ) : null}
           <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-sm text-muted-foreground">
             <p>No account needed. Downloads are free.</p>
-            <p>Files are processed in your browser.</p>
+            {/*
+              The one differentiator this site has over every free competitor
+              is that the file never leaves the tab — and until /proof existed
+              it was asserted here and nowhere else. This sentence is now the
+              way in to the evidence behind it.
+            */}
+            <p>
+              Files are processed in your browser.{' '}
+              <a
+                href="/proof"
+                className="focus-ring font-semibold text-foreground underline underline-offset-4"
+              >
+                See the proof
+              </a>
+            </p>
           </footer>
         </div>
       </section>

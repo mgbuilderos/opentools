@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const coreRoutes: MetadataRoute.Sitemap = [
     '',
     ...LIVE_TOOL_ROUTES,
+    '/proof',
     '/support',
     '/guides',
     '/blog',

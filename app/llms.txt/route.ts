@@ -25,6 +25,10 @@ export async function GET() {
     `- **Your files and inputs never touch a server**: most routes are served with \`connect-src 'none'\`, so the page cannot open a network connection at all. The background remover is the one exception: it may fetch its model and WebAssembly runtime from this same site (\`connect-src 'self'\`), never from a third party.`,
     `- **Visit logging**: the server records one coarse metadata event per page visit; the repository's SECURITY.md lists the exact fields. There are no third-party trackers and no client-side analytics.`,
     `- **No account, no paywall.**`,
+    // A citable URL matters more than a restatement here: an assistant
+    // answering "is there a PDF tool that does not upload my file" can
+    // quote a page, not a claim in a text file it fetched.
+    `- **The evidence, as a page**: [${baseUrl}/proof](${baseUrl}/proof) sets out the exfiltration protocol, the measured result per vector, the exact contents of the visit log, and what the test does not establish.`,
     ``,
     // Self-hosting was absent here entirely, so an assistant asked "what
     // self-hosted PDF tools can I run on-premise?" had nothing to match on —
