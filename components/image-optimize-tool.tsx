@@ -19,6 +19,10 @@ import {
   BatchRunnerPanel,
   useFileBatchRunner,
 } from '@/components/batch-runner';
+import {
+  RecipeAppliedNotice,
+  RecipeShareButton,
+} from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
@@ -28,6 +32,12 @@ import {
   supportedRasterTypes,
   type RasterFormat,
 } from '@/lib/tools/image';
+import {
+  IMAGE_OPTIMIZE_RECIPE,
+  describeRecipe,
+  readRecipeValues,
+  recipeParamNames,
+} from '@/lib/tools/recipe-link';
 
 type SourceImage = { file: File; url: string; width: number; height: number };
 type ImageReceipt = {
@@ -160,7 +170,50 @@ export function ImageOptimizeTool() {
   const [busy, setBusy] = useState(false);
   const [batchFiles, setBatchFiles] = useState<File[]>([]);
   const batch = useFileBatchRunner();
+  const [recipeSummary, setRecipeSummary] = useState('');
   const manifest = publicTools.find((tool) => tool.id === 'image-optimize')!;
+
+  // Settings shared from someone else's link, applied once and then cleared
+  // out of the address bar.
+  //
+  // WHY THE PARAMS ARE STRIPPED rather than kept as the source of truth, which
+  // is how `?tool=` works on the workbenches. These settings stay editable
+  // after arrival, so a URL that kept asserting them would have to be rewritten
+  // on every slider tick to avoid fighting the person using the page. Applying
+  // once and removing the params means the effect is idempotent: if React
+  // rebuilds the tree recovering from a hydration mismatch — the trap
+  // documented in text-workbench-tool.tsx — this either runs again with the
+  // same values or finds nothing left to do. Neither outcome loses an edit.
+  /* oxlint-disable react/react-compiler -- this effect reads the address bar,
+     an external system, which is what the rule's own guidance says an effect
+     is for. It runs once on mount, so the cascading render the rule warns
+     about happens exactly once, before anyone has typed anything. */
+  useEffect(() => {
+    const applied = readRecipeValues(
+      IMAGE_OPTIMIZE_RECIPE,
+      window.location.search,
+    );
+    if (Object.keys(applied).length === 0) return;
+
+    if (typeof applied.format === 'string') {
+      setFormat(`image/${applied.format}` as RasterFormat);
+    }
+    if (typeof applied.quality === 'number') setQuality(applied.quality);
+    if (typeof applied.width === 'number') setMaxWidth(applied.width);
+    if (typeof applied.height === 'number') setMaxHeight(applied.height);
+    setRecipeSummary(describeRecipe(IMAGE_OPTIMIZE_RECIPE, applied));
+
+    const url = new URL(window.location.href);
+    for (const name of recipeParamNames(IMAGE_OPTIMIZE_RECIPE)) {
+      url.searchParams.delete(name);
+    }
+    window.history.replaceState(
+      null,
+      '',
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, []);
+  /* oxlint-enable react/react-compiler */
 
   useEffect(() => {
     sourceRef.current = source;
@@ -432,7 +485,10 @@ export function ImageOptimizeTool() {
               </button>
             </div>
           ) : null}
-          <section className="mt-8 overflow-hidden rounded-2xl border bg-card">
+          <div className="mt-8">
+            <RecipeAppliedNotice summary={recipeSummary} />
+          </div>
+          <section className="overflow-hidden rounded-2xl border bg-card">
             <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
               <div>
                 <h2 className="text-sm font-semibold">Source image</h2>
@@ -588,6 +644,15 @@ export function ImageOptimizeTool() {
                     Clear
                   </Button>
                 ) : null}
+                <RecipeShareButton
+                  definition={IMAGE_OPTIMIZE_RECIPE}
+                  values={{
+                    format: format.split('/')[1],
+                    quality,
+                    width: maxWidth,
+                    height: maxHeight,
+                  }}
+                />
               </div>
             </div>
           </section>

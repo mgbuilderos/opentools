@@ -10,12 +10,22 @@ import {
   Sparkles,
   Trash2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  RecipeAppliedNotice,
+  RecipeShareButton,
+} from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import {
+  TEXT_CASE_RECIPE,
+  describeRecipe,
+  readRecipeValues,
+  recipeParamNames,
+} from '@/lib/tools/recipe-link';
 import {
   countWords,
   textCaseOptions,
@@ -42,7 +52,34 @@ export function ToolWorkspace() {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  const [recipeSummary, setRecipeSummary] = useState('');
   const manifest = toolMeta('text-case-converter');
+
+  // A shared setup link, applied once and then taken out of the address bar.
+  // See image-optimize-tool.tsx for why this is a one-shot rather than the
+  // converging effect the `?tool=` deep links use.
+  /* oxlint-disable react/react-compiler -- this effect reads the address bar,
+     an external system, which is what the rule's own guidance says an effect
+     is for. It runs once on mount, so the cascading render the rule warns
+     about happens exactly once, before anyone has typed anything. */
+  useEffect(() => {
+    const applied = readRecipeValues(TEXT_CASE_RECIPE, window.location.search);
+    if (typeof applied.mode !== 'string') return;
+
+    setMode(applied.mode as TextCaseMode);
+    setRecipeSummary(describeRecipe(TEXT_CASE_RECIPE, applied));
+
+    const url = new URL(window.location.href);
+    for (const name of recipeParamNames(TEXT_CASE_RECIPE)) {
+      url.searchParams.delete(name);
+    }
+    window.history.replaceState(
+      null,
+      '',
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, []);
+  /* oxlint-enable react/react-compiler */
 
   const runTransform = () => {
     if (!input) return;
@@ -144,7 +181,10 @@ export function ToolWorkspace() {
             </button>
           </div>
 
-          <div className="mt-8 grid gap-5 xl:grid-cols-2">
+          <div className="mt-8">
+            <RecipeAppliedNotice summary={recipeSummary} subjectNoun="text" />
+          </div>
+          <div className="grid gap-5 xl:grid-cols-2">
             <section
               aria-labelledby="input-heading"
               className="rounded-2xl border bg-card"
@@ -289,6 +329,13 @@ export function ToolWorkspace() {
                   Convert text
                 </Button>
               </div>
+            </div>
+            <div className="xl:max-w-xs">
+              <RecipeShareButton
+                definition={TEXT_CASE_RECIPE}
+                values={{ mode }}
+                subjectNoun="text"
+              />
             </div>
           </section>
 

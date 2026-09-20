@@ -18,9 +18,19 @@ import {
   BatchRunnerPanel,
   useFileBatchRunner,
 } from '@/components/batch-runner';
+import {
+  RecipeAppliedNotice,
+  RecipeShareButton,
+} from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
+import {
+  PDF_COMPRESS_RECIPE,
+  describeRecipe,
+  readRecipeValues,
+  recipeParamNames,
+} from '@/lib/tools/recipe-link';
 import type {
   PdfCompressOptions,
   PdfWorkerInput,
@@ -144,7 +154,46 @@ export function PdfCompressTool() {
   const [error, setError] = useState('');
   const [batchFiles, setBatchFiles] = useState<File[]>([]);
   const batch = useFileBatchRunner();
+  const [recipeSummary, setRecipeSummary] = useState('');
   const manifest = publicTools.find((tool) => tool.id === 'pdf-compress')!;
+
+  // Settings arriving from someone else's link. Applied once, then removed
+  // from the address bar — see image-optimize-tool.tsx for why that shape and
+  // not the converging one the `?tool=` deep links use.
+  /* oxlint-disable react/react-compiler -- this effect reads the address bar,
+     an external system, which is what the rule's own guidance says an effect
+     is for. It runs once on mount, so the cascading render the rule warns
+     about happens exactly once, before anyone has typed anything. */
+  useEffect(() => {
+    const applied = readRecipeValues(
+      PDF_COMPRESS_RECIPE,
+      window.location.search,
+    );
+    if (Object.keys(applied).length === 0) return;
+
+    if (typeof applied.recompress === 'boolean') {
+      setRecompressImages(applied.recompress);
+    }
+    if (typeof applied.quality === 'number') setImageQuality(applied.quality);
+    if (typeof applied.maxedge === 'string') {
+      setMaxImageDimension(Number(applied.maxedge));
+    }
+    if (typeof applied.metadata === 'boolean') {
+      setRemoveMetadata(applied.metadata);
+    }
+    setRecipeSummary(describeRecipe(PDF_COMPRESS_RECIPE, applied));
+
+    const url = new URL(window.location.href);
+    for (const name of recipeParamNames(PDF_COMPRESS_RECIPE)) {
+      url.searchParams.delete(name);
+    }
+    window.history.replaceState(
+      null,
+      '',
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, []);
+  /* oxlint-enable react/react-compiler */
 
   useEffect(
     () => () => {
@@ -404,7 +453,10 @@ export function PdfCompressTool() {
             </div>
           ) : null}
 
-          <section className="mt-8 overflow-hidden rounded-2xl border bg-card p-5 sm:p-6">
+          <div className="mt-8">
+            <RecipeAppliedNotice summary={recipeSummary} />
+          </div>
+          <section className="overflow-hidden rounded-2xl border bg-card p-5 sm:p-6">
             <input
               ref={fileRef}
               type="file"
@@ -574,6 +626,18 @@ export function PdfCompressTool() {
                     </Button>
                   </div>
                 ) : null}
+
+                <div className="sm:max-w-xs sm:self-end">
+                  <RecipeShareButton
+                    definition={PDF_COMPRESS_RECIPE}
+                    values={{
+                      recompress: recompressImages,
+                      quality: imageQuality,
+                      maxedge: String(maxImageDimension),
+                      metadata: removeMetadata,
+                    }}
+                  />
+                </div>
 
                 {status === 'processing' && progress.total > 0 ? (
                   <div aria-live="polite">
