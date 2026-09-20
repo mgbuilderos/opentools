@@ -40,7 +40,9 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
 
     // File summary
     await expect(page.getByText('tracked-doc.docx')).toBeVisible();
-    await expect(page.getByText('Microsoft Word Document (.docx)')).toBeVisible();
+    await expect(
+      page.getByText('Microsoft Word Document (.docx)'),
+    ).toBeVisible();
 
     // Author & Document Identity
     await expect(page.getByText('Jane Lawyer').first()).toBeVisible();
@@ -66,9 +68,7 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
     await expect(page.getByText('00AA1122').first()).toBeVisible();
 
     // Tracked changes & secret deleted text
-    await expect(
-      page.getByText('Hidden Deleted Text Warning'),
-    ).toBeVisible();
+    await expect(page.getByText('Hidden Deleted Text Warning')).toBeVisible();
     await expect(
       page.getByText('Payment of $250,000 shall be wired within 30 days.'),
     ).toBeVisible();
@@ -86,7 +86,7 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
     await uploadDocx(page, 'tracked-doc.docx');
 
     // Select "Accept Revisions"
-    await page.getByLabel('Accept Revisions').click();
+    await page.getByRole('radio', { name: /^Accept Revisions/ }).check();
 
     // Trigger download
     const cleanButton = page.getByRole('button', {
@@ -118,7 +118,9 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
 
     // Verify XML text
     const archive = readZip(downloadedBytes);
-    const docEntry = archive.entries.find((e) => e.path === 'word/document.xml');
+    const docEntry = archive.entries.find(
+      (e) => e.path === 'word/document.xml',
+    );
     expect(docEntry).toBeDefined();
     const docXml = new TextDecoder().decode(
       await extractEntry(downloadedBytes, docEntry!),
@@ -141,7 +143,7 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
     await uploadDocx(page, 'tracked-doc.docx');
 
     // Select "Reject Revisions"
-    await page.getByLabel('Reject Revisions').click();
+    await page.getByRole('radio', { name: /^Reject Revisions/ }).check();
 
     const cleanButton = page.getByRole('button', {
       name: 'Clean & download .docx',
@@ -156,7 +158,9 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
     const downloadedBytes = new Uint8Array(await readFile(downloadPath!));
 
     const archive = readZip(downloadedBytes);
-    const docEntry = archive.entries.find((e) => e.path === 'word/document.xml');
+    const docEntry = archive.entries.find(
+      (e) => e.path === 'word/document.xml',
+    );
     const docXml = new TextDecoder().decode(
       await extractEntry(downloadedBytes, docEntry!),
     );
