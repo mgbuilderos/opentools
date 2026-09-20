@@ -60,6 +60,8 @@ saying what you actually think:
 | Explain what the project is about | Why you built it — the thing you found unacceptable |
 | European dimension | Whether you believe the case. If you don't, say less, not more |
 | Requested amount | What the work honestly costs you, not the maximum |
+| Timeline and capacity | Your real hours per week. Nobody else can answer this, and overstating it is the commonest way a good proposal fails |
+| How this reaches projects | Which projects you will actually approach, by name |
 
 A test that works: read a paragraph aloud. If it doesn't sound like you
 explaining it to a friend, rewrite it until it does. Shorter and plainer beats
@@ -68,8 +70,11 @@ your central claim can be checked in two minutes, which almost no proposal can
 offer.
 
 **Status, 20 September 2026.** Evidence is complete and current: the egress
-proof passed 6/6 against the deployed site today. What remains is yours — the
-words, the budget decision, and the `[FILL]` marker.
+proof passed 6/6 against the deployed site today, and the four sections NLnet
+needs but the earlier draft lacked — tasks and deliverables, timeline and
+capacity, licensing, and adoption — are now in. What remains is yours: the
+words, the budget decision, and three `[YOU]` answers (your background, your
+available hours, and the projects you will approach by name).
 
 ---
 
@@ -360,11 +365,40 @@ application is read at all, so do not leave it out.*
 > institutional affiliation, no EU entity. If the European dimension here is
 > judged insufficient, I would rather be told that than have overstated it.
 
-## Budget
+## Tasks and deliverables
 
-*Indicative; adjust to what the work honestly costs and how much time you can
-commit. Reviewers weigh cost-effectiveness at 30% and prefer a small, credible
-ask over a padded one.*
+*NLnet does not hand over a lump sum. They agree a list of concrete tasks, each
+with an amount, and pay on delivery — the memorandum of understanding is built
+from this table. So this section, not the budget total, is what they are
+actually agreeing to. **Adjust the durations to what you can honestly commit**;
+see "Timeline and capacity" below.*
+
+| # | Task | Deliverable | Done when | € |
+| :-- | :--- | :--- | :--- | ---: |
+| 1 | Verification protocol | A published specification: the levels of evidence, what may and may not be claimed at each, the three documented failure modes, and how a deployed artefact is pinned in a result | It is published open access at a stable URL and a third party can follow it without contacting me | 8,000 |
+| 2 | Cross-engine test harness | An installable package that runs the protocol against either a local build or a deployed origin, in at least two engines, validated against a deliberately-leaking control | It is on a public package registry with a worked CI example, and **at least one project other than mine has run it** | 12,000 |
+| 3 | Public checker | A page and a command-line tool that take any URL and report, in plain language, whether that page can transmit what a user gives it — and what the check does not cover | It is publicly available, covers the documented vectors, and its wording has been tested on non-technical readers | 9,000 |
+| 4 | Hardened self-hostable edition | A container with TLS, authentication and a reproducible build, running with no network access | The image pulls anonymously, the build reproduces from published source, and the egress proof passes against a self-hosted instance | 11,000 |
+| 5 | Independent security review | A written review of the protocol and harness by an EU-based reviewer with no involvement in the work | The report is published **in full, including whatever it found**, with my responses | 5,000 |
+| | **Total** | | | **45,000** |
+
+Two things about this table are deliberate and worth keeping.
+
+**Task 2 is done when someone else runs it, not when I publish it.** A harness
+nobody adopted has not demonstrated that the method generalises, which is the
+entire claim. Tying payment to external adoption is the strongest commitment I
+can make to that.
+
+**Task 5 publishes whatever the review finds.** A security review that only
+gets published when it is favourable is marketing. This proposal argues that
+claims should be checkable; the review has to be held to the same standard.
+
+## Budget summary
+
+*The same five amounts as the task table above, which is the one that matters —
+this is only the summary. Adjust both together if you change anything.
+Reviewers weigh cost-effectiveness at 30% and prefer a small, credible ask over
+a padded one: cut a task rather than pad one.*
 
 | Task | € |
 | :--- | ---: |
@@ -374,6 +408,89 @@ ask over a padded one.*
 | Hardened self-hostable edition: TLS, authentication, reproducible build | 11,000 |
 | Independent security review of the protocol and harness | 5,000 |
 | **Total** | **45,000** |
+
+## Timeline and capacity
+
+*Feasibility is scored, and the commonest way a good single-maintainer proposal
+fails is claiming availability the applicant does not have. Understating is
+safer than overstating — and **[YOU]** are the only person who can fill this in
+honestly.*
+
+> **Duration: [YOU — e.g. 12 months from the start of the agreement].**
+>
+> **My available time: [YOU — hours per week, honestly. State whether this is
+> alongside other paid work, because it almost certainly is, and reviewers
+> would rather read that than discover it later.]**
+>
+> I am the sole maintainer. That is a real risk to this proposal and I would
+> rather name it than have it noticed. Three things reduce it. The work is
+> already partly done and published, so this grant extends an existing,
+> demonstrably shipping codebase rather than starting one. The tasks are
+> independently useful: if only tasks 1 and 2 are completed, the protocol and
+> harness still stand on their own and the remainder can be dropped without
+> stranding the rest. And I will actively seek a European co-maintainer for the
+> harness during task 2 rather than leaving it a one-person project.
+>
+> **If the method does not generalise** — if it turns out the protocol cannot be
+> applied cleanly to applications built differently from mine — I will publish
+> that finding rather than quietly narrow the claim. A documented negative
+> result about what architectural verification cannot cover is worth more to
+> the ecosystem than a method that only works on its author's code.
+
+## Licensing
+
+> All existing code is **MIT** (OSI-approved), stated in the repository's
+> `LICENSE` file, in `package.json`, and in the `funding.json` manifest as
+> `spdx:MIT`. Every output of this grant — the protocol specification, the test
+> harness, the public checker and the self-hostable edition — is released under
+> the same terms or another OSI-approved licence, with the documentation under
+> a free licence.
+>
+> There is no contributor licence agreement and no copyright assignment: I do
+> not ask contributors to sign anything. There are no patents, no patent
+> applications, and I will not file any on this work. There is no commercial
+> exclusivity, no dual-licensing arrangement, and no held-back "enterprise"
+> edition — the self-hostable build in task 4 is the same software, published
+> under the same licence.
+>
+> If any grant output would benefit from a standards-track contribution, it
+> would be offered royalty-free.
+
+## How this reaches the projects that would use it
+
+*This is the weakest part of most proposals like this one and it sits in
+relevance/impact, which is 40% of the score. A method nobody adopts has not
+demonstrated anything. Rewrite it in your own words, and only promise what you
+will actually do.*
+
+> The protocol and harness are worthless unless projects other than mine run
+> them, so adoption is a deliverable rather than an afterthought — task 2 is
+> explicitly not complete until an outside project has used it.
+>
+> **A direct, concrete offer rather than an announcement.** For each candidate
+> project I will run the proof against their deployed site myself and send them
+> the result — whether it passes or fails — with the harness and what it would
+> take to run it in their own CI. That is a few minutes of my time per project
+> and it hands them something useful immediately, rather than asking them to
+> evaluate a specification. A failing result is the more useful gift of the two.
+>
+> **Who I would approach first.** Client-side and local-first projects are the
+> natural adopters, starting with the ones named in the comparison section
+> above, and with NGI Zero portfolio projects that process user data in the
+> browser — **[YOU: confirm a handful by name from the NLnet project list
+> before submitting. Naming real projects you have actually looked at is far
+> more convincing than the category, and a reviewer may well know them.]**
+>
+> **Where the outputs live.** The specification at a stable public URL, the
+> harness on a public package registry with a worked CI example, the checker as
+> a public page needing no installation. All indexed and linkable, so a
+> developer asking "how do I prove my app does not upload files" can find it
+> without knowing my project exists.
+>
+> **Writing it up.** The three failure modes are publishable in their own right:
+> each produces a confidently wrong answer, and each is easy to hit. I would
+> write them up for a technical audience, and offer the method to a privacy or
+> browser-security venue if it holds up to the independent review in task 5.
 
 ## Other funding sources
 
@@ -421,4 +538,12 @@ ask over a padded one.*
   reviewers are technical and the limits section is what makes the rest
   credible.
 - **Write the [YOU] answers yourself.** They are about you, and they read as
-  hollow when they are not.
+  hollow when they are not. There are three: your background, your available
+  hours per week, and the projects you will approach by name.
+- **Name real projects in the adoption section.** Open NLnet's own project list
+  and pick a handful you have actually looked at. A reviewer may well know
+  them, and "client-side projects generally" is the kind of answer that reads
+  as never having checked.
+- **Keep the two budget tables in step.** The task table is what NLnet agrees
+  to and pays against; the summary below it must show the same five amounts. If
+  you change one, change both.
