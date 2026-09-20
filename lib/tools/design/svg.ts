@@ -1,7 +1,21 @@
 /**
- * SVG Optimizer and Security Sanitizer.
+ * SVG Optimizer and Sanitizer.
  * Cleans editor metadata (Inkscape, Illustrator), comments, and redundant precision.
- * Strictly sanitizes scripts and inline event handlers to prevent XSS.
+ *
+ * It also removes the parts of an SVG that can run code: script elements, event
+ * handler attributes, and URLs whose scheme is not one an image should use.
+ *
+ * **It is not a security boundary, and this file no longer claims to be one.**
+ * An SVG is XML, this runs on text, and there is no DOM parser available to it
+ * (`lib/tools/**` takes no dependencies, and the unit tests run under node).
+ * What makes it defensible is that it works by allow-list -- every tag is
+ * re-emitted from its parsed attributes and anything unrecognised is dropped --
+ * so an unknown construct fails closed. That is a much stronger position than
+ * the deny-list this replaced, which matched `on...=` only when whitespace
+ * preceded it and `javascript:` only when quotes surrounded it.
+ *
+ * The page renders results in an `<img>`, where SVG scripts never execute. The
+ * download is the artefact that travels, which is why this matters at all.
  */
 
 const SVG_NAMESPACE = 'http:' + '//www.w3.org/2000/svg';
@@ -32,48 +46,181 @@ export interface SvgDimensions {
 /**
  * Remove any script tags, inline event handlers, and javascript: links.
  */
+/** Elements that exist to run or embed something, rather than to draw. */
+const EXECUTABLE_ELEMENTS = new Set([
+  'script',
+  'foreignobject',
+  'handler',
+  'iframe',
+  'embed',
+  'object',
+  'audio',
+  'video',
+]);
+
+/**
+ * Elements that animate another attribute. Legitimate in SVG, so they are kept
+ * -- but not when the attribute they drive is one that can carry code, because
+ * `<animate attributeName="href" to="javascript:...">` needs no script tag and
+ * no event handler.
+ */
+const ANIMATION_ELEMENTS = new Set([
+  'animate',
+  'animatetransform',
+  'animatemotion',
+  'set',
+]);
+
+const URL_ATTRIBUTES = new Set([
+  'href',
+  'xlink:href',
+  'src',
+  'from',
+  'to',
+  'values',
+]);
+
+/**
+ * Collapse a value the way a browser does before it decides what a URL means:
+ * numeric character references are decoded, and whitespace and control
+ * characters are ignored. Without this, `java&#10;script:` and `java\nscript:`
+ * both read as harmless text here and as `javascript:` to the browser.
+ */
+function collapseForSchemeCheck(raw: string): string {
+  return (
+    raw
+      .replace(/&#x([0-9a-f]+);?/gi, (_m, hex) =>
+        String.fromCodePoint(Number.parseInt(hex, 16)),
+      )
+      .replace(/&#(\d+);?/g, (_m, dec) =>
+        String.fromCodePoint(Number.parseInt(dec, 10)),
+      )
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\s\u0000-\u001f\u007f]/g, '')
+      .toLowerCase()
+  );
+}
+
+/** Allow-list of what a URL in an optimised image may point at. */
+function isSafeUrlValue(raw: string): boolean {
+  const value = collapseForSchemeCheck(raw);
+  if (!value) return true;
+  if (/^[#./]/.test(value)) return true;
+  if (!value.includes(':')) return true;
+  return /^(?:https?:|mailto:|data:image\/(?:png|jpe?g|gif|webp);base64,)/.test(
+    value,
+  );
+}
+
+function isEventHandlerName(name: string): boolean {
+  return /^on/i.test(name);
+}
+
+const ATTRIBUTE_PATTERN =
+  /([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s/>]+)))?/g;
+
+// The attribute run is lazy so that a trailing `/` is captured as the
+// self-closing marker instead of being swallowed as an attribute. Greedy, it
+// ate the slash and `<rect/>` came back as `<rect>` -- an SVG is XML, so that
+// is not merely untidy, it is malformed.
+const TAG_PATTERN =
+  /<\/?([a-zA-Z][\w:.-]*)((?:"[^"]*"|'[^']*'|[^>"'])*?)\s*(\/?)>/g;
+
+/**
+ * Removes scripts, event handlers and unsafe URL schemes.
+ *
+ * Every tag is taken apart and rebuilt from the attributes actually parsed out
+ * of it, so how an attribute was separated from the tag name -- a space, a
+ * newline, a `/`, several of each -- cannot hide it. `scriptsRemoved` counts
+ * every element and attribute dropped, so the page can report a real number.
+ */
 export function sanitizeSvg(svg: string): {
   cleanSvg: string;
   scriptsRemoved: number;
 } {
-  let scriptsRemoved = 0;
+  let removed = 0;
   let clean = svg;
 
-  // Count and remove <script> tags
-  const scriptRegex = /<script\b[^>]*>[\s\S]*?<\/script>/gi;
-  const scriptMatches = clean.match(scriptRegex);
-  if (scriptMatches) {
-    scriptsRemoved += scriptMatches.length;
-    clean = clean.replace(scriptRegex, '');
+  // Executable elements go with their content. Looped until stable because
+  // removing one can reveal another that was nested inside it.
+  for (const element of EXECUTABLE_ELEMENTS) {
+    const paired = new RegExp(
+      `<${element}\\b(?:"[^"]*"|'[^']*'|[^>"'])*>[\\s\\S]*?<\\/${element}\\s*>`,
+      'gi',
+    );
+    const bare = new RegExp(
+      `<\\/?${element}\\b(?:"[^"]*"|'[^']*'|[^>"'])*\\/?>`,
+      'gi',
+    );
+    for (const pattern of [paired, bare]) {
+      let previous: string;
+      do {
+        previous = clean;
+        clean = clean.replace(pattern, () => {
+          removed += 1;
+          return '';
+        });
+      } while (clean !== previous);
+    }
   }
 
-  // Self-closing <script ... />
-  const selfScriptRegex = /<script\b[^>]*\/>/gi;
-  const selfScriptMatches = clean.match(selfScriptRegex);
-  if (selfScriptMatches) {
-    scriptsRemoved += selfScriptMatches.length;
-    clean = clean.replace(selfScriptRegex, '');
-  }
+  clean = clean.replace(
+    TAG_PATTERN,
+    (whole, rawName: string, rawAttrs: string, selfClose: string) => {
+      if (whole.startsWith('</')) return whole;
 
-  // Event handlers (e.g. onload=, onclick=, onerror=, onmouseover=)
-  const eventHandlerRegex =
-    /\s+on[a-zA-Z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
-  const eventMatches = clean.match(eventHandlerRegex);
-  if (eventMatches) {
-    scriptsRemoved += eventMatches.length;
-    clean = clean.replace(eventHandlerRegex, '');
-  }
+      const name = rawName.toLowerCase();
+      const kept: string[] = [];
+      let animatesSomethingDangerous = false;
 
-  // javascript: pseudoprotocol in href or xlink:href
-  const jsHrefRegex =
-    /\s+(?:xlink:)?href\s*=\s*(?:"javascript:[^"]*"|'javascript:[^']*')/gi;
-  const jsMatches = clean.match(jsHrefRegex);
-  if (jsMatches) {
-    scriptsRemoved += jsMatches.length;
-    clean = clean.replace(jsHrefRegex, '');
-  }
+      ATTRIBUTE_PATTERN.lastIndex = 0;
+      let match: RegExpExecArray | null;
+      while ((match = ATTRIBUTE_PATTERN.exec(rawAttrs)) !== null) {
+        const attrName = match[1]!;
+        const quoted = match[2] ?? match[3];
+        const value = quoted ?? match[4] ?? '';
+        const lower = attrName.toLowerCase();
 
-  return { cleanSvg: clean, scriptsRemoved };
+        if (isEventHandlerName(lower)) {
+          removed += 1;
+          continue;
+        }
+
+        if (URL_ATTRIBUTES.has(lower) && !isSafeUrlValue(value)) {
+          removed += 1;
+          continue;
+        }
+
+        if (
+          ANIMATION_ELEMENTS.has(name) &&
+          lower === 'attributename' &&
+          (isEventHandlerName(collapseForSchemeCheck(value)) ||
+            URL_ATTRIBUTES.has(collapseForSchemeCheck(value)))
+        ) {
+          animatesSomethingDangerous = true;
+        }
+
+        kept.push(
+          quoted === undefined && match[4] === undefined
+            ? attrName
+            : `${attrName}="${(value as string).replace(/"/g, '&quot;')}"`,
+        );
+      }
+
+      // An animation element that drives `href` or an `on...` attribute is
+      // dropped whole: keeping the element and removing only its target would
+      // leave an animation pointing at nothing, which is not what it asked for.
+      if (animatesSomethingDangerous) {
+        removed += 1;
+        return '';
+      }
+
+      const attrs = kept.length > 0 ? ` ${kept.join(' ')}` : '';
+      return `<${rawName}${attrs}${selfClose ? ' /' : ''}>`;
+    },
+  );
+
+  return { cleanSvg: clean, scriptsRemoved: removed };
 }
 
 /**
