@@ -196,7 +196,7 @@ You can copy this generated snippet directly into your codebase and immediately 
     slug: 'generate-sql-er-diagram-from-ddl-private',
     title: 'How to make an ER diagram from SQL, without a database',
     metaDescription:
-      'Paste CREATE TABLE statements and get an entity-relationship diagram as an SVG. Reads mysqldump and pg_dump output, including foreign keys declared in ALTER TABLE. Runs in your browser; the schema is never uploaded.',
+      'Paste CREATE TABLE statements and get an entity-relationship diagram as an SVG. Reads mysqldump and pg_dump output, and never uploads your schema.',
     keywords: [
       'er diagram from sql',
       'create er diagram from sql',
