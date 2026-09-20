@@ -867,16 +867,177 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Create high-performance frosted glass card components with backdrop-filter blur, border contrast, and hardware acceleration in pure CSS.',
     sections: [
       {
-        id: 'the-glassmorphism-aesthetic',
-        heading: 'The Modern Frosted Glass Aesthetic in Web Design',
-        content: `Glassmorphism combines multi-layered translucent surfaces with background blur (\`backdrop-filter: blur(...)\`) and delicate semi-transparent borders to create depth and sophistication in modern dashboards and landing pages.`,
+        id: 'what-glassmorphism-actually-is',
+        heading: 'What Glassmorphism Is, in Two CSS Properties',
+        content: `Glassmorphism is a surface treatment that makes an element look like frosted glass laid over the page behind it. Despite the number of tutorials that reach for images, gradients and pseudo-elements, the effect reduces to **two properties working together**:
+
+- \`backdrop-filter: blur(12px)\` — blurs whatever is painted *behind* the element, not the element itself.
+- \`background: rgba(255, 255, 255, 0.12)\` — a background that is **mostly transparent**, so the blurred backdrop remains visible through it.
+
+Everything else — the hairline border, the shadow, the subtle inner highlight — is polish on top of those two lines. If you take nothing else from this article: \`backdrop-filter\` does nothing visible unless the element's own background is translucent. That single misunderstanding accounts for most "backdrop-filter is not working" questions.
+
+A minimal, correct glass card is short enough to read in one go:
+
+\`\`\`css
+.glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+}
+\`\`\``,
+      },
+      {
+        id: 'how-backdrop-filter-works',
+        heading: 'How backdrop-filter Differs From filter',
+        content: `\`filter\` and \`backdrop-filter\` look similar and behave nothing alike.
+
+\`filter: blur(12px)\` takes the element **and its contents** — text, icons, children — and blurs all of it. Applied to a card, the card's own label becomes unreadable. This is almost never what a glass surface wants.
+
+\`backdrop-filter: blur(12px)\` leaves the element's contents perfectly sharp and instead filters the **backdrop image**: the composite of everything already painted beneath the element, clipped to the element's own border box and rounded corners.
+
+The browser builds that backdrop image in a distinct step. It takes a snapshot of the painted result behind the element, applies the filter chain to that snapshot, and draws the element's own background and contents on top. Because the snapshot is taken from what is *already painted*, backdrop-filter cannot see sibling elements that paint later in the same stacking context, and it cannot see anything outside the element's clip.
+
+That ordering explains a second common confusion: nesting two glass panels does not compound the blur the way people expect. The inner panel filters a backdrop that has already been flattened by the outer one, so the second blur operates on an image that is already smooth. Stacking them mostly costs performance and returns very little.
+
+The filter chain accepts more than blur, and a small amount of \`saturate()\` is what separates a convincing glass surface from a grey smear. Blurring averages neighbouring pixels, which pulls colours toward the mean and drains the backdrop of vibrancy. Pushing saturation back up to roughly 140–180% restores the colour that the blur removed:
+
+\`\`\`css
+backdrop-filter: blur(14px) saturate(160%) brightness(105%);
+\`\`\``,
+      },
+      {
+        id: 'the-translucency-budget',
+        heading: 'The Translucency Budget: Why 0.12 and Not 0.6',
+        content: `The background alpha is the single value that decides whether a surface reads as glass or as tinted plastic. It is worth choosing deliberately rather than nudging until it looks acceptable.
+
+At **alpha 0.05–0.15**, the backdrop dominates. The card reads unmistakably as glass, and it inherits the colour of whatever is behind it. This is the right range for decorative panels over a photograph or a colourful gradient.
+
+At **alpha 0.2–0.35**, the surface begins to assert its own colour. The backdrop is present but subordinate. This is the practical range for panels that must hold readable body text over an unpredictable background.
+
+Above **alpha 0.5**, you no longer have glass. You have a translucent panel, and the blur is doing almost no visible work while still costing a compositing pass. If you find yourself here for contrast reasons, delete the \`backdrop-filter\` and use an opaque background — you will get the same appearance and drop the GPU cost entirely.
+
+The direction of the tint matters as much as the amount. On dark backdrops, a white tint (\`rgba(255, 255, 255, 0.1)\`) lifts the surface forward. On light backdrops, a white tint disappears and a dark tint (\`rgba(15, 23, 42, 0.08)\`) is what creates separation. A card that looks correct in one theme and muddy in the other usually has the tint colour, not the alpha, set wrong.`,
+      },
+      {
+        id: 'the-border-that-sells-the-effect',
+        heading: 'The Hairline Border That Sells the Illusion',
+        content: `Real glass catches light along its edges. A flat translucent rectangle does not, which is why an unbordered glass card tends to look like a rendering artefact rather than a material.
+
+The convention is a one-pixel border a few percent brighter than the fill:
+
+\`\`\`css
+border: 1px solid rgba(255, 255, 255, 0.22);
+\`\`\`
+
+For a more convincing edge, separate the top edge from the rest. Light in most interface metaphors arrives from above, so the top border should be brightest and the bottom nearly invisible. An inset box-shadow produces this without extra markup:
+
+\`\`\`css
+box-shadow:
+  inset 0 1px 0 rgba(255, 255, 255, 0.28),
+  inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+  0 12px 32px rgba(0, 0, 0, 0.22);
+\`\`\`
+
+The third shadow in that list is the outer drop shadow, and it is doing something specific: it darkens the backdrop immediately beneath the card, which increases the contrast between the card's edge and its surroundings. Glass panels without a drop shadow tend to float ambiguously; the shadow is what places them in front of the page rather than embedded in it.
+
+Note that \`border-radius\` is honoured by the backdrop clip. A 16px radius produces a blurred backdrop with 16px rounded corners automatically — you do not need \`overflow: hidden\` on a wrapper, and adding one can create its own stacking-context surprises.`,
+      },
+      {
+        id: 'performance-and-compositing',
+        heading: 'What It Costs: Compositing, Repaint, and Scroll',
+        content: `\`backdrop-filter\` is a compositor-level operation, which is both why it is fast enough to ship and why it can become the most expensive thing on a page.
+
+Applying it promotes the element to its own compositing layer. The browser must then, for every frame in which the backdrop changes, re-read the pixels behind the element, run the filter chain over them, and recomposite. Over a static background that work happens once. Over a backdrop that moves — a scrolling list, a video, an animated gradient — it happens **every frame**.
+
+The practical consequences are worth stating plainly:
+
+- **Area is the cost driver.** Blur cost scales with the number of backdrop pixels, not with the complexity of the content. One full-screen glass overlay is far more expensive than six small glass cards.
+- **Blur radius matters less than area**, because most implementations approximate Gaussian blur with a fixed number of downsample-and-box passes rather than a kernel that grows linearly with the radius.
+- **Animating a glass element's position or size forces the backdrop to be re-filtered every frame.** Animating its \`opacity\` or \`transform\` is considerably cheaper than animating \`width\`, \`top\` or \`backdrop-filter\` itself.
+- **Avoid glass on elements pinned over a scrolling region** unless you have measured it on a low-end device. This is the single most common cause of janky scroll in otherwise well-built interfaces.
+
+A useful discipline: treat \`backdrop-filter\` as you would a large shadow or a full-page gradient. One or two per viewport is unremarkable. A dozen, or one covering the whole screen during a scroll, deserves a measurement before it ships.`,
+      },
+      {
+        id: 'contrast-and-accessibility',
+        heading: 'The Accessibility Problem Nobody Mentions',
+        content: `A glass surface has, by design, an unpredictable background. That is a direct problem for text contrast, because WCAG contrast ratios are computed against the colour actually behind the glyphs — and on a glass card, that colour is whatever happened to be underneath.
+
+Text that passes at 7:1 over the dark part of a photograph can fall below 3:1 over the bright part of the same photograph, in the same card, at the same moment. No single colour choice fixes this, because there is no single background colour.
+
+Three mitigations actually work:
+
+1. **Raise the fill alpha under text.** The blurred backdrop can stay decorative around the edges while the text sits on a region with enough opacity to stabilise contrast — roughly 0.35 and up for body copy.
+2. **Add a contrast floor with a gradient.** A subtle vertical gradient in the card's own background, darker where the text sits, sets a known worst case without making the whole surface opaque.
+3. **Constrain what can appear behind glass.** If the backdrop is a controlled gradient rather than user-supplied imagery, the worst case is knowable and testable.
+
+Honesty about the limit: if your glass panel must carry body text over arbitrary user images, glass is the wrong material. The effect is best used for chrome, navigation and decorative surfaces where the text is short, large and high-weight.`,
+      },
+      {
+        id: 'fallbacks-and-support',
+        heading: 'Support, Prefixes and a Fallback That Degrades Well',
+        content: `\`backdrop-filter\` is supported in current Chrome, Edge, Firefox and Safari. Two details still matter in production.
+
+Safari has required the \`-webkit-\` prefix for this property far longer than most, and older Safari versions on iOS still do. Ship both declarations, prefixed first:
+
+\`\`\`css
+-webkit-backdrop-filter: blur(12px) saturate(160%);
+backdrop-filter: blur(12px) saturate(160%);
+\`\`\`
+
+For browsers without support, the failure mode is not a broken layout — it is a card whose background is 12% white over a sharp, busy backdrop, which is usually illegible. Feature-query the enhancement rather than the fallback, so the readable version is the default:
+
+\`\`\`css
+.glass {
+  background: rgba(17, 24, 39, 0.82); /* opaque enough to read, always */
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(255, 255, 255, 0.12);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+  }
+}
+\`\`\`
+
+Written this way, a browser that cannot blur shows a solid, legible card, and only browsers that can blur opt into translucency. This ordering is the opposite of what most snippets do, and it is the reason those snippets break on older devices.
+
+One further consideration: users who enable **Reduce Transparency** in their operating system are asking, explicitly, for less of this. There is no dedicated media query for it, but \`prefers-reduced-transparency\` is shipping in current browsers and is worth honouring where available.`,
       },
     ],
     faqs: [
       {
-        question: 'Which browsers support CSS backdrop-filter?',
+        question: 'What is glassmorphism in CSS?',
         answer:
-          'All modern versions of Chrome, Safari, Edge, and Firefox support backdrop-filter natively.',
+          "Glassmorphism is a CSS surface style that makes an element look like frosted glass over the page behind it. It is produced by combining a mostly transparent background such as rgba(255, 255, 255, 0.12) with backdrop-filter: blur(12px), plus a hairline light border and a soft drop shadow. The blur applies to the backdrop behind the element, so the element's own text stays sharp.",
+      },
+      {
+        question: 'Why is my backdrop-filter not working?',
+        answer:
+          "The most common cause is an opaque background on the same element. backdrop-filter blurs what is behind the element, so if the element's own background is fully opaque it hides the blurred result completely. Set a translucent background such as rgba(255, 255, 255, 0.12). The second most common cause is a missing -webkit-backdrop-filter declaration, which older Safari versions still require.",
+      },
+      {
+        question: 'What is the difference between filter and backdrop-filter?',
+        answer:
+          "filter blurs the element and everything inside it, including its own text. backdrop-filter leaves the element's contents sharp and blurs only the backdrop painted behind it, clipped to the element's border box and border radius. For a glass card you want backdrop-filter; filter would make the card's own label unreadable.",
+      },
+      {
+        question: 'Does backdrop-filter hurt performance?',
+        answer:
+          'It can. backdrop-filter promotes the element to its own compositing layer, and the browser re-filters the backdrop pixels on every frame in which that backdrop changes. Cost scales with the area covered rather than the blur radius, so one full-screen glass overlay is much more expensive than several small cards. The costly case is a glass element pinned over a scrolling region, which should be measured on a low-end device before it ships.',
+      },
+      {
+        question: 'How do I keep text readable on a glass card?',
+        answer:
+          "Raise the background alpha under the text to roughly 0.35 or higher, add a subtle gradient in the card's own background so there is a known worst-case contrast, and constrain what can appear behind the panel. If the glass must carry body text over arbitrary user-supplied images, contrast cannot be guaranteed and an opaque surface is the correct choice.",
+      },
+      {
+        question: 'Do I still need the -webkit-backdrop-filter prefix?',
+        answer:
+          'Yes, if you support older Safari and older iOS versions. Current Chrome, Edge, Firefox and Safari all support the unprefixed property, but the prefixed form is still required on a meaningful number of iOS installs. Declare -webkit-backdrop-filter first, then backdrop-filter, and wrap the translucent styling in an @supports query so unsupported browsers keep a solid, legible background.',
       },
     ],
     relatedSlugs: [
@@ -906,17 +1067,174 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Generate mathematical dual light and dark physics-based box shadows for soft UI buttons, cards, and inset inputs.',
     sections: [
       {
-        id: 'physics-of-soft-ui',
-        heading: 'The Physics Behind Neumorphic Shadows',
-        content: `Neumorphism simulates extruded and inset tactile surfaces using two opposing box shadows: a bright highlight on the top-left (reflecting the simulated light source) and a soft ambient dark shadow on the bottom-right.`,
+        id: 'what-neumorphism-is',
+        heading: 'Neumorphism Is One Shadow Rule, Applied Twice',
+        content: `Neumorphism — soft UI — makes a control look as though it has been pressed up out of the surface behind it, or pushed down into it. Unlike most shadow styles, the element and its background are **the same colour**. Nothing is layered on top of anything; the form comes entirely from light.
+
+The whole technique is one rule applied twice:
+
+- A **dark shadow** offset in the direction light travels away from the source.
+- A **light shadow** offset in the exact opposite direction, by the same distance.
+
+\`\`\`css
+.soft {
+  background: #e0e5ec;
+  border-radius: 18px;
+  box-shadow:
+    9px 9px 18px #bcc1c8,
+    -9px -9px 18px #ffffff;
+}
+\`\`\`
+
+That is a raised surface. Move both shadows inside with the \`inset\` keyword and the same element appears pressed in:
+
+\`\`\`css
+.soft--pressed {
+  box-shadow:
+    inset 9px 9px 18px #bcc1c8,
+    inset -9px -9px 18px #ffffff;
+}
+\`\`\`
+
+The two states share a background, a radius and a shadow distance. Only \`inset\` differs, which is why neumorphic toggles animate so cleanly between states.`,
+      },
+      {
+        id: 'deriving-the-two-shadow-colours',
+        heading: 'Deriving the Two Shadow Colours From the Surface',
+        content: `The most frequent mistake in soft UI is picking shadow colours by eye. They are not free parameters — they are functions of the background, and getting them wrong is what makes an interface look dirty rather than soft.
+
+Both shadows must be **the surface colour, darkened and lightened by the same amount**. If the surface is \`#e0e5ec\`, the shadows are roughly \`#bcc1c8\` (about 15% darker) and \`#ffffff\` (about 15% lighter, clamped at white). Using a generic grey, or worse \`rgba(0,0,0,0.2)\`, introduces a hue that is not present in the surface and the result reads as smudged rather than sculpted.
+
+Two consequences follow:
+
+**Neumorphism requires a mid-tone background.** The light shadow needs headroom above the surface colour and the dark shadow needs headroom below it. On a white background there is nowhere to go lighter, so only the dark shadow renders and the effect collapses into an ordinary drop shadow. On pure black the reverse happens. The technique works in a band roughly from \`#d0d0d8\` to \`#eef0f4\` in light themes, and around \`#2a2d35\` to \`#363a45\` in dark ones.
+
+**The surface and its container must match exactly.** A neumorphic card on a background one shade off looks like a mistake, because the eye reads the seam before it reads the shadow. In practice this means the surface colour belongs in a single custom property that both the container and every soft control read from:
+
+\`\`\`css
+:root {
+  --surface: #e0e5ec;
+  --shadow-dark: #bcc1c8;
+  --shadow-light: #ffffff;
+}
+\`\`\``,
+      },
+      {
+        id: 'distance-blur-and-radius',
+        heading: 'Distance, Blur and Radius Move Together',
+        content: `Three numbers control how the material reads, and they are not independent.
+
+**Offset distance** sets the apparent height. Small offsets of 4–6px suggest a surface barely lifted; 12–20px suggests a thick, cushioned block. Both shadows must use the same magnitude with opposite signs — asymmetric offsets read as a lighting error rather than a design choice.
+
+**Blur radius** is conventionally about twice the offset. At \`9px\` offset, an \`18px\` blur gives the diffuse, matte falloff that defines the style. Reduce the blur below the offset and the surface hardens into something closer to a bevel; raise it far above and the form dissolves into a haze.
+
+**Border radius** determines how much of the shadow is visible at all. Soft UI depends on curvature: on a sharp-cornered rectangle, the two shadows meet at a hard diagonal at each corner and the illusion breaks. A radius of at least 12px, and ideally closer to half the element's height for pills and buttons, keeps the transition continuous.
+
+A rule of thumb that holds up well: **offset : blur : radius ≈ 1 : 2 : 2**. At a 9px offset that gives an 18px blur and an 18px radius, which is why so many published examples converge on those figures.`,
+      },
+      {
+        id: 'the-states-problem',
+        heading: 'The Interaction Problem: Where Do Hover and Focus Go?',
+        content: `Neumorphism spends its entire visual budget on one distinction — raised versus pressed — and interfaces need more states than that.
+
+A button typically needs rest, hover, active, focus-visible and disabled. Soft UI gives you raised and inset. The remaining three have to come from somewhere else, and the usual answers are weak: reducing the offset slightly for hover is nearly invisible, and tinting the surface breaks the rule that surface and background must match.
+
+Practical resolutions, in order of how well they work:
+
+1. **Use the offset for pressed only.** Rest is raised, active is inset. Do not spend it on hover.
+2. **Give hover a change of blur, not distance.** Tightening the blur from 18px to 14px reads as the surface firming up under the cursor without altering its apparent height.
+3. **Give focus a real, visible ring.** This is not optional. A focus indicator must be perceivable, and a subtly different shadow is not. Use an outline in an accent colour with an offset:
+
+\`\`\`css
+.soft:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+\`\`\`
+
+4. **Give disabled a flat surface.** Removing both shadows entirely is the clearest possible signal that a control is inert, and it costs nothing from the palette.`,
+      },
+      {
+        id: 'the-contrast-limitation',
+        heading: 'The Contrast Limitation That Rules Out Some Uses',
+        content: `This is the honest constraint, and it is the reason soft UI never displaced conventional interface styling.
+
+WCAG requires a contrast ratio of at least **3:1** between a control's visual boundary and the surrounding background, so that people with low vision can tell where a control begins and ends. Neumorphism defines boundaries with a shadow whose colour is, by construction, a few percent away from the background. The measured contrast between a neumorphic button and its container is frequently below **1.2:1**.
+
+There is no parameter adjustment that resolves this. Increasing the shadow contrast far enough to pass is the same as abandoning the style.
+
+What this means in practice:
+
+- **Acceptable**: decorative surfaces, cards and containers whose boundary is not load-bearing, and secondary controls that sit beside a clearly-marked primary action.
+- **Not acceptable**: a form's only submit button, a toggle whose state carries meaning, or any control a user must find unaided.
+
+A workable compromise is to keep the soft surface and add a conventional boundary to controls that need one — a 1px border at sufficient contrast, or a filled accent for primary actions. The page keeps its material, and the controls that must be findable remain findable.`,
+      },
+      {
+        id: 'dark-mode-and-tokens',
+        heading: 'Dark Mode, and Why This Belongs in Custom Properties',
+        content: `Soft UI does work in dark themes, but the numbers are not a simple inversion. Human perception of lightness is non-linear, and a dark shadow that reads correctly on \`#e0e5ec\` is far too subtle on \`#2b2f38\`.
+
+In dark themes the light shadow should be weaker and the dark shadow stronger than their light-theme counterparts, because there is less headroom above the surface than below it:
+
+\`\`\`css
+:root {
+  --surface: #e0e5ec;
+  --shadow-dark: #bcc1c8;
+  --shadow-light: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #2b2f38;
+    --shadow-dark: #1e2128;
+    --shadow-light: #383d48;
+  }
+}
+
+.soft {
+  background: var(--surface);
+  box-shadow:
+    9px 9px 18px var(--shadow-dark),
+    -9px -9px 18px var(--shadow-light);
+}
+\`\`\`
+
+Routing every value through custom properties is what makes the style maintainable. The shadow colours are derived from the surface, the surface appears in exactly one place per theme, and a theme change is three values rather than an audit of every component.
+
+Finally, respect \`prefers-reduced-motion\` if you animate between raised and pressed. The transition is short and subtle, but it is still motion, and the setting exists to be honoured.`,
       },
     ],
     faqs: [
       {
-        question:
-          'Can I generate inset neumorphic shadows for pressed button states?',
+        question: 'What is neumorphism in CSS?',
         answer:
-          'Yes. You can switch between flat, convex, concave, and inset (pressed) surface types.',
+          'Neumorphism, or soft UI, is a style where an element shares its background colour with the surface behind it and appears sculpted from that surface using two box-shadows: a darker one offset in one direction and a lighter one offset by the same distance in the opposite direction. Adding the inset keyword to both shadows makes the same element appear pressed into the surface instead of raised out of it.',
+      },
+      {
+        question: 'How do I choose neumorphic shadow colours?',
+        answer:
+          'Derive both shadows from the surface colour rather than picking them by eye. Darken the surface by roughly 15% for the dark shadow and lighten it by roughly 15% for the light shadow. Using a neutral grey or a black rgba value introduces a hue the surface does not contain, which makes the result look smudged instead of sculpted.',
+      },
+      {
+        question: 'Why does neumorphism not work on a white background?',
+        answer:
+          'The light shadow needs to be lighter than the surface and the dark shadow needs to be darker. On a white background there is no headroom above the surface colour, so only the dark shadow renders and the effect degrades into an ordinary drop shadow. Soft UI needs a mid-tone surface, roughly #d0d0d8 to #eef0f4 in light themes and around #2a2d35 to #363a45 in dark ones.',
+      },
+      {
+        question: 'What is the correct ratio of offset to blur in soft UI?',
+        answer:
+          'A reliable starting point is offset to blur to border-radius in a ratio of about 1 to 2 to 2. At a 9px offset that gives an 18px blur and an 18px radius. Reducing the blur below the offset hardens the effect into a bevel, and raising it far above the offset dissolves the form.',
+      },
+      {
+        question: 'Is neumorphism accessible?',
+        answer:
+          'Not on its own for essential controls. WCAG requires at least 3:1 contrast between a control boundary and its background, and a neumorphic boundary is defined by a shadow only a few percent from the surface colour, often measuring below 1.2:1. It is suitable for decorative surfaces and secondary controls, but a primary action or a stateful toggle needs a conventional border or fill in addition to the soft shadow.',
+      },
+      {
+        question: 'How do I handle hover and focus states in neumorphism?',
+        answer:
+          'Reserve the raised-to-inset change for the pressed state only. Express hover by tightening the blur rather than changing the offset, since a small offset change is nearly invisible. Focus must use a real outline in an accent colour with an outline-offset, because a subtly different shadow does not meet the requirement that a focus indicator be perceivable. Disabled is clearest as a flat surface with both shadows removed.',
       },
     ],
     relatedSlugs: [
@@ -946,16 +1264,176 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Build buttery-smooth 60fps keyframe animations leveraging GPU compositing without adding bloated JavaScript runtime dependencies.',
     sections: [
       {
-        id: 'why-pure-css-animations',
-        heading: 'Why Pure CSS Animations Outperform JavaScript Libraries',
-        content: `JavaScript animation libraries increase bundle sizes and can drop frames during heavy main-thread computations. Pure CSS animations running on transform and opacity leverage the browser compositor thread for buttery-smooth 60fps rendering.`,
+        id: 'what-the-compositor-can-animate',
+        heading: 'Only Two Properties Animate Without the Main Thread',
+        content: `Smooth CSS animation is not about easing curves or clever keyframes. It is about which properties the browser can hand entirely to the compositor.
+
+A browser renders a frame in stages: **style**, **layout**, **paint**, **composite**. Animating a property that forces an earlier stage means redoing that stage sixty times a second on the main thread, competing with your JavaScript. Animating a property handled at the last stage means the compositor can run it on its own, frequently on the GPU, even while the main thread is busy.
+
+In practice, exactly two properties composite cleanly across every current engine:
+
+- \`transform\` — translate, scale, rotate, skew
+- \`opacity\`
+
+Everything else has a cost. Animating \`width\`, \`height\`, \`top\`, \`left\`, \`margin\` or \`padding\` triggers **layout**, the most expensive stage, because the browser must recompute the geometry of the element and potentially everything around it. Animating \`background-color\`, \`box-shadow\`, \`border-radius\` or \`color\` triggers **paint**, which is cheaper than layout but still main-thread work proportional to the pixel area involved.
+
+This is why the same visual effect can be smooth or janky depending purely on how it is expressed. Sliding a panel in with \`left: -300px → 0\` and with \`transform: translateX(-300px) → none\` look identical and cost radically different amounts.`,
+      },
+      {
+        id: 'rewriting-layout-animations',
+        heading: 'Rewriting Layout Animations as Transforms',
+        content: `Most expensive animations have a direct transform equivalent.
+
+**Movement.** Replace \`top\`, \`left\`, \`right\`, \`bottom\` and \`margin\` offsets with \`translate\`:
+
+\`\`\`css
+/* expensive: triggers layout on every frame */
+@keyframes slide-in-bad {
+  from { left: -320px; }
+  to   { left: 0; }
+}
+
+/* cheap: composited */
+@keyframes slide-in {
+  from { transform: translateX(-320px); }
+  to   { transform: translateX(0); }
+}
+\`\`\`
+
+**Size.** Replace \`width\` and \`height\` with \`scale\`. The caveat is real: scaling an element scales its text and borders too, so this substitution suits cards, overlays and shapes rather than text containers that must stay crisp.
+
+**Appearance and disappearance.** Animate \`opacity\`, never \`display\`. \`display\` is not animatable and switching it mid-animation cancels the effect. The correct pattern pairs \`opacity\` with \`visibility\`, which is animatable in the sense that it snaps at the end of the transition rather than the start:
+
+\`\`\`css
+.panel {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 0s linear 200ms;
+}
+.panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms ease, visibility 0s;
+}
+\`\`\`
+
+**Height, honestly.** Animating an element from zero to its natural height is the one common case with no clean transform equivalent, because the final height is unknown. Modern browsers support interpolating to \`height: auto\` with \`interpolate-size: allow-keywords\`, and \`grid-template-rows: 0fr → 1fr\` is a widely supported alternative. Both still cost layout; the honest position is that this animation is expensive and should be short.`,
+      },
+      {
+        id: 'will-change-and-layer-promotion',
+        heading: 'will-change: The Hint That Backfires When Overused',
+        content: `\`will-change: transform\` tells the browser to promote an element to its own compositing layer ahead of time, so the first frame of an animation does not stall while that happens.
+
+It is genuinely useful and routinely misused.
+
+Each promoted layer consumes GPU memory proportional to its rasterised size. A handful of promoted elements is unremarkable. Applying \`will-change\` to a long list, or leaving it set permanently in a stylesheet, can exhaust memory on mobile devices and produce exactly the stutter it was meant to prevent.
+
+Two rules keep it safe:
+
+1. **Set it close to the moment it is needed and remove it afterwards.** Adding it on hover or focus, or via a class applied just before the animation begins, is the intended use.
+2. **Never apply it to a large number of elements at once.**
+
+\`\`\`css
+.card { transition: transform 180ms ease; }
+.card:hover { will-change: transform; transform: translateY(-4px); }
+\`\`\`
+
+The older \`transform: translateZ(0)\` and \`backface-visibility: hidden\` hacks achieve promotion as a side effect. They still work, but they say nothing about intent and cannot be removed as cleanly. \`will-change\` is the property that exists for this and is the one to reach for.`,
+      },
+      {
+        id: 'timing-and-easing',
+        heading: 'Duration and Easing: The Numbers That Read as Quality',
+        content: `Once an animation is cheap, what remains is whether it feels right, and that is mostly two numbers.
+
+**Duration.** Interface motion lives in a narrow band. Under roughly 100ms a transition is perceived as an abrupt change rather than a movement. Over roughly 400ms it begins to feel as though the interface is waiting on itself. Useful defaults: 120–180ms for small state changes such as hover and focus, 200–300ms for entrances and exits, and 300–400ms reserved for large surfaces crossing a substantial distance.
+
+**Easing.** Linear motion looks mechanical because almost nothing in the physical world moves at a constant speed. The defaults encode intent:
+
+- \`ease-out\` — fast at the start, settling at the end. Correct for things **entering**, because the element arrives promptly and comes to rest gently.
+- \`ease-in\` — slow at the start, accelerating away. Correct for things **leaving**.
+- \`ease-in-out\` — for movement that both begins and ends on screen.
+
+A custom cubic-bézier is worth it only when you want a specific character. \`cubic-bezier(0.16, 1, 0.3, 1)\` produces a decisive, slightly-overshooting settle that suits panels and modals:
+
+\`\`\`css
+.panel { transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1); }
+\`\`\`
+
+Distance should influence duration. An element crossing 600px in the same 180ms as one moving 4px will look like it teleported. Scaling duration gently with distance — not linearly, but noticeably — is what separates considered motion from uniform motion.`,
+      },
+      {
+        id: 'reduced-motion',
+        heading: 'prefers-reduced-motion Is Not Optional',
+        content: `Some people experience nausea, dizziness or migraine from interface motion. Vestibular disorders are common, and the operating system already exposes the preference. Honouring it is a correctness requirement, not a nicety.
+
+The wrong implementation removes all animation, which frequently breaks interfaces that rely on a transition to communicate that something changed. The better approach is to **replace movement with a fade** and shorten durations, keeping the feedback while removing the travel:
+
+\`\`\`css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+\`\`\`
+
+That global reset is the widely used safety net, and it is a reasonable floor. Where an animation carries meaning, prefer a targeted rule that keeps an opacity change while dropping the transform:
+
+\`\`\`css
+@media (prefers-reduced-motion: reduce) {
+  .panel { transition: opacity 120ms ease; transform: none; }
+}
+\`\`\`
+
+Large parallax effects, auto-playing carousels and anything that moves across a significant portion of the viewport are the highest-risk patterns and should be disabled outright under this query.`,
+      },
+      {
+        id: 'debugging-jank',
+        heading: 'Finding the Frame That Drops',
+        content: `When an animation stutters, guessing which property is responsible is slower than measuring.
+
+Open the browser's performance profiler, record while the animation runs, and look at the frame timeline. Long purple **Layout** bars mean a geometry property is being animated — find it and convert it to a transform. Long green **Paint** bars mean a paint-triggering property such as \`box-shadow\` or \`background-color\` is animating over a large area. Frames that are mostly yellow **Scripting** mean the animation is fine and your JavaScript is starving the main thread; in that case moving the animation to the compositor with \`transform\` will keep it smooth even while the script runs.
+
+Chromium's rendering panel adds two checkboxes worth knowing. **Paint flashing** highlights repainted regions in green — a well-built animation should show almost none. **Layer borders** draws the boundaries of compositing layers, which makes it immediately obvious whether promotion is happening and whether far too many layers exist.
+
+The most common single finding: an animation that is correctly written with transforms but sits inside a container whose \`box-shadow\` or \`filter\` is also transitioning, forcing a repaint of the whole area every frame regardless.`,
       },
     ],
     faqs: [
       {
-        question: 'Does the generator include will-change optimizations?',
+        question: 'Which CSS properties are cheapest to animate?',
         answer:
-          'Yes. All generated animations include will-change: transform, opacity and hardware transform3d acceleration.',
+          'Only transform and opacity can be handled entirely by the compositor, so those two animate without triggering layout or paint on the main thread. Animating width, height, top, left, margin or padding forces a layout recalculation every frame, and animating background-color, box-shadow, border-radius or color forces a repaint. The same visual effect is often available as a transform, and expressing it that way is what makes it smooth.',
+      },
+      {
+        question:
+          'How do I animate an element sliding in without causing jank?',
+        answer:
+          'Use transform: translateX() rather than the left or margin properties. A keyframe going from transform: translateX(-320px) to transform: translateX(0) is composited and does not trigger layout, while the same movement expressed with left recomputes geometry on every frame. Pair it with an ease-out timing function so the element arrives promptly and settles gently.',
+      },
+      {
+        question: 'When should I use will-change?',
+        answer:
+          'Apply will-change shortly before an animation starts, typically on hover or focus or through a class added just beforehand, and remove it afterwards. Each promoted element consumes GPU memory proportional to its rasterised size, so leaving it set permanently in a stylesheet or applying it across a long list can exhaust memory on mobile and cause the very stutter it was meant to prevent.',
+      },
+      {
+        question: 'What duration should a UI animation be?',
+        answer:
+          'Roughly 120 to 180 milliseconds for small state changes such as hover and focus, 200 to 300 milliseconds for entrances and exits, and 300 to 400 milliseconds only for large surfaces travelling a long distance. Below about 100 milliseconds a transition reads as an abrupt jump rather than movement, and above about 400 milliseconds the interface begins to feel as if it is waiting on itself.',
+      },
+      {
+        question: 'Which easing function should I use?',
+        answer:
+          'Use ease-out for elements entering the screen, so they arrive quickly and settle gently. Use ease-in for elements leaving. Use ease-in-out when the movement both starts and ends on screen. Avoid linear, which looks mechanical because very little in the physical world moves at constant speed.',
+      },
+      {
+        question: 'How do I respect prefers-reduced-motion?',
+        answer:
+          'Add a prefers-reduced-motion: reduce media query that reduces animation and transition durations to near zero as a global floor, and for animations that carry meaning replace the movement with a short opacity change rather than removing the feedback entirely. Parallax effects, auto-playing carousels and anything travelling across a large part of the viewport should be disabled outright under that query.',
       },
     ],
     relatedSlugs: [
@@ -1024,16 +1502,151 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Safely encode and decode sensitive authorization tokens, Basic Auth headers, and binary strings in local RAM without logging.',
     sections: [
       {
-        id: 'the-token-security-risk',
-        heading: 'The Security Risk of Online Base64 Decoders',
-        content: `Engineers frequently decode Base64 JWT tokens or API secrets using public online decoders without realizing their confidential credentials are being logged by third-party web servers. OpenTools performs all Base64 translation using native browser window.btoa / window.atob with UTF-8 support.`,
+        id: 'what-base64-is-for',
+        heading:
+          'Base64 Encodes Bytes for Text Channels — It Does Not Protect Them',
+        content: `Base64 maps arbitrary binary data onto 64 printable ASCII characters, so that bytes can travel through channels that only reliably carry text: email bodies, JSON string fields, HTTP headers, data URIs, and source files.
+
+The mechanism is mechanical and worth knowing. The encoder takes the input **three bytes at a time** — 24 bits — and re-splits those 24 bits into **four 6-bit groups**. Each 6-bit group indexes the alphabet \`A–Z\`, \`a–z\`, \`0–9\`, \`+\`, \`/\`. When the input length is not a multiple of three, the final group is padded with \`=\` so the output length stays a multiple of four.
+
+Three consequences follow directly from that arithmetic:
+
+1. **Output is always about 33% larger than input** — four characters for every three bytes, plus padding. A 3 MB file becomes roughly 4 MB of Base64.
+2. **Length is always a multiple of four** once padding is applied. A string whose length mod 4 is 1 cannot be valid Base64.
+3. **It is completely reversible by anyone.** There is no key.
+
+That third point is the one that matters most, and it deserves stating without hedging: **Base64 is an encoding, not encryption.** A Base64 string in a log file, a config file or a screenshot is plaintext to anyone who pastes it into a decoder. Credentials stored "encoded for safety" are stored in the clear.`,
+      },
+      {
+        id: 'the-unicode-trap',
+        heading: 'The Unicode Trap in btoa and atob',
+        content: `JavaScript's built-in \`btoa()\` fails on any string containing a character above U+00FF:
+
+\`\`\`js
+btoa('café');
+// InvalidCharacterError: String contains an invalid character
+\`\`\`
+
+The reason is historical. \`btoa\` was specified when JavaScript strings were treated as sequences of single bytes; it interprets each code unit as one byte and throws when a code unit exceeds 255. Emoji, accented Latin, Devanagari, Chinese and Cyrillic all break it.
+
+The correct approach encodes text to UTF-8 bytes first, then Base64-encodes those bytes:
+
+\`\`\`js
+function encodeText(text) {
+  const bytes = new TextEncoder().encode(text);   // UTF-8 bytes
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(binary);
+}
+
+function decodeText(encoded) {
+  const bytes = Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0));
+  return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+}
+\`\`\`
+
+Two details in that code are not decoration.
+
+The **0x8000 chunking** exists because \`String.fromCharCode(...bytes)\` spreads every byte as a separate function argument. On a large input this exceeds the JavaScript engine's argument limit and throws \`RangeError: Maximum call stack size exceeded\` — typically somewhere above 100 KB, which means the bug survives every small test and appears the first time a real file is used.
+
+The **\`{ fatal: true }\`** flag on \`TextDecoder\` makes invalid UTF-8 throw instead of silently substituting U+FFFD replacement characters. Without it, corrupted input decodes to plausible-looking text containing \`�\`, and the corruption is discovered much later.`,
+      },
+      {
+        id: 'base64url',
+        heading: 'Base64URL: The Variant JWTs and URLs Use',
+        content: `Standard Base64 uses \`+\` and \`/\`, both of which have meaning in a URL, and \`=\`, which has meaning in a query string. Placing standard Base64 in a URL therefore requires percent-encoding and produces unreadable results.
+
+**Base64URL**, defined in RFC 4648 §5, makes three substitutions:
+
+- \`+\` becomes \`-\`
+- \`/\` becomes \`_\`
+- trailing \`=\` padding is removed
+
+This is the encoding used by JSON Web Tokens, by OAuth state and PKCE parameters, and by most modern URL-safe identifier schemes. Converting between the two is mechanical:
+
+\`\`\`js
+const toBase64Url = (b64) =>
+  b64.replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
+
+const fromBase64Url = (value) =>
+  value.replace(/-/g, '+').replace(/_/g, '/') +
+  '='.repeat((4 - (value.length % 4)) % 4);
+\`\`\`
+
+The padding restoration in the second function is the part people omit, and \`atob\` will reject the unpadded string. The expression \`(4 - (length % 4)) % 4\` yields 0, 3, 2 or 1 and handles the case where no padding is needed without adding four equals signs.
+
+A JWT is three Base64URL segments joined by dots: header, payload, signature. **The payload is readable by anyone holding the token** — decoding it requires no key, because the signature authenticates the contents rather than concealing them. Never place anything confidential in a JWT payload.`,
+      },
+      {
+        id: 'data-uris',
+        heading: 'Data URIs: When Inlining Helps and When It Costs',
+        content: `A data URI embeds a Base64-encoded resource directly in markup or CSS:
+
+\`\`\`html
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..." alt="">
+\`\`\`
+
+This removes a network round trip, which is genuinely valuable for very small assets in the critical rendering path — an icon in above-the-fold CSS, for example.
+
+The costs accumulate quickly and are frequently underestimated:
+
+- **33% size penalty**, applied to every byte, permanently.
+- **No independent caching.** An inlined asset is re-downloaded with its containing document on every change to that document. A separate file is cached once and reused.
+- **Render blocking when inlined in CSS.** A large data URI inside a stylesheet delays first paint, because the stylesheet must be fully parsed before rendering begins.
+- **No parallel download.** The browser cannot fetch an inlined asset concurrently with anything else.
+
+A defensible rule: inline below roughly **4 KB**, and only for assets needed immediately. Above that, a separate cached request almost always wins. Inlining a 200 KB hero image as a data URI is a reliable way to make a page measurably slower while appearing to reduce request count.
+
+SVG is the exception worth knowing: because SVG is text, it can be embedded with URL encoding instead of Base64, avoiding the 33% penalty entirely and often producing a smaller result than the original file.`,
+      },
+      {
+        id: 'handling-secrets',
+        heading: 'Handling Tokens Safely While Encoding Them',
+        content: `The practical risk in Base64 work is not the algorithm. It is where the plaintext goes.
+
+Developers encode and decode tokens constantly — inspecting a JWT payload, preparing an HTTP Basic credential, checking an API key embedded in a config. Doing that in a web tool that posts the value to a server means the credential has been transmitted to, and possibly logged by, a third party. Rotating that credential afterwards is the only safe remedy, and it is rarely done.
+
+Three habits materially reduce exposure:
+
+1. **Decode locally.** A Base64 codec is pure arithmetic over bytes and needs no server. The OpenTools [Base64 encoder](/developer/base64-encoder) runs in the page, so the value is not transmitted anywhere.
+2. **Treat any credential pasted into any web page as compromised.** Browser extensions, autofill managers and crash reporters all have access to page content. If the token protects something important, rotate it.
+3. **Never commit Base64 credentials.** Encoding does not obscure anything from a secret scanner, from a code reviewer, or from anyone with repository read access — and git history preserves them after deletion.
+
+If you need the value to actually be protected rather than merely reformatted, the tool you want is encryption, not encoding — AES-GCM through the Web Crypto API, with a key you manage separately.`,
       },
     ],
     faqs: [
       {
-        question: 'Does this tool support Unicode and UTF-8 characters?',
+        question: 'Is Base64 a form of encryption?',
         answer:
-          'Yes. The encoder handles full multi-byte UTF-8 string encoding without character corruption.',
+          'No. Base64 is a reversible encoding that maps binary data onto 64 printable ASCII characters so it can travel through text-only channels. It uses no key and anyone can decode it instantly. A credential stored Base64-encoded is stored in plaintext for practical purposes, and if you need actual protection you need encryption such as AES-GCM through the Web Crypto API.',
+      },
+      {
+        question: 'Why does btoa throw an InvalidCharacterError?',
+        answer:
+          'btoa treats each string code unit as a single byte and throws on any character above U+00FF, so accented Latin, emoji, Devanagari, Chinese and Cyrillic all fail. Convert the text to UTF-8 bytes with TextEncoder first, then Base64-encode those bytes. Decoding reverses it with TextDecoder using the fatal flag so invalid input throws rather than silently producing replacement characters.',
+      },
+      {
+        question: 'Why does my Base64 encoder crash on large files?',
+        answer:
+          'The usual cause is String.fromCharCode(...bytes), which spreads every byte as a separate function argument and exceeds the JavaScript engine argument limit, throwing RangeError: Maximum call stack size exceeded. It typically appears above roughly 100 KB, so it survives small tests and fails on the first real file. Process the byte array in chunks of about 32,768 bytes instead.',
+      },
+      {
+        question: 'What is the difference between Base64 and Base64URL?',
+        answer:
+          'Base64URL replaces the plus character with a hyphen, the forward slash with an underscore, and removes trailing equals padding, because those three characters have meaning inside URLs. It is defined in RFC 4648 section 5 and is the encoding used by JSON Web Tokens and by OAuth state and PKCE parameters. Converting back requires restoring the padding before calling atob.',
+      },
+      {
+        question: 'How much larger does Base64 make a file?',
+        answer:
+          'About 33% larger. The encoder converts every three bytes of input into four output characters, plus up to two padding characters, so a 3 MB file becomes roughly 4 MB. This penalty applies to data URIs too, which is why inlining is only worthwhile below roughly 4 KB and for assets needed in the critical rendering path.',
+      },
+      {
+        question: 'Is it safe to decode a JWT in an online tool?',
+        answer:
+          'Only if the tool decodes locally in your browser. A JWT payload is Base64URL and readable by anyone holding the token, so pasting one into a tool that sends it to a server exposes the token to a third party and its request logs. If you have already done so with a live token, rotate it. A Base64 codec is pure byte arithmetic and has no legitimate need for a server round trip.',
       },
     ],
     relatedSlugs: [
@@ -1063,16 +1676,159 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
       'Generate single or bulk RFC 4122 UUID v4 identifiers using hardware entropy from crypto.randomUUID() in browser memory.',
     sections: [
       {
-        id: 'hardware-entropy-uuid',
-        heading: 'Hardware-Seeded RFC 4122 UUIDs',
-        content: `Generating unique database identifiers requires cryptographically strong pseudo-random numbers. OpenTools calls the browser-native crypto.randomUUID() interface, tapping your operating system entropy pool for 128-bit collision-free uniqueness.`,
+        id: 'what-a-uuid-v4-actually-is',
+        heading: 'What a UUID v4 Actually Contains',
+        content: `A UUID version 4 is 128 bits, of which **122 are random** and 6 are fixed by the specification. RFC 9562 (which superseded RFC 4122 in 2024) reserves four bits for the version and two for the variant, leaving the rest to chance.
+
+The canonical text form is 36 characters: 32 hexadecimal digits in five hyphen-separated groups of 8-4-4-4-12.
+
+\`\`\`
+f47ac10b-58cc-4372-a567-0e02b2c3d479
+              ^    ^
+              |    variant bits (first hex digit is 8, 9, a or b)
+              version (always 4)
+\`\`\`
+
+Two positions are not random and are worth recognising by eye:
+
+- **Character 15** — the first digit of the third group — is always \`4\`. That is the version nibble.
+- **Character 20** — the first digit of the fourth group — is always \`8\`, \`9\`, \`a\` or \`b\`. Those are the two variant bits (binary \`10\`) followed by two random bits.
+
+If you are validating UUIDs and your regex accepts any hex in those positions, it will accept strings that are not valid version 4 UUIDs. A correct pattern is specific about both:
+
+\`\`\`
+/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+\`\`\``,
+      },
+      {
+        id: 'why-mathrandom-is-wrong',
+        heading: 'Why Math.random() Is the Wrong Source',
+        content: `A large number of UUID snippets online generate their randomness with \`Math.random()\`. Every one of them is producing identifiers that are predictable in principle.
+
+\`Math.random()\` is specified only as an "implementation-dependent algorithm or strategy" returning values with approximately uniform distribution. It is a **pseudo-random number generator**: a deterministic function of hidden internal state. V8 uses xorshift128+, which is fast and statistically well-distributed and **explicitly not cryptographically secure**. Given enough consecutive outputs, the internal state can be recovered and all future outputs predicted. This has been demonstrated publicly against V8's implementation.
+
+It matters whenever the identifier is doing security work. If a UUID is a password-reset token, a session identifier, an unguessable document URL, or an invitation code, predictability turns it into an enumeration vulnerability. An attacker who can sample identifiers can generate the next ones.
+
+There is a second, subtler problem. \`Math.random()\` returns a double in [0, 1), which carries 52 bits of mantissa but typically only ~32 bits of underlying entropy per call in practice. Composing 122 bits of a UUID from such values does not reliably deliver 122 bits of entropy, which quietly weakens the collision arithmetic in the next section.
+
+The correct source is the Web Crypto API, which is backed by the platform's cryptographically secure generator:
+
+\`\`\`js
+crypto.getRandomValues(new Uint8Array(16));
+\`\`\``,
+      },
+      {
+        id: 'the-right-way-to-generate',
+        heading: 'crypto.randomUUID and the 65,536-Byte Limit',
+        content: `Modern browsers and Node expose a single-call generator that does all of this correctly:
+
+\`\`\`js
+const id = crypto.randomUUID();
+// 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+\`\`\`
+
+\`crypto.randomUUID()\` is available in all current browsers and requires a **secure context** — HTTPS or localhost. On an insecure origin it is simply absent, which is a common cause of "randomUUID is not a function" on a staging server served over plain HTTP.
+
+When generating in bulk, or when you need the raw bytes for another format, \`crypto.getRandomValues()\` is the primitive underneath. It has one limit that catches people out: **a single call may request at most 65,536 bytes.** Ask for more and it throws a \`QuotaExceededError\`. Generating a large batch therefore requires chunking:
+
+\`\`\`js
+function randomBytes(length) {
+  const output = new Uint8Array(length);
+  for (let offset = 0; offset < length; offset += 65_536) {
+    crypto.getRandomValues(
+      output.subarray(offset, Math.min(offset + 65_536, length)),
+    );
+  }
+  return output;
+}
+\`\`\`
+
+To assemble a v4 UUID from raw bytes by hand, set the two reserved fields explicitly — this is exactly what \`randomUUID\` does internally:
+
+\`\`\`js
+bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 10xx
+\`\`\``,
+      },
+      {
+        id: 'collision-arithmetic',
+        heading: 'Collision Probability, With the Actual Numbers',
+        content: `"Collision-free" is a claim people repeat without arithmetic. The honest statement is that collisions are possible and overwhelmingly improbable, and the birthday bound tells you exactly how improbable.
+
+With 122 random bits, the number of UUIDs you must generate before the probability of **any** collision reaches 50% is approximately 2^61, which is about **2.3 × 10^18** — 2.3 quintillion.
+
+More useful in practice is the probability at realistic volumes. For n identifiers drawn from 2^122 possibilities, the chance of at least one collision is approximately n² / 2^123:
+
+| UUIDs generated | Approximate collision probability |
+| :--- | :--- |
+| 1 billion (10^9) | 1 in 10^19 |
+| 1 trillion (10^12) | 1 in 10^13 |
+| 100 trillion (10^14) | 1 in 10^9 |
+
+For comparison, the probability of an undetected error in a TCP segment protected by its 16-bit checksum is vastly higher than any figure in that table. In any realistic application, UUID collision is not the risk you should be budgeting attention for.
+
+**The caveat that matters**: this arithmetic assumes 122 bits of genuine entropy. It is invalid if the generator is \`Math.random()\`, and it is invalid on a device whose entropy pool was not properly seeded at boot — a documented historical issue on some embedded platforms. The arithmetic is only as good as the randomness beneath it.`,
+      },
+      {
+        id: 'v4-versus-v7',
+        heading: 'When v4 Is the Wrong Version: UUID v7 and Database Indexes',
+        content: `Version 4 is the right default for identifiers that must be unguessable. It is frequently the wrong choice for a database primary key, and the reason is index locality.
+
+A v4 UUID is uniformly random, so consecutive inserts land at random positions in a B-tree index. Every insert dirties a different page, the working set grows toward the size of the whole index, and page splits multiply. On a large table with a clustered index on a random key — SQL Server and MySQL's InnoDB both cluster by primary key — this shows up as write amplification and steadily degrading insert throughput.
+
+**UUID version 7**, standardised in RFC 9562, addresses this directly. Its first 48 bits are a Unix millisecond timestamp, with the remaining bits random. The result sorts chronologically, so inserts append to the end of the index the way an auto-increment integer does, while remaining globally unique and generatable without coordination.
+
+Choose by what the identifier is for:
+
+- **v4** — public tokens, share links, anything that must not be guessable or enumerable, anything whose creation time must not leak.
+- **v7** — database primary keys, event and log identifiers, anything where ordering or index locality matters.
+
+Be aware of the trade: a v7 identifier **discloses its creation time** to anyone holding it. That is often harmless and occasionally not — it can reveal account-creation dates, order volumes over a period, or the timing of internal events. Do not use v7 where the timestamp is sensitive.`,
+      },
+      {
+        id: 'generating-locally',
+        heading: 'Why Generating Identifiers Locally Is the Sane Default',
+        content: `Many online UUID generators post a request to a server and render what comes back. For a value whose only property is that nobody can predict it, that arrangement is difficult to justify.
+
+An identifier generated on a remote server has been known to a system you do not control, has traversed a network, and may exist in that server's request logs. If the UUID is destined to become a session token, an API key or a reset link, its secrecy has already been compromised before you have pasted it anywhere.
+
+Generating in the browser tab removes that exposure. \`crypto.getRandomValues()\` draws from the operating system's own entropy source — \`/dev/urandom\` on Unix-like systems, \`BCryptGenRandom\` on Windows — through the browser's implementation. It is the same source the browser uses for TLS key material.
+
+The OpenTools [UUID generator](/developer/uuid-generator) runs entirely in the page for this reason. There is no request carrying the generated value, and batch generation is chunked to respect the 65,536-byte per-call limit rather than silently truncating.
+
+Two habits worth keeping regardless of which tool you use: **never reuse an identifier across a security boundary** — a UUID that was ever a public document id should not later become an authentication token — and **do not treat a UUID as a secret unless it was generated from a cryptographic source**, because a v4 UUID from a weak generator provides confidence rather than security.`,
       },
     ],
     faqs: [
       {
-        question: 'Can I generate bulk UUIDs in one click?',
+        question: 'What is a UUID v4?',
         answer:
-          'Yes. You can generate up to 500 UUIDs at once with uppercase/lowercase and hyphen formatting options.',
+          'A UUID version 4 is a 128-bit identifier of which 122 bits are random and 6 are fixed by RFC 9562. It is written as 36 characters in five hyphen-separated hexadecimal groups of 8-4-4-4-12. The first digit of the third group is always 4, marking the version, and the first digit of the fourth group is always 8, 9, a or b, encoding the variant.',
+      },
+      {
+        question: 'Is Math.random() safe for generating UUIDs?',
+        answer:
+          'No. Math.random() is a pseudo-random number generator whose internal state can be recovered from enough consecutive outputs, and V8 implements it with xorshift128+, which is explicitly not cryptographically secure. Any UUID used as a session token, reset link or unguessable URL must come from crypto.randomUUID() or crypto.getRandomValues(), which draw from the operating system entropy source.',
+      },
+      {
+        question: 'Why is crypto.randomUUID undefined in my browser?',
+        answer:
+          'crypto.randomUUID requires a secure context, meaning HTTPS or localhost. On a page served over plain HTTP the method is simply absent, which is the usual cause of the error on staging servers. Serving the page over HTTPS or testing on localhost restores it.',
+      },
+      {
+        question: 'How likely is a UUID v4 collision?',
+        answer:
+          'With 122 random bits you would need to generate roughly 2.3 quintillion UUIDs before the chance of any collision reaches 50%. At one billion identifiers the probability is about 1 in 10 to the power 19. This arithmetic holds only if the randomness is genuine; it is invalid for UUIDs produced with Math.random() or on a device whose entropy pool was poorly seeded.',
+      },
+      {
+        question: 'Should I use UUID v4 or v7 for a database primary key?',
+        answer:
+          'Use v7. A v4 UUID is uniformly random, so consecutive inserts land at random positions in a B-tree index, causing page splits and write amplification on large tables. UUID v7 begins with a 48-bit Unix millisecond timestamp, so identifiers sort chronologically and inserts append to the end of the index. The trade-off is that a v7 identifier discloses its creation time to anyone holding it.',
+      },
+      {
+        question: 'Why generate UUIDs in the browser instead of on a server?',
+        answer:
+          'A UUID generated remotely has been known to a system you do not control and may persist in that server request logs, which undermines the one property the identifier needs if it will become a token or key. Generating in the page with crypto.getRandomValues draws from the same operating system entropy source the browser uses for TLS key material, and the value never leaves the tab.',
       },
     ],
     relatedSlugs: [
