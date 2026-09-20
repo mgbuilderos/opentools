@@ -163,16 +163,15 @@ export function VideoTrimTool() {
       const from = readSeconds(startAt, 'The start time') ?? 0;
       const to =
         readSeconds(endAt, 'The end time') ?? loaded.movie.durationSeconds;
-      const extracted = await extractFrames(
-        new Blob([loaded.bytes as BlobPart]),
-        {
-          startSeconds: from,
-          endSeconds: to,
-          framesPerSecond: gifFps,
-          maxEdge: GIF_MAX_EDGE,
-          maxFrames: GIF_MAX_FRAMES,
-        },
-      );
+      // The bytes go straight to the decoder; there is no URL and no element,
+      // which is what keeps this working under the site's own media policy.
+      const extracted = await extractFrames(loaded.bytes, {
+        startSeconds: from,
+        endSeconds: to,
+        framesPerSecond: gifFps,
+        maxEdge: GIF_MAX_EDGE,
+        maxFrames: GIF_MAX_FRAMES,
+      });
 
       setBusy('Choosing colours…');
       const bytes = encodeGif(
