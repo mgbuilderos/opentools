@@ -155,6 +155,8 @@ describe('public canary catalog', () => {
   it('leaves no destination reachable by search alone', () => {
     // The count the owner was shown on 2026-09-20: 677 destinations exist and
     // the sidebar reached 438 of them. Search found the rest; browsing did not.
+    // 679 since the word cloud generator and the ER-diagram-to-SQL converter
+    // were added to answer search demand Google was already sending here.
     const everyDestination = publicTools.reduce(
       (total, tool) => total + (tool.searchEntries?.length || 1),
       0,
@@ -169,7 +171,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(677);
+    expect(everyDestination).toBe(679);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -247,7 +249,7 @@ describe('public canary catalog', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(646);
+    expect(entries).toHaveLength(648);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

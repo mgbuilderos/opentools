@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { CREATOR_OPERATIONS, runCreatorOperation } from './creator-workbench';
+import {
+  CREATOR_OPERATIONS,
+  countWordFrequencies,
+  estimateTextWidth,
+  generateWordCloudSvg,
+  runCreatorOperation,
+} from './creator-workbench';
 
 function defaults(id: string) {
   const operation = CREATOR_OPERATIONS.find((item) => item.id === id);
@@ -31,9 +37,9 @@ function silentPcmWav() {
 }
 
 describe('creator and social workbench', () => {
-  it('publishes 48 unique operations whose defaults all run', () => {
-    expect(CREATOR_OPERATIONS).toHaveLength(48);
-    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(48);
+  it('publishes 49 unique operations whose defaults all run', () => {
+    expect(CREATOR_OPERATIONS).toHaveLength(49);
+    expect(new Set(CREATOR_OPERATIONS.map((item) => item.id)).size).toBe(49);
     for (const operation of CREATOR_OPERATIONS) {
       expect(
         runCreatorOperation(
@@ -326,5 +332,186 @@ describe('creator and social workbench', () => {
     });
     expect(bullets).toContain('➤');
     expect(bullets).toContain('𝗙𝗮𝘀𝘁');
+  });
+});
+
+describe('word cloud generator', () => {
+  const settings = (overrides: Record<string, string> = {}) => ({
+    text: 'alpha alpha alpha beta beta gamma delta epsilon zeta',
+    maxWords: '60',
+    minLength: '3',
+    palette: 'ocean',
+    background: 'white',
+    stopwords: 'english',
+    extraStopwords: '',
+    ...overrides,
+  });
+
+  /** Every `<text>` box, in the same coordinates the SVG places them. */
+  function boxes(svg: string) {
+    return [
+      ...svg.matchAll(
+        /<text x="([\d.]+)" y="([\d.]+)" font-size="([\d.]+)"[^>]*>(?:<title>[^<]*<\/title>)?([^<]+)<\/text>/gu,
+      ),
+    ].map((match) => ({
+      x: Number(match[1]),
+      y: Number(match[2]),
+      size: Number(match[3]),
+      word: match[4],
+    }));
+  }
+
+  it('sizes words by how often they appear', () => {
+    const found = boxes(generateWordCloudSvg(settings()));
+    const alpha = found.find((box) => box.word === 'alpha');
+    const zeta = found.find((box) => box.word === 'zeta');
+
+    expect(alpha).toBeDefined();
+    expect(zeta).toBeDefined();
+    expect(alpha!.size).toBeGreaterThan(zeta!.size);
+  });
+
+  it('gives the same picture for the same text, every time', () => {
+    // The layout carries no random seed on purpose: a cloud a user cannot
+    // reproduce is a cloud they cannot put in a document and re-export later.
+    const once = generateWordCloudSvg(settings());
+    const twice = generateWordCloudSvg(settings());
+
+    expect(twice).toBe(once);
+  });
+
+  it('lays words out without overlapping each other', () => {
+    // The regression this guards: the search spiral used a fixed growth rate,
+    // so a page of large words exhausted every attempt and each one was left
+    // at the position of its last try -- the same position for all of them.
+    // Forty words came out as forty words in a single pile, and every other
+    // assertion here still passed.
+    const found = boxes(
+      generateWordCloudSvg(
+        settings({
+          text: Array.from({ length: 40 }, (_, index) =>
+            `subject${index} `.repeat(index + 1),
+          ).join(' '),
+        }),
+      ),
+    );
+
+    expect(found).toHaveLength(40);
+    expect(new Set(found.map((box) => `${box.x},${box.y}`)).size).toBe(40);
+
+    for (let a = 0; a < found.length; a += 1) {
+      for (let b = a + 1; b < found.length; b += 1) {
+        const one = found[a]!;
+        const two = found[b]!;
+        // `x` is already the box centre (text-anchor is middle), but `y` is the
+        // baseline, which the generator drops 0.34 of the font size below the
+        // centre. Comparing baselines directly measures two different-sized
+        // words against a shifted axis and reports overlaps that are not there.
+        const centre = (box: { y: number; size: number }) =>
+          box.y - box.size * 0.34;
+        const horizontal =
+          Math.abs(one.x - two.x) * 2 <
+          estimateTextWidth(one.word, one.size) +
+            estimateTextWidth(two.word, two.size);
+        const vertical =
+          Math.abs(centre(one) - centre(two)) * 2 <
+          one.size * 1.06 + two.size * 1.06;
+        expect(horizontal && vertical, `${one.word} overlaps ${two.word}`).toBe(
+          false,
+        );
+      }
+    }
+  });
+
+  it('removes English filler words unless told to keep them', () => {
+    const text = 'the cat and the hat and the mat';
+
+    expect(generateWordCloudSvg(settings({ text }))).not.toContain('>the<');
+    expect(
+      generateWordCloudSvg(settings({ text, stopwords: 'none' })),
+    ).toContain('>the<');
+  });
+
+  it('also drops words the user names', () => {
+    const svg = generateWordCloudSvg(
+      settings({
+        text: 'acme widget acme widget sprocket',
+        extraStopwords: 'acme, widget',
+      }),
+    );
+
+    expect(svg).toContain('>sprocket<');
+    expect(svg).not.toContain('>acme<');
+    expect(svg).not.toContain('>widget<');
+  });
+
+  it('cannot carry markup into the SVG it writes', () => {
+    // Words are cut on anything that is not a letter, digit, apostrophe or
+    // hyphen, so a tag in the input cannot survive as a word -- and `escapeXml`
+    // is the second line for the characters that do survive.
+    const svg = generateWordCloudSvg(
+      settings({
+        text: '<script>alert(1)</script> ordinary ordinary "quoted" & more',
+        stopwords: 'none',
+      }),
+    );
+
+    expect(svg).not.toContain('<script');
+    expect(svg).not.toContain('alert(1)');
+    expect(svg).toContain('>ordinary<');
+    expect(svg).toContain('>script<');
+    // Well-formed enough for a parser: one root element, tags all closed.
+    expect(svg.match(/<text /gu)?.length).toBe(svg.match(/<\/text>/gu)?.length);
+  });
+
+  it('keeps every word inside the viewBox it declares', () => {
+    const svg = generateWordCloudSvg(
+      settings({ text: 'one two three four five six seven eight nine ten' }),
+    );
+    const viewBox = /viewBox="0 0 (\d+) (\d+)"/u.exec(svg);
+
+    expect(viewBox).not.toBeNull();
+    const width = Number(viewBox![1]);
+    const height = Number(viewBox![2]);
+    for (const box of boxes(svg)) {
+      expect(box.x).toBeGreaterThan(0);
+      expect(box.x).toBeLessThan(width);
+      expect(box.y).toBeGreaterThan(0);
+      expect(box.y).toBeLessThan(height);
+    }
+  });
+
+  it('counts words without being fooled by punctuation or case', () => {
+    const counts = countWordFrequencies(
+      "Report, report; REPORT. well-known don't",
+    );
+
+    expect(counts[0]).toEqual({ word: 'report', count: 3 });
+    expect(counts.map((entry) => entry.word)).toContain('well-known');
+    expect(counts.map((entry) => entry.word)).toContain("don't");
+  });
+
+  it('orders equal counts alphabetically, so nothing shuffles between runs', () => {
+    const counts = countWordFrequencies('pear apple mango');
+
+    expect(counts.map((entry) => entry.word)).toEqual([
+      'apple',
+      'mango',
+      'pear',
+    ]);
+  });
+
+  it('explains itself when filtering leaves nothing to draw', () => {
+    expect(() =>
+      generateWordCloudSvg(
+        settings({ text: 'the and of to', stopwords: 'english' }),
+      ),
+    ).toThrow(/No words left after filtering/u);
+  });
+
+  it('refuses a word limit outside the range it can lay out', () => {
+    expect(() => generateWordCloudSvg(settings({ maxWords: '9000' }))).toThrow(
+      /whole number from 5 to 300/u,
+    );
   });
 });

@@ -1010,6 +1010,35 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
       outputExtension: 'svg',
     },
     {
+      id: 'er-diagram-to-sql',
+      name: 'ER Diagram to SQL Converter',
+      description:
+        'Turn a Mermaid erDiagram into runnable CREATE TABLE statements for PostgreSQL, MySQL or SQLite, with primary keys, foreign keys and junction tables for many-to-many.',
+      fields: [
+        area(
+          'diagram',
+          'Mermaid ER diagram',
+          'erDiagram\n    CUSTOMER ||--o{ ORDER : places\n    ORDER ||--|{ ORDER_ITEM : contains\n    PRODUCT ||--o{ ORDER_ITEM : "appears in"\n\n    CUSTOMER {\n        int id PK\n        string name\n        string email UK "login address"\n        datetime created_at\n    }\n    ORDER {\n        int id PK\n        int customer_id FK\n        decimal total\n        string status\n    }\n    PRODUCT {\n        int id PK\n        string title\n        decimal price\n    }\n    ORDER_ITEM {\n        int id PK\n        int order_id FK\n        int product_id FK\n        int quantity\n    }',
+        ),
+        select('dialect', 'SQL dialect', [
+          { value: 'postgresql', label: 'PostgreSQL' },
+          { value: 'mysql', label: 'MySQL / MariaDB' },
+          { value: 'sqlite', label: 'SQLite' },
+        ]),
+        select('naming', 'Table and column names', [
+          { value: 'preserve', label: 'Keep exactly as written' },
+          { value: 'snake_case', label: 'Convert to snake_case' },
+        ]),
+        select('joinTables', 'Many-to-many relationships', [
+          { value: 'yes', label: 'Create a junction table' },
+          { value: 'no', label: 'Skip them' },
+        ]),
+      ],
+      notice:
+        'Reads Mermaid erDiagram syntax. An entity with no attribute block has no columns to create, and a foreign key is written only when the entity it points at declares a single primary key — anything skipped is listed in a comment at the end rather than guessed.',
+      outputExtension: 'sql',
+    },
+    {
       id: 'json-to-zod-schema',
       name: 'JSON to Zod Schema Generator',
       description:
@@ -2420,6 +2449,14 @@ export async function runAdvancedDeveloperOperation(
       const sql = required(values.sql, 'SQL DDL');
       const theme = values.theme || 'dark';
       return generateSqlErDiagramSvg(sql, theme);
+    }
+    case 'er-diagram-to-sql': {
+      const diagram = required(values.diagram, 'Mermaid ER diagram');
+      return convertMermaidErDiagramToSql(diagram, {
+        dialect: values.dialect || 'postgresql',
+        naming: values.naming || 'preserve',
+        joinTables: values.joinTables !== 'no',
+      });
     }
     case 'svg-cleaner': {
       let markup = required(values.svg, 'SVG markup');
@@ -4164,4 +4201,551 @@ export function convertJsonToZodSchema(
   }
 
   return lines.join('\n');
+}
+
+/* -------------------------------------------------------------------------
+ * Mermaid ER diagram -> SQL DDL
+ *
+ * The reverse of `generateSqlErDiagramSvg`. Google sends people to this site
+ * for "er diagram to sql" as often as for "sql to er diagram", and only one
+ * direction existed. Mermaid's `erDiagram` is the interchange format worth
+ * accepting: GitHub, GitLab, Notion and Obsidian all render it, so a diagram
+ * someone already has is usually already in this syntax.
+ * ---------------------------------------------------------------------- */
+
+interface MermaidAttribute {
+  name: string;
+  mermaidType: string;
+  keys: string[];
+  comment: string;
+}
+
+interface MermaidEntity {
+  name: string;
+  attributes: MermaidAttribute[];
+}
+
+interface MermaidRelationship {
+  left: string;
+  right: string;
+  leftMany: boolean;
+  rightMany: boolean;
+  label: string;
+}
+
+/**
+ * Mermaid attribute types are free text, so this maps what people actually
+ * write and passes anything else through untouched. A type the author spelled
+ * in SQL already (`VARCHAR(64)`, `NUMERIC(10,2)`) must survive unchanged --
+ * rewriting it would silently narrow a column.
+ */
+const MERMAID_TYPE_MAP: Record<string, Record<string, string>> = {
+  postgresql: {
+    string: 'VARCHAR(255)',
+    str: 'VARCHAR(255)',
+    text: 'TEXT',
+    int: 'INTEGER',
+    integer: 'INTEGER',
+    number: 'INTEGER',
+    bigint: 'BIGINT',
+    long: 'BIGINT',
+    float: 'REAL',
+    double: 'DOUBLE PRECISION',
+    decimal: 'NUMERIC(12,2)',
+    money: 'NUMERIC(12,2)',
+    bool: 'BOOLEAN',
+    boolean: 'BOOLEAN',
+    date: 'DATE',
+    time: 'TIME',
+    datetime: 'TIMESTAMP',
+    timestamp: 'TIMESTAMP',
+    uuid: 'UUID',
+    json: 'JSONB',
+    blob: 'BYTEA',
+    binary: 'BYTEA',
+  },
+  mysql: {
+    string: 'VARCHAR(255)',
+    str: 'VARCHAR(255)',
+    text: 'TEXT',
+    int: 'INT',
+    integer: 'INT',
+    number: 'INT',
+    bigint: 'BIGINT',
+    long: 'BIGINT',
+    float: 'FLOAT',
+    double: 'DOUBLE',
+    decimal: 'DECIMAL(12,2)',
+    money: 'DECIMAL(12,2)',
+    bool: 'TINYINT(1)',
+    boolean: 'TINYINT(1)',
+    date: 'DATE',
+    time: 'TIME',
+    datetime: 'DATETIME',
+    timestamp: 'TIMESTAMP',
+    uuid: 'CHAR(36)',
+    json: 'JSON',
+    blob: 'BLOB',
+    binary: 'BLOB',
+  },
+  sqlite: {
+    string: 'TEXT',
+    str: 'TEXT',
+    text: 'TEXT',
+    int: 'INTEGER',
+    integer: 'INTEGER',
+    number: 'INTEGER',
+    bigint: 'INTEGER',
+    long: 'INTEGER',
+    float: 'REAL',
+    double: 'REAL',
+    decimal: 'NUMERIC',
+    money: 'NUMERIC',
+    bool: 'INTEGER',
+    boolean: 'INTEGER',
+    date: 'TEXT',
+    time: 'TEXT',
+    datetime: 'TEXT',
+    timestamp: 'TEXT',
+    uuid: 'TEXT',
+    json: 'TEXT',
+    blob: 'BLOB',
+    binary: 'BLOB',
+  },
+};
+
+/** Words that must be quoted rather than emitted bare as an identifier. */
+const SQL_RESERVED = new Set([
+  'order',
+  'user',
+  'group',
+  'table',
+  'select',
+  'from',
+  'where',
+  'index',
+  'key',
+  'primary',
+  'references',
+  'check',
+  'default',
+  'column',
+  'constraint',
+  'values',
+  'grant',
+  'role',
+  'transaction',
+  'limit',
+  'offset',
+  'case',
+  'when',
+  'desc',
+  'asc',
+  'end',
+]);
+
+function toSnakeCase(value: string): string {
+  return value
+    .replace(/[\s-]+/gu, '_')
+    .replace(/([a-z0-9])([A-Z])/gu, '$1_$2')
+    .replace(/__+/gu, '_')
+    .toLowerCase();
+}
+
+function quoteIdentifier(name: string, dialect: string): string {
+  const safe = /^[A-Za-z_][A-Za-z0-9_]*$/u.test(name);
+  if (safe && !SQL_RESERVED.has(name.toLowerCase())) return name;
+  if (dialect === 'mysql') return `\`${name.replaceAll('`', '``')}\``;
+  return `"${name.replaceAll('"', '""')}"`;
+}
+
+function mapMermaidType(mermaidType: string, dialect: string): string {
+  const raw = mermaidType.trim();
+  if (!raw) return dialect === 'sqlite' ? 'TEXT' : 'VARCHAR(255)';
+  // Already written as SQL -- a length, precision or an unmapped keyword.
+  // Passing it through is the only safe move; a guess here loses data.
+  const key = raw.toLowerCase();
+  const map = MERMAID_TYPE_MAP[dialect] ?? MERMAID_TYPE_MAP.postgresql;
+  if (map[key]) return map[key];
+  if (/[()]/u.test(raw) || /\s/u.test(raw)) return raw.toUpperCase();
+  return raw.toUpperCase();
+}
+
+/**
+ * Parses Mermaid `erDiagram` source into entities and relationships.
+ *
+ * Accepts the three block styles Mermaid itself accepts: a relationship line,
+ * an entity block with attributes, and an alias (`CUSTOMER["Customer"]`).
+ * Anything it cannot read is reported rather than dropped, because a silently
+ * skipped table is a schema that looks complete and is not.
+ */
+export function parseMermaidErDiagram(source: string): {
+  entities: MermaidEntity[];
+  relationships: MermaidRelationship[];
+  ignored: string[];
+} {
+  const entities = new Map<string, MermaidEntity>();
+  const relationships: MermaidRelationship[] = [];
+  const ignored: string[] = [];
+
+  const entityFor = (name: string) => {
+    const existing = entities.get(name);
+    if (existing) return existing;
+    const created: MermaidEntity = { name, attributes: [] };
+    entities.set(name, created);
+    return created;
+  };
+
+  const lines = source
+    .split(/\r?\n/u)
+    .map((line) => line.replace(/%%.*$/u, '').trim());
+
+  let current: MermaidEntity | null = null;
+
+  for (const line of lines) {
+    if (!line) continue;
+    if (/^erDiagram\b/iu.test(line)) continue;
+    if (
+      /^(?:direction|title|classDef|class|style|accTitle|accDescr)\b/iu.test(
+        line,
+      )
+    )
+      continue;
+
+    if (current) {
+      if (line === '}') {
+        current = null;
+        continue;
+      }
+      // `type name PK, UK "comment"` -- type and name are required, the rest
+      // optional. Mermaid allows several key markers on one attribute.
+      const attribute =
+        /^([A-Za-z_][\w()[\],. ]*?)\s+([A-Za-z_]\w*)\s*((?:\b(?:PK|FK|UK)\b[ ,]*)*)\s*(?:"([^"]*)")?\s*$/u.exec(
+          line,
+        );
+      if (!attribute) {
+        ignored.push(line);
+        continue;
+      }
+      current.attributes.push({
+        mermaidType: attribute[1].trim(),
+        name: attribute[2],
+        keys: (attribute[3] ?? '')
+          .toUpperCase()
+          .split(/[ ,]+/u)
+          .filter(Boolean),
+        comment: attribute[4] ?? '',
+      });
+      continue;
+    }
+
+    // `CUSTOMER ||--o{ ORDER : places`, or `..` for a non-identifying one.
+    //
+    // Cardinality is exactly two characters a side, and the crow's foot is the
+    // half that matters: `}` is "many" on the left, `{` is "many" on the right.
+    // Reading `{` on both sides -- the obvious mistake -- makes every
+    // one-to-many look one-to-one and silently drops every junction table.
+    const relationship =
+      /^(\w+)(?:\s*\[[^\]]*\])?\s+([|}o]{2})(?:--|\.\.)([|o{]{2})\s+(\w+)(?:\s*\[[^\]]*\])?\s*:\s*(.+)$/u.exec(
+        line,
+      );
+    if (relationship) {
+      const [, left, leftCardinality, rightCardinality, right, label] =
+        relationship;
+      entityFor(left);
+      entityFor(right);
+      relationships.push({
+        left,
+        right,
+        leftMany: leftCardinality.includes('}'),
+        rightMany: rightCardinality.includes('{'),
+        label: label.replace(/^["']|["']$/gu, '').trim(),
+      });
+      continue;
+    }
+
+    // `CUSTOMER {` opens an attribute block.
+    const block = /^(\w+)(?:\s*\[[^\]]*\])?\s*\{$/u.exec(line);
+    if (block) {
+      current = entityFor(block[1]);
+      continue;
+    }
+
+    // A bare entity name on its own line is legal Mermaid.
+    if (/^\w+(?:\s*\[[^\]]*\])?$/u.test(line)) {
+      entityFor(line.replace(/\s*\[[^\]]*\]$/u, ''));
+      continue;
+    }
+
+    ignored.push(line);
+  }
+
+  return { entities: [...entities.values()], relationships, ignored };
+}
+
+/**
+ * Orders entities so that every table is created before the tables that point
+ * at it. Kahn's algorithm over the parent -> child edges the relationships
+ * describe; whatever a cycle leaves behind is returned separately so the caller
+ * can say which tables could not be ordered instead of hiding it.
+ */
+function orderEntitiesParentsFirst(
+  entities: MermaidEntity[],
+  relationships: MermaidRelationship[],
+): { entities: MermaidEntity[]; cyclic: string[] } {
+  const byName = new Map(entities.map((entity) => [entity.name, entity]));
+  const parentsOf = new Map<string, Set<string>>(
+    entities.map((entity) => [entity.name, new Set<string>()]),
+  );
+
+  for (const relationship of relationships) {
+    // The "one" side is the parent; a many-to-many has no parent either way.
+    if (relationship.leftMany === relationship.rightMany) continue;
+    const parent = relationship.rightMany
+      ? relationship.left
+      : relationship.right;
+    const child = relationship.rightMany
+      ? relationship.right
+      : relationship.left;
+    if (parent === child) continue;
+    parentsOf.get(child)?.add(parent);
+  }
+
+  const ordered: MermaidEntity[] = [];
+  const placed = new Set<string>();
+  let progressed = true;
+
+  while (progressed) {
+    progressed = false;
+    for (const entity of entities) {
+      if (placed.has(entity.name)) continue;
+      const parents = parentsOf.get(entity.name) ?? new Set<string>();
+      const waiting = [...parents].some(
+        (parent) => byName.has(parent) && !placed.has(parent),
+      );
+      if (waiting) continue;
+      ordered.push(entity);
+      placed.add(entity.name);
+      progressed = true;
+    }
+  }
+
+  const cyclic = entities
+    .filter((entity) => !placed.has(entity.name))
+    .map((entity) => entity.name);
+
+  return {
+    entities: [
+      ...ordered,
+      ...entities.filter((entity) => !placed.has(entity.name)),
+    ],
+    cyclic,
+  };
+}
+
+/**
+ * Turns a Mermaid `erDiagram` into runnable DDL.
+ *
+ * Two deliberate limits, both stated on the page rather than papered over:
+ * an entity with no attribute block cannot become a table with columns, and a
+ * foreign key is only emitted when the target entity declares a primary key.
+ * Inventing either would produce DDL that runs and describes the wrong schema.
+ */
+export function convertMermaidErDiagramToSql(
+  source: string,
+  options: {
+    dialect?: string;
+    naming?: string;
+    joinTables?: boolean;
+  } = {},
+): string {
+  const dialect = options.dialect ?? 'postgresql';
+  const naming = options.naming ?? 'preserve';
+  const joinTables = options.joinTables !== false;
+
+  const { entities, relationships, ignored } = parseMermaidErDiagram(source);
+  if (entities.length === 0) {
+    throw new Error(
+      'No entities found. Paste a Mermaid erDiagram — it starts with `erDiagram` and names entities like `CUSTOMER ||--o{ ORDER : places`.',
+    );
+  }
+
+  const tableName = (name: string) =>
+    naming === 'snake_case' ? toSnakeCase(name) : name;
+  const columnName = (name: string) =>
+    naming === 'snake_case' ? toSnakeCase(name) : name;
+
+  const primaryKeyOf = new Map<string, MermaidAttribute[]>();
+  for (const entity of entities) {
+    primaryKeyOf.set(
+      entity.name,
+      entity.attributes.filter((attribute) => attribute.keys.includes('PK')),
+    );
+  }
+
+  const statements: string[] = [];
+  const notes: string[] = [];
+  const emptyEntities: string[] = [];
+
+  // A table has to exist before anything references it, so the statements are
+  // emitted parents-first. Mermaid lists entities in whatever order the author
+  // drew them, which in the common shape puts a child before its parent and
+  // makes the DDL fail on the first run. A cycle -- two tables referencing each
+  // other -- has no valid order, so the remainder is emitted as found and said
+  // so, rather than looping.
+  const ordered = orderEntitiesParentsFirst(entities, relationships);
+  if (ordered.cyclic.length > 0) {
+    notes.push(
+      `${ordered.cyclic.join(', ')} reference each other in a cycle, so no creation order satisfies every foreign key. Create the tables first and add those constraints with ALTER TABLE.`,
+    );
+  }
+
+  for (const entity of ordered.entities) {
+    if (entity.attributes.length === 0) {
+      emptyEntities.push(entity.name);
+      continue;
+    }
+
+    const table = quoteIdentifier(tableName(entity.name), dialect);
+    const columns: string[] = [];
+    const constraints: string[] = [];
+
+    for (const attribute of entity.attributes) {
+      const column = quoteIdentifier(columnName(attribute.name), dialect);
+      const type = mapMermaidType(attribute.mermaidType, dialect);
+      const parts = [`  ${column} ${type}`];
+      if (attribute.keys.includes('PK')) parts.push('NOT NULL');
+      if (attribute.keys.includes('UK')) parts.push('UNIQUE');
+      // The comment goes on its own line above the column, never trailing it:
+      // these lines are joined with commas afterwards, so a trailing `--`
+      // comment would swallow its own separator and break the statement.
+      const comment = attribute.comment
+        ? `  -- ${attribute.comment.replace(/\s+/gu, ' ')}\n`
+        : '';
+      columns.push(comment + parts.join(' '));
+    }
+
+    const primaryKey = primaryKeyOf.get(entity.name) ?? [];
+    if (primaryKey.length > 0) {
+      const keyColumns = primaryKey
+        .map((attribute) =>
+          quoteIdentifier(columnName(attribute.name), dialect),
+        )
+        .join(', ');
+      constraints.push(`  PRIMARY KEY (${keyColumns})`);
+    }
+
+    // A foreign key needs both a declared FK column here and a declared PK on
+    // the other side. Mermaid carries no mapping between the two, so the only
+    // honest link is by relationship: this entity's FK columns point at the
+    // entities it is related to, in the order those relationships appear.
+    const parents = relationships
+      .filter(
+        (relationship) =>
+          (relationship.right === entity.name &&
+            relationship.leftMany === false) ||
+          (relationship.left === entity.name &&
+            relationship.rightMany === true),
+      )
+      .map((relationship) =>
+        relationship.right === entity.name
+          ? relationship.left
+          : relationship.right,
+      )
+      .filter((name, index, all) => all.indexOf(name) === index);
+
+    const foreignKeyColumns = entity.attributes.filter((attribute) =>
+      attribute.keys.includes('FK'),
+    );
+
+    for (const [index, attribute] of foreignKeyColumns.entries()) {
+      const parent =
+        parents.find((name) =>
+          attribute.name.toLowerCase().startsWith(name.toLowerCase()),
+        ) ?? parents[index];
+      if (!parent) {
+        notes.push(
+          `${entity.name}.${attribute.name} is marked FK but no relationship names the table it points at — add the relationship line, or the constraint cannot be written.`,
+        );
+        continue;
+      }
+      const parentKey = primaryKeyOf.get(parent) ?? [];
+      if (parentKey.length !== 1) {
+        notes.push(
+          `${entity.name}.${attribute.name} points at ${parent}, which declares ${parentKey.length === 0 ? 'no primary key' : 'a composite primary key'} — write that constraint by hand.`,
+        );
+        continue;
+      }
+      constraints.push(
+        `  FOREIGN KEY (${quoteIdentifier(columnName(attribute.name), dialect)}) ` +
+          `REFERENCES ${quoteIdentifier(tableName(parent), dialect)} ` +
+          `(${quoteIdentifier(columnName(parentKey[0].name), dialect)})`,
+      );
+    }
+
+    statements.push(
+      `CREATE TABLE ${table} (\n${[...columns, ...constraints].join(',\n')}\n);`,
+    );
+  }
+
+  // Many-to-many has no direct SQL form; it needs a junction table. Emitting
+  // one is the standard resolution, and skipping it silently would leave the
+  // schema unable to record the relationship at all.
+  if (joinTables) {
+    for (const relationship of relationships) {
+      if (!relationship.leftMany || !relationship.rightMany) continue;
+      const leftKey = primaryKeyOf.get(relationship.left) ?? [];
+      const rightKey = primaryKeyOf.get(relationship.right) ?? [];
+      if (leftKey.length !== 1 || rightKey.length !== 1) {
+        notes.push(
+          `${relationship.left} to ${relationship.right} is many-to-many, but a junction table needs a single primary key on both sides.`,
+        );
+        continue;
+      }
+      const joinName = tableName(`${relationship.left}_${relationship.right}`);
+      const leftColumn = columnName(`${relationship.left}_${leftKey[0].name}`);
+      const rightColumn = columnName(
+        `${relationship.right}_${rightKey[0].name}`,
+      );
+      statements.push(
+        `-- junction table for the many-to-many "${relationship.label}"\n` +
+          `CREATE TABLE ${quoteIdentifier(joinName, dialect)} (\n` +
+          `  ${quoteIdentifier(leftColumn, dialect)} ${mapMermaidType(leftKey[0].mermaidType, dialect)} NOT NULL,\n` +
+          `  ${quoteIdentifier(rightColumn, dialect)} ${mapMermaidType(rightKey[0].mermaidType, dialect)} NOT NULL,\n` +
+          `  PRIMARY KEY (${quoteIdentifier(leftColumn, dialect)}, ${quoteIdentifier(rightColumn, dialect)}),\n` +
+          `  FOREIGN KEY (${quoteIdentifier(leftColumn, dialect)}) REFERENCES ${quoteIdentifier(tableName(relationship.left), dialect)} (${quoteIdentifier(columnName(leftKey[0].name), dialect)}),\n` +
+          `  FOREIGN KEY (${quoteIdentifier(rightColumn, dialect)}) REFERENCES ${quoteIdentifier(tableName(relationship.right), dialect)} (${quoteIdentifier(columnName(rightKey[0].name), dialect)})\n` +
+          `);`,
+      );
+    }
+  }
+
+  if (statements.length === 0) {
+    throw new Error(
+      'Every entity in this diagram is a bare name with no attribute block, so there are no columns to create. Add `ENTITY { type name PK }` blocks.',
+    );
+  }
+
+  const header = [
+    `-- Generated from a Mermaid erDiagram. Dialect: ${dialect}.`,
+    `-- ${statements.length} statement(s) from ${entities.length} entit${entities.length === 1 ? 'y' : 'ies'} and ${relationships.length} relationship(s).`,
+  ];
+
+  if (emptyEntities.length > 0) {
+    notes.push(
+      `No attribute block for ${emptyEntities.join(', ')}, so no table was created for ${emptyEntities.length === 1 ? 'it' : 'them'}.`,
+    );
+  }
+  if (ignored.length > 0) {
+    notes.push(
+      `${ignored.length} line(s) were not recognised as Mermaid ER syntax and were skipped: ${ignored.slice(0, 3).join(' / ')}${ignored.length > 3 ? ' …' : ''}`,
+    );
+  }
+
+  const footer =
+    notes.length > 0
+      ? ['', '-- Not written, and why:', ...notes.map((note) => `--   ${note}`)]
+      : [];
+
+  return [...header, '', statements.join('\n\n'), ...footer].join('\n');
 }

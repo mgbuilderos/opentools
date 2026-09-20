@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ADVANCED_DEVELOPER_OPERATIONS,
+  convertMermaidErDiagramToSql,
   generateSqlErDiagramSvg,
   runAdvancedDeveloperOperation,
 } from './developer-advanced-workbench';
@@ -17,11 +18,11 @@ function defaults(id: string) {
 }
 
 describe('advanced developer workbench', () => {
-  it('publishes 54 unique operations whose defaults all run', async () => {
-    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(54);
+  it('publishes 55 unique operations whose defaults all run', async () => {
+    expect(ADVANCED_DEVELOPER_OPERATIONS).toHaveLength(55);
     expect(
       new Set(ADVANCED_DEVELOPER_OPERATIONS.map((item) => item.id)).size,
-    ).toBe(54);
+    ).toBe(55);
     for (const operation of ADVANCED_DEVELOPER_OPERATIONS) {
       await expect(
         runAdvancedDeveloperOperation(operation.id, defaults(operation.id)),
@@ -721,5 +722,143 @@ describe('SQL to ER diagram, against SQL as it is really written', () => {
     expect(() => generateSqlErDiagramSvg('SELECT * FROM users;')).toThrow(
       /No valid CREATE TABLE/u,
     );
+  });
+});
+
+describe('ER diagram to SQL', () => {
+  const shop = [
+    'erDiagram',
+    '    CUSTOMER ||--o{ ORDER : places',
+    '    ORDER ||--|{ ORDER_ITEM : contains',
+    '    PRODUCT ||--o{ ORDER_ITEM : "appears in"',
+    '    CUSTOMER {',
+    '        int id PK',
+    '        string email UK "login address"',
+    '    }',
+    '    ORDER {',
+    '        int id PK',
+    '        int customer_id FK',
+    '    }',
+    '    PRODUCT {',
+    '        int id PK',
+    '        string title',
+    '    }',
+    '    ORDER_ITEM {',
+    '        int id PK',
+    '        int order_id FK',
+    '        int product_id FK',
+    '    }',
+  ].join('\n');
+
+  it('creates a table for every entity that has attributes', () => {
+    const sql = convertMermaidErDiagramToSql(shop);
+
+    for (const table of ['CUSTOMER', '"ORDER"', 'PRODUCT', 'ORDER_ITEM']) {
+      expect(sql).toContain(`CREATE TABLE ${table} (`);
+    }
+  });
+
+  it('creates a referenced table before the table that references it', () => {
+    // Mermaid lists entities in drawing order, which here puts ORDER_ITEM
+    // before the PRODUCT it points at. Emitting that order produces DDL that
+    // fails on its first run, which is the whole point of the tool.
+    const sql = convertMermaidErDiagramToSql(shop);
+
+    expect(sql.indexOf('CREATE TABLE PRODUCT')).toBeLessThan(
+      sql.indexOf('CREATE TABLE ORDER_ITEM'),
+    );
+    expect(sql.indexOf('CREATE TABLE CUSTOMER')).toBeLessThan(
+      sql.indexOf('CREATE TABLE "ORDER"'),
+    );
+  });
+
+  it('puts an attribute comment on its own line, never after the column', () => {
+    // A trailing `-- comment` swallows the comma that separates it from the
+    // next column, so the statement stops parsing at that line.
+    const sql = convertMermaidErDiagramToSql(shop);
+
+    expect(sql).toContain('  -- login address\n  email VARCHAR(255) UNIQUE,');
+    expect(sql).not.toMatch(/--[^\n]*,\s*\n/u);
+  });
+
+  it("reads the crow's foot on both sides, so many-to-many gets a junction table", () => {
+    const sql = convertMermaidErDiagramToSql(
+      'erDiagram\n  STUDENT }o--o{ COURSE : enrols\n' +
+        '  STUDENT {\n    int id PK\n  }\n  COURSE {\n    int id PK\n  }',
+    );
+
+    expect(sql).toContain('CREATE TABLE STUDENT_COURSE (');
+    expect(sql).toContain('PRIMARY KEY (STUDENT_id, COURSE_id)');
+    expect(sql).toContain('REFERENCES STUDENT (id)');
+    expect(sql).toContain('REFERENCES COURSE (id)');
+  });
+
+  it('quotes a table named after a reserved word, per dialect', () => {
+    expect(
+      convertMermaidErDiagramToSql(shop, { dialect: 'postgresql' }),
+    ).toContain('CREATE TABLE "ORDER"');
+    expect(convertMermaidErDiagramToSql(shop, { dialect: 'mysql' })).toContain(
+      'CREATE TABLE `ORDER`',
+    );
+  });
+
+  it('maps types per dialect and passes an explicit SQL type through', () => {
+    const diagram =
+      'erDiagram\n  T {\n    int a PK\n    decimal b\n    boolean c\n    VARCHAR(64) d\n  }';
+
+    expect(
+      convertMermaidErDiagramToSql(diagram, { dialect: 'postgresql' }),
+    ).toContain('b NUMERIC(12,2)');
+    expect(
+      convertMermaidErDiagramToSql(diagram, { dialect: 'mysql' }),
+    ).toContain('c TINYINT(1)');
+    expect(
+      convertMermaidErDiagramToSql(diagram, { dialect: 'sqlite' }),
+    ).toContain('b NUMERIC');
+    // An author who already wrote a width meant it; narrowing it loses data.
+    expect(convertMermaidErDiagramToSql(diagram)).toContain('d VARCHAR(64)');
+  });
+
+  it('converts names to snake_case only when asked', () => {
+    const diagram = 'erDiagram\n  OrderItem {\n    int orderId PK\n  }';
+
+    expect(convertMermaidErDiagramToSql(diagram)).toContain(
+      'CREATE TABLE OrderItem',
+    );
+    expect(
+      convertMermaidErDiagramToSql(diagram, { naming: 'snake_case' }),
+    ).toContain('CREATE TABLE order_item');
+    expect(
+      convertMermaidErDiagramToSql(diagram, { naming: 'snake_case' }),
+    ).toContain('order_id INTEGER');
+  });
+
+  it('says what it could not write rather than guessing it', () => {
+    // A composite primary key on the parent has no single column to reference,
+    // and an entity with no attribute block has no columns to create.
+    const sql = convertMermaidErDiagramToSql(
+      'erDiagram\n  PARENT ||--o{ CHILD : has\n  LOOSE_END\n' +
+        '  PARENT {\n    int a PK\n    int b PK\n  }\n' +
+        '  CHILD {\n    int id PK\n    int parent_id FK\n  }',
+    );
+
+    expect(sql).toContain('composite primary key');
+    expect(sql).toContain('No attribute block for LOOSE_END');
+    expect(sql).not.toContain('REFERENCES PARENT');
+  });
+
+  it('refuses input that is not a Mermaid ER diagram, by name', () => {
+    expect(() => convertMermaidErDiagramToSql('SELECT * FROM users;')).toThrow(
+      /No entities found/u,
+    );
+  });
+
+  it('accepts the `..` non-identifying relationship Mermaid also allows', () => {
+    const sql = convertMermaidErDiagramToSql(
+      'erDiagram\n  A ||..o{ B : notes\n  A {\n    int id PK\n  }\n' +
+        '  B {\n    int id PK\n    int a_id FK\n  }',
+    );
+
+    expect(sql).toContain('REFERENCES A (id)');
   });
 });

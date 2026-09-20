@@ -7337,6 +7337,24 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     destinationUrl: '/developer/sql-to-er-diagram',
   },
   {
+    id: 'developer-and-data.er-diagram-to-sql',
+    slug: 'developer-and-data-er-diagram-to-sql',
+    name: 'ER Diagram to SQL Converter',
+    category: 'Developer and Data',
+    // Added 2026-09-20 from Search Console: `er diagram to sql` and `erd from
+    // sql` were both drawing impressions while only the SQL-to-diagram
+    // direction existed. Last in its category for the same reason as the tool
+    // above -- demand is not proof the page performs.
+    rank: 82,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Reads a Mermaid erDiagram and writes CREATE TABLE statements for PostgreSQL, MySQL or SQLite, with primary keys, foreign keys and a junction table for each many-to-many. The reverse of the SQL to ER diagram tool.',
+    destinationUrl: '/developer/advanced?tool=er-diagram-to-sql',
+  },
+  {
     id: 'web-and-seo.meta-tag-generator',
     slug: 'web-and-seo-meta-tag-generator',
     name: 'Meta Tag Generator',
@@ -13744,6 +13762,23 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
     destinationUrl: '/creator/creator-file-naming-tool',
+  },
+  {
+    id: 'creator-and-social.word-cloud-generator',
+    slug: 'creator-and-social-word-cloud-generator',
+    name: 'Word Cloud Generator',
+    category: 'Creator and Social',
+    // Added 2026-09-20 from Search Console: `word click generator` drew an
+    // impression against a site with no word cloud tool at all. Last in its
+    // category until the page has its own numbers.
+    rank: 51,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Counts how often each word appears in pasted text and lays them out as a downloadable SVG, sized by frequency, with English filler words removed. The layout is fixed rather than random, so the same text always gives the same picture.',
+    destinationUrl: '/creator/workbench?tool=word-cloud-generator',
   },
 ] as const;
 

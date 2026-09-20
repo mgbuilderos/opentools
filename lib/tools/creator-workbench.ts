@@ -747,6 +747,47 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
     ],
     outputExtension: 'txt',
   },
+  {
+    id: 'word-cloud-generator',
+    name: 'Word cloud generator',
+    description:
+      'Turn any text into a downloadable SVG word cloud, sized by how often each word appears, with stop words removed.',
+    fields: [
+      area(
+        'text',
+        'Text',
+        'Paste an essay, a transcript, a batch of survey answers or a set of reviews here.\n\nThe cloud sizes every word by how often it appears, so the words people actually kept repeating come out largest. Common filler words — the, and, of, to — are removed first, because otherwise they would be the only words large enough to read.\n\nThe counting and the layout both run in this page, in ordinary JavaScript.',
+      ),
+      number('maxWords', 'Most words to show', '60'),
+      number('minLength', 'Ignore words shorter than (characters)', '3'),
+      select('palette', 'Colours', [
+        { value: 'ocean', label: 'Ocean (blues and teals)' },
+        { value: 'ember', label: 'Ember (ambers and rusts)' },
+        { value: 'forest', label: 'Forest (greens)' },
+        { value: 'berry', label: 'Berry (pinks and purples)' },
+        { value: 'slate', label: 'Slate (greys, print-safe)' },
+      ]),
+      select('background', 'Background', [
+        { value: 'white', label: 'White' },
+        { value: 'transparent', label: 'Transparent' },
+        { value: 'cream', label: 'Cream' },
+        { value: 'dark', label: 'Dark' },
+      ]),
+      select('stopwords', 'Common words', [
+        { value: 'english', label: 'Remove English filler words' },
+        { value: 'none', label: 'Keep every word' },
+      ]),
+      text(
+        'extraStopwords',
+        'Also ignore these words (comma separated)',
+        '',
+        'company, product, please',
+      ),
+    ],
+    notice:
+      'The layout is fixed, not random: the same text always produces the same cloud. Output is an SVG, so it stays sharp at any size and can be recoloured in any vector editor.',
+    outputExtension: 'svg',
+  },
 ] as const;
 
 function required(value: string, label: string) {
@@ -1703,6 +1744,9 @@ export function runCreatorOperation(
     case 'social-media-post-formatter': {
       return formatSocialMediaPost(values);
     }
+    case 'word-cloud-generator': {
+      return generateWordCloudSvg(values);
+    }
     default:
       throw new Error('Choose a supported creator operation.');
   }
@@ -2257,4 +2301,263 @@ function formatSocialMediaPost(values: Record<string, string>): string {
   });
 
   return lines.join('\n');
+}
+
+/* -------------------------------------------------------------------------
+ * Word cloud generator
+ *
+ * Google sends people here for "word cloud generator" and nothing answered it.
+ * Every well-known one asks you to paste your text into their server; this one
+ * is laid out in the browser and the text never leaves the page.
+ *
+ * The layout is deliberately deterministic -- no random seed anywhere -- so
+ * the same text always produces the same picture. A random layout would make
+ * the output impossible to test and impossible for a user to reproduce.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * English function words, which otherwise dominate every cloud: in any real
+ * document "the" outranks the subject by an order of magnitude, so a cloud
+ * that keeps them shows nothing about the text.
+ */
+const WORD_CLOUD_STOPWORDS = new Set(
+  (
+    'a about above after again against all am an and any are as at be because been before being below ' +
+    'between both but by can cannot could did do does doing down during each few for from further had ' +
+    'has have having he her here hers herself him himself his how i if in into is it its itself just me ' +
+    'more most my myself no nor not now of off on once only or other our ours ourselves out over own ' +
+    'same she should so some such than that the their theirs them themselves then there these they this ' +
+    'those through to too under until up very was we were what when where which while who whom why will ' +
+    'with you your yours yourself yourselves s t don shall may might must upon also would like get got ' +
+    'one two three make made much many us'
+  ).split(' '),
+);
+
+const WORD_CLOUD_PALETTES: Record<string, readonly string[]> = {
+  ember: ['#b45309', '#c2410c', '#9a3412', '#d97706', '#78350f', '#ea580c'],
+  ocean: ['#0e7490', '#0369a1', '#1d4ed8', '#0f766e', '#155e75', '#1e40af'],
+  forest: ['#15803d', '#4d7c0f', '#166534', '#65a30d', '#047857', '#3f6212'],
+  berry: ['#9d174d', '#7e22ce', '#be123c', '#a21caf', '#6b21a8', '#9f1239'],
+  slate: ['#0f172a', '#334155', '#1e293b', '#475569', '#111827', '#3f3f46'],
+};
+
+const WORD_CLOUD_BACKGROUNDS: Record<string, string> = {
+  transparent: '',
+  white: '#ffffff',
+  cream: '#fdf6e3',
+  dark: '#0b0f19',
+};
+
+/** A whole number inside a range, or a message naming the field that is wrong. */
+function clamp(
+  value: number,
+  minimum: number,
+  maximum: number,
+  label: string,
+): number {
+  const whole = Math.round(value);
+  if (!Number.isFinite(whole) || whole < minimum || whole > maximum)
+    throw new Error(
+      `${label} must be a whole number from ${minimum} to ${maximum}.`,
+    );
+  return whole;
+}
+
+interface PlacedWord {
+  text: string;
+  count: number;
+  size: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  colour: string;
+}
+
+/**
+ * Width of a string set in a bold sans-serif at `size` pixels.
+ *
+ * There is no font metric available here -- the SVG is generated, never
+ * measured -- so this is a per-character table rather than one average. A flat
+ * average makes `WWW` overlap its neighbour and `iii` float in white space,
+ * which is exactly the artefact that makes a generated cloud look broken.
+ */
+export function estimateTextWidth(word: string, size: number): number {
+  let ratio = 0;
+  for (const character of word) {
+    if ("ijlt.,;:'!|".includes(character)) ratio += 0.3;
+    else if ('fr '.includes(character)) ratio += 0.38;
+    else if ('mwMW@'.includes(character)) ratio += 0.92;
+    else if (character >= 'A' && character <= 'Z') ratio += 0.68;
+    else ratio += 0.56;
+  }
+  return ratio * size;
+}
+
+function rectanglesOverlap(a: PlacedWord, b: PlacedWord, gap: number): boolean {
+  return (
+    Math.abs(a.x - b.x) * 2 < a.width + b.width + gap &&
+    Math.abs(a.y - b.y) * 2 < a.height + b.height + gap
+  );
+}
+
+export function countWordFrequencies(
+  source: string,
+  options: { minimumLength?: number; stopwords?: ReadonlySet<string> } = {},
+): { word: string; count: number }[] {
+  const minimumLength = options.minimumLength ?? 3;
+  const stopwords = options.stopwords ?? new Set<string>();
+  const counts = new Map<string, number>();
+
+  // Keeps internal apostrophes and hyphens so "don't" and "well-known" stay
+  // one word, and strips the rest. Unicode letters, so this is not English-only.
+  for (const token of source.toLowerCase().split(/[^\p{L}\p{N}'’-]+/gu)) {
+    const word = token.replace(/^['’-]+|['’-]+$/gu, '');
+    if (word.length < minimumLength) continue;
+    if (stopwords.has(word)) continue;
+    if (/^\d+$/u.test(word)) continue;
+    counts.set(word, (counts.get(word) ?? 0) + 1);
+  }
+
+  // Alphabetical tie-break, so equal counts never reorder between runs.
+  return [...counts.entries()]
+    .map(([word, count]) => ({ word, count }))
+    .sort((a, b) => b.count - a.count || a.word.localeCompare(b.word));
+}
+
+export function generateWordCloudSvg(values: Record<string, string>): string {
+  const source = required(values.text ?? '', 'Text');
+  const maxWords = clamp(finite(values, 'maxWords'), 5, 300, 'Word limit');
+  const minimumLength = clamp(
+    finite(values, 'minLength'),
+    1,
+    12,
+    'Shortest word to keep',
+  );
+  const palette =
+    WORD_CLOUD_PALETTES[values.palette ?? 'ocean'] ?? WORD_CLOUD_PALETTES.ocean;
+  const background = WORD_CLOUD_BACKGROUNDS[values.background ?? 'white'] ?? '';
+
+  const stopwords = new Set<string>(
+    values.stopwords === 'none' ? [] : WORD_CLOUD_STOPWORDS,
+  );
+  for (const extra of (values.extraStopwords ?? '')
+    .toLowerCase()
+    .split(/[,\s]+/u)) {
+    if (extra) stopwords.add(extra);
+  }
+
+  const ranked = countWordFrequencies(source, {
+    minimumLength,
+    stopwords,
+  }).slice(0, maxWords);
+
+  if (ranked.length === 0) {
+    throw new Error(
+      `No words left after filtering. Every word was shorter than ${minimumLength} characters or on the stop-word list — lower the minimum length, or set stop words to "Keep every word".`,
+    );
+  }
+
+  const highest = ranked[0].count;
+  const lowest = ranked[ranked.length - 1].count;
+  const MIN_SIZE = 14;
+  const MAX_SIZE = 92;
+
+  // Area, not height, is what the eye compares, so the font scale is on the
+  // square root of the count. Scaling height linearly makes the commonest word
+  // look several times more common than it is.
+  const sizeFor = (count: number) => {
+    if (highest === lowest) return (MIN_SIZE + MAX_SIZE) / 2;
+    const position =
+      (Math.sqrt(count) - Math.sqrt(lowest)) /
+      (Math.sqrt(highest) - Math.sqrt(lowest));
+    return MIN_SIZE + position * (MAX_SIZE - MIN_SIZE);
+  };
+
+  const placed: PlacedWord[] = [];
+  const GAP = 6;
+  const ASPECT = 1.7;
+
+  const boxes = ranked.map((entry, index) => {
+    const size = sizeFor(entry.count);
+    return {
+      text: entry.word,
+      count: entry.count,
+      size,
+      x: 0,
+      y: 0,
+      width: estimateTextWidth(entry.word, size),
+      height: size * 1.06,
+      colour: palette[index % palette.length],
+    };
+  });
+
+  /**
+   * How fast the search spiral widens.
+   *
+   * This has to be derived from the words rather than fixed. A fixed step that
+   * suits a handful of small words never reaches far enough for a page of big
+   * ones: every word then exhausts its attempts and is dropped at whatever
+   * position the last attempt happened to leave, which is the same position for
+   * all of them -- a cloud of forty words stacked in one pile. Scaling the step
+   * to the total area the words need keeps the far edge reachable at every size.
+   */
+  const totalArea = boxes.reduce((sum, box) => sum + box.width * box.height, 0);
+  const radiusStep = Math.max(1.5, Math.sqrt(totalArea) / 70);
+
+  for (const candidate of boxes) {
+    // Archimedean spiral out from the centre until nothing overlaps. The angle
+    // steps by roughly constant arc length rather than constant angle, which
+    // would sample the middle densely and the outside barely at all and leave
+    // visible holes. The radius grows without bound, so the search always ends:
+    // past the extent of everything already placed, no overlap is possible.
+    let angle = 0;
+    let radius = 0;
+    let attempts = 0;
+    for (;;) {
+      candidate.x = Math.cos(angle) * radius * ASPECT;
+      candidate.y = Math.sin(angle) * radius;
+      if (!placed.some((word) => rectanglesOverlap(candidate, word, GAP)))
+        break;
+      attempts += 1;
+      angle += Math.min(0.45, 16 / (radius + 16));
+      radius = radiusStep * Math.sqrt(attempts);
+    }
+    placed.push({ ...candidate });
+  }
+
+  const left = Math.min(...placed.map((word) => word.x - word.width / 2));
+  const right = Math.max(...placed.map((word) => word.x + word.width / 2));
+  const top = Math.min(...placed.map((word) => word.y - word.height / 2));
+  const bottom = Math.max(...placed.map((word) => word.y + word.height / 2));
+  const PAD = 24;
+  const width = Math.ceil(right - left + PAD * 2);
+  const height = Math.ceil(bottom - top + PAD * 2);
+
+  const backgroundRect = background
+    ? `\n  <rect width="${width}" height="${height}" fill="${background}"/>`
+    : '';
+
+  // Words are emitted largest-last so the biggest sit on top if an estimate
+  // was a pixel out, and each carries its count as a title for screen readers
+  // and for anyone hovering the finished file.
+  const body = [...placed]
+    .sort((a, b) => a.size - b.size)
+    .map((word) => {
+      const x = (word.x - left + PAD).toFixed(1);
+      const y = (word.y - top + PAD + word.size * 0.34).toFixed(1);
+      return (
+        `  <text x="${x}" y="${y}" font-size="${word.size.toFixed(1)}" fill="${word.colour}" ` +
+        `text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700">` +
+        `<title>${escapeXml(word.text)} — ${word.count} time${word.count === 1 ? '' : 's'}</title>` +
+        `${escapeXml(word.text)}</text>`
+      );
+    })
+    .join('\n');
+
+  return (
+    `<svg xmlns="${svgNamespace}" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" ` +
+    `role="img" aria-label="Word cloud of ${placed.length} words, most frequent: ${escapeXml(ranked[0].word)}">` +
+    `${backgroundRect}\n${body}\n</svg>`
+  );
 }
