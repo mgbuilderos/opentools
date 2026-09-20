@@ -2246,6 +2246,34 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     destinationUrl: '/image/exact-size',
   },
   {
+    id: 'image.svg-optimizer',
+    slug: 'image-svg-optimizer',
+    name: 'SVG Optimizer and PNG Converter',
+    category: 'Image',
+    rank: 77,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Removes editor metadata, comments, empty groups and excess precision, drops anything in the file that can run code, and rasterises to PNG or WebP at 1x to 4x.',
+    destinationUrl: '/image/svg',
+  },
+  {
+    id: 'image.colour-converter',
+    slug: 'image-colour-converter',
+    name: 'Colour Converter and Palette Extractor',
+    category: 'Image',
+    rank: 78,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Converts between HEX, RGB, HSL and CMYK, saying plainly that CMYK without a device profile is an approximation, and extracts a dominant palette by median cut.',
+    destinationUrl: '/image/colour',
+  },
+  {
     id: 'video.video-compressor',
     slug: 'video-video-compressor',
     name: 'Video Compressor',
@@ -4820,6 +4848,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
     destinationUrl: '/data/workbench?tool=markdown-table-to-csv',
+  },
+  {
+    id: 'spreadsheet-and-data.list-hygiene',
+    slug: 'spreadsheet-and-data-list-hygiene',
+    name: 'Contact List Hygiene and Deduplicator',
+    category: 'Spreadsheet and Data',
+    rank: 46,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'De-duplicates by a chosen column, merges and compares two lists, splits by row count or column value, and normalises names, emails and phone numbers. The records never leave the tab.',
+    destinationUrl: '/data/lists',
   },
   {
     id: 'archive-and-file.zip-creator',
