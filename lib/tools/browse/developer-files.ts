@@ -803,6 +803,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'developer-advanced-workbench',
       },
       {
+        id: 'developer-advanced-workbench:er-diagram-to-sql',
+        name: 'ER Diagram to SQL Converter',
+        description:
+          'Turn a Mermaid erDiagram into runnable CREATE TABLE statements for PostgreSQL, MySQL or SQLite, with primary keys, foreign keys and junction tables for many-to-many.',
+        href: '/developer/advanced?tool=er-diagram-to-sql',
+        workspaceId: 'developer-advanced-workbench',
+      },
+      {
         id: 'developer-advanced-workbench:json-to-zod-schema',
         name: 'JSON to Zod Schema Generator',
         description:

@@ -500,6 +500,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/creator/workbench?tool=social-media-post-formatter',
         workspaceId: 'creator-workbench',
       },
+      {
+        id: 'creator-workbench:word-cloud-generator',
+        name: 'Word cloud generator',
+        description:
+          'Turn any text into a downloadable SVG word cloud, sized by how often each word appears, with stop words removed.',
+        href: '/creator/workbench?tool=word-cloud-generator',
+        workspaceId: 'creator-workbench',
+      },
     ],
   },
 ];
