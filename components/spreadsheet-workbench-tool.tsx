@@ -6,7 +6,20 @@ import {
   SPREADSHEET_OPERATIONS,
 } from '@/lib/tools/spreadsheet-workbench';
 
-export function SpreadsheetWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function SpreadsheetWorkbenchTool({
+  initialOperationId = 'csv-viewer',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="spreadsheet-workbench"
@@ -17,7 +30,8 @@ export function SpreadsheetWorkbenchTool() {
       actionLabel="Run tool"
       methodLabel="Bounded local table transform"
       operations={SPREADSHEET_OPERATIONS}
-      initialOperationId="csv-viewer"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runSpreadsheetOperation}
     />
   );

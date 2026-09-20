@@ -45,6 +45,9 @@ export const CACHED_GUIDE_SLUGS = [
   'text-and-writing-markdown-to-html',
   'developer-and-data-json-editor',
   'developer-and-data-json-diff',
+  'developer-and-data-base64-encoder',
+  'developer-and-data-base64-decoder',
+  'developer-and-data-uuid-generator',
   'developer-and-data-unix-timestamp-converter',
   'web-and-seo-meta-tag-generator',
   'web-and-seo-open-graph-generator',
@@ -63,9 +66,6 @@ export const CACHED_GUIDE_SLUGS = [
   'math-and-units-ratio-calculator',
   'finance-and-business-loan-emi-calculator',
   'finance-and-business-mortgage-calculator',
-  'finance-and-business-simple-interest-calculator',
-  'finance-and-business-compound-interest-calculator',
-  'finance-and-business-sip-calculator',
 ] as const;
 
 export function isCachedGuideSlug(slug: string): boolean {

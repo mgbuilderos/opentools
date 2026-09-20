@@ -6,7 +6,20 @@ import {
   runFinanceOperation,
 } from '@/lib/tools/finance-business-workbench';
 
-export function FinanceBusinessWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function FinanceBusinessWorkbenchTool({
+  initialOperationId = 'loan-emi-calculator',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="finance-business-workbench"
@@ -17,7 +30,8 @@ export function FinanceBusinessWorkbenchTool() {
       actionLabel="Calculate scenario"
       methodLabel="Declared formulas using supplied assumptions"
       operations={FINANCE_OPERATIONS}
-      initialOperationId="loan-emi-calculator"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runFinanceOperation}
     />
   );

@@ -3,7 +3,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { publicTools } from '../tools/catalog';
-import { LIVE_TOOL_ROUTES, isLiveToolUrl } from './live-tools';
+import {
+  LIVE_TOOL_ROUTES,
+  isLiveToolUrl,
+  routedToolIdsForPrefix,
+} from './live-tools';
 
 /**
  * Building a tool and registering it are separate steps, and the second one is
@@ -68,30 +72,29 @@ function routeFor(pageFile: string): string {
  * Read from the source rather than imported, because importing a route module
  * pulls in the whole client component tree for a check about file layout.
  */
-const GENERATED_FROM =
-  /MATH_OPERATIONS\.map\(\(operation\) => \(\{ tool: operation\.id \}\)\)/;
-
 function expandDynamic(page: {
   file: string;
   route: string;
   component: string;
 }): { file: string; route: string; component: string }[] {
   if (!page.route.includes('[')) return [page];
-  const source = readFileSync(page.file, 'utf8');
-  if (page.route === '/math/[tool]' && GENERATED_FROM.test(source)) {
-    const operations = readFileSync(
-      path.join(projectRoot, 'lib/tools/math-workbench.ts'),
-      'utf8',
-    );
-    return [...operations.matchAll(/^ {4}id: '([a-z0-9-]+)'/gmu)].map(
-      ([, id]) => ({ ...page, route: `/math/${id}` }),
-    );
+
+  const prefix = page.route.slice(0, page.route.lastIndexOf('/'));
+  const operations = routedToolIdsForPrefix(prefix);
+  if (page.route.endsWith('/[tool]') && operations) {
+    // The same source the route file and the registry both read, so the three
+    // cannot disagree about which pages exist.
+    return operations.map((operation) => ({
+      ...page,
+      route: `${prefix}/${operation.id}`,
+    }));
   }
+
   throw new Error(
     `${page.route} is a dynamic tool route this check does not know how to ` +
-      `expand. Teach it what params the page generates — do not let a ` +
-      `bracketed path through unchecked, or every route behind it ships ` +
-      `unverified.`,
+      `expand. Add its prefix to ROUTED_TOOL_PREFIXES in lib/seo/live-tools.ts ` +
+      `— do not let a bracketed path through unchecked, or every route behind ` +
+      `it ships unverified.`,
   );
 }
 

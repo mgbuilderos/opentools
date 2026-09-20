@@ -52,6 +52,22 @@ interface SchemaWorkbenchToolProps {
   methodLabel: string;
   operations: readonly WorkbenchOperation[];
   initialOperationId: string;
+  /**
+   * Set when this workbench is being rendered as one tool on its own page —
+   * `/science/ohm-s-law-calculator` rather than
+   * `/science/workbench?tool=ohm-s-law-calculator`.
+   *
+   * A workbench answers on one URL with one title for every operation it
+   * hosts, so none of them can rank for its own name and none reach the
+   * sitemap: a query parameter is not a page. When this is set, the path is
+   * what decides which tool is open, so the query-string sync stands down,
+   * the heading becomes the tool rather than the workspace, and picking
+   * another tool navigates to that tool's own page.
+   *
+   * The value is the category prefix, for example `/science`. Unset, every
+   * behaviour below is exactly what it was.
+   */
+  routedBasePath?: string;
   run: (
     operationId: string,
     values: Record<string, string>,
@@ -80,11 +96,17 @@ export function SchemaWorkbenchTool({
   methodLabel,
   operations,
   initialOperationId,
+  routedBasePath,
   run,
 }: SchemaWorkbenchToolProps) {
   const initial =
     operations.find((operation) => operation.id === initialOperationId) ??
     operations[0];
+  // Only treat this as a per-tool page when the id really names an operation,
+  // so a bad route falls back to workbench behaviour rather than heading a
+  // page after a tool it is not showing.
+  const routed =
+    routedBasePath !== undefined && initial.id === initialOperationId;
   const [operationId, setOperationId] = useState(initial.id);
   const operation = useMemo(
     () => operations.find((item) => item.id === operationId) ?? operations[0],
@@ -119,6 +141,7 @@ export function SchemaWorkbenchTool({
   // synchronise React state to an external system, the address bar, which is
   // what the rule's own guidance says an effect is for.
   useEffect(() => {
+    if (routed) return; // The path decides on a per-tool page.
     const requested = new URLSearchParams(window.location.search).get('tool');
     if (!requested || requested === operationId) return;
 
@@ -147,6 +170,12 @@ export function SchemaWorkbenchTool({
 
   const selectOperation = (nextId: string) => {
     const next = operations.find((item) => item.id === nextId) ?? operations[0];
+    // On a per-tool page each tool is a real page: go to it, so the address
+    // bar, the back button and a crawler all agree on what is open.
+    if (routed) {
+      window.location.assign(`${routedBasePath}/${next.id}`);
+      return;
+    }
     setOperationId(next.id);
     setValues(defaults(next));
     setOutput('');
@@ -286,11 +315,18 @@ export function SchemaWorkbenchTool({
               <p className="text-xs font-medium text-muted-foreground">
                 {eyebrow} / {operations.length} related tools
               </p>
+              {/*
+                On a per-tool page the heading is the tool, not the workspace.
+                A page titled "Ohm's law calculator" whose only <h1> reads
+                "Science & learning workbench" tells a reader and a crawler two
+                different things about what it is, and the heading is the one
+                they both weigh most.
+              */}
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                {title}
+                {routed ? initial.name : title}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                {introduction}
+                {routed ? initial.description : introduction}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">

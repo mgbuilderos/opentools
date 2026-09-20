@@ -38,7 +38,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Stretches and shifts a file so the first and last subtitle land on two moments you give, fixing drift a plain delay cannot.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-sync',
+    destinationUrl: '/subtitles/subtitle-sync',
   },
   {
     id: 'subtitles.frame-rate-converter',
@@ -52,7 +52,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Retimes subtitles between 23.976, 24, 25, 29.97 and 30 fps, the usual cause of captions that slip by seconds over an hour.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-framerate',
+    destinationUrl: '/subtitles/subtitle-framerate',
   },
   {
     id: 'subtitles.joiner',
@@ -66,7 +66,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Puts a second subtitle file after the first at a given offset, for a video assembled from two parts.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-merge',
+    destinationUrl: '/subtitles/subtitle-merge',
   },
   {
     id: 'subtitles.caption-checker',
@@ -80,7 +80,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Reports overlaps, out-of-order cues, lines past 42 characters and text that reads faster than 21 characters a second.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-check',
+    destinationUrl: '/subtitles/subtitle-check',
   },
   {
     id: 'audio.mp3-cutter',
@@ -1704,7 +1704,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=favicon-generator',
+    destinationUrl: '/creator/favicon-generator',
   },
   {
     id: 'image.app-icon-generator',
@@ -2292,7 +2292,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-compressor',
+    destinationUrl: '/creator/video-compressor',
   },
   {
     id: 'video.video-trimmer',
@@ -2306,7 +2306,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-trimmer',
+    destinationUrl: '/creator/video-trimmer',
   },
   {
     id: 'video.video-cutter',
@@ -2320,7 +2320,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-cutter',
+    destinationUrl: '/creator/video-cutter',
   },
   {
     id: 'video.video-merger',
@@ -2334,7 +2334,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-merger',
+    destinationUrl: '/creator/video-merger',
   },
   {
     id: 'video.video-splitter',
@@ -2348,7 +2348,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-splitter',
+    destinationUrl: '/creator/video-splitter',
   },
   {
     id: 'video.video-cropper',
@@ -2362,7 +2362,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-cropper',
+    destinationUrl: '/creator/video-cropper',
   },
   {
     id: 'video.video-resizer',
@@ -2376,7 +2376,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-resizer',
+    destinationUrl: '/creator/video-resizer',
   },
   {
     id: 'video.video-rotator',
@@ -2390,7 +2390,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-rotator',
+    destinationUrl: '/creator/video-rotator',
   },
   {
     id: 'video.video-flipper',
@@ -2404,7 +2404,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-flipper',
+    destinationUrl: '/creator/video-flipper',
   },
   {
     id: 'video.video-speed-changer',
@@ -2418,7 +2418,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-speed-changer',
+    destinationUrl: '/creator/video-speed-changer',
   },
   {
     id: 'video.video-reverser',
@@ -2432,7 +2432,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-reverser',
+    destinationUrl: '/creator/video-reverser',
   },
   {
     id: 'video.video-looper',
@@ -2446,7 +2446,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-looper',
+    destinationUrl: '/creator/video-looper',
   },
   {
     id: 'video.video-muter',
@@ -2460,7 +2460,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-muter',
+    destinationUrl: '/creator/video-muter',
   },
   {
     id: 'video.extract-audio-from-video',
@@ -2474,7 +2474,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=extract-audio-from-video',
+    destinationUrl: '/creator/extract-audio-from-video',
   },
   {
     id: 'video.add-audio-to-video',
@@ -2488,7 +2488,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=add-audio-to-video',
+    destinationUrl: '/creator/add-audio-to-video',
   },
   {
     id: 'video.gif-to-video',
@@ -2502,7 +2502,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=gif-to-video',
+    destinationUrl: '/creator/gif-to-video',
   },
   {
     id: 'video.video-format-converter',
@@ -2516,7 +2516,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-format-converter',
+    destinationUrl: '/creator/video-format-converter',
   },
   {
     id: 'video.mp4-to-webm',
@@ -2530,7 +2530,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=mp4-to-webm',
+    destinationUrl: '/creator/mp4-to-webm',
   },
   {
     id: 'video.webm-to-mp4',
@@ -2544,7 +2544,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=webm-to-mp4',
+    destinationUrl: '/creator/webm-to-mp4',
   },
   {
     id: 'video.video-frame-extractor',
@@ -2558,7 +2558,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-frame-extractor',
+    destinationUrl: '/creator/video-frame-extractor',
   },
   {
     id: 'video.video-thumbnail-generator',
@@ -2572,7 +2572,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-thumbnail-generator',
+    destinationUrl: '/creator/video-thumbnail-generator',
   },
   {
     id: 'video.subtitle-burner',
@@ -2586,7 +2586,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=subtitle-burner',
+    destinationUrl: '/creator/subtitle-burner',
   },
   {
     id: 'video.subtitle-extractor',
@@ -2600,7 +2600,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=subtitle-extractor',
+    destinationUrl: '/creator/subtitle-extractor',
   },
   {
     id: 'subtitles.delay-fixer',
@@ -2614,7 +2614,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-shift',
+    destinationUrl: '/subtitles/subtitle-shift',
   },
   {
     id: 'subtitles.srt-to-vtt',
@@ -2628,7 +2628,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-to-vtt',
+    destinationUrl: '/subtitles/subtitle-to-vtt',
   },
   {
     id: 'subtitles.vtt-to-srt',
@@ -2642,7 +2642,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/subtitles/workbench?tool=subtitle-to-srt',
+    destinationUrl: '/subtitles/subtitle-to-srt',
   },
   {
     id: 'video.video-watermark',
@@ -2656,7 +2656,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-watermark',
+    destinationUrl: '/creator/video-watermark',
   },
   {
     id: 'video.video-text-overlay',
@@ -2670,7 +2670,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-text-overlay',
+    destinationUrl: '/creator/video-text-overlay',
   },
   {
     id: 'video.video-fade-in-and-out',
@@ -2684,7 +2684,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-fade-in-and-out',
+    destinationUrl: '/creator/video-fade-in-and-out',
   },
   {
     id: 'video.video-volume-normalizer',
@@ -2698,7 +2698,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-volume-normalizer',
+    destinationUrl: '/creator/video-volume-normalizer',
   },
   {
     id: 'video.video-resolution-changer',
@@ -2712,7 +2712,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-resolution-changer',
+    destinationUrl: '/creator/video-resolution-changer',
   },
   {
     id: 'video.video-bitrate-calculator',
@@ -2726,7 +2726,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-bitrate-calculator',
+    destinationUrl: '/creator/video-bitrate-calculator',
   },
   {
     id: 'video.video-aspect-ratio-converter',
@@ -2740,7 +2740,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-aspect-ratio-converter',
+    destinationUrl: '/creator/video-aspect-ratio-converter',
   },
   {
     id: 'video.video-metadata-viewer',
@@ -2754,7 +2754,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-metadata-viewer',
+    destinationUrl: '/creator/video-metadata-viewer',
   },
   {
     id: 'video.video-metadata-remover',
@@ -2768,7 +2768,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-metadata-remover',
+    destinationUrl: '/creator/video-metadata-remover',
   },
   {
     id: 'video.screen-recorder',
@@ -2782,7 +2782,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=screen-recorder',
+    destinationUrl: '/creator/screen-recorder',
   },
   {
     id: 'video.webcam-recorder',
@@ -2796,7 +2796,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=webcam-recorder',
+    destinationUrl: '/creator/webcam-recorder',
   },
   {
     id: 'video.stop-motion-maker',
@@ -2810,7 +2810,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=stop-motion-maker',
+    destinationUrl: '/creator/stop-motion-maker',
   },
   {
     id: 'video.slideshow-video-maker',
@@ -2824,7 +2824,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=slideshow-video-maker',
+    destinationUrl: '/creator/slideshow-video-maker',
   },
   {
     id: 'video.video-contact-sheet',
@@ -2838,7 +2838,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-contact-sheet',
+    destinationUrl: '/creator/video-contact-sheet',
   },
   {
     id: 'video.video-scene-detector',
@@ -2852,7 +2852,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-scene-detector',
+    destinationUrl: '/creator/video-scene-detector',
   },
   {
     id: 'video.video-duplicate-frame-detector',
@@ -2866,7 +2866,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-duplicate-frame-detector',
+    destinationUrl: '/creator/video-duplicate-frame-detector',
   },
   {
     id: 'video.video-color-filter',
@@ -2880,7 +2880,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-color-filter',
+    destinationUrl: '/creator/video-color-filter',
   },
   {
     id: 'video.video-privacy-blur',
@@ -2894,7 +2894,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=video-privacy-blur',
+    destinationUrl: '/creator/video-privacy-blur',
   },
   {
     id: 'audio.audio-compressor',
@@ -2908,7 +2908,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-compressor',
+    destinationUrl: '/creator/audio-compressor',
   },
   {
     id: 'audio.audio-trimmer',
@@ -2922,7 +2922,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-trimmer',
+    destinationUrl: '/creator/audio-trimmer',
   },
   {
     id: 'audio.audio-cutter',
@@ -2936,7 +2936,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-cutter',
+    destinationUrl: '/creator/audio-cutter',
   },
   {
     id: 'audio.audio-merger',
@@ -2950,7 +2950,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-merger',
+    destinationUrl: '/creator/audio-merger',
   },
   {
     id: 'audio.audio-splitter',
@@ -2964,7 +2964,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-splitter',
+    destinationUrl: '/creator/audio-splitter',
   },
   {
     id: 'audio.mp3-to-wav',
@@ -2978,7 +2978,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=mp3-to-wav',
+    destinationUrl: '/creator/mp3-to-wav',
   },
   {
     id: 'audio.wav-to-mp3',
@@ -2992,7 +2992,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=wav-to-mp3',
+    destinationUrl: '/creator/wav-to-mp3',
   },
   {
     id: 'audio.flac-to-mp3',
@@ -3006,7 +3006,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=flac-to-mp3',
+    destinationUrl: '/creator/flac-to-mp3',
   },
   {
     id: 'audio.m4a-to-mp3',
@@ -3020,7 +3020,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=m4a-to-mp3',
+    destinationUrl: '/creator/m4a-to-mp3',
   },
   {
     id: 'audio.audio-volume-changer',
@@ -3034,7 +3034,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-volume-changer',
+    destinationUrl: '/creator/audio-volume-changer',
   },
   {
     id: 'audio.audio-normalizer',
@@ -3048,7 +3048,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-normalizer',
+    destinationUrl: '/creator/audio-normalizer',
   },
   {
     id: 'audio.audio-speed-changer',
@@ -3062,7 +3062,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-speed-changer',
+    destinationUrl: '/creator/audio-speed-changer',
   },
   {
     id: 'audio.audio-pitch-changer',
@@ -3076,7 +3076,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-pitch-changer',
+    destinationUrl: '/creator/audio-pitch-changer',
   },
   {
     id: 'audio.audio-reverser',
@@ -3090,7 +3090,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-reverser',
+    destinationUrl: '/creator/audio-reverser',
   },
   {
     id: 'audio.audio-looper',
@@ -3104,7 +3104,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-looper',
+    destinationUrl: '/creator/audio-looper',
   },
   {
     id: 'audio.audio-fade-in-and-out',
@@ -3118,7 +3118,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-fade-in-and-out',
+    destinationUrl: '/creator/audio-fade-in-and-out',
   },
   {
     id: 'audio.mono-to-stereo',
@@ -3132,7 +3132,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=mono-to-stereo',
+    destinationUrl: '/creator/mono-to-stereo',
   },
   {
     id: 'audio.stereo-to-mono',
@@ -3146,7 +3146,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=stereo-to-mono',
+    destinationUrl: '/creator/stereo-to-mono',
   },
   {
     id: 'audio.left-right-channel-splitter',
@@ -3160,7 +3160,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=left-right-channel-splitter',
+    destinationUrl: '/creator/left-right-channel-splitter',
   },
   {
     id: 'audio.audio-silence-remover',
@@ -3174,7 +3174,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-silence-remover',
+    destinationUrl: '/creator/audio-silence-remover',
   },
   {
     id: 'audio.audio-silence-generator',
@@ -3188,7 +3188,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-silence-generator',
+    destinationUrl: '/creator/audio-silence-generator',
   },
   {
     id: 'audio.metronome',
@@ -3202,7 +3202,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=metronome',
+    destinationUrl: '/creator/metronome',
   },
   {
     id: 'audio.tone-generator',
@@ -3216,7 +3216,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=tone-generator',
+    destinationUrl: '/creator/tone-generator',
   },
   {
     id: 'audio.white-noise-generator',
@@ -3230,7 +3230,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=white-noise-generator',
+    destinationUrl: '/creator/white-noise-generator',
   },
   {
     id: 'audio.pink-noise-generator',
@@ -3244,7 +3244,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=pink-noise-generator',
+    destinationUrl: '/creator/pink-noise-generator',
   },
   {
     id: 'audio.brown-noise-generator',
@@ -3258,7 +3258,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=brown-noise-generator',
+    destinationUrl: '/creator/brown-noise-generator',
   },
   {
     id: 'audio.voice-recorder',
@@ -3272,7 +3272,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=voice-recorder',
+    destinationUrl: '/creator/voice-recorder',
   },
   {
     id: 'audio.audio-waveform-generator',
@@ -3286,7 +3286,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-waveform-generator',
+    destinationUrl: '/creator/audio-waveform-generator',
   },
   {
     id: 'audio.audio-spectrogram',
@@ -3300,7 +3300,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-spectrogram',
+    destinationUrl: '/creator/audio-spectrogram',
   },
   {
     id: 'audio.bpm-detector',
@@ -3314,7 +3314,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=bpm-detector',
+    destinationUrl: '/creator/bpm-detector',
   },
   {
     id: 'audio.audio-metadata-viewer',
@@ -3328,7 +3328,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-metadata-viewer',
+    destinationUrl: '/creator/audio-metadata-viewer',
   },
   {
     id: 'audio.id3-tag-editor',
@@ -3356,7 +3356,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=album-art-extractor',
+    destinationUrl: '/creator/album-art-extractor',
   },
   {
     id: 'audio.album-art-embedder',
@@ -3370,7 +3370,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=album-art-embedder',
+    destinationUrl: '/creator/album-art-embedder',
   },
   {
     id: 'audio.podcast-loudness-meter',
@@ -3384,7 +3384,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=podcast-loudness-meter',
+    destinationUrl: '/creator/podcast-loudness-meter',
   },
   {
     id: 'audio.lufs-calculator',
@@ -3398,7 +3398,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=lufs-calculator',
+    destinationUrl: '/creator/lufs-calculator',
   },
   {
     id: 'audio.subtitle-transcriber',
@@ -3412,7 +3412,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=subtitle-transcriber',
+    destinationUrl: '/creator/subtitle-transcriber',
   },
   {
     id: 'audio.speech-to-text',
@@ -3426,7 +3426,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=speech-to-text',
+    destinationUrl: '/creator/speech-to-text',
   },
   {
     id: 'audio.text-to-speech',
@@ -3440,7 +3440,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=text-to-speech',
+    destinationUrl: '/creator/text-to-speech',
   },
   {
     id: 'audio.vocal-remover',
@@ -3454,7 +3454,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=vocal-remover',
+    destinationUrl: '/creator/vocal-remover',
   },
   {
     id: 'audio.noise-reducer',
@@ -3468,7 +3468,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=noise-reducer',
+    destinationUrl: '/creator/noise-reducer',
   },
   {
     id: 'audio.audio-equalizer',
@@ -3482,7 +3482,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-equalizer',
+    destinationUrl: '/creator/audio-equalizer',
   },
   {
     id: 'audio.ringtone-maker',
@@ -3496,7 +3496,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=ringtone-maker',
+    destinationUrl: '/creator/ringtone-maker',
   },
   {
     id: 'audio.audio-chunk-exporter',
@@ -3510,7 +3510,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audio-chunk-exporter',
+    destinationUrl: '/creator/audio-chunk-exporter',
   },
   {
     id: 'documents-and-office.docx-viewer',
@@ -3524,7 +3524,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=docx-viewer',
+    destinationUrl: '/documents/docx-viewer',
   },
   {
     id: 'documents-and-office.docx-to-text',
@@ -3538,7 +3538,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=docx-to-text',
+    destinationUrl: '/documents/docx-to-text',
   },
   {
     id: 'documents-and-office.docx-to-html',
@@ -3552,7 +3552,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=docx-to-html',
+    destinationUrl: '/documents/docx-to-html',
   },
   {
     id: 'documents-and-office.html-to-docx',
@@ -3566,7 +3566,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=html-to-docx',
+    destinationUrl: '/documents/html-to-docx',
   },
   {
     id: 'documents-and-office.markdown-to-docx',
@@ -3580,7 +3580,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=markdown-to-docx',
+    destinationUrl: '/documents/markdown-to-docx',
   },
   {
     id: 'documents-and-office.docx-to-markdown',
@@ -3594,7 +3594,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=docx-to-markdown',
+    destinationUrl: '/documents/docx-to-markdown',
   },
   {
     id: 'documents-and-office.odt-viewer',
@@ -3608,7 +3608,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=odt-viewer',
+    destinationUrl: '/documents/odt-viewer',
   },
   {
     id: 'documents-and-office.odt-to-docx',
@@ -3622,7 +3622,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=odt-to-docx',
+    destinationUrl: '/documents/odt-to-docx',
   },
   {
     id: 'documents-and-office.rtf-viewer',
@@ -3636,7 +3636,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=rtf-viewer',
+    destinationUrl: '/documents/rtf-viewer',
   },
   {
     id: 'documents-and-office.rtf-to-docx',
@@ -3650,7 +3650,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=rtf-to-docx',
+    destinationUrl: '/documents/rtf-to-docx',
   },
   {
     id: 'documents-and-office.pptx-viewer',
@@ -3664,7 +3664,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=pptx-viewer',
+    destinationUrl: '/documents/pptx-viewer',
   },
   {
     id: 'documents-and-office.pptx-to-images',
@@ -3678,7 +3678,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=pptx-to-images',
+    destinationUrl: '/documents/pptx-to-images',
   },
   {
     id: 'documents-and-office.pptx-slide-extractor',
@@ -3692,7 +3692,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=pptx-slide-extractor',
+    destinationUrl: '/documents/pptx-slide-extractor',
   },
   {
     id: 'documents-and-office.pptx-speaker-notes-extractor',
@@ -3706,7 +3706,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=pptx-speaker-notes-extractor',
+    destinationUrl: '/documents/pptx-speaker-notes-extractor',
   },
   {
     id: 'documents-and-office.pptx-theme-inspector',
@@ -3720,7 +3720,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=pptx-theme-inspector',
+    destinationUrl: '/documents/pptx-theme-inspector',
   },
   {
     id: 'documents-and-office.xlsx-viewer',
@@ -3734,7 +3734,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=xlsx-viewer',
+    destinationUrl: '/documents/xlsx-viewer',
   },
   {
     id: 'documents-and-office.xlsx-to-csv',
@@ -3748,7 +3748,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=xlsx-to-csv',
+    destinationUrl: '/documents/xlsx-to-csv',
   },
   {
     id: 'documents-and-office.csv-to-xlsx',
@@ -3762,7 +3762,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=csv-to-xlsx',
+    destinationUrl: '/documents/csv-to-xlsx',
   },
   {
     id: 'documents-and-office.ods-viewer',
@@ -3776,7 +3776,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=ods-viewer',
+    destinationUrl: '/documents/ods-viewer',
   },
   {
     id: 'documents-and-office.ods-to-xlsx',
@@ -3790,7 +3790,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=ods-to-xlsx',
+    destinationUrl: '/documents/ods-to-xlsx',
   },
   {
     id: 'documents-and-office.epub-reader',
@@ -3804,7 +3804,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=epub-reader',
+    destinationUrl: '/documents/epub-reader',
   },
   {
     id: 'documents-and-office.epub-metadata-editor',
@@ -3818,7 +3818,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=epub-metadata-editor',
+    destinationUrl: '/documents/epub-metadata-editor',
   },
   {
     id: 'documents-and-office.epub-chapter-extractor',
@@ -3832,7 +3832,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=epub-chapter-extractor',
+    destinationUrl: '/documents/epub-chapter-extractor',
   },
   {
     id: 'documents-and-office.mobi-metadata-viewer',
@@ -3846,7 +3846,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=mobi-metadata-viewer',
+    destinationUrl: '/documents/mobi-metadata-viewer',
   },
   {
     id: 'documents-and-office.plain-text-file-maker',
@@ -3860,7 +3860,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=plain-text-file-maker',
+    destinationUrl: '/documents/plain-text-file-maker',
   },
   {
     id: 'documents-and-office.markdown-file-maker',
@@ -3874,7 +3874,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=markdown-file-maker',
+    destinationUrl: '/documents/markdown-file-maker',
   },
   {
     id: 'documents-and-office.readme-generator',
@@ -3888,7 +3888,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=readme-generator',
+    destinationUrl: '/documents/readme-generator',
   },
   {
     id: 'documents-and-office.changelog-generator',
@@ -3902,7 +3902,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=changelog-generator',
+    destinationUrl: '/documents/changelog-generator',
   },
   {
     id: 'documents-and-office.invoice-generator',
@@ -3916,7 +3916,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=invoice-generator',
+    destinationUrl: '/documents/invoice-generator',
   },
   {
     id: 'documents-and-office.receipt-generator',
@@ -3930,7 +3930,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=receipt-generator',
+    destinationUrl: '/documents/receipt-generator',
   },
   {
     id: 'documents-and-office.quotation-generator',
@@ -3944,7 +3944,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=quotation-generator',
+    destinationUrl: '/documents/quotation-generator',
   },
   {
     id: 'documents-and-office.purchase-order-generator',
@@ -3958,7 +3958,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=purchase-order-generator',
+    destinationUrl: '/documents/purchase-order-generator',
   },
   {
     id: 'documents-and-office.resume-builder',
@@ -3972,7 +3972,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=resume-builder',
+    destinationUrl: '/documents/resume-builder',
   },
   {
     id: 'documents-and-office.cover-letter-builder',
@@ -3986,7 +3986,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=cover-letter-builder',
+    destinationUrl: '/documents/cover-letter-builder',
   },
   {
     id: 'documents-and-office.business-letter-generator',
@@ -4000,7 +4000,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=business-letter-generator',
+    destinationUrl: '/documents/business-letter-generator',
   },
   {
     id: 'documents-and-office.meeting-minutes-generator',
@@ -4014,7 +4014,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=meeting-minutes-generator',
+    destinationUrl: '/documents/meeting-minutes-generator',
   },
   {
     id: 'documents-and-office.agenda-generator',
@@ -4028,7 +4028,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=agenda-generator',
+    destinationUrl: '/documents/agenda-generator',
   },
   {
     id: 'documents-and-office.certificate-generator',
@@ -4042,7 +4042,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=certificate-generator',
+    destinationUrl: '/documents/certificate-generator',
   },
   {
     id: 'documents-and-office.label-sheet-generator',
@@ -4056,7 +4056,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=label-sheet-generator',
+    destinationUrl: '/documents/label-sheet-generator',
   },
   {
     id: 'documents-and-office.envelope-layout-generator',
@@ -4070,7 +4070,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=envelope-layout-generator',
+    destinationUrl: '/documents/envelope-layout-generator',
   },
   {
     id: 'documents-and-office.mail-merge-preview',
@@ -4084,7 +4084,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=mail-merge-preview',
+    destinationUrl: '/documents/mail-merge-preview',
   },
   {
     id: 'documents-and-office.document-word-counter',
@@ -4098,7 +4098,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=document-word-counter',
+    destinationUrl: '/documents/document-word-counter',
   },
   {
     id: 'documents-and-office.document-compare',
@@ -4112,7 +4112,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=document-compare',
+    destinationUrl: '/documents/document-compare',
   },
   {
     id: 'documents-and-office.document-metadata-remover',
@@ -4126,7 +4126,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=document-metadata-remover',
+    destinationUrl: '/documents/document-metadata-remover',
   },
   {
     id: 'documents-and-office.document-template-filler',
@@ -4140,7 +4140,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=document-template-filler',
+    destinationUrl: '/documents/document-template-filler',
   },
   {
     id: 'documents-and-office.bibtex-viewer',
@@ -4154,7 +4154,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=bibtex-viewer',
+    destinationUrl: '/documents/bibtex-viewer',
   },
   {
     id: 'documents-and-office.ris-citation-viewer',
@@ -4168,7 +4168,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=ris-citation-viewer',
+    destinationUrl: '/documents/ris-citation-viewer',
   },
   {
     id: 'documents-and-office.citation-formatter',
@@ -4182,7 +4182,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=citation-formatter',
+    destinationUrl: '/documents/citation-formatter',
   },
   {
     id: 'documents-and-office.latex-equation-renderer',
@@ -4196,7 +4196,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=latex-equation-renderer',
+    destinationUrl: '/documents/latex-equation-renderer',
   },
   {
     id: 'documents-and-office.latex-table-generator',
@@ -4210,7 +4210,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/workbench?tool=latex-table-generator',
+    destinationUrl: '/documents/latex-table-generator',
   },
   {
     id: 'documents-and-office.docx-metadata',
@@ -4238,7 +4238,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-viewer',
+    destinationUrl: '/data/csv-viewer',
   },
   {
     id: 'spreadsheet-and-data.csv-editor',
@@ -4252,7 +4252,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-editor',
+    destinationUrl: '/data/csv-editor',
   },
   {
     id: 'spreadsheet-and-data.csv-cleaner',
@@ -4266,7 +4266,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-cleaner',
+    destinationUrl: '/data/csv-cleaner',
   },
   {
     id: 'spreadsheet-and-data.csv-sorter',
@@ -4280,7 +4280,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-sorter',
+    destinationUrl: '/data/csv-sorter',
   },
   {
     id: 'spreadsheet-and-data.csv-filter',
@@ -4294,7 +4294,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-filter',
+    destinationUrl: '/data/csv-filter',
   },
   {
     id: 'spreadsheet-and-data.csv-column-selector',
@@ -4308,7 +4308,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-column-selector',
+    destinationUrl: '/data/csv-column-selector',
   },
   {
     id: 'spreadsheet-and-data.csv-column-renamer',
@@ -4322,7 +4322,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-column-renamer',
+    destinationUrl: '/data/csv-column-renamer',
   },
   {
     id: 'spreadsheet-and-data.csv-deduplicator',
@@ -4336,7 +4336,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-deduplicator',
+    destinationUrl: '/data/csv-deduplicator',
   },
   {
     id: 'spreadsheet-and-data.csv-merger',
@@ -4350,7 +4350,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-merger',
+    destinationUrl: '/data/csv-merger',
   },
   {
     id: 'spreadsheet-and-data.csv-splitter',
@@ -4364,7 +4364,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-splitter',
+    destinationUrl: '/data/csv-splitter',
   },
   {
     id: 'spreadsheet-and-data.csv-transposer',
@@ -4378,7 +4378,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-transposer',
+    destinationUrl: '/data/csv-transposer',
   },
   {
     id: 'spreadsheet-and-data.csv-pivot-table',
@@ -4392,7 +4392,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-pivot-table',
+    destinationUrl: '/data/csv-pivot-table',
   },
   {
     id: 'spreadsheet-and-data.csv-group-by',
@@ -4406,7 +4406,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-group-by',
+    destinationUrl: '/data/csv-group-by',
   },
   {
     id: 'spreadsheet-and-data.csv-join',
@@ -4420,7 +4420,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-join',
+    destinationUrl: '/data/csv-join',
   },
   {
     id: 'spreadsheet-and-data.csv-diff',
@@ -4434,7 +4434,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-diff',
+    destinationUrl: '/data/csv-diff',
   },
   {
     id: 'spreadsheet-and-data.csv-schema-inferer',
@@ -4448,7 +4448,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-schema-inferer',
+    destinationUrl: '/data/csv-schema-inferer',
   },
   {
     id: 'spreadsheet-and-data.csv-type-converter',
@@ -4462,7 +4462,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-type-converter',
+    destinationUrl: '/data/csv-type-converter',
   },
   {
     id: 'spreadsheet-and-data.csv-to-json',
@@ -4490,7 +4490,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=json-to-csv',
+    destinationUrl: '/data/json-to-csv',
   },
   {
     id: 'spreadsheet-and-data.csv-to-tsv',
@@ -4504,7 +4504,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-to-tsv',
+    destinationUrl: '/data/csv-to-tsv',
   },
   {
     id: 'spreadsheet-and-data.tsv-to-csv',
@@ -4518,7 +4518,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=tsv-to-csv',
+    destinationUrl: '/data/tsv-to-csv',
   },
   {
     id: 'spreadsheet-and-data.csv-to-sql',
@@ -4532,7 +4532,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=csv-to-sql',
+    destinationUrl: '/data/csv-to-sql',
   },
   {
     id: 'spreadsheet-and-data.sql-results-to-csv',
@@ -4546,7 +4546,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=sql-results-to-csv',
+    destinationUrl: '/data/sql-results-to-csv',
   },
   {
     id: 'spreadsheet-and-data.xlsx-sheet-splitter',
@@ -4560,7 +4560,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=xlsx-sheet-splitter',
+    destinationUrl: '/data/xlsx-sheet-splitter',
   },
   {
     id: 'spreadsheet-and-data.xlsx-sheet-merger',
@@ -4574,7 +4574,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=xlsx-sheet-merger',
+    destinationUrl: '/data/xlsx-sheet-merger',
   },
   {
     id: 'spreadsheet-and-data.spreadsheet-formula-viewer',
@@ -4588,7 +4588,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=spreadsheet-formula-viewer',
+    destinationUrl: '/data/spreadsheet-formula-viewer',
   },
   {
     id: 'spreadsheet-and-data.spreadsheet-cell-inspector',
@@ -4602,7 +4602,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=spreadsheet-cell-inspector',
+    destinationUrl: '/data/spreadsheet-cell-inspector',
   },
   {
     id: 'spreadsheet-and-data.spreadsheet-duplicate-finder',
@@ -4616,7 +4616,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=spreadsheet-duplicate-finder',
+    destinationUrl: '/data/spreadsheet-duplicate-finder',
   },
   {
     id: 'spreadsheet-and-data.spreadsheet-blank-row-remover',
@@ -4630,7 +4630,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=spreadsheet-blank-row-remover',
+    destinationUrl: '/data/spreadsheet-blank-row-remover',
   },
   {
     id: 'spreadsheet-and-data.spreadsheet-data-profiler',
@@ -4644,7 +4644,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=spreadsheet-data-profiler',
+    destinationUrl: '/data/spreadsheet-data-profiler',
   },
   {
     id: 'spreadsheet-and-data.spreadsheet-chart-preview',
@@ -4658,7 +4658,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=spreadsheet-chart-preview',
+    destinationUrl: '/data/spreadsheet-chart-preview',
   },
   {
     id: 'spreadsheet-and-data.vlookup-generator',
@@ -4672,7 +4672,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=vlookup-generator',
+    destinationUrl: '/data/vlookup-generator',
   },
   {
     id: 'spreadsheet-and-data.pivot-table-planner',
@@ -4686,7 +4686,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=pivot-table-planner',
+    destinationUrl: '/data/pivot-table-planner',
   },
   {
     id: 'spreadsheet-and-data.data-sampling-tool',
@@ -4700,7 +4700,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=data-sampling-tool',
+    destinationUrl: '/data/data-sampling-tool',
   },
   {
     id: 'spreadsheet-and-data.random-row-selector',
@@ -4714,7 +4714,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=random-row-selector',
+    destinationUrl: '/data/random-row-selector',
   },
   {
     id: 'spreadsheet-and-data.column-statistics',
@@ -4728,7 +4728,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=column-statistics',
+    destinationUrl: '/data/column-statistics',
   },
   {
     id: 'spreadsheet-and-data.missing-value-analyzer',
@@ -4742,7 +4742,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=missing-value-analyzer',
+    destinationUrl: '/data/missing-value-analyzer',
   },
   {
     id: 'spreadsheet-and-data.outlier-detector',
@@ -4756,7 +4756,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=outlier-detector',
+    destinationUrl: '/data/outlier-detector',
   },
   {
     id: 'spreadsheet-and-data.date-column-normalizer',
@@ -4770,7 +4770,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=date-column-normalizer',
+    destinationUrl: '/data/date-column-normalizer',
   },
   {
     id: 'spreadsheet-and-data.phone-column-normalizer',
@@ -4784,7 +4784,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=phone-column-normalizer',
+    destinationUrl: '/data/phone-column-normalizer',
   },
   {
     id: 'spreadsheet-and-data.address-column-cleaner',
@@ -4798,7 +4798,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=address-column-cleaner',
+    destinationUrl: '/data/address-column-cleaner',
   },
   {
     id: 'spreadsheet-and-data.currency-column-converter',
@@ -4812,7 +4812,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=currency-column-converter',
+    destinationUrl: '/data/currency-column-converter',
   },
   {
     id: 'spreadsheet-and-data.dataset-anonymizer',
@@ -4826,7 +4826,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=dataset-anonymizer',
+    destinationUrl: '/data/dataset-anonymizer',
   },
   {
     id: 'spreadsheet-and-data.table-to-markdown',
@@ -4840,7 +4840,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=table-to-markdown',
+    destinationUrl: '/data/table-to-markdown',
   },
   {
     id: 'spreadsheet-and-data.markdown-table-to-csv',
@@ -4854,7 +4854,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/data/workbench?tool=markdown-table-to-csv',
+    destinationUrl: '/data/markdown-table-to-csv',
   },
   {
     id: 'spreadsheet-and-data.list-hygiene',
@@ -5442,7 +5442,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=text-editor',
+    destinationUrl: '/text/text-editor',
   },
   {
     id: 'text-and-writing.markdown-editor',
@@ -5456,7 +5456,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=markdown-editor',
+    destinationUrl: '/text/markdown-editor',
   },
   {
     id: 'text-and-writing.markdown-previewer',
@@ -5470,7 +5470,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=markdown-previewer',
+    destinationUrl: '/text/markdown-previewer',
   },
   {
     id: 'text-and-writing.html-to-markdown',
@@ -5484,7 +5484,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=html-to-markdown',
+    destinationUrl: '/text/html-to-markdown',
   },
   {
     id: 'text-and-writing.markdown-to-html',
@@ -5498,7 +5498,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=markdown-to-html',
+    destinationUrl: '/text/markdown-to-html',
   },
   {
     id: 'text-and-writing.word-counter',
@@ -5512,7 +5512,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=word-counter',
+    destinationUrl: '/text/word-counter',
   },
   {
     id: 'text-and-writing.character-counter',
@@ -5526,7 +5526,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=character-counter',
+    destinationUrl: '/text/character-counter',
   },
   {
     id: 'text-and-writing.sentence-counter',
@@ -5540,7 +5540,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=sentence-counter',
+    destinationUrl: '/text/sentence-counter',
   },
   {
     id: 'text-and-writing.paragraph-counter',
@@ -5554,7 +5554,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=paragraph-counter',
+    destinationUrl: '/text/paragraph-counter',
   },
   {
     id: 'text-and-writing.reading-time-calculator',
@@ -5568,7 +5568,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=reading-time-calculator',
+    destinationUrl: '/text/reading-time-calculator',
   },
   {
     id: 'text-and-writing.text-case-converter',
@@ -5596,7 +5596,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=title-case-converter',
+    destinationUrl: '/text/title-case-converter',
   },
   {
     id: 'text-and-writing.slug-generator',
@@ -5610,7 +5610,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=slug-generator',
+    destinationUrl: '/text/slug-generator',
   },
   {
     id: 'text-and-writing.whitespace-remover',
@@ -5624,7 +5624,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=whitespace-remover',
+    destinationUrl: '/text/whitespace-remover',
   },
   {
     id: 'text-and-writing.blank-line-remover',
@@ -5638,7 +5638,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=blank-line-remover',
+    destinationUrl: '/text/blank-line-remover',
   },
   {
     id: 'text-and-writing.duplicate-line-remover',
@@ -5652,7 +5652,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=duplicate-line-remover',
+    destinationUrl: '/text/duplicate-line-remover',
   },
   {
     id: 'text-and-writing.line-sorter',
@@ -5666,7 +5666,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=line-sorter',
+    destinationUrl: '/text/line-sorter',
   },
   {
     id: 'text-and-writing.line-shuffler',
@@ -5680,7 +5680,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=line-shuffler',
+    destinationUrl: '/text/line-shuffler',
   },
   {
     id: 'text-and-writing.line-number-adder',
@@ -5694,7 +5694,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=line-number-adder',
+    destinationUrl: '/text/line-number-adder',
   },
   {
     id: 'text-and-writing.text-reverser',
@@ -5708,7 +5708,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=text-reverser',
+    destinationUrl: '/text/text-reverser',
   },
   {
     id: 'text-and-writing.text-repeater',
@@ -5722,7 +5722,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=text-repeater',
+    destinationUrl: '/text/text-repeater',
   },
   {
     id: 'text-and-writing.find-and-replace',
@@ -5736,7 +5736,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=find-and-replace',
+    destinationUrl: '/text/find-and-replace',
   },
   {
     id: 'text-and-writing.regex-replace',
@@ -5750,7 +5750,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=regex-replace',
+    destinationUrl: '/text/regex-replace',
   },
   {
     id: 'text-and-writing.text-diff',
@@ -5764,7 +5764,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=text-diff',
+    destinationUrl: '/text/text-diff',
   },
   {
     id: 'text-and-writing.text-merge',
@@ -5778,7 +5778,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=text-merge',
+    destinationUrl: '/text/text-merge',
   },
   {
     id: 'text-and-writing.text-splitter',
@@ -5792,7 +5792,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=text-splitter',
+    destinationUrl: '/text/text-splitter',
   },
   {
     id: 'text-and-writing.text-deduplicator',
@@ -5806,7 +5806,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=text-deduplicator',
+    destinationUrl: '/text/text-deduplicator',
   },
   {
     id: 'text-and-writing.lorem-ipsum-generator',
@@ -5820,7 +5820,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=lorem-ipsum-generator',
+    destinationUrl: '/text/lorem-ipsum-generator',
   },
   {
     id: 'text-and-writing.random-word-generator',
@@ -5834,7 +5834,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=random-word-generator',
+    destinationUrl: '/text/random-word-generator',
   },
   {
     id: 'text-and-writing.anagram-finder',
@@ -5848,7 +5848,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=anagram-finder',
+    destinationUrl: '/text/anagram-finder',
   },
   {
     id: 'text-and-writing.palindrome-checker',
@@ -5862,7 +5862,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=palindrome-checker',
+    destinationUrl: '/text/palindrome-checker',
   },
   {
     id: 'text-and-writing.spelling-variant-converter',
@@ -5876,7 +5876,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=spelling-variant-converter',
+    destinationUrl: '/text/spelling-variant-converter',
   },
   {
     id: 'text-and-writing.smart-quote-converter',
@@ -5890,7 +5890,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=smart-quote-converter',
+    destinationUrl: '/text/smart-quote-converter',
   },
   {
     id: 'text-and-writing.unicode-normalizer',
@@ -5904,7 +5904,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=unicode-normalizer',
+    destinationUrl: '/text/unicode-normalizer',
   },
   {
     id: 'text-and-writing.diacritic-remover',
@@ -5918,7 +5918,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=diacritic-remover',
+    destinationUrl: '/text/diacritic-remover',
   },
   {
     id: 'text-and-writing.emoji-remover',
@@ -5932,7 +5932,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=emoji-remover',
+    destinationUrl: '/text/emoji-remover',
   },
   {
     id: 'text-and-writing.emoji-extractor',
@@ -5946,7 +5946,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=emoji-extractor',
+    destinationUrl: '/text/emoji-extractor',
   },
   {
     id: 'text-and-writing.punctuation-cleaner',
@@ -5960,7 +5960,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=punctuation-cleaner',
+    destinationUrl: '/text/punctuation-cleaner',
   },
   {
     id: 'text-and-writing.text-to-handwriting',
@@ -5974,7 +5974,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=text-to-handwriting',
+    destinationUrl: '/text/text-to-handwriting',
   },
   {
     id: 'text-and-writing.ascii-art-generator',
@@ -5988,7 +5988,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=ascii-art-generator',
+    destinationUrl: '/text/ascii-art-generator',
   },
   {
     id: 'text-and-writing.ascii-art-text',
@@ -6002,7 +6002,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=ascii-art-text',
+    destinationUrl: '/text/ascii-art-text',
   },
   {
     id: 'text-and-writing.morse-code-translator',
@@ -6016,7 +6016,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=morse-code-translator',
+    destinationUrl: '/text/morse-code-translator',
   },
   {
     id: 'text-and-writing.braille-translator',
@@ -6030,7 +6030,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=braille-translator',
+    destinationUrl: '/text/braille-translator',
   },
   {
     id: 'text-and-writing.nato-alphabet-translator',
@@ -6044,7 +6044,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=nato-alphabet-translator',
+    destinationUrl: '/text/nato-alphabet-translator',
   },
   {
     id: 'text-and-writing.pig-latin-translator',
@@ -6058,7 +6058,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=pig-latin-translator',
+    destinationUrl: '/text/pig-latin-translator',
   },
   {
     id: 'text-and-writing.rot-cipher',
@@ -6072,7 +6072,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=rot-cipher',
+    destinationUrl: '/text/rot-cipher',
   },
   {
     id: 'text-and-writing.caesar-cipher',
@@ -6086,7 +6086,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=caesar-cipher',
+    destinationUrl: '/text/caesar-cipher',
   },
   {
     id: 'text-and-writing.vigenere-cipher',
@@ -6100,7 +6100,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=vigenere-cipher',
+    destinationUrl: '/text/vigenere-cipher',
   },
   {
     id: 'text-and-writing.text-summarization-workspace',
@@ -6114,7 +6114,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=text-summarization-workspace',
+    destinationUrl: '/text/text-summarization-workspace',
   },
   {
     id: 'text-and-writing.outline-builder',
@@ -6128,7 +6128,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=outline-builder',
+    destinationUrl: '/text/outline-builder',
   },
   {
     id: 'text-and-writing.prompt-template-builder',
@@ -6142,7 +6142,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=prompt-template-builder',
+    destinationUrl: '/text/prompt-template-builder',
   },
   {
     id: 'text-and-writing.email-signature-generator',
@@ -6156,7 +6156,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=email-signature-generator',
+    destinationUrl: '/text/email-signature-generator',
   },
   {
     id: 'text-and-writing.citation-text-generator',
@@ -6170,7 +6170,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/writing?tool=citation-text-generator',
+    destinationUrl: '/text/citation-text-generator',
   },
   {
     id: 'text-and-writing.subtitles-text-cleaner',
@@ -6184,7 +6184,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=subtitles-text-cleaner',
+    destinationUrl: '/text/subtitles-text-cleaner',
   },
   {
     id: 'text-and-writing.transcript-formatter',
@@ -6198,7 +6198,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/text/workbench?tool=transcript-formatter',
+    destinationUrl: '/text/transcript-formatter',
   },
   {
     id: 'developer-and-data.json-formatter',
@@ -6212,7 +6212,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=json-formatter',
+    destinationUrl: '/developer/json-formatter',
   },
   {
     id: 'developer-and-data.json-validator',
@@ -6226,7 +6226,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=json-validator',
+    destinationUrl: '/developer/json-validator',
   },
   {
     id: 'developer-and-data.json-minifier',
@@ -6240,7 +6240,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=json-minifier',
+    destinationUrl: '/developer/json-minifier',
   },
   {
     id: 'developer-and-data.json-editor',
@@ -6254,7 +6254,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=json-editor',
+    destinationUrl: '/developer/json-editor',
   },
   {
     id: 'developer-and-data.json-diff',
@@ -6268,7 +6268,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=json-diff',
+    destinationUrl: '/developer/json-diff',
   },
   {
     id: 'developer-and-data.json-path-tester',
@@ -6282,7 +6282,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=json-path-tester',
+    destinationUrl: '/developer/json-path-tester',
   },
   {
     id: 'developer-and-data.json-schema-validator',
@@ -6296,7 +6296,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=json-schema-validator',
+    destinationUrl: '/developer/json-schema-validator',
   },
   {
     id: 'developer-and-data.json-to-yaml',
@@ -6310,7 +6310,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=json-to-yaml',
+    destinationUrl: '/developer/json-to-yaml',
   },
   {
     id: 'developer-and-data.yaml-to-json',
@@ -6324,7 +6324,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=yaml-to-json',
+    destinationUrl: '/developer/yaml-to-json',
   },
   {
     id: 'developer-and-data.yaml-formatter',
@@ -6338,7 +6338,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=yaml-formatter',
+    destinationUrl: '/developer/yaml-formatter',
   },
   {
     id: 'developer-and-data.yaml-validator',
@@ -6352,7 +6352,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=yaml-validator',
+    destinationUrl: '/developer/yaml-validator',
   },
   {
     id: 'developer-and-data.xml-formatter',
@@ -6366,7 +6366,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=xml-formatter',
+    destinationUrl: '/developer/xml-formatter',
   },
   {
     id: 'developer-and-data.xml-validator',
@@ -6380,7 +6380,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=xml-validator',
+    destinationUrl: '/developer/xml-validator',
   },
   {
     id: 'developer-and-data.xml-to-json',
@@ -6394,7 +6394,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=xml-to-json',
+    destinationUrl: '/developer/xml-to-json',
   },
   {
     id: 'developer-and-data.json-to-xml',
@@ -6408,7 +6408,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=json-to-xml',
+    destinationUrl: '/developer/json-to-xml',
   },
   {
     id: 'developer-and-data.toml-formatter',
@@ -6422,7 +6422,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=toml-formatter',
+    destinationUrl: '/developer/toml-formatter',
   },
   {
     id: 'developer-and-data.toml-to-json',
@@ -6436,7 +6436,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=toml-to-json',
+    destinationUrl: '/developer/toml-to-json',
   },
   {
     id: 'developer-and-data.ini-viewer',
@@ -6450,7 +6450,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=ini-viewer',
+    destinationUrl: '/developer/ini-viewer',
   },
   {
     id: 'developer-and-data.csv-to-json',
@@ -6464,7 +6464,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=csv-to-json',
+    destinationUrl: '/developer/csv-to-json',
   },
   {
     id: 'developer-and-data.base64-encoder',
@@ -6478,7 +6478,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=base64-encoder',
+    destinationUrl: '/developer/base64-encoder',
   },
   {
     id: 'developer-and-data.base64-decoder',
@@ -6492,7 +6492,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=base64-decoder',
+    destinationUrl: '/developer/base64-decoder',
   },
   {
     id: 'developer-and-data.url-encoder',
@@ -6506,7 +6506,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=url-encoder',
+    destinationUrl: '/developer/url-encoder',
   },
   {
     id: 'developer-and-data.url-decoder',
@@ -6520,7 +6520,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=url-decoder',
+    destinationUrl: '/developer/url-decoder',
   },
   {
     id: 'developer-and-data.html-encoder',
@@ -6534,7 +6534,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=html-encoder',
+    destinationUrl: '/developer/html-encoder',
   },
   {
     id: 'developer-and-data.html-decoder',
@@ -6548,7 +6548,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=html-decoder',
+    destinationUrl: '/developer/html-decoder',
   },
   {
     id: 'developer-and-data.jwt-decoder',
@@ -6562,7 +6562,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=jwt-decoder',
+    destinationUrl: '/developer/jwt-decoder',
   },
   {
     id: 'developer-and-data.jwt-inspector',
@@ -6576,7 +6576,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=jwt-inspector',
+    destinationUrl: '/developer/jwt-inspector',
   },
   {
     id: 'developer-and-data.uuid-generator',
@@ -6590,7 +6590,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=uuid-generator',
+    destinationUrl: '/developer/uuid-generator',
   },
   {
     id: 'developer-and-data.ulid-generator',
@@ -6604,7 +6604,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=ulid-generator',
+    destinationUrl: '/developer/ulid-generator',
   },
   {
     id: 'developer-and-data.nano-id-generator',
@@ -6618,7 +6618,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=nano-id-generator',
+    destinationUrl: '/developer/nano-id-generator',
   },
   {
     id: 'developer-and-data.random-token-generator',
@@ -6632,7 +6632,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=random-token-generator',
+    destinationUrl: '/developer/random-token-generator',
   },
   {
     id: 'developer-and-data.password-generator',
@@ -6646,7 +6646,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=password-generator',
+    destinationUrl: '/developer/password-generator',
   },
   {
     id: 'developer-and-data.hash-generator',
@@ -6660,7 +6660,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=hash-generator',
+    destinationUrl: '/developer/hash-generator',
   },
   {
     id: 'developer-and-data.hmac-generator',
@@ -6674,7 +6674,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=hmac-generator',
+    destinationUrl: '/developer/hmac-generator',
   },
   {
     id: 'developer-and-data.checksum-calculator',
@@ -6688,7 +6688,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=checksum-calculator',
+    destinationUrl: '/developer/checksum-calculator',
   },
   {
     id: 'developer-and-data.regex-tester',
@@ -6702,7 +6702,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=regex-tester',
+    destinationUrl: '/developer/regex-tester',
   },
   {
     id: 'developer-and-data.regex-explainer',
@@ -6716,7 +6716,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=regex-explainer',
+    destinationUrl: '/developer/regex-explainer',
   },
   {
     id: 'developer-and-data.cron-expression-parser',
@@ -6730,7 +6730,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=cron-expression-parser',
+    destinationUrl: '/developer/cron-expression-parser',
   },
   {
     id: 'developer-and-data.cron-expression-builder',
@@ -6744,7 +6744,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=cron-expression-builder',
+    destinationUrl: '/developer/cron-expression-builder',
   },
   {
     id: 'developer-and-data.unix-timestamp-converter',
@@ -6772,7 +6772,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=epoch-calculator',
+    destinationUrl: '/developer/epoch-calculator',
   },
   {
     id: 'developer-and-data.color-converter',
@@ -6786,7 +6786,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=color-converter',
+    destinationUrl: '/developer/color-converter',
   },
   {
     id: 'developer-and-data.number-base-converter',
@@ -6800,7 +6800,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=number-base-converter',
+    destinationUrl: '/developer/number-base-converter',
   },
   {
     id: 'developer-and-data.binary-calculator',
@@ -6814,7 +6814,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=binary-calculator',
+    destinationUrl: '/developer/binary-calculator',
   },
   {
     id: 'developer-and-data.bitwise-calculator',
@@ -6828,7 +6828,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=bitwise-calculator',
+    destinationUrl: '/developer/bitwise-calculator',
   },
   {
     id: 'developer-and-data.ip-address-converter',
@@ -6842,7 +6842,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=ip-address-converter',
+    destinationUrl: '/developer/ip-address-converter',
   },
   {
     id: 'developer-and-data.ipv4-subnet-calculator',
@@ -6856,7 +6856,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=ipv4-subnet-calculator',
+    destinationUrl: '/developer/ipv4-subnet-calculator',
   },
   {
     id: 'developer-and-data.ipv6-subnet-calculator',
@@ -6870,7 +6870,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=ipv6-subnet-calculator',
+    destinationUrl: '/developer/ipv6-subnet-calculator',
   },
   {
     id: 'developer-and-data.cidr-calculator',
@@ -6884,7 +6884,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=cidr-calculator',
+    destinationUrl: '/developer/cidr-calculator',
   },
   {
     id: 'developer-and-data.dns-record-viewer',
@@ -6897,7 +6897,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'low',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/developer/workbench?tool=dns-record-viewer',
+    destinationUrl: '/developer/dns-record-viewer',
   },
   {
     id: 'developer-and-data.http-header-parser',
@@ -6911,7 +6911,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=http-header-parser',
+    destinationUrl: '/developer/http-header-parser',
   },
   {
     id: 'developer-and-data.cookie-parser',
@@ -6925,7 +6925,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=cookie-parser',
+    destinationUrl: '/developer/cookie-parser',
   },
   {
     id: 'developer-and-data.user-agent-parser',
@@ -6939,7 +6939,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=user-agent-parser',
+    destinationUrl: '/developer/user-agent-parser',
   },
   {
     id: 'developer-and-data.curl-to-code',
@@ -6953,7 +6953,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=curl-to-code',
+    destinationUrl: '/developer/curl-to-code',
   },
   {
     id: 'developer-and-data.code-to-curl',
@@ -6967,7 +6967,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=code-to-curl',
+    destinationUrl: '/developer/code-to-curl',
   },
   {
     id: 'developer-and-data.sql-formatter',
@@ -6981,7 +6981,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=sql-formatter',
+    destinationUrl: '/developer/sql-formatter',
   },
   {
     id: 'developer-and-data.sql-minifier',
@@ -6995,7 +6995,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=sql-minifier',
+    destinationUrl: '/developer/sql-minifier',
   },
   {
     id: 'developer-and-data.sql-parameter-binder',
@@ -7009,7 +7009,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=sql-parameter-binder',
+    destinationUrl: '/developer/sql-parameter-binder',
   },
   {
     id: 'developer-and-data.graphql-formatter',
@@ -7023,7 +7023,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=graphql-formatter',
+    destinationUrl: '/developer/graphql-formatter',
   },
   {
     id: 'developer-and-data.graphql-variable-builder',
@@ -7037,7 +7037,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=graphql-variable-builder',
+    destinationUrl: '/developer/graphql-variable-builder',
   },
   {
     id: 'developer-and-data.protobuf-viewer',
@@ -7051,7 +7051,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=protobuf-viewer',
+    destinationUrl: '/developer/protobuf-viewer',
   },
   {
     id: 'developer-and-data.messagepack-viewer',
@@ -7065,7 +7065,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=messagepack-viewer',
+    destinationUrl: '/developer/messagepack-viewer',
   },
   {
     id: 'developer-and-data.bson-viewer',
@@ -7079,7 +7079,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=bson-viewer',
+    destinationUrl: '/developer/bson-viewer',
   },
   {
     id: 'developer-and-data.javascript-formatter',
@@ -7093,7 +7093,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=javascript-formatter',
+    destinationUrl: '/developer/javascript-formatter',
   },
   {
     id: 'developer-and-data.css-formatter',
@@ -7107,7 +7107,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=css-formatter',
+    destinationUrl: '/developer/css-formatter',
   },
   {
     id: 'developer-and-data.html-formatter',
@@ -7121,7 +7121,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=html-formatter',
+    destinationUrl: '/developer/html-formatter',
   },
   {
     id: 'developer-and-data.code-minifier',
@@ -7135,7 +7135,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=code-minifier',
+    destinationUrl: '/developer/code-minifier',
   },
   {
     id: 'developer-and-data.code-diff',
@@ -7149,7 +7149,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=code-diff',
+    destinationUrl: '/developer/code-diff',
   },
   {
     id: 'developer-and-data.code-screenshot',
@@ -7163,7 +7163,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=code-screenshot',
+    destinationUrl: '/developer/code-screenshot',
   },
   {
     id: 'developer-and-data.gitignore-generator',
@@ -7177,7 +7177,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=gitignore-generator',
+    destinationUrl: '/developer/gitignore-generator',
   },
   {
     id: 'developer-and-data.dockerignore-generator',
@@ -7191,7 +7191,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=dockerignore-generator',
+    destinationUrl: '/developer/dockerignore-generator',
   },
   {
     id: 'developer-and-data.editorconfig-generator',
@@ -7205,7 +7205,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=editorconfig-generator',
+    destinationUrl: '/developer/editorconfig-generator',
   },
   {
     id: 'developer-and-data.package-json-inspector',
@@ -7219,7 +7219,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=package-json-inspector',
+    destinationUrl: '/developer/package-json-inspector',
   },
   {
     id: 'developer-and-data.semantic-version-calculator',
@@ -7233,7 +7233,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=semantic-version-calculator',
+    destinationUrl: '/developer/semantic-version-calculator',
   },
   {
     id: 'developer-and-data.chmod-calculator',
@@ -7247,7 +7247,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=chmod-calculator',
+    destinationUrl: '/developer/chmod-calculator',
   },
   {
     id: 'developer-and-data.escape-sequence-viewer',
@@ -7261,7 +7261,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=escape-sequence-viewer',
+    destinationUrl: '/developer/escape-sequence-viewer',
   },
   {
     id: 'developer-and-data.unicode-code-point-inspector',
@@ -7275,7 +7275,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/workbench?tool=unicode-code-point-inspector',
+    destinationUrl: '/developer/unicode-code-point-inspector',
   },
   {
     id: 'developer-and-data.webhook-payload-tester',
@@ -7289,7 +7289,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=webhook-payload-tester',
+    destinationUrl: '/developer/webhook-payload-tester',
   },
   {
     id: 'developer-and-data.openapi-viewer',
@@ -7303,7 +7303,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=openapi-viewer',
+    destinationUrl: '/developer/openapi-viewer',
   },
   {
     id: 'developer-and-data.openapi-example-generator',
@@ -7317,7 +7317,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/developer/advanced?tool=openapi-example-generator',
+    destinationUrl: '/developer/openapi-example-generator',
   },
   {
     id: 'developer-and-data.sql-to-er-diagram',
@@ -7334,7 +7334,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Reads CREATE TABLE statements and draws an entity-relationship diagram as an SVG, with the foreign keys as links between tables. The schema is never uploaded.',
-    destinationUrl: '/developer/advanced?tool=sql-to-er-diagram',
+    destinationUrl: '/developer/sql-to-er-diagram',
   },
   {
     id: 'web-and-seo.meta-tag-generator',
@@ -7348,7 +7348,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=meta-tag-generator',
+    destinationUrl: '/web/meta-tag-generator',
   },
   {
     id: 'web-and-seo.open-graph-generator',
@@ -7362,7 +7362,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=open-graph-generator',
+    destinationUrl: '/web/open-graph-generator',
   },
   {
     id: 'web-and-seo.twitter-card-generator',
@@ -7376,7 +7376,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=twitter-card-generator',
+    destinationUrl: '/web/twitter-card-generator',
   },
   {
     id: 'web-and-seo.serp-snippet-preview',
@@ -7390,7 +7390,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=serp-snippet-preview',
+    destinationUrl: '/web/serp-snippet-preview',
   },
   {
     id: 'web-and-seo.robots-txt-generator',
@@ -7404,7 +7404,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=robots-txt-generator',
+    destinationUrl: '/web/robots-txt-generator',
   },
   {
     id: 'web-and-seo.robots-txt-tester',
@@ -7418,7 +7418,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=robots-txt-tester',
+    destinationUrl: '/web/robots-txt-tester',
   },
   {
     id: 'web-and-seo.sitemap-generator',
@@ -7432,7 +7432,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=sitemap-generator',
+    destinationUrl: '/web/sitemap-generator',
   },
   {
     id: 'web-and-seo.sitemap-viewer',
@@ -7446,7 +7446,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=sitemap-viewer',
+    destinationUrl: '/web/sitemap-viewer',
   },
   {
     id: 'web-and-seo.canonical-url-builder',
@@ -7460,7 +7460,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=canonical-url-builder',
+    destinationUrl: '/web/canonical-url-builder',
   },
   {
     id: 'web-and-seo.hreflang-generator',
@@ -7474,7 +7474,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=hreflang-generator',
+    destinationUrl: '/web/hreflang-generator',
   },
   {
     id: 'web-and-seo.schema-markup-generator',
@@ -7488,7 +7488,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=schema-markup-generator',
+    destinationUrl: '/web/schema-markup-generator',
   },
   {
     id: 'web-and-seo.schema-markup-validator',
@@ -7502,7 +7502,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=schema-markup-validator',
+    destinationUrl: '/web/schema-markup-validator',
   },
   {
     id: 'web-and-seo.html-head-inspector',
@@ -7516,7 +7516,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=html-head-inspector',
+    destinationUrl: '/web/html-head-inspector',
   },
   {
     id: 'web-and-seo.link-extractor',
@@ -7530,7 +7530,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=link-extractor',
+    destinationUrl: '/web/link-extractor',
   },
   {
     id: 'web-and-seo.broken-link-list-checker',
@@ -7544,7 +7544,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=broken-link-list-checker',
+    destinationUrl: '/web/broken-link-list-checker',
   },
   {
     id: 'web-and-seo.redirect-chain-planner',
@@ -7558,7 +7558,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=redirect-chain-planner',
+    destinationUrl: '/web/redirect-chain-planner',
   },
   {
     id: 'web-and-seo.url-normalizer',
@@ -7572,7 +7572,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=url-normalizer',
+    destinationUrl: '/web/url-normalizer',
   },
   {
     id: 'web-and-seo.utm-builder',
@@ -7586,7 +7586,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=utm-builder',
+    destinationUrl: '/web/utm-builder',
   },
   {
     id: 'web-and-seo.utm-parser',
@@ -7600,7 +7600,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=utm-parser',
+    destinationUrl: '/web/utm-parser',
   },
   {
     id: 'web-and-seo.query-string-builder',
@@ -7614,7 +7614,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=query-string-builder',
+    destinationUrl: '/web/query-string-builder',
   },
   {
     id: 'web-and-seo.query-string-parser',
@@ -7628,7 +7628,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=query-string-parser',
+    destinationUrl: '/web/query-string-parser',
   },
   {
     id: 'web-and-seo.domain-name-generator',
@@ -7642,7 +7642,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=domain-name-generator',
+    destinationUrl: '/web/domain-name-generator',
   },
   {
     id: 'web-and-seo.domain-typo-generator',
@@ -7656,7 +7656,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=domain-typo-generator',
+    destinationUrl: '/web/domain-typo-generator',
   },
   {
     id: 'web-and-seo.favicon-inspector',
@@ -7670,7 +7670,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=favicon-inspector',
+    destinationUrl: '/web/favicon-inspector',
   },
   {
     id: 'web-and-seo.web-app-manifest-generator',
@@ -7684,7 +7684,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=web-app-manifest-generator',
+    destinationUrl: '/web/web-app-manifest-generator',
   },
   {
     id: 'web-and-seo.browser-compatibility-checklist',
@@ -7698,7 +7698,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=browser-compatibility-checklist',
+    destinationUrl: '/web/browser-compatibility-checklist',
   },
   {
     id: 'web-and-seo.css-gradient-generator',
@@ -7712,7 +7712,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-gradient-generator',
+    destinationUrl: '/web/css-gradient-generator',
   },
   {
     id: 'web-and-seo.css-shadow-generator',
@@ -7726,7 +7726,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-shadow-generator',
+    destinationUrl: '/web/css-shadow-generator',
   },
   {
     id: 'web-and-seo.css-border-radius-generator',
@@ -7740,7 +7740,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-border-radius-generator',
+    destinationUrl: '/web/css-border-radius-generator',
   },
   {
     id: 'web-and-seo.css-clip-path-generator',
@@ -7754,7 +7754,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-clip-path-generator',
+    destinationUrl: '/web/css-clip-path-generator',
   },
   {
     id: 'web-and-seo.css-grid-generator',
@@ -7768,7 +7768,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-grid-generator',
+    destinationUrl: '/web/css-grid-generator',
   },
   {
     id: 'web-and-seo.css-flexbox-generator',
@@ -7782,7 +7782,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-flexbox-generator',
+    destinationUrl: '/web/css-flexbox-generator',
   },
   {
     id: 'web-and-seo.css-clamp-calculator',
@@ -7796,7 +7796,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=css-clamp-calculator',
+    destinationUrl: '/web/css-clamp-calculator',
   },
   {
     id: 'web-and-seo.responsive-breakpoint-tester',
@@ -7810,7 +7810,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=responsive-breakpoint-tester',
+    destinationUrl: '/web/responsive-breakpoint-tester',
   },
   {
     id: 'web-and-seo.viewport-size-calculator',
@@ -7824,7 +7824,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=viewport-size-calculator',
+    destinationUrl: '/web/viewport-size-calculator',
   },
   {
     id: 'web-and-seo.aspect-ratio-calculator',
@@ -7838,7 +7838,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=aspect-ratio-calculator',
+    destinationUrl: '/web/aspect-ratio-calculator',
   },
   {
     id: 'web-and-seo.html-table-generator',
@@ -7852,7 +7852,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=html-table-generator',
+    destinationUrl: '/web/html-table-generator',
   },
   {
     id: 'web-and-seo.email-html-inliner',
@@ -7866,7 +7866,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=email-html-inliner',
+    destinationUrl: '/web/email-html-inliner',
   },
   {
     id: 'web-and-seo.accessibility-contrast-checker',
@@ -7880,7 +7880,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=accessibility-contrast-checker',
+    destinationUrl: '/web/accessibility-contrast-checker',
   },
   {
     id: 'web-and-seo.aria-label-checklist',
@@ -7894,7 +7894,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=aria-label-checklist',
+    destinationUrl: '/web/aria-label-checklist',
   },
   {
     id: 'web-and-seo.heading-structure-checker',
@@ -7908,7 +7908,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=heading-structure-checker',
+    destinationUrl: '/web/heading-structure-checker',
   },
   {
     id: 'web-and-seo.keyword-density-analyzer',
@@ -7922,7 +7922,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=keyword-density-analyzer',
+    destinationUrl: '/web/keyword-density-analyzer',
   },
   {
     id: 'web-and-seo.text-to-html-link',
@@ -7936,7 +7936,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/web/workbench?tool=text-to-html-link',
+    destinationUrl: '/web/text-to-html-link',
   },
   {
     id: 'web-and-seo.url-screenshot-planner',
@@ -7949,7 +7949,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'low',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/web/workbench?tool=url-screenshot-planner',
+    destinationUrl: '/web/url-screenshot-planner',
   },
   {
     id: 'web-and-seo.website-technology-notes',
@@ -7962,7 +7962,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'low',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/web/workbench?tool=website-technology-notes',
+    destinationUrl: '/web/website-technology-notes',
   },
   {
     id: 'web-and-seo.file-to-html',
@@ -7990,7 +7990,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-generator',
+    destinationUrl: '/qr/qr-code-generator',
   },
   {
     id: 'qr-and-barcode.qr-code-scanner',
@@ -8004,7 +8004,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-scanner',
+    destinationUrl: '/qr/qr-code-scanner',
   },
   {
     id: 'qr-and-barcode.url-qr-code',
@@ -8018,7 +8018,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=url-qr-code',
+    destinationUrl: '/qr/url-qr-code',
   },
   {
     id: 'qr-and-barcode.text-qr-code',
@@ -8032,7 +8032,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=text-qr-code',
+    destinationUrl: '/qr/text-qr-code',
   },
   {
     id: 'qr-and-barcode.wi-fi-qr-code',
@@ -8046,7 +8046,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=wi-fi-qr-code',
+    destinationUrl: '/qr/wi-fi-qr-code',
   },
   {
     id: 'qr-and-barcode.vcard-qr-code',
@@ -8060,7 +8060,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=vcard-qr-code',
+    destinationUrl: '/qr/vcard-qr-code',
   },
   {
     id: 'qr-and-barcode.email-qr-code',
@@ -8074,7 +8074,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=email-qr-code',
+    destinationUrl: '/qr/email-qr-code',
   },
   {
     id: 'qr-and-barcode.sms-qr-code',
@@ -8088,7 +8088,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=sms-qr-code',
+    destinationUrl: '/qr/sms-qr-code',
   },
   {
     id: 'qr-and-barcode.phone-qr-code',
@@ -8102,7 +8102,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=phone-qr-code',
+    destinationUrl: '/qr/phone-qr-code',
   },
   {
     id: 'qr-and-barcode.location-qr-code',
@@ -8116,7 +8116,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=location-qr-code',
+    destinationUrl: '/qr/location-qr-code',
   },
   {
     id: 'qr-and-barcode.calendar-event-qr-code',
@@ -8130,7 +8130,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=calendar-event-qr-code',
+    destinationUrl: '/qr/calendar-event-qr-code',
   },
   {
     id: 'qr-and-barcode.upi-qr-code',
@@ -8144,7 +8144,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=upi-qr-code',
+    destinationUrl: '/qr/upi-qr-code',
   },
   {
     id: 'qr-and-barcode.bitcoin-qr-code',
@@ -8158,7 +8158,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=bitcoin-qr-code',
+    destinationUrl: '/qr/bitcoin-qr-code',
   },
   {
     id: 'qr-and-barcode.app-store-qr-code',
@@ -8172,7 +8172,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=app-store-qr-code',
+    destinationUrl: '/qr/app-store-qr-code',
   },
   {
     id: 'qr-and-barcode.multi-link-qr-code',
@@ -8186,7 +8186,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=multi-link-qr-code',
+    destinationUrl: '/qr/multi-link-qr-code',
   },
   {
     id: 'qr-and-barcode.qr-code-svg-export',
@@ -8200,7 +8200,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-svg-export',
+    destinationUrl: '/qr/qr-code-svg-export',
   },
   {
     id: 'qr-and-barcode.qr-code-logo-embedder',
@@ -8214,7 +8214,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-logo-embedder',
+    destinationUrl: '/qr/qr-code-logo-embedder',
   },
   {
     id: 'qr-and-barcode.qr-code-batch-generator',
@@ -8228,7 +8228,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-batch-generator',
+    destinationUrl: '/qr/qr-code-batch-generator',
   },
   {
     id: 'qr-and-barcode.qr-code-contact-sheet',
@@ -8242,7 +8242,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-contact-sheet',
+    destinationUrl: '/qr/qr-code-contact-sheet',
   },
   {
     id: 'qr-and-barcode.qr-code-error-correction-tester',
@@ -8256,7 +8256,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=qr-code-error-correction-tester',
+    destinationUrl: '/qr/qr-code-error-correction-tester',
   },
   {
     id: 'qr-and-barcode.ean-13-generator',
@@ -8270,7 +8270,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=ean-13-generator',
+    destinationUrl: '/qr/ean-13-generator',
   },
   {
     id: 'qr-and-barcode.ean-8-generator',
@@ -8284,7 +8284,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=ean-8-generator',
+    destinationUrl: '/qr/ean-8-generator',
   },
   {
     id: 'qr-and-barcode.upc-a-generator',
@@ -8298,7 +8298,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=upc-a-generator',
+    destinationUrl: '/qr/upc-a-generator',
   },
   {
     id: 'qr-and-barcode.upc-e-generator',
@@ -8312,7 +8312,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=upc-e-generator',
+    destinationUrl: '/qr/upc-e-generator',
   },
   {
     id: 'qr-and-barcode.code-128-generator',
@@ -8326,7 +8326,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=code-128-generator',
+    destinationUrl: '/qr/code-128-generator',
   },
   {
     id: 'qr-and-barcode.code-39-generator',
@@ -8340,7 +8340,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=code-39-generator',
+    destinationUrl: '/qr/code-39-generator',
   },
   {
     id: 'qr-and-barcode.itf-14-generator',
@@ -8354,7 +8354,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=itf-14-generator',
+    destinationUrl: '/qr/itf-14-generator',
   },
   {
     id: 'qr-and-barcode.data-matrix-generator',
@@ -8368,7 +8368,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=data-matrix-generator',
+    destinationUrl: '/qr/data-matrix-generator',
   },
   {
     id: 'qr-and-barcode.pdf417-generator',
@@ -8382,7 +8382,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=pdf417-generator',
+    destinationUrl: '/qr/pdf417-generator',
   },
   {
     id: 'qr-and-barcode.barcode-scanner',
@@ -8396,7 +8396,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/qr/workbench?tool=barcode-scanner',
+    destinationUrl: '/qr/barcode-scanner',
   },
   {
     id: 'math-and-units.basic-calculator',
@@ -9390,7 +9390,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=loan-emi-calculator',
+    destinationUrl: '/finance/loan-emi-calculator',
   },
   {
     id: 'finance-and-business.mortgage-calculator',
@@ -9404,7 +9404,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=mortgage-calculator',
+    destinationUrl: '/finance/mortgage-calculator',
   },
   {
     id: 'finance-and-business.simple-interest-calculator',
@@ -9418,7 +9418,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=simple-interest-calculator',
+    destinationUrl: '/finance/simple-interest-calculator',
   },
   {
     id: 'finance-and-business.compound-interest-calculator',
@@ -9432,7 +9432,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=compound-interest-calculator',
+    destinationUrl: '/finance/compound-interest-calculator',
   },
   {
     id: 'finance-and-business.sip-calculator',
@@ -9446,7 +9446,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=sip-calculator',
+    destinationUrl: '/finance/sip-calculator',
   },
   {
     id: 'finance-and-business.lumpsum-investment-calculator',
@@ -9460,7 +9460,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=lumpsum-investment-calculator',
+    destinationUrl: '/finance/lumpsum-investment-calculator',
   },
   {
     id: 'finance-and-business.recurring-deposit-calculator',
@@ -9474,7 +9474,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=recurring-deposit-calculator',
+    destinationUrl: '/finance/recurring-deposit-calculator',
   },
   {
     id: 'finance-and-business.fixed-deposit-calculator',
@@ -9488,7 +9488,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=fixed-deposit-calculator',
+    destinationUrl: '/finance/fixed-deposit-calculator',
   },
   {
     id: 'finance-and-business.cagr-calculator',
@@ -9502,7 +9502,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=cagr-calculator',
+    destinationUrl: '/finance/cagr-calculator',
   },
   {
     id: 'finance-and-business.roi-calculator',
@@ -9516,7 +9516,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=roi-calculator',
+    destinationUrl: '/finance/roi-calculator',
   },
   {
     id: 'finance-and-business.irr-calculator',
@@ -9530,7 +9530,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=irr-calculator',
+    destinationUrl: '/finance/irr-calculator',
   },
   {
     id: 'finance-and-business.xirr-calculator',
@@ -9544,7 +9544,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=xirr-calculator',
+    destinationUrl: '/finance/xirr-calculator',
   },
   {
     id: 'finance-and-business.npv-calculator',
@@ -9558,7 +9558,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=npv-calculator',
+    destinationUrl: '/finance/npv-calculator',
   },
   {
     id: 'finance-and-business.inflation-calculator',
@@ -9572,7 +9572,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=inflation-calculator',
+    destinationUrl: '/finance/inflation-calculator',
   },
   {
     id: 'finance-and-business.future-value-calculator',
@@ -9586,7 +9586,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=future-value-calculator',
+    destinationUrl: '/finance/future-value-calculator',
   },
   {
     id: 'finance-and-business.present-value-calculator',
@@ -9600,7 +9600,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=present-value-calculator',
+    destinationUrl: '/finance/present-value-calculator',
   },
   {
     id: 'finance-and-business.annuity-calculator',
@@ -9614,7 +9614,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=annuity-calculator',
+    destinationUrl: '/finance/annuity-calculator',
   },
   {
     id: 'finance-and-business.retirement-corpus-calculator',
@@ -9628,7 +9628,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=retirement-corpus-calculator',
+    destinationUrl: '/finance/retirement-corpus-calculator',
   },
   {
     id: 'finance-and-business.emergency-fund-calculator',
@@ -9642,7 +9642,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=emergency-fund-calculator',
+    destinationUrl: '/finance/emergency-fund-calculator',
   },
   {
     id: 'finance-and-business.savings-goal-calculator',
@@ -9656,7 +9656,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=savings-goal-calculator',
+    destinationUrl: '/finance/savings-goal-calculator',
   },
   {
     id: 'finance-and-business.debt-payoff-calculator',
@@ -9670,7 +9670,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=debt-payoff-calculator',
+    destinationUrl: '/finance/debt-payoff-calculator',
   },
   {
     id: 'finance-and-business.credit-card-payoff-calculator',
@@ -9684,7 +9684,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=credit-card-payoff-calculator',
+    destinationUrl: '/finance/credit-card-payoff-calculator',
   },
   {
     id: 'finance-and-business.debt-to-income-calculator',
@@ -9698,7 +9698,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=debt-to-income-calculator',
+    destinationUrl: '/finance/debt-to-income-calculator',
   },
   {
     id: 'finance-and-business.net-worth-calculator',
@@ -9712,7 +9712,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=net-worth-calculator',
+    destinationUrl: '/finance/net-worth-calculator',
   },
   {
     id: 'finance-and-business.budget-planner',
@@ -9726,7 +9726,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=budget-planner',
+    destinationUrl: '/finance/budget-planner',
   },
   {
     id: 'finance-and-business.50-30-20-budget-calculator',
@@ -9740,7 +9740,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=50-30-20-budget-calculator',
+    destinationUrl: '/finance/50-30-20-budget-calculator',
   },
   {
     id: 'finance-and-business.gst-calculator',
@@ -9754,7 +9754,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=gst-calculator',
+    destinationUrl: '/finance/gst-calculator',
   },
   {
     id: 'finance-and-business.vat-calculator',
@@ -9768,7 +9768,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=vat-calculator',
+    destinationUrl: '/finance/vat-calculator',
   },
   {
     id: 'finance-and-business.sales-tax-calculator',
@@ -9782,7 +9782,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=sales-tax-calculator',
+    destinationUrl: '/finance/sales-tax-calculator',
   },
   {
     id: 'finance-and-business.income-tax-estimate',
@@ -9796,7 +9796,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=income-tax-estimate',
+    destinationUrl: '/finance/income-tax-estimate',
   },
   {
     id: 'finance-and-business.tds-calculator',
@@ -9810,7 +9810,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=tds-calculator',
+    destinationUrl: '/finance/tds-calculator',
   },
   {
     id: 'finance-and-business.hra-calculator',
@@ -9824,7 +9824,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=hra-calculator',
+    destinationUrl: '/finance/hra-calculator',
   },
   {
     id: 'finance-and-business.gratuity-calculator',
@@ -9838,7 +9838,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=gratuity-calculator',
+    destinationUrl: '/finance/gratuity-calculator',
   },
   {
     id: 'finance-and-business.epf-calculator',
@@ -9852,7 +9852,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=epf-calculator',
+    destinationUrl: '/finance/epf-calculator',
   },
   {
     id: 'finance-and-business.ppf-calculator',
@@ -9866,7 +9866,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=ppf-calculator',
+    destinationUrl: '/finance/ppf-calculator',
   },
   {
     id: 'finance-and-business.nps-calculator',
@@ -9880,7 +9880,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=nps-calculator',
+    destinationUrl: '/finance/nps-calculator',
   },
   {
     id: 'finance-and-business.salary-breakup-calculator',
@@ -9894,7 +9894,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=salary-breakup-calculator',
+    destinationUrl: '/finance/salary-breakup-calculator',
   },
   {
     id: 'finance-and-business.take-home-pay-calculator',
@@ -9908,7 +9908,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=take-home-pay-calculator',
+    destinationUrl: '/finance/take-home-pay-calculator',
   },
   {
     id: 'finance-and-business.hourly-to-salary-calculator',
@@ -9922,7 +9922,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=hourly-to-salary-calculator',
+    destinationUrl: '/finance/hourly-to-salary-calculator',
   },
   {
     id: 'finance-and-business.overtime-calculator',
@@ -9936,7 +9936,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=overtime-calculator',
+    destinationUrl: '/finance/overtime-calculator',
   },
   {
     id: 'finance-and-business.freelance-rate-calculator',
@@ -9950,7 +9950,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=freelance-rate-calculator',
+    destinationUrl: '/finance/freelance-rate-calculator',
   },
   {
     id: 'finance-and-business.markup-calculator',
@@ -9964,7 +9964,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=markup-calculator',
+    destinationUrl: '/finance/markup-calculator',
   },
   {
     id: 'finance-and-business.margin-calculator',
@@ -9978,7 +9978,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=margin-calculator',
+    destinationUrl: '/finance/margin-calculator',
   },
   {
     id: 'finance-and-business.break-even-calculator',
@@ -9992,7 +9992,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=break-even-calculator',
+    destinationUrl: '/finance/break-even-calculator',
   },
   {
     id: 'finance-and-business.profit-calculator',
@@ -10006,7 +10006,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=profit-calculator',
+    destinationUrl: '/finance/profit-calculator',
   },
   {
     id: 'finance-and-business.discount-calculator',
@@ -10020,7 +10020,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=discount-calculator',
+    destinationUrl: '/finance/discount-calculator',
   },
   {
     id: 'finance-and-business.commission-calculator',
@@ -10034,7 +10034,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=commission-calculator',
+    destinationUrl: '/finance/commission-calculator',
   },
   {
     id: 'finance-and-business.tip-calculator',
@@ -10048,7 +10048,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=tip-calculator',
+    destinationUrl: '/finance/tip-calculator',
   },
   {
     id: 'finance-and-business.split-bill-calculator',
@@ -10062,7 +10062,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=split-bill-calculator',
+    destinationUrl: '/finance/split-bill-calculator',
   },
   {
     id: 'finance-and-business.currency-converter',
@@ -10075,7 +10075,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/finance/workbench?tool=currency-converter',
+    destinationUrl: '/finance/currency-converter',
   },
   {
     id: 'finance-and-business.exchange-rate-margin-calculator',
@@ -10088,7 +10088,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/finance/workbench?tool=exchange-rate-margin-calculator',
+    destinationUrl: '/finance/exchange-rate-margin-calculator',
   },
   {
     id: 'finance-and-business.inventory-turnover-calculator',
@@ -10102,7 +10102,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=inventory-turnover-calculator',
+    destinationUrl: '/finance/inventory-turnover-calculator',
   },
   {
     id: 'finance-and-business.customer-acquisition-cost-calculator',
@@ -10131,7 +10131,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=lifetime-value-calculator',
+    destinationUrl: '/finance/lifetime-value-calculator',
   },
   {
     id: 'finance-and-business.churn-rate-calculator',
@@ -10145,7 +10145,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=churn-rate-calculator',
+    destinationUrl: '/finance/churn-rate-calculator',
   },
   {
     id: 'finance-and-business.mrr-calculator',
@@ -10159,7 +10159,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=mrr-calculator',
+    destinationUrl: '/finance/mrr-calculator',
   },
   {
     id: 'finance-and-business.arr-calculator',
@@ -10173,7 +10173,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=arr-calculator',
+    destinationUrl: '/finance/arr-calculator',
   },
   {
     id: 'finance-and-business.runway-calculator',
@@ -10187,7 +10187,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=runway-calculator',
+    destinationUrl: '/finance/runway-calculator',
   },
   {
     id: 'finance-and-business.burn-rate-calculator',
@@ -10201,7 +10201,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=burn-rate-calculator',
+    destinationUrl: '/finance/burn-rate-calculator',
   },
   {
     id: 'finance-and-business.invoice-late-fee-calculator',
@@ -10215,7 +10215,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/finance/workbench?tool=invoice-late-fee-calculator',
+    destinationUrl: '/finance/invoice-late-fee-calculator',
   },
   {
     id: 'date-time-and-productivity.date-difference-calculator',
@@ -10243,7 +10243,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=add-days-to-date',
+    destinationUrl: '/date/add-days-to-date',
   },
   {
     id: 'date-time-and-productivity.subtract-days-from-date',
@@ -10257,7 +10257,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=subtract-days-from-date',
+    destinationUrl: '/date/subtract-days-from-date',
   },
   {
     id: 'date-time-and-productivity.business-days-calculator',
@@ -10271,7 +10271,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=business-days-calculator',
+    destinationUrl: '/date/business-days-calculator',
   },
   {
     id: 'date-time-and-productivity.workday-calculator',
@@ -10285,7 +10285,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=workday-calculator',
+    destinationUrl: '/date/workday-calculator',
   },
   {
     id: 'date-time-and-productivity.age-calculator',
@@ -10313,7 +10313,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=birthday-countdown',
+    destinationUrl: '/date/birthday-countdown',
   },
   {
     id: 'date-time-and-productivity.anniversary-calculator',
@@ -10327,7 +10327,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=anniversary-calculator',
+    destinationUrl: '/date/anniversary-calculator',
   },
   {
     id: 'date-time-and-productivity.week-number-calculator',
@@ -10341,7 +10341,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=week-number-calculator',
+    destinationUrl: '/date/week-number-calculator',
   },
   {
     id: 'date-time-and-productivity.day-of-year-calculator',
@@ -10355,7 +10355,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=day-of-year-calculator',
+    destinationUrl: '/date/day-of-year-calculator',
   },
   {
     id: 'date-time-and-productivity.leap-year-checker',
@@ -10369,7 +10369,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=leap-year-checker',
+    destinationUrl: '/date/leap-year-checker',
   },
   {
     id: 'date-time-and-productivity.timezone-converter',
@@ -10383,7 +10383,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=timezone-converter',
+    destinationUrl: '/date/timezone-converter',
   },
   {
     id: 'date-time-and-productivity.world-clock',
@@ -10397,7 +10397,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=world-clock',
+    destinationUrl: '/date/world-clock',
   },
   {
     id: 'date-time-and-productivity.meeting-time-planner',
@@ -10411,7 +10411,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=meeting-time-planner',
+    destinationUrl: '/date/meeting-time-planner',
   },
   {
     id: 'date-time-and-productivity.unix-timestamp-converter',
@@ -10425,7 +10425,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=unix-timestamp-converter',
+    destinationUrl: '/date/unix-timestamp-converter',
   },
   {
     id: 'date-time-and-productivity.iso-date-formatter',
@@ -10439,7 +10439,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=iso-date-formatter',
+    destinationUrl: '/date/iso-date-formatter',
   },
   {
     id: 'date-time-and-productivity.duration-calculator',
@@ -10453,7 +10453,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=duration-calculator',
+    destinationUrl: '/date/duration-calculator',
   },
   {
     id: 'date-time-and-productivity.hours-calculator',
@@ -10467,7 +10467,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=hours-calculator',
+    destinationUrl: '/date/hours-calculator',
   },
   {
     id: 'date-time-and-productivity.timesheet-calculator',
@@ -10481,7 +10481,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=timesheet-calculator',
+    destinationUrl: '/date/timesheet-calculator',
   },
   {
     id: 'date-time-and-productivity.pomodoro-timer',
@@ -10495,7 +10495,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=pomodoro-timer',
+    destinationUrl: '/date/pomodoro-timer',
   },
   {
     id: 'date-time-and-productivity.countdown-timer',
@@ -10509,7 +10509,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=countdown-timer',
+    destinationUrl: '/date/countdown-timer',
   },
   {
     id: 'date-time-and-productivity.stopwatch',
@@ -10523,7 +10523,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=stopwatch',
+    destinationUrl: '/date/stopwatch',
   },
   {
     id: 'date-time-and-productivity.interval-timer',
@@ -10537,7 +10537,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=interval-timer',
+    destinationUrl: '/date/interval-timer',
   },
   {
     id: 'date-time-and-productivity.tabata-timer',
@@ -10551,7 +10551,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=tabata-timer',
+    destinationUrl: '/date/tabata-timer',
   },
   {
     id: 'date-time-and-productivity.habit-streak-calculator',
@@ -10565,7 +10565,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=habit-streak-calculator',
+    destinationUrl: '/productivity/habit-streak-calculator',
   },
   {
     id: 'date-time-and-productivity.task-prioritization-matrix',
@@ -10579,7 +10579,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=task-prioritization-matrix',
+    destinationUrl: '/productivity/task-prioritization-matrix',
   },
   {
     id: 'date-time-and-productivity.eisenhower-matrix',
@@ -10593,7 +10593,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=eisenhower-matrix',
+    destinationUrl: '/productivity/eisenhower-matrix',
   },
   {
     id: 'date-time-and-productivity.kanban-board',
@@ -10607,7 +10607,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=kanban-board',
+    destinationUrl: '/date/kanban-board',
   },
   {
     id: 'date-time-and-productivity.daily-planner',
@@ -10621,7 +10621,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=daily-planner',
+    destinationUrl: '/productivity/daily-planner',
   },
   {
     id: 'date-time-and-productivity.weekly-planner',
@@ -10635,7 +10635,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=weekly-planner',
+    destinationUrl: '/productivity/weekly-planner',
   },
   {
     id: 'date-time-and-productivity.monthly-planner',
@@ -10649,7 +10649,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=monthly-planner',
+    destinationUrl: '/productivity/monthly-planner',
   },
   {
     id: 'date-time-and-productivity.goal-breakdown-tool',
@@ -10663,7 +10663,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=goal-breakdown-tool',
+    destinationUrl: '/productivity/goal-breakdown-tool',
   },
   {
     id: 'date-time-and-productivity.decision-matrix',
@@ -10677,7 +10677,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=decision-matrix',
+    destinationUrl: '/productivity/decision-matrix',
   },
   {
     id: 'date-time-and-productivity.weighted-scoring-matrix',
@@ -10691,7 +10691,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=weighted-scoring-matrix',
+    destinationUrl: '/productivity/weighted-scoring-matrix',
   },
   {
     id: 'date-time-and-productivity.random-picker',
@@ -10705,7 +10705,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=random-picker',
+    destinationUrl: '/productivity/random-picker',
   },
   {
     id: 'date-time-and-productivity.wheel-spinner',
@@ -10719,7 +10719,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=wheel-spinner',
+    destinationUrl: '/date/wheel-spinner',
   },
   {
     id: 'date-time-and-productivity.name-picker',
@@ -10733,7 +10733,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=name-picker',
+    destinationUrl: '/productivity/name-picker',
   },
   {
     id: 'date-time-and-productivity.team-generator',
@@ -10747,7 +10747,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=team-generator',
+    destinationUrl: '/productivity/team-generator',
   },
   {
     id: 'date-time-and-productivity.tournament-bracket-maker',
@@ -10761,7 +10761,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=tournament-bracket-maker',
+    destinationUrl: '/productivity/tournament-bracket-maker',
   },
   {
     id: 'date-time-and-productivity.seating-chart-maker',
@@ -10775,7 +10775,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=seating-chart-maker',
+    destinationUrl: '/productivity/seating-chart-maker',
   },
   {
     id: 'date-time-and-productivity.checklist-maker',
@@ -10789,7 +10789,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=checklist-maker',
+    destinationUrl: '/productivity/checklist-maker',
   },
   {
     id: 'date-time-and-productivity.packing-list-generator',
@@ -10803,7 +10803,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=packing-list-generator',
+    destinationUrl: '/productivity/packing-list-generator',
   },
   {
     id: 'date-time-and-productivity.grocery-list-generator',
@@ -10817,7 +10817,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=grocery-list-generator',
+    destinationUrl: '/productivity/grocery-list-generator',
   },
   {
     id: 'date-time-and-productivity.study-schedule-maker',
@@ -10831,7 +10831,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/productivity/workbench?tool=study-schedule-maker',
+    destinationUrl: '/productivity/study-schedule-maker',
   },
   {
     id: 'date-time-and-productivity.focus-session-tracker',
@@ -10845,7 +10845,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/date/workbench?tool=focus-session-tracker',
+    destinationUrl: '/date/focus-session-tracker',
   },
   {
     id: 'health-and-fitness.bmi-calculator',
@@ -10859,7 +10859,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=bmi-calculator',
+    destinationUrl: '/science/bmi-calculator',
   },
   {
     id: 'health-and-fitness.bmr-calculator',
@@ -10873,7 +10873,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=bmr-calculator',
+    destinationUrl: '/science/bmr-calculator',
   },
   {
     id: 'health-and-fitness.tdee-calculator',
@@ -10887,7 +10887,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=tdee-calculator',
+    destinationUrl: '/science/tdee-calculator',
   },
   {
     id: 'health-and-fitness.body-fat-calculator',
@@ -10901,7 +10901,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=body-fat-calculator',
+    destinationUrl: '/science/body-fat-calculator',
   },
   {
     id: 'health-and-fitness.ideal-weight-calculator',
@@ -10915,7 +10915,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=ideal-weight-calculator',
+    destinationUrl: '/science/ideal-weight-calculator',
   },
   {
     id: 'health-and-fitness.lean-body-mass-calculator',
@@ -10929,7 +10929,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=lean-body-mass-calculator',
+    destinationUrl: '/science/lean-body-mass-calculator',
   },
   {
     id: 'health-and-fitness.waist-to-height-calculator',
@@ -10943,7 +10943,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=waist-to-height-calculator',
+    destinationUrl: '/science/waist-to-height-calculator',
   },
   {
     id: 'health-and-fitness.waist-to-hip-calculator',
@@ -10957,7 +10957,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=waist-to-hip-calculator',
+    destinationUrl: '/science/waist-to-hip-calculator',
   },
   {
     id: 'health-and-fitness.calorie-calculator',
@@ -10971,7 +10971,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=calorie-calculator',
+    destinationUrl: '/science/calorie-calculator',
   },
   {
     id: 'health-and-fitness.macro-calculator',
@@ -10985,7 +10985,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=macro-calculator',
+    destinationUrl: '/science/macro-calculator',
   },
   {
     id: 'health-and-fitness.protein-intake-calculator',
@@ -10999,7 +10999,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=protein-intake-calculator',
+    destinationUrl: '/science/protein-intake-calculator',
   },
   {
     id: 'health-and-fitness.fiber-intake-calculator',
@@ -11013,7 +11013,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=fiber-intake-calculator',
+    destinationUrl: '/science/fiber-intake-calculator',
   },
   {
     id: 'health-and-fitness.meal-calorie-splitter',
@@ -11027,7 +11027,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=meal-calorie-splitter',
+    destinationUrl: '/science/meal-calorie-splitter',
   },
   {
     id: 'health-and-fitness.intermittent-fasting-timer',
@@ -11041,7 +11041,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=intermittent-fasting-timer',
+    destinationUrl: '/science/intermittent-fasting-timer',
   },
   {
     id: 'health-and-fitness.pregnancy-due-date-calculator',
@@ -11055,7 +11055,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=pregnancy-due-date-calculator',
+    destinationUrl: '/science/pregnancy-due-date-calculator',
   },
   {
     id: 'health-and-fitness.ovulation-calculator',
@@ -11069,7 +11069,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=ovulation-calculator',
+    destinationUrl: '/science/ovulation-calculator',
   },
   {
     id: 'health-and-fitness.menstrual-cycle-tracker',
@@ -11083,7 +11083,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=menstrual-cycle-tracker',
+    destinationUrl: '/science/menstrual-cycle-tracker',
   },
   {
     id: 'health-and-fitness.gestational-age-calculator',
@@ -11097,7 +11097,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=gestational-age-calculator',
+    destinationUrl: '/science/gestational-age-calculator',
   },
   {
     id: 'health-and-fitness.baby-growth-percentile-viewer',
@@ -11111,7 +11111,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=baby-growth-percentile-viewer',
+    destinationUrl: '/science/baby-growth-percentile-viewer',
   },
   {
     id: 'health-and-fitness.heart-rate-zone-calculator',
@@ -11125,7 +11125,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=heart-rate-zone-calculator',
+    destinationUrl: '/science/heart-rate-zone-calculator',
   },
   {
     id: 'health-and-fitness.target-heart-rate-calculator',
@@ -11139,7 +11139,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=target-heart-rate-calculator',
+    destinationUrl: '/science/target-heart-rate-calculator',
   },
   {
     id: 'health-and-fitness.vo2-max-estimator',
@@ -11153,7 +11153,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=vo2-max-estimator',
+    destinationUrl: '/science/vo2-max-estimator',
   },
   {
     id: 'health-and-fitness.pace-calculator',
@@ -11167,7 +11167,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=pace-calculator',
+    destinationUrl: '/science/pace-calculator',
   },
   {
     id: 'health-and-fitness.running-split-calculator',
@@ -11181,7 +11181,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=running-split-calculator',
+    destinationUrl: '/science/running-split-calculator',
   },
   {
     id: 'health-and-fitness.race-time-predictor',
@@ -11195,7 +11195,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=race-time-predictor',
+    destinationUrl: '/science/race-time-predictor',
   },
   {
     id: 'health-and-fitness.cycling-power-to-weight-calculator',
@@ -11224,7 +11224,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=swimming-pace-calculator',
+    destinationUrl: '/science/swimming-pace-calculator',
   },
   {
     id: 'health-and-fitness.steps-to-distance-calculator',
@@ -11238,7 +11238,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=steps-to-distance-calculator',
+    destinationUrl: '/science/steps-to-distance-calculator',
   },
   {
     id: 'health-and-fitness.calories-burned-estimator',
@@ -11252,7 +11252,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=calories-burned-estimator',
+    destinationUrl: '/science/calories-burned-estimator',
   },
   {
     id: 'health-and-fitness.one-rep-max-calculator',
@@ -11266,7 +11266,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=one-rep-max-calculator',
+    destinationUrl: '/science/one-rep-max-calculator',
   },
   {
     id: 'health-and-fitness.plate-calculator',
@@ -11280,7 +11280,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=plate-calculator',
+    destinationUrl: '/science/plate-calculator',
   },
   {
     id: 'health-and-fitness.wilks-score-calculator',
@@ -11294,7 +11294,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=wilks-score-calculator',
+    destinationUrl: '/science/wilks-score-calculator',
   },
   {
     id: 'health-and-fitness.strength-standards-viewer',
@@ -11308,7 +11308,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=strength-standards-viewer',
+    destinationUrl: '/science/strength-standards-viewer',
   },
   {
     id: 'health-and-fitness.workout-timer',
@@ -11322,7 +11322,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=workout-timer',
+    destinationUrl: '/science/workout-timer',
   },
   {
     id: 'health-and-fitness.rest-timer',
@@ -11336,7 +11336,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=rest-timer',
+    destinationUrl: '/science/rest-timer',
   },
   {
     id: 'health-and-fitness.sleep-cycle-calculator',
@@ -11350,7 +11350,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=sleep-cycle-calculator',
+    destinationUrl: '/science/sleep-cycle-calculator',
   },
   {
     id: 'health-and-fitness.bedtime-calculator',
@@ -11364,7 +11364,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=bedtime-calculator',
+    destinationUrl: '/science/bedtime-calculator',
   },
   {
     id: 'health-and-fitness.caffeine-half-life-calculator',
@@ -11378,7 +11378,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=caffeine-half-life-calculator',
+    destinationUrl: '/science/caffeine-half-life-calculator',
   },
   {
     id: 'health-and-fitness.blood-pressure-log',
@@ -11392,7 +11392,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=blood-pressure-log',
+    destinationUrl: '/science/blood-pressure-log',
   },
   {
     id: 'health-and-fitness.blood-sugar-unit-converter',
@@ -11406,7 +11406,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=blood-sugar-unit-converter',
+    destinationUrl: '/science/blood-sugar-unit-converter',
   },
   {
     id: 'health-and-fitness.cholesterol-ratio-calculator',
@@ -11420,7 +11420,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=cholesterol-ratio-calculator',
+    destinationUrl: '/science/cholesterol-ratio-calculator',
   },
   {
     id: 'health-and-fitness.egfr-estimator',
@@ -11434,7 +11434,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=egfr-estimator',
+    destinationUrl: '/science/egfr-estimator',
   },
   {
     id: 'health-and-fitness.creatinine-clearance-calculator',
@@ -11448,7 +11448,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=creatinine-clearance-calculator',
+    destinationUrl: '/science/creatinine-clearance-calculator',
   },
   {
     id: 'health-and-fitness.drug-dose-unit-converter',
@@ -11462,7 +11462,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=drug-dose-unit-converter',
+    destinationUrl: '/science/drug-dose-unit-converter',
   },
   {
     id: 'health-and-fitness.iv-drip-rate-calculator',
@@ -11476,7 +11476,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=iv-drip-rate-calculator',
+    destinationUrl: '/science/iv-drip-rate-calculator',
   },
   {
     id: 'health-and-fitness.alcohol-unit-calculator',
@@ -11490,7 +11490,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=alcohol-unit-calculator',
+    destinationUrl: '/science/alcohol-unit-calculator',
   },
   {
     id: 'health-and-fitness.bac-estimator',
@@ -11504,7 +11504,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=bac-estimator',
+    destinationUrl: '/science/bac-estimator',
   },
   {
     id: 'health-and-fitness.hearing-frequency-test',
@@ -11518,7 +11518,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=hearing-frequency-test',
+    destinationUrl: '/science/hearing-frequency-test',
   },
   {
     id: 'health-and-fitness.vision-distance-converter',
@@ -11532,7 +11532,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=vision-distance-converter',
+    destinationUrl: '/science/vision-distance-converter',
   },
   {
     id: 'health-and-fitness.breathing-timer',
@@ -11546,7 +11546,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=breathing-timer',
+    destinationUrl: '/science/breathing-timer',
   },
   {
     id: 'health-and-fitness.mood-tracker',
@@ -11560,7 +11560,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=mood-tracker',
+    destinationUrl: '/science/mood-tracker',
   },
   {
     id: 'health-and-fitness.symptom-diary',
@@ -11574,7 +11574,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=symptom-diary',
+    destinationUrl: '/science/symptom-diary',
   },
   {
     id: 'health-and-fitness.medication-schedule-planner',
@@ -11588,7 +11588,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=medication-schedule-planner',
+    destinationUrl: '/science/medication-schedule-planner',
   },
   {
     id: 'health-and-fitness.health-measurement-converter',
@@ -11602,7 +11602,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=health-measurement-converter',
+    destinationUrl: '/science/health-measurement-converter',
   },
   {
     id: 'science-and-education.periodic-table',
@@ -11616,7 +11616,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=periodic-table',
+    destinationUrl: '/science/periodic-table',
   },
   {
     id: 'science-and-education.molar-mass-calculator',
@@ -11630,7 +11630,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=molar-mass-calculator',
+    destinationUrl: '/science/molar-mass-calculator',
   },
   {
     id: 'science-and-education.mole-calculator',
@@ -11644,7 +11644,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=mole-calculator',
+    destinationUrl: '/science/mole-calculator',
   },
   {
     id: 'science-and-education.solution-dilution-calculator',
@@ -11658,7 +11658,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=solution-dilution-calculator',
+    destinationUrl: '/science/solution-dilution-calculator',
   },
   {
     id: 'science-and-education.ph-calculator',
@@ -11672,7 +11672,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=ph-calculator',
+    destinationUrl: '/science/ph-calculator',
   },
   {
     id: 'science-and-education.chemical-equation-balancer',
@@ -11686,7 +11686,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=chemical-equation-balancer',
+    destinationUrl: '/science/chemical-equation-balancer',
   },
   {
     id: 'science-and-education.half-life-calculator',
@@ -11700,7 +11700,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=half-life-calculator',
+    destinationUrl: '/science/half-life-calculator',
   },
   {
     id: 'science-and-education.radioactive-decay-calculator',
@@ -11714,7 +11714,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=radioactive-decay-calculator',
+    destinationUrl: '/science/radioactive-decay-calculator',
   },
   {
     id: 'science-and-education.ohm-s-law-calculator',
@@ -11728,7 +11728,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=ohm-s-law-calculator',
+    destinationUrl: '/science/ohm-s-law-calculator',
   },
   {
     id: 'science-and-education.electric-power-calculator',
@@ -11742,7 +11742,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=electric-power-calculator',
+    destinationUrl: '/science/electric-power-calculator',
   },
   {
     id: 'science-and-education.resistor-color-code',
@@ -11756,7 +11756,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=resistor-color-code',
+    destinationUrl: '/science/resistor-color-code',
   },
   {
     id: 'science-and-education.capacitor-code-calculator',
@@ -11770,7 +11770,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=capacitor-code-calculator',
+    destinationUrl: '/science/capacitor-code-calculator',
   },
   {
     id: 'science-and-education.led-resistor-calculator',
@@ -11784,7 +11784,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=led-resistor-calculator',
+    destinationUrl: '/science/led-resistor-calculator',
   },
   {
     id: 'science-and-education.battery-runtime-calculator',
@@ -11798,7 +11798,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=battery-runtime-calculator',
+    destinationUrl: '/science/battery-runtime-calculator',
   },
   {
     id: 'science-and-education.coulomb-s-law-calculator',
@@ -11812,7 +11812,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=coulomb-s-law-calculator',
+    destinationUrl: '/science/coulomb-s-law-calculator',
   },
   {
     id: 'science-and-education.kinetic-energy-calculator',
@@ -11826,7 +11826,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=kinetic-energy-calculator',
+    destinationUrl: '/science/kinetic-energy-calculator',
   },
   {
     id: 'science-and-education.potential-energy-calculator',
@@ -11840,7 +11840,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=potential-energy-calculator',
+    destinationUrl: '/science/potential-energy-calculator',
   },
   {
     id: 'science-and-education.projectile-motion-calculator',
@@ -11854,7 +11854,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=projectile-motion-calculator',
+    destinationUrl: '/science/projectile-motion-calculator',
   },
   {
     id: 'science-and-education.free-fall-calculator',
@@ -11868,7 +11868,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=free-fall-calculator',
+    destinationUrl: '/science/free-fall-calculator',
   },
   {
     id: 'science-and-education.momentum-calculator',
@@ -11882,7 +11882,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=momentum-calculator',
+    destinationUrl: '/science/momentum-calculator',
   },
   {
     id: 'science-and-education.density-calculator',
@@ -11896,7 +11896,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=density-calculator',
+    destinationUrl: '/science/density-calculator',
   },
   {
     id: 'science-and-education.buoyancy-calculator',
@@ -11910,7 +11910,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=buoyancy-calculator',
+    destinationUrl: '/science/buoyancy-calculator',
   },
   {
     id: 'science-and-education.reynolds-number-calculator',
@@ -11924,7 +11924,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=reynolds-number-calculator',
+    destinationUrl: '/science/reynolds-number-calculator',
   },
   {
     id: 'science-and-education.wave-speed-calculator',
@@ -11938,7 +11938,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=wave-speed-calculator',
+    destinationUrl: '/science/wave-speed-calculator',
   },
   {
     id: 'science-and-education.doppler-effect-calculator',
@@ -11952,7 +11952,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=doppler-effect-calculator',
+    destinationUrl: '/science/doppler-effect-calculator',
   },
   {
     id: 'science-and-education.lens-equation-calculator',
@@ -11966,7 +11966,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=lens-equation-calculator',
+    destinationUrl: '/science/lens-equation-calculator',
   },
   {
     id: 'science-and-education.magnification-calculator',
@@ -11980,7 +11980,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=magnification-calculator',
+    destinationUrl: '/science/magnification-calculator',
   },
   {
     id: 'science-and-education.sound-intensity-calculator',
@@ -11994,7 +11994,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=sound-intensity-calculator',
+    destinationUrl: '/science/sound-intensity-calculator',
   },
   {
     id: 'science-and-education.decibel-converter',
@@ -12008,7 +12008,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=decibel-converter',
+    destinationUrl: '/science/decibel-converter',
   },
   {
     id: 'science-and-education.astronomy-unit-converter',
@@ -12022,7 +12022,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=astronomy-unit-converter',
+    destinationUrl: '/science/astronomy-unit-converter',
   },
   {
     id: 'science-and-education.planet-weight-calculator',
@@ -12036,7 +12036,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=planet-weight-calculator',
+    destinationUrl: '/science/planet-weight-calculator',
   },
   {
     id: 'science-and-education.moon-phase-calculator',
@@ -12050,7 +12050,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=moon-phase-calculator',
+    destinationUrl: '/science/moon-phase-calculator',
   },
   {
     id: 'science-and-education.sunrise-sunset-calculator',
@@ -12063,7 +12063,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'low',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/science/workbench?tool=sunrise-sunset-calculator',
+    destinationUrl: '/science/sunrise-sunset-calculator',
   },
   {
     id: 'science-and-education.grade-calculator',
@@ -12077,7 +12077,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=grade-calculator',
+    destinationUrl: '/science/grade-calculator',
   },
   {
     id: 'science-and-education.gpa-calculator',
@@ -12091,7 +12091,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=gpa-calculator',
+    destinationUrl: '/science/gpa-calculator',
   },
   {
     id: 'science-and-education.cgpa-calculator',
@@ -12105,7 +12105,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=cgpa-calculator',
+    destinationUrl: '/science/cgpa-calculator',
   },
   {
     id: 'science-and-education.exam-score-calculator',
@@ -12119,7 +12119,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=exam-score-calculator',
+    destinationUrl: '/science/exam-score-calculator',
   },
   {
     id: 'science-and-education.weighted-grade-calculator',
@@ -12133,7 +12133,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=weighted-grade-calculator',
+    destinationUrl: '/science/weighted-grade-calculator',
   },
   {
     id: 'science-and-education.attendance-percentage-calculator',
@@ -12147,7 +12147,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=attendance-percentage-calculator',
+    destinationUrl: '/science/attendance-percentage-calculator',
   },
   {
     id: 'science-and-education.study-time-planner',
@@ -12161,7 +12161,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=study-time-planner',
+    destinationUrl: '/science/study-time-planner',
   },
   {
     id: 'science-and-education.flashcard-maker',
@@ -12175,7 +12175,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=flashcard-maker',
+    destinationUrl: '/science/flashcard-maker',
   },
   {
     id: 'science-and-education.quiz-generator-workspace',
@@ -12189,7 +12189,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=quiz-generator-workspace',
+    destinationUrl: '/science/quiz-generator-workspace',
   },
   {
     id: 'science-and-education.citation-generator',
@@ -12203,7 +12203,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=citation-generator',
+    destinationUrl: '/science/citation-generator',
   },
   {
     id: 'science-and-education.apa-citation-formatter',
@@ -12217,7 +12217,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=apa-citation-formatter',
+    destinationUrl: '/science/apa-citation-formatter',
   },
   {
     id: 'science-and-education.mla-citation-formatter',
@@ -12231,7 +12231,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=mla-citation-formatter',
+    destinationUrl: '/science/mla-citation-formatter',
   },
   {
     id: 'science-and-education.chicago-citation-formatter',
@@ -12245,7 +12245,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=chicago-citation-formatter',
+    destinationUrl: '/science/chicago-citation-formatter',
   },
   {
     id: 'science-and-education.bibtex-generator',
@@ -12259,7 +12259,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=bibtex-generator',
+    destinationUrl: '/science/bibtex-generator',
   },
   {
     id: 'science-and-education.unit-circle-viewer',
@@ -12273,7 +12273,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=unit-circle-viewer',
+    destinationUrl: '/science/unit-circle-viewer',
   },
   {
     id: 'science-and-education.truth-table-generator',
@@ -12287,7 +12287,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=truth-table-generator',
+    destinationUrl: '/science/truth-table-generator',
   },
   {
     id: 'science-and-education.boolean-algebra-simplifier',
@@ -12301,7 +12301,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=boolean-algebra-simplifier',
+    destinationUrl: '/science/boolean-algebra-simplifier',
   },
   {
     id: 'science-and-education.set-calculator',
@@ -12315,7 +12315,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=set-calculator',
+    destinationUrl: '/science/set-calculator',
   },
   {
     id: 'science-and-education.venn-diagram-data-builder',
@@ -12329,7 +12329,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=venn-diagram-data-builder',
+    destinationUrl: '/science/venn-diagram-data-builder',
   },
   {
     id: 'science-and-education.graph-plotter',
@@ -12343,7 +12343,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=graph-plotter',
+    destinationUrl: '/science/graph-plotter',
   },
   {
     id: 'science-and-education.function-table-generator',
@@ -12357,7 +12357,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=function-table-generator',
+    destinationUrl: '/science/function-table-generator',
   },
   {
     id: 'science-and-education.statistics-distribution-viewer',
@@ -12371,7 +12371,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/science/workbench?tool=statistics-distribution-viewer',
+    destinationUrl: '/science/statistics-distribution-viewer',
   },
   {
     id: 'india-and-life-admin.aadhaar-masking-tool',
@@ -12385,7 +12385,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=aadhaar-masking-tool',
+    destinationUrl: '/life-admin/aadhaar-masking-tool',
   },
   {
     id: 'india-and-life-admin.pan-masking-tool',
@@ -12399,7 +12399,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=pan-masking-tool',
+    destinationUrl: '/life-admin/pan-masking-tool',
   },
   {
     id: 'india-and-life-admin.indian-address-formatter',
@@ -12413,7 +12413,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=indian-address-formatter',
+    destinationUrl: '/life-admin/indian-address-formatter',
   },
   {
     id: 'india-and-life-admin.pin-code-format-checker',
@@ -12427,7 +12427,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=pin-code-format-checker',
+    destinationUrl: '/life-admin/pin-code-format-checker',
   },
   {
     id: 'india-and-life-admin.indian-phone-number-formatter',
@@ -12441,7 +12441,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=indian-phone-number-formatter',
+    destinationUrl: '/life-admin/indian-phone-number-formatter',
   },
   {
     id: 'india-and-life-admin.ifsc-format-checker',
@@ -12455,7 +12455,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=ifsc-format-checker',
+    destinationUrl: '/life-admin/ifsc-format-checker',
   },
   {
     id: 'india-and-life-admin.micr-format-checker',
@@ -12469,7 +12469,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=micr-format-checker',
+    destinationUrl: '/life-admin/micr-format-checker',
   },
   {
     id: 'india-and-life-admin.gstin-validator',
@@ -12483,7 +12483,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=gstin-validator',
+    destinationUrl: '/life-admin/gstin-validator',
   },
   {
     id: 'india-and-life-admin.pan-format-validator',
@@ -12497,7 +12497,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=pan-format-validator',
+    destinationUrl: '/life-admin/pan-format-validator',
   },
   {
     id: 'india-and-life-admin.aadhaar-verhoeff-validator',
@@ -12511,7 +12511,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=aadhaar-verhoeff-validator',
+    destinationUrl: '/life-admin/aadhaar-verhoeff-validator',
   },
   {
     id: 'india-and-life-admin.upi-qr-generator',
@@ -12525,7 +12525,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=upi-qr-generator',
+    destinationUrl: '/life-admin/upi-qr-generator',
   },
   {
     id: 'india-and-life-admin.indian-currency-number-to-words',
@@ -12554,7 +12554,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=cheque-amount-writer',
+    destinationUrl: '/life-admin/cheque-amount-writer',
   },
   {
     id: 'india-and-life-admin.rent-receipt-generator',
@@ -12568,7 +12568,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=rent-receipt-generator',
+    destinationUrl: '/life-admin/rent-receipt-generator',
   },
   {
     id: 'india-and-life-admin.house-rent-split-calculator',
@@ -12582,7 +12582,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=house-rent-split-calculator',
+    destinationUrl: '/life-admin/house-rent-split-calculator',
   },
   {
     id: 'india-and-life-admin.electricity-bill-unit-calculator',
@@ -12611,7 +12611,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=lpg-consumption-calculator',
+    destinationUrl: '/life-admin/lpg-consumption-calculator',
   },
   {
     id: 'india-and-life-admin.fuel-cost-calculator',
@@ -12625,7 +12625,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=fuel-cost-calculator',
+    destinationUrl: '/life-admin/fuel-cost-calculator',
   },
   {
     id: 'india-and-life-admin.mileage-calculator',
@@ -12639,7 +12639,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=mileage-calculator',
+    destinationUrl: '/life-admin/mileage-calculator',
   },
   {
     id: 'india-and-life-admin.road-trip-cost-calculator',
@@ -12653,7 +12653,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=road-trip-cost-calculator',
+    destinationUrl: '/life-admin/road-trip-cost-calculator',
   },
   {
     id: 'india-and-life-admin.indian-train-berth-visualizer',
@@ -12666,7 +12666,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/life-admin/workbench?tool=indian-train-berth-visualizer',
+    destinationUrl: '/life-admin/indian-train-berth-visualizer',
   },
   {
     id: 'india-and-life-admin.tatkal-time-reminder',
@@ -12679,7 +12679,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/life-admin/workbench?tool=tatkal-time-reminder',
+    destinationUrl: '/life-admin/tatkal-time-reminder',
   },
   {
     id: 'india-and-life-admin.passport-photo-india-maker',
@@ -12693,7 +12693,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=passport-photo-india-maker',
+    destinationUrl: '/life-admin/passport-photo-india-maker',
   },
   {
     id: 'india-and-life-admin.visa-photo-size-maker',
@@ -12707,7 +12707,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=visa-photo-size-maker',
+    destinationUrl: '/life-admin/visa-photo-size-maker',
   },
   {
     id: 'india-and-life-admin.document-self-attestation-watermark',
@@ -12736,7 +12736,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=sensitive-document-redactor',
+    destinationUrl: '/life-admin/sensitive-document-redactor',
   },
   {
     id: 'india-and-life-admin.document-expiry-tracker',
@@ -12750,7 +12750,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=document-expiry-tracker',
+    destinationUrl: '/life-admin/document-expiry-tracker',
   },
   {
     id: 'india-and-life-admin.warranty-expiry-tracker',
@@ -12764,7 +12764,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=warranty-expiry-tracker',
+    destinationUrl: '/life-admin/warranty-expiry-tracker',
   },
   {
     id: 'india-and-life-admin.emi-due-date-planner',
@@ -12778,7 +12778,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=emi-due-date-planner',
+    destinationUrl: '/life-admin/emi-due-date-planner',
   },
   {
     id: 'india-and-life-admin.school-fee-planner',
@@ -12792,7 +12792,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=school-fee-planner',
+    destinationUrl: '/life-admin/school-fee-planner',
   },
   {
     id: 'india-and-life-admin.wedding-budget-planner',
@@ -12806,7 +12806,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=wedding-budget-planner',
+    destinationUrl: '/life-admin/wedding-budget-planner',
   },
   {
     id: 'india-and-life-admin.festival-date-list',
@@ -12819,7 +12819,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/life-admin/workbench?tool=festival-date-list',
+    destinationUrl: '/life-admin/festival-date-list',
   },
   {
     id: 'india-and-life-admin.indian-holiday-calendar-builder',
@@ -12846,7 +12846,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/life-admin/workbench?tool=pincode-list-filter',
+    destinationUrl: '/life-admin/pincode-list-filter',
   },
   {
     id: 'india-and-life-admin.vehicle-number-format-checker',
@@ -12860,7 +12860,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=vehicle-number-format-checker',
+    destinationUrl: '/life-admin/vehicle-number-format-checker',
   },
   {
     id: 'india-and-life-admin.driving-licence-format-checker',
@@ -12874,7 +12874,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=driving-licence-format-checker',
+    destinationUrl: '/life-admin/driving-licence-format-checker',
   },
   {
     id: 'india-and-life-admin.voter-id-format-checker',
@@ -12888,7 +12888,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=voter-id-format-checker',
+    destinationUrl: '/life-admin/voter-id-format-checker',
   },
   {
     id: 'india-and-life-admin.bank-account-masking-tool',
@@ -12902,7 +12902,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=bank-account-masking-tool',
+    destinationUrl: '/life-admin/bank-account-masking-tool',
   },
   {
     id: 'india-and-life-admin.upi-id-format-checker',
@@ -12916,7 +12916,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=upi-id-format-checker',
+    destinationUrl: '/life-admin/upi-id-format-checker',
   },
   {
     id: 'india-and-life-admin.epf-contribution-splitter',
@@ -12930,7 +12930,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=epf-contribution-splitter',
+    destinationUrl: '/life-admin/epf-contribution-splitter',
   },
   {
     id: 'india-and-life-admin.gratuity-eligibility-calculator',
@@ -12959,7 +12959,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=leave-encashment-calculator',
+    destinationUrl: '/life-admin/leave-encashment-calculator',
   },
   {
     id: 'india-and-life-admin.notice-period-calculator',
@@ -12973,7 +12973,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=notice-period-calculator',
+    destinationUrl: '/life-admin/notice-period-calculator',
   },
   {
     id: 'india-and-life-admin.salary-ctc-breakup',
@@ -12987,7 +12987,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=salary-ctc-breakup',
+    destinationUrl: '/life-admin/salary-ctc-breakup',
   },
   {
     id: 'india-and-life-admin.gst-invoice-generator',
@@ -13001,7 +13001,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=gst-invoice-generator',
+    destinationUrl: '/life-admin/gst-invoice-generator',
   },
   {
     id: 'date-time-and-productivity.birth-number-calculator',
@@ -13015,7 +13015,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=birth-number-calculator',
+    destinationUrl: '/life-admin/birth-number-calculator',
   },
   {
     id: 'date-time-and-productivity.life-path-number-calculator',
@@ -13029,7 +13029,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/life-admin/workbench?tool=life-path-number-calculator',
+    destinationUrl: '/life-admin/life-path-number-calculator',
   },
   {
     id: 'date-time-and-productivity.personal-year-number-calculator',
@@ -13058,7 +13058,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=youtube-thumbnail-resizer',
+    destinationUrl: '/creator/youtube-thumbnail-resizer',
   },
   {
     id: 'creator-and-social.youtube-chapter-generator',
@@ -13072,7 +13072,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=youtube-chapter-generator',
+    destinationUrl: '/creator/youtube-chapter-generator',
   },
   {
     id: 'creator-and-social.youtube-timestamp-formatter',
@@ -13086,7 +13086,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=youtube-timestamp-formatter',
+    destinationUrl: '/creator/youtube-timestamp-formatter',
   },
   {
     id: 'creator-and-social.youtube-tag-workspace',
@@ -13100,7 +13100,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=youtube-tag-workspace',
+    destinationUrl: '/creator/youtube-tag-workspace',
   },
   {
     id: 'creator-and-social.youtube-description-template',
@@ -13114,7 +13114,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=youtube-description-template',
+    destinationUrl: '/creator/youtube-description-template',
   },
   {
     id: 'creator-and-social.youtube-title-length-checker',
@@ -13128,7 +13128,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=youtube-title-length-checker',
+    destinationUrl: '/creator/youtube-title-length-checker',
   },
   {
     id: 'creator-and-social.instagram-grid-splitter',
@@ -13142,7 +13142,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=instagram-grid-splitter',
+    destinationUrl: '/creator/instagram-grid-splitter',
   },
   {
     id: 'creator-and-social.instagram-caption-formatter',
@@ -13156,7 +13156,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=instagram-caption-formatter',
+    destinationUrl: '/creator/instagram-caption-formatter',
   },
   {
     id: 'creator-and-social.instagram-bio-formatter',
@@ -13170,7 +13170,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=instagram-bio-formatter',
+    destinationUrl: '/creator/instagram-bio-formatter',
   },
   {
     id: 'creator-and-social.instagram-hashtag-workspace',
@@ -13184,7 +13184,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=instagram-hashtag-workspace',
+    destinationUrl: '/creator/instagram-hashtag-workspace',
   },
   {
     id: 'creator-and-social.linkedin-post-formatter',
@@ -13198,7 +13198,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=linkedin-post-formatter',
+    destinationUrl: '/creator/linkedin-post-formatter',
   },
   {
     id: 'creator-and-social.linkedin-carousel-pdf-maker',
@@ -13212,7 +13212,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=linkedin-carousel-pdf-maker',
+    destinationUrl: '/creator/linkedin-carousel-pdf-maker',
   },
   {
     id: 'creator-and-social.x-post-character-counter',
@@ -13226,7 +13226,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=x-post-character-counter',
+    destinationUrl: '/creator/x-post-character-counter',
   },
   {
     id: 'creator-and-social.x-thread-formatter',
@@ -13240,7 +13240,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=x-thread-formatter',
+    destinationUrl: '/creator/x-thread-formatter',
   },
   {
     id: 'creator-and-social.facebook-post-formatter',
@@ -13254,7 +13254,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=facebook-post-formatter',
+    destinationUrl: '/creator/facebook-post-formatter',
   },
   {
     id: 'creator-and-social.tiktok-caption-formatter',
@@ -13268,7 +13268,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=tiktok-caption-formatter',
+    destinationUrl: '/creator/tiktok-caption-formatter',
   },
   {
     id: 'creator-and-social.podcast-show-notes-template',
@@ -13282,7 +13282,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=podcast-show-notes-template',
+    destinationUrl: '/creator/podcast-show-notes-template',
   },
   {
     id: 'creator-and-social.podcast-chapter-generator',
@@ -13296,7 +13296,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=podcast-chapter-generator',
+    destinationUrl: '/creator/podcast-chapter-generator',
   },
   {
     id: 'creator-and-social.newsletter-template-builder',
@@ -13310,7 +13310,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=newsletter-template-builder',
+    destinationUrl: '/creator/newsletter-template-builder',
   },
   {
     id: 'creator-and-social.substack-draft-formatter',
@@ -13324,7 +13324,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=substack-draft-formatter',
+    destinationUrl: '/creator/substack-draft-formatter',
   },
   {
     id: 'creator-and-social.medium-draft-formatter',
@@ -13338,7 +13338,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=medium-draft-formatter',
+    destinationUrl: '/creator/medium-draft-formatter',
   },
   {
     id: 'creator-and-social.dev-to-front-matter-generator',
@@ -13352,7 +13352,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=dev-to-front-matter-generator',
+    destinationUrl: '/creator/dev-to-front-matter-generator',
   },
   {
     id: 'creator-and-social.hashnode-front-matter-generator',
@@ -13366,7 +13366,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=hashnode-front-matter-generator',
+    destinationUrl: '/creator/hashnode-front-matter-generator',
   },
   {
     id: 'creator-and-social.rss-feed-builder',
@@ -13380,7 +13380,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=rss-feed-builder',
+    destinationUrl: '/creator/rss-feed-builder',
   },
   {
     id: 'creator-and-social.rss-feed-validator',
@@ -13394,7 +13394,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=rss-feed-validator',
+    destinationUrl: '/creator/rss-feed-validator',
   },
   {
     id: 'creator-and-social.open-graph-image-maker',
@@ -13408,7 +13408,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=open-graph-image-maker',
+    destinationUrl: '/creator/open-graph-image-maker',
   },
   {
     id: 'creator-and-social.social-share-preview',
@@ -13422,7 +13422,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=social-share-preview',
+    destinationUrl: '/creator/social-share-preview',
   },
   {
     id: 'creator-and-social.link-in-bio-page-exporter',
@@ -13436,7 +13436,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=link-in-bio-page-exporter',
+    destinationUrl: '/creator/link-in-bio-page-exporter',
   },
   {
     id: 'creator-and-social.creator-media-kit-generator',
@@ -13450,7 +13450,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=creator-media-kit-generator',
+    destinationUrl: '/creator/creator-media-kit-generator',
   },
   {
     id: 'creator-and-social.rate-card-generator',
@@ -13464,7 +13464,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=rate-card-generator',
+    destinationUrl: '/creator/rate-card-generator',
   },
   {
     id: 'creator-and-social.sponsorship-cpm-calculator',
@@ -13478,7 +13478,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=sponsorship-cpm-calculator',
+    destinationUrl: '/creator/sponsorship-cpm-calculator',
   },
   {
     id: 'creator-and-social.engagement-rate-calculator',
@@ -13492,7 +13492,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=engagement-rate-calculator',
+    destinationUrl: '/creator/engagement-rate-calculator',
   },
   {
     id: 'creator-and-social.follower-growth-calculator',
@@ -13506,7 +13506,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=follower-growth-calculator',
+    destinationUrl: '/creator/follower-growth-calculator',
   },
   {
     id: 'creator-and-social.content-calendar-maker',
@@ -13520,7 +13520,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=content-calendar-maker',
+    destinationUrl: '/creator/content-calendar-maker',
   },
   {
     id: 'creator-and-social.content-idea-matrix',
@@ -13534,7 +13534,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=content-idea-matrix',
+    destinationUrl: '/creator/content-idea-matrix',
   },
   {
     id: 'creator-and-social.hook-generator-workspace',
@@ -13548,7 +13548,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=hook-generator-workspace',
+    destinationUrl: '/creator/hook-generator-workspace',
   },
   {
     id: 'creator-and-social.caption-line-breaker',
@@ -13562,7 +13562,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=caption-line-breaker',
+    destinationUrl: '/creator/caption-line-breaker',
   },
   {
     id: 'creator-and-social.hashtag-deduplicator',
@@ -13576,7 +13576,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=hashtag-deduplicator',
+    destinationUrl: '/creator/hashtag-deduplicator',
   },
   {
     id: 'creator-and-social.username-availability-checklist',
@@ -13589,7 +13589,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'low',
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
-    destinationUrl: '/creator/workbench?tool=username-availability-checklist',
+    destinationUrl: '/creator/username-availability-checklist',
   },
   {
     id: 'creator-and-social.brand-name-shortlister',
@@ -13603,7 +13603,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=brand-name-shortlister',
+    destinationUrl: '/creator/brand-name-shortlister',
   },
   {
     id: 'creator-and-social.brand-palette-generator',
@@ -13617,7 +13617,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=brand-palette-generator',
+    destinationUrl: '/creator/brand-palette-generator',
   },
   {
     id: 'creator-and-social.brand-font-pairing-notes',
@@ -13631,7 +13631,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=brand-font-pairing-notes',
+    destinationUrl: '/creator/brand-font-pairing-notes',
   },
   {
     id: 'creator-and-social.watermark-batch-tool',
@@ -13645,7 +13645,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=watermark-batch-tool',
+    destinationUrl: '/creator/watermark-batch-tool',
   },
   {
     id: 'creator-and-social.meme-generator',
@@ -13659,7 +13659,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=meme-generator',
+    destinationUrl: '/creator/meme-generator',
   },
   {
     id: 'creator-and-social.quote-card-generator',
@@ -13673,7 +13673,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=quote-card-generator',
+    destinationUrl: '/creator/quote-card-generator',
   },
   {
     id: 'creator-and-social.podcast-cover-resizer',
@@ -13687,7 +13687,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=podcast-cover-resizer',
+    destinationUrl: '/creator/podcast-cover-resizer',
   },
   {
     id: 'creator-and-social.audiogram-maker',
@@ -13701,7 +13701,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=audiogram-maker',
+    destinationUrl: '/creator/audiogram-maker',
   },
   {
     id: 'creator-and-social.subtitle-style-preview',
@@ -13715,7 +13715,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=subtitle-style-preview',
+    destinationUrl: '/creator/subtitle-style-preview',
   },
   {
     id: 'creator-and-social.teleprompter',
@@ -13729,7 +13729,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=teleprompter',
+    destinationUrl: '/creator/teleprompter',
   },
   {
     id: 'creator-and-social.creator-file-naming-tool',
@@ -13743,7 +13743,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/creator/workbench?tool=creator-file-naming-tool',
+    destinationUrl: '/creator/creator-file-naming-tool',
   },
 ] as const;
 

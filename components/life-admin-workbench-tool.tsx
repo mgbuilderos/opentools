@@ -6,7 +6,20 @@ import {
   runLifeAdminOperation,
 } from '@/lib/tools/life-admin-workbench';
 
-export function LifeAdminWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function LifeAdminWorkbenchTool({
+  initialOperationId = 'aadhaar-masking-tool',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="life-admin-workbench"
@@ -17,7 +30,8 @@ export function LifeAdminWorkbenchTool() {
       actionLabel="Run locally"
       methodLabel="Deterministic browser-local rules and supplied assumptions"
       operations={LIFE_ADMIN_OPERATIONS}
-      initialOperationId="aadhaar-masking-tool"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runLifeAdminOperation}
     />
   );

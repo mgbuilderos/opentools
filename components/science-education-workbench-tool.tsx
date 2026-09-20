@@ -6,7 +6,20 @@ import {
   runScienceOperation,
 } from '@/lib/tools/science-education-workbench';
 
-export function ScienceEducationWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function ScienceEducationWorkbenchTool({
+  initialOperationId = 'ohm-s-law-calculator',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="science-education-workbench"
@@ -17,7 +30,8 @@ export function ScienceEducationWorkbenchTool() {
       actionLabel="Calculate locally"
       methodLabel="Declared formulas and bounded local logic"
       operations={SCIENCE_OPERATIONS}
-      initialOperationId="ohm-s-law-calculator"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runScienceOperation}
     />
   );

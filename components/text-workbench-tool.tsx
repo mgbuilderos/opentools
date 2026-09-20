@@ -42,9 +42,25 @@ function downloadText(value: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-export function TextWorkbenchTool() {
-  const [operationId, setOperationId] =
-    useState<TextOperationId>('word-counter');
+/*
+  `initialOperationId` and `routedBasePath` let this workbench also serve as one
+  tool on its own page. All 33 text tools used to answer on /text/workbench
+  behind a `?tool=` parameter with one shared title, so none could rank for its
+  own name and none reached the sitemap. app/text/[tool]/page.tsx now renders
+  this component once per operation at /text/<id>. Unset, behaviour is
+  unchanged and /text/workbench keeps working.
+*/
+export function TextWorkbenchTool({
+  initialOperationId,
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
+  const routed = TEXT_OPERATIONS.find((item) => item.id === initialOperationId);
+  const [operationId, setOperationId] = useState<TextOperationId>(
+    (routed?.id as TextOperationId) ?? 'word-counter',
+  );
   const [input, setInput] = useState('');
   const [find, setFind] = useState('');
   const [replacement, setReplacement] = useState('');
@@ -82,6 +98,7 @@ export function TextWorkbenchTool() {
   // synchronise React state to an external system, the address bar, which is
   // what the rule's own guidance says an effect is for.
   useEffect(() => {
+    if (routed) return; // The path decides on a per-tool page.
     const requested = new URLSearchParams(window.location.search).get('tool');
     if (!requested || requested === operationId) return;
     if (!TEXT_OPERATIONS.some((item) => item.id === requested)) {
@@ -105,6 +122,11 @@ export function TextWorkbenchTool() {
   };
 
   const selectOperation = (next: TextOperationId) => {
+    // On a per-tool page each tool is a real page: go to it.
+    if (routed) {
+      window.location.assign(`${routedBasePath}/${next}`);
+      return;
+    }
     setOperationId(next);
     clearResult();
     const url = new URL(window.location.href);
@@ -197,12 +219,14 @@ export function TextWorkbenchTool() {
               <p className="text-xs font-medium text-muted-foreground">
                 Text & data / 33 related tools
               </p>
+              {/* On a per-tool page the heading is the tool, not the workspace. */}
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Text workbench
+                {routed ? routed.name : 'Text workbench'}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                Count, clean, transform, inspect, and translate text in one
-                compact local workspace.
+                {routed
+                  ? routed.description
+                  : 'Count, clean, transform, inspect, and translate text in one compact local workspace.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">

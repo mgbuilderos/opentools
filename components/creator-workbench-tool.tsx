@@ -6,7 +6,20 @@ import {
   runCreatorOperation,
 } from '@/lib/tools/creator-workbench';
 
-export function CreatorWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function CreatorWorkbenchTool({
+  initialOperationId = 'youtube-chapter-generator',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="creator-workbench"
@@ -17,7 +30,8 @@ export function CreatorWorkbenchTool() {
       actionLabel="Build result"
       methodLabel="Deterministic local transform"
       operations={CREATOR_OPERATIONS}
-      initialOperationId="youtube-chapter-generator"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runCreatorOperation}
     />
   );

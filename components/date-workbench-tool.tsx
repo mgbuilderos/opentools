@@ -3,7 +3,20 @@
 import { SchemaWorkbenchTool } from '@/components/schema-workbench-tool';
 import { DATE_OPERATIONS, runDateOperation } from '@/lib/tools/date-workbench';
 
-export function DateWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function DateWorkbenchTool({
+  initialOperationId = 'add-days-to-date',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="date-workbench"
@@ -14,7 +27,8 @@ export function DateWorkbenchTool() {
       actionLabel="Calculate"
       methodLabel="UTC-stable local calculation"
       operations={DATE_OPERATIONS}
-      initialOperationId="add-days-to-date"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runDateOperation}
     />
   );

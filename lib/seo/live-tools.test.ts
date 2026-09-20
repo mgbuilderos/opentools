@@ -11,6 +11,7 @@ import {
   LIVE_TOOL_ROUTES,
   isLiveToolUrl,
   operationIdsForRoute,
+  routedToolIdsForPrefix,
 } from './live-tools';
 import { TOOL_CATALOG } from './tool-catalog-data';
 
@@ -41,22 +42,33 @@ describe('live tool registry', () => {
     }
   });
 
-  it('generates a static param for every per-tool route it claims', async () => {
-    // The other half of `pageFileFor`: the dynamic page must really produce
-    // each `/math/<id>` that the registry lists, or the registry is promising
-    // pages the build never writes.
-    const { generateStaticParams } = await import('../../app/math/[tool]/page');
-    const generated = new Set(
-      generateStaticParams().map(({ tool }) => `/math/${tool}`),
-    );
-    const claimed = LIVE_TOOL_ROUTES.filter(
-      (route) =>
-        route.startsWith('/math/') &&
-        !existsSync(path.join(appRoot, 'app', route, 'page.tsx')),
+  it('claims no per-tool route its dynamic page does not generate', () => {
+    // The other half of `pageFileFor`. A dynamic parent existing is not
+    // enough: it must really produce this exact path, or the registry puts a
+    // URL in the sitemap that the build never writes and Google gets a 404.
+    const prefixes = new Set(
+      LIVE_TOOL_ROUTES.filter(
+        (route) => !existsSync(path.join(appRoot, 'app', route, 'page.tsx')),
+      ).map((route) => route.slice(0, route.lastIndexOf('/'))),
     );
 
-    expect(claimed.length).toBeGreaterThan(0);
-    expect(claimed.filter((route) => !generated.has(route))).toEqual([]);
+    expect(prefixes.size).toBeGreaterThan(0);
+    for (const prefix of prefixes) {
+      const generated = new Set(
+        (routedToolIdsForPrefix(prefix) ?? []).map(
+          (operation) => `${prefix}/${operation.id}`,
+        ),
+      );
+      const claimed = LIVE_TOOL_ROUTES.filter(
+        (route) =>
+          route.startsWith(`${prefix}/`) &&
+          !existsSync(path.join(appRoot, 'app', route, 'page.tsx')),
+      );
+      expect(
+        claimed.filter((route) => !generated.has(route)),
+        prefix,
+      ).toEqual([]);
+    }
   });
 
   it('rejects operations a route does not run', () => {

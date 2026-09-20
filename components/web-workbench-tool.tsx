@@ -3,7 +3,20 @@
 import { SchemaWorkbenchTool } from '@/components/schema-workbench-tool';
 import { runWebOperation, WEB_OPERATIONS } from '@/lib/tools/web-workbench';
 
-export function WebWorkbenchTool() {
+/*
+  The two optional props are what let this workbench also serve as one tool on
+  its own page: `app/<category>/[tool]/page.tsx` renders it once per operation
+  with that operation's id and the category prefix. Unset, every behaviour is
+  exactly what it was, and the workbench URL keeps working for anyone holding
+  it.
+*/
+export function WebWorkbenchTool({
+  initialOperationId = 'meta-tag-generator',
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   return (
     <SchemaWorkbenchTool
       currentToolId="web-workbench"
@@ -14,7 +27,8 @@ export function WebWorkbenchTool() {
       actionLabel="Run tool"
       methodLabel="Deterministic local transform"
       operations={WEB_OPERATIONS}
-      initialOperationId="meta-tag-generator"
+      initialOperationId={initialOperationId}
+      routedBasePath={routedBasePath}
       run={runWebOperation}
     />
   );
