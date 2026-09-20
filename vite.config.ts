@@ -60,13 +60,17 @@ export default defineConfig(async () => {
       : undefined,
     plugins: [
       vinext({
-        // Pages are cached in KV on first render and served from there, so
-        // the Worker stops re-rendering every page on every request -- that
-        // per-request render is what exhausted its resources under crawl load
-        // on 2026-09-16 (1,316 `exceededResources` 503s in one hour).
-        // Build-time prerender is deliberately NOT enabled: it bundles every
-        // page into the Worker script (3.0MB gzip vs 0.96MB) for no gain once
-        // the KV cache fills on the first request to each URL.
+        // Every route is rendered at build time and served from the Worker
+        // bundle, so a page request never renders React. The KV cache alone
+        // could not carry this: on the free plan KV allows 1,000 writes a day
+        // while a full cache needs ~1,340 keys (670 URLs x html+rsc), and
+        // every deploy starts a new `cache:app:<build id>:` prefix, so the
+        // cache restarts from empty and can never finish filling. Measured on
+        // 2026-09-20: 183 of 670 live URLs returned 503 and Cloudflare killed
+        // 268 of 1,241 renders with `exceededCpu` against the free plan's
+        // 10ms budget (successful renders needed 30ms median, 286ms worst).
+        // KV stays bound as the fallback for anything prerender skips.
+        prerender: true,
         cache: {
           data: kvDataAdapter({ binding: 'VINEXT_KV_CACHE' }),
         },

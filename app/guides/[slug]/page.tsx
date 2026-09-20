@@ -20,10 +20,13 @@ interface GuidePageProps {
 
 const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 
+// Every guide in the sitemap is built here. A narrower list (the first 50 by
+// wave and rank) left 523 guides rendering per request on a Worker capped at
+// 10ms CPU, which is what returned 503 to Google: 183 of 670 live URLs on
+// 2026-09-20, 177 of them guides. Keep this in step with `app/sitemap.ts`,
+// which enumerates the same catalog.
 export async function generateStaticParams() {
-  return LIVE_TOOL_CATALOG.filter((t) => t.releaseWave === 'P0' || t.rank <= 5)
-    .slice(0, 50)
-    .map((tool) => ({ slug: tool.slug }));
+  return LIVE_TOOL_CATALOG.map((tool) => ({ slug: tool.slug }));
 }
 
 export async function generateMetadata({

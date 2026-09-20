@@ -10,7 +10,7 @@
     "indexnow": "node scripts/submit-indexnow.mjs",
     "dev": "vinext dev",
     "prebuild": "npm run design:qc",
-    "build": "vinext build",
+    "build": "vinext build && node scripts/prerender-to-assets.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "wrangler deploy --config dist/server/wrangler.json",
     "lint": "oxlint",
