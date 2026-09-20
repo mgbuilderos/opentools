@@ -273,12 +273,9 @@ export function PdfGridOverlay({
       </div>
 
       {renderError ? (
-        <p
-          className="rounded border border-destructive/40 bg-destructive/5 p-3 text-sm text-foreground"
-          role="status"
-        >
+        <output className="block rounded border border-destructive/40 bg-destructive/5 p-3 text-sm text-foreground">
           {renderError}
-        </p>
+        </output>
       ) : null}
 
       <div className="overflow-x-auto">

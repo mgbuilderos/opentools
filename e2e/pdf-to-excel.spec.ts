@@ -13,14 +13,62 @@ const fixturesDir = path.join(
   '__fixtures__',
 );
 
+/**
+ * Hand the page a PDF, and make sure the page actually took it.
+ *
+ * The input is server-rendered, so it exists before React has hydrated and
+ * attached the change handler. Setting files in that window fires an event
+ * into nothing: the upload silently does not happen and the page sits on its
+ * empty drop zone until the test times out somewhere far away, looking like a
+ * broken feature. Reproduced at three workers, roughly one run in four —
+ * `rows: 0, frame: 0` with the drop-zone copy still on screen.
+ *
+ * So: wait for the chunks to land, then confirm the app moved off the empty
+ * state, and set the files once more if it did not.
+ */
 async function uploadPdf(page: Page, fixtureName: string) {
   const filePath = path.join(fixturesDir, fixtureName);
   const fileBytes = await readFile(filePath);
   const input = page.locator('input[type="file"]');
-  await input.setInputFiles({
+  const file = {
     name: fixtureName,
     mimeType: 'application/pdf',
     buffer: fileBytes,
+  };
+
+  await page.waitForLoadState('networkidle');
+  await input.setInputFiles(file);
+
+  // The drop zone is replaced the moment a file is accepted, whatever the
+  // outcome after that — results, a refusal, or an error.
+  const dropZone = page.getByText('Drop your bank statement or PDF table here');
+  try {
+    await expect(dropZone).toBeHidden({ timeout: 5000 });
+  } catch {
+    await input.setInputFiles([]);
+    await input.setInputFiles(file);
+    await expect(dropZone).toBeHidden({ timeout: 20000 });
+  }
+}
+
+/**
+ * Wait for the page view to finish drawing.
+ *
+ * The overlay positions its dividers from the rendered canvas's dimensions, so
+ * nothing about the grid is assertable until pdf.js has painted. Waiting on
+ * the canvas is a real readiness signal; a fixed sleep is not.
+ */
+async function waitForGrid(page: Page): Promise<void> {
+  // 45s covers the cold server: the first page load after the suite's
+  // webServer boots has to deliver the pdf.js chunks, and with three browsers
+  // arriving together the first one can take tens of seconds. A warm run
+  // resolves this in about a second. The budget does not hide a regression —
+  // if the grid stops rendering the canvas never appears and this still fails.
+  await expect(
+    page.locator('[data-testid="pdf-grid-frame"] canvas'),
+  ).toBeVisible({ timeout: 45000 });
+  await expect(page.getByTestId('column-divider').first()).toBeVisible({
+    timeout: 15000,
   });
 }
 
@@ -177,6 +225,151 @@ test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
     await expect(page.locator('input[value="SOFTWARE RENEWAL"]')).toBeVisible();
     await expect(
       page.locator('input[value="CONSULTING SERVICES"]'),
+    ).toBeVisible();
+  });
+
+  test('reads the columns off a ruled PDF and says so, rather than guessing', async ({
+    page,
+  }) => {
+    // Renders a full page with pdf.js on top of the extraction. That is real
+    // work, and at three parallel workers several browsers do it at once —
+    // the same contention the config already caps for the model-loading
+    // specs. Marked slow rather than given a bigger timeout, so a genuine
+    // product regression still shows up as a failure and not as a long wait.
+    test.slow();
+    await page.goto('/pdf/to-excel');
+    await uploadPdf(page, 'statement-ruled.pdf');
+
+    // Extraction first — the facts panel is rendered from its result, so
+    // asserting the panel before a row exists is asserting out of order and
+    // spends the whole timeout budget waiting for the wrong thing.
+    await expect(page.locator('input[value="01/04/2026"]')).toBeVisible({
+      timeout: 45000,
+    });
+
+    // Then: the facts panel must state HOW the columns were found. This is
+    // the claim the whole lattice engine exists to be able to make.
+    await expect(page.getByText('Read from the drawn lines')).toBeVisible();
+
+    // Eight transactions over two pages, header counted once, footer dropped.
+    await expect(page.locator('input[value="30/04/2026"]')).toBeVisible();
+    await expect(page.locator('input[value="NORTHERN RENT DD"]')).toBeVisible();
+
+    // The repeated header on page 2 must not have become a data row. Scoped
+    // to the body: the column-name row is editable too, so an unscoped
+    // "Date" matches the header the table is supposed to have.
+    await expect(page.locator('tbody input[value="Date"]')).toHaveCount(0);
+    // Nor the footer, which lattice drops for free by sitting outside the
+    // ruled area.
+    await expect(page.locator('tbody input[value*="Sort code"]')).toHaveCount(
+      0,
+    );
+  });
+
+  test('draws the page with a divider per column boundary', async ({
+    page,
+  }) => {
+    // Renders a full page with pdf.js on top of the extraction. That is real
+    // work, and at three parallel workers several browsers do it at once —
+    // the same contention the config already caps for the model-loading
+    // specs. Marked slow rather than given a bigger timeout, so a genuine
+    // product regression still shows up as a failure and not as a long wait.
+    test.slow();
+    await page.goto('/pdf/to-excel');
+    await uploadPdf(page, 'statement-ruled.pdf');
+
+    await waitForGrid(page);
+    // Six boundaries for the five-column ruled statement.
+    await expect(page.getByTestId('column-divider')).toHaveCount(6);
+  });
+
+  test('a divider removed on the page view merges two columns in the table', async ({
+    page,
+  }) => {
+    // Renders a full page with pdf.js on top of the extraction. That is real
+    // work, and at three parallel workers several browsers do it at once —
+    // the same contention the config already caps for the model-loading
+    // specs. Marked slow rather than given a bigger timeout, so a genuine
+    // product regression still shows up as a failure and not as a long wait.
+    test.slow();
+    await page.goto('/pdf/to-excel');
+    await uploadPdf(page, 'statement-ruled.pdf');
+    await waitForGrid(page);
+    await expect(page.getByTestId('column-divider')).toHaveCount(6);
+
+    // Before: the date and the description are separate cells.
+    await expect(page.locator('input[value="01/04/2026"]')).toBeVisible();
+    await expect(page.locator('input[value="Opening balance"]')).toBeVisible();
+
+    // Remove the divider between them, with the keyboard rather than a drag,
+    // because the feature must work without a mouse.
+    const dividers = page.getByTestId('column-divider');
+    await dividers.nth(1).focus();
+    await page.keyboard.press('Delete');
+
+    await expect(page.getByTestId('column-divider')).toHaveCount(5);
+    // After: one cell holding both, which is what merging the columns means.
+    await expect(
+      page.locator('input[value="01/04/2026 Opening balance"]'),
+    ).toBeVisible();
+  });
+
+  test("refuses to remove the table's own outer edge", async ({ page }) => {
+    // Renders a full page with pdf.js on top of the extraction. That is real
+    // work, and at three parallel workers several browsers do it at once —
+    // the same contention the config already caps for the model-loading
+    // specs. Marked slow rather than given a bigger timeout, so a genuine
+    // product regression still shows up as a failure and not as a long wait.
+    test.slow();
+    await page.goto('/pdf/to-excel');
+    await uploadPdf(page, 'statement-ruled.pdf');
+    await waitForGrid(page);
+    await expect(page.getByTestId('column-divider')).toHaveCount(6);
+
+    // Removing it would not merge anything: it would drop every value to the
+    // left of the table out of the extraction.
+    await page.getByTestId('column-divider').first().focus();
+    await page.keyboard.press('Delete');
+    await expect(page.getByTestId('column-divider')).toHaveCount(6);
+    await expect(page.locator('input[value="01/04/2026"]')).toBeVisible();
+  });
+
+  test('names a broken running balance instead of scoring the document', async ({
+    page,
+  }) => {
+    // Renders a full page with pdf.js on top of the extraction. That is real
+    // work, and at three parallel workers several browsers do it at once —
+    // the same contention the config already caps for the model-loading
+    // specs. Marked slow rather than given a bigger timeout, so a genuine
+    // product regression still shows up as a failure and not as a long wait.
+    test.slow();
+    await page.goto('/pdf/to-excel');
+    await uploadPdf(page, 'statement-ruled.pdf');
+
+    // A clean statement flags nothing.
+    await expect(page.getByText('Nothing flagged')).toBeVisible({
+      timeout: 45000,
+    });
+    await expect(page.getByTestId('cell-flags')).toHaveCount(0);
+
+    // Break one balance the way a misread digit would. Addressed by its
+    // accessible name, not by its value: `fill` changes the value, and a
+    // value selector then stops resolving to the element being edited.
+    const balance = page.getByLabel('Row 3 Column 5', { exact: true });
+    await expect(balance).toHaveValue('4,550.00');
+    await balance.fill('9,999.99');
+
+    const flags = page.getByTestId('cell-flags');
+    await expect(flags).toBeVisible();
+    await expect(flags).toContainText('running balance does not continue');
+    // And never a percentage, which is the rule this panel exists under.
+    await expect(flags).not.toContainText('%');
+
+    // The flag reaches a screen reader too, not just the eye: the cell's own
+    // accessible name now carries the reason. (This is also why the exact
+    // name above stops matching once the cell is flagged.)
+    await expect(
+      page.getByLabel('Row 3 Column 5. Needs a look:'),
     ).toBeVisible();
   });
 });

@@ -68,6 +68,25 @@ const ROLE_LABELS: Record<ColumnRole, string> = {
 
 const MAX_PDF_BYTES = 100 * 1024 * 1024; // 100 MB
 
+/**
+ * How many flags to spell out. A badly misread statement can flag hundreds,
+ * and a list that long stops being a list to work through; the rest stay
+ * outlined in the table where the problem is.
+ */
+const MAX_LISTED_FLAGS = 12;
+
+/**
+ * The divider positions implied by a set of columns.
+ *
+ * Columns from either engine are contiguous — each one's right edge is the
+ * next one's left — so the dividers are every left edge plus the final right.
+ */
+function edgesOf(table: ExtractedTableResult): number[] {
+  if (table.columns.length === 0) return [];
+  const last = table.columns[table.columns.length - 1]!;
+  return [...table.columns.map((column) => column.left), last.right];
+}
+
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -181,6 +200,7 @@ export function PdfToExcelTool() {
   const [columnSource, setColumnSource] = useState<'rules' | 'spacing'>(
     'spacing',
   );
+  const [columnEdges, setColumnEdges] = useState<number[]>([]);
 
   // Download links
   const [xlsxUrl, setXlsxUrl] = useState<string | null>(null);
@@ -208,6 +228,7 @@ export function PdfToExcelTool() {
     setPageGrids([]);
     setOverlayPage(1);
     setColumnSource('spacing');
+    setColumnEdges([]);
     setHeaders([]);
     setRows([]);
     setColumnRoles([]);
@@ -280,6 +301,7 @@ export function PdfToExcelTool() {
         const initialHeaders = [...table.headers];
         const initialRows = table.rows.map((r) => [...r.cells]);
         const initialRoles = inferInitialRoles(initialHeaders, initialRows);
+        setColumnEdges(edgesOf(table));
 
         setHeaders(initialHeaders);
         setRows(initialRows);
@@ -380,6 +402,68 @@ export function PdfToExcelTool() {
     }
   };
 
+  /**
+   * Re-read the document against boundaries the user moved.
+   *
+   * Their dividers apply to EVERY page, not just the one on screen: a
+   * statement keeps one column layout throughout, so fixing it once should
+   * fix the whole document rather than leaving page 4 wrong.
+   *
+   * Roles are kept when the column count has not changed, and re-inferred
+   * when it has — removing a divider merges two columns, and carrying the old
+   * roles over would leave "Debit" pointing at a column that no longer exists.
+   */
+  const handleColumnEdgesChange = useCallback(
+    (edges: number[]) => {
+      setColumnEdges(edges);
+      if (!geometry || edges.length < 2) return;
+
+      const ruled =
+        columnSource === 'rules'
+          ? extractTableFromGrids(
+              geometry.map((page, index) => {
+                const grid = pageGrids[index];
+                return {
+                  items: page.items,
+                  grid: grid
+                    ? {
+                        ...grid,
+                        columnEdges: edges,
+                        left: edges[0]!,
+                        right: edges[edges.length - 1]!,
+                      }
+                    : null,
+                };
+              }),
+            )
+          : null;
+      const table =
+        ruled ?? extractTableFromPdfPages(geometry, { columnEdges: edges });
+      if (table.rows.length === 0) return;
+
+      const nextHeaders = [...table.headers];
+      const nextRows = table.rows.map((row) => [...row.cells]);
+      setHeaders(nextHeaders);
+      setRows(nextRows);
+      setColumnRoles((previous) =>
+        previous.length === nextHeaders.length
+          ? previous
+          : inferInitialRoles(nextHeaders, nextRows),
+      );
+
+      // Any download already built describes the old boundaries.
+      setXlsxUrl((url) => {
+        if (url) URL.revokeObjectURL(url);
+        return null;
+      });
+      setCsvUrl((url) => {
+        if (url) URL.revokeObjectURL(url);
+        return null;
+      });
+    },
+    [geometry, pageGrids, columnSource],
+  );
+
   // Reconcile Running Balance across active rows
   const reconciliationReport: StatementReconciliationReport | null =
     useMemo(() => {
@@ -460,6 +544,34 @@ export function PdfToExcelTool() {
 
       return reconcileRunningBalance(transactions);
     }, [rows, columnRoles, datePreference]);
+
+  /**
+   * Which cells need a human, and why. Recomputed from the table as it stands,
+   * so correcting a divider or editing a cell clears its flag immediately.
+   */
+  const cellFlags: CellFlag[] = useMemo(() => {
+    if (rows.length === 0 || columnRoles.length === 0) return [];
+    const moneyColumn = columnRoles.findIndex(
+      (role) => role === 'balance' || role === 'amount' || role === 'debit',
+    );
+    const convention = detectNumberConvention(
+      moneyColumn === -1 ? [] : rows.map((row) => row[moneyColumn] ?? ''),
+    );
+    return flagCells(rows, columnRoles, {
+      convention,
+      dateFormat: datePreference,
+      reconciliation: reconciliationReport,
+    });
+  }, [rows, columnRoles, datePreference, reconciliationReport]);
+
+  const flagsByCell = useMemo(() => {
+    const map = new Map<string, CellFlag>();
+    for (const flag of cellFlags) {
+      const key = `${flag.rowIndex}:${flag.columnIndex}`;
+      if (!map.has(key)) map.set(key, flag);
+    }
+    return map;
+  }, [cellFlags]);
 
   // Export to Excel (.xlsx)
   const handleExportXlsx = async () => {
@@ -813,6 +925,29 @@ export function PdfToExcelTool() {
               </div>
             </div>
 
+            {/* The page, with the grid on it. The tool's whole claim to being
+                trustworthy is that you can see what it read and correct it. */}
+            {pdfBytes && columnEdges.length >= 2 ? (
+              <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Scale className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Check the columns
+                  </h3>
+                </div>
+                <PdfGridOverlay
+                  bytes={pdfBytes}
+                  pageNumber={overlayPage}
+                  pageCount={pageCount}
+                  onPageChange={setOverlayPage}
+                  columnEdges={columnEdges}
+                  rowEdges={pageGrids[overlayPage - 1]?.rowEdges ?? []}
+                  onColumnEdgesChange={handleColumnEdgesChange}
+                  source={columnSource}
+                />
+              </div>
+            ) : null}
+
             {/* Confidence & Facts Panel (Guardrail G5: No fake % score!) */}
             <div className="rounded-xl border border-border bg-card p-5 sm:p-6 space-y-4">
               <div className="flex items-center gap-2">
@@ -833,6 +968,41 @@ export function PdfToExcelTool() {
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     Multi-line description continuations merged automatically
+                  </div>
+                </div>
+
+                {/* Fact: where the columns came from. This is a statement of
+                    fact about the document, not a quality score. */}
+                <div className="rounded-lg border border-border/60 bg-background p-3.5">
+                  <span className="text-xs text-muted-foreground font-medium">
+                    How the columns were found
+                  </span>
+                  <div className="mt-1 text-base font-semibold text-foreground">
+                    {columnSource === 'rules'
+                      ? 'Read from the drawn lines'
+                      : 'Worked out from the spacing'}
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    {columnSource === 'rules'
+                      ? 'This PDF draws its table borders, so the column positions are stated rather than estimated.'
+                      : 'This PDF draws no table lines, so the columns were estimated. Check them on the page above.'}
+                  </div>
+                </div>
+
+                {/* Fact: what needs checking, counted and named — never scored. */}
+                <div className="rounded-lg border border-border/60 bg-background p-3.5">
+                  <span className="text-xs text-muted-foreground font-medium">
+                    Cells to check
+                  </span>
+                  <div className="mt-1 text-base font-semibold text-foreground">
+                    {cellFlags.length === 0
+                      ? 'Nothing flagged'
+                      : (summariseFlags(cellFlags) ?? '')}
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    {cellFlags.length === 0
+                      ? 'Every date and amount read cleanly, and the running balance continues throughout.'
+                      : 'Each one is listed below with the reason. We do not publish an accuracy percentage, because we cannot measure your document.'}
                   </div>
                 </div>
 
@@ -965,6 +1135,42 @@ export function PdfToExcelTool() {
                 </div>
               </div>
 
+              {/* What needs a look, in reading order, each with its reason.
+                  A list you can walk beats a score you cannot check. */}
+              {cellFlags.length > 0 ? (
+                <div
+                  className="rounded-lg border border-destructive/40 bg-destructive/5 p-4"
+                  data-testid="cell-flags"
+                >
+                  <h4 className="text-sm font-semibold text-foreground">
+                    {summariseFlags(cellFlags)}
+                  </h4>
+                  <ul className="mt-2 space-y-1.5">
+                    {cellFlags.slice(0, MAX_LISTED_FLAGS).map((flag) => (
+                      <li
+                        key={`${flag.rowIndex}:${flag.columnIndex}:${flag.reason}`}
+                        className="text-xs text-muted-foreground"
+                      >
+                        <span className="font-medium text-foreground">
+                          Row {flag.rowIndex + 1}
+                          {flag.columnIndex >= 0
+                            ? `, ${headers[flag.columnIndex]?.trim() || `column ${flag.columnIndex + 1}`}`
+                            : ''}
+                          :
+                        </span>{' '}
+                        {flag.message}
+                      </li>
+                    ))}
+                  </ul>
+                  {cellFlags.length > MAX_LISTED_FLAGS ? (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      And {cellFlags.length - MAX_LISTED_FLAGS} more, each
+                      outlined in the table below.
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
               {/* Table Container */}
               <div className="overflow-x-auto rounded-lg border border-border bg-background">
                 <table className="w-full border-collapse text-left text-xs sm:text-sm">
@@ -1042,17 +1248,28 @@ export function PdfToExcelTool() {
                       >
                         {row.map((cellValue, colIdx) => {
                           const isIgnored = columnRoles[colIdx] === 'ignore';
+                          const flag = flagsByCell.get(`${rowIdx}:${colIdx}`);
                           return (
                             <td
                               key={colIdx}
+                              data-flagged={flag ? flag.reason : undefined}
                               className={`p-2 ${
                                 isIgnored ? 'opacity-40 line-through' : ''
-                              }`}
+                              } ${flag ? 'bg-destructive/5' : ''}`}
                             >
                               <input
                                 type="text"
                                 value={cellValue}
-                                aria-label={`Row ${rowIdx + 1} Column ${colIdx + 1}`}
+                                // The reason travels with the cell, so the
+                                // flag is readable where the problem is and
+                                // not only in the list below.
+                                title={flag?.message}
+                                aria-label={
+                                  flag
+                                    ? `Row ${rowIdx + 1} Column ${colIdx + 1}. Needs a look: ${flag.message}`
+                                    : `Row ${rowIdx + 1} Column ${colIdx + 1}`
+                                }
+                                aria-invalid={flag ? true : undefined}
                                 onChange={(e) =>
                                   handleCellChange(
                                     rowIdx,
@@ -1060,7 +1277,11 @@ export function PdfToExcelTool() {
                                     e.target.value,
                                   )
                                 }
-                                className="h-7 w-full rounded border border-transparent bg-transparent px-1 text-xs text-foreground hover:border-border focus:border-foreground focus:bg-background focus:outline-none"
+                                className={`h-7 w-full rounded border bg-transparent px-1 text-xs text-foreground hover:border-border focus:border-foreground focus:bg-background focus:outline-none ${
+                                  flag
+                                    ? 'border-destructive/50'
+                                    : 'border-transparent'
+                                }`}
                               />
                             </td>
                           );
