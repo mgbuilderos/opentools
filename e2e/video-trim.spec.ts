@@ -154,9 +154,60 @@ test.describe('Video trimmer', () => {
     await expect(page.getByRole('button', { name: /^Save / })).toHaveCount(0);
   });
 
-  test('does not offer GIF, which it cannot do without decoding', async ({ page }) => {
+  test('says which of its outputs lose quality and which do not', async ({ page }) => {
+    // This test previously asserted the page said GIF was "the one thing this
+    // page cannot do". GIF now exists, and the old sentence survived an edit
+    // that silently failed to match — so for a while the page both offered a
+    // GIF and said it could not make one. Guarding the honest version instead.
     await page.goto('/video/trim');
-    await expect(page.getByText(/cannot do, because that genuinely needs decoding/u)).toBeVisible();
+    await expect(
+      page.getByText(/copy compressed frames across, so they lose nothing/u),
+    ).toBeVisible();
+    await expect(page.getByText(/genuinely worse than its input/u)).toBeVisible();
+    await expect(page.getByText(/cannot do, because that genuinely needs decoding/u)).toHaveCount(0);
+  });
+
+  test('turns a clip into a real animated GIF', async ({ page }) => {
+    await page.goto('/video/trim');
+    await choose(page);
+    await page.getByLabel('What to keep').selectOption('gif');
+    await expect(page.getByLabel('Frames a second')).toBeVisible();
+    await page.getByLabel('Frames a second').selectOption('5');
+    await page.getByLabel('Colours').selectOption('32');
+
+    await page.getByRole('button', { name: 'Make the GIF' }).click();
+    await expect(page.getByRole('button', { name: /^Save / })).toBeVisible({ timeout: 30_000 });
+    const download: Promise<Download> = page.waitForEvent('download');
+    await page.getByRole('button', { name: /^Save / }).click();
+    const bytes = new Uint8Array(await readFile((await (await download).path())!));
+
+    // A GIF89a, with a trailer, and the Netscape block that makes it loop.
+    expect(new TextDecoder().decode(bytes.subarray(0, 6))).toBe('GIF89a');
+    expect(bytes[bytes.length - 1]).toBe(0x3b);
+    expect(new TextDecoder().decode(bytes).includes('NETSCAPE2.0')).toBe(true);
+    // The size is in the header, little-endian, straight after the signature.
+    const width = bytes[6] | (bytes[7] << 8);
+    const height = bytes[8] | (bytes[9] << 8);
+    expect(width).toBeGreaterThan(0);
+    expect(height).toBeGreaterThan(0);
+    // 160x120 source is already under the 480px cap, so it is not scaled up.
+    expect(width).toBeLessThanOrEqual(480);
+    // More than one frame, counted by graphic control blocks.
+    let frames = 0;
+    for (let at = 0; at < bytes.length - 1; at += 1) {
+      if (bytes[at] === 0x21 && bytes[at + 1] === 0xf9) frames += 1;
+    }
+    expect(frames).toBeGreaterThan(1);
+  });
+
+  test('says plainly that the GIF is the one output that loses quality', async ({ page }) => {
+    // Every other operation on this page copies compressed frames. Letting a
+    // reader assume the GIF does too would be the page overclaiming.
+    await page.goto('/video/trim');
+    await choose(page);
+    await page.getByLabel('What to keep').selectOption('gif');
+    await expect(page.getByText(/Dithering hides the banding/u)).toBeVisible();
+    await expect(page.getByText(/re-encoded\s+rather than copied/u).first()).toBeVisible();
   });
 
   test('sends nothing off this origin while doing the work', async ({ page }) => {
