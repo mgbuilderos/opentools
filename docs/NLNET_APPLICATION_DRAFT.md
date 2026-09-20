@@ -76,6 +76,11 @@ capacity, licensing, and adoption — are now in. What remains is yours: the
 words, the budget decision, and three `[YOU]` answers (your background, your
 available hours, and the projects you will approach by name).
 
+**The one decision that outranks everything else here** is in "Scope warning",
+under Timeline and capacity: at part-time hours the five-task €45,000 scope
+does not fit a normal grant window, and cutting to a €20,000 core ask is
+probably the stronger application. Decide that before you write a word.
+
 ---
 
 ## The framing decision, and why
@@ -411,31 +416,77 @@ a padded one: cut a task rather than pad one.*
 
 ## Timeline and capacity
 
-*Feasibility is scored, and the commonest way a good single-maintainer proposal
-fails is claiming availability the applicant does not have. Understating is
-safer than overstating — and **[YOU]** are the only person who can fill this in
-honestly.*
+*Feasibility is 30% of the score alongside technical excellence, and the
+commonest way a good single-maintainer proposal fails is claiming availability
+the applicant does not have. **Read the scope warning under the table before
+you fill this in** — it is the most consequential thing in this file.*
 
-> **Duration: [YOU — e.g. 12 months from the start of the agreement].**
+> **My situation.** I work on OpenTools alongside paid employment. It is a
+> serious commitment rather than a hobby — the application shipped in September
+> 2026, and the commit history shows the rate I actually deliver at, which is a
+> better guide than anything I could assert here. But it is not full-time, and
+> I would rather state that plainly than have the timeline quietly assume
+> otherwise.
 >
-> **My available time: [YOU — hours per week, honestly. State whether this is
-> alongside other paid work, because it almost certainly is, and reviewers
-> would rather read that than discover it later.]**
+> **My available time: [YOU — real hours per week. Count the weeks you will
+> lose to work and life, not your best week.]**
 >
-> I am the sole maintainer. That is a real risk to this proposal and I would
-> rather name it than have it noticed. Three things reduce it. The work is
-> already partly done and published, so this grant extends an existing,
-> demonstrably shipping codebase rather than starting one. The tasks are
-> independently useful: if only tasks 1 and 2 are completed, the protocol and
-> harness still stand on their own and the remainder can be dropped without
-> stranding the rest. And I will actively seek a European co-maintainer for the
-> harness during task 2 rather than leaving it a one-person project.
+> **Duration: [YOU — see the scope note below before choosing.]**
 >
-> **If the method does not generalise** — if it turns out the protocol cannot be
-> applied cleanly to applications built differently from mine — I will publish
-> that finding rather than quietly narrow the claim. A documented negative
-> result about what architectural verification cannot cover is worth more to
-> the ecosystem than a method that only works on its author's code.
+> I am the sole maintainer. That is a real risk and I would rather name it than
+> have it noticed. Three things reduce it. The work is already partly done and
+> published, so this grant extends a demonstrably shipping codebase rather than
+> starting one. The tasks are independently useful: if only tasks 1 and 2 are
+> completed, the protocol and the harness stand on their own and the rest can
+> be dropped without stranding anything. And I will actively seek a European
+> co-maintainer for the harness during task 2 rather than leave it a one-person
+> project.
+>
+> **If the method does not generalise** — if the protocol cannot be applied
+> cleanly to applications built differently from mine — I will publish that
+> finding rather than quietly narrow the claim. A documented negative result
+> about what architectural verification cannot cover is worth more to the
+> ecosystem than a method that only works on its author's code.
+
+### Scope warning — read this before you submit
+
+*This part is for you, not for NLnet. Delete it.*
+
+Rough effort, at full-time equivalent, for the five tasks as written:
+
+| Task | FTE weeks |
+| :--- | ---: |
+| 1 · Verification protocol | 3–4 |
+| 2 · Cross-engine harness | 6–8 |
+| 3 · Public checker | 4–5 |
+| 4 · Hardened self-hostable edition | 5–6 |
+| 5 · Coordinating and responding to the review | 2 |
+| **Total** | **20–25** |
+
+Twenty to twenty-five full-time weeks is **five to six months of full-time
+work**. At 12 hours a week that is roughly **16–20 months**; at 20 hours a week,
+about **10–12 months**.
+
+So the €45,000 five-task scope only fits a normal grant window if you can give
+it something close to half a working week, every week, for a year. If you
+cannot, you have two honest options, and **the second is usually the better
+application**:
+
+1. **Ask for €45,000 over a longer period** — state 18 months rather than 12.
+   Defensible, but reviewers read long timelines from single part-time
+   maintainers as delivery risk, and that is the 30% criterion.
+2. **Cut to the core and ask for less.** Tasks 1 and 2 — the protocol and the
+   harness — are €20,000 and *are* the research contribution this entire
+   proposal argues for. Tasks 3 and 4 are useful product work, but a reviewer
+   could reasonably see them as building your own application rather than
+   public infrastructure. A €20,000 ask that is obviously deliverable part-time
+   scores better on feasibility **and** on cost-effectiveness, which together
+   are 60% of the total.
+
+A smaller funded grant beats a larger rejected one, and NLnet states that a
+first grant can be followed by a larger one. Tasks 3 and 4 are exactly what a
+second application would be for, with tasks 1 and 2 delivered as evidence that
+you ship what you promise.
 
 ## Licensing
 
@@ -532,7 +583,12 @@ will actually do.*
   everywhere, and never round it upward — a reviewer who counts and finds a
   discrepancy will discount everything else you claim, and this is a proposal
   whose entire argument is that claims should be checkable.
+- **Decide the scope first.** See "Scope warning" under Timeline and capacity.
+  Everything else in this file is downstream of whether you ask for €45,000 or
+  €20,000, including the abstract.
 - **Cut the budget rather than pad it.** Cost-effectiveness is 30% of the score.
+  A smaller funded grant beats a larger rejected one, and NLnet says a first
+  grant can be followed by a larger one.
 - **Do not overclaim.** Say what the evidence covers (two engines, one build)
   and what it does not (every browser, every device, the absence of bugs). The
   reviewers are technical and the limits section is what makes the rest
