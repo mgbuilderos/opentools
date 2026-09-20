@@ -37,9 +37,13 @@ export const DEDICATED_TOOL_ROUTES = [
   '/image/exact-size',
   '/data/excel',
   '/image/metadata',
-  '/image/svg',
-  '/image/colour',
-  '/data/lists',
+  // '/image/svg', '/image/colour', '/data/lists' -- Antigravity phases 4 and 5.
+  // Deliberately unregistered: the owner asked on 2026-09-20 that no new tool is
+  // published before a tech review, and registering one puts it in the sitemap,
+  // gives it a guide page and makes every CTA offer it on the next deploy. The
+  // pages are built and pass their tests; only publication is held. Re-register
+  // by deleting this comment and restoring the three routes, and remove the
+  // matching entries from HELD_BACK in lib/seo/tool-page-registration.test.ts.
   '/documents/metadata',
   '/pdf/bates',
   '/web/file-to-html',

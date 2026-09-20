@@ -66,6 +66,36 @@ const toolPages = findPageFiles(path.join(projectRoot, 'app'))
       page.component !== undefined,
   );
 
+/**
+ * Tool pages deliberately not registered, and why.
+ *
+ * Registering a tool is what puts it in the sitemap, gives it a guide page and
+ * lets every CTA offer it -- so registration is publication, and the owner
+ * asked on 2026-09-20 that no new tool is published before a tech review.
+ * Without somewhere to say that, the checks below fail on a decision somebody
+ * made on purpose, and the obvious way to get a green run is to publish the
+ * tool. That is the wrong repair, so the decision is written down instead.
+ *
+ * An entry here is a hold someone can be asked about. A page in neither this
+ * list nor `LIVE_TOOL_ROUTES` is an accident, and the checks still fail on it.
+ * Releasing a tool means deleting its entry here and restoring its route in
+ * `lib/seo/live-tools.ts`, in one commit.
+ */
+const HELD_BACK: ReadonlyMap<string, string> = new Map([
+  [
+    '/image/svg',
+    "Antigravity phase 4, 2026-09-20 — awaiting the owner's tech review.",
+  ],
+  [
+    '/image/colour',
+    "Antigravity phase 4, 2026-09-20 — awaiting the owner's tech review.",
+  ],
+  [
+    '/data/lists',
+    "Antigravity phase 5, 2026-09-20 — awaiting the owner's tech review.",
+  ],
+]);
+
 describe('every tool page in app/ is reachable by something other than the URL bar', () => {
   it('finds the tool pages at all, so a passing run means something', () => {
     // If the convention above ever stops holding, this test would silently
@@ -91,7 +121,10 @@ describe('every tool page in app/ is reachable by something other than the URL b
     // `isLiveToolUrl` answers from, so this is the single fact that decides
     // whether a finished tool is findable.
     const missing = toolPages
-      .filter((page) => !LIVE_TOOL_ROUTES.includes(page.route))
+      .filter(
+        (page) =>
+          !LIVE_TOOL_ROUTES.includes(page.route) && !HELD_BACK.has(page.route),
+      )
       .map((page) => page.route);
 
     expect(
@@ -100,10 +133,24 @@ describe('every tool page in app/ is reachable by something other than the URL b
     ).toEqual([]);
   });
 
+  it('holds back nothing that has since been registered or deleted', () => {
+    const pages = new Set(toolPages.map((page) => page.route));
+    const stale = [...HELD_BACK.keys()].filter(
+      (route) => LIVE_TOOL_ROUTES.includes(route) || !pages.has(route),
+    );
+
+    expect(
+      stale,
+      `listed as held back but no longer held back — remove them from HELD_BACK ` +
+        `so the list stays a true record: ${stale.join(', ')}`,
+    ).toEqual([]);
+  });
+
   it('answers isLiveToolUrl for each of them', () => {
     // Belt and braces: a route can be in the list and still be refused by the
     // gate, because the gate also checks the `?tool=` operation for workbenches.
     const refused = toolPages
+      .filter((page) => !HELD_BACK.has(page.route))
       .filter((page) => !isLiveToolUrl(page.route))
       .map((page) => page.route);
 
@@ -134,6 +181,7 @@ describe('every tool page in app/ is reachable by something other than the URL b
     const workbench = /\/workbench$|\/advanced$|\/writing$/;
 
     const unlisted = toolPages
+      .filter((page) => !HELD_BACK.has(page.route))
       .filter((page) => !workbench.test(page.route))
       .filter((page) => !registeredComponents.has(page.component))
       .map((page) => page.route);
