@@ -14,6 +14,8 @@ import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { editVideo, keyframeSeconds } from '@/lib/tools/video/edit';
+import { extractFrames } from '@/lib/tools/video/frames';
+import { encodeGif } from '@/lib/tools/video/gif';
 import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
 import { publicTools } from '@/lib/tools/catalog';
 
@@ -24,7 +26,11 @@ import { publicTools } from '@/lib/tools/catalog';
  */
 const MAX_BYTES = 250 * 1024 * 1024;
 
-type Keep = 'both' | 'video' | 'audio';
+type Keep = 'both' | 'video' | 'audio' | 'gif';
+
+/** A GIF of a long clip is enormous and nobody wants it. */
+const GIF_MAX_FRAMES = 150;
+const GIF_MAX_EDGE = 480;
 
 interface Loaded {
   name: string;
@@ -80,6 +86,9 @@ export function VideoTrimTool() {
   const [startAt, setStartAt] = useState('');
   const [endAt, setEndAt] = useState('');
   const [keep, setKeep] = useState<Keep>('both');
+  const [gifFps, setGifFps] = useState(10);
+  const [gifColors, setGifColors] = useState(128);
+  const [gifDither, setGifDither] = useState(false);
 
   const manifest = publicTools.find((tool) => tool.id === 'video-trim')!;
 
@@ -138,6 +147,81 @@ export function VideoTrimTool() {
         caught instanceof Error
           ? caught.message
           : 'That file could not be read.',
+      );
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const onMakeGif = async () => {
+    if (!loaded) return;
+    clearSaved();
+    setError('');
+    setBusy('Reading the frames…');
+    const started = performance.now();
+    try {
+      const from = readSeconds(startAt, 'The start time') ?? 0;
+      const to =
+        readSeconds(endAt, 'The end time') ?? loaded.movie.durationSeconds;
+      const extracted = await extractFrames(
+        new Blob([loaded.bytes as BlobPart]),
+        {
+          startSeconds: from,
+          endSeconds: to,
+          framesPerSecond: gifFps,
+          maxEdge: GIF_MAX_EDGE,
+          maxFrames: GIF_MAX_FRAMES,
+        },
+      );
+
+      setBusy('Choosing colours…');
+      const bytes = encodeGif(
+        extracted.frames.map((rgba) => ({
+          rgba,
+          delayCentiseconds: extracted.delayCentiseconds,
+        })),
+        {
+          width: extracted.width,
+          height: extracted.height,
+          colors: gifColors,
+          dither: gifDither,
+        },
+      );
+      // oxlint-disable-next-line react/react-compiler
+      const durationMs = performance.now() - started;
+
+      const base = loaded.name.replace(/\.[^.]+$/u, '');
+      const url = URL.createObjectURL(
+        new Blob([bytes as BlobPart], { type: 'image/gif' }),
+      );
+      const next: Saved = {
+        name: `${base}.gif`,
+        url,
+        size: bytes.length,
+        headline: `${extracted.frames.length} frames, ${extracted.width}×${extracted.height}`,
+        detail: `${gifColors} colours${gifDither ? ', dithered' : ''}, at ${gifFps} frames a second. Built in ${durationMs < 1000 ? `${durationMs.toFixed(0)} ms` : `${(durationMs / 1000).toFixed(1)} s`}. A GIF is re-encoded rather than copied, so unlike the trim this one does lose quality — that is the format, not the tool.`,
+        note: extracted.truncated
+          ? `Stopped at ${GIF_MAX_FRAMES} frames. A longer GIF would be enormous and slow to load; trim the range or lower the frame rate to cover more of the clip.`
+          : null,
+      };
+      savedRef.current = next;
+      setSaved(next);
+
+      announceCompletion({
+        operation: 'Video to GIF',
+        durationMs,
+        summary: `Made a GIF from ${loaded.name}.`,
+        metrics: [
+          { label: 'Frames', value: String(extracted.frames.length) },
+          { label: 'Size', value: formatBytes(bytes.length) },
+          { label: 'Uploaded', value: 'No' },
+        ],
+      });
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'That could not be turned into a GIF.',
       );
     } finally {
       setBusy('');
@@ -404,6 +488,7 @@ export function VideoTrimTool() {
                     <option value="both">Both the picture and the sound</option>
                     <option value="video">Picture only — mute it</option>
                     <option value="audio">Sound only — save the audio</option>
+                    <option value="gif">An animated GIF</option>
                   </select>
                   <p className="mt-3 text-xs leading-5 text-muted-foreground">
                     Muting removes the sound track rather than silencing it, so
@@ -413,10 +498,93 @@ export function VideoTrimTool() {
                 </div>
               </div>
 
+              {keep === 'gif' ? (
+                <div className="mt-4 rounded-2xl border bg-card p-5">
+                  <h2 className="text-sm font-semibold">
+                    How to build the GIF
+                  </h2>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    <div>
+                      <label
+                        htmlFor="gif-fps"
+                        className="text-xs text-muted-foreground"
+                      >
+                        Frames a second
+                      </label>
+                      <select
+                        id="gif-fps"
+                        value={gifFps}
+                        onChange={(event) =>
+                          setGifFps(Number(event.target.value))
+                        }
+                        className="focus-ring mt-1.5 block w-full rounded-lg border bg-background p-2 text-sm"
+                      >
+                        <option value={5}>5 — smallest</option>
+                        <option value={10}>10 — usual choice</option>
+                        <option value={15}>15 — smoother</option>
+                        <option value={20}>20 — smoothest, biggest</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="gif-colors"
+                        className="text-xs text-muted-foreground"
+                      >
+                        Colours
+                      </label>
+                      <select
+                        id="gif-colors"
+                        value={gifColors}
+                        onChange={(event) =>
+                          setGifColors(Number(event.target.value))
+                        }
+                        className="focus-ring mt-1.5 block w-full rounded-lg border bg-background p-2 text-sm"
+                      >
+                        <option value={32}>32 — smallest file</option>
+                        <option value={64}>64</option>
+                        <option value={128}>128 — usual choice</option>
+                        <option value={256}>256 — most a GIF allows</option>
+                      </select>
+                    </div>
+                    <div className="flex items-end">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={gifDither}
+                          onChange={(event) =>
+                            setGifDither(event.target.checked)
+                          }
+                          className="focus-ring size-4"
+                        />
+                        Dither
+                      </label>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                    A GIF holds at most 256 colours, so this one is re-encoded
+                    rather than copied — the only thing on this page that loses
+                    quality, and that is the format rather than the tool.
+                    Dithering hides the banding that few colours cause, at the
+                    cost of a larger file. Stops at {GIF_MAX_FRAMES} frames and{' '}
+                    {GIF_MAX_EDGE}px on the longest edge.
+                  </p>
+                </div>
+              ) : null}
+
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Button type="button" disabled={Boolean(busy)} onClick={onRun}>
+                <Button
+                  type="button"
+                  disabled={Boolean(busy)}
+                  onClick={
+                    keep === 'gif'
+                      ? () => {
+                          void onMakeGif();
+                        }
+                      : onRun
+                  }
+                >
                   <Scissors aria-hidden="true" className="size-4" />
-                  Make the clip
+                  {keep === 'gif' ? 'Make the GIF' : 'Make the clip'}
                 </Button>
                 <p className="text-xs text-muted-foreground">
                   From {formatBytes(loaded.size)}. Nothing is decoded, so this
@@ -451,9 +619,12 @@ export function VideoTrimTool() {
           </section>
 
           <p className="mt-10 text-xs leading-5 text-muted-foreground">
-            {manifest.shortDescription} Turning a clip into a GIF is the one
-            thing this page cannot do, because that genuinely needs decoding —
-            it is not offered rather than offered badly.
+            {manifest.shortDescription} The trim, the mute and the audio
+            extraction copy compressed frames across, so they lose nothing at
+            all. The GIF is the exception and the only one that does: it has to
+            decode and re-encode, and a GIF holds at most 256 colours, so its
+            output is genuinely worse than its input. That is the format rather
+            than the tool.
           </p>
         </div>
       </section>

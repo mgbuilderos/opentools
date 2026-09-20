@@ -44,6 +44,7 @@ export function contentSecurityPolicy({
     "form-action 'none'",
     "frame-ancestors 'none'",
     "img-src 'self' blob: data:",
+    "media-src 'self' blob:",
     "object-src 'none'",
     scriptSrc,
     "style-src 'self' 'unsafe-inline'",
