@@ -13,6 +13,7 @@ import {
   Link as LinkIcon,
   Palette,
   UploadCloud,
+  Video,
   X,
 } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
@@ -57,6 +58,16 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
       file.type.startsWith('image/') ||
       ['png', 'jpg', 'jpeg', 'webp', 'avif', 'svg'].includes(ext)
     ) {
+      const actions: DetectedAction[] = [...SMART_DROPZONE_ACTIONS.image];
+      if (
+        ['jpg', 'jpeg', 'png', 'webp'].includes(ext) &&
+        isLiveToolUrl('/image/metadata')
+      ) {
+        actions.push({
+          label: 'See what this photo reveals',
+          href: '/image/metadata',
+        });
+      }
       return {
         category: 'Media',
         typeLabel: 'Image Graphic',
@@ -64,8 +75,30 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Ready for client-side compression, background removal, and dimensions editing.',
         icon: <ImageIcon className="size-5 text-foreground" />,
-        actions: SMART_DROPZONE_ACTIONS.image,
+        actions,
       };
+    }
+
+    if (file.type.startsWith('video/') || ['mp4', 'mov', 'm4v'].includes(ext)) {
+      const actions: DetectedAction[] = [];
+      if (isLiveToolUrl('/video/trim')) {
+        actions.push({
+          label: 'Trim, mute or extract the audio',
+          href: '/video/trim',
+          isPrimary: true,
+        });
+      }
+      if (actions.length > 0) {
+        return {
+          category: 'Video',
+          typeLabel: ext ? `${ext.toUpperCase()} Video` : 'Video File',
+          summary: `${file.name} (${sizeKb} KB)`,
+          details:
+            'Ready for client-side trimming, muting, and audio extraction.',
+          icon: <Video className="size-5 text-foreground" />,
+          actions,
+        };
+      }
     }
 
     if (file.type === 'text/csv' || ext === 'csv' || ext === 'tsv') {
@@ -113,25 +146,58 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
       };
     }
 
+    if (file.type === 'audio/mpeg' || ext === 'mp3') {
+      const actions: DetectedAction[] = [];
+      if (isLiveToolUrl('/audio/mp3-toolkit')) {
+        actions.push({
+          label: 'MP3 toolkit',
+          href: '/audio/mp3-toolkit',
+          isPrimary: true,
+        });
+      }
+      if (isLiveToolUrl('/audio/convert')) {
+        actions.push({
+          label: 'Convert to WAV',
+          href: '/audio/convert',
+          isPrimary: actions.length === 0,
+        });
+      }
+      if (actions.length > 0) {
+        return {
+          category: 'Audio',
+          typeLabel: 'MP3 Audio',
+          summary: `${file.name} (${sizeKb} KB)`,
+          details:
+            'Ready for lossless cutting, joining, ID3 tagging, and frame-accurate inspection.',
+          icon: <FileText className="size-5 text-foreground" />,
+          actions,
+        };
+      }
+    }
+
     if (
-      (file.type === 'audio/mpeg' || ext === 'mp3') &&
-      isLiveToolUrl('/audio/mp3-toolkit')
+      ['m4a', 'flac', 'ogg', 'opus', 'aiff', 'aif', 'wav'].includes(ext) ||
+      file.type.startsWith('audio/')
     ) {
-      return {
-        category: 'Audio',
-        typeLabel: 'MP3 Audio',
-        summary: `${file.name} (${sizeKb} KB)`,
-        details:
-          'Ready for lossless cutting, joining, ID3 tagging, and frame-accurate inspection.',
-        icon: <FileText className="size-5 text-foreground" />,
-        actions: [
-          {
-            label: 'MP3 toolkit',
-            href: '/audio/mp3-toolkit',
-            isPrimary: true,
-          },
-        ],
-      };
+      const actions: DetectedAction[] = [];
+      if (isLiveToolUrl('/audio/convert')) {
+        actions.push({
+          label: 'Convert to WAV',
+          href: '/audio/convert',
+          isPrimary: true,
+        });
+      }
+      if (actions.length > 0) {
+        return {
+          category: 'Audio',
+          typeLabel: ext ? `${ext.toUpperCase()} Audio` : 'Audio Recording',
+          summary: `${file.name} (${sizeKb} KB)`,
+          details:
+            'Ready for in-browser decoding, trimming, and WAV conversion.',
+          icon: <FileText className="size-5 text-foreground" />,
+          actions,
+        };
+      }
     }
 
     if (
