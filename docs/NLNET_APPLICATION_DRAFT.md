@@ -20,7 +20,7 @@
 > deliverable is a method whose intended adopters are EU projects; it makes a
 > GDPR claim testable; it is a technical answer to the international-transfer
 > problem; it serves EU public bodies that currently have no compliant option;
-> and €5,000 of the budget is committed to an EU-based reviewer. An actual EU
+> and a fifth of the budget is committed to an EU-based reviewer. An actual EU
 > co-maintainer would still be worth more than all five.
 >
 > **Apply to OTF and FUTO first** — see `docs/FUTO_APPLICATION_DRAFT.md`. Both
@@ -76,10 +76,13 @@ capacity, licensing, and adoption — are now in. What remains is yours: the
 words, the budget decision, and three `[YOU]` answers (your background, your
 available hours, and the projects you will approach by name).
 
-**The one decision that outranks everything else here** is in "Scope warning",
-under Timeline and capacity: at part-time hours the five-task €45,000 scope
-does not fit a normal grant window, and cutting to a €20,000 core ask is
-probably the stronger application. Decide that before you write a word.
+**The scope decision is made.** This asks for **€20,000** over about 12 months
+for three tasks — the protocol, the harness, and an independent European review
+— rather than the €45,000 five-task version. The public checker and the
+self-hostable edition came out: they are applications of the method rather than
+the method itself, and the smaller plan fits the hours you actually have.
+That decision is argued openly in "What this grant deliberately excludes",
+which stays in the submission.
 
 ---
 
@@ -138,16 +141,19 @@ spec, not an audience.
 > one command, without installing our application or trusting our report.
 >
 > The grant would generalise this from one application into reusable public
-> infrastructure: a documented verification protocol, an engine-independent
-> test harness any project can adopt, and a checker that lets a non-technical
-> person evaluate any web tool's claim. The intended outcome is that "processes
-> your data locally" becomes a statement that can be tested rather than
-> marketing copy.
+> infrastructure: a documented verification protocol, and an engine-independent
+> test harness that any project can run in its own CI — validated by an
+> independent European review. The intended outcome is that "processes your
+> data locally" becomes a statement that can be tested rather than marketing
+> copy.
 
 ## Requested amount
 
-**€45,000** *(adjust — see budget. Anything from €5,000 works; ask for what the
-work costs, not the maximum.)*
+**€20,000**
+
+*Deliberately well below the €50,000 ceiling. See "What this grant deliberately
+excludes" — asking for what the work costs, and saying plainly what is not in
+it, is worth more here than a larger number.*
 
 ## Have you been involved with projects or organisations relevant to this?
 
@@ -239,11 +245,13 @@ work costs, not the maximum.)*
 > 2. **An engine-independent test harness**, packaged for reuse, so any web
 >    project can run the same proof in its own CI rather than reimplementing it
 >    and hitting the failure modes above.
-> 3. **A public checker** that inspects any URL's policy and reports, in plain
->    language, whether that page is capable of transmitting what a user gives
->    it — so the evaluation is available to people who do not read headers.
-> 4. **A hardened self-hostable edition** for organisations that cannot use a
->    third-party service at all: TLS, authentication, and a reproducible build.
+> Two things are deliberately **not** in this grant, though both are wanted: a
+> public checker that would let a non-technical person evaluate any web tool,
+> and a hardened self-hostable edition for organisations that cannot use a
+> third-party service. Both are applications of the method rather than the
+> method itself, and both can be built by anyone once the protocol and harness
+> exist. Including them would roughly double the ask for work that is useful
+> but not novel.
 >
 > **Why it matters beyond one application.** The protocol and harness are the
 > deliverable; our tools are the reference implementation that proves the method
@@ -358,10 +366,12 @@ application is read at all, so do not leave it out.*
 > transmit — is the thing procurement can actually accept. It is useless without
 > the verification method, which is why the two are funded together.
 >
-> **Concrete commitments, if funded.** The €5,000 independent security review in
-> this budget will be commissioned from an **EU-based reviewer**, so a defined
-> share of this grant is spent in Europe, on European expertise, validating the
-> protocol from inside the ecosystem that would use it. All outputs are
+> **Concrete commitments, if funded.** The €4,000 independent review in this
+> budget will be commissioned from an **EU-based reviewer** — a fifth of the
+> entire grant, spent in Europe, on European expertise, validating the protocol
+> from inside the ecosystem that would use it. I kept it in the budget when I
+> cut the scope down, because a method nobody independent has checked is not
+> infrastructure. All outputs are
 > published open access under an OSI-approved licence, with no commercial
 > exclusivity and no patent claims. I will actively seek a European
 > co-maintainer for the harness rather than keep it a single-maintainer project.
@@ -374,73 +384,92 @@ application is read at all, so do not leave it out.*
 
 *NLnet does not hand over a lump sum. They agree a list of concrete tasks, each
 with an amount, and pay on delivery — the memorandum of understanding is built
-from this table. So this section, not the budget total, is what they are
-actually agreeing to. **Adjust the durations to what you can honestly commit**;
-see "Timeline and capacity" below.*
+from this table. So this section, not the total, is what they are actually
+agreeing to.*
 
 | # | Task | Deliverable | Done when | € |
 | :-- | :--- | :--- | :--- | ---: |
-| 1 | Verification protocol | A published specification: the levels of evidence, what may and may not be claimed at each, the three documented failure modes, and how a deployed artefact is pinned in a result | It is published open access at a stable URL and a third party can follow it without contacting me | 8,000 |
-| 2 | Cross-engine test harness | An installable package that runs the protocol against either a local build or a deployed origin, in at least two engines, validated against a deliberately-leaking control | It is on a public package registry with a worked CI example, and **at least one project other than mine has run it** | 12,000 |
-| 3 | Public checker | A page and a command-line tool that take any URL and report, in plain language, whether that page can transmit what a user gives it — and what the check does not cover | It is publicly available, covers the documented vectors, and its wording has been tested on non-technical readers | 9,000 |
-| 4 | Hardened self-hostable edition | A container with TLS, authentication and a reproducible build, running with no network access | The image pulls anonymously, the build reproduces from published source, and the egress proof passes against a self-hosted instance | 11,000 |
-| 5 | Independent security review | A written review of the protocol and harness by an EU-based reviewer with no involvement in the work | The report is published **in full, including whatever it found**, with my responses | 5,000 |
-| | **Total** | | | **45,000** |
+| 1 | Verification protocol | A published specification: the levels of evidence, what may and may not be claimed at each, the three documented failure modes, and how a deployed artefact is pinned in a result | It is published open access at a stable URL and a third party can follow it without contacting me | 6,000 |
+| 2 | Cross-engine test harness | An installable package that runs the protocol against either a local build or a deployed origin, in at least two engines, validated against a deliberately-leaking control | It is on a public package registry with a worked CI example, and **at least one project other than mine has run it** | 10,000 |
+| 3 | Independent review | A written review of the protocol and harness by an EU-based reviewer with no involvement in the work | The report is published **in full, including whatever it found**, with my responses | 4,000 |
+| | **Total** | | | **20,000** |
 
-Two things about this table are deliberate and worth keeping.
+Three things about this table are deliberate and worth keeping.
 
 **Task 2 is done when someone else runs it, not when I publish it.** A harness
 nobody adopted has not demonstrated that the method generalises, which is the
 entire claim. Tying payment to external adoption is the strongest commitment I
 can make to that.
 
-**Task 5 publishes whatever the review finds.** A security review that only
+**Task 3 publishes whatever the review finds.** A security review that only
 gets published when it is favourable is marketing. This proposal argues that
 claims should be checkable; the review has to be held to the same standard.
 
+**A fifth of the grant goes to an independent European reviewer.** It survived
+the scope cut when larger, more visible pieces did not, because a verification
+method that has only ever been checked by its own author is not infrastructure.
+
+## What this grant deliberately excludes
+
+*Keep this in the submission. Saying plainly what you are not asking for is
+the most credible thing in a budget.*
+
+> Two further things would obviously follow from this work, and I have left
+> both out: a public checker that would let a non-technical person evaluate any
+> web tool's claim, and a hardened self-hostable edition for organisations that
+> cannot use a third-party service at all. Both are genuinely wanted and I
+> intend to build them.
+>
+> They are not in this application for two reasons. They are *applications of*
+> the method rather than the method itself — once the protocol and harness
+> exist, anyone can build them, including someone other than me. And I work on
+> this alongside paid employment; a four-deliverable scope would have implied
+> availability I do not have, and I would rather submit a smaller plan I will
+> certainly finish than a larger one I might not.
+>
+> If this work lands and the method proves out, those two are the natural
+> subject of a later proposal — with the protocol and harness already delivered
+> as evidence of what I do with a grant.
+
 ## Budget summary
 
-*The same five amounts as the task table above, which is the one that matters —
-this is only the summary. Adjust both together if you change anything.
-Reviewers weigh cost-effectiveness at 30% and prefer a small, credible ask over
-a padded one: cut a task rather than pad one.*
+*The same three amounts as the task table above, which is the one that matters.
+If you change one, change both.*
 
 | Task | € |
 | :--- | ---: |
-| Verification protocol: specification, evidence levels, documented traps, published open access | 8,000 |
-| Reusable cross-engine test harness, packaged and documented for third-party adoption | 12,000 |
-| Public checker for evaluating any URL, with plain-language output | 9,000 |
-| Hardened self-hostable edition: TLS, authentication, reproducible build | 11,000 |
-| Independent security review of the protocol and harness | 5,000 |
-| **Total** | **45,000** |
+| Verification protocol: specification, evidence levels, documented traps, published open access | 6,000 |
+| Reusable cross-engine test harness, packaged and documented for third-party adoption | 10,000 |
+| Independent review of the protocol and harness, by an EU-based reviewer | 4,000 |
+| **Total** | **20,000** |
 
 ## Timeline and capacity
 
 *Feasibility is 30% of the score alongside technical excellence, and the
 commonest way a good single-maintainer proposal fails is claiming availability
-the applicant does not have. **Read the scope warning under the table before
-you fill this in** — it is the most consequential thing in this file.*
+the applicant does not have.*
 
 > **My situation.** I work on OpenTools alongside paid employment. It is a
 > serious commitment rather than a hobby — the application shipped in September
 > 2026, and the commit history shows the rate I actually deliver at, which is a
 > better guide than anything I could assert here. But it is not full-time, and
 > I would rather state that plainly than have the timeline quietly assume
-> otherwise.
+> otherwise. The scope of this proposal was set to fit the time I actually
+> have, not the other way round.
 >
 > **My available time: [YOU — real hours per week. Count the weeks you will
-> lose to work and life, not your best week.]**
+> lose to work and life, not your best week. If it is 10–12, say 10–12.]**
 >
-> **Duration: [YOU — see the scope note below before choosing.]**
+> **Duration: [YOU — 12 months is comfortable for this scope at roughly 12
+> hours a week; see the note below and pick what you can stand behind.]**
 >
 > I am the sole maintainer. That is a real risk and I would rather name it than
 > have it noticed. Three things reduce it. The work is already partly done and
 > published, so this grant extends a demonstrably shipping codebase rather than
-> starting one. The tasks are independently useful: if only tasks 1 and 2 are
-> completed, the protocol and the harness stand on their own and the rest can
-> be dropped without stranding anything. And I will actively seek a European
-> co-maintainer for the harness during task 2 rather than leave it a one-person
-> project.
+> starting one. The two build tasks are independently useful — if only the
+> protocol is completed, it stands on its own. And I will actively seek a
+> European co-maintainer for the harness during task 2 rather than leave it a
+> one-person project.
 >
 > **If the method does not generalise** — if the protocol cannot be applied
 > cleanly to applications built differently from mine — I will publish that
@@ -448,45 +477,30 @@ you fill this in** — it is the most consequential thing in this file.*
 > about what architectural verification cannot cover is worth more to the
 > ecosystem than a method that only works on its author's code.
 
-### Scope warning — read this before you submit
+### How the timeline was worked out
 
-*This part is for you, not for NLnet. Delete it.*
+*For you, not for NLnet. Delete before submitting — but redo the arithmetic
+with your real hours before you do.*
 
-Rough effort, at full-time equivalent, for the five tasks as written:
+The two build tasks are roughly **9–12 full-time-equivalent weeks** (protocol
+3–4, harness 6–8). Task 3 is mostly someone else's work plus about two weeks of
+yours coordinating and responding.
 
-| Task | FTE weeks |
-| :--- | ---: |
-| 1 · Verification protocol | 3–4 |
-| 2 · Cross-engine harness | 6–8 |
-| 3 · Public checker | 4–5 |
-| 4 · Hardened self-hostable edition | 5–6 |
-| 5 · Coordinating and responding to the review | 2 |
-| **Total** | **20–25** |
+That is about **2.5–3 months full-time**. Part-time:
 
-Twenty to twenty-five full-time weeks is **five to six months of full-time
-work**. At 12 hours a week that is roughly **16–20 months**; at 20 hours a week,
-about **10–12 months**.
+| Your hours/week | Elapsed |
+| :--- | :--- |
+| 10 | ~11–14 months |
+| 12 | ~9–12 months |
+| 20 | ~6–7 months |
 
-So the €45,000 five-task scope only fits a normal grant window if you can give
-it something close to half a working week, every week, for a year. If you
-cannot, you have two honest options, and **the second is usually the better
-application**:
+So 12 months holds at 12 hours a week with margin for the weeks you lose. If
+your honest number is nearer 8, say 15 months rather than squeeze it — the
+scope is already small enough that a longer timeline does not look like
+overreach.
 
-1. **Ask for €45,000 over a longer period** — state 18 months rather than 12.
-   Defensible, but reviewers read long timelines from single part-time
-   maintainers as delivery risk, and that is the 30% criterion.
-2. **Cut to the core and ask for less.** Tasks 1 and 2 — the protocol and the
-   harness — are €20,000 and *are* the research contribution this entire
-   proposal argues for. Tasks 3 and 4 are useful product work, but a reviewer
-   could reasonably see them as building your own application rather than
-   public infrastructure. A €20,000 ask that is obviously deliverable part-time
-   scores better on feasibility **and** on cost-effectiveness, which together
-   are 60% of the total.
-
-A smaller funded grant beats a larger rejected one, and NLnet states that a
-first grant can be followed by a larger one. Tasks 3 and 4 are exactly what a
-second application would be for, with tasks 1 and 2 delivered as evidence that
-you ship what you promise.
+For comparison, the rejected €45,000 version was 20–25 FTE weeks, which at 12
+hours a week was 16–20 months. That is the gap you just closed.
 
 ## Licensing
 
@@ -583,9 +597,9 @@ will actually do.*
   everywhere, and never round it upward — a reviewer who counts and finds a
   discrepancy will discount everything else you claim, and this is a proposal
   whose entire argument is that claims should be checkable.
-- **Decide the scope first.** See "Scope warning" under Timeline and capacity.
-  Everything else in this file is downstream of whether you ask for €45,000 or
-  €20,000, including the abstract.
+- **Delete the two sections marked "for you, not for NLnet"** — "How the
+  timeline was worked out", and this checklist. Keep "What this grant
+  deliberately excludes": that one is written for the reviewer.
 - **Cut the budget rather than pad it.** Cost-effectiveness is 30% of the score.
   A smaller funded grant beats a larger rejected one, and NLnet says a first
   grant can be followed by a larger one.
