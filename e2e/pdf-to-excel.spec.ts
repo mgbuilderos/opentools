@@ -122,6 +122,9 @@ test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
 
     await expect(page.getByText(/statement-scanned\.pdf/i)).toBeVisible();
     await expect(
+      page.getByRole('button', { name: 'Open PDF OCR with this file' }),
+    ).toBeVisible();
+    await expect(
       page.getByText(/contains no readable digital text layer/i),
     ).toBeVisible();
 

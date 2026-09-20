@@ -12,8 +12,9 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { offerFile } from '@/lib/file-handoff';
 import { DOCX_MIME_TYPE } from '@/lib/tools/docx/document';
-import { convertPdfToWord } from '@/lib/tools/pdf/pdf-to-word';
+import { convertPdfToWord, PdfToWordError } from '@/lib/tools/pdf/pdf-to-word';
 
 type Receipt = {
   url: string;
@@ -56,6 +57,7 @@ export function PdfToWordTool() {
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [canOpenOcr, setCanOpenOcr] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
@@ -88,6 +90,7 @@ export function PdfToWordTool() {
     if (!next) return;
     clearReceipt();
     setError('');
+    setCanOpenOcr(false);
     if (next.size > MAX_BYTES) {
       setError(
         `${next.name} is ${formatBytes(next.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}.`,
@@ -101,6 +104,7 @@ export function PdfToWordTool() {
     if (!file || busy) return;
     setBusy(true);
     setError('');
+    setCanOpenOcr(false);
     clearReceipt();
 
     const startedAt = performance.now();
@@ -149,6 +153,9 @@ export function PdfToWordTool() {
         ],
       });
     } catch (cause) {
+      setCanOpenOcr(
+        cause instanceof PdfToWordError && cause.code === 'NO_TEXT_LAYER',
+      );
       setError(
         cause instanceof Error
           ? cause.message
@@ -157,6 +164,12 @@ export function PdfToWordTool() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function openOcr() {
+    if (!file) return;
+    await offerFile(file);
+    window.location.assign('/pdf/ocr');
   }
 
   return (
@@ -216,6 +229,16 @@ export function PdfToWordTool() {
               <div>
                 <p className="font-semibold">Couldn’t convert this PDF</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
+                {canOpenOcr ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-3"
+                    onClick={() => void openOcr()}
+                  >
+                    Open PDF OCR with this file
+                  </Button>
+                ) : null}
               </div>
               <button
                 type="button"

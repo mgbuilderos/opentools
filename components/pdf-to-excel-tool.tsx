@@ -21,6 +21,7 @@ import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { PdfGridOverlay } from '@/components/pdf-grid-overlay';
 import { announceCompletion } from '@/lib/completion';
+import { offerFile } from '@/lib/file-handoff';
 import {
   flagCells,
   summariseFlags,
@@ -828,13 +829,26 @@ export function PdfToExcelTool() {
             </div>
 
             <div className="pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Choose Another PDF
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (!file) return;
+                    void offerFile(file).then(() =>
+                      window.location.assign('/pdf/ocr'),
+                    );
+                  }}
+                >
+                  Open PDF OCR with this file
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Choose Another PDF
+                </Button>
+              </div>
             </div>
           </div>
         )}

@@ -114,10 +114,29 @@ test.describe('PDF to Word', () => {
     await expect(alert).toBeVisible({ timeout: 60_000 });
     await expect(alert).toContainText('no text in it');
     await expect(alert).toContainText(/scan|photo/iu);
+    await expect(
+      page.getByRole('button', { name: 'Open PDF OCR with this file' }),
+    ).toBeVisible();
     // Nothing is offered for download, so nobody saves an empty document.
     await expect(
       page.getByRole('button', { name: 'Save Word document' }),
     ).toHaveCount(0);
+  });
+
+  test('hands a refused scan to PDF OCR without choosing it again', async ({
+    page,
+  }) => {
+    await page.goto('/pdf/to-word');
+    await page.waitForLoadState('networkidle');
+    await choosePdf(page, await scannedPdf(), 'handoff-scan.pdf');
+    await page.getByRole('button', { name: 'Convert to Word' }).click();
+    await page
+      .getByRole('button', { name: 'Open PDF OCR with this file' })
+      .click();
+    await expect(page).toHaveURL(/\/pdf\/ocr$/u);
+    await expect(page.getByText('handoff-scan.pdf', { exact: true })).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
   test('states the limits of the conversion before anything is converted', async ({
