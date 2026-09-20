@@ -16,6 +16,11 @@ import {
 import { useCallback, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import {
@@ -91,6 +96,8 @@ export function MetadataTool() {
   const [busy, setBusy] = useState<string>('');
   const [stripResult, setStripResult] = useState<ImageStripResult | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
@@ -101,7 +108,7 @@ export function MetadataTool() {
 
     if (file.size > MAX_FILE_BYTES) {
       setError(
-        `File is too large (${formatBytes(file.size)}). The browser limit is ${formatBytes(MAX_FILE_BYTES)}.`,
+        `File is too large (${formatBytes(file.size)}). This tool's per-file limit is ${formatBytes(MAX_FILE_BYTES)}.`,
       );
       errorRef.current?.focus();
       return;
@@ -140,18 +147,26 @@ export function MetadataTool() {
     }
   }, []);
 
-  const handleChoose = (file?: File) => {
-    if (!file) return;
-    void processFile(file);
+  const handleChoose = (files?: FileList | File[]) => {
+    const selected = Array.from(files ?? []);
+    if (selected.length === 0 || busy || batch.running) return;
+    if (selected.length === 1) {
+      batch.reset();
+      setBatchFiles([]);
+      void processFile(selected[0]);
+      return;
+    }
+    setLoaded(null);
+    setStripResult(null);
+    setError('');
+    batch.reset();
+    setBatchFiles(selected);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      void processFile(file);
-    }
+    handleChoose(e.dataTransfer.files);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -165,6 +180,8 @@ export function MetadataTool() {
   };
 
   const handleReset = () => {
+    batch.reset();
+    setBatchFiles([]);
     setLoaded(null);
     setStripResult(null);
     setError('');
@@ -172,6 +189,45 @@ export function MetadataTool() {
     if (fileRef.current) {
       fileRef.current.value = '';
     }
+  };
+
+  const startBatch = () => {
+    setError('');
+    void batch.start(batchFiles, async (file, _index, signal) => {
+      if (file.size > MAX_FILE_BYTES) {
+        return {
+          status: 'skipped',
+          reason: `The ${formatBytes(MAX_FILE_BYTES)} per-file limit was exceeded.`,
+        };
+      }
+      if (signal.aborted) {
+        return { status: 'skipped', reason: 'Batch cancelled.' };
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const metadata = readMetadata(bytes);
+      if (metadata.format === 'unsupported') {
+        return {
+          status: 'skipped',
+          reason: 'Only JPEG, PNG, and WebP photos are supported.',
+        };
+      }
+      const result = stripMetadata(bytes);
+      if (!result.success) {
+        throw new Error(
+          result.warnings[0] ??
+            'Metadata could not be stripped from this file.',
+        );
+      }
+      return {
+        status: 'done',
+        output: {
+          blob: new Blob([result.cleanedBytes as BlobPart], {
+            type: getMimeType(result.format),
+          }),
+          fileName: getCleanFileName(file.name),
+        },
+      };
+    });
   };
 
   const handleStripAndDownload = () => {
@@ -340,21 +396,35 @@ export function MetadataTool() {
                   ref={fileRef}
                   id="metadata-file-input"
                   type="file"
+                  multiple
                   accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                   className="hidden"
-                  onChange={(e) => handleChoose(e.target.files?.[0])}
+                  onChange={(e) => handleChoose(e.target.files ?? [])}
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="default"
+                  disabled={Boolean(busy) || batch.running}
                   onClick={() => fileRef.current?.click()}
                   className="cursor-pointer"
                 >
-                  Select photo
+                  Select photo(s)
                 </Button>
               </label>
+              <BatchLocalPromise />
             </div>
+          ) : null}
+
+          {batchFiles.length > 1 ? (
+            <BatchRunnerPanel
+              files={batchFiles}
+              runner={batch}
+              startLabel="Strip all metadata"
+              zipName="clean-photos.zip"
+              onStart={startBatch}
+              onClear={handleReset}
+            />
           ) : null}
 
           {/* Busy indicator */}
