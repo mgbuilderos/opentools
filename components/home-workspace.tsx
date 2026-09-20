@@ -197,23 +197,43 @@ export function HomeWorkspace() {
               </button>
             </div>
           ) : null}
-          <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-sm text-muted-foreground">
-            <p>No account needed. Downloads are free.</p>
-            {/*
-              The one differentiator this site has over every free competitor
-              is that the file never leaves the tab — and until /proof existed
-              it was asserted here and nowhere else. This sentence is now the
-              way in to the evidence behind it.
-            */}
+          {/*
+            The one differentiator this site has over every free competitor is
+            that the file never leaves the tab — and until /proof existed it was
+            asserted in this footer and nowhere else, with nothing to click. The
+            four pages that carry the evidence now hang off it.
+          */}
+          <footer className="mt-12 flex flex-col gap-3 border-t pt-5 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <p>
-              Files are processed in your browser.{' '}
+              No account needed. Downloads are free. Files are processed in your
+              browser.
+            </p>
+            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <a
                 href="/proof"
                 className="focus-ring font-semibold text-foreground underline underline-offset-4"
               >
                 See the proof
               </a>
-            </p>
+              <a
+                href="/privacy"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Privacy
+              </a>
+              <a
+                href="/security"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Security
+              </a>
+              <a
+                href="/about"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                About
+              </a>
+            </nav>
           </footer>
         </div>
       </section>

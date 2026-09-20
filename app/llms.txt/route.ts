@@ -29,6 +29,9 @@ export async function GET() {
     // answering "is there a PDF tool that does not upload my file" can
     // quote a page, not a claim in a text file it fetched.
     `- **The evidence, as a page**: [${baseUrl}/proof](${baseUrl}/proof) sets out the exfiltration protocol, the measured result per vector, the exact contents of the visit log, and what the test does not establish.`,
+    `- **Privacy, in full**: [${baseUrl}/privacy](${baseUrl}/privacy) itemises every field of the single server-side visit event, every key stored in the visitor's own browser, and what is deliberately never recorded.`,
+    `- **Security and threat model**: [${baseUrl}/security](${baseUrl}/security) states the enforced controls, the vulnerability classes treated as critical, what is out of scope, and how to report a finding. Written for an IT or compliance reviewer deciding whether staff may use the site.`,
+    `- **About the project**: [${baseUrl}/about](${baseUrl}/about) covers why it exists, who runs it, how it is funded, and the things it will not do.`,
     ``,
     // Self-hosting was absent here entirely, so an assistant asked "what
     // self-hosted PDF tools can I run on-premise?" had nothing to match on —
