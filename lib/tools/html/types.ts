@@ -38,4 +38,10 @@ export interface HtmlConversionResult {
     byteLength: number;
   }[];
   totalBytes: number;
+  /**
+   * Links that were not `http`, `https` or `mailto` and so were left off the
+   * images. Reported rather than dropped quietly: a link that vanishes without
+   * a word is found by the recipient, not the sender.
+   */
+  rejectedLinks: string[];
 }

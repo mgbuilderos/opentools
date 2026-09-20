@@ -2,6 +2,7 @@ import {
   createEmailPackageZip,
   generateEmailHtml,
   generateWebHtml,
+  safeLinkUrl,
 } from './generator';
 import { getImageDimensions } from './image-dimensions';
 import type {
@@ -17,6 +18,25 @@ export interface RawFileInput {
   linkUrl?: string;
 }
 
+/**
+ * Keeps `logo.png` and a second, different `logo.png` apart by numbering the
+ * later one, extension intact so the file still opens as what it is.
+ */
+function uniqueFilename(name: string, taken: Set<string>): string {
+  if (!taken.has(name)) {
+    taken.add(name);
+    return name;
+  }
+  const dot = name.lastIndexOf('.');
+  const stem = dot > 0 ? name.slice(0, dot) : name;
+  const ext = dot > 0 ? name.slice(dot) : '';
+  let n = 2;
+  while (taken.has(`${stem}-${n}${ext}`)) n++;
+  const unique = `${stem}-${n}${ext}`;
+  taken.add(unique);
+  return unique;
+}
+
 export async function convertFilesToHtml(
   inputs: RawFileInput[],
   options: HtmlConversionOptions = {},
@@ -26,6 +46,11 @@ export async function convertFilesToHtml(
   }
 
   const slices: HtmlSliceItem[] = [];
+  const rejectedLinks: string[] = [];
+  // Two files can arrive with the same name from different folders. Both would
+  // be written to the same path in the ZIP and referenced by the same `src`, so
+  // one image would silently stand in for the other in the sent email.
+  const usedFilenames = new Set<string>();
   let totalBytes = 0;
 
   for (let i = 0; i < inputs.length; i++) {
@@ -39,7 +64,14 @@ export async function convertFilesToHtml(
       );
     }
 
-    const cleanFilename = input.name.replace(/[^\w.-]/g, '_');
+    const cleanFilename = uniqueFilename(
+      input.name.replace(/[^\w.-]/g, '_'),
+      usedFilenames,
+    );
+
+    if (input.linkUrl && !safeLinkUrl(input.linkUrl)) {
+      rejectedLinks.push(input.linkUrl);
+    }
 
     slices.push({
       id: `slice-${i + 1}-${cleanFilename}`,
@@ -73,5 +105,6 @@ export async function convertFilesToHtml(
       byteLength: s.bytes.byteLength,
     })),
     totalBytes,
+    rejectedLinks,
   };
 }

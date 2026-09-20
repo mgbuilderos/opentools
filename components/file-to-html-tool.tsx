@@ -333,17 +333,20 @@ export function FileToHtmlTool() {
     [conversionResult],
   );
 
-  // For email iframe preview: substitute slice preview URLs for local "images/..." paths
+  // The email HTML points at files that exist only once the ZIP is unpacked, so
+  // the preview swaps each one for the blob URL already in memory. It goes by
+  // position rather than by name: the email template emits exactly one `src`
+  // per slice in order (pinned by a test in lib/tools/html/converter.test.ts),
+  // and rebuilding the name here would miss both the escaping applied to the
+  // path prefix and the renaming of duplicate filenames.
   const emailPreviewHtml = useMemo(() => {
     if (!conversionResult) return '';
-    let preview = conversionResult.emailHtml;
-    for (const slice of slices) {
-      const cleanName = slice.name.replace(/[^\w.-]/g, '_');
-      const targetSrc = `${imagePrefix}${cleanName}`;
-      preview = preview.replaceAll(targetSrc, slice.previewUrl);
-    }
-    return preview;
-  }, [conversionResult, slices, imagePrefix]);
+    let index = 0;
+    return conversionResult.emailHtml.replace(/src="[^"]*"/g, (whole) => {
+      const slice = slices[index++];
+      return slice ? `src="${slice.previewUrl}"` : whole;
+    });
+  }, [conversionResult, slices]);
 
   const totalInputBytes = useMemo(
     () => slices.reduce((sum, s) => sum + s.bytes.byteLength, 0),
@@ -479,6 +482,30 @@ export function FileToHtmlTool() {
           >
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <div className="flex-1 font-medium">{errorMessage}</div>
+          </div>
+        )}
+
+        {conversionResult && conversionResult.rejectedLinks.length > 0 && (
+          <div
+            role="alert"
+            className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
+          >
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" />
+            <div className="flex-1">
+              <p className="font-semibold text-destructive">
+                {conversionResult.rejectedLinks.length === 1
+                  ? 'One link was left off the image.'
+                  : `${conversionResult.rejectedLinks.length} links were left off their images.`}
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                Only web and email addresses are written into the HTML, so the
+                rest of the file stays safe to send. Check{' '}
+                {conversionResult.rejectedLinks
+                  .map((link) => `"${link}"`)
+                  .join(', ')}
+                .
+              </p>
+            </div>
           </div>
         )}
 

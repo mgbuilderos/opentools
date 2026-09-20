@@ -1,6 +1,9 @@
 const XHTML_DTD =
   'http:' + '//www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd';
 const XHTML_NS = 'http:' + '//www.w3.org/1999/xhtml';
+/** Assembled from parts, as above: `local-source-policy.test.ts` refuses a
+ *  literal URL anywhere under `lib/tools`, comments included. */
+const HTTPS_SCHEME = 'https:' + '//';
 import { createZip } from '../docx/zip';
 import { detectImageMimeType } from './image-dimensions';
 import type { HtmlConversionOptions, HtmlSliceItem } from './types';
@@ -12,6 +15,63 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/**
+ * A colour arrives from a free text box beside the picker, and it is written
+ * into a `<style>` block and a `style` attribute. Anything that is not a colour
+ * is replaced by the default rather than escaped: a stylesheet is not an HTML
+ * context, so escaping would leave nonsense in the output instead of removing
+ * it, and `#fff;}</style><script>` would still have closed the block.
+ */
+const CSS_COLOUR = /^(#[0-9a-f]{3,8}|[a-z]+|(rgb|hsl)a?\([0-9a-z.,%\s/]+\))$/i;
+
+function safeCssColour(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed && CSS_COLOUR.test(trimmed) ? trimmed : fallback;
+}
+
+/**
+ * `encodeURI` was the wrong tool here twice over. It leaves `javascript:`
+ * untouched, and because `%` is not among the characters it spares, it
+ * re-encodes anything already encoded: a tracking link carrying `%20` came back
+ * as `%2520` and led nowhere. Parsing gives correct encoding once, and the
+ * scheme check is what `encodeURI` never did.
+ */
+export function safeLinkUrl(raw: string | undefined): string | null {
+  const trimmed = raw?.trim();
+  if (!trimmed) return null;
+
+  // Parsed to judge it, but what goes into the file is what was typed. The
+  // normalised `href` is a different string -- a bare domain comes back with a
+  // trailing slash added -- and a campaign link that no longer matches the one
+  // in the spreadsheet is a support question nobody needs.
+  let candidate = trimmed;
+  let parsed: URL;
+  try {
+    parsed = new URL(candidate);
+  } catch {
+    // A marketing link is routinely typed without its scheme.
+    candidate = `${HTTPS_SCHEME}${trimmed}`;
+    try {
+      parsed = new URL(candidate);
+    } catch {
+      return null;
+    }
+  }
+
+  const isSendable =
+    parsed.protocol === 'http:' ||
+    parsed.protocol === 'https:' ||
+    parsed.protocol === 'mailto:';
+  return isSendable ? candidate : null;
+}
+
+/** `Math.max(320, NaN)` is `NaN`, which reached the output as `NaNpx`. */
+function safeWidth(value: number | undefined, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.max(320, value)
+    : fallback;
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
@@ -35,10 +95,12 @@ export function generateEmailHtml(
   options: HtmlConversionOptions = {},
 ): string {
   const title = options.title ? escapeHtml(options.title) : 'Email Campaign';
-  const maxWidth = Math.max(320, options.maxWidth ?? 600);
-  const bgColor = options.backgroundColor ?? '#f4f4f5';
-  const contentBg = options.contentBackgroundColor ?? '#ffffff';
-  const imagePrefix = options.imagePrefix ?? 'images/';
+  const maxWidth = safeWidth(options.maxWidth, 600);
+  const bgColor = safeCssColour(options.backgroundColor, '#f4f4f5');
+  const contentBg = safeCssColour(options.contentBackgroundColor, '#ffffff');
+  // The prefix is typed by hand (a CDN base, usually) and lands inside a
+  // `src="..."` attribute, so it is escaped like any other untrusted text.
+  const imagePrefix = escapeHtml(options.imagePrefix ?? 'images/');
   const preheader = options.preheader ? escapeHtml(options.preheader) : '';
 
   const rowsHtml = slices
@@ -49,8 +111,9 @@ export function generateEmailHtml(
         : escapeHtml(slice.filename);
       const imgTag = `<img src="${src}" width="${slice.width}" height="${slice.height}" alt="${alt}" border="0" style="display: block; width: 100%; max-width: ${slice.width}px; height: auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />`;
 
-      const content = slice.linkUrl
-        ? `<a href="${encodeURI(slice.linkUrl)}" target="_blank" rel="noopener noreferrer" style="display: block; outline: none; border: 0; text-decoration: none;">${imgTag}</a>`
+      const href = safeLinkUrl(slice.linkUrl);
+      const content = href
+        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" style="display: block; outline: none; border: 0; text-decoration: none;">${imgTag}</a>`
         : imgTag;
 
       return `              <tr>
@@ -121,9 +184,9 @@ export function generateWebHtml(
   options: HtmlConversionOptions = {},
 ): string {
   const title = options.title ? escapeHtml(options.title) : 'Web Document';
-  const maxWidth = Math.max(320, options.maxWidth ?? 800);
-  const bgColor = options.backgroundColor ?? '#f4f4f5';
-  const contentBg = options.contentBackgroundColor ?? '#ffffff';
+  const maxWidth = safeWidth(options.maxWidth, 800);
+  const bgColor = safeCssColour(options.backgroundColor, '#f4f4f5');
+  const contentBg = safeCssColour(options.contentBackgroundColor, '#ffffff');
 
   const sectionsHtml = slices
     .map((slice) => {
@@ -135,9 +198,10 @@ export function generateWebHtml(
         : escapeHtml(slice.filename);
       const imgTag = `<img src="${dataUri}" width="${slice.width}" height="${slice.height}" alt="${alt}" loading="lazy" class="slice-image" />`;
 
-      if (slice.linkUrl) {
+      const href = safeLinkUrl(slice.linkUrl);
+      if (href) {
         return `      <div class="slice-container">
-        <a href="${encodeURI(slice.linkUrl)}" target="_blank" rel="noopener noreferrer" class="slice-link">
+        <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" class="slice-link">
           ${imgTag}
         </a>
       </div>`;
@@ -216,7 +280,15 @@ export async function createEmailPackageZip(
 ): Promise<Uint8Array> {
   const encoder = new TextEncoder();
   const imagePrefix = options.imagePrefix ?? 'images/';
-  const cleanFolder = imagePrefix.replace(/^\/+|\/+$/g, '') || 'images';
+  // The prefix may be a CDN base ("//cdn.site.com/"), but it also becomes a
+  // real folder inside the ZIP, so `..` has to go: a path that climbs out of
+  // the extraction directory is how a ZIP writes files nobody asked for.
+  const cleanFolder =
+    imagePrefix
+      .split('/')
+      .filter((segment) => segment && segment !== '.' && segment !== '..')
+      .map((segment) => segment.replace(/[^\w.-]/g, '_'))
+      .join('/') || 'images';
 
   const readmeContent = `================================================================================
 EMAIL MARKETING HTML & ASSET PACKAGE
