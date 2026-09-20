@@ -7313,6 +7313,23 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     destinationUrl: '/developer/advanced?tool=openapi-example-generator',
   },
   {
+    id: 'developer-and-data.sql-to-er-diagram',
+    slug: 'developer-and-data-sql-to-er-diagram',
+    name: 'SQL to ER Diagram Generator',
+    category: 'Developer and Data',
+    // Last in its category, not rank 4. Search Console is evidence of demand,
+    // not evidence this page performs -- and rank <= 5 feeds a capped list that
+    // would evict an established guide to make room for an untested one.
+    rank: 81,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Reads CREATE TABLE statements and draws an entity-relationship diagram as an SVG, with the foreign keys as links between tables. The schema is never uploaded.',
+    destinationUrl: '/developer/advanced?tool=sql-to-er-diagram',
+  },
+  {
     id: 'web-and-seo.meta-tag-generator',
     slug: 'web-and-seo-meta-tag-generator',
     name: 'Meta Tag Generator',

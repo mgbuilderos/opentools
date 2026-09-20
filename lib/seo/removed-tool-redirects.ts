@@ -19,6 +19,12 @@ const EXACT_REDIRECTS: Readonly<Record<string, string>> = {
     '/guides/category/health-and-fitness',
   '/guides/image-image-upscaler': '/guides/category/image',
   '/guides/audio-audio-format-converter': '/guides/category/audio',
+  // Indexed by Google and returning 404: it appeared in Search Console on
+  // 2026-09-20 with an impression and no page behind it. No live tool converts
+  // Markdown to .docx, so this goes to the category that lists what we do have
+  // for documents rather than to a tool that does a different job.
+  '/guides/documents-and-office-markdown-to-docx':
+    '/guides/category/documents-and-office',
   // No video tool is live, so the video hub is gone too; both land on the index.
   '/guides/category/video': '/guides',
   '/guides/video-video-to-gif': '/guides',
