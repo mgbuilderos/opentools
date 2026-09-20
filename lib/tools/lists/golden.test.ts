@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -51,14 +51,24 @@ describe('List Hygiene Frozen Golden Verification', () => {
     const outputCsv = serializeListTable(norm.table);
 
     const goldenPath = path.join(fixturesDir, 'golden-cleaned-subscribers.csv');
-    // If golden does not exist, initialize it
-    try {
-      const expected = readFileSync(goldenPath, 'utf8');
-      expect(outputCsv).toBe(expected);
-    } catch {
-      writeFileSync(goldenPath, outputCsv, 'utf8');
-      expect(outputCsv.length).toBeGreaterThan(50);
-    }
+
+    // Read and compared unconditionally.
+    //
+    // This used to sit in a `try` whose `catch` wrote `outputCsv` to the golden
+    // path and then asserted only that the output was longer than 50
+    // characters. A failing `expect` throws, so the catch caught the very
+    // mismatch the test existed to find, replaced the golden file with the new
+    // wrong output, and passed. Verified on 2026-09-20 by appending a marker
+    // inside `serializeListTable`: the test reported PASS and the committed
+    // golden changed from aa0bb8a9 to abdc47ef with the marker inside it.
+    //
+    // A golden file is a record of what an outside tool approved. A test that
+    // rewrites it when it disagrees cannot fail, and erases the evidence on its
+    // way through. If this file is ever genuinely missing, that is a fault to
+    // fix deliberately, not silently during a test run.
+    const expected = readFileSync(goldenPath, 'utf8');
+
+    expect(outputCsv).toBe(expected);
   });
 
   it('proves non-vacuity: altered input produces altered output', () => {
