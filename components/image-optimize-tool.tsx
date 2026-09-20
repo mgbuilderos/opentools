@@ -14,6 +14,11 @@ import NextImage from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
@@ -75,6 +80,71 @@ function encodeCanvas(
   });
 }
 
+async function optimizeImage({
+  url,
+  width,
+  height,
+  maxWidth,
+  maxHeight,
+  format,
+  quality,
+}: {
+  url: string;
+  width: number;
+  height: number;
+  maxWidth: number;
+  maxHeight: number;
+  format: RasterFormat;
+  quality: number;
+}) {
+  const decoded = await loadImage(url);
+  const dimensions = calculateContainDimensions(
+    width,
+    height,
+    maxWidth,
+    maxHeight,
+  );
+  const canvas = document.createElement('canvas');
+  canvas.width = dimensions.width;
+  canvas.height = dimensions.height;
+  const context = canvas.getContext('2d', {
+    alpha: format !== 'image/jpeg',
+  });
+  if (!context)
+    throw new Error('Canvas processing is unavailable in this browser.');
+  if (format === 'image/jpeg') {
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+  context.drawImage(decoded, 0, 0, canvas.width, canvas.height);
+  const blob = await encodeCanvas(canvas, format, quality / 100);
+  // WebKit answers a WebP request with a PNG rather than failing. Keep what the
+  // browser produced and name the file for the format it actually is.
+  const encodedFormat = blob.type as RasterFormat;
+  if (!supportedRasterTypes.has(encodedFormat)) {
+    throw new Error('This browser did not produce a usable image format.');
+  }
+  const validationUrl = URL.createObjectURL(blob);
+  try {
+    const validationImage = await loadImage(validationUrl);
+    if (
+      validationImage.naturalWidth !== dimensions.width ||
+      validationImage.naturalHeight !== dimensions.height
+    ) {
+      throw new Error('The optimized image failed its dimension check.');
+    }
+  } finally {
+    URL.revokeObjectURL(validationUrl);
+  }
+  return { blob, format: encodedFormat, ...dimensions };
+}
+
+function baseName(fileName: string) {
+  return fileName.replace(/\.[^.]+$/, '') || 'image';
+}
+
 export function ImageOptimizeTool() {
   const fileRef = useRef<HTMLInputElement>(null);
   const sourceRef = useRef<SourceImage | null>(null);
@@ -88,6 +158,8 @@ export function ImageOptimizeTool() {
   const [quality, setQuality] = useState(82);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
   const manifest = publicTools.find((tool) => tool.id === 'image-optimize')!;
 
   useEffect(() => {
@@ -151,6 +223,24 @@ export function ImageOptimizeTool() {
     }
   };
 
+  const chooseImages = (files?: FileList | File[]) => {
+    const selected = Array.from(files ?? []);
+    if (selected.length === 0 || busy || batch.running) return;
+    if (selected.length === 1) {
+      batch.reset();
+      setBatchFiles([]);
+      void chooseImage(selected[0]);
+      return;
+    }
+    clearResult();
+    if (sourceRef.current) URL.revokeObjectURL(sourceRef.current.url);
+    sourceRef.current = null;
+    setSource(null);
+    setError('');
+    batch.reset();
+    setBatchFiles(selected);
+  };
+
   const run = async () => {
     if (!source || busy) return;
     if (
@@ -173,54 +263,19 @@ export function ImageOptimizeTool() {
     clearResult();
     const started = performance.now();
     try {
-      const decoded = await loadImage(source.url);
-      const dimensions = calculateContainDimensions(
-        source.width,
-        source.height,
-        targetMaxWidth,
-        targetMaxHeight,
-      );
-      const canvas = document.createElement('canvas');
-      canvas.width = dimensions.width;
-      canvas.height = dimensions.height;
-      const context = canvas.getContext('2d', {
-        alpha: targetFormat !== 'image/jpeg',
+      const optimized = await optimizeImage({
+        url: source.url,
+        width: source.width,
+        height: source.height,
+        maxWidth: targetMaxWidth,
+        maxHeight: targetMaxHeight,
+        format: targetFormat,
+        quality: targetQuality,
       });
-      if (!context)
-        throw new Error('Canvas processing is unavailable in this browser.');
-      if (targetFormat === 'image/jpeg') {
-        context.fillStyle = '#ffffff';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-      }
-      context.imageSmoothingEnabled = true;
-      context.imageSmoothingQuality = 'high';
-      context.drawImage(decoded, 0, 0, canvas.width, canvas.height);
-      const blob = await encodeCanvas(
-        canvas,
-        targetFormat,
-        targetQuality / 100,
-      );
-      // WebKit answers a WebP request with a PNG rather than failing. Refusing
-      // would leave the tool dead on that browser, so keep what the browser
-      // produced and name the file for the format it actually is.
-      const encodedFormat = blob.type as RasterFormat;
-      if (!supportedRasterTypes.has(encodedFormat)) {
-        throw new Error('This browser did not produce a usable image format.');
-      }
-      const validationUrl = URL.createObjectURL(blob);
-      const validationImage = await loadImage(validationUrl);
-      if (
-        validationImage.naturalWidth !== dimensions.width ||
-        validationImage.naturalHeight !== dimensions.height
-      ) {
-        URL.revokeObjectURL(validationUrl);
-        throw new Error('The optimized image failed its dimension check.');
-      }
+      const validationUrl = URL.createObjectURL(optimized.blob);
       const next = {
         url: validationUrl,
-        blob,
-        format: encodedFormat,
-        ...dimensions,
+        ...optimized,
         durationMs: performance.now() - started,
       };
       resultRef.current = next;
@@ -228,13 +283,13 @@ export function ImageOptimizeTool() {
       announceCompletion({
         operation: 'Image optimizer',
         durationMs: next.durationMs,
-        summary: `Image converted to ${encodedFormat.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
+        summary: `Image converted to ${optimized.format.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
         metrics: [
           { label: 'Before', value: formatBytes(source.file.size) },
-          { label: 'After', value: formatBytes(blob.size) },
+          { label: 'After', value: formatBytes(optimized.blob.size) },
           {
             label: 'Saved',
-            value: `${Math.max(0, Math.round((1 - blob.size / source.file.size) * 100))}%`,
+            value: `${Math.max(0, Math.round((1 - optimized.blob.size / source.file.size) * 100))}%`,
           },
         ],
       });
@@ -249,7 +304,66 @@ export function ImageOptimizeTool() {
     }
   };
 
+  const startBatch = () => {
+    if (
+      !Number.isFinite(maxWidth) ||
+      !Number.isFinite(maxHeight) ||
+      maxWidth < 1 ||
+      maxHeight < 1 ||
+      maxWidth > 12000 ||
+      maxHeight > 12000
+    ) {
+      setError('Width and height must be whole numbers from 1 to 12,000.');
+      return;
+    }
+    setError('');
+    const settings = {
+      maxWidth: Math.floor(maxWidth),
+      maxHeight: Math.floor(maxHeight),
+      format,
+      quality,
+    };
+    void batch.start(batchFiles, async (file, _index, signal) => {
+      if (!supportedRasterTypes.has(file.type as RasterFormat)) {
+        return {
+          status: 'skipped',
+          reason: 'Choose a JPEG, PNG, or WebP image.',
+        };
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        return {
+          status: 'skipped',
+          reason: 'The 25 MB file limit was exceeded.',
+        };
+      }
+      if (signal.aborted) {
+        return { status: 'skipped', reason: 'Batch cancelled.' };
+      }
+      const url = URL.createObjectURL(file);
+      try {
+        const decoded = await loadImage(url);
+        const optimized = await optimizeImage({
+          url,
+          width: decoded.naturalWidth,
+          height: decoded.naturalHeight,
+          ...settings,
+        });
+        return {
+          status: 'done',
+          output: {
+            blob: optimized.blob,
+            fileName: `${baseName(file.name)}-optimized.${extensionForRasterType(optimized.format)}`,
+          },
+        };
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    });
+  };
+
   const clearAll = () => {
+    batch.reset();
+    setBatchFiles([]);
     clearResult();
     if (sourceRef.current) URL.revokeObjectURL(sourceRef.current.url);
     sourceRef.current = null;
@@ -360,22 +474,24 @@ export function ImageOptimizeTool() {
                 <input
                   ref={fileRef}
                   type="file"
+                  multiple
                   accept="image/jpeg,image/png,image/webp"
                   aria-label="Choose image to optimize"
                   className="sr-only"
-                  onChange={(event) =>
-                    void chooseImage(event.target.files?.[0])
-                  }
+                  onChange={(event) => chooseImages(event.target.files ?? [])}
                 />
                 <Button
                   variant="outline"
                   className="h-11 w-full"
-                  disabled={busy}
+                  disabled={busy || batch.running}
                   onClick={() => fileRef.current?.click()}
                 >
                   <FileImage aria-hidden="true" />
-                  {source ? 'Choose another' : 'Choose image'}
+                  {source || batchFiles.length > 0
+                    ? 'Choose another'
+                    : 'Choose image(s)'}
                 </Button>
+                <BatchLocalPromise />
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <label className="text-xs font-semibold">
                     Max width
@@ -384,7 +500,7 @@ export function ImageOptimizeTool() {
                       min="1"
                       max="12000"
                       value={maxWidth}
-                      disabled={busy}
+                      disabled={busy || batch.running}
                       onChange={(event) => {
                         clearResult();
                         setMaxWidth(Number(event.target.value));
@@ -399,7 +515,7 @@ export function ImageOptimizeTool() {
                       min="1"
                       max="12000"
                       value={maxHeight}
-                      disabled={busy}
+                      disabled={busy || batch.running}
                       onChange={(event) => {
                         clearResult();
                         setMaxHeight(Number(event.target.value));
@@ -412,7 +528,7 @@ export function ImageOptimizeTool() {
                   Output format
                   <select
                     value={format}
-                    disabled={busy}
+                    disabled={busy || batch.running}
                     onChange={(event) => {
                       clearResult();
                       setFormat(event.target.value as RasterFormat);
@@ -434,7 +550,7 @@ export function ImageOptimizeTool() {
                     min="10"
                     max="100"
                     value={quality}
-                    disabled={busy || format === 'image/png'}
+                    disabled={busy || batch.running || format === 'image/png'}
                     onChange={(event) => {
                       clearResult();
                       setQuality(Number(event.target.value));
@@ -442,23 +558,25 @@ export function ImageOptimizeTool() {
                     className="mt-2 h-6 w-full cursor-pointer accent-foreground"
                   />
                 </label>
-                <Button
-                  className="mt-5 h-11 w-full"
-                  disabled={
-                    !source ||
-                    busy ||
-                    !Number.isFinite(maxWidth) ||
-                    !Number.isFinite(maxHeight) ||
-                    maxWidth < 1 ||
-                    maxHeight < 1 ||
-                    maxWidth > 12000 ||
-                    maxHeight > 12000
-                  }
-                  onClick={() => void run()}
-                >
-                  <Sparkles aria-hidden="true" />
-                  {busy ? 'Optimizing…' : 'Optimize image'}
-                </Button>
+                {batchFiles.length === 0 ? (
+                  <Button
+                    className="mt-5 h-11 w-full"
+                    disabled={
+                      !source ||
+                      busy ||
+                      !Number.isFinite(maxWidth) ||
+                      !Number.isFinite(maxHeight) ||
+                      maxWidth < 1 ||
+                      maxHeight < 1 ||
+                      maxWidth > 12000 ||
+                      maxHeight > 12000
+                    }
+                    onClick={() => void run()}
+                  >
+                    <Sparkles aria-hidden="true" />
+                    {busy ? 'Optimizing…' : 'Optimize image'}
+                  </Button>
+                ) : null}
                 {source ? (
                   <Button
                     variant="ghost"
@@ -473,6 +591,16 @@ export function ImageOptimizeTool() {
               </div>
             </div>
           </section>
+          {batchFiles.length > 1 ? (
+            <BatchRunnerPanel
+              files={batchFiles}
+              runner={batch}
+              startLabel="Optimize all"
+              zipName="optimized-images.zip"
+              onStart={startBatch}
+              onClear={clearAll}
+            />
+          ) : null}
           {result && source ? (
             <section
               aria-labelledby="image-result-heading"
