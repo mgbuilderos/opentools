@@ -124,6 +124,76 @@ test.describe('File to HTML Converter (/web/file-to-html)', () => {
     }
   });
 
+  /**
+   * The page title, the meta description and the file picker all promise
+   * multi-page PDFs, and nothing tested that claim -- no unit test, no e2e
+   * test, no fixture. The PDF never reaches `convertFilesToHtml`, which refuses
+   * anything that is not an image; the component rasterises each page to a PNG
+   * first, in the browser, which is why this can only be checked here.
+   *
+   * `two-page.pdf` is written by hand in `__fixtures__` so it owes nothing to
+   * the code under test. Poppler's `pdfinfo` reads it as 2 pages at 200x100
+   * pts. The two pages have different shapes so the slices can be told apart
+   * by their dimensions alone.
+   */
+  test('splits a multi-page PDF into one image per page', async ({ page }) => {
+    await page.goto('/web/file-to-html');
+
+    const input = page.locator('input[type="file"]');
+    await input.setInputFiles(path.join(htmlFixturesDir, 'two-page.pdf'));
+
+    // One slice per page, named for the page it came from, and landscape
+    // before portrait -- so the order of the document survived.
+    await expect(page.getByText('two-page_page_1.png')).toBeVisible();
+    await expect(page.getByText('two-page_page_2.png')).toBeVisible();
+
+    // Page 1 is 200x100 pts and page 2 is 100x200, rendered at `scale = 2`
+    // (pdf-slices.ts) for a crisp raster. The shapes prove each slice came
+    // from its own page rather than one page being rendered twice.
+    await expect(page.getByText('400 × 200 px')).toBeVisible();
+    await expect(page.getByText('200 × 400 px')).toBeVisible();
+
+    const convertBtn = page.getByRole('button', {
+      name: 'Generate HTML & Package',
+    });
+    await convertBtn.click();
+    await expect(page.getByText('Conversion Complete')).toBeVisible();
+
+    const downloadZipLink = page.locator('a[download$="_email_package.zip"]');
+    const [zipDownload] = await Promise.all([
+      page.waitForEvent('download'),
+      downloadZipLink.click(),
+    ]);
+    const zipPath = await zipDownload.path();
+    expect(zipPath).toBeTruthy();
+    if (!zipPath) return;
+
+    const zipBytes = new Uint8Array(await readFile(zipPath));
+    const archive = readZip(zipBytes);
+    const images = archive.entries
+      .map((e) => e.path)
+      .filter((p) => p.startsWith('images/'));
+
+    // Two pages in, two images out, and they are real PNGs rather than the
+    // PDF handed through under a new name.
+    expect(images).toHaveLength(2);
+    for (const imagePath of images) {
+      const entry = archive.entries.find((e) => e.path === imagePath)!;
+      const bytes = await extractEntry(zipBytes, entry);
+      expect(bytes.slice(0, 8)).toEqual(
+        new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+      );
+    }
+
+    const indexEntry = archive.entries.find((e) => e.path === 'index.html')!;
+    const indexHtml = new TextDecoder().decode(
+      await extractEntry(zipBytes, indexEntry),
+    );
+    for (const imagePath of images) {
+      expect(indexHtml).toContain(imagePath);
+    }
+  });
+
   test('refuses invalid or non-image files with clear guidance', async ({
     page,
   }) => {
