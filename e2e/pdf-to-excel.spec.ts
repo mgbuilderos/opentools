@@ -143,6 +143,20 @@ test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
     ).not.toBeVisible();
   });
 
+  test('hands a refused statement scan to PDF OCR without choosing it again', async ({
+    page,
+  }) => {
+    await page.goto('/pdf/to-excel');
+    await uploadPdf(page, 'statement-scanned.pdf');
+    await page
+      .getByRole('button', { name: 'Open PDF OCR with this file' })
+      .click();
+    await expect(page).toHaveURL(/\/pdf\/ocr$/u);
+    await expect(
+      page.getByText('statement-scanned.pdf', { exact: true }),
+    ).toBeVisible({ timeout: 10_000 });
+  });
+
   test('extracts statement, displays preview grid, reconciles balance, and downloads valid Excel and CSV', async ({
     page,
   }) => {

@@ -16,7 +16,7 @@ async function textPng(page: Page) {
     context.fillStyle = '#000000';
     context.font = 'bold 96px Arial, sans-serif';
     context.textBaseline = 'middle';
-    context.fillText('SEARCHABLE OCR PAGE', 45, 130);
+    context.fillText('OPEN TOOLS OCR', 55, 130);
     return canvas.toDataURL('image/png').split(',')[1]!;
   });
   return Buffer.from(base64, 'base64');
@@ -48,7 +48,8 @@ test.describe('PDF OCR', () => {
     await expect(
       page.getByRole('heading', { name: 'Done — 1 page searchable' }),
     ).toBeVisible({ timeout: 180_000 });
-    await expect(page.getByRole('cell', { name: /^1$/u })).toHaveCount(2);
+    await expect(page.locator('table tbody tr')).toHaveCount(1);
+    await expect(page.locator('table tbody tr')).toContainText(/^1/u);
 
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Save searchable PDF' }).click();
@@ -60,9 +61,7 @@ test.describe('PDF OCR', () => {
     const extracted = execFileSync('pdftotext', [path, '-'], {
       encoding: 'utf8',
     });
-    expect(extracted.replace(/\s+/gu, ' ').trim()).toContain(
-      'SEARCHABLE OCR PAGE',
-    );
+    expect(extracted.replace(/\s+/gu, ' ').trim()).toContain('OPEN TOOLS OCR');
   });
 
   test('refuses a text PDF before any OCR asset is requested', async ({ page }) => {

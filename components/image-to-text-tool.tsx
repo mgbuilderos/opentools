@@ -397,7 +397,7 @@ export function ImageToTextTool() {
                           <mark
                             key={`${word.text}-${wordIndex}`}
                             title={`${word.confidence.toFixed(1)} confidence`}
-                            className="rounded bg-amber-200 px-0.5 text-amber-950"
+                            className="rounded border border-destructive/35 bg-destructive/10 px-0.5 text-foreground"
                           >
                             {word.text}
                           </mark>
