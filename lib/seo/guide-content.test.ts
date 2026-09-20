@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getGuideBySlug } from './guide-content';
+import { generateToolGuide, getGuideBySlug } from './guide-content';
 import { LIVE_TOOL_CATALOG } from './live-tools';
 import {
   getAllToolSlugs,
@@ -45,7 +45,11 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
 
     expect(mergeGuide.metaTitle).toContain('Merge PDF');
     expect(mergeGuide.metaDescription).toContain('never touch a server');
-    expect(mergeGuide.directAnswer).toContain('To merge pdf without uploading');
+    // Was `toContain('To merge pdf without uploading')`, which pinned the
+    // ungrammatical sentence the template used to produce.
+    expect(mergeGuide.directAnswer).toContain(
+      'To use the OpenTools Merge PDF without uploading',
+    );
     expect(mergeGuide.cspHeader).toContain("connect-src 'none'");
     expect(mergeGuide.diagramSvg).toContain('<svg');
     expect(mergeGuide.steps).toHaveLength(3);
@@ -169,5 +173,41 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
     expect(prose).toContain('not pad');
     // No named portal presets: limits change with every notice.
     expect(prose).not.toMatch(/\b\d+\s*(?:–|-|to)\s*\d+\s*KB\b/u);
+  });
+
+  /**
+   * Google prints the title verbatim, so a broken one is the first thing a
+   * searcher reads. The template used to be `How to ${name} ...`, and because
+   * tool names here are noun phrases it produced "How to MP3 Cutter in your
+   * browser" on **548 of 562 guides** -- every guide but fourteen.
+   *
+   * Leading with the name is also what the demand looks like: every query in
+   * Search Console on 2026-09-20 was a tool name, not a how-to phrase.
+   */
+  it('starts every guide title with the tool name, and reads as English', () => {
+    const offenders: string[] = [];
+
+    for (const tool of LIVE_TOOL_CATALOG) {
+      const guide = generateToolGuide(tool);
+      if (!guide.metaTitle.startsWith(tool.name)) {
+        offenders.push(guide.metaTitle);
+      }
+      // "How to <noun phrase>" is the specific break being guarded. "How to
+      // use <name>" is fine and is what the HowTo schema says.
+      if (/How to (?!use )/u.test(guide.metaTitle)) {
+        offenders.push(guide.metaTitle);
+      }
+      if (/How to (?!use )/u.test(guide.heading)) {
+        offenders.push(guide.heading);
+      }
+      if (guide.directAnswer.startsWith(`To ${tool.name.toLowerCase()} `)) {
+        offenders.push(guide.directAnswer.slice(0, 60));
+      }
+    }
+
+    expect(
+      offenders.slice(0, 5),
+      `${offenders.length} guide strings do not read as English`,
+    ).toEqual([]);
   });
 });

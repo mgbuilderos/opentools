@@ -202,14 +202,20 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   const localModel = loadsLocalModel(route);
   const cspHeader = contentSecurityPolicy({ localModel });
 
-  const metaTitle = `How to ${tool.name} in your browser — free, no upload`;
+  // Tool names in this catalogue are noun phrases -- "MP3 Cutter", "SQL to ER
+  // Diagram Generator" -- so "How to <name>" was ungrammatical on 548 of the
+  // 562 guides. Google shows the title verbatim, so that was the first thing a
+  // searcher saw. Leading with the name also matches what people actually
+  // type: every query in Search Console on 2026-09-20 was a tool name
+  // ("latex table generator", "er diagram from sql"), not a how-to phrase.
+  const metaTitle = `${tool.name} — free, in your browser, no upload`;
   const metaDescription = `${tool.name} runs in your own browser tab. Your files and inputs never touch a server, no account is needed, and there is no paywall.`;
   const eyebrow = `${tool.category} / Free Browser Utility`;
-  const heading = `How to ${tool.name} Online Without Uploading Your Files`;
+  const heading = `${tool.name} — online, without uploading your files`;
   const detail = GUIDE_DETAILS[tool.slug];
   const directAnswer =
     detail?.directAnswer ??
-    `To ${tool.name.toLowerCase()} without uploading anything: open the OpenTools ${tool.name} workbench, load your input, and run it. The work happens in the page itself using ${runtime}, and the result is saved straight from your browser to your own disk.`;
+    `To use the OpenTools ${tool.name} without uploading anything: open it, load your input, and run it. The work happens in the page itself using ${runtime}, and the result is saved straight from your browser to your own disk.`;
   const leadParagraph =
     detail?.leadParagraph ??
     `${tool.name} runs inside your browser tab. Where a conventional online converter sends your file to its servers and returns a result, this tool reads the file in the page using ${tool.executionMode === 'local-wasm' ? 'WebAssembly and typed memory buffers' : 'the browser\x27s own APIs'}. Your files and inputs never touch a server.`;
@@ -328,7 +334,7 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
       },
       {
         '@type': 'HowTo',
-        name: `How to ${tool.name} in your browser`,
+        name: `How to use ${tool.name} in your browser`,
         description: directAnswer,
         step: steps.map((step, index) => ({
           '@type': 'HowToStep',
