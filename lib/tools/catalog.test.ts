@@ -3,12 +3,14 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 import {
+  NAVIGATION_MAJOR_SECTIONS,
   publicTools,
   searchTools,
   toolDestinationsForGroup,
   toolGroups,
   toolsForGroup,
 } from './catalog';
+import { groupIcons } from '@/components/category-icons';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
@@ -101,23 +103,14 @@ describe('public canary catalog', () => {
     );
     const assigned = new Set(assignedIds);
 
-    // Six workbenches sit in categories the nine workspaces do not cover --
-    // Finance, Science, Creator, Life Admin, Document and Date. Placing them
-    // means either forcing them somewhere they do not belong or adding
-    // workspaces to the home page, which changes what every visitor sees
-    // first. That is the owner's call, so they are listed here rather than
-    // hidden: the list may shrink, and anything NOT on it fails.
-    const awaitingAWorkspace = [
-      'productivity-workbench',
-      'finance-business-workbench',
-      'science-education-workbench',
-      'document-workbench',
-      'creator-workbench',
-      'life-admin-workbench',
-    ];
+    // The six workbenches that used to be excused here -- Documents, Finance,
+    // Science, Creator, Life admin and Planning -- have workspaces now. The
+    // owner took that decision on 2026-09-20 after being shown that they, and
+    // Video, accounted for 239 live destinations no menu path could reach.
+    // There is no exception list any more: a tool in no workspace fails.
     const unassigned = publicTools
       .map((tool) => tool.id)
-      .filter((id) => !assigned.has(id) && !awaitingAWorkspace.includes(id));
+      .filter((id) => !assigned.has(id));
     expect(
       unassigned,
       `reachable by URL but listed in no workspace: ${unassigned.join(', ')}`,
@@ -128,26 +121,101 @@ describe('public canary catalog', () => {
     );
     expect(duplicated, 'listed in more than one workspace').toEqual([]);
 
-    expect(toolGroups).toHaveLength(9);
+    expect(toolGroups).toHaveLength(17);
+  });
+
+  it('shows every workspace in the sidebar, with an icon', () => {
+    // `video` was a complete group with a live tool, and the sidebar never
+    // listed it, because the sidebar renders NAVIGATION_MAJOR_SECTIONS and
+    // nothing required a group to appear there. Assigning a tool to a group it
+    // could not be navigated to passed every gate for weeks.
+    const navIds = NAVIGATION_MAJOR_SECTIONS.flatMap(
+      (section) => section.groupCategoryIds,
+    );
+    const groupIds = toolGroups.map((group) => group.id);
+
+    const missing = groupIds.filter((id) => !navIds.includes(id));
+    expect(
+      missing,
+      `defined as a workspace but absent from the sidebar: ${missing.join(', ')}`,
+    ).toEqual([]);
+
+    const unknown = navIds.filter((id) => !groupIds.includes(id));
+    expect(unknown, 'listed in the sidebar but not a workspace').toEqual([]);
+
+    const repeated = navIds.filter((id, i) => navIds.indexOf(id) !== i);
+    expect(repeated, 'listed in more than one sidebar section').toEqual([]);
+
+    // A group with no icon renders `undefined` as a component and takes the
+    // whole sidebar down on first paint.
+    const iconless = groupIds.filter((id) => !groupIcons[id]);
+    expect(iconless, 'workspace with no sidebar icon').toEqual([]);
+  });
+
+  it('leaves no destination reachable by search alone', () => {
+    // The count the owner was shown on 2026-09-20: 677 destinations exist and
+    // the sidebar reached 438 of them. Search found the rest; browsing did not.
+    const everyDestination = publicTools.reduce(
+      (total, tool) => total + (tool.searchEntries?.length || 1),
+      0,
+    );
+    const navIds = new Set(
+      NAVIGATION_MAJOR_SECTIONS.flatMap((section) => section.groupCategoryIds),
+    );
+    const reachable = toolGroups
+      .filter((group) => navIds.has(group.id))
+      .reduce(
+        (total, group) => total + toolDestinationsForGroup(group).length,
+        0,
+      );
+
+    expect(everyDestination).toBe(677);
+    expect(reachable).toBe(everyDestination);
   });
 
   it('keeps the evidence-weighted launch order explicit', () => {
+    // Order follows the sidebar's own four sections, so the list a visitor
+    // scans and the list the home page tabs render are the same sequence.
     expect(toolGroups.map((group) => group.id)).toEqual([
       'pdf',
       'images',
       'audio',
+      'video',
+      'documents',
+      'files',
+      'text-data',
+      'spreadsheets',
+      'developer-files',
+      'web-seo',
+      'calculators',
+      'dates',
+      'finance',
+      'science',
+      'qr-barcode',
+      'creator',
+      'life-admin',
+    ]);
+    expect(toolsForGroup(toolGroups[0]!)[0]?.id).toBe('pdf-merge');
+
+    // Every id that existed before the 2026-09-20 rebuild still resolves,
+    // because `/?category=<id>` is a public URL and an unknown one silently
+    // falls back to PDF rather than telling anyone it is wrong.
+    for (const id of [
+      'pdf',
+      'images',
+      'audio',
+      'video',
       'text-data',
       'developer-files',
       'calculators',
       'qr-barcode',
       'web-seo',
-      // Video is last deliberately. The order above is evidence-weighted, and
-      // nothing is known yet about how the video tool performs — it shipped
-      // with one operation on 2026-09-19. Claiming a higher position would be
-      // claiming evidence that does not exist.
-      'video',
-    ]);
-    expect(toolsForGroup(toolGroups[0]!)[0]?.id).toBe('pdf-merge');
+    ]) {
+      expect(
+        toolGroups.some((group) => group.id === id),
+        `category URL /?category=${id} no longer resolves`,
+      ).toBe(true);
+    }
   });
 
   it('gives every task in a selected category equal destination hierarchy', () => {

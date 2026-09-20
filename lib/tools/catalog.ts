@@ -1439,21 +1439,43 @@ export const publicTools: ToolManifest[] = [
 ];
 
 export interface ToolGroup {
+  // Listed in sidebar order. Each id is also a public URL (`/?category=<id>`),
+  // so an id is added or kept, never renamed -- `home-workspace.tsx` answers an
+  // unknown category with PDF instead of saying the link is dead.
   id:
     | 'pdf'
     | 'images'
-    | 'text-data'
-    | 'developer-files'
-    | 'calculators'
-    | 'web-seo'
-    | 'qr-barcode'
     | 'audio'
-    | 'video';
+    | 'video'
+    | 'documents'
+    | 'files'
+    | 'text-data'
+    | 'spreadsheets'
+    | 'developer-files'
+    | 'web-seo'
+    | 'calculators'
+    | 'dates'
+    | 'finance'
+    | 'science'
+    | 'qr-barcode'
+    | 'creator'
+    | 'life-admin';
   name: string;
   shortDescription: string;
   toolIds: string[];
 }
 
+// Seventeen groups, one per kind of work a visitor arrives looking for.
+//
+// There were nine, and they hid a third of the site: `video` was a group the
+// sidebar never listed, and six workbenches -- Documents, Finance, Science,
+// Creator, Life admin and Planning -- belonged to no group at all, so 239 live
+// destinations could be reached only by typing the right word into search.
+// Google was already sending people to one of them (`latex table generator`
+// resolves to `/documents/workbench`) with no menu path to follow.
+//
+// Every id that existed before is kept, contents reshuffled, because
+// `/?category=<id>` is a public URL. New work gets a new id; nothing is renamed.
 export const toolGroups: ToolGroup[] = [
   {
     id: 'pdf',
@@ -1492,55 +1514,55 @@ export const toolGroups: ToolGroup[] = [
     toolIds: ['mp3-toolkit', 'audio-convert'],
   },
   {
+    id: 'video',
+    name: 'Video',
+    shortDescription:
+      'Trim, mute and extract audio from MP4 and MOV without re-encoding.',
+    toolIds: ['video-trim'],
+  },
+  {
+    id: 'documents',
+    name: 'Documents & office',
+    shortDescription:
+      'Word and office documents, LaTeX tables, citations, and letters.',
+    toolIds: ['document-workbench', 'docx-metadata'],
+  },
+  {
+    id: 'files',
+    name: 'Files & archives',
+    shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
+    toolIds: ['file-hash', 'archive-toolkit', 'file-workbench'],
+  },
+  {
     id: 'text-data',
-    name: 'Text & data',
-    shortDescription: 'Case conversion, JSON, and CSV utilities.',
+    name: 'Text & writing',
+    shortDescription: 'Case conversion, counting, cleaning, and writing tools.',
+    toolIds: ['text-case-converter', 'text-workbench', 'writing-workbench'],
+  },
+  {
+    id: 'spreadsheets',
+    name: 'Spreadsheets & data',
+    shortDescription: 'JSON, CSV, Excel, and tabular data cleanup.',
     toolIds: [
-      'text-case-converter',
-      'text-workbench',
-      'writing-workbench',
-      'json-format',
-      'csv-to-json',
       'spreadsheet-workbench',
       'excel-converter',
-      'subtitle-workbench',
-      'docx-metadata',
+      'csv-to-json',
+      'json-format',
       'list-hygiene',
     ],
   },
   {
     id: 'developer-files',
-    name: 'Developer & files',
-    shortDescription: 'Base64, UUIDs, timestamps, hashes, and files.',
+    name: 'Developer',
+    shortDescription: 'Base64, UUIDs, timestamps, regex, and schema tools.',
     toolIds: [
       'base64-encode',
       'base64-decode',
       'uuid-generator',
       'unix-timestamp',
-      'file-hash',
-      'archive-toolkit',
-      'file-workbench',
       'developer-data-workbench',
       'developer-advanced-workbench',
     ],
-  },
-  {
-    id: 'calculators',
-    name: 'Calculators',
-    shortDescription: 'Percentage, date difference, and math utilities.',
-    toolIds: [
-      'percentage-calculator',
-      'math-workbench',
-      'date-difference',
-      'age-calculator',
-      'date-workbench',
-    ],
-  },
-  {
-    id: 'qr-barcode',
-    name: 'QR & barcodes',
-    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
-    toolIds: ['qr-barcode-workbench'],
   },
   {
     id: 'web-seo',
@@ -1549,11 +1571,51 @@ export const toolGroups: ToolGroup[] = [
     toolIds: ['web-workbench', 'file-to-html'],
   },
   {
-    id: 'video',
-    name: 'Video',
-    shortDescription:
-      'Trim, mute and extract audio from MP4 and MOV without re-encoding.',
-    toolIds: ['video-trim'],
+    id: 'calculators',
+    name: 'Calculators & units',
+    shortDescription: 'Percentages, arithmetic, formulas, and unit conversion.',
+    toolIds: ['percentage-calculator', 'math-workbench'],
+  },
+  {
+    id: 'dates',
+    name: 'Dates & planning',
+    shortDescription: 'Date maths, age, timesheets, schedules, and checklists.',
+    toolIds: [
+      'date-difference',
+      'age-calculator',
+      'date-workbench',
+      'productivity-workbench',
+    ],
+  },
+  {
+    id: 'finance',
+    name: 'Finance & business',
+    shortDescription: 'Loans, tax, invoices, margins, and business maths.',
+    toolIds: ['finance-business-workbench'],
+  },
+  {
+    id: 'science',
+    name: 'Science & learning',
+    shortDescription: 'Physics, chemistry, statistics, and study tools.',
+    toolIds: ['science-education-workbench'],
+  },
+  {
+    id: 'qr-barcode',
+    name: 'QR & barcodes',
+    shortDescription: 'QR payloads, SVG sheets, product codes, and labels.',
+    toolIds: ['qr-barcode-workbench'],
+  },
+  {
+    id: 'creator',
+    name: 'Creator & social',
+    shortDescription: 'Captions, subtitles, thumbnails, and social formats.',
+    toolIds: ['creator-workbench', 'subtitle-workbench'],
+  },
+  {
+    id: 'life-admin',
+    name: 'India & life admin',
+    shortDescription: 'Indian paperwork, identifiers, and household admin.',
+    toolIds: ['life-admin-workbench'],
   },
 ];
 
@@ -1690,54 +1752,15 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
     ].filter((section) => section.destinations.length > 0);
   }
 
-  if (group.id === 'text-data') {
-    const isData = (d: ToolDestination) =>
-      d.id === 'json-format' ||
-      d.id === 'csv-to-json' ||
-      d.id.startsWith('spreadsheet-workbench');
-
-    const isText = (d: ToolDestination) =>
-      d.id === 'text-case-converter' ||
-      d.id.startsWith('text-workbench') ||
-      d.id.startsWith('writing-workbench');
-
-    const data = destinations.filter(isData);
-    const text = destinations.filter(isText);
-    const assigned = new Set([
-      ...data.map((d) => d.id),
-      ...text.map((d) => d.id),
-    ]);
-    const remaining = destinations.filter((d) => !assigned.has(d.id));
-
-    return [
-      {
-        id: 'data-spreadsheets',
-        title: 'Data Serialization & Spreadsheets',
-        description:
-          'Format JSON, convert CSVs, and manipulate tabular datasets.',
-        destinations: data,
-      },
-      {
-        id: 'typography-writing',
-        title: 'Typography, Formatting & Writing',
-        description:
-          'Case conversion, text inspection, word counting, and writing tools.',
-        destinations: [...text, ...remaining],
-      },
-    ].filter((section) => section.destinations.length > 0);
-  }
-
   if (group.id === 'developer-files') {
     const isTokens = (d: ToolDestination) =>
       d.id === 'base64-encode' ||
       d.id === 'base64-decode' ||
       d.id === 'uuid-generator' ||
-      d.id === 'unix-timestamp' ||
-      d.id === 'file-hash';
+      d.id === 'unix-timestamp';
     const isWorkbench = (d: ToolDestination) =>
       d.id.startsWith('developer-data-workbench') ||
-      d.id.startsWith('developer-advanced-workbench') ||
-      d.id.startsWith('file-workbench');
+      d.id.startsWith('developer-advanced-workbench');
 
     const tokens = destinations.filter(isTokens);
     const workbenches = destinations.filter(isWorkbench);
@@ -1751,49 +1774,14 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       {
         id: 'encodings-tokens-hashes',
         title: 'Encodings, Tokens & Hashes',
-        description: 'Base64, UUID v4, timestamps, and checksums.',
+        description: 'Base64, UUID v4, and Unix timestamps.',
         destinations: tokens,
       },
       {
         id: 'engineering-workbenches',
-        title: 'Engineering Workbenches & Files',
-        description:
-          'Type generators, regex, token parsers, and binary file tools.',
+        title: 'Engineering Workbenches',
+        description: 'Type generators, regex, token parsers, and converters.',
         destinations: [...workbenches, ...remaining],
-      },
-    ].filter((section) => section.destinations.length > 0);
-  }
-
-  if (group.id === 'calculators') {
-    const isMath = (d: ToolDestination) =>
-      d.id === 'percentage-calculator' || d.id.startsWith('math-workbench');
-    const isDate = (d: ToolDestination) =>
-      d.id === 'date-difference' ||
-      d.id === 'age-calculator' ||
-      d.id.startsWith('date-workbench');
-
-    const math = destinations.filter(isMath);
-    const date = destinations.filter(isDate);
-    const assigned = new Set([
-      ...math.map((d) => d.id),
-      ...date.map((d) => d.id),
-    ]);
-    const remaining = destinations.filter((d) => !assigned.has(d.id));
-
-    return [
-      {
-        id: 'math-calculations',
-        title: 'Math & Precision Calculations',
-        description:
-          'Percentages, arithmetic, scientific formulas, and unit conversions.',
-        destinations: math,
-      },
-      {
-        id: 'datetime-chronometry',
-        title: 'Date, Time & Chronometry',
-        description:
-          'Date differences, age counter, business days, and timesheets.',
-        destinations: [...date, ...remaining],
       },
     ].filter((section) => section.destinations.length > 0);
   }
@@ -1867,21 +1855,40 @@ export interface NavMajorSection {
   groupCategoryIds: ToolGroup['id'][];
 }
 
+// The headings a visitor reads before they read a category name, so they say
+// what the visitor has or wants -- not how the codebase is organised. The three
+// they replace ("Workspaces", "Engineering & Data", "Utilities & Design") were
+// internal language: nobody searches for a workspace, and calling PDF/Image/Audio
+// workspaces implied the other eleven categories were something lesser.
+//
+// Every group id in `toolGroups` must appear here exactly once. A group listed
+// nowhere is invisible in the sidebar however complete its tools are, which is
+// what happened to `video`; `catalog.test.ts` now fails if it happens again.
 export const NAVIGATION_MAJOR_SECTIONS: NavMajorSection[] = [
   {
-    id: 'primary-workspaces',
-    title: 'Workspaces',
-    groupCategoryIds: ['pdf', 'images', 'audio'],
+    id: 'files-you-have',
+    title: 'Files you have',
+    groupCategoryIds: ['pdf', 'images', 'audio', 'video', 'documents', 'files'],
   },
   {
-    id: 'engineering-data',
-    title: 'Engineering & Data',
-    groupCategoryIds: ['developer-files', 'text-data'],
+    id: 'text-data-code',
+    title: 'Text, data & code',
+    groupCategoryIds: [
+      'text-data',
+      'spreadsheets',
+      'developer-files',
+      'web-seo',
+    ],
   },
   {
-    id: 'utilities-design',
-    title: 'Utilities & Design',
-    groupCategoryIds: ['web-seo', 'qr-barcode', 'calculators'],
+    id: 'work-it-out',
+    title: 'Work it out',
+    groupCategoryIds: ['calculators', 'dates', 'finance', 'science'],
+  },
+  {
+    id: 'everyday',
+    title: 'Everyday',
+    groupCategoryIds: ['qr-barcode', 'creator', 'life-admin'],
   },
 ];
 

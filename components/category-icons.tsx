@@ -21,6 +21,10 @@ import {
   Image as ImageIcon,
   Landmark,
   ListOrdered,
+  FolderArchive,
+  Table2,
+  CalendarClock,
+  FileType2,
   Megaphone,
   QrCode,
   RotateCw,
@@ -33,16 +37,27 @@ import {
 } from 'lucide-react';
 import type { ToolDestination, ToolGroup } from '@/lib/tools/catalog';
 
+// One icon per group in `toolGroups`. A missing entry renders `undefined` as a
+// component and takes the whole sidebar down, so `catalog.test.ts` asserts the
+// two stay in step rather than leaving it to a runtime crash.
 export const groupIcons: Record<ToolGroup['id'], typeof FileStack> = {
   pdf: FileStack,
   images: ImageIcon,
-  'text-data': Type,
-  'developer-files': Braces,
-  calculators: Calculator,
-  'web-seo': Globe2,
-  'qr-barcode': QrCode,
   audio: AudioLines,
   video: Film,
+  documents: FileType2,
+  files: FolderArchive,
+  'text-data': Type,
+  spreadsheets: Table2,
+  'developer-files': Braces,
+  'web-seo': Globe2,
+  calculators: Calculator,
+  dates: CalendarClock,
+  finance: Landmark,
+  science: FlaskConical,
+  'qr-barcode': QrCode,
+  creator: Megaphone,
+  'life-admin': BriefcaseBusiness,
 };
 
 export function destinationIcon(
