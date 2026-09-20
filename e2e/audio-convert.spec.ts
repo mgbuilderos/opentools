@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { expect, test, type Download, type Page } from '@playwright/test';
 
+import { readZip } from '../lib/tools/archive/zip-reader';
 import { decodeWav } from '../lib/tools/audio/wav';
 
 const fixtureDir = path.join(
@@ -57,7 +58,35 @@ function peakOf(samples: Float32Array) {
 }
 
 test.describe('Audio to WAV converter', () => {
-  test('says what the file is before anything is converted', async ({ page }) => {
+  test('converts three recordings and downloads every WAV as a ZIP', async ({
+    page,
+  }) => {
+    const source = await readFile(path.join(fixtureDir, STEREO_WAV));
+    await page.goto('/audio/convert');
+    await page.getByLabel('Choose an audio file').setInputFiles([
+      { name: 'first.wav', mimeType: 'audio/wav', buffer: source },
+      { name: 'second.wav', mimeType: 'audio/wav', buffer: source },
+      { name: 'third.wav', mimeType: 'audio/wav', buffer: source },
+    ]);
+
+    await page.getByRole('button', { name: 'Convert all to WAV' }).click();
+    await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3, {
+      timeout: 60_000,
+    });
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as ZIP' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('converted-audio.zip');
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+    expect(
+      readZip(new Uint8Array(await readFile(downloadPath!))).entries,
+    ).toHaveLength(3);
+  });
+
+  test('says what the file is before anything is converted', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, STEREO_WAV);
 
@@ -66,10 +95,14 @@ test.describe('Audio to WAV converter', () => {
     await expect(page.getByText('stereo', { exact: true })).toBeVisible();
     await expect(page.getByText('0:00.10')).toBeVisible();
     // The claim that matters: the decode used the file's own rate.
-    await expect(page.getByText('nothing was resampled on the way in')).toBeVisible();
+    await expect(
+      page.getByText('nothing was resampled on the way in'),
+    ).toBeVisible();
   });
 
-  test('the file it hands back really is a WAV of the right length', async ({ page }) => {
+  test('the file it hands back really is a WAV of the right length', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, STEREO_WAV);
     const wav = decodeWav(await convert(page));
@@ -81,7 +114,9 @@ test.describe('Audio to WAV converter', () => {
     expect(peakOf(wav.channels[0])).toBeCloseTo(0.8, 2);
   });
 
-  test('decodes a compressed file and writes out its samples', async ({ page }) => {
+  test('decodes a compressed file and writes out its samples', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, FLAC);
     await expect(page.getByText('FLAC · FLAC, 24-bit')).toBeVisible();
@@ -114,7 +149,9 @@ test.describe('Audio to WAV converter', () => {
     expect(wav.channels[0]).toHaveLength(1764);
   });
 
-  test('changes the sample rate through the browser’s own resampler', async ({ page }) => {
+  test('changes the sample rate through the browser’s own resampler', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, STEREO_WAV);
     await page.getByLabel('Sample rate').selectOption('22050');
@@ -126,7 +163,9 @@ test.describe('Audio to WAV converter', () => {
     expect(wav.channels[0].length).toBeLessThanOrEqual(2210);
   });
 
-  test('puts the loudest moment exactly where it was asked to go', async ({ page }) => {
+  test('puts the loudest moment exactly where it was asked to go', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, STEREO_WAV);
     await page.getByLabel(/Normalise the peak to/u).fill('3');
@@ -137,7 +176,9 @@ test.describe('Audio to WAV converter', () => {
     expect(dbfs).toBeLessThan(-2.9);
   });
 
-  test('writes 24-bit and 32-bit float when those are chosen', async ({ page }) => {
+  test('writes 24-bit and 32-bit float when those are chosen', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, STEREO_WAV);
 
@@ -167,7 +208,9 @@ test.describe('Audio to WAV converter', () => {
     test(`converts ${what}`, async ({ page }) => {
       await page.goto('/audio/convert');
       await choose(page, fixture);
-      await expect(page.getByRole('button', { name: 'Convert to WAV' })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'Convert to WAV' }),
+      ).toBeVisible();
 
       const wav = decodeWav(await convert(page));
       expect(wav.channels[0].length).toBeGreaterThan(700);
@@ -179,10 +222,14 @@ test.describe('Audio to WAV converter', () => {
     await page.goto('/audio/convert');
     await choose(page, 'notes.txt', Buffer.from('this is not audio at all'));
     await expect(page.getByRole('alert')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Convert to WAV' })).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Convert to WAV' }),
+    ).toHaveCount(0);
   });
 
-  test('refuses a backwards trim range instead of writing an empty file', async ({ page }) => {
+  test('refuses a backwards trim range instead of writing an empty file', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     await choose(page, STEREO_WAV);
     await page.getByLabel('Start at (seconds)').fill('0.08');
@@ -193,7 +240,9 @@ test.describe('Audio to WAV converter', () => {
     await expect(page.getByRole('button', { name: /^Save / })).toHaveCount(0);
   });
 
-  test('names decibels, not seconds, when the level box is wrong', async ({ page }) => {
+  test('names decibels, not seconds, when the level box is wrong', async ({
+    page,
+  }) => {
     // This field reused the seconds parser, so an unparseable level reported
     // "must be a number of seconds" — the wrong units, for the wrong field.
     await page.goto('/audio/convert');
@@ -224,17 +273,24 @@ test.describe('Audio to WAV converter', () => {
     });
   }
 
-  test('never claims to encode MP3, because it has no encoder', async ({ page }) => {
+  test('never claims to encode MP3, because it has no encoder', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
-    await expect(page.getByText('There is no MP3 encoder on this page')).toBeVisible();
+    await expect(
+      page.getByText('There is no MP3 encoder on this page'),
+    ).toBeVisible();
   });
 
-  test('sends nothing off this origin while doing the work', async ({ page }) => {
+  test('sends nothing off this origin while doing the work', async ({
+    page,
+  }) => {
     await page.goto('/audio/convert');
     const origin = new URL(page.url()).origin;
     const offOrigin: string[] = [];
     page.on('request', (request) => {
-      if (new URL(request.url()).origin !== origin) offOrigin.push(request.url());
+      if (new URL(request.url()).origin !== origin)
+        offOrigin.push(request.url());
     });
 
     await choose(page, FLAC);

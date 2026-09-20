@@ -13,6 +13,11 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { decodeAudioFile, resample } from '@/lib/tools/audio/decode';
@@ -123,6 +128,74 @@ function readSeconds(value: string, label: string): number | null {
   return parsed;
 }
 
+interface AudioConversionSettings {
+  channelChoice: ChannelChoice;
+  depth: WavBitDepth;
+  endAt: number | null;
+  fadeIn: number;
+  fadeOut: number;
+  normalize: number | null;
+  rateChoice: RateChoice;
+  startAt: number | null;
+}
+
+async function convertAudioData(
+  input: AudioData,
+  settings: AudioConversionSettings,
+) {
+  const steps: string[] = [];
+  let audio = input;
+
+  if (settings.startAt !== null || settings.endAt !== null) {
+    const total = durationSeconds(audio);
+    audio = trim(audio, settings.startAt ?? 0, settings.endAt ?? total);
+    steps.push(`trimmed to ${formatClock(durationSeconds(audio))}`);
+  }
+
+  if (settings.channelChoice === 'mono' && audio.channels.length > 1) {
+    audio = toMono(audio);
+    steps.push('mixed down to mono');
+  } else if (
+    settings.channelChoice === 'left' ||
+    settings.channelChoice === 'right'
+  ) {
+    const index = settings.channelChoice === 'left' ? 0 : 1;
+    audio = extractChannel(audio, index);
+    steps.push(`kept the ${settings.channelChoice} channel`);
+  }
+
+  if (settings.rateChoice !== 'keep') {
+    const target = Number(settings.rateChoice);
+    if (target !== audio.sampleRate) {
+      audio = await resample(audio, target);
+      steps.push(`resampled to ${formatHertz(target)}`);
+    }
+  }
+
+  if (settings.fadeIn > 0 || settings.fadeOut > 0) {
+    audio = applyFade(audio, settings.fadeIn, settings.fadeOut);
+    steps.push('faded');
+  }
+
+  if (settings.normalize !== null) {
+    audio = normalizePeak(audio, settings.normalize);
+    steps.push(`normalised to ${settings.normalize.toFixed(1)} dBFS`);
+  }
+
+  const projected = wavByteLength(audio, settings.depth);
+  if (projected > MAX_OUTPUT_BYTES) {
+    throw new Error(
+      `That would produce a ${formatBytes(projected)} WAV, which is more than this tab can hold. Trim it, or choose a lower bit depth or sample rate.`,
+    );
+  }
+
+  return { audio, bytes: encodeWav(audio, settings.depth), steps };
+}
+
+function wavNameFor(fileName: string) {
+  return `${fileName.replace(/\.[^.]+$/u, '') || 'audio'}.wav`;
+}
+
 export function AudioConvertTool() {
   const fileRef = useRef<HTMLInputElement>(null);
   const savedRef = useRef<Saved | null>(null);
@@ -132,6 +205,8 @@ export function AudioConvertTool() {
   const [saved, setSaved] = useState<Saved | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
 
   const [depth, setDepth] = useState<WavBitDepth>(16);
   const [channelChoice, setChannelChoice] = useState<ChannelChoice>('keep');
@@ -204,6 +279,33 @@ export function AudioConvertTool() {
     }
   };
 
+  const onChooseFiles = (files?: FileList | File[]) => {
+    const selected = Array.from(files ?? []);
+    if (selected.length === 0 || busy || batch.running) return;
+    if (selected.length === 1) {
+      batch.reset();
+      setBatchFiles([]);
+      void onChoose(selected[0]);
+      return;
+    }
+    clearSaved();
+    setLoaded(null);
+    setError('');
+    batch.reset();
+    setBatchFiles(selected);
+  };
+
+  const getSettings = (): AudioConversionSettings => ({
+    channelChoice,
+    depth,
+    endAt: readSeconds(endAt, 'The end time'),
+    fadeIn: readSeconds(fadeIn, 'The fade in') ?? 0,
+    fadeOut: readSeconds(fadeOut, 'The fade out') ?? 0,
+    normalize: readDecibelsBelowFullScale(normalize),
+    rateChoice,
+    startAt: readSeconds(startAt, 'The start time'),
+  });
+
   const onConvert = async () => {
     if (!loaded) return;
     clearSaved();
@@ -211,64 +313,16 @@ export function AudioConvertTool() {
     setBusy('Converting…');
     const started = performance.now();
     try {
-      const steps: string[] = [];
-      let audio = loaded.audio;
-
-      const from = readSeconds(startAt, 'The start time');
-      const to = readSeconds(endAt, 'The end time');
-      if (from !== null || to !== null) {
-        const total = durationSeconds(audio);
-        audio = trim(audio, from ?? 0, to ?? total);
-        steps.push(`trimmed to ${formatClock(durationSeconds(audio))}`);
-      }
-
-      if (channelChoice === 'mono' && audio.channels.length > 1) {
-        audio = toMono(audio);
-        steps.push('mixed down to mono');
-      } else if (channelChoice === 'left' || channelChoice === 'right') {
-        const index = channelChoice === 'left' ? 0 : 1;
-        audio = extractChannel(audio, index);
-        steps.push(`kept the ${channelChoice} channel`);
-      }
-
-      if (rateChoice !== 'keep') {
-        const target = Number(rateChoice);
-        if (target !== audio.sampleRate) {
-          audio = await resample(audio, target);
-          steps.push(`resampled to ${formatHertz(target)}`);
-        }
-      }
-
-      const fadeInSeconds = readSeconds(fadeIn, 'The fade in') ?? 0;
-      const fadeOutSeconds = readSeconds(fadeOut, 'The fade out') ?? 0;
-      if (fadeInSeconds > 0 || fadeOutSeconds > 0) {
-        audio = applyFade(audio, fadeInSeconds, fadeOutSeconds);
-        steps.push('faded');
-      }
-
-      const level = readDecibelsBelowFullScale(normalize);
-      if (level !== null) {
-        audio = normalizePeak(audio, level);
-        steps.push(`normalised to ${level.toFixed(1)} dBFS`);
-      }
-
-      const projected = wavByteLength(audio, depth);
-      if (projected > MAX_OUTPUT_BYTES) {
-        throw new Error(
-          `That would produce a ${formatBytes(projected)} WAV, which is more than this tab can hold. Trim it, or choose a lower bit depth or sample rate.`,
-        );
-      }
-
-      const bytes = encodeWav(audio, depth);
+      const converted = await convertAudioData(loaded.audio, getSettings());
+      const { audio, bytes, steps } = converted;
       // oxlint-disable-next-line react/react-compiler
       const durationMs = performance.now() - started;
 
       const url = URL.createObjectURL(
         new Blob([bytes as BlobPart], { type: 'audio/wav' }),
       );
-      const base = loaded.name.replace(/\.[^.]+$/u, '');
       const next: Saved = {
-        name: `${base}.wav`,
+        name: wavNameFor(loaded.name),
         url,
         size: bytes.length,
         headline: `${depth === 32 ? '32-bit float' : `${depth}-bit`} WAV, ${formatHertz(audio.sampleRate)}, ${channelWord(audio.channels.length)}`,
@@ -299,6 +353,48 @@ export function AudioConvertTool() {
     } finally {
       setBusy('');
     }
+  };
+
+  const clearAll = () => {
+    batch.reset();
+    setBatchFiles([]);
+    clearSaved();
+    setLoaded(null);
+    setError('');
+    setBusy('');
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const startBatch = () => {
+    let settings: AudioConversionSettings;
+    try {
+      settings = getSettings();
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : 'Check the conversion settings.',
+      );
+      return;
+    }
+    setError('');
+    void batch.start(batchFiles, async (file, _index, signal) => {
+      if (file.size > MAX_INPUT_BYTES) {
+        return { status: 'skipped', reason: 'The 100 MB limit was exceeded.' };
+      }
+      if (signal.aborted) {
+        return { status: 'skipped', reason: 'Batch cancelled.' };
+      }
+      const decoded = await decodeAudioFile(file);
+      const converted = await convertAudioData(decoded.audio, settings);
+      return {
+        status: 'done',
+        output: {
+          blob: new Blob([converted.bytes as BlobPart], { type: 'audio/wav' }),
+          fileName: wavNameFor(file.name),
+        },
+      };
+    });
   };
 
   const projectedSize = loaded ? wavByteLength(loaded.audio, depth) : 0;
@@ -366,18 +462,115 @@ export function AudioConvertTool() {
               ref={fileRef}
               id="audio-file"
               type="file"
+              multiple
               accept="audio/*,.mp3,.m4a,.aac,.flac,.ogg,.opus,.oga,.wav,.aiff,.aif,.caf,.webm"
               className="focus-ring mt-3 block w-full rounded-lg border bg-background p-2.5 text-sm"
-              onChange={(event) => {
-                void onChoose(event.target.files?.[0]);
-              }}
+              disabled={Boolean(busy) || batch.running}
+              onChange={(event) => onChooseFiles(event.target.files ?? [])}
             />
             <p className="mt-3 text-xs leading-5 text-muted-foreground">
               Output is WAV. There is no MP3 encoder on this page — shipping one
               means shipping a licensed encoder, and a re-encode would lose
               quality that the original still has.
             </p>
+            <BatchLocalPromise />
           </div>
+
+          {batchFiles.length > 1 ? (
+            <section className="mt-6 rounded-2xl border bg-card p-5">
+              <h2 className="text-sm font-semibold">Batch WAV settings</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                These settings apply to every selected recording.
+              </p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                <label className="text-xs font-semibold">
+                  Bit depth
+                  <select
+                    value={depth}
+                    disabled={batch.running}
+                    onChange={(event) =>
+                      setDepth(Number(event.target.value) as WavBitDepth)
+                    }
+                    className="focus-ring mt-1.5 block w-full rounded-lg border bg-background p-2 text-sm"
+                  >
+                    <option value={16}>16-bit</option>
+                    <option value={24}>24-bit</option>
+                    <option value={32}>32-bit float</option>
+                  </select>
+                </label>
+                <label className="text-xs font-semibold">
+                  Channels
+                  <select
+                    value={channelChoice}
+                    disabled={batch.running}
+                    onChange={(event) =>
+                      setChannelChoice(event.target.value as ChannelChoice)
+                    }
+                    className="focus-ring mt-1.5 block w-full rounded-lg border bg-background p-2 text-sm"
+                  >
+                    <option value="keep">Keep as they are</option>
+                    <option value="mono">Mix down to mono</option>
+                    <option value="left">Left channel only</option>
+                    <option value="right">Right channel only</option>
+                  </select>
+                </label>
+                <label className="text-xs font-semibold">
+                  Sample rate
+                  <select
+                    value={rateChoice}
+                    disabled={batch.running}
+                    onChange={(event) =>
+                      setRateChoice(event.target.value as RateChoice)
+                    }
+                    className="focus-ring mt-1.5 block w-full rounded-lg border bg-background p-2 text-sm"
+                  >
+                    <option value="keep">Keep each source rate</option>
+                    <option value="48000">48,000 Hz</option>
+                    <option value="44100">44,100 Hz</option>
+                    <option value="22050">22,050 Hz</option>
+                    <option value="8000">8,000 Hz</option>
+                  </select>
+                </label>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                {[
+                  ['Start at (seconds)', startAt, setStartAt],
+                  ['End at (seconds)', endAt, setEndAt],
+                  ['Fade in (seconds)', fadeIn, setFadeIn],
+                  ['Fade out (seconds)', fadeOut, setFadeOut],
+                  ['Normalise peak (dB)', normalize, setNormalize],
+                ].map(([label, value, update]) => (
+                  <label
+                    key={label as string}
+                    className="text-xs font-semibold"
+                  >
+                    {label as string}
+                    <input
+                      inputMode="decimal"
+                      value={value as string}
+                      disabled={batch.running}
+                      onChange={(event) =>
+                        (update as (next: string) => void)(event.target.value)
+                      }
+                      placeholder="optional"
+                      className="focus-ring mt-1.5 block w-full rounded-lg border bg-background p-2 text-sm"
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {batchFiles.length > 1 ? (
+            <BatchRunnerPanel
+              files={batchFiles}
+              runner={batch}
+              startLabel="Convert all to WAV"
+              zipName="converted-audio.zip"
+              onStart={startBatch}
+              onClear={clearAll}
+            />
+          ) : null}
 
           {busy ? (
             <output className="mt-4 block text-sm text-muted-foreground">
