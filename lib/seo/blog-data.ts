@@ -11,6 +11,14 @@ export interface BlogFaq {
   answer: string;
 }
 
+/**
+ * A post as it is written in this file.
+ *
+ * `readingTime` is deliberately absent: it is computed from the words that are
+ * actually here. See `BLOG_POSTS` below for why.
+ */
+export type AuthoredPost = Omit<BlogPost, 'readingTime'>;
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -28,13 +36,12 @@ export interface BlogPost {
   relatedSlugs: readonly string[];
 }
 
-export const BLOG_POSTS: readonly BlogPost[] = [
+const AUTHORED_POSTS: readonly AuthoredPost[] = [
   {
     slug: 'how-to-convert-json-to-zod-schema-offline',
-    title:
-      'How to Convert JSON to Zod Validation Schemas In-Browser (100% Private)',
+    title: 'JSON to Zod Schema, Generated in Your Browser',
     metaDescription:
-      'Generate type-safe TypeScript Zod validation schemas from JSON data instantly in your browser. Zero server uploads, smart string refinements, and auto-inferred types.',
+      'Generate type-safe TypeScript Zod schemas from JSON in your browser. No uploads, smart string refinements, and auto-inferred types.',
     keywords: [
       'json to zod',
       'json to zod schema generator online',
@@ -45,7 +52,6 @@ export const BLOG_POSTS: readonly BlogPost[] = [
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
-    readingTime: '9 min read',
     author: 'OpenTools Engineering Group',
     toolName: 'JSON to Zod Schema Generator',
     toolDestination: '/developer/advanced?tool=json-to-zod-schema',
@@ -71,10 +77,10 @@ When you supply a sample JSON document, the engine executes a recursive depth-fi
 
 1. **Primitive Mapping**: Maps raw JavaScript numbers, booleans, and strings to \`z.number()\`, \`z.boolean()\`, and \`z.string()\`. Integers are automatically refined with \`z.number().int()\`.
 2. **Smart String Refinement Detection**: Instead of treating all text as generic strings, regex heuristics detect specific standard RFC formats:
-   - Email addresses $\\rightarrow$ \`z.string().email()\`
-   - UUID v4 identifiers $\\rightarrow$ \`z.string().uuid()\`
-   - ISO-8601 timestamps $\\rightarrow$ \`z.string().datetime()\`
-   - Web URLs $\\rightarrow$ \`z.string().url()\`
+   - Email addresses → \`z.string().email()\`
+   - UUID v4 identifiers → \`z.string().uuid()\`
+   - ISO-8601 timestamps → \`z.string().datetime()\`
+   - Web URLs → \`z.string().url()\`
 3. **Recursive Object & Array Aggregation**: Nested objects are transformed into composite \`z.object({...})\` definitions, while homogeneous arrays are mapped to \`z.array(itemSchema)\`.
 4. **TypeScript Inference Export**: Emits a companion \`export type Entity = z.infer<typeof entitySchema>;\` so you never have to duplicate your interface definitions.`,
       },
@@ -202,7 +208,6 @@ You can copy this generated snippet directly into your codebase and immediately 
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
-    readingTime: '6 min read',
     author: 'OpenTools',
     toolName: 'SQL to ER Diagram Generator',
     toolDestination: '/developer/advanced?tool=sql-to-er-diagram',
@@ -316,8 +321,7 @@ Three themes: dark, light, and a navy-and-cyan blueprint. The dark one suits a R
   },
   {
     slug: 'how-to-merge-pdf-contracts-privately',
-    title:
-      'How to Merge Confidential PDF Documents In-Browser with Zero Cloud Uploads',
+    title: 'Merge Confidential PDFs Without Uploading Them',
     metaDescription:
       'Combine multiple PDF files, contracts, and reports into a single organized document. 100% private client-side WebAssembly execution with zero server uploads.',
     keywords: [
@@ -330,7 +334,6 @@ Three themes: dark, light, and a navy-and-cyan blueprint. The dark one suits a R
     ],
     category: 'PDF & Documents',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Security & Privacy Group',
     toolName: 'PDF Merger',
     toolDestination: '/pdf/merge',
@@ -417,10 +420,9 @@ Zero network requests are made during the entire process. The execution speed is
   },
   {
     slug: 'modern-css-gradient-studio-guide',
-    title:
-      'Multi-Stop Linear, Radial & Conic CSS Gradients for Modern Web Design',
+    title: 'CSS Gradients: Linear, Radial and Conic, Explained',
     metaDescription:
-      'Master multi-stop linear, radial, and conic CSS gradients. Generate Tailwind arbitrary classes, SVG gradient definitions, and pure CSS rules with instant live preview.',
+      'Build multi-stop linear, radial and conic CSS gradients with a live preview, and export them as CSS, Tailwind classes or SVG.',
     keywords: [
       'css gradient generator',
       'tailwind css gradient maker',
@@ -431,7 +433,6 @@ Zero network requests are made during the entire process. The execution speed is
     ],
     category: 'Web & Design',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Design Systems Team',
     toolName: 'CSS Gradient Studio',
     toolDestination: '/web/workbench?tool=css-gradient-studio',
@@ -526,8 +527,7 @@ background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
   },
   {
     slug: 'style-linkedin-x-posts-unicode-text',
-    title:
-      'Styling LinkedIn & X Posts with Mathematical Bold, Italic & Monospace Unicode',
+    title: 'Bold and Italic Text for LinkedIn and X Posts',
     metaDescription:
       'Format social media posts with mathematical Unicode bold, italic, monospace, script, and circled text. Boost social engagement without broken font encoding.',
     keywords: [
@@ -540,7 +540,6 @@ background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
     ],
     category: 'Creator & Social',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools Creator Growth Group',
     toolName: 'Social Media Post Formatter',
     toolDestination: '/creator/workbench?tool=social-media-post-formatter',
@@ -600,10 +599,9 @@ Because these are universal Unicode code points rather than proprietary HTML mar
   },
   {
     slug: 'how-to-write-operator-grade-sops',
-    title:
-      'Writing Operator-Grade SOPs & Standard Playbooks for Remote Engineering Teams',
+    title: 'Writing SOPs Your Team Will Actually Follow',
     metaDescription:
-      'Create structured, professional Standard Operating Procedures (SOPs) and runbooks online. Features document control, step-by-step actions, and verification checklists.',
+      'Write structured SOPs and runbooks in your browser, with document control, step-by-step actions and verification checklists.',
     keywords: [
       'sop generator free online',
       'standard operating procedure template maker',
@@ -613,7 +611,6 @@ Because these are universal Unicode code points rather than proprietary HTML mar
     ],
     category: 'Documents & Legal',
     publishedAt: '2026-09-16',
-    readingTime: '9 min read',
     author: 'OpenTools Operations & Systems Practice',
     toolName: 'SOP & Playbook Generator',
     toolDestination: '/documents/workbench?tool=sop-generator',
@@ -660,8 +657,7 @@ A Standard Operating Procedure (SOP) or Technical Runbook provides an unambiguou
   },
   {
     slug: 'agile-user-story-acceptance-criteria-gherkin',
-    title:
-      'Drafting Agile User Stories with Gherkin BDD Given/When/Then Acceptance Criteria',
+    title: 'User Stories with Gherkin Acceptance Criteria',
     metaDescription:
       'Generate clear Agile user stories and Gherkin BDD acceptance criteria with Definition of Done (DoD) checklists. Improve sprint planning and QA automation.',
     keywords: [
@@ -673,7 +669,6 @@ A Standard Operating Procedure (SOP) or Technical Runbook provides an unambiguou
     ],
     category: 'Documents & Legal',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Agile Engineering Group',
     toolName: 'Agile User Story & BDD Builder',
     toolDestination:
@@ -727,8 +722,7 @@ Formatting agile requirements using the industry-standard **Gherkin Behavior-Dri
   },
   {
     slug: 'free-freelance-invoice-generator-no-signup',
-    title:
-      'Creating Professional Freelance Invoices Online Free (Zero SaaS Fee or Data Leaks)',
+    title: 'Make a Freelance Invoice Free, Without Signing Up',
     metaDescription:
       'Generate itemized freelance and agency invoices with automatic tax, discount calculation, and print-ready PDF styling. 100% private in-browser accounting.',
     keywords: [
@@ -740,7 +734,6 @@ Formatting agile requirements using the industry-standard **Gherkin Behavior-Dri
     ],
     category: 'Finance & Business',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools Finance Tools Group',
     toolName: 'Freelance Invoice Generator',
     toolDestination: '/finance/workbench?tool=invoice-generator',
@@ -777,8 +770,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'contractor-timesheet-overtime-calculator-guide',
-    title:
-      'Calculating Weekly Work Hours, Overtime & Pay Accurately Without Cloud Spreadsheets',
+    title: 'Calculate Weekly Hours and Overtime Accurately',
     metaDescription:
       'Calculate daily work hours, break deductions, and 1.5x overtime pay online. Generates signed contractor timesheets in print-ready HTML and PDF layout.',
     keywords: [
@@ -790,7 +782,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Finance & Business',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools Business Engineering Team',
     toolName: 'Weekly Timesheet & Overtime Calculator',
     toolDestination: '/finance/workbench?tool=timesheet-calculator',
@@ -818,10 +809,9 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'mutual-nda-generator-free-legal-playbook',
-    title:
-      'Drafting Standard Mutual Non-Disclosure Agreements In-Browser with Zero Risk',
+    title: 'Draft a Mutual NDA in Your Browser, Free',
     metaDescription:
-      'Generate enforceable 2-party Mutual Non-Disclosure Agreements (NDAs) online. Features standard confidentiality definitions, term duration, and dual signature lines.',
+      'Draft a two-party mutual NDA in your browser: standard confidentiality definitions, term duration and dual signature lines.',
     keywords: [
       'free mutual nda generator online',
       'non disclosure agreement maker private',
@@ -831,7 +821,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Documents & Legal',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Legal Engineering Practice',
     toolName: 'Mutual NDA Contract Generator',
     toolDestination: '/documents/workbench?tool=legal-nda-generator',
@@ -859,8 +848,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'how-to-build-frosted-glassmorphism-css',
-    title:
-      'How to Implement Modern Frosted Glass UI in Pure CSS with GPU Acceleration',
+    title: 'Frosted Glass UI in Pure CSS (Glassmorphism)',
     metaDescription:
       'Generate modern frosted glassmorphism CSS effects with GPU blur, border highlights, and dark mode contrast. Works across all modern web browsers.',
     keywords: [
@@ -872,7 +860,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Web & Design',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools UI/UX Engineering Group',
     toolName: 'CSS Glassmorphism Generator',
     toolDestination: '/web/workbench?tool=css-glassmorphism-generator',
@@ -900,8 +887,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'neumorphism-soft-ui-css-shadow-guide',
-    title:
-      'Designing Physics-Based Soft UI Neumorphic Shadows for Modern Web Components',
+    title: 'Neumorphism in CSS: Soft UI Shadows That Work',
     metaDescription:
       'Create realistic dual-shadow neumorphism Soft UI buttons, cards, and inset form fields in pure CSS. Configurable light source, elevation, and surface curvature.',
     keywords: [
@@ -913,7 +899,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Web & Design',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools Web Design Practice',
     toolName: 'CSS Neumorphism Studio',
     toolDestination: '/web/workbench?tool=css-neumorphism-generator',
@@ -942,8 +927,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'gpu-accelerated-css-keyframe-animations',
-    title:
-      'Building Smooth GPU-Accelerated CSS Keyframe Animations Without Heavy Libraries',
+    title: 'Smooth CSS Keyframe Animations Without a Library',
     metaDescription:
       'Generate pure CSS keyframe animations (float, pulse, bounce, spin, shake) with custom easing and transformZ GPU acceleration.',
     keywords: [
@@ -955,7 +939,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Web & Design',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Web Performance Team',
     toolName: 'CSS Animation Generator',
     toolDestination: '/web/workbench?tool=css-animation-generator',
@@ -983,8 +966,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'markdown-to-pdf-academic-print-guide',
-    title:
-      'Publishing Academic & Corporate PDF Documents from Markdown in the Browser',
+    title: 'Markdown to PDF for Print, In the Browser',
     metaDescription:
       'Convert Markdown notes into publication-grade print and PDF documents with academic serif typography, standard margins, and page breaks.',
     keywords: [
@@ -996,7 +978,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'PDF & Documents',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Document Engineering Group',
     toolName: 'Markdown to PDF Document Maker',
     toolDestination: '/text/writing?tool=markdown-to-pdf-doc',
@@ -1024,8 +1005,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'safe-base64-encode-decode-developer-guide',
-    title:
-      'Safe Base64 Encoding & Decoding for Confidential API Tokens in Local RAM',
+    title: 'Base64 Encode and Decode Without Leaking Tokens',
     metaDescription:
       'Encode and decode Base64 strings, secret bearer tokens, and binary buffers with zero network transmission. Fast, private UTF-8 compliant converter.',
     keywords: [
@@ -1037,7 +1017,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools Security Engineering Practice',
     toolName: 'Base64 Encoder & Decoder',
     toolDestination: '/developer/base64-encoder',
@@ -1065,8 +1044,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'cryptographically-secure-uuidv4-generation',
-    title:
-      'Generating Collision-Free RFC 4122 UUID v4 Identifiers in Local Device Memory',
+    title: 'Generate RFC 4122 UUID v4s on Your Own Device',
     metaDescription:
       'Generate cryptographically random RFC 4122 Version 4 UUIDs using browser Web Crypto APIs. Fast bulk generation with zero server telemetry.',
     keywords: [
@@ -1078,7 +1056,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
-    readingTime: '6 min read',
     author: 'OpenTools Developer Platforms Team',
     toolName: 'UUID v4 Generator',
     toolDestination: '/developer/uuid-generator',
@@ -1106,8 +1083,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'convert-unix-epoch-timestamp-utc-local',
-    title:
-      'Converting Epoch Timestamps to UTC and Local Timezones Instantly Without Network Lag',
+    title: 'Convert Unix Epoch Timestamps to UTC and Local',
     metaDescription:
       'Convert Unix seconds and milliseconds timestamps into ISO 8601, UTC, and local timezone formats. Includes relative time calculations.',
     keywords: [
@@ -1119,7 +1095,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
-    readingTime: '7 min read',
     author: 'OpenTools Chrono Utilities Group',
     toolName: 'Unix Timestamp Converter',
     toolDestination: '/developer/unix-timestamp',
@@ -1148,8 +1123,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'clean-csv-transform-to-json-browser',
-    title:
-      'Cleaning and Transforming Messy Tabular CSV Data to Structured JSON In-Browser',
+    title: 'Clean Messy CSV and Convert It to JSON',
     metaDescription:
       'Convert CSV spreadsheets into clean, structured JSON arrays and objects. Supports custom delimiters, header normalization, and data type coercion.',
     keywords: [
@@ -1161,7 +1135,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Data & Spreadsheets',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Data Systems Group',
     toolName: 'CSV to JSON Transformer',
     toolDestination: '/data/csv-to-json',
@@ -1189,8 +1162,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'local-ai-image-background-removal-wasm',
-    title:
-      'Removing Image Backgrounds Locally on Your GPU Using WebAssembly AI (0 Uploads)',
+    title: 'Remove Image Backgrounds Locally with WebAssembly',
     metaDescription:
       'Remove image backgrounds automatically in your browser using local AI neural networks. 100% private, zero uploads, transparent PNG output.',
     keywords: [
@@ -1202,7 +1174,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Image & Media',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Machine Learning Group',
     toolName: 'Image Background Remover',
     toolDestination: '/image/background-remover',
@@ -1231,8 +1202,7 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
   },
   {
     slug: 'optimize-images-browser-webp-converter',
-    title:
-      'Compressing and Converting Images in the Browser Without Server Uploads',
+    title: 'Compress and Convert Images Without Uploading',
     metaDescription:
       'Resize, compress, and convert PNG, JPEG, and WebP images directly in your browser. Fast client-side image processing with zero server uploads.',
     keywords: [
@@ -1244,7 +1214,6 @@ The OpenTools [Freelance Invoice Generator](/finance/workbench?tool=invoice-gene
     ],
     category: 'Image & Media',
     publishedAt: '2026-09-16',
-    readingTime: '8 min read',
     author: 'OpenTools Media Engineering Group',
     toolName: 'Image Compressor and Converter',
     toolDestination: '/image/optimize',
@@ -1301,7 +1270,6 @@ With the OpenTools [Image Compressor and Converter](/image/optimize), image proc
     ],
     category: 'Audio & Media',
     publishedAt: '2026-09-18',
-    readingTime: '7 min read',
     author: 'OpenTools Media Engineering Group',
     toolName: 'Subtitle Workbench',
     toolDestination: '/subtitles/workbench',
@@ -1323,12 +1291,12 @@ With the OpenTools [Image Compressor and Converter](/image/optimize), image proc
 
 When a subtitle file authored for a 25 fps PAL television broadcast is played against a 23.976 fps NTSC film transfer, the dialogue in the film runs slower than the subtitle cue timestamps. The timing ratio between the two standards is:
 
-$$25 \\div 23.976 \\approx 1.042709$$
+**25 ÷ 23.976 ≈ 1.042709**
 
 Each second of video duration takes approximately 1.0427 seconds of elapsed playback on the 23.976 fps release. While a 4.27% difference appears modest in a five-second scene, the discrepancy compounds across feature-length content:
 
-- Over a **10-minute** short: $600\\text{ s} \\times 0.0427 \\approx 25.6\\text{ seconds}$ of drift.
-- Over a **two-hour film** (7,200 seconds): $7,200\\text{ s} \\times (1.042709 - 1) \\approx 307.5\\text{ seconds}$, which is about **5 minutes** of cumulative drift.
+- Over a **10-minute** short: 600 s × 0.0427 ≈ 25.6 seconds of drift.
+- Over a **two-hour film** (7,200 seconds): 7,200 s × (1.042709 − 1) ≈ 307.5 seconds, which is about **5 minutes** of cumulative drift.
 
 By the second hour, subtitles appear several minutes ahead of the corresponding audio track.`,
       },
@@ -1338,18 +1306,18 @@ By the second hour, subtitles appear several minutes ahead of the corresponding 
         content: `Rather than guessing unknown historical frame rates or intermediate conversions, the mathematically sound fix is two-point synchronization.
 
 Two-point synchronization works by anchoring two known reference points:
-1. **First Line Reference**: Note the true audio time when the first spoken subtitle line occurs ($T_{\\text{actual}, 1}$) versus where the file currently places it ($T_{\\text{file}, 1}$).
-2. **Last Line Reference**: Note the true audio time when the final spoken line occurs ($T_{\\text{actual}, 2}$) versus its timestamp in the file ($T_{\\text{file}, 2}$).
+1. **First Line Reference**: Note the true audio time when the first spoken subtitle line occurs (\`actual₁\`) versus where the file currently places it (\`file₁\`).
+2. **Last Line Reference**: Note the true audio time when the final spoken line occurs (\`actual₂\`) versus its timestamp in the file (\`file₂\`).
 
-From these two data points, we calculate a global scale factor ($S$) and a global initial offset ($O$):
+From these two data points, we calculate a global scale factor (\`S\`) and a global initial offset (\`O\`):
 
-$$S = \\frac{T_{\\text{actual}, 2} - T_{\\text{actual}, 1}}{T_{\\text{file}, 2} - T_{\\text{file}, 1}}$$
+**S = (actual₂ − actual₁) ÷ (file₂ − file₁)**
 
-$$O = T_{\\text{actual}, 1} - (S \\times T_{\\text{file}, 1})$$
+**O = actual₁ − (S × file₁)**
 
-Every intermediate timestamp $t$ across the entire subtitle file is then recalculated using a single linear transform:
+Every intermediate timestamp \`t\` across the entire subtitle file is then recalculated using a single linear transform:
 
-$$t_{\\text{adjusted}} = (S \\times t) + O$$
+**adjusted = (S × t) + O**
 
 With just two recorded numbers, the entire subtitle track stretches and shifts proportionally, landing every spoken line in between on its exact dialogue mark.`,
       },
@@ -1393,7 +1361,6 @@ With just two recorded numbers, the entire subtitle track stretches and shifts p
     ],
     category: 'Audio & Media',
     publishedAt: '2026-09-18',
-    readingTime: '8 min read',
     author: 'OpenTools Media Engineering Group',
     toolName: 'Lossless MP3 Toolkit',
     toolDestination: '/audio/mp3-toolkit',
@@ -1411,7 +1378,7 @@ However, lossless cutting carries an unavoidable physical trade-off: **boundary 
 
 An MP3 file consists of a continuous stream of self-contained binary frames. At a 44.1 kHz sampling rate, each standard MPEG-1 Layer III frame holds exactly 1,152 uncompressed audio samples. The duration of each frame is fixed:
 
-$$\\frac{1,152\\text{ samples}}{44,100\\text{ samples/sec}} \\approx 0.0261224\\text{ seconds} = 26.12\\text{ ms}$$
+**1,152 samples ÷ 44,100 samples per second ≈ 0.0261224 seconds = 26.12 ms**
 
 Because frame payload data cannot be severed midway without corrupting the Huffman-coded bitstream, a lossless cut must land on an exact frame edge. Your cut is accurate to about **26 ms**, rather than individual discrete audio samples.`,
       },
@@ -1473,10 +1440,9 @@ Because lossless cutting operates purely on binary frame boundaries and header o
   },
   {
     slug: 'we-tried-to-make-our-own-site-leak-your-file',
-    title:
-      'We Tried to Make Our Own Site Leak Your File: The Executable Egress Proof',
+    title: 'We Tried to Make Our Own Site Leak Your File',
     metaDescription:
-      'How we test that files never leave your browser tab: Content Security Policy connect-src none, 5 refused exfiltration vectors, and an automated non-vacuous egress test suite.',
+      'How we test that files never leave your tab: a connect-src none policy, five refused exfiltration routes, and a non-vacuous egress suite.',
     keywords: [
       'browser egress proof',
       'content security policy connect-src none',
@@ -1487,7 +1453,6 @@ Because lossless cutting operates purely on binary frame boundaries and header o
     ],
     category: 'Security & Systems',
     publishedAt: '2026-09-18',
-    readingTime: '8 min read',
     author: 'OpenTools Security Engineering Group',
     toolName: 'Image Compressor & Converter',
     toolDestination: '/image/optimize',
@@ -1607,10 +1572,9 @@ By verifying that our served policy forbids connections and that real file workf
   },
   {
     slug: 'zip-crc32-checksum-validation-in-browser',
-    title:
-      'Why File Size Checks Miss Corruption: ZIP CRC32 Checksum Validation in Browser RAM',
+    title: 'Why File Size Checks Miss ZIP Corruption',
     metaDescription:
-      'Why uncompressed byte size checks fail to catch archive corruption, and how in-browser CRC32 cyclic redundancy checks verify unpacked file integrity before saving.',
+      'Why byte-size checks miss archive corruption, and how an in-browser CRC32 check verifies every unpacked file before you save it.',
     keywords: [
       'zip crc32 verification',
       'in-browser zip corruption detection',
@@ -1621,7 +1585,6 @@ By verifying that our served policy forbids connections and that real file workf
     ],
     category: 'Security & Systems',
     publishedAt: '2026-09-19',
-    readingTime: '8 min read',
     author: 'OpenTools Archive Systems Group',
     toolName: 'ZIP Archive Toolkit',
     toolDestination: '/file/archive',
@@ -1719,8 +1682,7 @@ All warnings are highlighted in the UI index before any file is saved.`,
   },
   {
     slug: 'macos-utf8-zip-filename-encoding-bug',
-    title:
-      'The macOS ZIP UTF-8 Flag Bug: When Archiver Flags Lie and Bytes Tell the Truth',
+    title: 'The macOS ZIP Bug Where Filename Flags Lie',
     metaDescription:
       'Why macOS zip creates UTF-8 filenames without setting the UTF-8 bit flag, and how in-browser heuristic decoding avoids mojibake and CP437 corruption.',
     keywords: [
@@ -1733,7 +1695,6 @@ All warnings are highlighted in the UI index before any file is saved.`,
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-19',
-    readingTime: '8 min read',
     author: 'OpenTools Systems Engineering Group',
     toolName: 'ZIP Archive Toolkit',
     toolDestination: '/file/archive',
@@ -1828,8 +1789,7 @@ Testing bytes against mathematical validity ensures robust character preservatio
   },
   {
     slug: 'open-source-first-contributions-pure-typescript',
-    title:
-      'Contributing to OpenTools: 4 Pure-TypeScript First Tasks with Zero Framework Overhead',
+    title: 'Four Pure-TypeScript First Issues in OpenTools',
     metaDescription:
       'Explore 4 bite-sized, pure TypeScript open source contributions: ZIP64 headers, TTML subtitles, SCC closed captions, and WebKit dropzone handoffs.',
     keywords: [
@@ -1842,7 +1802,6 @@ Testing bytes against mathematical validity ensures robust character preservatio
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-19',
-    readingTime: '9 min read',
     author: 'OpenTools Core Engineering',
     toolName: 'OpenTools Repository',
     toolDestination: '/developer/advanced?tool=json-to-zod-schema',
@@ -1945,10 +1904,9 @@ Explore our repository [CONTRIBUTING.md](https://github.com/mgbuilderos/opentool
   },
   {
     slug: 'legal-document-workflow-in-browser-privacy',
-    title:
-      'In-Browser Legal Document Workflows: Privilege, Document Assembly, and the Unbuilt Gaps',
+    title: 'In-Browser Legal Document Workflows and Privilege',
     metaDescription:
-      'How legal professionals process discovery bundles, exhibits, and contracts in local browser memory. A step-by-step workflow audit, privacy mechanisms, and unbuilt gaps.',
+      'How legal teams handle discovery bundles, exhibits and contracts in local browser memory — the workflow, the privacy mechanics, the gaps.',
     keywords: [
       'legal document workflow browser',
       'confidential pdf merge legal',
@@ -1959,7 +1917,6 @@ Explore our repository [CONTRIBUTING.md](https://github.com/mgbuilderos/opentool
     ],
     category: 'Legal & Business',
     publishedAt: '2026-09-19',
-    readingTime: '9 min read',
     author: 'OpenTools Architecture Group',
     toolName: 'PDF Merge & Bundle Assembly',
     toolDestination: '/pdf/merge',
@@ -2033,10 +1990,9 @@ Where these four steps are required, teams must use dedicated local desktop soft
   },
   {
     slug: 'graphic-design-asset-workflow-in-browser',
-    title:
-      "The Graphic Designer's Asset Pipeline: In-Browser Optimization, Proofing, and Format Gaps",
+    title: 'A Designer Asset Pipeline That Runs In-Browser',
     metaDescription:
-      'A practical review of client asset workflows for graphic designers: image compression, format conversion, background removal, and the honest format limitations of in-browser tooling.',
+      'Client asset workflows for designers: compression, format conversion, background removal, and the honest limits of in-browser tooling.',
     keywords: [
       'graphic designer workflow browser',
       'client asset proofing pdf tools',
@@ -2047,7 +2003,6 @@ Where these four steps are required, teams must use dedicated local desktop soft
     ],
     category: 'Design & Creative',
     publishedAt: '2026-09-19',
-    readingTime: '8 min read',
     author: 'OpenTools Architecture Group',
     toolName: 'Image Optimizer & Format Converter',
     toolDestination: '/image/optimize',
@@ -2118,10 +2073,9 @@ These steps execute inside the user's browser runtime using HTML5 Canvas and loc
   },
   {
     slug: 'digital-marketer-data-and-asset-workflow',
-    title:
-      'Digital Marketing Workflows in Browser: Customer List Sensitivity, Social Assets, and Spreadsheet Limits',
+    title: 'Marketing Workflows That Keep Customer Lists Local',
     metaDescription:
-      'Audit of digital marketing workflows: customer list privacy, social media asset preparation, video trimming, and the reality of CSV vs Excel file limits in browser.',
+      'Marketing workflows audited: customer-list privacy, social asset prep, video trimming, and the real CSV versus Excel limits in a browser.',
     keywords: [
       'digital marketing workflow browser',
       'customer list privacy csv tools',
@@ -2132,7 +2086,6 @@ These steps execute inside the user's browser runtime using HTML5 Canvas and loc
     ],
     category: 'Data & Analytics',
     publishedAt: '2026-09-19',
-    readingTime: '9 min read',
     author: 'OpenTools Architecture Group',
     toolName: 'CSV to JSON Data Converter',
     toolDestination: '/data/csv-to-json',
@@ -2205,10 +2158,9 @@ Each of these utilities operates without account registration, file watermarks, 
   },
   {
     slug: 'audio-to-wav-conversion-silent-resampling-trap',
-    title:
-      'Building an In-Browser Audio Converter: The Silent Resampling Trap in decodeAudioData',
+    title: 'The Silent Resampling Trap in decodeAudioData',
     metaDescription:
-      'Why standard Web Audio decodeAudioData silently resamples audio files, how header probing preserves native sample rates, and the engineering behind in-browser WAV conversion.',
+      'Why Web Audio decodeAudioData silently resamples your file, and how header probing preserves the native sample rate instead.',
     keywords: [
       'decodeaudiodata silent resampling trap',
       'in-browser audio to wav converter',
@@ -2219,7 +2171,6 @@ Each of these utilities operates without account registration, file watermarks, 
     ],
     category: 'Audio & Media',
     publishedAt: '2026-09-19',
-    readingTime: '9 min read',
     author: 'OpenTools Engineering Group',
     toolName: 'Audio to WAV Converter',
     toolDestination: '/audio/convert',
@@ -2295,10 +2246,9 @@ The engine is covered by 74 unit tests across pure modules (19 in wav.test.ts, 2
   },
   {
     slug: 'lossless-video-trimming-without-codecs-mp4',
-    title:
-      'Video Editing Without a Codec: Lossless MP4 Trimming and the Scrambled Frames Bug',
+    title: 'Lossless MP4 Trimming and the Scrambled Frames Bug',
     metaDescription:
-      'How to trim, mute, and extract audio from MP4 and MOV videos in-browser without transcoding. Container sample table surgery, keyframe snapping, and the ctts display ordering bug.',
+      'Trim, mute and extract audio from MP4 and MOV in-browser without transcoding: sample-table surgery, keyframe snapping, the ctts bug.',
     keywords: [
       'lossless video trimming in-browser',
       'mp4 container surgery no codec',
@@ -2309,7 +2259,6 @@ The engine is covered by 74 unit tests across pure modules (19 in wav.test.ts, 2
     ],
     category: 'Video & Media',
     publishedAt: '2026-09-19',
-    readingTime: '9 min read',
     author: 'OpenTools Engineering Group',
     toolName: 'Lossless Video Trimmer',
     toolDestination: '/video/trim',
@@ -2381,6 +2330,47 @@ Critically, **the audio-only extraction path passed every test during this time*
     ],
   },
 ];
+
+/** Words a general reader gets through in a minute. */
+const WORDS_PER_MINUTE = 230;
+
+/**
+ * Count the words a visitor actually reads: section prose and FAQ answers.
+ *
+ * Fenced code blocks and markdown table pipes are stripped — nobody *reads* a
+ * 30-line code sample at prose speed, and counting it inflates the estimate in
+ * exactly the posts that are already the most padded.
+ */
+export function countPostWords(post: AuthoredPost): number {
+  const prose = [
+    ...post.sections.map((section) => section.content),
+    ...post.faqs.map((faq) => faq.answer),
+  ].join('\n');
+  return prose
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/[|`*_#>-]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean).length;
+}
+
+/**
+ * WHY THIS IS COMPUTED AND NOT WRITTEN DOWN.
+ *
+ * Every one of these posts used to carry a hand-typed `readingTime`, and on
+ * 2026-09-20 an audit found **all 31 were wrong** — several by more than an
+ * order of magnitude. `how-to-build-frosted-glassmorphism-css` advertised
+ * "7 min read" above 37 words of body copy; the NDA post claimed 8 minutes for
+ * 41. That is a claim to the reader that the page cannot keep, and the house
+ * rule is that no claim ships unless something proves it.
+ *
+ * Deriving it from the prose makes the failure impossible rather than merely
+ * fixed: a post that is padded or trimmed re-states its own length, and nobody
+ * has to remember to update a number. `blog-quality.test.ts` holds the line.
+ */
+export const BLOG_POSTS: readonly BlogPost[] = AUTHORED_POSTS.map((post) => ({
+  ...post,
+  readingTime: `${Math.max(1, Math.round(countPostWords(post) / WORDS_PER_MINUTE))} min read`,
+}));
 
 export function getAllBlogPosts(): readonly BlogPost[] {
   return BLOG_POSTS;
