@@ -74,6 +74,13 @@ attractive rows, and it is the one I added after this round.
 | 3 | **Loudness / delivery check** (LUFS, true peak, noise floor vs Spotify/Apple/EBU/ACX) | Auphonic $11–89/mo; NUGEN $382; ACX rejects on noise floor | BS.1770 K-weighting + gating | **`lib/tools/audio/` decode + PCM already built** | No | **23** |
 | 4 | **Drawing register from title blocks** (200-page set → CSV + per-sheet split) | EverMap $99; Bluebeam $330/yr; Apryse sells it as AI | Bounding-box filter over positioned text | **`pdf-text.ts` already returns x/y/width** | No | **23** |
 | 5 | **True PDF redaction** | Acrobat Pro only; Redactable $7.50/doc–$1,299/mo; CaseGuard $99–329/mo | Rasterise-and-flatten is honest and easy | `lib/tools/redaction/detectors.ts` exists | No | **23** |
+| 5a | **Document compare / redline** (DOCX↔DOCX, PDF↔PDF) | Draftable **$129–261/user/yr**; Diffchecker $15–20/user/mo; Litera $195–1,000+/user/yr | Text diff is standard; Word-native tracked changes is the hard part | pdfjs text + our OOXML work | No | **24** |
+| 5b | **Excel workbook audit / CAAT** (hardcoded constants in formulas, broken formula runs, external links, hidden sheets; Benford, duplicates, gaps, round numbers, weekend postings) | PerfectXL **$249–2,000/yr**; ActiveData $149–299; TopCAATs ~$300; Synkronizer €89–199 | **The most computationally trivial job found** — xlsx is a ZIP of XML, formulas are plain text | **Full Excel read/write engine already built** | No | **24** |
+| 5c | **NACHA ACH file** (payroll CSV → bank file, and validate one before it goes) | achfilegenerator **$19/mo or $149/yr**; ezACH $199; Treasury Software $39.95–149.95/mo; ACH Pro paywalls **exactly the CSV-import half** | Fixed 94-char records, blocking, entry hash, control totals — fully deterministic | Our CSV engine | No | **23** |
+| 5d | **Form 8949 / Schedule D** from broker CSV, with wash-sale adjustments | TradeLog **$219–459/yr**; Form8949.com **$18 per broker file** | Arithmetic + PDF form fill, both of which we do. Wash-sale correctness for options/short sales is the risk | pdf-lib, CSV | No | **22** |
+| 5e | **Burst a PDF by rule and auto-name** (bookmark, blank page, regex, text change) | A-PDF Payroll Split **$79**; EverMap AutoSplit $99–149 (rules are Pro-only); PDF-eXPLODE $595 | pdfjs text + pdf-lib page copy | `pdf-text.ts` | No | **22** |
+| 5f | **X12 834 enrolment** alongside 835/837 | HIPAAsuite **$2,000–2,500** one-time per format | Same parser as row 2 | — | No | folds into **2** |
+| 5g | **Table of authorities** from a DOCX brief | Litera Best Authority **$65 per document** | Citation regex is tractable; writing TA field codes back into OOXML is the work | DOCX read/write | No | **20** |
 | 6 | **Bilingual QA** (XLIFF/SDLXLIFF/TMX: untranslated, number/tag mismatch) | ApSIC Xbench **€99/yr**, the de-facto standard | XML + strings | XML parsing from OOXML work | No | **22** |
 | 7 | **Question bank → QTI / Moodle XML** | Respondus $79–149 single, **$1,695–2,945/yr** campus | DOCX is a ZIP of XML | **We already read and write DOCX** | No | **22** |
 | 8 | **PDF print preflight** (bleed, trim, colour space, fonts, effective PPI) | PitStop **$40/mo**; FlightCheck $249/yr; ink coverage alone $99/yr | Object model only — no rasteriser | pdf-lib + pdfjs | No | **21** |
@@ -106,6 +113,49 @@ Recording the dead ends is worth as much as the candidates.
   need the large models we have ruled out.
 - **BWF/iXML audio metadata** — the two standard tools are free.
 - **Structural analysis formats** (.std, .s2k) — undocumented and not evergreen.
+- **Statutory payroll and tax filing formats** — the richest-looking vein, and
+  it dies on free government tooling. SSA gives away AccuWage for EFW2, the IRS
+  IRIS portal takes free CSV, Texas ships QuickFile, HMRC gives away Basic PAYE
+  Tools. Where a statutory format *is* paid (UK iXBRL, £25–60 a filing) the
+  file is destined to be public, so our privacy advantage buys nothing.
+- **PDF/A validation** — free. veraPDF is the PDF Association's own reference
+  implementation. The money is in *fixing*, which needs the engine we ruled out.
+- **Digital signature verification** — **structurally impossible for us.**
+  Checking revocation (OCSP/CRL) and EU trust lists requires network calls, and
+  `connect-src 'none'` forbids exactly that. This is the first candidate ruled
+  out by our own promise rather than by effort, and it is worth remembering as
+  a category: anything needing a live authority is not ours to build.
+- **ACORD AL3 insurance files** — trivially parseable fixed-length records,
+  blocked by licensing: the element dictionary ships only to members
+  ($2,500 pilot fee).
+
+## The finding I would act on above all others
+
+**Our exact architecture is already being sold, profitably, in at least eight
+niches — and the sellers lead with our pitch.**
+
+- `achfilegenerator.com` — **$19/mo**, and its headline is that account numbers
+  stay in your browser.
+- `SafeRedact` — **$99/yr**, client-side redaction.
+- `edifileconverter.com` — **$19.99/mo** for a client-side X12 viewer.
+- `PrepFile` — **$19** for 1,000 in-browser legal PDF operations.
+- Plus the four from earlier: DICOM, SPSS/Stata, CAD takeoff, EPUB.
+
+Read pessimistically, the niches are occupied. Read correctly, this is the best
+news in the whole document: it proves **demand, price tolerance and technical
+feasibility simultaneously**, using our exact architecture, with no theorising.
+People are paying $19 a month for one tool that runs in their own browser.
+
+Which settles the strategy. We do not win these lanes by being private — they
+are already private. **We win by being free, and by being one site instead of
+eight.** A bookkeeper should not need four subscriptions and four logins for
+four file jobs that all run on their own laptop.
+
+And the recurring wall across every rejected candidate in every sweep was the
+same one: **OCR**. Scanned payslips, loss runs, scanned claim files, photographed
+statements. Which is why the tiered answer in
+`ANTIGRAVITY_PIPELINE_2_2026-09-20.md` Part 3 matters beyond bank statements —
+it is the gate on a whole category, not one tool.
 
 ## One correction from checking our own code
 
