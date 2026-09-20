@@ -879,13 +879,13 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     name: 'PDF Bates Numbering',
     category: 'PDF',
     rank: 53,
-    executionMode: 'local-wasm',
-    releaseWave: 'P2',
+    executionMode: 'local-js',
+    releaseWave: 'P1',
     riskTier: 'low',
-    validationStatus: 'backlog-candidate',
+    validationStatus: 'priority-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=pdf-bates-numbering',
+      'Stamps sequential exhibit identifiers across a bundle, continuing the count from one file to the next, upright on rotated and cropped pages.',
+    destinationUrl: '/pdf/bates',
   },
   {
     id: 'pdf.pdf-contact-sheet',
@@ -4176,6 +4176,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
     destinationUrl: '/documents/workbench?tool=latex-table-generator',
+  },
+  {
+    id: 'documents-and-office.docx-metadata',
+    slug: 'documents-and-office-docx-metadata',
+    name: 'Word Document Metadata Viewer and Stripper',
+    category: 'Documents and Office',
+    rank: 51,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Reads the author, company, editing time, tracked changes and deleted text held inside a .docx, and removes them on request.',
+    destinationUrl: '/documents/metadata',
   },
   {
     id: 'spreadsheet-and-data.csv-viewer',
@@ -7883,6 +7897,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes: 'Requires explicit network consent; never a silent fallback.',
     destinationUrl: '/web/workbench?tool=website-technology-notes',
+  },
+  {
+    id: 'web-and-seo.file-to-html',
+    slug: 'web-and-seo-file-to-html',
+    name: 'File to HTML Converter',
+    category: 'Web and SEO',
+    rank: 46,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Turns images into email-ready HTML with the images packaged beside it, or into one standalone page with the images embedded.',
+    destinationUrl: '/web/file-to-html',
   },
   {
     id: 'qr-and-barcode.qr-code-generator',

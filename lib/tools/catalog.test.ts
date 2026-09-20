@@ -92,9 +92,41 @@ describe('public canary catalog', () => {
   });
 
   it('assigns every working tool to exactly one compact workspace', () => {
-    const _assignedIds = toolGroups.flatMap((group) =>
+    // This assertion is the point of the test. It used to compute the list
+    // below, discard it, and check only the group count -- so a tool could be
+    // built, routed and shipped while appearing in no workspace at all, which
+    // is exactly what happened to four of them.
+    const assignedIds = toolGroups.flatMap((group) =>
       toolsForGroup(group).map((tool) => tool.id),
     );
+    const assigned = new Set(assignedIds);
+
+    // Six workbenches sit in categories the nine workspaces do not cover --
+    // Finance, Science, Creator, Life Admin, Document and Date. Placing them
+    // means either forcing them somewhere they do not belong or adding
+    // workspaces to the home page, which changes what every visitor sees
+    // first. That is the owner's call, so they are listed here rather than
+    // hidden: the list may shrink, and anything NOT on it fails.
+    const awaitingAWorkspace = [
+      'productivity-workbench',
+      'finance-business-workbench',
+      'science-education-workbench',
+      'document-workbench',
+      'creator-workbench',
+      'life-admin-workbench',
+    ];
+    const unassigned = publicTools
+      .map((tool) => tool.id)
+      .filter((id) => !assigned.has(id) && !awaitingAWorkspace.includes(id));
+    expect(
+      unassigned,
+      `reachable by URL but listed in no workspace: ${unassigned.join(', ')}`,
+    ).toEqual([]);
+
+    const duplicated = assignedIds.filter(
+      (id, i) => assignedIds.indexOf(id) !== i,
+    );
+    expect(duplicated, 'listed in more than one workspace').toEqual([]);
 
     expect(toolGroups).toHaveLength(9);
   });
@@ -123,6 +155,7 @@ describe('public canary catalog', () => {
     expect(pdf.map((destination) => destination.name)).toEqual([
       'Merge PDF',
       'Compress PDF',
+      'PDF to Word',
       'Sign and fill PDF',
       'Extract PDF pages',
       'Images to PDF',
@@ -132,12 +165,13 @@ describe('public canary catalog', () => {
       'PDF page numbers',
       'PDF watermark',
       'PDF metadata editor',
+      'Bates numbering for PDFs',
     ]);
-    expect(pdf).toHaveLength(11);
+    expect(pdf).toHaveLength(13);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(11);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(13);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {
