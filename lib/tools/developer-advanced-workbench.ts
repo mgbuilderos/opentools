@@ -3780,8 +3780,21 @@ export function generateSqlErDiagramSvg(
   sqlInput: string,
   theme = 'dark',
 ): string {
+  /**
+   * Matches a `CREATE TABLE` in the shapes real dumps actually emit, not just
+   * the textbook one. Two additions, both verified against real output:
+   *
+   * - **A schema qualifier.** `pg_dump` writes `CREATE TABLE public.users`.
+   *   Requiring a bare name made every Postgres dump produce "No valid CREATE
+   *   TABLE statements found". The schema is captured and discarded; two tables
+   *   with the same name in different schemas are a real ambiguity and drawing
+   *   them as one is better than drawing neither.
+   * - **Trailing table options.** `mysqldump` closes with
+   *   `) ENGINE=InnoDB DEFAULT CHARSET=utf8;`, so insisting on `);` skipped the
+   *   whole statement. The body still stops at the matching `)`.
+   */
   const tableRegex =
-    /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?(\w+)["`]?\s*\(([\s\S]*?)\);/giu;
+    /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`]?(?:\w+["`]?\s*\.\s*["`]?)?(\w+)["`]?\s*\(([\s\S]*?)\)\s*[^;()]*;/giu;
   const tables: SqlTable[] = [];
 
   let match: RegExpExecArray | null;
@@ -3790,14 +3803,39 @@ export function generateSqlErDiagramSvg(
     const body = match[2];
     const columns: SqlColumn[] = [];
 
-    const lines = body
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean);
+    /**
+     * Split on the commas that separate definitions, not on newlines.
+     *
+     * Splitting by line assumed one column per line. Real SQL does not promise
+     * that: `CREATE TABLE orders (id INT PRIMARY KEY, user_id INT REFERENCES
+     * users(id))` is one line, and the old code read only `id` from it — then
+     * found `REFERENCES` in the remainder and attached the foreign key **to
+     * `id`**, drawing a relationship from the wrong column. Silently wrong is
+     * worse than refusing.
+     *
+     * Depth-aware, because a comma inside parentheses belongs to its own
+     * definition: `DECIMAL(10, 2)` is one type and `PRIMARY KEY (order_id,
+     * sku)` is one constraint.
+     */
+    const lines: string[] = [];
+    let depth = 0;
+    let current = '';
+    for (const char of body) {
+      if (char === '(') depth++;
+      else if (char === ')') depth--;
+      if (char === ',' && depth === 0) {
+        lines.push(current.trim());
+        current = '';
+        continue;
+      }
+      current += char;
+    }
+    lines.push(current.trim());
+    const definitions = lines.filter(Boolean);
     const tablePks = new Set<string>();
     const tableFks = new Map<string, { table: string; col: string }>();
 
-    for (const line of lines) {
+    for (const line of definitions) {
       const cleanLine = line.replace(/,\s*$/u, '');
       const pkMatch = /^PRIMARY\s+KEY\s*\(([^)]+)\)/iu.exec(cleanLine);
       if (pkMatch) {
@@ -3864,6 +3902,37 @@ export function generateSqlErDiagramSvg(
     if (columns.length > 0) {
       tables.push({ name: tableName, columns });
     }
+  }
+
+  /**
+   * Foreign keys declared after the fact.
+   *
+   * `pg_dump` does not put them inside `CREATE TABLE`; it emits
+   * `ALTER TABLE ONLY orders ADD CONSTRAINT fk FOREIGN KEY (user_id)
+   * REFERENCES users(id);` further down the file. Without this pass the tables
+   * were drawn correctly and **every relationship between them was silently
+   * missing** — the one thing an ER diagram exists to show.
+   */
+  const alterFkRegex =
+    /ALTER\s+TABLE\s+(?:ONLY\s+)?["`]?(?:\w+["`]?\s*\.\s*["`]?)?(\w+)["`]?[\s\S]*?FOREIGN\s+KEY\s*\(([^)]+)\)\s*REFERENCES\s+["`]?(?:\w+["`]?\s*\.\s*["`]?)?(\w+)["`]?\s*(?:\(([^)]+)\))?/giu;
+  let alter: RegExpExecArray | null;
+  while ((alter = alterFkRegex.exec(sqlInput)) !== null) {
+    const table = tables.find(
+      (candidate) => candidate.name.toLowerCase() === alter![1]!.toLowerCase(),
+    );
+    if (!table) continue;
+    const colName = alter[2]!
+      .trim()
+      .replace(/["`]/gu, '')
+      .split(',')[0]!
+      .trim();
+    const column = table.columns.find(
+      (candidate) => candidate.name.toLowerCase() === colName.toLowerCase(),
+    );
+    if (!column) continue;
+    column.isFk = true;
+    column.referencesTable = alter[3]!.trim();
+    column.referencesCol = alter[4]?.trim().replace(/["`]/gu, '') || 'id';
   }
 
   if (tables.length === 0) {

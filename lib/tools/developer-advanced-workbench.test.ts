@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ADVANCED_DEVELOPER_OPERATIONS,
+  generateSqlErDiagramSvg,
   runAdvancedDeveloperOperation,
 } from './developer-advanced-workbench';
 
@@ -625,6 +626,100 @@ CREATE TABLE orders (
     expect(zodOutput).toContain('lastLogin: z.string().datetime(),');
     expect(zodOutput).toContain(
       'export type UserAccount = z.infer<typeof UserAccountSchema>;',
+    );
+  });
+});
+
+/**
+ * These are the shapes real schema dumps come in, and every one of them was
+ * broken. Search Console on 2026-09-20 showed four of twelve queries asking for
+ * an ER diagram from SQL, which is the site's clearest demand signal — and the
+ * tool behind it could not read the output of either `mysqldump` or `pg_dump`.
+ *
+ * Each case below is the actual output format of the tool named, not a
+ * simplified version of it.
+ */
+describe('SQL to ER diagram, against SQL as it is really written', () => {
+  const flagsFor = (svg: string) =>
+    [...svg.matchAll(/>(PK|FK)<\/text>/gu)].map((match) => match[1]);
+
+  it('reads a mysqldump table, which closes with ENGINE options', () => {
+    // `) ENGINE=InnoDB DEFAULT CHARSET=utf8;` — the old pattern demanded `);`
+    // and threw "No valid CREATE TABLE statements found" on every MySQL dump.
+    const svg = generateSqlErDiagramSvg(
+      'CREATE TABLE `users` (\n  `id` int(11) NOT NULL,\n  `email` varchar(255),\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;',
+    );
+
+    expect(svg).toContain('users');
+    expect(svg).toContain('email');
+    expect(flagsFor(svg)).toContain('PK');
+  });
+
+  it('reads a pg_dump table, which qualifies the name with its schema', () => {
+    // `CREATE TABLE public.users` — a bare-name pattern skipped the statement.
+    const svg = generateSqlErDiagramSvg(
+      'CREATE TABLE public.users (\n    id integer NOT NULL,\n    email text\n);',
+    );
+
+    expect(svg).toContain('users');
+    expect(svg).toContain('email');
+  });
+
+  it('draws a foreign key that pg_dump declared in a later ALTER TABLE', () => {
+    // pg_dump does not put foreign keys inside CREATE TABLE. Without a second
+    // pass the tables were drawn and every relationship between them was
+    // silently missing — the one thing an ER diagram exists to show.
+    const svg = generateSqlErDiagramSvg(
+      [
+        'CREATE TABLE users (id integer NOT NULL);',
+        'CREATE TABLE orders (id integer NOT NULL, user_id integer);',
+        'ALTER TABLE ONLY orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id);',
+      ].join('\n'),
+    );
+
+    expect(flagsFor(svg)).toContain('FK');
+  });
+
+  it('puts the foreign key on the column that has it, not the first one', () => {
+    // The worst of the four, because it produced a plausible wrong answer
+    // rather than an error. Columns were split by newline, so this one-line
+    // table parsed only `id`, then found REFERENCES in the leftover text and
+    // marked **`id`** as the foreign key.
+    const svg = generateSqlErDiagramSvg(
+      'CREATE TABLE users (id INTEGER PRIMARY KEY);\nCREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER REFERENCES users(id));',
+    );
+
+    expect(svg).toContain('user_id');
+    expect(flagsFor(svg)).toContain('FK');
+    // The FK marker must appear after `id` was already marked PK twice, i.e.
+    // it belongs to the second table's second column.
+    expect(flagsFor(svg)).toEqual(['PK', 'PK', 'FK']);
+  });
+
+  it('keeps a composite primary key as two columns', () => {
+    const svg = generateSqlErDiagramSvg(
+      'CREATE TABLE order_items (order_id INT, sku VARCHAR(20), PRIMARY KEY (order_id, sku));',
+    );
+
+    expect(svg).toContain('order_id');
+    expect(svg).toContain('sku');
+    expect(flagsFor(svg)).toEqual(['PK', 'PK']);
+  });
+
+  it('does not split a type that contains a comma', () => {
+    // `DECIMAL(10, 2)` is one type. A naive comma split makes it two columns.
+    const svg = generateSqlErDiagramSvg(
+      'CREATE TABLE invoices (id INT PRIMARY KEY, total DECIMAL(10, 2), note TEXT);',
+    );
+
+    expect(svg).toContain('total');
+    expect(svg).toContain('note');
+    expect(svg).not.toContain('>2<');
+  });
+
+  it('still refuses input with no CREATE TABLE in it, by name', () => {
+    expect(() => generateSqlErDiagramSvg('SELECT * FROM users;')).toThrow(
+      /No valid CREATE TABLE/u,
     );
   });
 });
