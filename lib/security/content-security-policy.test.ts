@@ -23,8 +23,12 @@ describe('content security policy', () => {
     expect(policy).not.toMatch(/https?:|\*/u);
   });
 
-  it('scopes the exception to the background-removal pages and worker', () => {
+  it('scopes the exception to local-model pages and asset workers', () => {
     expect(loadsLocalModel('/image/background-remover')).toBe(true);
+    expect(loadsLocalModel('/ocr/worker.min.js')).toBe(true);
+    expect(loadsLocalModel('/ocr/core/tesseract-core-lstm.wasm')).toBe(true);
+    expect(loadsLocalModel('/image/to-text')).toBe(false);
+    expect(loadsLocalModel('/pdf/ocr')).toBe(false);
     expect(loadsLocalModel('/image/editor/')).toBe(true);
     expect(
       loadsLocalModel(
@@ -47,6 +51,7 @@ describe('content security policy', () => {
     const policies = [...headers.matchAll(/Content-Security-Policy: (.+)/gu)];
     expect(policies.map((match) => match[1])).toEqual([
       contentSecurityPolicy(),
+      contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),

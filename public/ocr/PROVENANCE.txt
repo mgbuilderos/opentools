@@ -1,0 +1,20 @@
+Vendored OCR assets
+===================
+
+tesseract.js 7.0.0
+  Source: https://github.com/naptha/tesseract.js/tree/v7.0.0
+  License: Apache-2.0 (LICENSE-tesseract-js.txt)
+  Files: worker.min.js, worker.min.js.LICENSE.txt
+
+tesseract.js-core 7.0.0
+  Source: https://github.com/naptha/tesseract.js-core/tree/v7.0.0
+  License: Apache-2.0 (LICENSE-tesseract-js-core.txt)
+  Files: core/tesseract-core-*-lstm.wasm.js and matching .wasm files
+
+@tesseract.js-data/eng 1.0.0, 4.0.0_best_int/eng.traineddata.gz
+  Source: https://github.com/naptha/tessdata/tree/gh-pages/4.0.0_best_int
+  License: Apache-2.0 (LICENSE-eng-data.txt)
+  File: lang/eng.traineddata.gz
+
+The runtime is configured with local workerPath, corePath and langPath values.
+No CDN fallback is used.

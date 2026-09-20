@@ -10,6 +10,7 @@
 const LOCAL_MODEL_PATHS = [
   /^\/image\/(?:background-remover|editor)\/?$/u,
   /^\/_next\/static\/workers\/background-removal\.worker-[\w-]+\.js$/u,
+  /^\/ocr\//u,
 ];
 
 /** Next.js header `source` patterns matching LOCAL_MODEL_PATHS. */
@@ -17,6 +18,7 @@ export const LOCAL_MODEL_SOURCES = [
   '/image/background-remover',
   '/image/editor',
   '/_next/static/workers/:file(background-removal\\.worker-[\\w-]+\\.js)',
+  '/ocr/:path*',
 ];
 
 export function loadsLocalModel(pathname: string) {
