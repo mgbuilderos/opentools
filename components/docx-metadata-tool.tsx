@@ -19,6 +19,11 @@ import {
 import { useCallback, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import {
@@ -70,6 +75,8 @@ export function DocxMetadataTool() {
   const [error, setError] = useState<string>('');
   const [busy, setBusy] = useState<string>('');
   const [isDragOver, setIsDragOver] = useState(false);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
 
   // Policy options
   const [policy, setPolicy] = useState<TrackedChangesPolicy>('keep');
@@ -124,18 +131,26 @@ export function DocxMetadataTool() {
     }
   }, []);
 
-  const handleChoose = (file?: File) => {
-    if (!file) return;
-    void processFile(file);
+  const handleChoose = (files?: FileList | File[]) => {
+    const selected = Array.from(files ?? []);
+    if (selected.length === 0 || busy || batch.running) return;
+    if (selected.length === 1) {
+      batch.reset();
+      setBatchFiles([]);
+      void processFile(selected[0]);
+      return;
+    }
+    setLoaded(null);
+    setCleanSummary(null);
+    setError('');
+    batch.reset();
+    setBatchFiles(selected);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      void processFile(file);
-    }
+    handleChoose(e.dataTransfer.files);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -149,6 +164,8 @@ export function DocxMetadataTool() {
   };
 
   const handleReset = () => {
+    batch.reset();
+    setBatchFiles([]);
     setLoaded(null);
     setCleanSummary(null);
     setError('');
@@ -157,6 +174,38 @@ export function DocxMetadataTool() {
     if (fileRef.current) {
       fileRef.current.value = '';
     }
+  };
+
+  const startBatch = () => {
+    setError('');
+    const options = {
+      trackedChanges: policy,
+      stripComments,
+      stripRsids,
+      stripProperties: stripProps,
+    };
+    void batch.start(batchFiles, async (file, _index, signal) => {
+      if (file.size > MAX_FILE_BYTES) {
+        return { status: 'skipped', reason: 'The 50 MB limit was exceeded.' };
+      }
+      if (!file.name.toLowerCase().endsWith('.docx')) {
+        return { status: 'skipped', reason: 'Only .docx files are supported.' };
+      }
+      if (signal.aborted) {
+        return { status: 'skipped', reason: 'Batch cancelled.' };
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const cleanedBytes = await stripDocxMetadata(bytes, options);
+      return {
+        status: 'done',
+        output: {
+          blob: new Blob([cleanedBytes as BlobPart], {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          }),
+          fileName: getCleanFileName(file.name, policy),
+        },
+      };
+    });
   };
 
   const handleCleanAndDownload = async () => {
@@ -339,22 +388,94 @@ export function DocxMetadataTool() {
                 <input
                   ref={fileRef}
                   type="file"
+                  multiple
                   accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   className="hidden"
-                  onChange={(e) => handleChoose(e.target.files?.[0])}
+                  onChange={(e) => handleChoose(e.target.files ?? [])}
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="default"
-                  disabled={Boolean(busy)}
+                  disabled={Boolean(busy) || batch.running}
                   onClick={() => fileRef.current?.click()}
                   className="cursor-pointer"
                 >
-                  {busy || 'Select .docx document'}
+                  {busy || 'Select .docx document(s)'}
                 </Button>
               </label>
+              <BatchLocalPromise />
             </div>
+          ) : null}
+
+          {batchFiles.length > 1 ? (
+            <section
+              aria-labelledby="batch-docx-options"
+              className="mt-6 rounded-2xl border bg-card p-5"
+            >
+              <h2 id="batch-docx-options" className="text-sm font-semibold">
+                Cleaning & revision options
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                These settings apply to every selected document.
+              </p>
+              <label className="mt-4 block text-xs font-semibold">
+                Tracked changes
+                <select
+                  aria-label="Batch tracked changes"
+                  value={policy}
+                  disabled={batch.running}
+                  onChange={(event) =>
+                    setPolicy(event.target.value as TrackedChangesPolicy)
+                  }
+                  className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm sm:max-w-xs"
+                >
+                  <option value="keep">Keep revisions</option>
+                  <option value="accept">Accept revisions</option>
+                  <option value="reject">Reject revisions</option>
+                </select>
+              </label>
+              <div className="mt-4 flex flex-wrap gap-4 text-xs">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={stripProps}
+                    disabled={batch.running}
+                    onChange={(event) => setStripProps(event.target.checked)}
+                  />
+                  Strip author and app properties
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={stripComments}
+                    disabled={batch.running}
+                    onChange={(event) => setStripComments(event.target.checked)}
+                  />
+                  Strip reviewer comments
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={stripRsids}
+                    disabled={batch.running}
+                    onChange={(event) => setStripRsids(event.target.checked)}
+                  />
+                  Strip machine RSIDs
+                </label>
+              </div>
+            </section>
+          ) : null}
+
+          {batchFiles.length > 1 ? (
+            <BatchRunnerPanel
+              files={batchFiles}
+              runner={batch}
+              startLabel="Clean all documents"
+              zipName="clean-documents.zip"
+              onStart={startBatch}
+              onClear={handleReset}
+            />
           ) : null}
 
           {/* Busy indicator */}
