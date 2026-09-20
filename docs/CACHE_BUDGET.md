@@ -4,6 +4,23 @@
 have very little of, and the obvious way to configure it spends all of that
 currency and buys nothing.
 
+## Update, 2026-09-20 — pages no longer draw on this budget
+
+Every route is now prerendered at build time and served from `dist/client/` as a
+static asset, so a page request writes nothing to KV and renders nothing. The
+budget below still governs the **data** cache (`fetch` / `use cache`), and KV
+stays bound as the fallback for anything prerender skips — but the question this
+document was written to answer, *which 50 pages can we afford to cache*, no
+longer has to be asked.
+
+What forced it: on 2026-09-20, 183 of 670 sitemap URLs returned 503 (177 of them
+guides). Cloudflare's log for the live Worker shows 268 of 1,241 renders killed
+with `exceededCpu` against the free plan's 10ms, while surviving renders needed
+30ms median and 286ms at worst. The cache could never have covered that — a full
+cache is ~1,340 keys against ~1,000 writes a day, and each deploy opens a fresh
+`cache:app:<build id>:` prefix, so it restarts from empty. The namespace held
+4,345 keys across ten dead build IDs that morning and 792 for the live one.
+
 ## The constraint
 
 Cloudflare Workers KV on the **free** plan allows roughly **1,000 writes a day**.
