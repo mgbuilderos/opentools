@@ -1,6 +1,13 @@
 /**
  * Programmatic Tool Catalog Dataset (1,000 Tools).
- * Generated automatically from registries/tool_catalog.csv.
+ * Seeded from registries/tool_catalog.csv, then maintained BY HAND. Nothing
+ * regenerates this file, and the CSV has no destinationUrl column, so a
+ * regeneration would drop every destination here. Edit it directly.
+ *
+ * This is the 1,000-tool ROADMAP, not the live site. Visitor-facing surfaces
+ * (sitemap, llms.txt, /guides, search) all read LIVE_TOOL_CATALOG from
+ * ./live-tools instead. A destinationUrl here is a planned landing page for a
+ * candidate, so one that does not resolve to a built operation is expected.
  * Zero external dependencies; statically optimized for instant SSR and SEO metadata generation.
  */
 
@@ -1733,13 +1740,13 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     name: 'Image Metadata Viewer',
     category: 'Image',
     rank: 40,
-    executionMode: 'local-wasm',
+    executionMode: 'local-js',
     releaseWave: 'P2',
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/image/editor?tool=image-metadata-viewer',
+      'Shipped 2026-09-20 as the local photo metadata viewer and stripper.',
+    destinationUrl: '/image/metadata',
   },
   {
     id: 'image.exif-remover',
@@ -1752,8 +1759,8 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'low',
     validationStatus: 'priority-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/image/editor?tool=exif-remover',
+      'Shipped 2026-09-20 as the local photo metadata viewer and stripper.',
+    destinationUrl: '/image/metadata',
   },
   {
     id: 'image.exif-editor',
@@ -1780,8 +1787,8 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     riskTier: 'medium',
     validationStatus: 'backlog-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/image/editor?tool=gps-metadata-remover',
+      'Shipped 2026-09-20 as the local photo metadata viewer and stripper.',
+    destinationUrl: '/image/metadata',
   },
   {
     id: 'image.image-color-picker',
