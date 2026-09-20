@@ -188,127 +188,123 @@ You can copy this generated snippet directly into your codebase and immediately 
   },
   {
     slug: 'generate-sql-er-diagram-from-ddl-private',
-    title:
-      'How to Generate SQL Entity-Relationship (ER) Diagrams from DDL Without a Database',
+    title: 'How to make an ER diagram from SQL, without a database',
     metaDescription:
-      'Create interactive, responsive SVG Entity Relationship Diagrams directly from SQL CREATE TABLE statements. 100% private in-browser schema visualization.',
+      'Paste CREATE TABLE statements and get an entity-relationship diagram as an SVG. Reads mysqldump and pg_dump output, including foreign keys declared in ALTER TABLE. Runs in your browser; the schema is never uploaded.',
     keywords: [
+      'er diagram from sql',
+      'create er diagram from sql',
+      'erd from sql',
       'sql to er diagram',
-      'generate er diagram from sql query online free',
-      'sql ddl to entity relationship diagram',
-      'schema visualizer private',
-      'sql to er diagram generator private',
+      'mysqldump to er diagram',
+      'pg_dump schema diagram',
       'convert create table to er diagram',
     ],
     category: 'Developer & Systems',
     publishedAt: '2026-09-16',
-    readingTime: '10 min read',
-    author: 'OpenTools Database Architecture Team',
+    readingTime: '6 min read',
+    author: 'OpenTools',
     toolName: 'SQL to ER Diagram Generator',
     toolDestination: '/developer/advanced?tool=sql-to-er-diagram',
     summary:
-      'Convert raw SQL CREATE TABLE scripts into interactive, responsive SVG Entity Relationship Diagrams with cubic bezier relationship curves without requiring live database credentials or connections.',
+      'Paste your CREATE TABLE statements into the SQL to ER Diagram Generator and you get an SVG of the tables with their foreign keys drawn between them. No database connection, no credentials, no upload — the SQL is parsed in the page. This is what it reads, and what it does not.',
     sections: [
       {
-        id: 'database-diagram-headaches',
-        heading:
-          'The Challenge of Visualizing Schemas Without Compromising Security',
-        content: `Relational database architectures evolve rapidly during active development. Whether onboarding new team members, conducting architectural design reviews, or documenting schema migrations, having a clear visual Entity-Relationship (ER) diagram is invaluable.
-
-However, traditional database visualization tools require connecting directly to live databases via connection strings, granting read permissions, or installing heavy desktop software. When working on private enterprise databases or sensitive client systems, transmitting connection credentials or uploading proprietary database schemas to cloud SaaS visualizers introduces severe compliance and security risks.
-
-The ideal solution is a client-side visualizer that parses plain text SQL DDL migration scripts directly inside your browser without needing live database access.`,
-      },
-      {
-        id: 'instant-ddl-parsing',
-        heading: 'How In-Browser DDL Lexing & Layout Rendering Works',
-        content: `OpenTools features a client-side SQL lexer and DDL parser written in pure TypeScript. When you paste your SQL migration script:
-
-1. **Tokenization & Grammar Parsing**: The parser scans for \`CREATE TABLE [table_name]\` blocks and extracts column names, data types (VARCHAR, INT, UUID, TIMESTAMP, etc.), and constraint modifiers (\`PRIMARY KEY\`, \`NOT NULL\`, \`UNIQUE\`, \`DEFAULT\`).
-2. **Foreign Key & Relationship Mapping**: It detects both inline foreign key constraints and standalone \`CONSTRAINT ... FOREIGN KEY (col) REFERENCES foreign_table(col)\` clauses to establish relationship edges between tables.
-3. **Grid Coordinate Calculation**: A deterministic layout algorithm calculates optimal positions for table cards to minimize intersecting relationship curves.
-4. **Responsive Vector Rendering**: Generates clean, responsive SVG diagrams with table header badges, primary/foreign key icons, and cubic bezier connection paths linking referenced columns.`,
-      },
-      {
-        id: 'step-by-step-er-guide',
-        heading: 'Step-by-Step Example: Visualizing an E-Commerce Schema',
-        content: `Paste your standard ANSI SQL schema directly into the [SQL to ER Diagram Generator](/developer/advanced?tool=sql-to-er-diagram):
+        id: 'paste-the-schema',
+        heading: 'Paste the schema, get the diagram',
+        content: `Open the [SQL to ER Diagram Generator](/developer/advanced?tool=sql-to-er-diagram) and paste SQL like this:
 
 \`\`\`sql
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id INTEGER PRIMARY KEY,
+  email VARCHAR(255) UNIQUE
 );
 
 CREATE TABLE orders (
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES users(id),
-    total_amount DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE order_items (
-    id UUID PRIMARY KEY,
-    order_id UUID NOT NULL REFERENCES orders(id),
-    product_name VARCHAR(255) NOT NULL,
-    quantity INT NOT NULL,
-    unit_price DECIMAL(10, 2) NOT NULL
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  total DECIMAL(10, 2)
 );
 \`\`\`
 
-The visualizer instantly renders a multi-table vector diagram with table headers, primary key identifiers (\`PK\`), foreign key links (\`FK\`), and smooth relationship lines illustrating the 1-to-many relationship from \`users\` $\\rightarrow$ \`orders\` $\\rightarrow$ \`order_items\`.`,
+You get an SVG with two table cards, \`id\` marked **PK** in each, \`user_id\` marked **FK**, and a line joining it to \`users.id\`.
+
+There is no connection string and no account. The SQL is text, and reading text does not require a database — which is the whole reason this can happen in a browser tab at all.`,
       },
       {
-        id: 'theme-and-export-options',
-        heading: 'Customization, Themes & Export Options',
-        content: `The ER Diagram generator supports:
-- **Zinc Dark & Clean Light Themes**: Seamlessly integrate exported diagrams into dark-mode developer documentation (Docusaurus, VitePress) or light-mode corporate technical reports.
-- **High-Resolution SVG & PNG Export**: Download lossless vector SVGs for crisp scaling in pitch decks and engineering documentation.
-- **Copy Raw SVG Code**: One-click copy of the raw SVG markup for embedding directly into HTML or Markdown documents.`,
+        id: 'what-it-reads',
+        heading: 'What it reads, exactly',
+        content: `Every item here was checked by running the parser against the real output of the tool named, not against simplified examples.
+
+**Table definitions**
+
+- \`CREATE TABLE\` and \`CREATE TABLE IF NOT EXISTS\`
+- Names quoted with double quotes or backticks
+- Schema-qualified names — \`CREATE TABLE public.users\`, which is how \`pg_dump\` writes every table. The schema is dropped from the label.
+- Trailing table options — \`) ENGINE=InnoDB DEFAULT CHARSET=utf8;\`, which is how \`mysqldump\` closes every table.
+
+**Keys and relationships**
+
+- Inline: \`user_id INTEGER REFERENCES users(id)\`
+- Table-level: \`FOREIGN KEY (user_id) REFERENCES users(id)\`
+- Declared afterwards: \`ALTER TABLE ONLY orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id);\` — \`pg_dump\` puts foreign keys here rather than inside \`CREATE TABLE\`, often hundreds of lines further down the file.
+- Composite primary keys: \`PRIMARY KEY (order_id, sku)\` marks both columns.
+- \`NOT NULL\`, used to decide whether a column is shown as nullable.
+
+Commas inside parentheses are left alone, so \`DECIMAL(10, 2)\` stays one type rather than becoming two columns.`,
       },
       {
-        id: 'comparison-matrix',
-        heading:
-          'Comparison: OpenTools SQL to ER Diagram Generator vs Cloud Database SaaS',
-        content: `| Feature | OpenTools In-Browser ER Visualizer | Cloud Database Visualizer SaaS |
-| :--- | :--- | :--- |
-| **Database Connection Required** | **None (Pure SQL text)** | Live connection string / SSH tunnel |
-| **Data Privacy** | **100% In-Browser Memory (No server uploads)** | Schema uploaded and logged on servers |
-| **Cost** | **$0 / Free Forever** | $15 - $49 / user / month |
-| **Render Engine** | **Native Vector SVG** | Canvas / Raster bitmap |
-| **Dark Mode Support** | **Built-in Zinc Dark & Clean Light** | Often locked to paid tiers |`,
+        id: 'what-it-does-not',
+        heading: 'What it does not do',
+        content: `A diagram that is wrong in a way you cannot see is worse than one that refuses to draw, so here is the boundary.
+
+- **It does not connect to anything.** If your schema only exists in a running database, you need to export it first — \`mysqldump --no-data\` or \`pg_dump --schema-only\` both produce exactly the text this reads.
+- **It does not infer relationships that are not declared.** A column called \`user_id\` with no \`REFERENCES\` and no foreign key constraint is drawn as an ordinary column, because guessing from a name is how diagrams acquire relationships that do not exist in the database.
+- **It does not read views, triggers, stored procedures or indexes.** Tables and the keys between them only.
+- **It does not show cardinality.** A foreign key is drawn as a line. Whether that relationship is one-to-many or one-to-one is not something \`REFERENCES\` tells you.
+- **It does not parse dialect-specific column syntax beyond the name and type.** Postgres arrays, MySQL generated columns and similar are read as a type string and drawn as written.`,
+      },
+      {
+        id: 'why-in-the-browser',
+        heading: 'Why this one runs in the page',
+        content: `A schema is a map of a business. Table and column names carry customer structure, pricing models, internal identifiers, and often the names of clients. Handing that to a web service to draw a picture is a larger disclosure than it looks, and for anyone working under an NDA or on a client system it is usually one they have not been given permission to make.
+
+The tool is served with \`connect-src 'none'\`, a Content-Security-Policy directive that tells the browser to refuse every outbound network request the page attempts. It is not a promise in a privacy policy; it is enforced by the browser, and you can check it yourself: open the network tab, paste a schema, generate a diagram, and watch nothing leave. Turning off your network connection entirely also works — the tool keeps running.`,
+      },
+      {
+        id: 'export',
+        heading: 'Getting the diagram out',
+        content: `The output is an SVG, which matters more than it sounds. It is text, so it goes into a repository and diffs like code; it scales to any size without blurring, so it survives being dropped into documentation or printed at A3 for a wall; and it can be opened by any browser with no software installed.
+
+Three themes: dark, light, and a navy-and-cyan blueprint. The dark one suits a README rendered on GitHub; the light one prints without emptying a cartridge.`,
       },
     ],
     faqs: [
       {
         question:
-          'Do I need to grant database access or provide connection strings?',
+          'Do I need to give it database access or a connection string?',
         answer:
-          'No. The tool parses pure SQL DDL text (CREATE TABLE scripts) in local browser memory. No database connection or credentials are ever requested.',
+          'No. It reads SQL text — the CREATE TABLE statements themselves. There is no field for a host, a user or a password, because nothing connects to anything.',
       },
       {
-        question: 'Which SQL dialects are supported?',
+        question: 'Will it read a mysqldump or pg_dump file?',
         answer:
-          'The parser supports standard ANSI SQL, PostgreSQL, MySQL, SQLite, MariaDB, and Microsoft SQL Server DDL syntax.',
+          'Yes. Both were broken until 2026-09-20 and both are covered now: mysqldump closes tables with ENGINE options, and pg_dump qualifies names with a schema and declares foreign keys in separate ALTER TABLE statements. Export with `mysqldump --no-data` or `pg_dump --schema-only` and paste the result.',
       },
       {
-        question: 'Can I export the ER diagram as an SVG or PNG image?',
+        question: 'Does my schema get uploaded?',
         answer:
-          'Yes. You can export high-resolution SVG vector files, PNG images, or copy the SVG source code directly to your clipboard.',
+          "No. The page is served with `connect-src 'none'`, which makes the browser refuse any outbound request the page tries to make. You can verify it in the network tab, or by disconnecting from the internet and using the tool anyway.",
       },
       {
-        question:
-          'Does the generator handle multi-table schemas with complex foreign keys?',
+        question: 'Why is my foreign key missing from the diagram?',
         answer:
-          'Yes. It automatically calculates relationship curves and organizes multiple tables with primary and foreign key constraints.',
+          'Almost always because it is not declared in the SQL. A column named user_id is only drawn as a relationship if the schema says REFERENCES or FOREIGN KEY somewhere — including in a later ALTER TABLE. The tool does not guess relationships from column names, because a guessed relationship looks exactly like a real one.',
       },
       {
-        question: 'Is my proprietary schema data stored on any server?',
+        question: 'Can it show one-to-many versus one-to-one?',
         answer:
-          'Never. All lexing, parsing, and SVG generation occurs strictly inside your local browser tab with your files and inputs never touching a server.',
+          'No. A foreign key is drawn as a line between the two columns. SQL does not record cardinality in the constraint, so showing it would mean inventing it.',
       },
     ],
     relatedSlugs: [
