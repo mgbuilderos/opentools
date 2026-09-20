@@ -33,8 +33,30 @@ function elapsed(value: number) {
     : `${(value / 1000).toFixed(2)} s`;
 }
 
-export function MathWorkbenchTool() {
-  const [operationId, setOperationId] = useState('basic-calculator');
+/*
+  `initialOperationId` is what gives each calculator its own address.
+
+  All 67 of these used to answer on one URL, `/math/workbench?tool=<id>`, with
+  one title for all of them — so "median calculator" and "margin of error
+  calculator" were the same page as far as a search engine is concerned, and
+  neither could rank for its own name. `app/math/[tool]/page.tsx` now renders
+  this same component once per operation at `/math/<id>`, with that
+  operation's own title and description.
+
+  When the prop is set, the path already decides which tool is open, so the
+  query-string sync below stands down and picking another tool navigates to
+  that tool's page instead of rewriting a parameter. `/math/workbench` keeps
+  working unchanged for anyone who has it bookmarked.
+*/
+export function MathWorkbenchTool({
+  initialOperationId,
+}: {
+  initialOperationId?: string;
+} = {}) {
+  const routed = MATH_OPERATIONS.find((item) => item.id === initialOperationId);
+  const [operationId, setOperationId] = useState(
+    routed?.id ?? 'basic-calculator',
+  );
   const operation = useMemo(
     () =>
       MATH_OPERATIONS.find((item) => item.id === operationId) ??
@@ -42,7 +64,7 @@ export function MathWorkbenchTool() {
     [operationId],
   );
   const [values, setValues] = useState<Record<string, string>>(() =>
-    defaults(MATH_OPERATIONS[0]),
+    defaults(routed ?? MATH_OPERATIONS[0]),
   );
   const [output, setOutput] = useState('');
   const [duration, setDuration] = useState(0);
@@ -62,6 +84,7 @@ export function MathWorkbenchTool() {
   // synchronise React state to an external system, the address bar, which is
   // what the rule's own guidance says an effect is for.
   useEffect(() => {
+    if (routed) return; // The path decides on a per-tool page.
     const requested = new URLSearchParams(window.location.search).get('tool');
     if (!requested || requested === operationId) return;
     const selected = MATH_OPERATIONS.find((item) => item.id === requested);
@@ -83,6 +106,12 @@ export function MathWorkbenchTool() {
   const selectOperation = (nextId: string) => {
     const next =
       MATH_OPERATIONS.find((item) => item.id === nextId) ?? MATH_OPERATIONS[0];
+    // On a per-tool page, each tool is a real page: go to it, so the address
+    // bar, the back button and a crawler all agree on what is open.
+    if (routed) {
+      window.location.assign(`/math/${next.id}`);
+      return;
+    }
     setOperationId(next.id);
     setValues(defaults(next));
     setOutput('');
@@ -136,15 +165,31 @@ export function MathWorkbenchTool() {
         <div className="mx-auto max-w-5xl">
           <header className="flex flex-col justify-between gap-5 border-b pb-7 sm:flex-row sm:items-start">
             <div>
+              {/*
+                On a per-tool page the heading is the tool, not the workspace.
+                A page titled "Median calculator" whose only <h1> reads "Math &
+                unit workbench" is telling a reader and a search engine two
+                different things about what it is, and the heading is the one
+                they both weigh most.
+              */}
               <p className="text-xs font-medium text-muted-foreground">
                 Calculators / {MATH_OPERATIONS.length} related tools
               </p>
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Math & unit workbench
+                {routed ? routed.name : 'Math & unit workbench'}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                Arithmetic, statistics, number theory, geometry, and unit
-                conversion in one local workspace.
+                {/*
+                  `local-source-policy.test.ts` bans the no-upload phrasing as
+                  an unproved release claim (rule 23, decision 15), comments
+                  included, and the guard is right: a page may describe where
+                  the work happens, which is a fact about the code, but it may
+                  not assert a result about the wire that only the egress
+                  protocol establishes. That evidence lives on /proof.
+                */}
+                {routed
+                  ? `${routed.description} It runs in this browser tab.`
+                  : 'Arithmetic, statistics, number theory, geometry, and unit conversion in one local workspace.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">

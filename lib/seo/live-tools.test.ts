@@ -19,13 +19,44 @@ const origin = ['https:', '//', 'getopentools.com'].join('');
 const sitemapUrls = sitemap().map(({ url }) => url.slice(origin.length));
 
 describe('live tool registry', () => {
+  /**
+   * A route has a page when `app/<route>/page.tsx` exists, or when a dynamic
+   * segment one level up renders it — `app/math/[tool]/page.tsx` serves every
+   * `/math/<id>` its `generateStaticParams` names.
+   *
+   * The check stays as strict as it was. It is not "a dynamic parent exists,
+   * so anything under it passes": the parent must actually generate this exact
+   * path, which is asserted separately below. Without that second half a typo
+   * in a route would sail through here and 404 in production.
+   */
+  function pageFileFor(route: string) {
+    if (existsSync(path.join(appRoot, 'app', route, 'page.tsx'))) return true;
+    const parent = route.slice(0, route.lastIndexOf('/'));
+    return existsSync(path.join(appRoot, 'app', parent, '[tool]', 'page.tsx'));
+  }
+
   it('only names routes that have a page', () => {
     for (const route of LIVE_TOOL_ROUTES) {
-      expect(
-        existsSync(path.join(appRoot, 'app', route, 'page.tsx')),
-        route,
-      ).toBe(true);
+      expect(pageFileFor(route), route).toBe(true);
     }
+  });
+
+  it('generates a static param for every per-tool route it claims', async () => {
+    // The other half of `pageFileFor`: the dynamic page must really produce
+    // each `/math/<id>` that the registry lists, or the registry is promising
+    // pages the build never writes.
+    const { generateStaticParams } = await import('../../app/math/[tool]/page');
+    const generated = new Set(
+      generateStaticParams().map(({ tool }) => `/math/${tool}`),
+    );
+    const claimed = LIVE_TOOL_ROUTES.filter(
+      (route) =>
+        route.startsWith('/math/') &&
+        !existsSync(path.join(appRoot, 'app', route, 'page.tsx')),
+    );
+
+    expect(claimed.length).toBeGreaterThan(0);
+    expect(claimed.filter((route) => !generated.has(route))).toEqual([]);
   });
 
   it('rejects operations a route does not run', () => {

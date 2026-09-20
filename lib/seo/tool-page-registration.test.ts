@@ -55,6 +55,46 @@ function routeFor(pageFile: string): string {
   return rel === '' ? '/' : `/${rel.split(path.sep).join('/')}`;
 }
 
+/**
+ * A dynamic segment is not one route, it is every route it generates.
+ *
+ * `app/math/[tool]/page.tsx` renders all 67 math calculators, one static page
+ * each at `/math/<id>`. Checking the literal `/math/[tool]` would test a path
+ * that never exists, and — worse — would pass or fail as a single unit while
+ * saying nothing about the 67 addresses that actually ship. So the segment is
+ * expanded to the ids its own source names, and each one is then held to
+ * exactly the same standard as a hand-written page.
+ *
+ * Read from the source rather than imported, because importing a route module
+ * pulls in the whole client component tree for a check about file layout.
+ */
+const GENERATED_FROM =
+  /MATH_OPERATIONS\.map\(\(operation\) => \(\{ tool: operation\.id \}\)\)/;
+
+function expandDynamic(page: {
+  file: string;
+  route: string;
+  component: string;
+}): { file: string; route: string; component: string }[] {
+  if (!page.route.includes('[')) return [page];
+  const source = readFileSync(page.file, 'utf8');
+  if (page.route === '/math/[tool]' && GENERATED_FROM.test(source)) {
+    const operations = readFileSync(
+      path.join(projectRoot, 'lib/tools/math-workbench.ts'),
+      'utf8',
+    );
+    return [...operations.matchAll(/^ {4}id: '([a-z0-9-]+)'/gmu)].map(
+      ([, id]) => ({ ...page, route: `/math/${id}` }),
+    );
+  }
+  throw new Error(
+    `${page.route} is a dynamic tool route this check does not know how to ` +
+      `expand. Teach it what params the page generates — do not let a ` +
+      `bracketed path through unchecked, or every route behind it ships ` +
+      `unverified.`,
+  );
+}
+
 const toolPages = findPageFiles(path.join(projectRoot, 'app'))
   .map((file) => ({
     file,
@@ -64,7 +104,8 @@ const toolPages = findPageFiles(path.join(projectRoot, 'app'))
   .filter(
     (page): page is { file: string; route: string; component: string } =>
       page.component !== undefined,
-  );
+  )
+  .flatMap(expandDynamic);
 
 /**
  * Tool pages deliberately not registered, and why.

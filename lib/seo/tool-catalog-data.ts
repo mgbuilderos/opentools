@@ -8410,7 +8410,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=basic-calculator',
+    destinationUrl: '/math/basic-calculator',
   },
   {
     id: 'math-and-units.scientific-calculator',
@@ -8424,7 +8424,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=scientific-calculator',
+    destinationUrl: '/math/scientific-calculator',
   },
   {
     id: 'math-and-units.fraction-calculator',
@@ -8438,7 +8438,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=fraction-calculator',
+    destinationUrl: '/math/fraction-calculator',
   },
   {
     id: 'math-and-units.percentage-calculator',
@@ -8466,7 +8466,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=ratio-calculator',
+    destinationUrl: '/math/ratio-calculator',
   },
   {
     id: 'math-and-units.proportion-calculator',
@@ -8480,7 +8480,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=proportion-calculator',
+    destinationUrl: '/math/proportion-calculator',
   },
   {
     id: 'math-and-units.average-calculator',
@@ -8494,7 +8494,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=average-calculator',
+    destinationUrl: '/math/average-calculator',
   },
   {
     id: 'math-and-units.median-calculator',
@@ -8508,7 +8508,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=median-calculator',
+    destinationUrl: '/math/median-calculator',
   },
   {
     id: 'math-and-units.mode-calculator',
@@ -8522,7 +8522,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=mode-calculator',
+    destinationUrl: '/math/mode-calculator',
   },
   {
     id: 'math-and-units.standard-deviation-calculator',
@@ -8536,7 +8536,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=standard-deviation-calculator',
+    destinationUrl: '/math/standard-deviation-calculator',
   },
   {
     id: 'math-and-units.variance-calculator',
@@ -8550,7 +8550,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=variance-calculator',
+    destinationUrl: '/math/variance-calculator',
   },
   {
     id: 'math-and-units.probability-calculator',
@@ -8564,7 +8564,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=probability-calculator',
+    destinationUrl: '/math/probability-calculator',
   },
   {
     id: 'math-and-units.permutation-calculator',
@@ -8578,7 +8578,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=permutation-calculator',
+    destinationUrl: '/math/permutation-calculator',
   },
   {
     id: 'math-and-units.combination-calculator',
@@ -8592,7 +8592,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=combination-calculator',
+    destinationUrl: '/math/combination-calculator',
   },
   {
     id: 'math-and-units.prime-number-checker',
@@ -8606,7 +8606,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=prime-number-checker',
+    destinationUrl: '/math/prime-number-checker',
   },
   {
     id: 'math-and-units.prime-factorization',
@@ -8620,7 +8620,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=prime-factorization',
+    destinationUrl: '/math/prime-factorization',
   },
   {
     id: 'math-and-units.gcd-calculator',
@@ -8634,7 +8634,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=gcd-calculator',
+    destinationUrl: '/math/gcd-calculator',
   },
   {
     id: 'math-and-units.lcm-calculator',
@@ -8648,7 +8648,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=lcm-calculator',
+    destinationUrl: '/math/lcm-calculator',
   },
   {
     id: 'math-and-units.quadratic-equation-solver',
@@ -8662,7 +8662,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=quadratic-equation-solver',
+    destinationUrl: '/math/quadratic-equation-solver',
   },
   {
     id: 'math-and-units.linear-equation-solver',
@@ -8676,7 +8676,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=linear-equation-solver',
+    destinationUrl: '/math/linear-equation-solver',
   },
   {
     id: 'math-and-units.system-of-equations-solver',
@@ -8690,7 +8690,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=system-of-equations-solver',
+    destinationUrl: '/math/system-of-equations-solver',
   },
   {
     id: 'math-and-units.matrix-calculator',
@@ -8704,7 +8704,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=matrix-calculator',
+    destinationUrl: '/math/matrix-calculator',
   },
   {
     id: 'math-and-units.determinant-calculator',
@@ -8718,7 +8718,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=determinant-calculator',
+    destinationUrl: '/math/determinant-calculator',
   },
   {
     id: 'math-and-units.complex-number-calculator',
@@ -8732,7 +8732,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=complex-number-calculator',
+    destinationUrl: '/math/complex-number-calculator',
   },
   {
     id: 'math-and-units.logarithm-calculator',
@@ -8746,7 +8746,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=logarithm-calculator',
+    destinationUrl: '/math/logarithm-calculator',
   },
   {
     id: 'math-and-units.exponent-calculator',
@@ -8760,7 +8760,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=exponent-calculator',
+    destinationUrl: '/math/exponent-calculator',
   },
   {
     id: 'math-and-units.root-calculator',
@@ -8774,7 +8774,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=root-calculator',
+    destinationUrl: '/math/root-calculator',
   },
   {
     id: 'math-and-units.geometry-calculator',
@@ -8788,7 +8788,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=geometry-calculator',
+    destinationUrl: '/math/geometry-calculator',
   },
   {
     id: 'math-and-units.triangle-calculator',
@@ -8802,7 +8802,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=triangle-calculator',
+    destinationUrl: '/math/triangle-calculator',
   },
   {
     id: 'math-and-units.circle-calculator',
@@ -8816,7 +8816,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=circle-calculator',
+    destinationUrl: '/math/circle-calculator',
   },
   {
     id: 'math-and-units.rectangle-calculator',
@@ -8830,7 +8830,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=rectangle-calculator',
+    destinationUrl: '/math/rectangle-calculator',
   },
   {
     id: 'math-and-units.polygon-calculator',
@@ -8844,7 +8844,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=polygon-calculator',
+    destinationUrl: '/math/polygon-calculator',
   },
   {
     id: 'math-and-units.volume-calculator',
@@ -8858,7 +8858,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=volume-calculator',
+    destinationUrl: '/math/volume-calculator',
   },
   {
     id: 'math-and-units.surface-area-calculator',
@@ -8872,7 +8872,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=surface-area-calculator',
+    destinationUrl: '/math/surface-area-calculator',
   },
   {
     id: 'math-and-units.distance-converter',
@@ -8886,7 +8886,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=distance-converter',
+    destinationUrl: '/math/distance-converter',
   },
   {
     id: 'math-and-units.area-converter',
@@ -8900,7 +8900,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=area-converter',
+    destinationUrl: '/math/area-converter',
   },
   {
     id: 'math-and-units.volume-converter',
@@ -8914,7 +8914,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=volume-converter',
+    destinationUrl: '/math/volume-converter',
   },
   {
     id: 'math-and-units.mass-converter',
@@ -8928,7 +8928,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=mass-converter',
+    destinationUrl: '/math/mass-converter',
   },
   {
     id: 'math-and-units.temperature-converter',
@@ -8942,7 +8942,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=temperature-converter',
+    destinationUrl: '/math/temperature-converter',
   },
   {
     id: 'math-and-units.speed-converter',
@@ -8956,7 +8956,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=speed-converter',
+    destinationUrl: '/math/speed-converter',
   },
   {
     id: 'math-and-units.time-unit-converter',
@@ -8970,7 +8970,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=time-unit-converter',
+    destinationUrl: '/math/time-unit-converter',
   },
   {
     id: 'math-and-units.pressure-converter',
@@ -8984,7 +8984,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=pressure-converter',
+    destinationUrl: '/math/pressure-converter',
   },
   {
     id: 'math-and-units.energy-converter',
@@ -8998,7 +8998,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=energy-converter',
+    destinationUrl: '/math/energy-converter',
   },
   {
     id: 'math-and-units.power-converter',
@@ -9012,7 +9012,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=power-converter',
+    destinationUrl: '/math/power-converter',
   },
   {
     id: 'math-and-units.force-converter',
@@ -9026,7 +9026,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=force-converter',
+    destinationUrl: '/math/force-converter',
   },
   {
     id: 'math-and-units.torque-converter',
@@ -9040,7 +9040,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=torque-converter',
+    destinationUrl: '/math/torque-converter',
   },
   {
     id: 'math-and-units.angle-converter',
@@ -9054,7 +9054,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=angle-converter',
+    destinationUrl: '/math/angle-converter',
   },
   {
     id: 'math-and-units.frequency-converter',
@@ -9068,7 +9068,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=frequency-converter',
+    destinationUrl: '/math/frequency-converter',
   },
   {
     id: 'math-and-units.data-size-converter',
@@ -9082,7 +9082,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=data-size-converter',
+    destinationUrl: '/math/data-size-converter',
   },
   {
     id: 'math-and-units.fuel-economy-converter',
@@ -9096,7 +9096,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=fuel-economy-converter',
+    destinationUrl: '/math/fuel-economy-converter',
   },
   {
     id: 'math-and-units.cooking-unit-converter',
@@ -9110,7 +9110,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=cooking-unit-converter',
+    destinationUrl: '/math/cooking-unit-converter',
   },
   {
     id: 'math-and-units.shoe-size-converter',
@@ -9124,7 +9124,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=shoe-size-converter',
+    destinationUrl: '/math/shoe-size-converter',
   },
   {
     id: 'math-and-units.clothing-size-converter',
@@ -9138,7 +9138,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=clothing-size-converter',
+    destinationUrl: '/math/clothing-size-converter',
   },
   {
     id: 'math-and-units.roman-numeral-converter',
@@ -9152,7 +9152,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=roman-numeral-converter',
+    destinationUrl: '/math/roman-numeral-converter',
   },
   {
     id: 'math-and-units.number-to-words',
@@ -9166,7 +9166,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=number-to-words',
+    destinationUrl: '/math/number-to-words',
   },
   {
     id: 'math-and-units.words-to-number',
@@ -9180,7 +9180,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=words-to-number',
+    destinationUrl: '/math/words-to-number',
   },
   {
     id: 'math-and-units.significant-figures-calculator',
@@ -9194,7 +9194,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=significant-figures-calculator',
+    destinationUrl: '/math/significant-figures-calculator',
   },
   {
     id: 'math-and-units.scientific-notation-converter',
@@ -9208,7 +9208,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=scientific-notation-converter',
+    destinationUrl: '/math/scientific-notation-converter',
   },
   {
     id: 'math-and-units.rounding-calculator',
@@ -9222,7 +9222,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=rounding-calculator',
+    destinationUrl: '/math/rounding-calculator',
   },
   {
     id: 'math-and-units.margin-of-error-calculator',
@@ -9236,7 +9236,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=margin-of-error-calculator',
+    destinationUrl: '/math/margin-of-error-calculator',
   },
   {
     id: 'math-and-units.confidence-interval-calculator',
@@ -9250,7 +9250,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=confidence-interval-calculator',
+    destinationUrl: '/math/confidence-interval-calculator',
   },
   {
     id: 'math-and-units.z-score-calculator',
@@ -9264,7 +9264,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=z-score-calculator',
+    destinationUrl: '/math/z-score-calculator',
   },
   {
     id: 'math-and-units.percentile-calculator',
@@ -9278,7 +9278,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=percentile-calculator',
+    destinationUrl: '/math/percentile-calculator',
   },
   {
     id: 'math-and-units.correlation-calculator',
@@ -9292,7 +9292,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=correlation-calculator',
+    destinationUrl: '/math/correlation-calculator',
   },
   {
     id: 'math-and-units.linear-regression-calculator',
@@ -9306,7 +9306,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=linear-regression-calculator',
+    destinationUrl: '/math/linear-regression-calculator',
   },
   {
     id: 'math-and-units.sample-size-calculator',
@@ -9320,7 +9320,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=sample-size-calculator',
+    destinationUrl: '/math/sample-size-calculator',
   },
   {
     id: 'math-and-units.random-number-generator',
@@ -9334,7 +9334,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=random-number-generator',
+    destinationUrl: '/math/random-number-generator',
   },
   {
     id: 'math-and-units.dice-roller',
@@ -9348,7 +9348,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=dice-roller',
+    destinationUrl: '/math/dice-roller',
   },
   {
     id: 'math-and-units.coin-flipper',
@@ -9362,7 +9362,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=coin-flipper',
+    destinationUrl: '/math/coin-flipper',
   },
   {
     id: 'math-and-units.sequence-generator',
@@ -9376,7 +9376,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/math/workbench?tool=sequence-generator',
+    destinationUrl: '/math/sequence-generator',
   },
   {
     id: 'finance-and-business.loan-emi-calculator',
