@@ -160,6 +160,18 @@ export function ImageOptimizeTool() {
   const sourceRef = useRef<SourceImage | null>(null);
   const resultRef = useRef<ImageReceipt | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  /**
+   * True once a shared link has supplied max width or height.
+   *
+   * WHY IT IS NEEDED. Choosing a file normally re-fits those two boxes to the
+   * image's own dimensions, which is right for someone who set nothing. For
+   * someone who arrived from a link it is wrong: the notice says "max width
+   * 720 px", they pick a 64 px image, and the shared bound is silently
+   * replaced by 64 before they ever press the button. Caught by
+   * `e2e/recipe-links.spec.ts`; it is a ref and not state because nothing
+   * renders from it.
+   */
+  const recipeSetDimensionsRef = useRef(false);
   const [source, setSource] = useState<SourceImage | null>(null);
   const [result, setResult] = useState<ImageReceipt | null>(null);
   const [maxWidth, setMaxWidth] = useState(1600);
@@ -201,6 +213,12 @@ export function ImageOptimizeTool() {
     if (typeof applied.quality === 'number') setQuality(applied.quality);
     if (typeof applied.width === 'number') setMaxWidth(applied.width);
     if (typeof applied.height === 'number') setMaxHeight(applied.height);
+    if (
+      typeof applied.width === 'number' ||
+      typeof applied.height === 'number'
+    ) {
+      recipeSetDimensionsRef.current = true;
+    }
     setRecipeSummary(describeRecipe(IMAGE_OPTIMIZE_RECIPE, applied));
 
     const url = new URL(window.location.href);
@@ -264,8 +282,11 @@ export function ImageOptimizeTool() {
       };
       sourceRef.current = next;
       setSource(next);
-      setMaxWidth(Math.min(decoded.naturalWidth, 2400));
-      setMaxHeight(Math.min(decoded.naturalHeight, 2400));
+      // Fit the bounds to the image, unless a shared link already chose them.
+      if (!recipeSetDimensionsRef.current) {
+        setMaxWidth(Math.min(decoded.naturalWidth, 2400));
+        setMaxHeight(Math.min(decoded.naturalHeight, 2400));
+      }
     } catch (caught) {
       URL.revokeObjectURL(url);
       setError(
