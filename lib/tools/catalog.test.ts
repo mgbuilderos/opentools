@@ -156,6 +156,7 @@ describe('public canary catalog', () => {
       'Merge PDF',
       'Compress PDF',
       'PDF to Word',
+      'PDF to Excel',
       'Sign and fill PDF',
       'Extract PDF pages',
       'Images to PDF',
@@ -167,11 +168,11 @@ describe('public canary catalog', () => {
       'PDF metadata editor',
       'Bates numbering for PDFs',
     ]);
-    expect(pdf).toHaveLength(13);
+    expect(pdf).toHaveLength(14);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(13);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(14);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

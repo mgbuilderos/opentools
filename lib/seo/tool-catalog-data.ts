@@ -389,13 +389,13 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     name: 'PDF to Excel',
     category: 'PDF',
     rank: 18,
-    executionMode: 'local-wasm',
+    executionMode: 'local-js',
     releaseWave: 'P1',
     riskTier: 'low',
-    validationStatus: 'backlog-candidate',
+    validationStatus: 'priority-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=pdf-to-excel',
+      'Extracts 2D tables and bank statements directly into .xlsx and .csv in-browser. Multi-line rows merged, running balances reconciled, dates and amounts parsed per column, and scanned PDFs refused.',
+    destinationUrl: '/pdf/to-excel',
   },
   {
     id: 'pdf.excel-to-pdf',

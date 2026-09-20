@@ -338,6 +338,41 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-to-excel',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'PDF to Excel',
+    shortDescription:
+      'Convert bank statements and PDF tables into clean Excel (.xlsx) and CSV with column detection, reconciliation and zero server uploads.',
+    category: 'PDF',
+    aliases: [
+      'pdf to excel',
+      'pdf to xlsx',
+      'bank statement converter',
+      'bank statement to excel',
+      'bank statement to csv',
+      'pdf table extractor',
+      'convert pdf to spreadsheet',
+    ],
+    jobs: [
+      'convert pdf bank statement to excel without uploading client data',
+      'extract table from pdf to csv',
+      'convert bank statement to spreadsheet',
+      'reconcile running balance on pdf statement',
+    ],
+    href: '/pdf/to-excel',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'pdf.table.extract',
+        'spreadsheet.xlsx.write',
+        'spreadsheet.csv.transform',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-sign',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1433,6 +1468,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-page-tools',
       'pdf-bates',
       'pdf-to-word',
+      'pdf-to-excel',
     ],
   },
   {
