@@ -41,6 +41,39 @@ no off-origin response, zero off-origin bytes, no request carrying a body, the
 filename absent from every request URL, and no `fetch`/`xhr`/`beacon`/
 `websocket` initiator recorded for the whole document.
 
+## Result — 2026-09-20, against the deployed site
+
+**6/6 passed, Chromium and WebKit, run directly against `getopentools.com`.**
+
+This is the run ADR-014 asks for. Every earlier result was measured against a
+build on a laptop; this one measures what a visitor actually receives.
+
+| | |
+| :--- | :--- |
+| Target | `https://getopentools.com` |
+| App chunk served | `index-_tTSc37h.js` |
+| Edge | `cf-ray a3de6ac16cdd9998-SIN` |
+| Third-party beacon tags in the HTML | `0` |
+
+Re-verified independently by header inspection on `/`, `/pdf/compress`,
+`/image/optimize` and `/support`: all four serve `connect-src 'none'`,
+`form-action 'none'`, `object-src 'none'` and `base-uri 'self'`, and none
+carries a `cloudflareinsights` tag when requested with a real browser
+user-agent.
+
+**How to re-run it.** `playwright.production.config.ts` points the same protocol
+at a deployed origin. It starts no server, so it cannot accidentally measure a
+stale build already listening on a port:
+
+```bash
+npx playwright test --config playwright.production.config.ts
+EGRESS_BASE_URL=https://staging.example npx playwright test --config playwright.production.config.ts
+```
+
+Its global setup prints the app chunk and edge ray of whatever answered, and
+fails outright if a third-party beacon tag has returned. Evidence that does not
+name the build it measured is not evidence.
+
 ## Result — 2026-09-18
 
 Run against the production build. **6/6 passed, Chromium and WebKit.**
@@ -63,12 +96,26 @@ Real operation, `/image/optimize`, 86,563-byte PNG → 3.1 KB:
 - `0` bytes to any off-origin host.
 - The probe filename appears in no request URL.
 
-## Two traps worth keeping
+## Three traps worth keeping
 
 **A blocked `sendBeacon` still returns `true`.** The spec returns true once the
 beacon is *queued*; CSP refuses it afterwards. Any check that asserts on that
 return value records a leak as a pass. Assert on observed network, never on a
 return value.
+
+**The test can lose a race with hydration and blame the product.** Found
+2026-09-20, the first time this ran against a deployed origin rather than
+localhost. The real-file check hands a file over by assigning `input.files` and
+firing `change`. Do that before React has hydrated and the handover is
+discarded when it does; the button stays disabled forever and the run reports
+*"a real file goes through a real tool"* as failing. The tool was fine
+throughout — verified separately by driving the live page's own file input,
+which enabled the button with no console errors. Locally the race is invisible
+because load is instant, so this failure mode cannot appear until the day the
+protocol is pointed at the thing it is supposed to prove. The fix is to wait for
+the page to settle and then assert the handover registered *before* clicking, so
+a future failure says "the file never reached the tool" rather than "a click
+timed out".
 
 **Chromium raises a request event for a request it is about to block.** An XHR
 the CSP kills still fires `page.on('request')`, with `transferSize: 0` and a
@@ -116,5 +163,7 @@ depends on the CSP to be true.
 
 ---
 
-*Re-run with `npx playwright test e2e/egress-proof.spec.ts`. Re-run it before
-any release that repeats an egress claim; that is what rule 23 asks for.*
+*Re-run locally with `npx playwright test e2e/egress-proof.spec.ts`, and against
+what is actually live with `npx playwright test --config
+playwright.production.config.ts`. Re-run it before any release that repeats an
+egress claim; that is what rule 23 asks for.*

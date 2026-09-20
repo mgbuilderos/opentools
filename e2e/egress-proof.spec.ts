@@ -27,8 +27,17 @@ import { expect, test } from '@playwright/test';
  * value records a leak as a pass. Assert on observed network, never on a return.
  */
 
-/** Hosts the page is allowed to talk to. Anything else is a finding. */
-const SAME_ORIGIN = 'localhost:8788';
+/**
+ * Hosts the page is allowed to talk to. Anything else is a finding.
+ *
+ * Derived from the target rather than hardcoded, so the same protocol can run
+ * against a local build (the default) or against what is actually deployed.
+ * Rule 23 asks whether *a build that ships* passed the protocol, and until now
+ * the protocol could only ever be pointed at localhost.
+ */
+const SAME_ORIGIN = new URL(
+  process.env.EGRESS_BASE_URL ?? 'http://localhost:8788',
+).host;
 
 const isOffOrigin = (url: string) => {
   try {
@@ -78,17 +87,18 @@ function watchOffOrigin(page: import('@playwright/test').Page) {
     },
     /** Bytes actually put on the wire to anywhere off-origin. Must be zero. */
     async assertZeroBytesOffOrigin(page: import('@playwright/test').Page) {
-      const transferred = await page.evaluate(() =>
+      const transferred = await page.evaluate((sameOrigin) =>
         performance
           .getEntriesByType('resource')
           .map((entry) => entry as PerformanceResourceTiming)
-          .filter((entry) => !entry.name.includes('localhost:8788'))
+          .filter((entry) => !entry.name.includes(sameOrigin))
           .filter(
             (entry) =>
               !entry.name.startsWith('blob:') &&
               !entry.name.startsWith('data:'),
           )
           .map((entry) => ({ url: entry.name, bytes: entry.transferSize })),
+        SAME_ORIGIN,
       );
       for (const entry of transferred) {
         expect(entry.bytes, `bytes reached ${entry.url}`).toBe(0);
@@ -199,6 +209,13 @@ test.describe('egress proof', () => {
     });
 
     await page.goto('/image/optimize');
+    // Hydration must finish before the file is handed over. Assigning
+    // `input.files` and firing `change` at markup React has not attached to
+    // yet is silently discarded when it hydrates, and the button then stays
+    // disabled forever — which reads as "the tool is broken" when the tool is
+    // fine. Locally the race is invisible because load is instant; over a real
+    // network against the deployed site it loses every time.
+    await page.waitForLoadState('networkidle');
 
     // A real PNG, built in the page, handed over exactly as a file picker would.
     // The filename is distinctive so it can be searched for in every URL below.
@@ -231,7 +248,11 @@ test.describe('egress proof', () => {
       input.dispatchEvent(new Event('change', { bubbles: true }));
     }, probeName);
 
-    await page.getByRole('button', { name: /optimi[sz]e image/iu }).click();
+    const optimise = page.getByRole('button', { name: /optimi[sz]e image/iu });
+    // Assert the handover registered before clicking, so a failure here reads
+    // "the file never reached the tool" rather than "a click timed out".
+    await expect(optimise).toBeEnabled({ timeout: 15_000 });
+    await optimise.click();
 
     // The tool is done when it offers the result for saving.
     await expect(
