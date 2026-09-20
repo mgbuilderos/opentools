@@ -35,9 +35,22 @@ import { expect, test } from '@playwright/test';
  * Rule 23 asks whether *a build that ships* passed the protocol, and until now
  * the protocol could only ever be pointed at localhost.
  */
-const SAME_ORIGIN = new URL(
+let SAME_ORIGIN = new URL(
   process.env.EGRESS_BASE_URL ?? 'http://localhost:8788',
 ).host;
+
+/**
+ * Take the origin from the config the run is actually using.
+ *
+ * Without this the default above wins, and `playwright.production.config.ts`
+ * -- which points the browser at the deployed site -- scored every real
+ * request as off-origin. The command `docs/EGRESS_PROOF.md` documents could not
+ * pass unless the reader also happened to export `EGRESS_BASE_URL`, which the
+ * document does not say. A proof nobody can reproduce is not a proof.
+ */
+test.beforeEach(({ baseURL }) => {
+  if (baseURL) SAME_ORIGIN = new URL(baseURL).host;
+});
 
 const isOffOrigin = (url: string) => {
   try {
@@ -87,17 +100,18 @@ function watchOffOrigin(page: import('@playwright/test').Page) {
     },
     /** Bytes actually put on the wire to anywhere off-origin. Must be zero. */
     async assertZeroBytesOffOrigin(page: import('@playwright/test').Page) {
-      const transferred = await page.evaluate((sameOrigin) =>
-        performance
-          .getEntriesByType('resource')
-          .map((entry) => entry as PerformanceResourceTiming)
-          .filter((entry) => !entry.name.includes(sameOrigin))
-          .filter(
-            (entry) =>
-              !entry.name.startsWith('blob:') &&
-              !entry.name.startsWith('data:'),
-          )
-          .map((entry) => ({ url: entry.name, bytes: entry.transferSize })),
+      const transferred = await page.evaluate(
+        (sameOrigin) =>
+          performance
+            .getEntriesByType('resource')
+            .map((entry) => entry as PerformanceResourceTiming)
+            .filter((entry) => !entry.name.includes(sameOrigin))
+            .filter(
+              (entry) =>
+                !entry.name.startsWith('blob:') &&
+                !entry.name.startsWith('data:'),
+            )
+            .map((entry) => ({ url: entry.name, bytes: entry.transferSize })),
         SAME_ORIGIN,
       );
       for (const entry of transferred) {
