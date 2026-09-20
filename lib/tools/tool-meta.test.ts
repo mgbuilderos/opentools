@@ -66,7 +66,7 @@ describe('tool metadata', () => {
 
     expect(
       offenders,
-      'imports the catalogue at runtime; use tool-meta or navigation instead',
-    ).toEqual(['home-workspace.tsx']);
+      'imports the catalogue at runtime; use tool-meta, navigation or browse instead',
+    ).toEqual([]);
   });
 });

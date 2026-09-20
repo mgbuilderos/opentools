@@ -7,31 +7,58 @@ import { destinationIcon } from '@/components/category-icons';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
 import {
-  toolDestinationsForGroup,
-  toolSubsectionsForGroup,
-  toolGroups,
-  type ToolGroup,
-} from '@/lib/tools/catalog';
+  INITIAL_GROUP_ID,
+  INITIAL_SECTIONS,
+  loadBrowseSections,
+  type BrowseSection,
+} from '@/lib/tools/browse';
+import { NAV_GROUPS, type NavGroupId } from '@/lib/tools/navigation';
 
 export function HomeWorkspace() {
   const [selectedGroupId, setSelectedGroupId] =
-    useState<ToolGroup['id']>('pdf');
+    useState<NavGroupId>(INITIAL_GROUP_ID);
   const [filter, setFilter] = useState('');
   const headingRef = useRef<HTMLHeadingElement>(null);
   const selectedGroup =
-    toolGroups.find((group) => group.id === selectedGroupId) ?? toolGroups[0];
-  const _destinations = useMemo(
-    () => toolDestinationsForGroup(selectedGroup),
-    [selectedGroup],
-  );
-  const subsections = useMemo(
-    () => toolSubsectionsForGroup(selectedGroup),
-    [selectedGroup],
-  );
+    NAV_GROUPS.find((group) => group.id === selectedGroupId) ?? NAV_GROUPS[0]!;
+
+  // The default category's cards are in the prerendered HTML, so they have to
+  // be present at the very first client render or React discards the page and
+  // rebuilds it. That one is imported statically; the rest are fetched when
+  // opened and kept, so going back to a category is instant. See
+  // lib/tools/browse.ts.
+  //
+  // Derived rather than stored, so the effect never calls setState in its own
+  // body -- that is `react-compiler/EffectSetState`, and it is a real warning
+  // here rather than one to suppress: seeding state from a prop-like constant
+  // and then re-setting it in an effect is exactly the cascading render it
+  // describes.
+  const [fetched, setFetched] = useState<
+    Partial<Record<NavGroupId, readonly BrowseSection[]>>
+  >({});
+  const subsections =
+    selectedGroupId === INITIAL_GROUP_ID
+      ? INITIAL_SECTIONS
+      : fetched[selectedGroupId];
+  const loadingGroupId = subsections ? null : selectedGroupId;
+
+  useEffect(() => {
+    if (selectedGroupId === INITIAL_GROUP_ID || fetched[selectedGroupId])
+      return;
+    let cancelled = false;
+    void loadBrowseSections(selectedGroupId).then((sections) => {
+      if (cancelled) return;
+      setFetched((previous) => ({ ...previous, [selectedGroupId]: sections }));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedGroupId, fetched]);
 
   const normalizedFilter = filter.trim().toLocaleLowerCase();
 
   const filteredSubsections = useMemo(() => {
+    if (!subsections) return [];
     if (!normalizedFilter) {
       return subsections.map((section) => ({
         ...section,
@@ -65,7 +92,8 @@ export function HomeWorkspace() {
         'category',
       );
       setSelectedGroupId(
-        toolGroups.find((group) => group.id === candidate)?.id ?? 'pdf',
+        NAV_GROUPS.find((group) => group.id === candidate)?.id ??
+          INITIAL_GROUP_ID,
       );
       setFilter('');
     };
@@ -74,7 +102,7 @@ export function HomeWorkspace() {
     return () => window.removeEventListener('popstate', readCategory);
   }, []);
 
-  const selectCategory = (groupId: ToolGroup['id']) => {
+  const selectCategory = (groupId: NavGroupId) => {
     setSelectedGroupId(groupId);
     setFilter('');
     if (groupId !== selectedGroupId)
@@ -127,8 +155,13 @@ export function HomeWorkspace() {
 
           <div className="my-6 flex flex-wrap items-center justify-between gap-4">
             <output className="text-sm text-muted-foreground">
-              {totalVisibleCount} {totalVisibleCount === 1 ? 'tool' : 'tools'}
-              {filter ? ` matching “${filter}”` : ' · Choose a task to begin'}
+              {loadingGroupId
+                ? `${selectedGroup.destinationCount} tools · loading`
+                : `${totalVisibleCount} ${totalVisibleCount === 1 ? 'tool' : 'tools'}${
+                    filter
+                      ? ` matching “${filter}”`
+                      : ' · Choose a task to begin'
+                  }`}
             </output>
             <div className="relative w-full sm:w-72">
               <Search
@@ -146,41 +179,57 @@ export function HomeWorkspace() {
             </div>
           </div>
           <div data-design="equal-tool-hierarchy" className="space-y-10">
-            {filteredSubsections.map((section) => (
-              <div key={section.id} className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-                  <div>
-                    <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                      {section.title}
-                    </h2>
-                    <p className="text-xs text-muted-foreground">
-                      {section.description}
-                    </p>
-                  </div>
-                  <span className="tabular rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground">
-                    {section.visibleDestinations.length}{' '}
-                    {section.visibleDestinations.length === 1
-                      ? 'tool'
-                      : 'tools'}
-                  </span>
-                </div>
+            {loadingGroupId
+              ? null
+              : filteredSubsections.map((section) => (
+                  <div key={section.id} className="space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+                      <div>
+                        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                          {section.title}
+                        </h2>
+                        <p className="text-xs text-muted-foreground">
+                          {section.description}
+                        </p>
+                      </div>
+                      <span className="tabular rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono text-muted-foreground">
+                        {section.visibleDestinations.length}{' '}
+                        {section.visibleDestinations.length === 1
+                          ? 'tool'
+                          : 'tools'}
+                      </span>
+                    </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {section.visibleDestinations.map((tool) => (
-                    <ToolLinkCard
-                      key={tool.id}
-                      name={tool.name}
-                      description={tool.description}
-                      href={tool.href}
-                      icon={destinationIcon(tool, selectedGroup.id)}
-                      className="min-h-36 items-start [&>span]:items-start [&>span>span:last-child>span:first-child]:text-base [&>span>span:last-child>span:last-child]:text-sm"
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                      {section.visibleDestinations.map((tool) => (
+                        <ToolLinkCard
+                          key={tool.id}
+                          name={tool.name}
+                          description={tool.description}
+                          href={tool.href}
+                          icon={destinationIcon(tool, selectedGroup.id)}
+                          className="min-h-36 items-start [&>span]:items-start [&>span>span:last-child>span:first-child]:text-base [&>span>span:last-child>span:last-child]:text-sm"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
           </div>
-          {!totalVisibleCount ? (
+          {loadingGroupId ? (
+            <div
+              className="rounded-xl border border-dashed p-8"
+              aria-live="polite"
+            >
+              <h2 className="text-lg font-semibold">
+                Loading {selectedGroup.name}…
+              </h2>
+              <p className="mt-2 text-base text-muted-foreground">
+                {selectedGroup.destinationCount} tools, fetched only when you
+                open the category.
+              </p>
+            </div>
+          ) : null}
+          {!loadingGroupId && !totalVisibleCount ? (
             <div className="rounded-xl border border-dashed p-8">
               <h2 className="text-lg font-semibold">
                 No matching tool in {selectedGroup.name}

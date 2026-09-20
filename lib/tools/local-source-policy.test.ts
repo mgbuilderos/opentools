@@ -156,7 +156,11 @@ describe('local tool source policy', () => {
     expect(shell).toContain('aria-label="Tool categories"');
     expect(shell).toContain('onCategorySelect(group.id)');
     expect(shell).not.toContain('<ToolLinkCard');
-    expect(home).toContain('toolDestinationsForGroup(selectedGroup)');
+    // Was `toolDestinationsForGroup(selectedGroup)`, whose only remaining use
+    // was a `_destinations` binding nothing read -- so this line passed on dead
+    // code and would have passed a workspace rendering category links instead
+    // of task cards. Assert the render it is actually about.
+    expect(home).toContain('section.visibleDestinations.map(');
     expect(home).toContain('data-design="equal-tool-hierarchy"');
     expect(home).toContain('<ToolLinkCard');
     expect(shell).toContain('showModal()');

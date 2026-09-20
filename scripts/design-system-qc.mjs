@@ -43,9 +43,13 @@ requireText(
   'data-design="equal-tool-hierarchy"',
   'main category surface must expose equal task hierarchy',
 );
+// This asserted the literal call `toolDestinationsForGroup(selectedGroup)`,
+// whose only remaining use was a `_destinations` binding nothing read -- so the
+// gate was satisfied by dead code and would have passed a surface that rendered
+// workspace links instead of task destinations. It now asserts the render.
 requireText(
   'components/home-workspace.tsx',
-  'toolDestinationsForGroup(selectedGroup)',
+  'section.visibleDestinations.map(',
   'main category surface must flatten workspaces into equal task destinations',
 );
 requireText(

@@ -19,7 +19,7 @@ import {
 import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { offerFile } from '@/lib/file-handoff';
-import { isLiveToolUrl } from '@/lib/seo/live-tools';
+import { isLiveToolUrl } from '@/lib/seo/live-tool-routes';
 import { cn } from '@/lib/utils';
 import {
   type DetectedAction,

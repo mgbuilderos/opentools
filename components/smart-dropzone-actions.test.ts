@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isLiveToolUrl } from '../lib/seo/live-tools';
+import { isLiveToolUrl } from '../lib/seo/live-tool-routes';
 import { SMART_DROPZONE_ACTIONS } from './smart-dropzone-actions';
 
 describe('smart dropzone actions', () => {
@@ -47,7 +47,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('handles subtitles, videos, and audio correctly when tools are not live (fallback to generic file)', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
     const { vi } = await import('vitest');
     const spy = vi
@@ -117,7 +117,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('suggests Subtitle workbench and MP3 toolkit when isLiveToolUrl returns true', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
 
     const { vi } = await import('vitest');
@@ -171,7 +171,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('suggests Video trim for .mp4, .mov, and .m4v when isLiveToolUrl returns true', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
 
     const { vi } = await import('vitest');
@@ -209,7 +209,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('suggests Convert to WAV for audio formats (.m4a, .flac, .ogg, .opus, .aiff, .wav)', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
 
     const { vi } = await import('vitest');
@@ -240,7 +240,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('suggests both MP3 toolkit and Convert to WAV for .mp3 when both are live', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
 
     const { vi } = await import('vitest');
@@ -270,7 +270,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('suggests Photo metadata for image formats (.jpg, .jpeg, .png, .webp) when isLiveToolUrl returns true', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
 
     const { vi } = await import('vitest');
@@ -317,7 +317,7 @@ describe('smart dropzone actions', () => {
   });
 
   it('excludes Photo metadata when isLiveToolUrl(/image/metadata) is false', async () => {
-    const liveToolsModule = await import('../lib/seo/live-tools');
+    const liveToolsModule = await import('../lib/seo/live-tool-routes');
     const origIsLive = liveToolsModule.isLiveToolUrl;
 
     const { vi } = await import('vitest');
