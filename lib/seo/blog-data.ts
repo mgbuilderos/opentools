@@ -1463,16 +1463,166 @@ The most common single finding: an animation that is correctly written with tran
       'Transform plain Markdown text into publication-ready corporate documents and research briefs with custom print styling in device memory.',
     sections: [
       {
-        id: 'markdown-publishing',
-        heading: 'Markdown to PDF Without Cloud Document Converters',
-        content: `Markdown is the standard format for technical documentation, research notes, and articles. The OpenTools [Markdown to PDF Maker](/text/writing?tool=markdown-to-pdf-doc) applies professional CSS print styles with proper @page rules and header hierarchies for instant export.`,
+        id: 'why-markdown-to-pdf-is-hard',
+        heading: 'Markdown Describes Structure; PDF Describes Pages',
+        content: `Markdown has no concept of a page. It is a flat stream of structural elements — headings, paragraphs, lists, code blocks — with no notion of where one sheet of paper ends and the next begins.
+
+PDF is the opposite. It is a page-description format in which every element has an absolute position on a fixed canvas of a specific physical size.
+
+Converting between them means **inventing everything PDF requires and Markdown does not supply**: page size, margins, where page breaks fall, whether a heading may sit alone at the foot of a page, how a table behaves when it is taller than the remaining space, and what appears in the running header and footer.
+
+Those decisions are what separate a document that looks typeset from one that looks like a web page someone printed. Most converters make them badly by default, which is why Markdown-to-PDF output so often has headings stranded at page bottoms and code blocks split mid-line.`,
+      },
+      {
+        id: 'the-print-css-route',
+        heading: 'The Browser Is Already a Typesetting Engine',
+        content: `The practical route to good PDF output in a browser is not a PDF-drawing library. It is to render the Markdown to HTML and then control pagination with **print CSS**, letting the browser's own layout engine do the typesetting it already does well.
+
+The \`@page\` rule defines the physical sheet:
+
+\`\`\`css
+@page {
+  size: A4;
+  margin: 20mm 18mm 22mm 18mm;
+}
+\`\`\`
+
+\`size\` accepts named sizes (\`A4\`, \`Letter\`) or explicit dimensions, plus \`portrait\` or \`landscape\`. Margins here are the printable margins of the sheet itself, distinct from any CSS margins inside the document body.
+
+Pagination control comes from a small set of properties that are widely misunderstood:
+
+\`\`\`css
+h1, h2, h3, h4 {
+  break-after: avoid;      /* never leave a heading alone at a page foot */
+  break-inside: avoid;
+}
+
+pre, table, figure, blockquote {
+  break-inside: avoid;     /* do not split a code block across pages */
+}
+
+p {
+  orphans: 3;              /* min lines left at the bottom of a page */
+  widows: 3;               /* min lines carried to the next page */
+}
+\`\`\`
+
+\`break-after: avoid\` on headings is the single highest-impact rule in the entire stylesheet. Without it, roughly one heading in every few pages ends up stranded, and nothing else about the document matters as much to how professional it reads.
+
+\`orphans\` and \`widows\` are typographic terms worth getting right: an **orphan** is a lone first line left at the bottom of a page; a **widow** is a lone last line pushed to the top of the next. Both look like errors to a reader even when they cannot name why.`,
+      },
+      {
+        id: 'headers-footers-and-numbering',
+        heading: 'Page Numbers, Running Headers, and the Counter Nobody Uses',
+        content: `Academic and corporate documents need page numbers, and CSS provides them through \`@page\` margin boxes and the built-in \`page\` counter:
+
+\`\`\`css
+@page {
+  @bottom-center {
+    content: counter(page) " of " counter(pages);
+    font-size: 9pt;
+    color: #555;
+  }
+  @top-right {
+    content: "Quarterly Review — Confidential";
+    font-size: 8pt;
+  }
+}
+\`\`\`
+
+Support for margin boxes varies between browser print engines and dedicated renderers, and this is the main area where browser printing falls short of a typesetting tool. Where margin boxes are unavailable, a fixed-position element repeated by the print engine is the usual workaround.
+
+Two further refinements matter for formal documents:
+
+**Different first page.** Title pages usually omit the running header. \`@page :first\` targets it specifically, as do \`:left\` and \`:right\` for duplex printing with mirrored margins.
+
+**Section-aware breaks.** \`break-before: page\` on top-level headings starts each chapter on a fresh sheet, which is the convention for reports and theses:
+
+\`\`\`css
+h1 { break-before: page; }
+h1:first-of-type { break-before: avoid; }
+\`\`\`
+
+The second rule prevents a blank opening page, which is the bug that always accompanies the first.`,
+      },
+      {
+        id: 'typography-for-print',
+        heading: 'Typography That Survives the Transition to Paper',
+        content: `Screen typography and print typography have different constraints, and carrying screen values onto paper is what makes a printed page look wrong in a way readers notice but cannot articulate.
+
+**Use physical units.** Set type in \`pt\` or \`mm\` for print, not \`px\`. A pixel has no fixed physical size; a point is exactly 1/72 inch. Body text between **10pt and 12pt** is the readable range on paper — noticeably smaller than the 16px screen default, because reading distance and resolution are both different.
+
+**Measure matters more on paper.** A line length of 65–75 characters is the comfortable range. An A4 page with narrow margins and 11pt type produces lines well over 100 characters, which is tiring to read. Generous margins are not wasted space; they are what makes the measure correct.
+
+**Increase leading slightly.** Print benefits from \`line-height\` around 1.45–1.6 for body text.
+
+**Serif for body, still.** For long-form printed text, a serif face remains easier to read at small sizes on paper, where the rendering is high-resolution and stroke contrast survives.
+
+**Make links useful on paper.** A hyperlink is meaningless in print unless its destination is visible. Print stylesheets conventionally expose it:
+
+\`\`\`css
+@media print {
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 85%;
+    word-break: break-all;
+  }
+}
+\`\`\``,
+      },
+      {
+        id: 'local-conversion',
+        heading: 'Converting Locally, and Why It Matters for Documents',
+        content: `The documents people convert from Markdown are rarely public. They are theses before submission, internal reports, board papers, contracts in draft, research under embargo.
+
+Uploading such a document to a conversion service transmits the full text to a third party. Unlike an image, a document is immediately indexable and searchable by whoever receives it, and a draft under embargo loses its embargo the moment it is transmitted.
+
+Because the browser already contains the layout engine, the conversion needs no server at all. The Markdown is parsed to HTML in the page, print CSS is applied, and the browser's own print pipeline produces the PDF. The OpenTools [Markdown to PDF tool](/text/writing?tool=markdown-to-pdf-doc) works this way.
+
+Two practical notes for anyone relying on this route:
+
+**Fonts must be available locally or embedded.** A PDF generated from a page referencing a web font that failed to load will silently substitute a fallback, and the document you send is not the document you previewed. Check the output, not the preview.
+
+**Print backgrounds are off by default.** Browsers omit background colours and images when printing unless explicitly enabled. Code blocks with a tinted background, callout boxes and table zebra striping all disappear. \`print-color-adjust: exact\` requests that they be kept:
+
+\`\`\`css
+pre, .callout, tbody tr:nth-child(even) {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+\`\`\``,
       },
     ],
     faqs: [
       {
-        question: 'Are images and tables supported in Markdown to PDF?',
+        question: 'Why does my Markdown to PDF output look unprofessional?',
         answer:
-          'Yes. Standard GitHub Flavored Markdown (GFM) tables, blockquotes, code fences, and links are fully formatted.',
+          'Usually because nothing controls pagination. Markdown has no concept of a page, so the converter must invent page size, margins and break behaviour. Without break-after: avoid on headings and break-inside: avoid on code blocks and tables, headings end up stranded at the foot of pages and code blocks split mid-line, which is what makes output read as a printed web page rather than a typeset document.',
+      },
+      {
+        question: 'How do I stop a heading being left at the bottom of a page?',
+        answer:
+          'Apply break-after: avoid to your heading elements in print CSS. This tells the layout engine never to place a break immediately after a heading, pushing it to the next page with the content it introduces. It is the single highest-impact rule in a print stylesheet, because a stranded heading is the error readers notice most.',
+      },
+      {
+        question: 'What are orphans and widows in print CSS?',
+        answer:
+          'An orphan is a lone first line of a paragraph left at the bottom of a page; a widow is a lone last line pushed to the top of the next. The CSS orphans and widows properties set the minimum number of lines allowed in each position, and a value of 3 for both is a reasonable default for body text. Readers perceive both as errors even when they cannot name them.',
+      },
+      {
+        question: 'What font size should I use for a printed PDF?',
+        answer:
+          'Between 10pt and 12pt for body text, set in physical units rather than pixels, because a point is exactly one seventy-second of an inch while a pixel has no fixed physical size. That is noticeably smaller than the 16px screen default, since reading distance and resolution differ on paper. Pair it with a line height around 1.45 to 1.6 and margins generous enough to keep lines to 65 to 75 characters.',
+      },
+      {
+        question: 'Why are my code block backgrounds missing in the PDF?',
+        answer:
+          'Browsers omit background colours and images when printing unless explicitly told otherwise. Add print-color-adjust: exact, along with the -webkit- prefixed form, to the elements whose backgrounds must survive, such as code blocks, callouts and zebra-striped table rows.',
+      },
+      {
+        question: 'Is it safe to convert a confidential document online?',
+        answer:
+          'Only if the conversion runs in your browser. Documents converted from Markdown are typically theses before submission, board papers, internal reports or drafts under embargo, and uploading one transmits the complete text to a third party where it is immediately readable and indexable. Since the browser already contains the layout engine that does the typesetting, the conversion needs no server.',
       },
     ],
     relatedSlugs: [
@@ -1858,17 +2008,128 @@ Two habits worth keeping regardless of which tool you use: **never reuse an iden
       'Translate Unix epoch timestamps in seconds and milliseconds into human-readable datetime formats across all global timezones.',
     sections: [
       {
-        id: 'epoch-time-conversion',
-        heading: 'Debugging Timestamps Across Distributed Systems',
-        content: `Server logs, database records, and event streams typically store temporal events as integer Unix timestamps. Converting between epoch seconds/milliseconds and local or UTC time strings is essential for rapid log analysis and debugging.`,
+        id: 'what-epoch-time-is',
+        heading: 'What Unix Epoch Time Counts, and What It Ignores',
+        content: `Unix time is the number of seconds elapsed since **00:00:00 UTC on 1 January 1970**, the Unix epoch. It is the timestamp format underneath almost every log file, database \`created_at\` column, JWT \`exp\` claim and API response you will handle.
+
+Its appeal is that it is a single integer with no timezone, no locale and no formatting ambiguity. \`1737331200\` means the same instant everywhere on Earth.
+
+Two properties are less obvious and cause most of the confusion in practice.
+
+**Unix time ignores leap seconds.** It is not a count of every physical second since 1970. The standard defines each day as exactly 86,400 seconds, so when a leap second is inserted, Unix time either repeats a value or is smeared across the day depending on the platform. The practical consequence: Unix time tracks UTC as displayed, not elapsed physical time, and differences across a leap second are off by one second. For interface work this never matters. For high-precision scientific timing it does, and TAI is the correct clock there.
+
+**Unix time has no timezone.** A timestamp is an instant. "What time was that?" has no answer until you supply a zone. The same \`1737331200\` is 09:20 in Kolkata, 04:50 in London and 23:50 the previous day in Los Angeles. Storing a timezone alongside a timestamp is only necessary when you need to know where the user was, not when the event happened.`,
+      },
+      {
+        id: 'seconds-versus-milliseconds',
+        heading:
+          'Seconds or Milliseconds: The Off-By-1000 That Reaches Production',
+        content: `The single most common timestamp bug is confusing the two units, and it is easy because both are integers that look plausible.
+
+- **Unix standard, most backends, JWT claims, PostgreSQL \`EXTRACT(EPOCH...)\`**: seconds.
+- **JavaScript \`Date.now()\`, Java \`System.currentTimeMillis()\`, most JSON APIs written in those languages**: milliseconds.
+
+Passing seconds where milliseconds are expected produces a date in **January 1970**. Passing milliseconds where seconds are expected produces a date roughly **50,000 years in the future**. Both failures are loud if you look at the output and silent if you only check that the code did not throw.
+
+A reliable way to tell them apart by eye, valid for dates near the present:
+
+| Digits | Unit | Example era |
+| :--- | :--- | :--- |
+| 10 | seconds | 2001–2286 |
+| 13 | milliseconds | 2001–2286 |
+
+A 10-digit value beginning with \`1\` is a recent timestamp in seconds. A 13-digit value beginning with \`1\` is the same instant in milliseconds. In JavaScript the conversion is explicit and belongs at the boundary where data enters your system:
+
+\`\`\`js
+const fromSeconds = (s) => new Date(s * 1000);
+const toSeconds = (d) => Math.floor(d.getTime() / 1000);
+\`\`\`
+
+Use \`Math.floor\`, not \`Math.round\`. Rounding can push a timestamp into the following second, which breaks exact-match queries and makes \`exp\` claims expire a second late.`,
+      },
+      {
+        id: 'the-2038-problem',
+        heading: 'The Year 2038 Problem Is Still Real',
+        content: `A signed 32-bit integer holds a maximum value of 2,147,483,647. As a Unix timestamp that is **03:14:07 UTC on 19 January 2038**. One second later it overflows to negative, and systems using 32-bit \`time_t\` interpret the result as **13 December 1901**.
+
+This is not a historical curiosity. It is live in three places today:
+
+1. **Embedded and industrial systems** with long service lives — meters, controllers, medical devices — many still built on 32-bit platforms.
+2. **Databases with 32-bit timestamp columns.** MySQL's \`TIMESTAMP\` type maxes out at \`2038-01-19 03:14:07 UTC\` by design. \`DATETIME\` does not have this limit, and the difference matters when storing future dates.
+3. **Anything calculating far-future dates now** — a 30-year mortgage schedule, a lease expiry, a certificate validity window. These cross the boundary years before 2038 arrives.
+
+The remedy is to use 64-bit time throughout, which pushes the limit approximately 292 billion years out. In JavaScript this is already the case: \`Date\` stores milliseconds as a double and its usable range is ±8.64 × 10^15 ms, roughly ±273,000 years. In MySQL, prefer \`DATETIME\` or \`BIGINT\` over \`TIMESTAMP\` for anything that may hold a date past 2038.`,
+      },
+      {
+        id: 'converting-correctly',
+        heading: 'Converting Correctly, Including the Cases That Bite',
+        content: `Converting a timestamp for display means choosing a target zone explicitly. Relying on the runtime's local zone produces output that differs between your laptop, your CI runner and your server.
+
+\`Intl.DateTimeFormat\` is the correct tool, and it handles daylight saving transitions and historical zone rule changes through the IANA database:
+
+\`\`\`js
+const fmt = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Kolkata',
+  dateStyle: 'medium',
+  timeStyle: 'long',
+});
+fmt.format(new Date(1737331200 * 1000));
+\`\`\`
+
+Three cases deserve specific care:
+
+**Parsing a date-only string.** \`new Date('2026-01-20')\` is parsed as **UTC midnight** under the ISO 8601 rules, while \`new Date('2026/01/20')\` is parsed as **local midnight**. In a zone behind UTC the first form displays as 19 January. This is the source of a great many one-day-off bugs. Be explicit: \`new Date(Date.UTC(2026, 0, 20))\`.
+
+**Daylight saving gaps.** In a zone that springs forward, local times in the skipped hour do not exist. 02:30 on the transition day is not a real instant in London; converting it yields 01:30 or 03:30 depending on the library. Wall-clock arithmetic across a DST boundary is only safe with a zone-aware library.
+
+**Fixed offsets are not timezones.** \`UTC+05:30\` is an offset; \`Asia/Kolkata\` is a zone with a history of rule changes. Storing an offset loses the information needed to compute a correct local time for any other date.`,
+      },
+      {
+        id: 'local-conversion',
+        heading: 'Why This Belongs in the Browser',
+        content: `A timestamp converter needs no server. The conversion is integer arithmetic, and every current browser ships the full IANA timezone database through \`Intl\` — the same data a backend would consult.
+
+There is a practical reason to prefer a local tool beyond speed. Timestamps in logs are rarely isolated facts. They arrive attached to request identifiers, user identifiers, error messages and internal hostnames, and pasting a log line into a remote converter sends all of it to a third party. For anyone handling production incident data, that is an avoidable disclosure.
+
+The OpenTools [Unix timestamp converter](/developer/unix-timestamp) runs in the page: it detects whether a value is in seconds or milliseconds by magnitude, renders the instant in UTC and in your local zone side by side, and converts in both directions. Nothing is transmitted.
+
+For anything you are building yourself, three rules prevent most timestamp defects:
+
+1. **Store UTC, always.** Convert to a local zone only at the moment of display.
+2. **Convert units at the boundary**, where external data enters, and keep one unit internally.
+3. **Name the unit in the field.** \`expiresAtSeconds\` or \`createdAtMs\` eliminates an entire class of bug that \`expiresAt\` invites.`,
       },
     ],
     faqs: [
       {
-        question:
-          'Does the converter handle both seconds and millisecond epoch timestamps?',
+        question: 'What is a Unix epoch timestamp?',
         answer:
-          'Yes. It automatically detects 10-digit (seconds) and 13-digit (milliseconds) epoch formats.',
+          'A Unix epoch timestamp is the number of seconds elapsed since 00:00:00 UTC on 1 January 1970. It represents a single instant with no timezone attached, so the same value refers to the same moment everywhere. It also excludes leap seconds, because the standard defines every day as exactly 86,400 seconds.',
+      },
+      {
+        question: 'Is my timestamp in seconds or milliseconds?',
+        answer:
+          'Count the digits. For dates near the present, a 10-digit value is seconds and a 13-digit value is milliseconds. Passing seconds where milliseconds are expected produces a date in January 1970, and passing milliseconds where seconds are expected produces a date tens of thousands of years in the future. JavaScript Date.now() returns milliseconds while most backends and JWT claims use seconds.',
+      },
+      {
+        question: 'What is the year 2038 problem?',
+        answer:
+          'A signed 32-bit integer holds a maximum of 2,147,483,647, which as a Unix timestamp is 03:14:07 UTC on 19 January 2038. One second later it overflows to negative and is read as December 1901. It still affects embedded systems, MySQL TIMESTAMP columns which cap at that exact instant, and any calculation of far-future dates such as a 30-year mortgage schedule. Using 64-bit time or MySQL DATETIME avoids it.',
+      },
+      {
+        question: 'Why is my date one day off when I parse it?',
+        answer:
+          'new Date("2026-01-20") is parsed as UTC midnight under ISO 8601 rules, while new Date("2026/01/20") is parsed as local midnight. In any timezone behind UTC the first form displays as the previous day. Construct the date explicitly with Date.UTC(2026, 0, 20) to remove the ambiguity.',
+      },
+      {
+        question: 'Should I store timestamps with a timezone?',
+        answer:
+          'Store UTC and convert to a local zone only when displaying. A timestamp is an instant and needs no zone to be unambiguous. Store a zone separately only when you specifically need to know where the user was, not when the event occurred, and store an IANA zone name such as Asia/Kolkata rather than a fixed offset, since offsets lose the rule history needed for other dates.',
+      },
+      {
+        question: 'Can I convert timestamps without sending data to a server?',
+        answer:
+          'Yes. The conversion is integer arithmetic and every current browser ships the full IANA timezone database through the Intl API, which is the same data a backend would use. This matters because log lines usually carry request identifiers, user identifiers and internal hostnames alongside the timestamp, and pasting one into a remote converter discloses all of it.',
       },
     ],
     relatedSlugs: [
@@ -1898,16 +2159,128 @@ Two habits worth keeping regardless of which tool you use: **never reuse an iden
       'Convert large CSV datasets to structured JSON arrays with automatic number/boolean type coercion and zero data retention.',
     sections: [
       {
-        id: 'tabular-data-conversion',
-        heading: 'Converting Tabular Data for Modern Web APIs',
-        content: `Exporting CSV data from legacy systems and importing into modern REST or GraphQL APIs requires reliable JSON conversion. OpenTools parses delimiters (commas, semicolons, tabs), trims whitespace, and converts numeric strings into native JSON numbers.`,
+        id: 'why-csv-breaks',
+        heading: 'CSV Has No Standard, and That Is the Whole Problem',
+        content: `There is no authoritative CSV specification. RFC 4180 is an informational memo published in 2005 that describes common practice; it is not a standard anyone is obliged to follow, and most tools do not follow it completely.
+
+What actually varies between files that all call themselves CSV:
+
+- **The delimiter.** Comma, semicolon or tab. European locales using a comma as the decimal separator routinely export semicolon-delimited files, which is why a spreadsheet exported in Germany opens as a single column elsewhere.
+- **The quote character**, and how a quote inside a quoted field is escaped — doubled (\`""\`) per RFC 4180, or backslash-escaped in files produced by database tools.
+- **Line endings.** \`\\r\\n\`, \`\\n\`, or a bare \`\\r\` from very old Mac software.
+- **The encoding.** UTF-8, UTF-8 with a byte-order mark, Windows-1252, or UTF-16 from Excel's "Unicode Text" export.
+- **Whether there is a header row at all.**
+
+A parser that assumes any of these is a parser that will silently corrupt somebody's data. The failures are quiet: a misdetected delimiter produces one column, a misdetected encoding produces mojibake, and a naive split on commas destroys every quoted field containing a comma — which in practice means every address and every company name with a suffix.`,
+      },
+      {
+        id: 'why-split-is-wrong',
+        heading: 'Why line.split(",") Is Always Wrong',
+        content: `The single most common CSV bug is parsing with \`split\`. It fails on the first correctly-quoted field:
+
+\`\`\`
+id,name,notes
+1,"Acme, Inc.","He said ""yes"" on Tuesday"
+\`\`\`
+
+Splitting that second row on commas yields five fields instead of three, and shifts every subsequent column. The row is not rejected — it is silently wrong, which is worse.
+
+Correct CSV parsing requires a **character-by-character state machine** that tracks whether it is currently inside a quoted field. The rules are few:
+
+1. Outside quotes, a delimiter ends the field and a newline ends the record.
+2. A quote at the start of a field enters quoted mode.
+3. Inside quotes, delimiters and newlines are **literal data**, not separators.
+4. Inside quotes, two consecutive quotes mean one literal quote.
+5. A quote followed by anything other than a quote ends quoted mode.
+
+Rule 3 is the one that surprises people: **a single CSV record can span multiple lines** when a quoted field contains a newline. Any code that begins by splitting the file into lines has already failed on such a file, before parsing starts.
+
+This is why reaching for a tested parser matters more here than in most formats. The rules are simple to state and easy to get subtly wrong, and every mistake produces plausible-looking output rather than an error.`,
+      },
+      {
+        id: 'detecting-encoding-and-delimiter',
+        heading: 'Detecting the Delimiter and the Encoding Before Parsing',
+        content: `Before a single field can be read, two things must be established from evidence rather than assumption.
+
+**Encoding.** Check for a byte-order mark first: \`EF BB BF\` is UTF-8, \`FF FE\` is UTF-16LE, \`FE FF\` is UTF-16BE. If a BOM is present it settles the question. If not, attempt a strict UTF-8 decode and only fall back when it fails:
+
+\`\`\`js
+try {
+  text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+} catch {
+  text = new TextDecoder('windows-1252').decode(bytes);
+}
+\`\`\`
+
+The \`fatal: true\` flag is essential. Without it, invalid UTF-8 decodes to replacement characters silently, and a Windows-1252 file full of accented names becomes a file full of \`�\` with no error raised anywhere.
+
+If a BOM is found, **strip it**. A leading BOM left in place attaches itself to the first header name, so \`id\` becomes \`\\ufeffid\` and every lookup by that column name fails for reasons invisible in a debugger.
+
+**Delimiter.** The reliable heuristic is consistency rather than frequency. For each candidate — comma, semicolon, tab, pipe — parse the first several rows and measure how consistent the resulting field count is. The correct delimiter yields the same count on every row; an incorrect one yields a varying count. Choosing by raw frequency picks the comma inside \`"Acme, Inc."\` over the real semicolon delimiter.`,
+      },
+      {
+        id: 'typing-the-output',
+        heading: 'Type Inference: Where Data Quietly Corrupts',
+        content: `Converting CSV to JSON means deciding whether \`"42"\` becomes \`42\` or stays \`"42"\`. Both answers are wrong in some cases, which is why this step needs a stated policy rather than a default.
+
+The values that must **not** be coerced to numbers:
+
+- **Leading-zero identifiers.** Postcodes, PIN codes, account numbers and part numbers. \`007\` becoming \`7\` destroys the value. India's PIN codes and US ZIP codes both contain them.
+- **Long numeric identifiers.** JavaScript numbers are IEEE-754 doubles with 53 bits of integer precision. An 18-digit order id or a Twitter-style snowflake id loses its final digits — silently, with no error. A credit card number similarly.
+- **Values with a leading \`+\`**, such as phone numbers.
+
+The values that usually **should** be coerced: quantities, prices, measurements — anything you intend to do arithmetic on.
+
+Empty fields need a policy too. An empty CSV cell can reasonably become \`null\`, \`""\`, or be omitted from the object entirely. These are meaningfully different in a downstream JSON consumer, and the choice should be explicit rather than accidental.
+
+The safe default for a general-purpose converter is **no coercion**: keep everything as strings and let the consumer decide. When a tool does infer types, it should say so and let you turn it off, because the failure mode of wrong inference is silent data loss rather than a visible error.`,
+      },
+      {
+        id: 'cleaning-before-converting',
+        heading: 'Cleaning Before Converting',
+        content: `Most real CSV files need work before the conversion is meaningful.
+
+**Duplicate and empty header names.** JSON object keys must be unique, so two columns named \`Name\` will collide and one will overwrite the other. Empty header cells produce a key of \`""\`. Both need resolving — by suffixing duplicates and naming blanks — before any row is converted.
+
+**Whitespace in headers.** \`" Email "\` and \`"Email"\` are different keys. Trimming header names is almost always correct; trimming values is a judgement call, since trailing spaces are occasionally meaningful.
+
+**Ragged rows.** A row with fewer fields than the header is usually truncation; a row with more is usually an unescaped delimiter. Neither should be silently padded or dropped. The right behaviour is to surface the row number so a human can look at it.
+
+**Trailing blank lines.** A file ending in a newline produces one final empty record in naive parsers, which then appears in the JSON as an object with empty values.
+
+The OpenTools [CSV to JSON converter](/data/csv-to-json) performs the parse in the browser tab, which matters for this format specifically: CSV exports are overwhelmingly customer lists, order histories, payroll extracts and mailing lists. Those are exactly the files that should not be uploaded to a third party to be reformatted, and the conversion requires nothing a server could add.`,
       },
     ],
     faqs: [
       {
-        question: 'Are large CSV files uploaded anywhere during conversion?',
+        question: 'Why does my CSV file open as a single column?',
         answer:
-          'No. The streaming parser processes rows directly in browser memory without sending any bytes to external servers.',
+          'The delimiter is almost certainly a semicolon rather than a comma. Locales that use a comma as the decimal separator, which includes most of Europe, export semicolon-delimited CSV. A parser assuming commas finds none and treats each line as one field. Detect the delimiter by testing candidates and choosing the one that yields a consistent field count across rows, rather than by counting occurrences.',
+      },
+      {
+        question: 'Why can I not just split a CSV line on commas?',
+        answer:
+          'Because a quoted field may contain commas, quotes and even newlines. The row 1,"Acme, Inc.","He said ""yes""" splits into five fields instead of three and shifts every column after it, silently. Correct parsing needs a character-by-character state machine that tracks whether it is inside a quoted field, and it must handle records that span multiple lines.',
+      },
+      {
+        question: 'How do I stop leading zeros being stripped from my data?',
+        answer:
+          'Turn off numeric type inference for those columns, or use a converter that keeps all values as strings by default. Postcodes, PIN codes, account numbers and part numbers lose meaning when 007 becomes 7. Long numeric identifiers are worse: JavaScript numbers carry only 53 bits of integer precision, so an 18-digit order id silently loses its final digits with no error raised.',
+      },
+      {
+        question: 'What causes strange characters in my converted CSV?',
+        answer:
+          'Usually a Windows-1252 file decoded as UTF-8, or a byte-order mark left in place. Check for a BOM first, since EF BB BF identifies UTF-8 and FF FE identifies UTF-16LE, and strip it if present or it attaches to your first column name. Decode UTF-8 with the fatal flag so an invalid file throws rather than silently producing replacement characters, then fall back to Windows-1252.',
+      },
+      {
+        question: 'What happens to empty cells when converting CSV to JSON?',
+        answer:
+          'That is a policy choice, not a fixed rule. An empty cell can become null, an empty string, or be omitted from the object entirely, and those three are meaningfully different to whatever consumes the JSON. A converter should state which it does and ideally let you choose, because silently picking one can break a downstream schema validation.',
+      },
+      {
+        question: 'Is it safe to convert a customer CSV in an online tool?',
+        answer:
+          'Only if the conversion runs in your browser. CSV exports are overwhelmingly customer lists, order histories, payroll extracts and mailing lists, so uploading one to convert its format discloses personal data to a third party for no technical benefit. CSV parsing is pure string processing and needs nothing a server could provide.',
       },
     ],
     relatedSlugs: [
@@ -1937,17 +2310,109 @@ Two habits worth keeping regardless of which tool you use: **never reuse an iden
       'Isolate foreground subjects and create transparent PNGs locally on your GPU using browser-native WebAssembly neural networks.',
     sections: [
       {
-        id: 'local-ai-vs-cloud-apis',
-        heading: 'Why Local In-Browser AI Background Removal is the Future',
-        content: `Traditional background removal services charge per-image API credits and upload user photos to cloud data centers. OpenTools executes a lightweight neural segmentation model directly in your browser using WebGL and WebAssembly, delivering instant transparent cutouts with complete privacy.`,
+        id: 'what-salience-segmentation-does',
+        heading: 'Background Removal Is Salient Object Detection',
+        content: `Removing a background is not edge detection and it is not colour keying. The task a modern remover performs is **salient object detection**: predicting, for every pixel, how likely it is to belong to the visually dominant subject.
+
+The model used here is **U²-Net** in its small variant, \`u2netp\`. U²-Net is a nested U-structure — an encoder–decoder built from further encoder–decoder blocks — designed specifically for salience rather than for classification. It does not know what a dog is. It has learned which regions of an image human annotators marked as the subject.
+
+The output is not a mask of ones and zeros. It is a **saliency map**: a single-channel image the same shape as the input, where each value is a confidence between 0 and 1. That map becomes the alpha channel of the result, which is why good removers produce soft, believable edges on hair and fur rather than the jagged cut-out that thresholding produces.
+
+The small variant matters for a browser. \`u2netp\` is a few megabytes rather than the ~170 MB of the full network, which is the difference between a tool that loads in seconds and one nobody waits for.`,
+      },
+      {
+        id: 'the-320-pixel-constraint',
+        heading: 'The 320×320 Constraint, and Why Edges Soften',
+        content: `U²-Net takes a fixed input of **320×320 pixels**. Every image, whatever its dimensions, is resized to that square before inference and the resulting saliency map is scaled back up to the original size.
+
+This single fact explains most of the quality characteristics people notice:
+
+- **Fine detail below the resample threshold is lost.** A 4000-pixel-wide photograph is reduced to 320 before the model sees it, so individual hair strands, wire-frame glasses and chain-link fences fall below one pixel of model resolution. The upscaled matte approximates them rather than resolving them.
+- **Extreme aspect ratios suffer.** A panorama squeezed into a square distorts the subject before inference, and accuracy drops.
+- **Cost is constant.** Inference on a 500-pixel image and a 5000-pixel image takes the same time, because both become 320×320. Only the decode and the final compositing scale with image size.
+
+Before inference the pixels are also normalised: converted to floating point, divided by 255, then standardised against the mean and standard deviation the network was trained on. Skipping that step produces a saliency map that looks like noise — a common failure when people wire up the model themselves and feed it raw bytes.`,
+      },
+      {
+        id: 'where-it-fails',
+        heading: 'Where It Fails, Stated Honestly',
+        content: `A tool that never says what it cannot do wastes people's time. Salient object detection has predictable failure modes:
+
+**Low subject–background contrast.** A grey cat on a grey sofa gives the model little to separate. The matte becomes uncertain in exactly the region that matters.
+
+**Multiple plausible subjects.** The model predicts *the* salient object. Three people standing apart yields an arbitrary choice or a blended matte covering all of them.
+
+**Transparency and translucency.** Glass, smoke, water, veils and fine netting have no correct binary answer. A wine glass returns either a solid silhouette or a hole, and neither is right.
+
+**Very fine structure.** Flyaway hair, fur at the edge of a backlit subject, thin cables and foliage. The 320-pixel constraint sets a hard floor here.
+
+**Subjects that touch the frame edge.** Salience models are trained predominantly on centred subjects; something cropped at the boundary is often partially excluded.
+
+For product photography on a plain backdrop the results are usually publication-ready. For a backlit portrait with loose hair, expect to do manual work afterwards — and choose a tool that gives you the matte rather than only a flattened result.`,
+      },
+      {
+        id: 'why-local-inference-matters',
+        heading: 'Why Running the Model Locally Changes the Privacy Calculus',
+        content: `Background removal is applied overwhelmingly to photographs of people, identity documents, and unreleased product shots. The standard workflow for every major online remover is to upload the original image to a server, run inference there, and return the cut-out.
+
+That means the original — full resolution, with its EXIF metadata intact, including GPS coordinates and camera serial number where present — has been transmitted to and processed by a third party. For a passport photograph or an unannounced product, that is a meaningful disclosure, and it is invisible to the user because the interface looks identical either way.
+
+Running inference in the browser removes the transfer entirely. The model file is fetched once, cached, and executed by **ONNX Runtime Web**, which uses WebAssembly and, where available, WebGPU. The image is decoded into a canvas, converted to a tensor, and passed to the model — all inside the tab.
+
+The honest trade-offs of the local approach:
+
+- **The first run downloads the model.** Subsequent runs use the cached copy.
+- **It uses your device's compute.** On an older phone a large image takes noticeably longer than a server would.
+- **Quality is bounded by the small model.** Services running the full U²-Net or a proprietary successor on server GPUs can produce better mattes on difficult images.
+
+The OpenTools [background remover](/image/background-remover) makes the local trade deliberately: the image never leaves the device, and the worker running the model is terminated when you navigate away so the multi-megabyte model is not left resident.`,
+      },
+      {
+        id: 'getting-better-results',
+        heading: 'Practical Ways to Get a Better Matte',
+        content: `The model is fixed, but the input is not, and input quality dominates the result.
+
+**Shoot or crop for contrast.** The single highest-leverage change is separating the subject from the background tonally. A dark subject against a light backdrop is trivial; a dark subject against a dark backdrop is unreliable.
+
+**Fill the frame, but leave margin.** Subjects touching the frame edge are often clipped by the salience prediction. A little breathing room around the subject measurably improves the matte.
+
+**Do not pre-sharpen.** Sharpening amplifies edge halos, which the model can read as subject boundary, producing a fringe of background pixels retained around the cut-out.
+
+**Composite onto a similar tone.** If the final background is dark, any retained fringe from a light original will glow. Where you control the destination, matching the tone hides small matte errors that would otherwise be obvious.
+
+**Export PNG or WebP, never JPEG.** JPEG has no alpha channel. Exporting a cut-out as JPEG flattens the transparency onto white and discards it permanently. This is the most common way people lose a good result after producing it.`,
       },
     ],
     faqs: [
       {
-        question:
-          'Does the background removal model run on my device hardware?',
+        question: 'How does automatic background removal work?',
         answer:
-          'Yes. The model weights execute locally via WebGL/WASM on your device GPU/CPU. Your photos never leave your device.',
+          'It uses salient object detection rather than edge detection. A neural network, commonly U²-Net, predicts for every pixel how likely it is to belong to the visually dominant subject and outputs a saliency map of confidence values between 0 and 1. That map becomes the alpha channel of the result, which is why good removers produce soft edges on hair rather than a hard cut-out.',
+      },
+      {
+        question: 'Why are the edges of my cut-out soft or imprecise?',
+        answer:
+          'U²-Net resizes every input to a fixed 320 by 320 pixels before inference, then scales the resulting matte back up to the original size. Detail finer than that resolution, such as individual hair strands, thin wires or chain-link fencing, falls below one model pixel and can only be approximated on the way back up.',
+      },
+      {
+        question: 'When does background removal fail?',
+        answer:
+          'Predictably in five cases: low contrast between subject and background, such as a grey cat on a grey sofa; images with several equally plausible subjects, where the model must pick one; transparent or translucent material like glass, smoke and veils, where no binary answer is correct; very fine structure such as flyaway hair; and subjects cropped at the frame edge, since salience models are trained mostly on centred subjects.',
+      },
+      {
+        question: 'Is it safe to upload photos to a background remover?',
+        answer:
+          'Most online removers upload your full-resolution original, EXIF metadata included, which can carry GPS coordinates and a camera serial number. For identity documents, photographs of people or unreleased product shots this is a real disclosure. A remover that runs the model in your browser with ONNX Runtime Web avoids the transfer entirely, at the cost of using your own device compute and a one-time model download.',
+      },
+      {
+        question: 'Why did my transparent background turn white?',
+        answer:
+          'The result was exported as JPEG, which has no alpha channel. Saving a cut-out as JPEG flattens the transparency onto a white matte and discards it permanently. Export as PNG or WebP, both of which support an alpha channel, to keep the transparency.',
+      },
+      {
+        question: 'How can I improve background removal results?',
+        answer:
+          'Maximise tonal contrast between subject and background, leave a small margin rather than cropping tight to the frame edge, and avoid sharpening beforehand since edge halos can be read as subject boundary and leave a fringe. Where you control the final background, matching its tone to the original hides small matte errors that would otherwise be visible.',
       },
     ],
     relatedSlugs: [
