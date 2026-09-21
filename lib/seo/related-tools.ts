@@ -1,4 +1,5 @@
 import { publicTools } from '../tools/catalog';
+import { CONVERSION_PAIRS } from './conversion-pairs';
 import {
   isLiveToolUrl,
   LIVE_TOOL_ROUTES,
@@ -120,6 +121,23 @@ function categoriesByRoute(): ReadonlyMap<string, string> {
       categories.set(`${prefixOf(path)}/${entry.id}`, manifest.category);
     }
   }
+
+  /*
+    A conversion pair runs a Math workbench operation, so it belongs to the
+    category that workbench declares -- taken from the operation it runs, not
+    from a second table to keep in step.
+
+    Without this the fallback below gives every `/convert` page the category
+    `/convert`: 512 pages in a category nothing else shares. Measured on the
+    built site, that made them a closed island -- none of the 512 had a single
+    inbound link from outside `/convert`, and between them they linked out to
+    four pages. The sitemap was the only way in.
+  */
+  for (const pair of CONVERSION_PAIRS) {
+    const category = categories.get(`/math/${pair.operationId}`);
+    if (category) categories.set(`/convert/${pair.id}`, category);
+  }
+
   return categories;
 }
 
