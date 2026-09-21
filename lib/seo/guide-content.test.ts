@@ -45,16 +45,22 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
 
     expect(mergeGuide.metaTitle).toContain('Merge PDF');
     expect(mergeGuide.metaDescription).toContain('never touch a server');
-    // Was `toContain('To merge pdf without uploading')`, which pinned the
-    // ungrammatical sentence the template used to produce.
-    expect(mergeGuide.directAnswer).toContain(
-      'To use the OpenTools Merge PDF without uploading',
-    );
+    // Was `toContain('To merge pdf without uploading')`, then
+    // `'To use the OpenTools Merge PDF without uploading'` — both pinned this
+    // guide to the shared template. Merge PDF now has a GUIDE_DETAILS entry
+    // written from lib/tools/pdf/engine.ts, so asserting the template sentence
+    // would be asserting that the differentiation had NOT happened. What
+    // matters is that the answer is about this tool and leads with the action.
+    expect(mergeGuide.directAnswer).toMatch(/merge/iu);
+    expect(mergeGuide.directAnswer).not.toContain('To use the OpenTools');
     expect(mergeGuide.cspHeader).toContain("connect-src 'none'");
     expect(mergeGuide.diagramSvg).toContain('<svg');
     expect(mergeGuide.steps).toHaveLength(3);
     expect(mergeGuide.comparison).toHaveLength(5);
-    expect(mergeGuide.faqs).toHaveLength(4);
+    // Four generic FAQs, plus the tool-specific ones prepended by its
+    // GUIDE_DETAILS entry. Pinning this to exactly 4 would cap how much real
+    // content any guide is allowed to carry.
+    expect(mergeGuide.faqs.length).toBeGreaterThanOrEqual(4);
     expect(mergeGuide.relatedTools.length).toBeGreaterThanOrEqual(3);
     expect(mergeGuide.categoryPillar?.name).toBe('PDF');
 
