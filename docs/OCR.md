@@ -28,7 +28,7 @@ Source URLs, file ownership and local license copies are recorded in `public/ocr
 | `worker.min.js`           | `576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d` |
 | `lang/eng.traineddata.gz` | `45b4cb346724ac1774f1c36f42f182b887bcdb28ebe63e6fff90ac41f3fcff91` |
 | fallback JS wrapper       | `eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680` |
-| fallback WASM             | `66b17df6e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680`   |
+| fallback WASM             | `66b17df6e20c5329a17ffa9c202a47eaa3e32500b253d4c7f38e7f2bc01457c3`   |
 | SIMD JS wrapper           | `c58b46a4c796c0b8afccf77591d5b875b6896b45d402bbce8caa6f5362447b38` |
 | SIMD WASM                 | `34e8d50cac216427d86bf397d610fdd9f49492539bbcdfbfccc4eda20c810bea` |
 | relaxed-SIMD JS wrapper   | `861a536cf9ef8e63cb644d57bab39c388f37f7d6b6f60024b741c5f6b39a59b3` |
