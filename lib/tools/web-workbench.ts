@@ -1,3 +1,5 @@
+import { emitHtmlTable, parseTable } from './notation/table';
+
 export interface WebFieldOption {
   value: string;
   label: string;
@@ -1354,18 +1356,9 @@ export function runWebOperation(
       return `${width / divisor}:${height / divisor}\nAt ${target}px wide: ${((target * height) / width).toFixed(2)}px high`;
     }
     case 'html-table-generator': {
-      const rows = lines(values.table, 2_000).map((row) => row.split('\t'));
-      const width = rows[0].length;
-      if (!width || rows.some((row) => row.length !== width))
-        throw new Error(
-          'Every tab-separated row must have the same number of columns.',
-        );
-      const cells = (row: string[], element: 'th' | 'td') =>
-        `    <tr>${row.map((cell) => `<${element}>${html(cell)}</${element}>`).join('')}</tr>`;
-      return `<table>\n  <thead>\n${cells(rows[0], 'th')}\n  </thead>\n  <tbody>\n${rows
-        .slice(1)
-        .map((row) => cells(row, 'td'))
-        .join('\n')}\n  </tbody>\n</table>`;
+      const raw = required(values.table, 'Table data');
+      const tbl = parseTable(raw);
+      return emitHtmlTable(tbl);
     }
     case 'accessibility-contrast-checker': {
       const first = luminance(parseHex(values.foreground));

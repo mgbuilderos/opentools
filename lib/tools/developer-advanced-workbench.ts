@@ -1,5 +1,6 @@
 import type { DetectionCategory } from './redaction/detectors';
 import { assertNothingRemains, redactSecrets } from './redaction/redact';
+import { emitSchema, parseSchema, type SchemaFormat } from './notation/schema';
 
 export interface AdvancedDeveloperField {
   id: string;
@@ -992,16 +993,25 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     },
     {
       id: 'sql-to-er-diagram',
-      name: 'SQL Schema to Visual ER Diagram',
+      name: 'ER Diagram from SQL (ERD) — Generate Mermaid, DBML & SVG',
       description:
-        'Parse SQL DDL CREATE TABLE statements into an interactive, publication-grade SVG Entity-Relationship diagram with table nodes and foreign key links.',
+        'Create an ER diagram from SQL DDL online. Export interactive visual SVG, Mermaid erDiagram, DBML, and PlantUML in your browser with zero server uploads.',
       fields: [
         area(
           'sql',
           'SQL DDL (CREATE TABLE statements)',
           'CREATE TABLE users (\n  id INTEGER PRIMARY KEY,\n  name VARCHAR(100) NOT NULL,\n  email VARCHAR(255) UNIQUE,\n  created_at TIMESTAMP\n);\n\nCREATE TABLE orders (\n  id INTEGER PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id),\n  total_amount DECIMAL(10, 2),\n  status VARCHAR(50)\n);\n\nCREATE TABLE order_items (\n  id INTEGER PRIMARY KEY,\n  order_id INTEGER NOT NULL REFERENCES orders(id),\n  product_name VARCHAR(100),\n  price DECIMAL(10, 2)\n);',
         ),
-        select('theme', 'Diagram theme', [
+        select('format', 'Output format', [
+          { value: 'svg', label: 'Interactive Visual SVG' },
+          { value: 'mermaid', label: 'Mermaid (erDiagram)' },
+          { value: 'dbml', label: 'DBML (Database Markup Language)' },
+          { value: 'plantuml', label: 'PlantUML ERD' },
+          { value: 'data-dictionary', label: 'Markdown Data Dictionary' },
+          { value: 'prisma', label: 'Prisma Schema' },
+          { value: 'json-schema', label: 'JSON Schema' },
+        ]),
+        select('theme', 'Diagram theme (for SVG)', [
           { value: 'dark', label: 'Dark Operator (Zinc / Emerald)' },
           { value: 'light', label: 'Light Clean (White / Slate)' },
           { value: 'blueprint', label: 'Blueprint (Navy / Cyan)' },
@@ -2447,8 +2457,13 @@ export async function runAdvancedDeveloperOperation(
     }
     case 'sql-to-er-diagram': {
       const sql = required(values.sql, 'SQL DDL');
-      const theme = values.theme || 'dark';
-      return generateSqlErDiagramSvg(sql, theme);
+      const format = values.format || 'svg';
+      if (format === 'svg') {
+        const theme = values.theme || 'dark';
+        return generateSqlErDiagramSvg(sql, theme);
+      }
+      const schema = parseSchema(sql, 'sql-ddl');
+      return emitSchema(schema, format as SchemaFormat);
     }
     case 'er-diagram-to-sql': {
       const diagram = required(values.diagram, 'Mermaid ER diagram');
