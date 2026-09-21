@@ -29,6 +29,8 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 
+import { freePort, isPortCollision } from './free-port.mjs';
+
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SOURCE = path.join(ROOT, 'dist/server/prerendered-routes');
 const TARGET = path.join(ROOT, 'dist/client');
@@ -39,7 +41,17 @@ const SERVED_ROUTES = [
   '/llms.txt',
   '/llms-full.txt',
 ];
-const CAPTURE_PORT = 8791;
+/**
+ * How many times to re-pick a port before giving up.
+ *
+ * A fixed port was the original design and it broke: several worktrees build at
+ * once, `8791` was hardcoded, and on 2026-09-21 one lane's build killed
+ * another's with nothing but "wrangler dev exited with 1". The port is chosen
+ * by the OS now, but the gap between asking for a free port and wrangler
+ * binding it is still a gap — another process can take it in between — so a
+ * collision is retried rather than treated as a build failure.
+ */
+const CAPTURE_PORT_ATTEMPTS = 5;
 
 if (!existsSync(SOURCE)) {
   console.error(
@@ -72,13 +84,20 @@ function moveTree(from, to) {
   }
 }
 
-async function waitForServer(url, server) {
+async function waitForServer(url, server, stderr) {
   const deadline = Date.now() + 90_000;
   while (Date.now() < deadline) {
     if (server.exitCode !== null) {
-      throw new Error(
-        `wrangler dev exited with ${server.exitCode} before it served anything`,
+      // The reason used to be discarded with `stdio: 'ignore'`, so this failure
+      // read as "exited with 1" and said nothing about why. Whatever wrangler
+      // complained about is far more useful than the exit code.
+      const reason = stderr().trim().split('\n').slice(-6).join('\n');
+      const error = new Error(
+        `wrangler dev exited with ${server.exitCode} before it served anything` +
+          (reason ? `:\n${reason}` : ''),
       );
+      error.stderr = reason;
+      throw error;
     }
     try {
       const probe = await fetch(url, { signal: AbortSignal.timeout(2000) });
@@ -92,21 +111,40 @@ async function waitForServer(url, server) {
 }
 
 async function captureServedRoutes() {
-  const server = spawn(
-    path.join(ROOT, 'node_modules/.bin/wrangler'),
-    [
-      'dev',
-      '--config',
-      'dist/server/wrangler.json',
-      '--port',
-      String(CAPTURE_PORT),
-    ],
-    { cwd: ROOT, stdio: 'ignore' },
-  );
-  const origin = `http://127.0.0.1:${CAPTURE_PORT}`;
+  for (let attempt = 1; ; attempt += 1) {
+    const port = await freePort();
+    let captured = '';
+    const server = spawn(
+      path.join(ROOT, 'node_modules/.bin/wrangler'),
+      ['dev', '--config', 'dist/server/wrangler.json', '--port', String(port)],
+      { cwd: ROOT, stdio: ['ignore', 'ignore', 'pipe'] },
+    );
+    server.stderr.setEncoding('utf8');
+    server.stderr.on('data', (chunk) => {
+      captured += chunk;
+    });
+    const origin = `http://127.0.0.1:${port}`;
 
+    try {
+      await waitForServer(`${origin}/robots.txt`, server, () => captured);
+    } catch (error) {
+      server.kill('SIGTERM');
+      if (isPortCollision(error) && attempt < CAPTURE_PORT_ATTEMPTS) {
+        console.log(
+          `  Port ${port} was taken before wrangler could bind it; ` +
+            `retrying (${attempt} of ${CAPTURE_PORT_ATTEMPTS}).`,
+        );
+        continue;
+      }
+      throw error;
+    }
+    return captureFrom(origin, server);
+  }
+}
+
+/** Saves each served route to disk, then always stops the server. */
+async function captureFrom(origin, server) {
   try {
-    await waitForServer(`${origin}/robots.txt`, server);
     for (const route of SERVED_ROUTES) {
       const response = await fetch(`${origin}${route}`, {
         signal: AbortSignal.timeout(30_000),
