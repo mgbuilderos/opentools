@@ -28,6 +28,20 @@ const everyDestination = publicTools.reduce(
   0,
 );
 
+// Read the link text from the catalogue rather than writing it down. `8a07ba1`
+// renamed this operation for search ("LaTeX Table Generator Online -- Free CSV
+// & Markdown to LaTeX") and the hardcoded name here stopped matching, so the
+// click timed out for a rename that broke nothing a visitor can see.
+const LATEX_TABLE_HREF = '/documents/workbench?tool=latex-table-generator';
+const latexTableDestination = toolGroups
+  .flatMap((group) => toolDestinationsForGroup(group))
+  .find((destination) => destination.href === LATEX_TABLE_HREF)!;
+// Substring, not `exact`: the card's accessible name carries the description
+// too. Escaped, because the name is data and contains regex metacharacters.
+const latexTableLinkName = new RegExp(
+  latexTableDestination.name.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'),
+);
+
 test.describe('sidebar navigation', () => {
   test('lists every workspace, and reaches every destination', async ({
     page,
@@ -66,7 +80,7 @@ test.describe('sidebar navigation', () => {
     );
 
     await page
-      .getByRole('link', { name: /LaTeX table generator/ })
+      .getByRole('link', { name: latexTableLinkName })
       .first()
       .click();
 
