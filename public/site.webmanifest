@@ -1,26 +1,110 @@
 {
-  "name": "OpenTools \u2014 Private Browser Utilities",
+  "id": "/",
+  "name": "OpenTools — Private Browser Utilities",
   "short_name": "OpenTools",
   "description": "100% in-browser, zero-upload private utilities for PDF, images, video, text, developer, and structured data.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#09090b",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    }
+  ],
+  "share_target": {
+    "action": "/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "file",
+          "accept": [
+            "application/pdf",
+            ".pdf",
+            "image/*",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp",
+            ".heic",
+            ".avif",
+            "text/csv",
+            ".csv",
+            "application/json",
+            ".json",
+            "text/plain",
+            ".txt",
+            "application/zip",
+            ".zip",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".docx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".xlsx"
+          ]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/share-target",
+      "launch_type": "single-client",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "image/png": [".png"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/webp": [".webp"],
+        "text/csv": [".csv"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Compress an image",
+      "short_name": "Compress",
+      "description": "Shrink a photo or scan to fit an upload limit.",
+      "url": "/image/optimize",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Merge PDFs",
+      "short_name": "Merge PDF",
+      "description": "Join several PDFs into one document.",
+      "url": "/pdf/merge",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Rotate or reorder PDF pages",
+      "short_name": "PDF pages",
+      "description": "Fix the page order or orientation of a PDF.",
+      "url": "/pdf/page-tools",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Checksum a file",
+      "short_name": "Checksum",
+      "description": "Compute SHA-256 and other hashes for any file.",
+      "url": "/file/hash-calculator",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

@@ -10,7 +10,7 @@
     "indexnow": "node scripts/submit-indexnow.mjs",
     "dev": "vinext dev",
     "prebuild": "npm run design:qc",
-    "build": "vinext build && node scripts/prerender-to-assets.mjs && node scripts/verify-static-coverage.mjs",
+    "build": "vinext build && node scripts/prerender-to-assets.mjs && node scripts/verify-static-coverage.mjs && node scripts/build-service-worker-precache.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "node scripts/deploy-lock.mjs assert && wrangler deploy --config dist/server/wrangler.json",
     "lock": "node scripts/deploy-lock.mjs status",

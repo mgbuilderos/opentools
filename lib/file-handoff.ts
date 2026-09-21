@@ -180,7 +180,16 @@ function takeFromSession(): File | null {
   }
 }
 
-function markWaiting() {
+/**
+ * Raise the marker that says a file is waiting to be collected.
+ *
+ * Exported because the dropzone is no longer the only thing that stores one.
+ * A file arriving from the Android share sheet is written straight into the
+ * database below by `public/sw.js`, and a service worker has no
+ * `sessionStorage` to raise the marker with — so the share carries a query
+ * flag instead and `components/handed-over-file.tsx` raises it on arrival.
+ */
+export function noteFileWaiting() {
   try {
     sessionStorage?.setItem(WAITING_KEY, '1');
   } catch {
@@ -199,7 +208,7 @@ function clearWaiting(): boolean {
 }
 
 export async function offerFile(file: File): Promise<boolean> {
-  markWaiting();
+  noteFileWaiting();
 
   // Read the bytes before opening anything. An IndexedDB transaction commits
   // as soon as it goes idle, so it cannot survive an `await` in the middle.

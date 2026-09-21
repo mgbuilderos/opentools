@@ -9,6 +9,7 @@ import {
   showInstallDialog,
   subscribeInstall,
 } from '@/lib/pwa-install';
+import { COMPLETION_EVENT } from '@/lib/completion';
 
 const DISMISSED_KEY = 'opentools-install-dismissed-v1';
 
@@ -31,6 +32,13 @@ const DISMISSED_KEY = 'opentools-install-dismissed-v1';
  * - iOS Safari → a short instruction naming the actual menu item.
  * - Already installed → nothing.
  *
+ * **Why it waits for a finished job.** It used to render on arrival, which is
+ * the worst moment there is: a first-time visitor has had nothing from this
+ * site yet and is being asked to put it on their home screen. Asking is cheap
+ * only once — the dismissal is remembered forever — so it is spent at the one
+ * moment the answer is obvious, immediately after a tool has finished
+ * someone's work. Nothing is shown until `COMPLETION_EVENT` fires.
+ *
  * It is dismissible and the dismissal is remembered. The product's whole
  * argument is that it does not nag or gate; an install banner that cannot be
  * closed would contradict that for a feature nobody is obliged to want.
@@ -45,18 +53,32 @@ export function InstallPrompt() {
     canInstallOnServer,
   );
   const [showIosHint, setShowIosHint] = useState(false);
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
+  const [finishedSomething, setFinishedSomething] = useState(false);
+  /**
+   * The receipt and the milestone card both open at the bottom of the screen,
+   * and on a phone each is near enough full width that a third thing there
+   * covers one of them. They are the surfaces that pay for the site, so this
+   * one yields: it waits for the last `<dialog>` to close before appearing.
+   * `close` does not bubble, so the listener is a capturing one on `document`.
+   */
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     // Registered here rather than in a layout so the worker and the prompt that
-    // depends on it cannot drift apart. Failure is silent and harmless: without
-    // a worker the site still works, it just cannot be installed on Chrome.
+    // depends on it cannot drift apart. It is deliberately not waiting for the
+    // completion event below: the worker is what serves the app with no
+    // network and what answers the share sheet, and both have to be in place
+    // long before anyone finishes a job. Failure is silent and harmless.
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => undefined);
     }
 
     try {
-      if (localStorage.getItem(DISMISSED_KEY) === '1') return;
+      if (localStorage.getItem(DISMISSED_KEY) === '1') {
+        setDismissed(true);
+        return;
+      }
     } catch {
       /* Private mode and blocked storage both mean "not dismissed". */
     }
@@ -66,15 +88,36 @@ export function InstallPrompt() {
       window.matchMedia?.('(display-mode: standalone)').matches ||
       // Safari's own flag, which predates the standard media query.
       (navigator as unknown as { standalone?: boolean }).standalone === true;
-    if (installed) return;
-
-    setDismissed(false);
+    if (installed) {
+      setDismissed(true);
+      return;
+    }
 
     // iOS never fires that event. Detect it directly, and exclude installed
     // and in-app browsers where Add to Home Screen is unavailable anyway.
     const ua = navigator.userAgent;
     const iOS = /iPad|iPhone|iPod/u.test(ua) && !/CriOS|FxiOS|EdgiOS/u.test(ua);
     if (iOS) setShowIosHint(true);
+
+    const onCompletion = () => setFinishedSomething(true);
+    const readDialogs = () =>
+      setDialogOpen(document.querySelector('dialog[open]') !== null);
+
+    window.addEventListener(COMPLETION_EVENT, onCompletion);
+    // `<dialog>` announces neither its open nor, bubbling, its close, so the
+    // `open` attribute itself is what is watched.
+    const dialogs = new MutationObserver(readDialogs);
+    dialogs.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributeFilter: ['open'],
+    });
+    readDialogs();
+
+    return () => {
+      window.removeEventListener(COMPLETION_EVENT, onCompletion);
+      dialogs.disconnect();
+    };
   }, []);
 
   const close = () => {
@@ -90,11 +133,14 @@ export function InstallPrompt() {
     if (await showInstallDialog()) close();
   };
 
-  if (dismissed) return null;
+  if (dismissed || !finishedSomething || dialogOpen) return null;
   if (!deferred && !showIosHint) return null;
 
   return (
-    <div className="mx-auto mb-3 flex max-w-4xl items-center gap-3 rounded-xl border border-success/30 bg-success/5 px-3 py-2.5 sm:px-4">
+    <div
+      data-install-prompt
+      className="fixed inset-x-3 bottom-3 z-[55] mx-auto flex max-w-md items-center gap-3 rounded-xl border border-success/30 bg-card px-3 py-2.5 shadow-[0_12px_48px_rgb(0_0_0/14%)] sm:px-4"
+    >
       <Download
         aria-hidden="true"
         className="size-4 shrink-0 text-success sm:size-5"
@@ -111,7 +157,7 @@ export function InstallPrompt() {
               .
             </>
           ) : (
-            'Install it and the tools open straight from your home screen.'
+            'Install it and your files open straight from the share sheet.'
           )}
         </p>
       </div>

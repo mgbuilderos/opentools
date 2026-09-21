@@ -90,7 +90,37 @@ const STORED = [
   [
     'opentools-handoff',
     'IndexedDB',
-    'A file you dropped on the home page, held only long enough to survive the click through to the tool you picked. It is deleted the instant that tool collects it, and anything older than five minutes is discarded on read. This is your own browser’s storage on the machine the file already came from.',
+    'A file you dropped on the home page, or sent to OpenTools from another app, held only long enough to survive the trip to the tool that opens it. It is deleted the instant that tool collects it, and anything older than five minutes is discarded on read. This is your own browser’s storage on the machine the file already came from.',
+  ],
+  [
+    'opentools-handoff-waiting',
+    'Session storage',
+    'A single flag saying that a file is waiting to be collected, so that an ordinary page load does not have to open the database above to find out there is nothing there. It is removed as soon as it is read, and it is gone when you close the tab.',
+  ],
+  [
+    'opentools-handoff-file',
+    'Session storage',
+    'The same waiting file, for browsers that will not store one in IndexedDB. Only files under 3 MB fit here; larger ones are simply not carried across. Removed on collection, and gone when you close the tab.',
+  ],
+  [
+    'opentools-install-dismissed-v1',
+    'Local storage',
+    'That you closed the offer to add OpenTools to your home screen, so that it is not offered to you again.',
+  ],
+  [
+    'tools-support-preference-v1',
+    'Local storage',
+    'When the support message was last shown to you, and whether you asked not to be shown it again. Nothing about what you did, and no record of whether you gave anything.',
+  ],
+  [
+    'celebrated_milestones',
+    'Local storage',
+    'Which of the three usage milestones you have already been shown, so the same one is not shown twice. A list of three possible numbers, and nothing else.',
+  ],
+  [
+    'opentools-offline-…',
+    'Cache storage',
+    'Copies of the front page, a handful of tool pages and the scripts and styles they need, stored so the app still opens when you have no signal. It holds pages from this site only — never a file of yours, and never anything you typed. A new version of the site replaces it, and clearing site data removes it.',
   ],
 ] as const;
 

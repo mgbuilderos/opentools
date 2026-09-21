@@ -87,27 +87,48 @@ test.describe('the service worker', () => {
       'utf8',
     );
     // Comments are stripped first. The file documents the bug it is avoiding,
-    // so it names both of these in prose — what matters is that neither
-    // survives into code. An earlier version of this test read the whole file
-    // and failed on its own explanation.
+    // so it names it in prose — what matters is that it does not survive into
+    // code. An earlier version of this test read the whole file and failed on
+    // its own explanation.
     const code = source
       .replace(/\/\*[\s\S]*?\*\//gu, '')
       .replace(/^\s*\/\/.*$/gmu, '');
 
     // The notice was served in place of real pages while the network was fine.
     expect(code, 'the offline notice is back in the code').not.toContain('You are offline');
-    // `respondWith` is the only way a worker can replace a page with its own
-    // answer. While fetching is refused, this file must never call it.
-    expect(code, 'the worker is answering requests again').not.toContain('respondWith');
+
+    /*
+     * This used to assert that `respondWith` appeared nowhere at all, on the
+     * reasoning that a worker which cannot fetch has nothing true to answer
+     * with. The premise was wrong rather than the caution: `connect-src`
+     * governs `fetch` and `cache.add`, while `importScripts` is governed by
+     * `script-src 'self'` and `cache.put` stores a Response that already
+     * exists — so the bytes can be shipped to the worker as a script and it
+     * does have something real to serve. Measured in Chromium against this
+     * build served with the production headers.
+     *
+     * What is still forbidden is the thing that actually broke the site: a
+     * fetch the header refuses, committed to inside `respondWith`. The full
+     * set of invariants is asserted in `lib/service-worker.test.ts`, which
+     * runs in the unit gate on every build rather than only here.
+     */
+    expect(code, 'the worker calls fetch, which our own header refuses').not.toMatch(
+      /\bfetch\s*\(/u,
+    );
+    expect(code, 'the worker answers a GET without checking it is offline').toContain(
+      'if (self.navigator.onLine) return;',
+    );
   });
 
-  test('the install prompt does not promise offline use', async ({ page }) => {
-    // Rule: no claim unless code or a test proves it. While `connect-src 'none'`
-    // refuses every fetch a worker could make, nothing on this origin can be
-    // cached, so the site does not work offline and must not say it does. The
-    // prompt said "Works offline afterwards" and "keeps working — even with no
-    // internet", both of which stopped being true the moment the worker could
-    // not fill a cache.
+  test('the install prompt does not overstate what works offline', async ({ page }) => {
+    /*
+     * Rule: no claim unless code or a test proves it. Offline now genuinely
+     * works — `e2e/share-target.spec.ts` loads a tool with the network
+     * switched off — but it covers the app shell and the handful of pages in
+     * the precache list, not the site. "Works offline" as a flat statement
+     * would still promise more than is true, so the banner sells the share
+     * sheet, which is true everywhere.
+     */
     const source = readFileSync(
       path.join(
         path.dirname(fileURLToPath(import.meta.url)),
