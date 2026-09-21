@@ -4,6 +4,7 @@ import { DeveloperAdvancedWorkbenchTool } from '@/components/developer-advanced-
 import { ADVANCED_DEVELOPER_OPERATIONS } from '@/lib/tools/developer-advanced-workbench';
 import { DeveloperDataWorkbenchTool } from '@/components/developer-data-workbench-tool';
 import { DEVELOPER_DATA_OPERATIONS } from '@/lib/tools/developer-data-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -71,6 +72,7 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (
     ADVANCED_DEVELOPER_OPERATIONS.some((operation) => operation.id === tool)
   ) {
@@ -78,6 +80,7 @@ export default async function Page({
       <DeveloperAdvancedWorkbenchTool
         initialOperationId={tool}
         routedBasePath={BASE}
+        relatedTools={related}
       />
     );
   }
@@ -86,6 +89,7 @@ export default async function Page({
       <DeveloperDataWorkbenchTool
         initialOperationId={tool}
         routedBasePath={BASE}
+        relatedTools={related}
       />
     );
   }

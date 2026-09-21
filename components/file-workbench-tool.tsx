@@ -15,8 +15,10 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
   FILE_WORKBENCH_OPERATIONS,
   type FileWorkbenchOperation,
@@ -57,9 +59,12 @@ function elapsed(milliseconds: number) {
 export function FileWorkbenchTool({
   initialOperationId,
   routedBasePath,
+  relatedTools = [],
 }: {
   initialOperationId?: string;
   routedBasePath?: string;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 } = {}) {
   const initial = FILE_WORKBENCH_OPERATIONS[0];
   // Only treat this as a per-tool page when the id really names an operation,
@@ -513,6 +518,8 @@ export function FileWorkbenchTool({
               </div>
             </section>
           ) : null}
+
+          <RelatedTools tools={relatedTools} />
 
           <footer className="mt-7 border-t py-5 text-xs leading-5 text-muted-foreground">
             Local File, Blob, Streams, and Web Crypto APIs · No overwrite

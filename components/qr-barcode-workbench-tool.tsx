@@ -1,6 +1,7 @@
 'use client';
 
 import { SchemaWorkbenchTool } from '@/components/schema-workbench-tool';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
   QR_BARCODE_OPERATIONS,
   runQrBarcodeOperation,
@@ -16,9 +17,12 @@ import {
 export function QrBarcodeWorkbenchTool({
   initialOperationId = 'qr-code-generator',
   routedBasePath,
+  relatedTools,
 }: {
   initialOperationId?: string;
   routedBasePath?: string;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 } = {}) {
   return (
     <SchemaWorkbenchTool
@@ -32,6 +36,7 @@ export function QrBarcodeWorkbenchTool({
       operations={QR_BARCODE_OPERATIONS}
       initialOperationId={initialOperationId}
       routedBasePath={routedBasePath}
+      relatedTools={relatedTools}
       run={runQrBarcodeOperation}
     />
   );

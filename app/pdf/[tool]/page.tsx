@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PdfPageTools } from '@/components/pdf-page-tools';
 import { PDF_PAGE_OPERATIONS } from '@/lib/tools/catalog';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -72,5 +73,10 @@ export default async function Page({
 }) {
   const { tool } = await params;
   if (!OPERATIONS.some((operation) => operation.id === tool)) return null;
-  return <PdfPageTools initialOperationId={tool} />;
+  return (
+    <PdfPageTools
+      initialOperationId={tool}
+      relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
+    />
+  );
 }

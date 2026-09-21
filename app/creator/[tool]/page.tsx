@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { CreatorWorkbenchTool } from '@/components/creator-workbench-tool';
 import { CREATOR_OPERATIONS } from '@/lib/tools/creator-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -67,9 +68,14 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (CREATOR_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
-      <CreatorWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />
+      <CreatorWorkbenchTool
+        initialOperationId={tool}
+        routedBasePath={BASE}
+        relatedTools={related}
+      />
     );
   }
   return null;

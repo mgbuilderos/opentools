@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ImageEditorTool } from '@/components/image-editor-tool';
 import { IMAGE_EDITOR_OPERATIONS } from '@/lib/tools/catalog';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -82,5 +83,11 @@ export default async function Page({
 }) {
   const { tool } = await params;
   if (!OPERATIONS.some((operation) => operation.id === tool)) return null;
-  return <ImageEditorTool initialOperationId={tool} {...propsFor(tool)} />;
+  return (
+    <ImageEditorTool
+      initialOperationId={tool}
+      relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
+      {...propsFor(tool)}
+    />
+  );
 }

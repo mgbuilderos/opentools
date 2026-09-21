@@ -13,8 +13,10 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
   MATH_OPERATIONS,
   runMathOperation,
@@ -99,9 +101,12 @@ function relatedPairs(pair: ConversionPairView) {
 export function MathWorkbenchTool({
   initialOperationId,
   pair,
+  relatedTools = [],
 }: {
   initialOperationId?: string;
   pair?: ConversionPairView;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 } = {}) {
   const routed = MATH_OPERATIONS.find((item) => item.id === initialOperationId);
   const [operationId, setOperationId] = useState(
@@ -484,7 +489,9 @@ export function MathWorkbenchTool({
                 ))}
               </ul>
             </nav>
-          ) : null}
+          ) : (
+            <RelatedTools tools={relatedTools} />
+          )}
 
           <footer className="mt-8 border-t py-5 text-xs leading-5 text-muted-foreground">
             Local JavaScript · Results use finite-number and exact-integer

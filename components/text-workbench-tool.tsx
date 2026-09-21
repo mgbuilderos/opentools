@@ -14,8 +14,10 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
   runTextOperation,
   TEXT_OPERATIONS,
@@ -53,9 +55,12 @@ function downloadText(value: string) {
 export function TextWorkbenchTool({
   initialOperationId,
   routedBasePath,
+  relatedTools = [],
 }: {
   initialOperationId?: string;
   routedBasePath?: string;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 } = {}) {
   const routed = TEXT_OPERATIONS.find((item) => item.id === initialOperationId);
   const [operationId, setOperationId] = useState<TextOperationId>(
@@ -508,6 +513,8 @@ export function TextWorkbenchTool({
               </div>
             </section>
           ) : null}
+
+          <RelatedTools tools={relatedTools} />
 
           <footer className="mt-8 border-t py-5 text-xs text-muted-foreground">
             Local JavaScript · 2,000,000-character limit · No client-side

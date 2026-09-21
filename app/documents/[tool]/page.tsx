@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { DocumentWorkbenchTool } from '@/components/document-workbench-tool';
 import { DOCUMENT_OPERATIONS } from '@/lib/tools/document-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -67,9 +68,14 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (DOCUMENT_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
-      <DocumentWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />
+      <DocumentWorkbenchTool
+        initialOperationId={tool}
+        routedBasePath={BASE}
+        relatedTools={related}
+      />
     );
   }
   return null;
