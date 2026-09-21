@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { PdfPageTools } from '@/components/pdf-page-tools';
 import { PDF_PAGE_OPERATIONS } from '@/lib/tools/catalog';
-import { dedicatedToolIdsForPrefix } from '@/lib/seo/live-tools';
+import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 
 export const revalidate = 86400;
 
@@ -28,7 +28,7 @@ export const revalidate = 86400;
   2. `/pdf` already holds nine hand-written folders (merge, compress, sign,
      to-word, …). A literal segment beats a dynamic one, so any id matching one
      of them would be claimed here and served there, putting a URL in the
-     sitemap the build never writes. `dedicatedToolIdsForPrefix` is the single
+     sitemap the build never writes. `excludedToolIdsForPrefix` is the single
      list both this route and the registry exclude against. No id collides
      today; the filter is what keeps that true when the next one is added.
 
@@ -38,7 +38,7 @@ export const revalidate = 86400;
 
 const BASE = '/pdf';
 const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
-const DEDICATED = dedicatedToolIdsForPrefix(BASE);
+const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
 

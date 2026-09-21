@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ImageEditorTool } from '@/components/image-editor-tool';
 import { IMAGE_EDITOR_OPERATIONS } from '@/lib/tools/catalog';
-import { dedicatedToolIdsForPrefix } from '@/lib/seo/live-tools';
+import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 
 export const revalidate = 86400;
 
@@ -20,7 +20,7 @@ export const revalidate = 86400;
      exact-size, metadata, background-remover, and the two held back for the
      owner's tech review). A literal segment beats a dynamic one, so an id
      matching one of them would be claimed here and served there — a sitemap
-     URL the build never writes. `dedicatedToolIdsForPrefix` is the single list
+     URL the build never writes. `excludedToolIdsForPrefix` is the single list
      both this route and the registry exclude against. No id collides today;
      the filter is what keeps that true when the next one is added. The two
      held-back tools are literal folders that are not operations of this
@@ -41,7 +41,7 @@ export const revalidate = 86400;
 
 const BASE = '/image';
 const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
-const DEDICATED = dedicatedToolIdsForPrefix(BASE);
+const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
 

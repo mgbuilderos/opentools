@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { FileWorkbenchTool } from '@/components/file-workbench-tool';
 import { FILE_WORKBENCH_OPERATIONS } from '@/lib/tools/file-workbench';
-import { dedicatedToolIdsForPrefix } from '@/lib/seo/live-tools';
+import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 
 export const revalidate = 86400;
 
@@ -17,7 +17,7 @@ export const revalidate = 86400;
 
   `/file` holds three hand-written folders (workbench, archive,
   hash-calculator) and a literal segment beats a dynamic one, so their ids are
-  filtered out through `dedicatedToolIdsForPrefix`, the same list the registry
+  filtered out through `excludedToolIdsForPrefix`, the same list the registry
   excludes against. None of the 31 collides today; the filter is what keeps
   that true when the next one is added.
 
@@ -27,7 +27,7 @@ export const revalidate = 86400;
 
 const BASE = '/file';
 const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
-const DEDICATED = dedicatedToolIdsForPrefix(BASE);
+const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
 

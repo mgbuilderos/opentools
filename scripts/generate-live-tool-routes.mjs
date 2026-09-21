@@ -15,8 +15,10 @@ import path from 'node:path';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const TARGET = path.join(ROOT, 'lib/seo/live-tool-routes.ts');
 
+// Static specifier: a computed import path is "too dynamic" for vite-node, so
+// run this with `npx tsx scripts/generate-live-tool-routes.mjs`.
 const { LIVE_TOOL_ROUTES, operationIdsForRoute } = await import(
-  path.join(ROOT, 'lib/seo/live-tools.ts')
+  '../lib/seo/live-tools.ts'
 );
 
 const routes = LIVE_TOOL_ROUTES.map((route) => `  '${route}',`).join('\n');

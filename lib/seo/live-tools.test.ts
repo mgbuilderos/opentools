@@ -12,6 +12,7 @@ import {
   isLiveToolUrl,
   operationIdsForRoute,
   routedToolIdsForPrefix,
+  routedToolPrefixes,
 } from './live-tools';
 import { TOOL_CATALOG } from './tool-catalog-data';
 
@@ -69,6 +70,36 @@ describe('live tool registry', () => {
         prefix,
       ).toEqual([]);
     }
+  });
+
+  it('gives every tool exactly one URL', () => {
+    // Two workbenches can host the same operation. Generating a page under
+    // each prefix produces two URLs with the same title running the same tool
+    // -- duplicate content, which splits the ranking and makes a search engine
+    // guess which is canonical. `json-to-csv` and `url-normalizer` shipped that
+    // way before an audit of titles across the built site caught them, so the
+    // audit is this test.
+    // Walk the prefixes rather than parsing route strings: a hand-written
+    // route can legitimately end in the same segment as another (/image/metadata
+    // and /documents/metadata are different tools), and every workbench hub
+    // ends in "workbench". Only generated per-tool pages can collide on an id.
+    const seen = new Map<string, string>();
+    const duplicated: string[] = [];
+    for (const prefix of routedToolPrefixes()) {
+      for (const operation of routedToolIdsForPrefix(prefix) ?? []) {
+        const route = `${prefix}/${operation.id}`;
+        const already = seen.get(operation.id);
+        if (already)
+          duplicated.push(`${operation.id}: ${already} and ${route}`);
+        else seen.set(operation.id, route);
+      }
+    }
+
+    expect(seen.size).toBeGreaterThan(500);
+    expect(
+      duplicated,
+      `the same tool is published at more than one URL: ${duplicated.join(', ')}`,
+    ).toEqual([]);
   });
 
   it('rejects operations a route does not run', () => {

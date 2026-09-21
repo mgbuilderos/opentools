@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MathWorkbenchTool } from '@/components/math-workbench-tool';
+import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { MATH_OPERATIONS } from '@/lib/tools/math-workbench';
 
 export const revalidate = 86400;
@@ -24,12 +25,18 @@ export const revalidate = 86400;
   the page is not showing.
 */
 
+const BASE = '/math';
 const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return MATH_OPERATIONS.map((operation) => ({ tool: operation.id }));
+  // Same shared exclusion every other [tool] route uses, so this one cannot
+  // quietly start claiming an id a hand-written folder or another prefix owns.
+  const excluded = excludedToolIdsForPrefix(BASE);
+  return MATH_OPERATIONS.filter((operation) => !excluded.has(operation.id)).map(
+    (operation) => ({ tool: operation.id }),
+  );
 }
 
 function operationFor(tool: string) {

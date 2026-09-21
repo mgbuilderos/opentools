@@ -14,7 +14,14 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: ['/'],
-        disallow: ['/api/'],
+        // `/guides-cached/*` is the rewrite target behind CACHED_GUIDE_SLUGS,
+        // not a place for a reader. Every one of its 50 pages is byte-identical
+        // to the `/guides/*` page it serves, answers 200 to anyone who asks,
+        // and appears in no sitemap -- so a crawler that finds one has found
+        // duplicate content and has to guess which URL is canonical. Blocking
+        // the prefix is the fix; the pages themselves must keep working,
+        // because the rewrite is what serves `/guides/*`.
+        disallow: ['/api/', '/guides-cached/'],
       },
       {
         userAgent: [
@@ -29,7 +36,7 @@ export default function robots(): MetadataRoute.Robots {
           'cohere-ai',
         ],
         allow: ['/'],
-        disallow: ['/api/'],
+        disallow: ['/api/', '/guides-cached/'],
       },
     ],
     sitemap: `${siteOrigin}/sitemap.xml`,

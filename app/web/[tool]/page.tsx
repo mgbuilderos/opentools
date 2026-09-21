@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { WebWorkbenchTool } from '@/components/web-workbench-tool';
 import { WEB_OPERATIONS } from '@/lib/tools/web-workbench';
 
@@ -23,7 +24,7 @@ export const revalidate = 86400;
 
 const BASE = '/web';
 const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
-const DEDICATED = new Set<string>([]);
+const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
 

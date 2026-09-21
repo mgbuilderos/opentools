@@ -168,13 +168,43 @@ const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
  * A literal folder always wins over a dynamic segment, so an id that already
  * has its own hand-written page is served by that page and must not be claimed
  * here as well — `generateStaticParams` excludes the same ids, through the same
- * `dedicatedToolIdsForPrefix` this reads.
+ * `excludedToolIdsForPrefix` this reads.
  */
+/**
+ * An operation that two workbenches both host gets exactly ONE page.
+ *
+ * `json-to-csv` is in both the spreadsheet and developer-data lists, and
+ * `url-normalizer` in both developer-data and web. Generating a page under
+ * each prefix produced two URLs with the same title running the same tool —
+ * duplicate content, which splits whatever ranking either would have earned
+ * and leaves a search engine to pick a canonical for us. Found by auditing
+ * titles across the built site rather than by any test, so the audit is now a
+ * test.
+ *
+ * The owner is chosen by what the tool is for, not by position in the map, so
+ * reordering `ROUTED_TOOL_PREFIXES` cannot silently move a live URL.
+ */
+const CROSS_PREFIX_OWNER: ReadonlyMap<string, string> = new Map([
+  // Data shape conversions belong with the spreadsheet tools; `/data/csv-to-json`
+  // already has a hand-written page, so its sibling belongs there too.
+  ['csv-to-json', '/data'],
+  ['json-to-csv', '/data'],
+  // URL tools travel together, and someone searching for any of the three is
+  // doing web work rather than general development.
+  ['url-normalizer', '/web'],
+  ['query-string-builder', '/web'],
+  ['query-string-parser', '/web'],
+  // Billing documents: the search intent is money, not document formatting.
+  ['invoice-generator', '/finance'],
+  ['receipt-generator', '/finance'],
+  ['timesheet-calculator', '/finance'],
+]);
+
 const ROUTED_TOOL_ROUTES = [...ROUTED_TOOL_PREFIXES].flatMap(
   ([prefix, operations]) => {
-    const dedicated = dedicatedToolIdsForPrefix(prefix);
+    const excluded = excludedToolIdsForPrefix(prefix);
     return operations
-      .filter((operation) => !dedicated.has(operation.id))
+      .filter((operation) => !excluded.has(operation.id))
       .map((operation) => `${prefix}/${operation.id}`);
   },
 );
@@ -188,25 +218,53 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   ]),
 ];
 
-/** The operations a `[tool]` route generates a page for, by prefix. */
-export function routedToolIdsForPrefix(prefix: string) {
-  return ROUTED_TOOL_PREFIXES.get(prefix);
+/** Every prefix that has an `app/<prefix>/[tool]/page.tsx`. */
+export function routedToolPrefixes(): readonly string[] {
+  return [...ROUTED_TOOL_PREFIXES.keys()];
 }
 
 /**
- * Ids under `prefix` that already have their own hand-written folder.
+ * The operations a `[tool]` route actually generates a page for.
  *
- * A literal segment beats a dynamic one, so `app/pdf/merge/page.tsx` answers
- * `/pdf/merge` and `app/pdf/[tool]/page.tsx` never sees it. Listing such an id
- * in `generateStaticParams` would ask the build for a page that is already
- * spoken for; the registry filters the same ids out of `ROUTED_TOOL_ROUTES`,
- * so both read this one function and cannot drift apart.
+ * Exclusions are applied here rather than by each caller: this is what the
+ * registry publishes, what `generateStaticParams` writes and what the
+ * registration scan checks, so all three read one answer and a tool cannot be
+ * orphaned by one of them disagreeing.
+ */
+export function routedToolIdsForPrefix(prefix: string) {
+  const operations = ROUTED_TOOL_PREFIXES.get(prefix);
+  if (!operations) return operations;
+  const excluded = excludedToolIdsForPrefix(prefix);
+  // Deduplicated by id, first source wins, because two workbenches under the
+  // SAME prefix can host the same operation -- `regex-tester` is in both the
+  // advanced and data developer lists. The route file resolves it the same way,
+  // so the registry and the build agree on which component answers.
+  return [
+    ...new Map(
+      operations
+        .filter((operation) => !excluded.has(operation.id))
+        .map((operation) => [operation.id, operation]),
+    ).values(),
+  ];
+}
+
+/**
+ * Ids a `[tool]` route under `prefix` must NOT generate.
+ *
+ * Two reasons an id is excluded. First, it already has its own hand-written
+ * folder: a literal segment beats a dynamic one, so `app/pdf/merge/page.tsx`
+ * answers `/pdf/merge` and `app/pdf/[tool]/page.tsx` never sees it, and
+ * listing it would ask the build for a page already spoken for. Second,
+ * another prefix owns it — see `CROSS_PREFIX_OWNER`.
+ *
+ * The registry and every route's `generateStaticParams` read this one
+ * function, so the sitemap and the built files cannot drift apart.
  *
  * Nested routes are ignored: only a single segment under the prefix can
  * collide with a `[tool]` slug.
  */
-export function dedicatedToolIdsForPrefix(prefix: string): ReadonlySet<string> {
-  return new Set(
+export function excludedToolIdsForPrefix(prefix: string): ReadonlySet<string> {
+  const excluded = new Set(
     DEDICATED_TOOL_ROUTES.filter((route) =>
       route.startsWith(`${prefix}/`),
     ).flatMap((route) => {
@@ -214,6 +272,10 @@ export function dedicatedToolIdsForPrefix(prefix: string): ReadonlySet<string> {
       return id.includes('/') ? [] : [id];
     }),
   );
+  for (const [id, owner] of CROSS_PREFIX_OWNER) {
+    if (owner !== prefix) excluded.add(id);
+  }
+  return excluded;
 }
 
 /** Operation ids the route runs, or undefined for a single-tool route. */
