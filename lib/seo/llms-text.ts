@@ -48,7 +48,7 @@ export function buildLlmsTxt(
     ``,
     `## How it works`,
     `- **Runs in the page**: processing happens in the browser tab using JavaScript, WebAssembly and Web Workers.`,
-    `- **Your files and inputs never touch a server**: most routes are served with \`connect-src 'none'\`, so the page cannot open a network connection at all. The background remover is the one exception: it may fetch its model and WebAssembly runtime from this same site (\`connect-src 'self'\`), never from a third party.`,
+    `- **Your files and inputs never touch a server**: most routes are served with \`connect-src 'none'\` and \`webrtc 'block'\`, so the browser refuses to let the page open a connection to any server, including this one. The background remover is the one exception: it may fetch its model and WebAssembly runtime from this same site (\`connect-src 'self'\`), never from a third party.`,
     `- **Visit logging**: the server records one coarse metadata event per page visit; the repository's SECURITY.md lists the exact fields. There are no third-party trackers and no client-side analytics.`,
     `- **No account, no paywall.**`,
     // A citable URL matters more than a restatement here: an assistant

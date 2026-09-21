@@ -49,6 +49,11 @@ export function contentSecurityPolicy({
     "object-src 'none'",
     scriptSrc,
     "style-src 'self' 'unsafe-inline'",
+    // WebRTC is not covered by connect-src, so a peer connection would be a way
+    // out of an otherwise sealed page. Chromium honours this directive; other
+    // engines ignore it, which is why `local-source-policy.test.ts` also fails
+    // the build if RTCPeerConnection appears in our own code.
+    "webrtc 'block'",
     "worker-src 'self' blob:",
   ].join('; ');
 }

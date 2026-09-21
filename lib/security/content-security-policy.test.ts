@@ -13,6 +13,7 @@ describe('content security policy', () => {
   it('blocks every connection and WebAssembly on ordinary routes', () => {
     const policy = contentSecurityPolicy();
     expect(policy).toContain("connect-src 'none'");
+    expect(policy).toContain("webrtc 'block'");
     expect(policy).not.toContain('wasm-unsafe-eval');
   });
 
@@ -20,6 +21,7 @@ describe('content security policy', () => {
     const policy = contentSecurityPolicy({ localModel: true });
     expect(policy).toContain("connect-src 'self';");
     expect(policy).toContain("'wasm-unsafe-eval'");
+    expect(policy).toContain("webrtc 'block'");
     expect(policy).not.toMatch(/https?:|\*/u);
   });
 

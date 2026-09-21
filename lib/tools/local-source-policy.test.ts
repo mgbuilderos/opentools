@@ -15,6 +15,8 @@ const forbiddenNetworkPrimitives = [
   /\bWebSocket\s*\(/u,
   /\bEventSource\s*\(/u,
   /\bsendBeacon\s*\(/u,
+  /\bRTCPeerConnection\b/u,
+  /\bRTCDataChannel\b/u,
   /https?:\/\//u,
 ];
 

@@ -278,7 +278,7 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
     ...(detail?.faqs ?? []),
     {
       question: `Does ${tool.name} upload my files or data to any server?`,
-      answer: `No. The work happens in the page you have open. ${localModel ? 'This page may fetch its own model and WebAssembly files from this site, and its Content Security Policy allows no other origin.' : 'This page is served with a Content Security Policy of connect-src \x27none\x27, so the browser will not let it open a network connection at all.'}`,
+      answer: `No. The work happens in the page you have open. ${localModel ? 'This page may fetch its own model and WebAssembly files from this site, and its Content Security Policy allows no other origin.' : 'This page is served with a Content Security Policy of connect-src \x27none\x27 and webrtc \x27block\x27, so the browser will not let it open a connection to any server, including this one.'}`,
     },
     {
       question: `Is ${tool.name} free?`,
