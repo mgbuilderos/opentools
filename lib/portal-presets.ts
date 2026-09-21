@@ -73,6 +73,42 @@ export const PORTAL_PRESETS: readonly PortalPreset[] = [
     sourceUrl: 'https://support.google.com/mail/answer/6584',
     checkedOn: '2026-09-17',
   },
+  /*
+   * The three Indian filing ceilings below are the ones a practice is bounced
+   * by, and they are per-file rather than per-submission: getting one document
+   * under the number here does not answer the separate caps each portal puts
+   * on how many documents you may attach, which is why those caps are stated
+   * in `note` rather than left for the rejection screen to teach.
+   */
+  {
+    id: 'income-tax-e-proceedings-attachment',
+    portal: 'Income Tax e-filing',
+    field: 'Each attachment on a response to a notice (e-Proceedings)',
+    limitBytes: decimalMbToKib(5),
+    note: 'Per attachment. The same page caps a response at 10 attachments and 50 MB across all of them, so a bundle can pass this ceiling and still be refused.',
+    sourceUrl:
+      'https://www.incometax.gov.in/iec/foportal/help/respond-to-e-proceedings-faq',
+    checkedOn: '2026-09-21',
+  },
+  {
+    id: 'gst-appeal-supporting-document',
+    portal: 'GST appeal',
+    field: 'Each supporting document on an appeal application',
+    limitBytes: decimalMbToKib(5),
+    note: 'Per document, PDF or JPEG only, and at most 4 supporting documents on the application.',
+    sourceUrl: 'https://tutorial.gst.gov.in/userguide/appeal/appeal_manual.htm',
+    checkedOn: '2026-09-21',
+  },
+  {
+    id: 'gst-registration-document',
+    portal: 'GST registration',
+    field: 'Each proof document on a new registration application',
+    limitBytes: decimalMbToKib(1),
+    note: 'Per document, PDF or JPEG only. The same form takes the authorised signatory photograph at 100 KB and e-KYC documents at 2 MB, so check which field you are filling.',
+    sourceUrl:
+      'https://tutorial.gst.gov.in/userguide/registration/Apply_for_Registration_Normal_Taxpayer.htm',
+    checkedOn: '2026-09-21',
+  },
 ];
 
 export const PRESET_MAX_AGE_DAYS = 90;

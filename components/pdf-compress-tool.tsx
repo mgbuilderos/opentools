@@ -1,9 +1,11 @@
 'use client';
 
 import {
+  AlertTriangle,
   ArrowDownToLine,
   CheckCircle2,
   FilePlus2,
+  Gauge,
   LockKeyhole,
   Minimize2,
   ShieldCheck,
@@ -18,13 +20,21 @@ import {
   BatchRunnerPanel,
   useFileBatchRunner,
 } from '@/components/batch-runner';
+import { PracticeBriefPanel } from '@/components/practice-brief';
 import {
   RecipeAppliedNotice,
   RecipeShareButton,
 } from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { PracticeBrief } from '@/lib/practice-briefs';
+import { PORTAL_PRESETS, findPreset } from '@/lib/portal-presets';
 import { publicTools } from '@/lib/tools/catalog';
+import {
+  bytesToKib,
+  kibToBytes,
+  validateTarget,
+} from '@/lib/tools/pdf/size-targets';
 import {
   PDF_COMPRESS_RECIPE,
   describeRecipe,
@@ -46,6 +56,18 @@ type Receipt = {
   compressedBytes: number;
   imagesRecompressed: number;
   durationMs: number;
+  /**
+   * Set only by a fit-to-a-ceiling run. A plain compression has no target to
+   * be judged against, and saying "under the limit" when nobody named a limit
+   * would be an answer to a question that was not asked.
+   */
+  fit?: {
+    targetBytes: number;
+    outcome: 'already-under' | 'met' | 'over-max';
+    quality: number | null;
+    maxImageDimension: number | null;
+    attempts: number;
+  };
 };
 
 const MAX_BYTES = 150 * 1024 * 1024;
@@ -83,6 +105,21 @@ function formatDuration(durationMs: number) {
 function savedPercent(originalBytes: number, compressedBytes: number) {
   if (originalBytes < 1) return 0;
   return Math.floor(((originalBytes - compressedBytes) / originalBytes) * 100);
+}
+
+/**
+ * The host of a citation, for the "read from <host> on <date>" line.
+ *
+ * The URL is data from `lib/portal-presets.ts`, never a literal here:
+ * `local-source-policy.test.ts` keeps `http(s)://` out of `components/`, and
+ * this page does not open it — a person clicks it.
+ */
+function sourceHost(url: string) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return 'the portal';
+  }
 }
 
 async function toWorkerInput(source: { id: string; file: File }) {
@@ -136,7 +173,11 @@ function compressedFileName(fileName: string) {
   return `${base}_compressed.pdf`;
 }
 
-export function PdfCompressTool() {
+/**
+ * `brief` re-points this page at one profession without forking the tool.
+ * See the same prop on `pdf-to-excel-tool.tsx` for why it exists.
+ */
+export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -153,6 +194,15 @@ export function PdfCompressTool() {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [error, setError] = useState('');
   const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  /*
+    Fit-to-a-ceiling state. `lib/tools/pdf/fit-to-size.ts` and the worker's
+    `fit-to-size` branch have existed, tested, since the compressor was
+    written -- with no control anywhere that could reach them. This is that
+    control. The target is held as the string in the box so a half-typed
+    number does not become 0.
+  */
+  const [presetId, setPresetId] = useState('');
+  const [targetKb, setTargetKb] = useState('');
   const batch = useFileBatchRunner();
   const [recipeSummary, setRecipeSummary] = useState('');
   const manifest = publicTools.find((tool) => tool.id === 'pdf-compress')!;
@@ -280,7 +330,19 @@ export function PdfCompressTool() {
     setBatchFiles(selected);
   };
 
-  const run = async () => {
+  const selectedPreset = presetId === '' ? null : findPreset(presetId);
+  const targetBytes =
+    targetKb.trim() === '' ? null : kibToBytes(Number(targetKb));
+  const targetProblem =
+    targetBytes === null ? null : validateTarget(targetBytes);
+
+  const applyPreset = (preset: (typeof PORTAL_PRESETS)[number]) => {
+    clearResult();
+    setPresetId(preset.id);
+    setTargetKb(String(bytesToKib(preset.limitBytes)));
+  };
+
+  const run = async (fitTo: number | null = null) => {
     if (!source || status === 'processing') return;
     clearResult();
     setError('');
@@ -314,6 +376,16 @@ export function PdfCompressTool() {
             compressedBytes: message.compressedByteLength ?? blob.size,
             imagesRecompressed: message.imagesRecompressed ?? 0,
             durationMs,
+            fit:
+              message.fitOutcome && message.targetBytes !== undefined
+                ? {
+                    targetBytes: message.targetBytes,
+                    outcome: message.fitOutcome,
+                    quality: message.fitQuality ?? null,
+                    maxImageDimension: message.fitMaxImageDimension ?? null,
+                    attempts: message.fitAttempts ?? 0,
+                  }
+                : undefined,
           };
           setReceipt(next);
           setStatus('success');
@@ -347,7 +419,14 @@ export function PdfCompressTool() {
         worker.terminate();
         workerRef.current = null;
       };
-      const request: PdfWorkerRequest = { type: 'compress', input, options };
+      const request: PdfWorkerRequest =
+        fitTo === null
+          ? { type: 'compress', input, options }
+          : {
+              type: 'fit-to-size',
+              input,
+              options: { targetBytes: fitTo, removeMetadata },
+            };
       worker.postMessage(request, [input.bytes]);
     } catch {
       workerRef.current?.terminate();
@@ -413,16 +492,23 @@ export function PdfCompressTool() {
           <div className="flex flex-col justify-between gap-5 border-b pb-8 sm:flex-row sm:items-start">
             <div>
               <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <span>PDF</span>
-                <span aria-hidden="true">/</span>
-                <span>Compress</span>
+                {brief ? (
+                  <span>{brief.eyebrow}</span>
+                ) : (
+                  <>
+                    <span>PDF</span>
+                    <span aria-hidden="true">/</span>
+                    <span>Compress</span>
+                  </>
+                )}
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Compress a PDF
+                {brief ? brief.heading : 'Compress a PDF'}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Rewrite a PDF more compactly and re-encode the photos inside it.
-                The file is read by this page and never sent to a server.
+                {brief
+                  ? brief.lede
+                  : 'Rewrite a PDF more compactly and re-encode the photos inside it. The file is read by this page and never sent to a server.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -430,6 +516,8 @@ export function PdfCompressTool() {
               prototype
             </span>
           </div>
+
+          {brief ? <PracticeBriefPanel brief={brief} /> : null}
 
           {error ? (
             <div
@@ -605,6 +693,80 @@ export function PdfCompressTool() {
                 </label>
 
                 {source ? (
+                  <div className="rounded-xl border bg-muted/45 p-4">
+                    <fieldset>
+                      <legend className="text-sm font-semibold">
+                        Fit under a portal ceiling
+                      </legend>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                        Pick the form you are filing into, or type your own
+                        ceiling. The page then re-encodes at descending quality
+                        until a measured result really is under it — no
+                        estimate, and no silent loop: every attempt is a real
+                        rewrite and the count is reported.
+                      </p>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        {PORTAL_PRESETS.map((preset) => (
+                          <Button
+                            key={preset.id}
+                            type="button"
+                            size="sm"
+                            variant={
+                              preset.id === presetId ? 'secondary' : 'outline'
+                            }
+                            aria-pressed={preset.id === presetId}
+                            disabled={status === 'processing'}
+                            onClick={() => applyPreset(preset)}
+                          >
+                            {preset.portal} · {formatBytes(preset.limitBytes)}
+                          </Button>
+                        ))}
+                      </div>
+                      {selectedPreset ? (
+                        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                          {selectedPreset.portal}: {selectedPreset.field}.{' '}
+                          {selectedPreset.note} Read from{' '}
+                          <a
+                            href={selectedPreset.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-4"
+                          >
+                            {sourceHost(selectedPreset.sourceUrl)}
+                          </a>{' '}
+                          on {selectedPreset.checkedOn}. Portals change limits
+                          without announcing it — check yours before you rely on
+                          this.
+                        </p>
+                      ) : null}
+                      <label className="mt-3 block max-w-xs text-xs font-semibold">
+                        Ceiling (KB)
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min="0"
+                          step="1"
+                          placeholder="e.g. 4882"
+                          value={targetKb}
+                          disabled={status === 'processing'}
+                          onChange={(event) => {
+                            setPresetId('');
+                            setTargetKb(event.target.value);
+                            clearResult();
+                          }}
+                          className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm"
+                        />
+                      </label>
+                      {targetProblem ? (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {targetProblem}
+                        </p>
+                      ) : null}
+                    </fieldset>
+                  </div>
+                ) : null}
+
+                {source ? (
                   <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
                     <Button
                       variant="ghost"
@@ -613,6 +775,21 @@ export function PdfCompressTool() {
                       onClick={clear}
                     >
                       <Trash2 aria-hidden="true" /> Clear
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-11 min-w-44"
+                      disabled={
+                        status === 'processing' ||
+                        targetBytes === null ||
+                        targetProblem !== null
+                      }
+                      onClick={() => void run(targetBytes)}
+                    >
+                      <Gauge aria-hidden="true" />
+                      {status === 'processing'
+                        ? 'Working locally…'
+                        : 'Fit under ceiling'}
                     </Button>
                     <Button
                       className="h-11 min-w-44"
@@ -673,13 +850,23 @@ export function PdfCompressTool() {
               <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div className="flex items-start gap-3">
                   <span className="grid size-9 shrink-0 place-items-center rounded-full border">
-                    <CheckCircle2 aria-hidden="true" className="size-5" />
+                    {receipt.fit?.outcome === 'over-max' ? (
+                      <AlertTriangle aria-hidden="true" className="size-5" />
+                    ) : (
+                      <CheckCircle2 aria-hidden="true" className="size-5" />
+                    )}
                   </span>
                   <div>
                     <h2 className="text-lg font-semibold">
-                      {nothingSaved
-                        ? 'Done — this PDF was already as small as we can make it'
-                        : `Done — ${saved}% smaller`}
+                      {receipt.fit
+                        ? receipt.fit.outcome === 'over-max'
+                          ? `Still over the ceiling — smallest reached was ${formatBytes(receipt.compressedBytes)}`
+                          : receipt.fit.outcome === 'already-under'
+                            ? 'Already under the ceiling — your file is unchanged'
+                            : `Under the ceiling — ${formatBytes(receipt.compressedBytes)}`
+                        : nothingSaved
+                          ? 'Done — this PDF was already as small as we can make it'
+                          : `Done — ${saved}% smaller`}
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {formatBytes(receipt.originalBytes)} →{' '}
@@ -726,7 +913,16 @@ export function PdfCompressTool() {
                   </p>
                 </div>
               </div>
-              {nothingSaved ? (
+              {receipt.fit ? (
+                <p className="border-t p-4 text-sm text-muted-foreground">
+                  Ceiling {formatBytes(receipt.fit.targetBytes)}.{' '}
+                  {receipt.fit.outcome === 'already-under'
+                    ? 'The file you opened was already under it, so nothing was re-encoded and nothing was lost.'
+                    : receipt.fit.outcome === 'met'
+                      ? `Reached after ${receipt.fit.attempts} measured ${receipt.fit.attempts === 1 ? 'rewrite' : 'rewrites'}, at photo quality ${receipt.fit.quality}% and a largest photo edge of ${receipt.fit.maxImageDimension} px. Every attempt was weighed on the bytes it actually produced, not on an estimate.`
+                      : `${receipt.fit.attempts} measured ${receipt.fit.attempts === 1 ? 'rewrite' : 'rewrites'} were tried, down to photo quality ${receipt.fit.quality}% at ${receipt.fit.maxImageDimension} px, and none landed under it. Saving this gives you the smallest one produced. Split the document, or take the pages the portal actually asked for.`}
+                </p>
+              ) : nothingSaved ? (
                 <p className="border-t p-4 text-sm text-muted-foreground">
                   The rewritten file came out no smaller, so this is your
                   original, byte for byte. A PDF that is mostly text has little

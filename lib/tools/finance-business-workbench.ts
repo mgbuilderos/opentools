@@ -667,28 +667,30 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   },
   {
     id: 'invoice-generator',
-    name: 'Zero-egress printable invoice maker',
+    name: 'Printable client bill maker',
     description:
-      'Generate professional, print-ready freelance and commercial invoices with itemized taxes, discounts, and payment instructions.',
+      'Lay out a print-ready bill with itemised lines, a tax line and payment instructions. Rupee amounts group in lakh and crore.',
     fields: [
-      text('invoiceNumber', 'Invoice number / ID', 'INV-2026-001'),
+      text('invoiceNumber', 'Bill number', 'MG/2026-27/014'),
       area(
         'sender',
-        'Your business / sender details',
-        'Acme Studio Inc.\n123 Innovation Way, Suite 400\nSan Francisco, CA 94105\ncontact@acmestudio.example',
+        'Your firm (one detail per line)',
+        'M. G. & Associates\nChartered Accountants\n3rd Floor, Suvarna Chambers, F. C. Road\nPune 411004, Maharashtra\nbilling@mgassociates.example',
       ),
       area(
         'client',
-        'Billed to / client details',
-        'Globex Tech Corp.\n456 Enterprise Blvd\nNew York, NY 10001\nbilling@globex.example',
+        'Billed to (one detail per line)',
+        'Shreeji Textiles Private Limited\nPlot 42, MIDC Industrial Area\nNashik 422010, Maharashtra\naccounts@shreejitextiles.example',
       ),
-      text('invoiceDate', 'Invoice date (YYYY-MM-DD)', '2026-09-16'),
-      text('dueDate', 'Payment due date (YYYY-MM-DD)', '2026-09-30'),
+      // Printed exactly as typed. Indian practice reads DD/MM/YYYY, and the
+      // defaults sit inside FY 2026-27, which runs 01/04/2026 to 31/03/2027.
+      text('invoiceDate', 'Bill date (DD/MM/YYYY)', '21/09/2026'),
+      text('dueDate', 'Payment due date (DD/MM/YYYY)', '05/10/2026'),
       select('currency', 'Currency', [
+        { value: 'INR', label: 'INR (₹) — grouped in lakh and crore' },
         { value: 'USD', label: 'USD ($)' },
         { value: 'EUR', label: 'EUR (€)' },
         { value: 'GBP', label: 'GBP (£)' },
-        { value: 'INR', label: 'INR (₹)' },
         { value: 'CAD', label: 'CAD ($)' },
         { value: 'AUD', label: 'AUD ($)' },
         { value: 'JPY', label: 'JPY (¥)' },
@@ -697,14 +699,14 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
       area(
         'items',
         'Line items (Description, Quantity, Unit Price)',
-        'UI/UX Design System, 1, 1200\nFrontend Engineering (Hours), 40, 75\nAPI Integration & QA Testing, 10, 80',
+        'Statutory audit for FY 2025-26, 1, 125000\nIncome tax return filing and computation, 1, 25000\nGST monthly return filing (Apr-Sep 2026), 6, 4500\nRepresentation before assessing officer (hours), 8, 3500',
       ),
-      number('taxRate', 'Tax / VAT / GST rate (%)', '10'),
+      number('taxRate', 'Tax rate you are charging (%)', '18'),
       number('discount', 'Discount amount', '0'),
       area(
         'notes',
         'Payment terms & notes',
-        'Payment instructions:\nBank: First Commercial Bank\nAccount: 1234-5678-9012\nUPI: acmestudio@upi\nThank you for your business!',
+        'Payable within 15 days of receipt.\nBank: State Bank of India, F. C. Road branch\nAccount: 3894 2210 7745\nIFSC: SBIN0001234\nUPI: mgassociates@upi\nThis is a bill for professional services. Where a tax invoice under the GST law is required, it will be issued separately with the particulars that law prescribes.',
       ),
     ],
     notice:
@@ -1626,9 +1628,31 @@ interface InvoiceData {
   notes: string;
 }
 
+/**
+ * Group a money figure the way the chosen currency is actually written.
+ *
+ * All three printable documents below grouped every currency in `en-US`, so a
+ * bill denominated in rupees printed ₹1,234,567.89. That is not a rounding
+ * nicety: an Indian practice reads in lakh and crore, and a bill that groups
+ * in thousands and millions reads as one that was not written for the client
+ * it is addressed to. `en-IN` gives ₹12,34,567.89 — the same number, grouped
+ * the way the reader counts.
+ *
+ * Keyed on the currency rather than on the visitor's own locale, because the
+ * document is read by whoever it is sent to, not by whoever generated it.
+ */
+const MONEY_LOCALES: Record<string, string> = { INR: 'en-IN' };
+
+function moneyFormatter(currencyCode: string) {
+  return new Intl.NumberFormat(MONEY_LOCALES[currencyCode] ?? 'en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 function generateInvoiceHtml(d: InvoiceData): string {
-  const formatMoney = (n: number) =>
-    `${d.currency}${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const money = moneyFormatter(d.currencyCode);
+  const formatMoney = (n: number) => `${d.currency}${money.format(n)}`;
 
   const itemRows = d.items
     .map(
@@ -1805,8 +1829,8 @@ interface ReceiptData {
 }
 
 function generateReceiptHtml(d: ReceiptData): string {
-  const formatMoney = (n: number) =>
-    `${d.currency}${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const money = moneyFormatter(d.currencyCode);
+  const formatMoney = (n: number) => `${d.currency}${money.format(n)}`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1950,8 +1974,8 @@ interface TimesheetData {
 }
 
 function generateTimesheetHtml(d: TimesheetData): string {
-  const formatMoney = (n: number) =>
-    `${d.currency}${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const money = moneyFormatter(d.currencyCode);
+  const formatMoney = (n: number) => `${d.currency}${money.format(n)}`;
 
   const rows = d.entries
     .map(

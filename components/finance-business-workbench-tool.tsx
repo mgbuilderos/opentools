@@ -1,6 +1,7 @@
 'use client';
 
 import { SchemaWorkbenchTool } from '@/components/schema-workbench-tool';
+import type { PracticeBrief } from '@/lib/practice-briefs';
 import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
   FINANCE_OPERATIONS,
@@ -18,11 +19,15 @@ export function FinanceBusinessWorkbenchTool({
   initialOperationId = 'loan-emi-calculator',
   routedBasePath,
   relatedTools,
+  brief,
 }: {
   initialOperationId?: string;
   routedBasePath?: string;
   /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
   relatedTools?: readonly RelatedTool[];
+  /** Set by a hand-written page written for one profession; see the prop on
+   *  `SchemaWorkbenchTool`. */
+  brief?: PracticeBrief;
 } = {}) {
   return (
     <SchemaWorkbenchTool
@@ -37,6 +42,7 @@ export function FinanceBusinessWorkbenchTool({
       initialOperationId={initialOperationId}
       routedBasePath={routedBasePath}
       relatedTools={relatedTools}
+      brief={brief}
       run={runFinanceOperation}
     />
   );

@@ -18,9 +18,11 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { PracticeBriefPanel } from '@/components/practice-brief';
 import { Button } from '@/components/ui/button';
 import { PdfGridOverlay } from '@/components/pdf-grid-overlay';
 import { announceCompletion } from '@/lib/completion';
+import type { PracticeBrief } from '@/lib/practice-briefs';
 import { offerFile } from '@/lib/file-handoff';
 import {
   flagCells,
@@ -168,7 +170,15 @@ function inferInitialRoles(
   return roles;
 }
 
-export function PdfToExcelTool() {
+/**
+ * `brief` re-points this page at one profession without forking the tool.
+ *
+ * The engine is the same either way. What changes is the heading, the
+ * standfirst and the two lists under them, because "PDF to Excel" and "the
+ * client's bank statement, into the books, by Thursday" are the same operation
+ * described to two different people, and only one of them is searching.
+ */
+export function PdfToExcelTool({ brief }: { brief?: PracticeBrief } = {}) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [file, setFile] = useState<File | null>(null);
@@ -738,16 +748,24 @@ export function PdfToExcelTool() {
             </span>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Bank Statement &amp; PDF Table to Excel
+            {brief ? brief.heading : 'Bank Statement & PDF Table to Excel'}
           </h1>
-          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Convert PDF bank statements and financial tables directly into clean
-            Excel (<code className="font-mono text-xs">.xlsx</code>) and{' '}
-            <code className="font-mono text-xs">.csv</code> spreadsheets. Runs
-            entirely inside your browser tab — confidential transaction records,
-            balances, and account numbers never leave your device.
-          </p>
+          {brief ? (
+            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {brief.lede}
+            </p>
+          ) : (
+            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Convert PDF bank statements and financial tables directly into
+              clean Excel (<code className="font-mono text-xs">.xlsx</code>) and{' '}
+              <code className="font-mono text-xs">.csv</code> spreadsheets. Runs
+              entirely inside your browser tab — confidential transaction
+              records, balances, and account numbers never leave your device.
+            </p>
+          )}
         </div>
+
+        {brief ? <PracticeBriefPanel brief={brief} /> : null}
 
         {/* Global Error Banner */}
         {errorMessage && (
@@ -1084,14 +1102,37 @@ export function PdfToExcelTool() {
                     Balance Reconciliation
                   </span>
                   {reconciliationReport?.hasBalanceColumn ? (
-                    reconciliationReport.mismatchCount === 0 ? (
+                    /*
+                      A row whose amount could not be parsed is skipped by the
+                      reconciler rather than counted as a mismatch, so a
+                      statement where NOTHING could be checked arrives here
+                      with mismatchCount 0 and used to be certified "100%
+                      Reconciled" under a tick. That is the worst possible
+                      failure for this panel: it is read precisely by people
+                      deciding whether to trust the export. Nothing is
+                      reconciled until at least one row was actually checked.
+                    */
+                    reconciliationReport.reconciledCount === 0 ? (
+                      <div>
+                        <div className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                          <AlertTriangle className="h-4 w-4" />
+                          <span>Not checked</span>
+                        </div>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          A balance column was found, but no row could be
+                          checked against it — the amounts on this statement did
+                          not parse. Verify the closing balance yourself.
+                        </div>
+                      </div>
+                    ) : reconciliationReport.mismatchCount === 0 ? (
                       <div>
                         <div className="mt-1 flex items-center gap-1.5 text-base font-semibold text-foreground">
                           <CheckCircle2 className="h-4 w-4 text-foreground" />
                           <span>100% Reconciled</span>
                         </div>
                         <div className="mt-1 text-xs text-muted-foreground">
-                          All balance deltas match transaction amounts (
+                          All {reconciliationReport.reconciledCount} checked
+                          rows match their balance movement (
                           {reconciliationReport.chronologicalDirection})
                         </div>
                       </div>

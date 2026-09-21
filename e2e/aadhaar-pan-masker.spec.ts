@@ -224,7 +224,9 @@ test.describe('the masker and the single-number tools share one engine', () => {
     await expect(link).toBeVisible();
     await link.click();
     await expect(
-      page.getByRole('heading', { name: 'Mask Aadhaar and PAN numbers' }),
+      page.getByRole('heading', {
+        name: 'Mask Aadhaar and PAN before a client file leaves the firm',
+      }),
     ).toBeVisible();
   });
 });

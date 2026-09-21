@@ -15,7 +15,9 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { PracticeBriefPanel } from '@/components/practice-brief';
 import { Button } from '@/components/ui/button';
+import type { PracticeBrief } from '@/lib/practice-briefs';
 import { toolMeta } from '@/lib/tools/tool-meta';
 import type {
   IdMaskRequest,
@@ -60,7 +62,13 @@ function formatDuration(durationMs: number) {
 const plural = (count: number, one: string, many: string) =>
   `${count.toLocaleString()} ${count === 1 ? one : many}`;
 
-export function AadhaarPanMaskerTool() {
+/**
+ * `brief` re-points this page at one profession without forking the tool.
+ * See the same prop on `pdf-to-excel-tool.tsx` for why it exists.
+ */
+export function AadhaarPanMaskerTool({
+  brief,
+}: { brief?: PracticeBrief } = {}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLTextAreaElement>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -225,17 +233,21 @@ export function AadhaarPanMaskerTool() {
           <div className="flex flex-col justify-between gap-5 border-b pb-8 sm:flex-row sm:items-start">
             <div>
               <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground">
-                <span>India &amp; life admin</span>
-                <span aria-hidden="true">/</span>
-                <span>Aadhaar and PAN masker</span>
+                <span>{brief ? brief.eyebrow : 'India & life admin'}</span>
+                {brief ? null : (
+                  <>
+                    <span aria-hidden="true">/</span>
+                    <span>Aadhaar and PAN masker</span>
+                  </>
+                )}
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Mask Aadhaar and PAN numbers
+                {brief ? brief.heading : 'Mask Aadhaar and PAN numbers'}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Detects and masks Aadhaar and PAN numbers in text on your
-                device. Aadhaar numbers are masked the way a masked Aadhaar is:
-                the first 8 digits are hidden.
+                {brief
+                  ? brief.lede
+                  : 'Detects and masks Aadhaar and PAN numbers in text on your device. Aadhaar numbers are masked the way a masked Aadhaar is: the first 8 digits are hidden.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -243,6 +255,8 @@ export function AadhaarPanMaskerTool() {
               prototype
             </span>
           </div>
+
+          {brief ? <PracticeBriefPanel brief={brief} /> : null}
 
           <section
             aria-labelledby="scope-heading"

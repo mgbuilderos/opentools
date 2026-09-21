@@ -1,15 +1,28 @@
 import type { Metadata } from 'next';
 
 import { PdfToExcelTool } from '@/components/pdf-to-excel-tool';
+import { practiceBrief } from '@/lib/practice-briefs';
 
 export const revalidate = 86400;
 
+/*
+  Re-pointed at one profession rather than at everyone.
+
+  The tool is unchanged and the URL is unchanged; the title, heading and
+  standfirst now name the job — a client's bank statement, into the books —
+  instead of naming the file formats. "PDF to Excel converter" is what the
+  page did; "the statement the bank emailed, as rows I can post" is what
+  somebody is actually looking for at nine on a Monday.
+*/
+
+const BRIEF = practiceBrief('bank-statement-to-books');
+
 export const metadata: Metadata = {
-  title: 'PDF to Excel & Bank Statement Converter',
+  title: BRIEF.heading,
   description:
-    'Convert PDF bank statements and financial tables to clean Excel (.xlsx) and CSV spreadsheets directly in your browser. Column boundary detection, running balance reconciliation, and 100% private with zero server uploads.',
+    'Turn a client bank statement PDF into Excel (.xlsx) or CSV in your browser. Reads separate debit and credit columns, DR and CR markers and lakh grouping, rejoins wrapped narration, and recomputes the running balance so a dropped row is found before you post it.',
 };
 
 export default function Page() {
-  return <PdfToExcelTool />;
+  return <PdfToExcelTool brief={BRIEF} />;
 }

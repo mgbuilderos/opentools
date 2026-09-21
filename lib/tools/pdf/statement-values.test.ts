@@ -31,6 +31,42 @@ describe('lib/tools/pdf/statement-values', () => {
       expect(parseAmount('$1,234.56').currency).toBe('USD');
     });
 
+    /**
+     * `\bdr\b` has no word boundary between `6` and `D`, so `1,234.56Dr` was
+     * neither detected nor stripped while `1,234.56 Dr` worked. `parseFloat`
+     * stops at the letter and returns a healthy-looking `1234.56`, so `value`
+     * was non-null, `cell-flags.ts` raised nothing, and a withdrawal reached
+     * the spreadsheet as a positive number. Indian banks print the unspaced
+     * form routinely, which is precisely the statement this tool is for.
+     */
+    it('reads a DR or CR marker printed against the digits', () => {
+      for (const marker of ['Dr', 'DR', 'dr']) {
+        const parsed = parseAmount(`1,234.56${marker}`);
+        expect(parsed.value, marker).toBe(-1234.56);
+        expect(parsed.isDebit, marker).toBe(true);
+      }
+      for (const marker of ['Cr', 'CR', 'cr']) {
+        const parsed = parseAmount(`1,234.56${marker}`);
+        expect(parsed.value, marker).toBe(1234.56);
+        expect(parsed.isCredit, marker).toBe(true);
+      }
+      // Lakh grouping and a trailing marker together, which is the common
+      // shape on an Indian overdraft or credit-card statement.
+      const lakh = parseAmount('12,34,567.89Cr', 'indian-lakh');
+      expect(lakh.value).toBe(1234567.89);
+      expect(lakh.isCredit).toBe(true);
+      // A marker before the figure, and with a full stop after it.
+      expect(parseAmount('Dr. 1,234.56').value).toBe(-1234.56);
+    });
+
+    it('does not read a marker out of the middle of a word', () => {
+      // The reason `\b` was there in the first place. A narration cell that
+      // reaches the amount parser must not be turned negative by "DRAFT".
+      expect(parseAmount('DRAFT').isDebit).toBe(false);
+      expect(parseAmount('CREDITED').isCredit).toBe(false);
+      expect(parseAmount('1,234.56 HYDRO').isDebit).toBe(false);
+    });
+
     it('parses European format with decimal commas', () => {
       expect(parseAmount('1.234,56', 'european').value).toBe(1234.56);
       expect(parseAmount('(1.234,56)', 'european').value).toBe(-1234.56);

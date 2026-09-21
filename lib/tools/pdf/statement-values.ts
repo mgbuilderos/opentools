@@ -143,6 +143,35 @@ export function detectNumberConvention(
 }
 
 /**
+ * DR/CR markers, bounded by letters rather than by `\b`.
+ *
+ * `\bdr\b` looks right and is wrong on exactly the statements this tool exists
+ * for. There is no word boundary between `6` and `D` in `1,234.56Dr` — both are
+ * word characters — so an unspaced marker was neither detected nor stripped,
+ * while `1,234.56 Dr` worked. `parseFloat` stops at the `D` and returns a
+ * perfectly good-looking `1234.56`, so `value` was non-null, `cell-flags.ts`
+ * raised nothing, and a withdrawal was exported as a positive number with no
+ * warning anywhere. Indian banks print the unspaced form routinely.
+ *
+ * A letter-only boundary keeps the reason `\b` was there in the first place:
+ * `DRAFT`, `CREDIT` and `MICR` still do not match, because the character after
+ * the marker is a letter.
+ */
+const DEBIT_MARKER = /(?<![a-z])dr(?![a-z])/iu;
+const CREDIT_MARKER = /(?<![a-z])cr(?![a-z])/iu;
+
+/**
+ * The same boundary rule, for removing markers before parsing the digits.
+ *
+ * The full stop after `Dr.` and `Cr.` is part of the marker. Left behind, it
+ * became a second decimal point — `Dr. 1,234.56` reduced to `.1234.56`, which
+ * `parseFloat` reads as `0.1234`, an amount three orders of magnitude out and
+ * flagged by nothing, because it parsed.
+ */
+const MARKER_WORDS =
+  /(?<![a-z])(Rs\.?|INR|USD|EUR|GBP|dr\.?|cr\.?)(?![a-z])/giu;
+
+/**
  * Parse an amount string according to a determined numbering convention.
  */
 export function parseAmount(
@@ -166,8 +195,8 @@ export function parseAmount(
   const hasParentheses = raw.startsWith('(') && raw.endsWith(')');
   const hasLeadingMinus = raw.startsWith('-');
   const hasTrailingMinus = raw.endsWith('-');
-  const hasDr = /\bdr\b/iu.test(raw);
-  const hasCr = /\bcr\b/iu.test(raw);
+  const hasDr = DEBIT_MARKER.test(raw);
+  const hasCr = CREDIT_MARKER.test(raw);
 
   const isNegative =
     hasParentheses || hasLeadingMinus || hasTrailingMinus || hasDr;
@@ -175,7 +204,7 @@ export function parseAmount(
   // Strip currency symbols and letters, keeping commas and periods
   let numericPart = raw
     .replace(/[$€£₹¥]/gu, '')
-    .replace(/\b(Rs\.?|INR|USD|EUR|GBP|dr|cr)\b/giu, '')
+    .replace(MARKER_WORDS, '')
     .replace(/[-+\s()]/gu, '');
 
   if (!numericPart) {

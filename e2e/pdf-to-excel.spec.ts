@@ -99,7 +99,7 @@ async function readZipEntry(zip: Uint8Array, name: string): Promise<string> {
   throw new Error(`${name} is not in the archive`);
 }
 
-test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
+test.describe('Bank statement PDF to Excel for client books (/pdf/to-excel)', () => {
   test('refuses scanned/image-only PDF by name without producing empty output (G7)', async ({
     page,
   }) => {
@@ -107,7 +107,9 @@ test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
 
     await expect(
       page.getByRole('heading', {
-        name: 'Bank Statement & PDF Table to Excel',
+        // The heading now names the job rather than the file formats: the
+        // page carries a practice brief from lib/practice-briefs.ts.
+        name: 'Bank statement PDF to Excel for client books',
       }),
     ).toBeVisible();
 

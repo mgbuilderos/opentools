@@ -17,11 +17,13 @@ import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { PracticeBriefPanel } from '@/components/practice-brief';
 import { RelatedTools } from '@/components/related-tools';
 import { ToolExplainer } from '@/components/tool-explainer';
 import { getToolExplainer } from '@/lib/seo/guide-content';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { PracticeBrief } from '@/lib/practice-briefs';
 import type { RelatedTool } from '@/lib/seo/related-tools';
 
 interface WorkbenchField {
@@ -82,6 +84,18 @@ interface SchemaWorkbenchToolProps {
    * every tool page. `lib/seo/live-tool-routes.ts` exists for the same reason.
    */
   relatedTools?: readonly RelatedTool[];
+  /**
+   * Set when a hand-written page under this prefix is addressing one
+   * profession rather than everyone. It replaces the eyebrow, heading and
+   * standfirst that would otherwise be taken from the operation definition,
+   * and adds the two lists a professional reads before trusting a tool with a
+   * client's figures. The operation that runs is unchanged.
+   *
+   * A hand-written folder beats a dynamic segment, so the page carrying this
+   * answers on the SAME URL the `[tool]` route would have generated — there is
+   * no second address and no duplicate of the tool to split its ranking.
+   */
+  brief?: PracticeBrief;
   run: (
     operationId: string,
     values: Record<string, string>,
@@ -112,6 +126,7 @@ export function SchemaWorkbenchTool({
   initialOperationId,
   routedBasePath,
   relatedTools = [],
+  brief,
   run,
 }: SchemaWorkbenchToolProps) {
   const initial =
@@ -328,7 +343,9 @@ export function SchemaWorkbenchTool({
           <header className="flex flex-col justify-between gap-5 border-b pb-6 sm:flex-row sm:items-start">
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                {eyebrow} / {operations.length} related tools
+                {brief
+                  ? brief.eyebrow
+                  : `${eyebrow} / ${operations.length} related tools`}
               </p>
               {/*
                 On a per-tool page the heading is the tool, not the workspace.
@@ -338,10 +355,14 @@ export function SchemaWorkbenchTool({
                 they both weigh most.
               */}
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                {routed ? initial.name : title}
+                {brief ? brief.heading : routed ? initial.name : title}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                {routed ? initial.description : introduction}
+                {brief
+                  ? brief.lede
+                  : routed
+                    ? initial.description
+                    : introduction}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -349,6 +370,8 @@ export function SchemaWorkbenchTool({
               Runs in this tab
             </span>
           </header>
+
+          {brief ? <PracticeBriefPanel brief={brief} /> : null}
 
           <div className="mt-5 grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
             <section className="rounded-xl border bg-card p-4">

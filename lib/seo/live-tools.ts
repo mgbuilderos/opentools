@@ -58,6 +58,19 @@ export const DEDICATED_TOOL_ROUTES = [
   '/file/hash-calculator',
   '/file/archive',
   '/life-admin/aadhaar-pan-masker',
+  /*
+   * Two operations whose `[tool]` page was generated from a one-line name and
+   * description, replaced by a hand-written folder at the SAME address.
+   *
+   * A literal segment beats a dynamic one and `excludedToolIdsForPrefix` takes
+   * these ids straight back out of the route that would otherwise generate
+   * them, so this is not a second URL for the same tool and nothing is
+   * duplicated: it is the one URL, written for the people who need it. Both
+   * carry a brief from `lib/practice-briefs.ts` addressed to Indian
+   * accountants, tax consultants and bookkeepers.
+   */
+  '/life-admin/indian-currency-number-to-words',
+  '/finance/invoice-generator',
   '/text/case-converter',
   '/developer/base64-encoder',
   '/developer/base64-decoder',
