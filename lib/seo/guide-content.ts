@@ -164,6 +164,41 @@ interface GuideDetail {
 }
 
 const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
+  // lib/tools/ocr/{assets,runtime,layout}.ts and their tests
+  'image-image-to-text': {
+    directAnswer:
+      'Open the image-to-text tool, choose a picture containing printed text, and run it. Recognition happens in your browser with Tesseract, so the picture is never sent anywhere; the first run downloads the engine and the English model, and later runs reuse the cached copies.',
+    leadParagraph:
+      'This reads printed text out of a photograph or screenshot and gives you characters you can copy. It ships English only, and the model recognises printed type rather than handwriting. The first run downloads 9,819,346 bytes (9.36 MiB) — the worker, the English traineddata and the WebAssembly core — which your browser then caches, so it is a one-off rather than a per-image cost. Accuracy depends on the picture: straight, well-lit, reasonably large text reads well, and a skewed phone photograph of a curved page does not.',
+    faqs: [
+      {
+        question: 'Is my image uploaded when I convert it to text?',
+        answer:
+          'No. Recognition runs in your own browser using a Tesseract worker loaded from this site, and the picture is read into the page rather than posted anywhere. The worker is created from a same-origin script rather than a blob URL specifically so it inherits this site\x27s narrow asset policy instead of a broader one.',
+      },
+      {
+        question: 'How much does the first run download?',
+        answer:
+          'Up to 9,819,346 bytes, about 9.36 MiB: a 111,307-byte worker, a 2,952,873-byte English model, and a WebAssembly core of roughly 6.7 MiB. Your browser caches all three, so subsequent images cost nothing extra to download. The exact core size varies slightly with the SIMD support your browser reports.',
+      },
+      {
+        question: 'Which languages does it recognise?',
+        answer:
+          'English only. The engine is created with the single language code eng, and no other traineddata file is served, so text in other scripts will either be misread as English or produce nothing useful.',
+      },
+      {
+        question:
+          'Why is some of the recognised text marked as low confidence?',
+        answer:
+          'Every word carries a confidence score from the engine, and anything below 75 is flagged so you can check it rather than trust it silently. Low scores cluster around small text, low contrast, unusual fonts and compression artefacts.',
+      },
+      {
+        question: 'Can it read handwriting or a photograph of a curved page?',
+        answer:
+          'Not reliably. The model is trained on printed type, and lines are grouped by comparing each word\x27s vertical centre against the median word height — an assumption that holds for flat, straight text and breaks down on curved, skewed or heavily rotated pages.',
+      },
+    ],
+  },
   // lib/tools/web-workbench.ts (open-graph-generator operation, the
   // open-graph-generator branch of runWebOperation, and the absoluteUrl /
   // required / html helpers) and lib/tools/web-workbench.test.ts.

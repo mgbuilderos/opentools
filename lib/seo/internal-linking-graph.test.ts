@@ -96,6 +96,11 @@ describe('Internal Linking Graph & Topic Clusters', () => {
     for (const tool of LIVE_TOOL_CATALOG.slice(0, 120)) {
       for (const link of getRelatedToolLinks(tool.slug, 4)) {
         if (link.tool.category === tool.category) continue;
+        // Hand-curated workflow links (EXPLICIT_RELATED_SLUGS on main) are a
+        // stronger relationship than a shared word, and are meant to cross
+        // categories — an OCR result going to a PDF tool is the whole point.
+        // This rule governs the automatic pick only.
+        if (!link.relationship.startsWith('Related in')) continue;
         const words = new Set(
           tool.name
             .toLowerCase()
