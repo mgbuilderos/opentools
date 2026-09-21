@@ -62,6 +62,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/image/metadata',
         workspaceId: 'photo-metadata',
       },
+      {
+        id: 'image-to-text',
+        name: 'Image to text',
+        description:
+          'Read selectable English text from screenshots, photos and scanned images.',
+        href: '/image/to-text',
+        workspaceId: 'image-to-text',
+      },
     ],
   },
   {

@@ -115,7 +115,7 @@ test.describe('PDF to Word', () => {
     await expect(alert).toContainText('no text in it');
     await expect(alert).toContainText(/scan|photo/iu);
     await expect(
-      page.getByRole('button', { name: 'Open PDF OCR with this file' }),
+      page.getByRole('button', { name: 'Read this scan with OCR' }),
     ).toBeVisible();
     // Nothing is offered for download, so nobody saves an empty document.
     await expect(
@@ -130,11 +130,11 @@ test.describe('PDF to Word', () => {
     await page.waitForLoadState('networkidle');
     await choosePdf(page, await scannedPdf(), 'handoff-scan.pdf');
     await page.getByRole('button', { name: 'Convert to Word' }).click();
-    await page
-      .getByRole('button', { name: 'Open PDF OCR with this file' })
-      .click();
+    await page.getByRole('button', { name: 'Read this scan with OCR' }).click();
     await expect(page).toHaveURL(/\/pdf\/ocr$/u);
-    await expect(page.getByText('handoff-scan.pdf', { exact: true })).toBeVisible({
+    await expect(
+      page.getByText('handoff-scan.pdf', { exact: true }),
+    ).toBeVisible({
       timeout: 10_000,
     });
   });

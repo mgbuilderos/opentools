@@ -39,6 +39,16 @@ function abortedError() {
   return new DOMException('OCR was cancelled.', 'AbortError');
 }
 
+function rejectOnAbort(signal: AbortSignal): Promise<never> {
+  return new Promise((_, reject) => {
+    if (signal.aborted) reject(abortedError());
+    else
+      signal.addEventListener('abort', () => reject(abortedError()), {
+        once: true,
+      });
+  });
+}
+
 function imageDimensions(
   image: Blob,
 ): Promise<{ width: number; height: number }> {
@@ -77,7 +87,7 @@ export async function createOcrSession(
 
   let progressHandler = onInitialProgress;
   const tesseract = await import('tesseract.js');
-  const worker = (await tesseract.createWorker('eng', tesseract.OEM.LSTM_ONLY, {
+  const workerPromise = tesseract.createWorker('eng', tesseract.OEM.LSTM_ONLY, {
     workerPath: '/ocr/worker.min.js',
     corePath: '/ocr/core',
     langPath: '/ocr/lang',
@@ -90,7 +100,22 @@ export async function createOcrSession(
         progress: Math.max(0, Math.min(1, message.progress)),
       });
     },
-  })) as unknown as WorkerLike;
+  }) as unknown as Promise<WorkerLike>;
+
+  let worker: WorkerLike;
+  try {
+    worker = signal
+      ? await Promise.race([workerPromise, rejectOnAbort(signal)])
+      : await workerPromise;
+  } catch (cause) {
+    if (signal?.aborted) {
+      void workerPromise.then(
+        (created) => created.terminate(),
+        () => undefined,
+      );
+    }
+    throw cause;
+  }
 
   let terminated = false;
   const terminate = async () => {

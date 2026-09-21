@@ -11,28 +11,28 @@ Neither route imports Tesseract.js in its initial client bundle or requests an O
 
 The runtime is pinned and served from `public/ocr`; it has no CDN fallback.
 
-| Component | Version | License | Checked-in runtime bytes |
-| --- | --- | --- | ---: |
-| `tesseract.js` worker | 7.0.0 | Apache-2.0 | 111,307 |
-| English `4.0.0_best_int` data | 1.0.0 package | Apache-2.0 | 2,952,873 |
-| fallback LSTM core | 7.0.0 | Apache-2.0 | 6,751,845 |
-| SIMD LSTM core | 7.0.0 | Apache-2.0 | 6,757,073 |
-| relaxed-SIMD LSTM core | 7.0.0 | Apache-2.0 | 6,768,033 |
+| Component                     | Version       | License    | Checked-in runtime bytes |
+| ----------------------------- | ------------- | ---------- | -----------------------: |
+| `tesseract.js` worker         | 7.0.0         | Apache-2.0 |                  111,307 |
+| English `4.0.0_best_int` data | 1.0.0 package | Apache-2.0 |                2,952,873 |
+| fallback LSTM core            | 7.0.0         | Apache-2.0 |                6,751,845 |
+| SIMD LSTM core                | 7.0.0         | Apache-2.0 |                6,757,073 |
+| relaxed-SIMD LSTM core        | 7.0.0         | Apache-2.0 |                6,768,033 |
 
 A browser downloads the worker, English data and one compatible core, not all three cores. The largest possible combination is therefore 111,307 + 2,952,873 + 6,768,033 = **9,832,213 bytes**. `lib/tools/ocr/assets.test.ts` compares this disclosure with the actual checked-in file sizes so a runtime update cannot silently make the promise stale.
 
 Source URLs, file ownership and local license copies are recorded in `public/ocr/PROVENANCE.txt`. SHA-256 checksums for the runtime inputs are:
 
-| File | SHA-256 |
-| --- | --- |
-| `worker.min.js` | `576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d` |
+| File                      | SHA-256                                                            |
+| ------------------------- | ------------------------------------------------------------------ |
+| `worker.min.js`           | `576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d` |
 | `lang/eng.traineddata.gz` | `45b4cb346724ac1774f1c36f42f182b887bcdb28ebe63e6fff90ac41f3fcff91` |
-| fallback JS wrapper | `eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680` |
-| fallback WASM | `66b17df6e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680` |
-| SIMD JS wrapper | `c58b46a4c796c0b8afccf77591d5b875b6896b45d402bbce8caa6f5362447b38` |
-| SIMD WASM | `34e8d50cac216427d86bf397d610fdd9f49492539bbcdfbfccc4eda20c810bea` |
-| relaxed-SIMD JS wrapper | `861a536cf9ef8e63cb644d57bab39c388f37f7d6b6f60024b741c5f6b39a59b3` |
-| relaxed-SIMD WASM | `7985c92d4c64e7267d24cadffe1b2a1da6bf8aa55fdcaf953fe94fe122a24545` |
+| fallback JS wrapper       | `eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680` |
+| fallback WASM             | `66b17df6e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680`   |
+| SIMD JS wrapper           | `c58b46a4c796c0b8afccf77591d5b875b6896b45d402bbce8caa6f5362447b38` |
+| SIMD WASM                 | `34e8d50cac216427d86bf397d610fdd9f49492539bbcdfbfccc4eda20c810bea` |
+| relaxed-SIMD JS wrapper   | `861a536cf9ef8e63cb644d57bab39c388f37f7d6b6f60024b741c5f6b39a59b3` |
+| relaxed-SIMD WASM         | `7985c92d4c64e7267d24cadffe1b2a1da6bf8aa55fdcaf953fe94fe122a24545` |
 
 ## Runtime and security boundary
 
@@ -56,14 +56,14 @@ For a scan, each page is rendered at 2× scale, capped at 16 million pixels, and
 
 The invisible layer uses the standard Helvetica font and the product is English-only. Unsupported non-ASCII glyphs are normalised or omitted from that PDF layer; the plain-text result retains the recogniser's text. Rotated or unusually transformed source pages can have less exact selection geometry even when search and extraction work.
 
-The PDF-to-Word and PDF-to-Excel scanned-document refusals offer **Open PDF OCR with this file**. The existing in-memory/IndexedDB handoff carries the already-selected file so the user does not have to choose it again.
+The PDF-to-Word and PDF-to-Excel scanned-document refusals offer **Read this scan with OCR**. The existing in-memory/IndexedDB handoff carries the already-selected file so the user does not have to choose it again.
 
 ## Verification
 
 The focused unit suite covers OCR assets, layout, PDF layer construction, batch execution and scoped CSP behavior. Browser tests run in Chromium and WebKit and prove:
 
 - a cold route and file selection request no OCR assets;
-- an explicit size-labelled action recognises a generated image containing `OPEN TOOLS OCR` exactly;
+- an explicit size-labelled action recognises the committed `e2e/fixtures/ocr-known-text.svg` fixture as `OPEN TOOLS OCR` exactly;
 - a two-image batch completes sequentially;
 - an image-only PDF produces a `%PDF-` download whose text is independently recovered by the system `pdftotext` executable;
 - an existing-text PDF is refused before model download;

@@ -122,7 +122,7 @@ test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
 
     await expect(page.getByText(/statement-scanned\.pdf/i)).toBeVisible();
     await expect(
-      page.getByRole('button', { name: 'Open PDF OCR with this file' }),
+      page.getByRole('button', { name: 'Read this scan with OCR' }),
     ).toBeVisible();
     await expect(
       page.getByText(/contains no readable digital text layer/i),
@@ -148,9 +148,7 @@ test.describe('Bank Statement & PDF Table to Excel (/pdf/to-excel)', () => {
   }) => {
     await page.goto('/pdf/to-excel');
     await uploadPdf(page, 'statement-scanned.pdf');
-    await page
-      .getByRole('button', { name: 'Open PDF OCR with this file' })
-      .click();
+    await page.getByRole('button', { name: 'Read this scan with OCR' }).click();
     await expect(page).toHaveURL(/\/pdf\/ocr$/u);
     await expect(
       page.getByText('statement-scanned.pdf', { exact: true }),

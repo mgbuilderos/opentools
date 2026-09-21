@@ -105,6 +105,14 @@ export interface RelatedToolLink {
   relationship: string;
 }
 
+/** Workflow edges that cross catalog categories and therefore cannot be inferred by rank. */
+const EXPLICIT_RELATED_SLUGS: Readonly<Record<string, readonly string[]>> = {
+  'pdf-ocr-pdf': ['image-image-to-text', 'pdf-pdf-to-word', 'pdf-pdf-to-excel'],
+  'image-image-to-text': ['pdf-ocr-pdf'],
+  'pdf-pdf-to-word': ['pdf-ocr-pdf'],
+  'pdf-pdf-to-excel': ['pdf-ocr-pdf'],
+};
+
 export function getRelatedToolLinks(
   currentSlug: string,
   count = 4,
@@ -112,8 +120,14 @@ export function getRelatedToolLinks(
   const current = getLiveToolBySlug(currentSlug);
   if (!current) return [];
 
+  const explicit = (EXPLICIT_RELATED_SLUGS[currentSlug] ?? [])
+    .map((slug) => getLiveToolBySlug(slug))
+    .filter((tool): tool is ToolCatalogEntry => Boolean(tool))
+    .slice(0, count);
+  const explicitSlugs = new Set(explicit.map((tool) => tool.slug));
+
   const categoryTools = getLiveToolsByCategory(current.category).filter(
-    (t) => t.slug !== currentSlug,
+    (tool) => tool.slug !== currentSlug && !explicitSlugs.has(tool.slug),
   );
 
   // Three signals, none of which measure real usage: catalog neighbours score
@@ -144,9 +158,18 @@ export function getRelatedToolLinks(
 
   // The label states where the tool sits in the catalog. Nothing here measures
   // how people actually use it, so it must not imply that it does.
-  return scored.slice(0, count).map(({ tool }) => ({
-    tool,
-    guideHref: `/guides/${tool.slug}`,
-    relationship: `Also in ${tool.category}`,
-  }));
+  return [
+    ...explicit.map((tool) => ({
+      tool,
+      guideHref: `/guides/${tool.slug}`,
+      relationship: 'Continue this OCR workflow',
+    })),
+    ...scored
+      .slice(0, Math.max(0, count - explicit.length))
+      .map(({ tool }) => ({
+        tool,
+        guideHref: `/guides/${tool.slug}`,
+        relationship: `Also in ${tool.category}`,
+      })),
+  ];
 }

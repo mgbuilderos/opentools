@@ -2,6 +2,11 @@ import { readFile } from 'node:fs/promises';
 
 import { expect, test, type Page } from '@playwright/test';
 
+const knownTextSvg = await readFile(
+  new URL('./fixtures/ocr-known-text.svg', import.meta.url),
+  'utf8',
+);
+
 async function textPng(page: Page, text = 'OPEN TOOLS OCR') {
   const base64 = await page.evaluate((value) => {
     const canvas = document.createElement('canvas');
@@ -16,6 +21,27 @@ async function textPng(page: Page, text = 'OPEN TOOLS OCR') {
     context.fillText(value, 55, 130);
     return canvas.toDataURL('image/png').split(',')[1]!;
   }, text);
+  return Buffer.from(base64, 'base64');
+}
+
+async function knownTextFixturePng(page: Page) {
+  const base64 = await page.evaluate(async (svg) => {
+    const image = new Image();
+    const url = URL.createObjectURL(
+      new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
+    );
+    try {
+      image.src = url;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      canvas.getContext('2d')!.drawImage(image, 0, 0);
+      return canvas.toDataURL('image/png').split(',')[1]!;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }, knownTextSvg);
   return Buffer.from(base64, 'base64');
 }
 
@@ -37,7 +63,7 @@ test.describe('Image to text OCR', () => {
     await page.waitForLoadState('networkidle');
     expect(ocrRequests, 'cold route loaded an OCR asset').toEqual([]);
 
-    const image = await textPng(page);
+    const image = await knownTextFixturePng(page);
     await page.getByLabel('Choose images for text recognition').setInputFiles({
       name: 'known-text.png',
       mimeType: 'image/png',
@@ -46,11 +72,15 @@ test.describe('Image to text OCR', () => {
     expect(ocrRequests, 'file selection loaded an OCR asset').toEqual([]);
 
     await page
-      .getByRole('button', { name: /download 9,832,213 bytes .* and read text/iu })
+      .getByRole('button', {
+        name: /download 9,832,213 bytes .* and read text/iu,
+      })
       .click();
     const output = page.getByLabel('Recognised text from known-text.png');
     await expect(output).toHaveValue('OPEN TOOLS OCR', { timeout: 120_000 });
-    expect(ocrRequests.some((url) => url.endsWith('/worker.min.js'))).toBe(true);
+    expect(ocrRequests.some((url) => url.endsWith('/worker.min.js'))).toBe(
+      true,
+    );
     expect(ocrRequests.some((url) => url.endsWith('/eng.traineddata.gz'))).toBe(
       true,
     );
@@ -60,7 +90,9 @@ test.describe('Image to text OCR', () => {
     await page.getByRole('button', { name: 'Download .txt' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('known-text-text.txt');
-    expect(await readFile((await saved.path())!, 'utf8')).toBe('OPEN TOOLS OCR');
+    expect(await readFile((await saved.path())!, 'utf8')).toBe(
+      'OPEN TOOLS OCR',
+    );
   });
 
   test('runs multiple images sequentially through the shared batch runner', async ({
@@ -74,17 +106,15 @@ test.describe('Image to text OCR', () => {
       { name: 'first.png', mimeType: 'image/png', buffer: first },
       { name: 'second.png', mimeType: 'image/png', buffer: second },
     ]);
-    await page
-      .getByRole('button', { name: /and read 2 images/iu })
-      .click();
+    await page.getByRole('button', { name: /and read 2 images/iu }).click();
     await expect(page.locator('[data-batch-result="done"]')).toHaveCount(2, {
       timeout: 180_000,
     });
     await expect(page.getByLabel('Recognised text from first.png')).toHaveValue(
       'FIRST IMAGE',
     );
-    await expect(page.getByLabel('Recognised text from second.png')).toHaveValue(
-      'SECOND IMAGE',
-    );
+    await expect(
+      page.getByLabel('Recognised text from second.png'),
+    ).toHaveValue('SECOND IMAGE');
   });
 });

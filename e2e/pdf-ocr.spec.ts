@@ -5,20 +5,27 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { testPdf } from './fixtures';
 
+const knownTextSvg = await readFile(
+  new URL('./fixtures/ocr-known-text.svg', import.meta.url),
+  'utf8',
+);
+
 async function textPng(page: Page) {
-  const base64 = await page.evaluate(() => {
+  const base64 = await page.evaluate(async (svg) => {
+    const image = new Image();
+    const url = URL.createObjectURL(
+      new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
+    );
+    image.src = url;
+    await image.decode();
     const canvas = document.createElement('canvas');
-    canvas.width = 1200;
-    canvas.height = 260;
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
     const context = canvas.getContext('2d')!;
-    context.fillStyle = '#ffffff';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = '#000000';
-    context.font = 'bold 96px Arial, sans-serif';
-    context.textBaseline = 'middle';
-    context.fillText('OPEN TOOLS OCR', 55, 130);
+    context.drawImage(image, 0, 0);
+    URL.revokeObjectURL(url);
     return canvas.toDataURL('image/png').split(',')[1]!;
-  });
+  }, knownTextSvg);
   return Buffer.from(base64, 'base64');
 }
 
@@ -43,7 +50,9 @@ test.describe('PDF OCR', () => {
       buffer: await scannedPdf(page),
     });
     await page
-      .getByRole('button', { name: /check scan, then download 9,832,213 bytes/iu })
+      .getByRole('button', {
+        name: /check scan, then download 9,832,213 bytes/iu,
+      })
       .click();
     await expect(
       page.getByRole('heading', { name: 'Done — 1 page searchable' }),
@@ -64,7 +73,9 @@ test.describe('PDF OCR', () => {
     expect(extracted.replace(/\s+/gu, ' ').trim()).toContain('OPEN TOOLS OCR');
   });
 
-  test('refuses a text PDF before any OCR asset is requested', async ({ page }) => {
+  test('refuses a text PDF before any OCR asset is requested', async ({
+    page,
+  }) => {
     const ocrRequests: string[] = [];
     page.on('request', (request) => {
       const path = new URL(request.url()).pathname;
@@ -85,8 +96,8 @@ test.describe('PDF OCR', () => {
       timeout: 60_000,
     });
     expect(ocrRequests).toEqual([]);
-    await expect(page.getByRole('button', { name: 'Save searchable PDF' })).toHaveCount(
-      0,
-    );
+    await expect(
+      page.getByRole('button', { name: 'Save searchable PDF' }),
+    ).toHaveCount(0);
   });
 });

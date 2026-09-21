@@ -209,7 +209,7 @@ export function ImageToTextTool() {
             <p className="mt-1 text-muted-foreground">
               Choosing files downloads nothing. Starting OCR downloads at most{' '}
               <strong>{assetDisclosure}</strong> from this site, then the
-              browser caches those versioned assets. Recognition can misread
+              browser caches those static assets. Recognition can misread
               blurred, skewed or stylised text; highlighted words are the
               recogniser&apos;s measured low-confidence results and should be
               checked.
@@ -326,10 +326,10 @@ export function ImageToTextTool() {
           ) : null}
 
           {runner.running && files.length > 1 && engineProgress ? (
-            <p role="status" className="mt-3 text-sm text-muted-foreground">
+            <output className="mt-3 block text-sm text-muted-foreground">
               {engineProgress.status} ·{' '}
               {Math.round(engineProgress.progress * 100)}%
-            </p>
+            </output>
           ) : null}
 
           <div className="mt-6 space-y-5">

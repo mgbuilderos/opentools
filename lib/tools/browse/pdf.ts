@@ -55,6 +55,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-to-word',
       },
       {
+        id: 'pdf-ocr',
+        name: 'OCR PDF',
+        description:
+          'Add an invisible searchable English text layer to a scanned PDF while preserving its visible pages.',
+        href: '/pdf/ocr',
+        workspaceId: 'pdf-ocr',
+      },
+      {
         id: 'pdf-to-excel',
         name: 'PDF to Excel',
         description:

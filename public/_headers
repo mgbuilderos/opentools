@@ -44,7 +44,7 @@
 # build-scoped; the only two unhashed files, `_buildManifest.js` and
 # `_ssgManifest.js`, live inside the build-id directory.
 /_next/static/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=86400, must-revalidate
 
 /image/background-remover
   ! Content-Security-Policy

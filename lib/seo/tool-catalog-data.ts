@@ -301,10 +301,10 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     executionMode: 'local-model',
     releaseWave: 'P1',
     riskTier: 'low',
-    validationStatus: 'backlog-candidate',
+    validationStatus: 'priority-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=ocr-pdf',
+      'English-only on-device OCR adds an invisible rendering-mode-3 text layer while preserving the original visible pages; already-text PDFs are refused before the model loads.',
+    destinationUrl: '/pdf/ocr',
   },
   {
     id: 'pdf.pdf-to-text',
@@ -2279,6 +2279,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     notes:
       'Converts between HEX, RGB, HSL and CMYK, saying plainly that CMYK without a device profile is an approximation, and extracts a dominant palette by median cut.',
     destinationUrl: '/image/colour',
+  },
+  {
+    id: 'image.image-to-text',
+    slug: 'image-image-to-text',
+    name: 'Image to Text',
+    category: 'Image',
+    rank: 79,
+    executionMode: 'local-model',
+    releaseWave: 'P0',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'English-only on-device OCR for PNG, JPEG, WebP and BMP images, with sequential batches, measured confidence and explicit lazy-download disclosure.',
+    destinationUrl: '/image/to-text',
   },
   {
     id: 'video.video-compressor',

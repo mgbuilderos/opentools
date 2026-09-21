@@ -86,4 +86,29 @@ describe('Internal Linking Graph & Topic Clusters', () => {
       expect(pillar?.href).toMatch(/^\/guides\/category\//);
     }
   });
+
+  it('links the OCR dead-end recoveries in both directions', () => {
+    const pdfOcr = getRelatedToolLinks('pdf-ocr-pdf', 4).map(
+      (link) => link.tool.slug,
+    );
+    expect(pdfOcr).toEqual(
+      expect.arrayContaining([
+        'image-image-to-text',
+        'pdf-pdf-to-word',
+        'pdf-pdf-to-excel',
+      ]),
+    );
+
+    expect(
+      getRelatedToolLinks('image-image-to-text', 4).map(
+        (link) => link.tool.slug,
+      ),
+    ).toContain('pdf-ocr-pdf');
+    expect(
+      getRelatedToolLinks('pdf-pdf-to-word', 4).map((link) => link.tool.slug),
+    ).toContain('pdf-ocr-pdf');
+    expect(
+      getRelatedToolLinks('pdf-pdf-to-excel', 4).map((link) => link.tool.slug),
+    ).toContain('pdf-ocr-pdf');
+  });
 });

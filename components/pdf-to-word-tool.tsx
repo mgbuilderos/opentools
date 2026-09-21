@@ -236,7 +236,7 @@ export function PdfToWordTool() {
                     className="mt-3"
                     onClick={() => void openOcr()}
                   >
-                    Open PDF OCR with this file
+                    Read this scan with OCR
                   </Button>
                 ) : null}
               </div>

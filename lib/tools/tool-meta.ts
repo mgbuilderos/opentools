@@ -58,6 +58,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Rewrite a PDF more compactly and re-encode the photos inside it.',
   },
+  'pdf-ocr': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Add an invisible searchable English text layer to a scanned PDF while preserving its visible pages.',
+  },
   'pdf-to-word': {
     version: '0.1.0-canary',
     shortDescription:
@@ -149,6 +154,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
   'image-optimize': {
     version: '0.1.0-canary',
     shortDescription: 'Resize, compress, and convert a static image locally.',
+  },
+  'image-to-text': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Read selectable English text from screenshots, photos and scanned images.',
   },
   'image-exact-size': {
     version: '0.1.0-canary',

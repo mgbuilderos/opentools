@@ -839,7 +839,7 @@ export function PdfToExcelTool() {
                     );
                   }}
                 >
-                  Open PDF OCR with this file
+                  Read this scan with OCR
                 </Button>
                 <Button
                   type="button"

@@ -155,8 +155,9 @@ describe('public canary catalog', () => {
   it('leaves no destination reachable by search alone', () => {
     // The count the owner was shown on 2026-09-20: 677 destinations exist and
     // the sidebar reached 438 of them. Search found the rest; browsing did not.
-    // 679 since the word cloud generator and the ER-diagram-to-SQL converter
-    // were added to answer search demand Google was already sending here.
+    // 679 after the word cloud generator and ER-diagram-to-SQL converter;
+    // 680 after PDF redaction, then 682 after the two dedicated OCR
+    // destinations were registered.
     const everyDestination = publicTools.reduce(
       (total, tool) => total + (tool.searchEntries?.length || 1),
       0,
@@ -171,7 +172,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(680);
+    expect(everyDestination).toBe(682);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -226,6 +227,7 @@ describe('public canary catalog', () => {
       'Merge PDF',
       'Compress PDF',
       'PDF to Word',
+      'OCR PDF',
       'PDF to Excel',
       'Sign and fill PDF',
       'Extract PDF pages',
@@ -239,11 +241,11 @@ describe('public canary catalog', () => {
       'Bates numbering for PDFs',
       'Redact & Black Out PDF',
     ]);
-    expect(pdf).toHaveLength(15);
+    expect(pdf).toHaveLength(16);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(15);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(16);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

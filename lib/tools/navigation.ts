@@ -56,6 +56,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     toolIds: [
       'pdf-merge',
       'pdf-compress',
+      'pdf-ocr',
       'pdf-sign',
       'pdf-extract',
       'images-to-pdf',
@@ -70,9 +71,10 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'images',
     name: 'Image',
     shortDescription: 'Compress, resize, convert, crop, and adjust images.',
-    destinationCount: 12,
+    destinationCount: 13,
     toolIds: [
       'image-optimize',
+      'image-to-text',
       'image-exact-size',
       'image-editor',
       'photo-metadata',

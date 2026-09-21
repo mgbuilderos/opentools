@@ -33,6 +33,7 @@ export const CACHED_GUIDE_SLUGS = [
   'image-image-flipper',
   'image-background-remover',
   'image-exif-remover',
+  'image-image-to-text',
   'audio-audio-trimmer',
   'spreadsheet-and-data-csv-viewer',
   'spreadsheet-and-data-csv-editor',
@@ -65,7 +66,6 @@ export const CACHED_GUIDE_SLUGS = [
   'math-and-units-percentage-calculator',
   'math-and-units-ratio-calculator',
   'finance-and-business-loan-emi-calculator',
-  'finance-and-business-mortgage-calculator',
 ] as const;
 
 export function isCachedGuideSlug(slug: string): boolean {

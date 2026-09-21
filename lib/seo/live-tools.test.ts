@@ -75,6 +75,8 @@ describe('live tool registry', () => {
     expect(isLiveToolUrl('/developer/advanced?tool=jwt-decoder')).toBe(true);
     expect(isLiveToolUrl('/pdf/page-tools?tool=rotate-pdf')).toBe(true);
     expect(isLiveToolUrl('/pdf/merge')).toBe(true);
+    expect(isLiveToolUrl('/pdf/ocr')).toBe(true);
+    expect(isLiveToolUrl('/image/to-text')).toBe(true);
     expect(isLiveToolUrl('/image/exact-size')).toBe(true);
     expect(
       isLiveToolUrl('/creator/workbench?tool=exact-kb-image-compressor'),
@@ -151,6 +153,8 @@ describe('sitemap', () => {
     // Compress PDF is live now that /pdf/compress runs it; the guide that used
     // to point at a control the page tool never had is back in the sitemap.
     expect(guides).toContain('/guides/pdf-compress-pdf');
+    expect(guides).toContain('/guides/pdf-ocr-pdf');
+    expect(guides).toContain('/guides/image-image-to-text');
     expect(guides).not.toContain('/guides/video-video-to-gif');
     // /image/exact-size really writes the file, so its guide is listed.
     expect(guides).toContain('/guides/image-resize-image-to-exact-kb');

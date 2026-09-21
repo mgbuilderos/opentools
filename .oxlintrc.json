@@ -32,7 +32,8 @@
     "next-env.d.ts",
     "components/ui/**",
     "hooks/**",
-    "public/ort/**"
+    "public/ort/**",
+    "public/ocr/**"
   ],
   "rules": {
     "no-array-constructor": "error",

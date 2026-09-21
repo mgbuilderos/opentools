@@ -339,6 +339,38 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-ocr',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'OCR PDF',
+    shortDescription:
+      'Add an invisible searchable English text layer to a scanned PDF while preserving its visible pages.',
+    category: 'PDF',
+    aliases: [
+      'ocr pdf',
+      'searchable pdf',
+      'scan to searchable pdf',
+      'extract text from scanned pdf',
+      'pdf optical character recognition',
+    ],
+    jobs: [
+      'make a scanned pdf searchable',
+      'copy text from a photographed document',
+      'download text from an image-only pdf',
+    ],
+    href: '/pdf/ocr',
+    execution: {
+      mode: 'local-wasm',
+      capabilities: [
+        'pdf.page.render',
+        'ocr.english.recognize',
+        'pdf.text.layer',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-to-excel',
     version: '0.1.0-canary',
     status: 'canary',
@@ -901,6 +933,34 @@ export const publicTools: ToolManifest[] = [
     execution: {
       mode: 'local-js',
       capabilities: ['image.raster.decode', 'image.raster.encode'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'image-to-text',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Image to text',
+    shortDescription:
+      'Read selectable English text from screenshots, photos and scanned images.',
+    category: 'Image',
+    aliases: [
+      'image to text',
+      'photo to text',
+      'screenshot text extractor',
+      'picture ocr',
+      'optical character recognition',
+    ],
+    jobs: [
+      'copy text from a screenshot',
+      'read text from a photographed page',
+      'extract text from several scanned images',
+    ],
+    href: '/image/to-text',
+    execution: {
+      mode: 'local-wasm',
+      capabilities: ['image.raster.decode', 'ocr.english.recognize'],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -1500,6 +1560,7 @@ export const toolGroups: ToolGroup[] = [
     toolIds: [
       'pdf-merge',
       'pdf-compress',
+      'pdf-ocr',
       'pdf-sign',
       'pdf-extract',
       'images-to-pdf',
@@ -1516,6 +1577,7 @@ export const toolGroups: ToolGroup[] = [
     shortDescription: 'Compress, resize, convert, crop, and adjust images.',
     toolIds: [
       'image-optimize',
+      'image-to-text',
       'image-exact-size',
       'image-editor',
       'photo-metadata',
