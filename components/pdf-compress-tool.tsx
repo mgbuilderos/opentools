@@ -174,6 +174,102 @@ function compressedFileName(fileName: string) {
 }
 
 /**
+ * The portal-ceiling controls, lifted out of `PdfCompressTool`.
+ *
+ * Not only for tidiness. `PdfCompressTool` is long, and with this markup
+ * inlined the React compiler stopped being able to tell which of the
+ * component's own functions run during render — it reported the
+ * `performance.now()` inside the worker handler as an impure render-time
+ * call. The panel holds no state and reaches for nothing outside its props,
+ * so moving it out restores that analysis and makes the claim obvious to a
+ * reader too.
+ *
+ * `selectedPreset` is derived here rather than passed, so the id shown as
+ * pressed and the citation shown underneath cannot disagree.
+ */
+function PortalCeilingPanel({
+  presetId,
+  targetKb,
+  targetProblem,
+  disabled,
+  onPreset,
+  onTargetKb,
+}: {
+  presetId: string;
+  targetKb: string;
+  targetProblem: string | null;
+  disabled: boolean;
+  onPreset: (preset: (typeof PORTAL_PRESETS)[number]) => void;
+  onTargetKb: (value: string) => void;
+}) {
+  const selectedPreset = presetId === '' ? null : findPreset(presetId);
+
+  return (
+    <div className="rounded-xl border bg-muted/45 p-4">
+      <fieldset>
+        <legend className="text-sm font-semibold">
+          Fit under a portal ceiling
+        </legend>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          Pick the form you are filing into, or type your own ceiling. The page
+          then re-encodes at descending quality until a measured result really
+          is under it — no estimate, and no silent loop: every attempt is a real
+          rewrite and the count is reported.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {PORTAL_PRESETS.map((preset) => (
+            <Button
+              key={preset.id}
+              type="button"
+              size="sm"
+              variant={preset.id === presetId ? 'secondary' : 'outline'}
+              aria-pressed={preset.id === presetId}
+              disabled={disabled}
+              onClick={() => onPreset(preset)}
+            >
+              {preset.portal} · {formatBytes(preset.limitBytes)}
+            </Button>
+          ))}
+        </div>
+        {selectedPreset ? (
+          <p className="mt-3 text-xs leading-5 text-muted-foreground">
+            {selectedPreset.portal}: {selectedPreset.field}.{' '}
+            {selectedPreset.note} Read from{' '}
+            <a
+              href={selectedPreset.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4"
+            >
+              {sourceHost(selectedPreset.sourceUrl)}
+            </a>{' '}
+            on {selectedPreset.checkedOn}. Portals change limits without
+            announcing it — check yours before you rely on this.
+          </p>
+        ) : null}
+        <label className="mt-3 block max-w-xs text-xs font-semibold">
+          Ceiling (KB)
+          <input
+            type="number"
+            inputMode="numeric"
+            min="0"
+            step="1"
+            placeholder="e.g. 4882"
+            value={targetKb}
+            disabled={disabled}
+            onChange={(event) => onTargetKb(event.target.value)}
+            className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm"
+          />
+        </label>
+        {targetProblem ? (
+          <p className="mt-2 text-xs text-muted-foreground">{targetProblem}</p>
+        ) : null}
+      </fieldset>
+    </div>
+  );
+}
+
+/**
  * `brief` re-points this page at one profession without forking the tool.
  * See the same prop on `pdf-to-excel-tool.tsx` for why it exists.
  */
@@ -330,7 +426,6 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
     setBatchFiles(selected);
   };
 
-  const selectedPreset = presetId === '' ? null : findPreset(presetId);
   const targetBytes =
     targetKb.trim() === '' ? null : kibToBytes(Number(targetKb));
   const targetProblem =
@@ -342,7 +437,7 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
     setTargetKb(String(bytesToKib(preset.limitBytes)));
   };
 
-  const run = async (fitTo: number | null = null) => {
+  const run = async (fitTo: number | null) => {
     if (!source || status === 'processing') return;
     clearResult();
     setError('');
@@ -693,77 +788,18 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
                 </label>
 
                 {source ? (
-                  <div className="rounded-xl border bg-muted/45 p-4">
-                    <fieldset>
-                      <legend className="text-sm font-semibold">
-                        Fit under a portal ceiling
-                      </legend>
-                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                        Pick the form you are filing into, or type your own
-                        ceiling. The page then re-encodes at descending quality
-                        until a measured result really is under it — no
-                        estimate, and no silent loop: every attempt is a real
-                        rewrite and the count is reported.
-                      </p>
-                      <div className="mt-3 flex flex-wrap items-center gap-2">
-                        {PORTAL_PRESETS.map((preset) => (
-                          <Button
-                            key={preset.id}
-                            type="button"
-                            size="sm"
-                            variant={
-                              preset.id === presetId ? 'secondary' : 'outline'
-                            }
-                            aria-pressed={preset.id === presetId}
-                            disabled={status === 'processing'}
-                            onClick={() => applyPreset(preset)}
-                          >
-                            {preset.portal} · {formatBytes(preset.limitBytes)}
-                          </Button>
-                        ))}
-                      </div>
-                      {selectedPreset ? (
-                        <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                          {selectedPreset.portal}: {selectedPreset.field}.{' '}
-                          {selectedPreset.note} Read from{' '}
-                          <a
-                            href={selectedPreset.sourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline underline-offset-4"
-                          >
-                            {sourceHost(selectedPreset.sourceUrl)}
-                          </a>{' '}
-                          on {selectedPreset.checkedOn}. Portals change limits
-                          without announcing it — check yours before you rely on
-                          this.
-                        </p>
-                      ) : null}
-                      <label className="mt-3 block max-w-xs text-xs font-semibold">
-                        Ceiling (KB)
-                        <input
-                          type="number"
-                          inputMode="numeric"
-                          min="0"
-                          step="1"
-                          placeholder="e.g. 4882"
-                          value={targetKb}
-                          disabled={status === 'processing'}
-                          onChange={(event) => {
-                            setPresetId('');
-                            setTargetKb(event.target.value);
-                            clearResult();
-                          }}
-                          className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm"
-                        />
-                      </label>
-                      {targetProblem ? (
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          {targetProblem}
-                        </p>
-                      ) : null}
-                    </fieldset>
-                  </div>
+                  <PortalCeilingPanel
+                    presetId={presetId}
+                    targetKb={targetKb}
+                    targetProblem={targetProblem}
+                    disabled={status === 'processing'}
+                    onPreset={applyPreset}
+                    onTargetKb={(value) => {
+                      setPresetId('');
+                      setTargetKb(value);
+                      clearResult();
+                    }}
+                  />
                 ) : null}
 
                 {source ? (
@@ -794,7 +830,7 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
                     <Button
                       className="h-11 min-w-44"
                       disabled={status === 'processing'}
-                      onClick={() => void run()}
+                      onClick={() => void run(null)}
                     >
                       <Minimize2 aria-hidden="true" />
                       {status === 'processing'

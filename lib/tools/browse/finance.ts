@@ -1,5 +1,7 @@
 // Generated from `toolSubsectionsForGroup` -- see lib/tools/browse.ts for why,
 // and browse.test.ts, which fails if this file drifts from the catalogue.
+//
+// Regenerate with `npx tsx scripts/generate-browse-data.mjs`.
 import type { BrowseSection } from '../browse';
 
 export const SECTIONS: readonly BrowseSection[] = [
@@ -417,9 +419,9 @@ export const SECTIONS: readonly BrowseSection[] = [
       },
       {
         id: 'finance-business-workbench:invoice-generator',
-        name: 'Zero-egress printable invoice maker',
+        name: 'Printable client bill maker',
         description:
-          'Generate professional, print-ready freelance and commercial invoices with itemized taxes, discounts, and payment instructions.',
+          'Lay out a print-ready bill with itemised lines, a tax line and payment instructions. Rupee amounts group in lakh and crore.',
         href: '/finance/workbench?tool=invoice-generator',
         workspaceId: 'finance-business-workbench',
       },

@@ -5,6 +5,7 @@ import {
   LIVE_TOOL_ROUTES,
   routedToolIdsForPrefix,
   routedToolPrefixes,
+  shadowedToolOperations,
 } from './live-tools';
 
 /**
@@ -173,6 +174,30 @@ function collectToolPages(): readonly ToolPage[] {
         nameWords: words(operation.name),
         jobWords: words(operation.description),
       });
+    });
+  }
+
+  /*
+    Pages a hand-written folder answers at an address the `[tool]` route would
+    otherwise have generated. The loop above cannot see them: it reads
+    `routedToolIdsForPrefix`, which removes exactly these ids so the build does
+    not write the page twice. Without this, registering a route as dedicated
+    silently deleted it from the link graph — the page shipped, reachable from
+    the sitemap and from nothing else.
+
+    Named from the operation the page runs, which is the same source the
+    generated page used, so a link says what the reader will find.
+  */
+  for (const { route, operation } of shadowedToolOperations()) {
+    add({
+      href: route,
+      name: operation.name,
+      description: operation.description,
+      category: categories.get(route) ?? prefixOf(route),
+      prefix: prefixOf(route),
+      position: -1,
+      nameWords: words(operation.name),
+      jobWords: words(operation.description),
     });
   }
 

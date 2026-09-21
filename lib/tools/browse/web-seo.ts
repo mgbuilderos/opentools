@@ -1,5 +1,7 @@
 // Generated from `toolSubsectionsForGroup` -- see lib/tools/browse.ts for why,
 // and browse.test.ts, which fails if this file drifts from the catalogue.
+//
+// Regenerate with `npx tsx scripts/generate-browse-data.mjs`.
 import type { BrowseSection } from '../browse';
 
 export const SECTIONS: readonly BrowseSection[] = [

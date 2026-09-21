@@ -335,6 +335,41 @@ export function excludedToolIdsForPrefix(prefix: string): ReadonlySet<string> {
 }
 
 /**
+ * Operations whose page is a hand-written folder instead of the `[tool]`
+ * route's output — id, name and description included.
+ *
+ * `excludedToolIdsForPrefix` exists to stop the BUILD writing two pages for
+ * one address. It was also, accidentally, stopping the LINK GRAPH seeing the
+ * address at all: `related-tools.ts` enumerates `routedToolIdsForPrefix`,
+ * which applies that exclusion, so the moment a route moved into
+ * `DEDICATED_TOOL_ROUTES` it became a page nothing could point at. The page
+ * still exists, still runs that operation and is still in the sitemap; only
+ * the internal links vanished, which is the quiet half of the failure
+ * `tool-page-registration.test.ts` was written to catch.
+ *
+ * So the exclusion stays exactly as it is, and callers that need the page
+ * rather than the build step read it from here. A route excluded for the
+ * other reason — another prefix owns it, see `CROSS_PREFIX_OWNER` — is not
+ * returned, because that page genuinely lives somewhere else.
+ */
+export function shadowedToolOperations(): readonly {
+  route: string;
+  operation: RoutedOperation;
+}[] {
+  const dedicated = new Set<string>(DEDICATED_TOOL_ROUTES);
+  const found = new Map<string, RoutedOperation>();
+  for (const [prefix, operations] of ROUTED_PREFIX_ENTRIES) {
+    for (const operation of operations) {
+      const route = `${prefix}/${operation.id}`;
+      if (dedicated.has(route) && !found.has(route)) {
+        found.set(route, operation);
+      }
+    }
+  }
+  return [...found].map(([route, operation]) => ({ route, operation }));
+}
+
+/**
  * Every prefix that gives its operations a page each, in declaration order.
  *
  * Read by `related-tools.ts`, which needs to walk all of them. Handing out the

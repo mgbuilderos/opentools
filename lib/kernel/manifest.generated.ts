@@ -9162,47 +9162,51 @@ export const KERNEL_MANIFEST = [
   {
     id: 'invoice-generator',
     source: 'finance-business',
-    name: 'Zero-egress printable invoice maker',
+    name: 'Printable client bill maker',
     description:
-      'Generate professional, print-ready freelance and commercial invoices with itemized taxes, discounts, and payment instructions.',
+      'Lay out a print-ready bill with itemised lines, a tax line and payment instructions. Rupee amounts group in lakh and crore.',
     input: 'text',
     params: [
       {
         id: 'sender',
-        label: 'Your business / sender details',
+        label: 'Your firm (one detail per line)',
         type: 'textarea',
         defaultValue:
-          'Acme Studio Inc.\n123 Innovation Way, Suite 400\nSan Francisco, CA 94105\ncontact@acmestudio.example',
+          'M. G. & Associates\nChartered Accountants\n3rd Floor, Suvarna Chambers, F. C. Road\nPune 411004, Maharashtra\nbilling@mgassociates.example',
         serialisable: false,
       },
       {
         id: 'client',
-        label: 'Billed to / client details',
+        label: 'Billed to (one detail per line)',
         type: 'textarea',
         defaultValue:
-          'Globex Tech Corp.\n456 Enterprise Blvd\nNew York, NY 10001\nbilling@globex.example',
+          'Shreeji Textiles Private Limited\nPlot 42, MIDC Industrial Area\nNashik 422010, Maharashtra\naccounts@shreejitextiles.example',
         serialisable: false,
       },
       {
         id: 'invoiceDate',
-        label: 'Invoice date (YYYY-MM-DD)',
+        label: 'Bill date (DD/MM/YYYY)',
         type: 'text',
-        defaultValue: '2026-09-16',
+        defaultValue: '21/09/2026',
         serialisable: false,
       },
       {
         id: 'dueDate',
-        label: 'Payment due date (YYYY-MM-DD)',
+        label: 'Payment due date (DD/MM/YYYY)',
         type: 'text',
-        defaultValue: '2026-09-30',
+        defaultValue: '05/10/2026',
         serialisable: false,
       },
       {
         id: 'currency',
         label: 'Currency',
         type: 'select',
-        defaultValue: 'USD',
+        defaultValue: 'INR',
         options: [
+          {
+            value: 'INR',
+            label: 'INR (₹) — grouped in lakh and crore',
+          },
           {
             value: 'USD',
             label: 'USD ($)',
@@ -9214,10 +9218,6 @@ export const KERNEL_MANIFEST = [
           {
             value: 'GBP',
             label: 'GBP (£)',
-          },
-          {
-            value: 'INR',
-            label: 'INR (₹)',
           },
           {
             value: 'CAD',
@@ -9243,14 +9243,14 @@ export const KERNEL_MANIFEST = [
         label: 'Line items (Description, Quantity, Unit Price)',
         type: 'textarea',
         defaultValue:
-          'UI/UX Design System, 1, 1200\nFrontend Engineering (Hours), 40, 75\nAPI Integration & QA Testing, 10, 80',
+          'Statutory audit for FY 2025-26, 1, 125000\nIncome tax return filing and computation, 1, 25000\nGST monthly return filing (Apr-Sep 2026), 6, 4500\nRepresentation before assessing officer (hours), 8, 3500',
         serialisable: false,
       },
       {
         id: 'taxRate',
-        label: 'Tax / VAT / GST rate (%)',
+        label: 'Tax rate you are charging (%)',
         type: 'number',
-        defaultValue: '10',
+        defaultValue: '18',
         serialisable: true,
       },
       {
@@ -9265,7 +9265,7 @@ export const KERNEL_MANIFEST = [
         label: 'Payment terms & notes',
         type: 'textarea',
         defaultValue:
-          'Payment instructions:\nBank: First Commercial Bank\nAccount: 1234-5678-9012\nUPI: acmestudio@upi\nThank you for your business!',
+          'Payable within 15 days of receipt.\nBank: State Bank of India, F. C. Road branch\nAccount: 3894 2210 7745\nIFSC: SBIN0001234\nUPI: mgassociates@upi\nThis is a bill for professional services. Where a tax invoice under the GST law is required, it will be issued separately with the particulars that law prescribes.',
         serialisable: false,
       },
     ],
