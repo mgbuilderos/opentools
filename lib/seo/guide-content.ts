@@ -2326,6 +2326,42 @@ export const DIFFERENTIATED_GUIDE_SLUGS: ReadonlySet<string> = new Set(
  * workbench tool's catalogue URL may carry `?tool=` while the routed page does
  * not.
  */
+/**
+ * The explainer for a tool by its catalogue id, for pages that know the id
+ * rather than the URL — the dedicated `app/<category>/<tool>/page.tsx` pages,
+ * which pass `currentToolId` and never build a routed path.
+ *
+ * Those were the thinnest pages on the site when measured on 2026-09-21:
+ * `/developer/base64-encoder` and `/developer/base64-decoder` carried 35
+ * visible words, `/developer/uuid-generator` 37, `/math/percentage-calculator`
+ * 45 — and each of them is a tool whose guide survived consolidation, so a
+ * hand-written explainer for it already existed.
+ */
+export function getToolExplainerById(toolId: string): GuideDetail | undefined {
+  // Catalogue ids are namespaced — `developer-and-data.uuid-generator` — while
+  // these pages pass the bare tool id they use for `currentToolId`. Match the
+  // full id first, then the segment after the dot.
+  //
+  // An ambiguous suffix returns nothing rather than guessing. Two categories
+  // can legitimately own a tool of the same name, and showing one tool's
+  // limits on another tool's page would be worse than showing none: the whole
+  // value of this text is that it is true of the thing in front of you.
+  // Three keys, because none alone covers these pages. The catalogue id is
+  // namespaced (`developer-and-data.unix-timestamp-converter`), the page
+  // passes a short id (`unix-timestamp`), and the two do not always agree —
+  // the catalogue calls it a converter and the route does not. The last
+  // segment of `destinationUrl` is what the route actually is, so it matches
+  // when the names have drifted.
+  const matches = LIVE_TOOL_CATALOG.filter(
+    (tool) =>
+      tool.id === toolId ||
+      tool.id.split('.').pop() === toolId ||
+      tool.destinationUrl.split('?')[0]!.split('/').pop() === toolId,
+  );
+  if (matches.length !== 1) return undefined;
+  return GUIDE_DETAILS[matches[0]!.slug];
+}
+
 export function getToolExplainer(toolUrl: string): GuideDetail | undefined {
   const path = toolUrl.split('?')[0];
   const entry = LIVE_TOOL_CATALOG.find(

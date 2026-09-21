@@ -14,6 +14,8 @@ import {
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { ToolExplainer } from '@/components/tool-explainer';
+import { getToolExplainerById } from '@/lib/seo/guide-content';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import {
@@ -105,6 +107,14 @@ function UtilityFrame({
             </span>
           </header>
           {children}
+          {/*
+            The hand-written explainer, when this tool has one. These pages
+            were the thinnest on the site — 35 to 45 visible words — while the
+            writing for several of them already existed behind a guide URL.
+            Rendering it here is the same content serving the page people
+            actually land on.
+          */}
+          <UtilityExplainer id={id} title={title} />
           <footer className="mt-10 border-t py-6 text-xs leading-5 text-muted-foreground">
             Local JavaScript · No client-side analytics · Formal multi-browser
             egress proof pending
@@ -790,4 +800,11 @@ export function FileHashTool() {
       ) : null}
     </UtilityFrame>
   );
+}
+
+/** Renders the hand-written explainer for a dedicated tool page, if any. */
+function UtilityExplainer({ id, title }: { id: string; title: string }) {
+  const detail = getToolExplainerById(id);
+  if (!detail) return null;
+  return <ToolExplainer detail={detail} toolName={title} />;
 }
