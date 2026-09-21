@@ -61,6 +61,7 @@ import type {
   PdfPageGeometry,
   PdfWorkerInput,
 } from './protocol';
+import { stripMetadataInPlace } from './metadata';
 import {
   displayedRectToUserSpace,
   pageGeometry,
@@ -641,12 +642,12 @@ export async function compressPdf(
   }
 
   if (options.removeMetadata) {
-    document.setTitle('');
-    document.setAuthor('');
-    document.setSubject('');
-    document.setKeywords([]);
-    document.setProducer('');
-    document.setCreator('');
+    // This used to blank the six Info fields by hand and stop there, which
+    // left the XMP packet — where Word and Acrobat also record the author and
+    // the title — fully intact. Measured on a file carrying one: the output
+    // still contained the author's name after the option was ticked. See the
+    // header of `./metadata` for the four places a PDF keeps identity.
+    stripMetadataInPlace(document);
   }
 
   let imagesRecompressed = 0;
