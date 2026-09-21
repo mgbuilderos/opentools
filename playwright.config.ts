@@ -34,7 +34,15 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run start -- --port 8788',
+    // `npm run qc:release` builds immediately before the end-to-end gate, so
+    // it sets E2E_SKIP_BUILD and the server starts on those bytes rather than
+    // making them a second time. Run on its own, the suite still builds first:
+    // `e2e/global-setup.ts` refuses to start without a local build to compare
+    // the served app chunk against.
+    command:
+      process.env.E2E_SKIP_BUILD === '1'
+        ? 'npm run start -- --port 8788'
+        : 'npm run build && npm run start -- --port 8788',
     url: 'http://localhost:8788',
     reuseExistingServer: !process.env.CI,
     timeout: 300000,

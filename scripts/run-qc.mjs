@@ -65,7 +65,7 @@ if (existsSync(path.join(blueprintRoot, 'scripts/verify_blueprint.mjs'))) {
   );
 }
 
-if (releaseMode)
+if (releaseMode) {
   gates.splice(5, 0, {
     name: 'DEPENDENCY ADVISORIES',
     command: 'npm',
@@ -73,12 +73,36 @@ if (releaseMode)
     cwd: appRoot,
   });
 
+  // End-to-end runs in release mode only, and it runs *after* BUILD so it
+  // exercises the bytes this pass just produced.
+  //
+  // Why it exists: the eight everyday gates never open a page. On 2026-09-21
+  // the file-upload path was broken in seven specs — files handed to a
+  // server-rendered input before React hydrated went nowhere — and every one
+  // of those gates stayed green while it reached `main`. A page that cannot
+  // accept a file is not something format, lint, types or a unit suite can
+  // see. Anything user-facing needs a browser to have opened it.
+  //
+  // `E2E_SKIP_BUILD` stops Playwright's `webServer` rebuilding what BUILD has
+  // already made a moment earlier. `e2e/global-setup.ts` still refuses to run
+  // against a server whose app chunk is not this worktree's, so a stray
+  // preview on 8788 fails the gate loudly instead of passing it silently.
+  const afterBuild = gates.findIndex((gate) => gate.name === 'BUILD') + 1;
+  gates.splice(afterBuild, 0, {
+    name: 'END-TO-END (BROWSER)',
+    command: 'npx',
+    args: ['playwright', 'test'],
+    cwd: appRoot,
+    env: { ...process.env, E2E_SKIP_BUILD: '1' },
+  });
+}
+
 const started = performance.now();
 for (const gate of gates) {
   process.stdout.write(`\n[QC] ${gate.name}\n`);
   const result = spawnSync(gate.command, gate.args, {
     cwd: gate.cwd,
-    env: process.env,
+    env: gate.env ?? process.env,
     stdio: 'inherit',
   });
 
