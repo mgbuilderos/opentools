@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { FileWorkbenchTool } from '@/components/file-workbench-tool';
 import { FILE_WORKBENCH_OPERATIONS } from '@/lib/tools/file-workbench';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -61,5 +62,11 @@ export default async function Page({
 }) {
   const { tool } = await params;
   if (!OPERATIONS.some((operation) => operation.id === tool)) return null;
-  return <FileWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />;
+  return (
+    <FileWorkbenchTool
+      initialOperationId={tool}
+      routedBasePath={BASE}
+      relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
+    />
+  );
 }

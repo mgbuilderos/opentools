@@ -4,6 +4,7 @@ import { TextWorkbenchTool } from '@/components/text-workbench-tool';
 import { TEXT_OPERATIONS } from '@/lib/tools/text-workbench';
 import { WritingWorkbenchTool } from '@/components/writing-workbench-tool';
 import { WRITING_OPERATIONS } from '@/lib/tools/writing-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -71,14 +72,23 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (TEXT_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
-      <TextWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />
+      <TextWorkbenchTool
+        initialOperationId={tool}
+        routedBasePath={BASE}
+        relatedTools={related}
+      />
     );
   }
   if (WRITING_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
-      <WritingWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />
+      <WritingWorkbenchTool
+        initialOperationId={tool}
+        routedBasePath={BASE}
+        relatedTools={related}
+      />
     );
   }
   return null;

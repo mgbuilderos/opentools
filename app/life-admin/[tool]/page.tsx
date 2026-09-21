@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { LifeAdminWorkbenchTool } from '@/components/life-admin-workbench-tool';
 import { LIFE_ADMIN_OPERATIONS } from '@/lib/tools/life-admin-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -69,9 +70,14 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (LIFE_ADMIN_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
-      <LifeAdminWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />
+      <LifeAdminWorkbenchTool
+        initialOperationId={tool}
+        routedBasePath={BASE}
+        relatedTools={related}
+      />
     );
   }
   return null;

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { QrBarcodeWorkbenchTool } from '@/components/qr-barcode-workbench-tool';
 import { QR_BARCODE_OPERATIONS } from '@/lib/tools/qr-barcode-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -69,9 +70,14 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (QR_BARCODE_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
-      <QrBarcodeWorkbenchTool initialOperationId={tool} routedBasePath={BASE} />
+      <QrBarcodeWorkbenchTool
+        initialOperationId={tool}
+        routedBasePath={BASE}
+        relatedTools={related}
+      />
     );
   }
   return null;

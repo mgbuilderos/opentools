@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { MathWorkbenchTool } from '@/components/math-workbench-tool';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { MATH_OPERATIONS } from '@/lib/tools/math-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -64,5 +65,6 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
-  return <MathWorkbenchTool initialOperationId={tool} />;
+  const related = relatedToolsFor(`/math/${tool}`);
+  return <MathWorkbenchTool initialOperationId={tool} relatedTools={related} />;
 }

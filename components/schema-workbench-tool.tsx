@@ -17,8 +17,10 @@ import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 
 interface WorkbenchField {
   id: string;
@@ -68,6 +70,16 @@ interface SchemaWorkbenchToolProps {
    * behaviour below is exactly what it was.
    */
   routedBasePath?: string;
+  /**
+   * The tools to offer at the end of a per-tool page, worked out during the
+   * build by `lib/seo/related-tools.ts` and passed in as plain data.
+   *
+   * Computed in the route file rather than here because reaching the catalogue
+   * means importing all eighteen operation modules, and this component runs in
+   * the browser: doing it here would put the whole catalogue in the bundle of
+   * every tool page. `lib/seo/live-tool-routes.ts` exists for the same reason.
+   */
+  relatedTools?: readonly RelatedTool[];
   run: (
     operationId: string,
     values: Record<string, string>,
@@ -97,6 +109,7 @@ export function SchemaWorkbenchTool({
   operations,
   initialOperationId,
   routedBasePath,
+  relatedTools = [],
   run,
 }: SchemaWorkbenchToolProps) {
   const initial =
@@ -649,6 +662,8 @@ export function SchemaWorkbenchTool({
               </div>
             </section>
           ) : null}
+
+          <RelatedTools tools={relatedTools} />
 
           <footer className="mt-7 border-t py-5 text-xs leading-5 text-muted-foreground">
             Local JavaScript · Inputs remain in this browser tab · Tool-specific

@@ -1,6 +1,7 @@
 'use client';
 
 import { SchemaWorkbenchTool } from '@/components/schema-workbench-tool';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import { runWebOperation, WEB_OPERATIONS } from '@/lib/tools/web-workbench';
 
 /*
@@ -13,9 +14,12 @@ import { runWebOperation, WEB_OPERATIONS } from '@/lib/tools/web-workbench';
 export function WebWorkbenchTool({
   initialOperationId = 'meta-tag-generator',
   routedBasePath,
+  relatedTools,
 }: {
   initialOperationId?: string;
   routedBasePath?: string;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 } = {}) {
   return (
     <SchemaWorkbenchTool
@@ -29,6 +33,7 @@ export function WebWorkbenchTool({
       operations={WEB_OPERATIONS}
       initialOperationId={initialOperationId}
       routedBasePath={routedBasePath}
+      relatedTools={relatedTools}
       run={runWebOperation}
     />
   );

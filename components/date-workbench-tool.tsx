@@ -1,6 +1,7 @@
 'use client';
 
 import { SchemaWorkbenchTool } from '@/components/schema-workbench-tool';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import { DATE_OPERATIONS, runDateOperation } from '@/lib/tools/date-workbench';
 
 /*
@@ -13,9 +14,12 @@ import { DATE_OPERATIONS, runDateOperation } from '@/lib/tools/date-workbench';
 export function DateWorkbenchTool({
   initialOperationId = 'add-days-to-date',
   routedBasePath,
+  relatedTools,
 }: {
   initialOperationId?: string;
   routedBasePath?: string;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 } = {}) {
   return (
     <SchemaWorkbenchTool
@@ -29,6 +33,7 @@ export function DateWorkbenchTool({
       operations={DATE_OPERATIONS}
       initialOperationId={initialOperationId}
       routedBasePath={routedBasePath}
+      relatedTools={relatedTools}
       run={runDateOperation}
     />
   );

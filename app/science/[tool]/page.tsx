@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { ScienceEducationWorkbenchTool } from '@/components/science-education-workbench-tool';
 import { SCIENCE_OPERATIONS } from '@/lib/tools/science-education-workbench';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 
 export const revalidate = 86400;
 
@@ -67,11 +68,13 @@ export default async function Page({
   params: Promise<{ tool: string }>;
 }) {
   const { tool } = await params;
+  const related = relatedToolsFor(`${BASE}/${tool}`);
   if (SCIENCE_OPERATIONS.some((operation) => operation.id === tool)) {
     return (
       <ScienceEducationWorkbenchTool
         initialOperationId={tool}
         routedBasePath={BASE}
+        relatedTools={related}
       />
     );
   }

@@ -16,6 +16,7 @@ import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
+import { CONVERSION_PAIRS } from './conversion-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
@@ -139,30 +140,71 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>([
  * the registry, so the registry can never promise a page the build skipped.
  * Only `PDF_PAGE_OPERATIONS` is listed for `/pdf`, not the 66 catalogue
  * entries aimed at that URL: see the note on `PDF_PAGE_TOOL_OPERATION_IDS`.
+ *
+ * `/convert` is the same idea taken one level down. A converter is not one
+ * search intent: "cm to inches" and "km to miles" are separate questions that
+ * the distance converter's single page answered with a single title. Its
+ * "operations" are the from→to pairs the converters themselves declare, one
+ * page each, so the same registration, the same sitemap and the same tests
+ * cover them with nothing new to remember. See `conversion-pairs.ts`.
  */
-const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
-  new Map<string, readonly { id: string }[]>([
-    ['/creator', CREATOR_OPERATIONS],
-    ['/data', SPREADSHEET_OPERATIONS],
-    ['/date', DATE_OPERATIONS],
-    [
-      '/developer',
-      [...ADVANCED_DEVELOPER_OPERATIONS, ...DEVELOPER_DATA_OPERATIONS],
-    ],
-    ['/documents', DOCUMENT_OPERATIONS],
-    ['/file', FILE_WORKBENCH_OPERATIONS],
-    ['/finance', FINANCE_OPERATIONS],
-    ['/image', IMAGE_EDITOR_OPERATIONS],
-    ['/life-admin', LIFE_ADMIN_OPERATIONS],
-    ['/math', MATH_OPERATIONS],
-    ['/pdf', PDF_PAGE_OPERATIONS],
-    ['/productivity', PRODUCTIVITY_OPERATIONS],
-    ['/qr', QR_BARCODE_OPERATIONS],
-    ['/science', SCIENCE_OPERATIONS],
-    ['/subtitles', SUBTITLE_OPERATIONS],
-    ['/text', [...TEXT_OPERATIONS, ...WRITING_OPERATIONS]],
-    ['/web', WEB_OPERATIONS],
-  ]);
+/**
+ * What an operation has to expose to be given a page of its own: an id for the
+ * address, and the name and description that become the page's title, heading
+ * and meta description. Every workbench operation already carries all three —
+ * naming them here is what lets a caller build a link to the page without
+ * re-importing the eighteen operation modules and re-deriving which prefix
+ * each one belongs to.
+ */
+export interface RoutedOperation {
+  id: string;
+  name: string;
+  description: string;
+}
+
+// Annotated rather than inferred, and lifted out of the `new Map(...)` call:
+// each operation list has its own element type, so TypeScript widens the tuple
+// array to a union of them before it ever considers the Map's declared type.
+// An annotated const makes the literal contextually typed instead.
+const ROUTED_PREFIX_ENTRIES: readonly (readonly [
+  string,
+  readonly RoutedOperation[],
+])[] = [
+  // A conversion pair carries `title`, not `name`/`description`. Adapted here
+  // rather than by loosening `RoutedOperation`, which related-tools relies on
+  // to build each link's label and blurb.
+  [
+    '/convert',
+    CONVERSION_PAIRS.map((pair) => ({
+      id: pair.id,
+      name: pair.title,
+      description: `Convert ${pair.fromLabel} to ${pair.toLabel} in your browser.`,
+    })),
+  ],
+  ['/creator', CREATOR_OPERATIONS],
+  ['/data', SPREADSHEET_OPERATIONS],
+  ['/date', DATE_OPERATIONS],
+  [
+    '/developer',
+    [...ADVANCED_DEVELOPER_OPERATIONS, ...DEVELOPER_DATA_OPERATIONS],
+  ],
+  ['/documents', DOCUMENT_OPERATIONS],
+  ['/file', FILE_WORKBENCH_OPERATIONS],
+  ['/finance', FINANCE_OPERATIONS],
+  ['/image', IMAGE_EDITOR_OPERATIONS],
+  ['/life-admin', LIFE_ADMIN_OPERATIONS],
+  ['/math', MATH_OPERATIONS],
+  ['/pdf', PDF_PAGE_OPERATIONS],
+  ['/productivity', PRODUCTIVITY_OPERATIONS],
+  ['/qr', QR_BARCODE_OPERATIONS],
+  ['/science', SCIENCE_OPERATIONS],
+  ['/subtitles', SUBTITLE_OPERATIONS],
+  ['/text', [...TEXT_OPERATIONS, ...WRITING_OPERATIONS]],
+  ['/web', WEB_OPERATIONS],
+];
+
+const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly RoutedOperation[]> =
+  new Map(ROUTED_PREFIX_ENTRIES);
 
 /**
  * A literal folder always wins over a dynamic segment, so an id that already
@@ -219,10 +261,6 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
 ];
 
 /** Every prefix that has an `app/<prefix>/[tool]/page.tsx`. */
-export function routedToolPrefixes(): readonly string[] {
-  return [...ROUTED_TOOL_PREFIXES.keys()];
-}
-
 /**
  * The operations a `[tool]` route actually generates a page for.
  *
@@ -276,6 +314,18 @@ export function excludedToolIdsForPrefix(prefix: string): ReadonlySet<string> {
     if (owner !== prefix) excluded.add(id);
   }
   return excluded;
+}
+
+/**
+ * Every prefix that gives its operations a page each, in declaration order.
+ *
+ * Read by `related-tools.ts`, which needs to walk all of them. Handing out the
+ * keys rather than the map keeps the one source of truth here: a caller that
+ * kept its own prefix list would silently stop covering a workbench the day a
+ * fifteenth one is added.
+ */
+export function routedToolPrefixes(): readonly string[] {
+  return [...ROUTED_TOOL_PREFIXES.keys()];
 }
 
 /** Operation ids the route runs, or undefined for a single-tool route. */

@@ -19,8 +19,10 @@ import NextImage from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import type { RelatedTool } from '@/lib/seo/related-tools';
 import type { BackgroundRemovalResponse } from '@/lib/tools/background-removal/protocol';
 import { toolMeta } from '@/lib/tools/tool-meta';
 import {
@@ -170,9 +172,12 @@ const EDITOR_TASKS: ReadonlyMap<string, { name: string; description: string }> =
 export function ImageEditorTool({
   defaultRemoveBackground = false,
   initialOperationId,
+  relatedTools = [],
 }: {
   defaultRemoveBackground?: boolean;
   initialOperationId?: string;
+  /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
+  relatedTools?: readonly RelatedTool[];
 }) {
   const task = initialOperationId
     ? EDITOR_TASKS.get(initialOperationId)
@@ -957,6 +962,8 @@ export function ImageEditorTool({
               </div>
             </section>
           ) : null}
+          <RelatedTools tools={relatedTools} />
+
           <footer className="mt-10 border-t py-6 text-xs text-muted-foreground">
             Candidate {manifest.version} · Browser Canvas · Static raster output
           </footer>
