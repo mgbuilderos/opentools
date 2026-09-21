@@ -1,0 +1,15 @@
+{
+  "target": "https://getopentools.com",
+  "verifiedAt": "2026-09-21T05:44:27.935Z",
+  "engines": ["chromium", "webkit"],
+  "checks": [
+    "a real file goes through a real tool without leaving the device",
+    "every attempt to send data out is refused",
+    "the served policy forbids network connections"
+  ],
+  "assertionsRun": 6,
+  "findings": 0,
+  "durationMs": 13235,
+  "reproduce": "EGRESS_BASE_URL=https://getopentools.com npx playwright test --config=playwright.production.config.ts",
+  "source": "e2e/egress-proof.spec.ts"
+}

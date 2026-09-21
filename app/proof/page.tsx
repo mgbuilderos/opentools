@@ -7,6 +7,8 @@ import {
   TerminalSquare,
 } from 'lucide-react';
 
+import egressReceipt from '@/lib/seo/egress-receipt.json';
+
 export const revalidate = 86400;
 
 /*
@@ -34,7 +36,29 @@ export const revalidate = 86400;
   is what they can hold us to. The commit each run executed against is recorded
   in docs/agent_ledger.jsonl.
 */
-const TESTED_ON = '20 September 2026';
+/*
+  The date is read from the receipt, not typed here.
+
+  It was a literal until this change, and it had already gone stale once —
+  `914a8d1 fix(proof): date the run to this release, not to a stale build`.
+  A hand-typed date on an evidence page is the claim again, one step removed:
+  the page would keep asserting a run that no longer matched the deployed
+  build, and nobody would notice until someone thought to check.
+
+  `lib/seo/egress-receipt.json` is written only by `scripts/egress-receipt.mjs`,
+  which runs the protocol in `e2e/egress-proof.spec.ts` against the DEPLOYED
+  site and exits non-zero without writing if anything fails. So this string can
+  only ever name a run that actually passed, and re-dating the page is now the
+  same action as re-running the proof rather than a separate thing to remember.
+
+  Importing JSON is safe under `local-source-policy.test.ts`: that guard scans
+  .ts and .tsx sources for literal remote URLs, and the receipt's target is a
+  runtime value in a .json file, not a literal in this one.
+*/
+const TESTED_ON = new Date(egressReceipt.verifiedAt).toLocaleDateString(
+  'en-GB',
+  { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' },
+);
 
 /*
   `lib/tools/local-source-policy.test.ts` scans every file under app/ and
