@@ -25,10 +25,12 @@
  *
  * Exit code 0 means go, 1 means wait. Safe to put in front of a deploy command.
  */
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const ACCOUNT = '00f21e5724f9ebf7b1ab0cb42ae76b1e';
 const DAILY_ALLOWANCE = 1000;
@@ -343,6 +345,11 @@ async function main() {
         }`
       : '  WARN no build to measure — falling back to the old flat estimate',
   );
+  // The deploy lock, reported here as well as enforced in `npm run deploy`.
+  // Seeing it before the expensive checks is the point: on 2026-09-21 two
+  // sessions held the old markdown lock within an hour and neither found out
+  // until after a deploy had already gone out.
+  console.log(`  ${lockLine()}`);
   console.log(
     `  ${guards.staleDist ? 'STOP' : 'ok  '} dist/ ${
       guards.staleDist
@@ -470,3 +477,34 @@ async function main() {
 }
 
 await main();
+
+/**
+ * One line describing who holds the deploy lock, read straight from the shared
+ * lock file so this cannot disagree with what `deploy` enforces.
+ */
+function lockLine() {
+  try {
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    let root = here;
+    for (let up = 0; up < 8; up += 1) {
+      if (existsSync(path.join(root, 'AGENT_BOARD.md'))) break;
+      root = path.dirname(root);
+    }
+    const lockPath = path.join(root, '.deploy-lock.json');
+    if (!existsSync(lockPath)) {
+      return 'WARN deploy lock is FREE — take it before you deploy (npm run lock:acquire)';
+    }
+    const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
+    const tokenPath = path.join(here, '..', '.deploy-lock-token');
+    const mine =
+      existsSync(tokenPath) &&
+      createHash('sha256')
+        .update(readFileSync(tokenPath, 'utf8').trim())
+        .digest('hex') === lock.tokenHash;
+    return mine
+      ? `ok   deploy lock held by you (${lock.owner})`
+      : `STOP deploy lock held by ${lock.owner} since ${lock.takenAt} — not you`;
+  } catch {
+    return 'WARN deploy lock state could not be read';
+  }
+}

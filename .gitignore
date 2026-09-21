@@ -48,3 +48,6 @@ next-env.d.ts
 
 # forensic audit output (regenerate with playwright.audit.config.ts)
 /audit-out/
+
+# deploy lock capability token — proves this worktree holds the lock
+.deploy-lock-token
