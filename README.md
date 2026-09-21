@@ -60,6 +60,15 @@ Logs. It records:
   referrer URL is not stored.
 - A timestamp.
 
+**Cloudflare's own error reports.** Separately from the event above, Cloudflare
+sends every site it serves a `NEL` / `Report-To` header, so a browser that
+fails to reach the site may report that failure (the URL, the error type and
+timing) to `a.nel.cloudflare.com`. `success_fraction` is `0.0`, so successful
+requests are never reported, and no file, input or result is ever included.
+This is added at Cloudflare's edge, not by this app, so it cannot be removed in
+`proxy.ts` or `public/_headers`; it is switched off per zone in the Cloudflare
+dashboard, or with the zone `nel` setting in Cloudflare's API.
+
 This event does not include your IP address, city, region, raw referrer,
 cookies, files, file names, pasted text, or results — tools run in the browser,
 so the server never receives them. Logs are retained under Cloudflare's Workers Logs retention.
@@ -67,7 +76,9 @@ Cloudflare may also record standard request metadata for its platform logs.
 
 ## Core Tool Suite
 
-42 live tool routes, covering 553 catalogued tools. Every tool shows a
+691 live tool routes, 679 of them browsable from the 17 sidebar groups. Those
+counts come from generated data, and `navigation.test.ts` fails the build when
+they drift. Every tool shows a
 completion receipt with measured duration, output facts, and an explicit
 privacy boundary.
 
