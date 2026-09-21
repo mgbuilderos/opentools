@@ -206,8 +206,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'life-admin',
     name: 'India & life admin',
     shortDescription: 'Indian paperwork, identifiers, and household admin.',
-    destinationCount: 26,
-    toolIds: ['life-admin-workbench'],
+    destinationCount: 27,
+    toolIds: ['aadhaar-pan-masker', 'life-admin-workbench'],
   },
 ];
 

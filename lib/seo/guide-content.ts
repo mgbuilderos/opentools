@@ -2264,6 +2264,32 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
         question: 'Can I leave the canonical blank?',
         answer:
           'No. All four fields are required, and an empty canonical stops the run with "Canonical URL must be an absolute HTTP(S) URL." If a page genuinely should not declare a canonical, delete that one line from the generated block before pasting it; the other three tags stand on their own.',
+  // lib/tools/id-mask/mask.ts, recheck.ts and e2e/aadhaar-pan-masker.spec.ts
+  'india-and-life-admin-mask-aadhaar-and-pan-numbers': {
+    directAnswer:
+      'To mask Aadhaar and PAN numbers without uploading anything, open the OpenTools masker, paste your text or open a text file, and run it. JavaScript in your browser hides the first 8 digits of each Aadhaar number and the first 6 characters of each PAN, keeping the spacing you wrote. It reads text only, not images, scans or PDFs.',
+    leadParagraph:
+      'The masker finds and masks Aadhaar and PAN numbers anywhere in text, on your own device. Aadhaar numbers are masked the way a masked Aadhaar is: the first 8 digits are hidden and the last 4 stay. PAN numbers show their last 4 characters by default, or none. After masking, a second and deliberately looser check reads the result, and if anything still looks like an Aadhaar or PAN number the page says which line and column before you can copy or download it.',
+    faqs: [
+      {
+        question: 'Does it mask a scanned Aadhaar card, a photo or a PDF?',
+        answer:
+          'No. This tool reads text only. It does not read images, scans or PDFs, so a photo or scan of a card is not masked. It opens .txt, .csv, .tsv, .json, .md and .log files, or text you paste.',
+      },
+      {
+        question: 'What if the masker misses a number?',
+        answer:
+          'After masking, a separate and deliberately looser check reads the result. If anything still looks like an Aadhaar or PAN number, the page shows its line and column and keeps copy and download switched off until you confirm you have checked it. Numbers of 13 or more digits, such as card numbers and 16-digit Virtual IDs, are not masked; they are counted so you can check them.',
+      },
+      {
+        question: 'What about a number with a typo in it?',
+        answer:
+          'It is masked as well. A number of the right shape is hidden whether or not it passes the Verhoeff checksum every Aadhaar number carries, and the report counts the two separately, so a mistyped number is never left in the open.',
+      },
+      {
+        question: 'Is this connected to UIDAI or the Income Tax Department?',
+        answer:
+          'No. It is an independent tool. It is not made, approved or endorsed by UIDAI or the Income Tax Department.',
       },
     ],
   },

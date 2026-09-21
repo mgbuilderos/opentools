@@ -31,11 +31,19 @@ describe('life-admin workbench', () => {
   });
 
   it('masks identifiers without validating ownership', () => {
+    // The Aadhaar and PAN cases run on lib/tools/id-mask/mask.ts, the same
+    // engine as the whole-text masker, so they keep the layout the user typed
+    // rather than imposing one, and they agree with it digit for digit.
     expect(
       runLifeAdminOperation('aadhaar-masking-tool', {
-        input: '1234 5678 9012',
+        input: '2345 6789 0124',
       }),
-    ).toBe('xxxx-xxxx-9012');
+    ).toBe('XXXX XXXX 0124');
+    expect(
+      runLifeAdminOperation('aadhaar-masking-tool', {
+        input: '2345-6789-0124',
+      }),
+    ).toBe('XXXX-XXXX-0124');
     expect(
       runLifeAdminOperation('pan-masking-tool', { input: 'abcde1234f' }),
     ).toBe('XXXXXX234F');
@@ -47,6 +55,16 @@ describe('life-admin workbench', () => {
     expect(() =>
       runLifeAdminOperation('aadhaar-masking-tool', { input: 'abcd56789012' }),
     ).toThrow(/digits, spaces, and hyphens/u);
+    // No Aadhaar number starts with 0 or 1, and the scanner will not mask one
+    // either; saying so is better than masking twelve digits that are not one.
+    expect(() =>
+      runLifeAdminOperation('aadhaar-masking-tool', {
+        input: '1234 5678 9012',
+      }),
+    ).toThrow(/never begins with 0 or 1/u);
+    expect(() =>
+      runLifeAdminOperation('pan-masking-tool', { input: '1234567890' }),
+    ).toThrow(/five letters, then four digits/u);
   });
 
   it('checks formats conservatively and preserves invalid evidence', () => {

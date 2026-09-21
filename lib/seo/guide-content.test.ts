@@ -75,6 +75,22 @@ describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
     expect(graph[3]['@type']).toBe('BreadcrumbList');
   });
 
+  it('states the text-only limit and no affiliation on the masker guide', () => {
+    const guide = getGuideBySlug(
+      'india-and-life-admin-mask-aadhaar-and-pan-numbers',
+    );
+    expect(guide?.tool.destinationUrl).toBe('/life-admin/aadhaar-pan-masker');
+    expect(guide?.cspHeader).toContain("connect-src 'none'");
+    expect(guide?.directAnswer).toContain('JavaScript in your browser');
+    expect(guide?.directAnswer).toContain('not images, scans or PDFs');
+    expect(guide?.directAnswer).not.toMatch(/WebAssembly/u);
+    const answers = guide?.faqs.map((faq) => faq.answer).join(' ') ?? '';
+    expect(answers).toContain('It does not read images, scans or PDFs');
+    expect(answers).toContain(
+      'not made, approved or endorsed by UIDAI or the Income Tax Department',
+    );
+  });
+
   it('returns undefined gracefully for non-existent guide slugs', () => {
     expect(getGuideBySlug('non-existent-tool-slug-xyz')).toBeUndefined();
   });

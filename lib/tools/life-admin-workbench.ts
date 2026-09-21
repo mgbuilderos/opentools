@@ -1,3 +1,5 @@
+import { maskAadhaarValue, maskPanValue } from './id-mask/mask';
+
 export interface LifeAdminField {
   id: string;
   label: string;
@@ -61,18 +63,20 @@ export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
   {
     id: 'aadhaar-masking-tool',
     name: 'Aadhaar masking tool',
-    description: 'Hide the first eight digits and retain only the last four.',
-    fields: [text('input', '12-digit Aadhaar number', '1234 5678 9012')],
+    description:
+      'Hide the first eight digits of one number and retain only the last four.',
+    fields: [text('input', '12-digit Aadhaar number', '2345 6789 0124')],
     notice:
-      'Masking follows UIDAI’s displayed masked-Aadhaar pattern. This does not validate, authenticate, store, or retrieve Aadhaar data.',
+      'Masking follows UIDAI’s displayed masked-Aadhaar pattern. This does not validate, authenticate, store, or retrieve Aadhaar data. For a whole document or paste, use the Aadhaar and PAN masker.',
   },
   {
     id: 'pan-masking-tool',
     name: 'PAN masking tool',
-    description: 'Hide the first six characters of a ten-character PAN value.',
+    description:
+      'Hide the first six characters of one ten-character PAN value.',
     fields: [text('input', 'PAN value', 'ABCDE1234F')],
     notice:
-      'Privacy transform only. It does not validate PAN structure, ownership, status, or tax records.',
+      'Privacy transform only. It does not validate PAN structure, ownership, status, or tax records. For a whole document or paste, use the Aadhaar and PAN masker.',
   },
   {
     id: 'bank-account-masking-tool',
@@ -566,25 +570,16 @@ export function runLifeAdminOperation(
   values: Record<string, string>,
 ): string {
   switch (operationId) {
-    case 'aadhaar-masking-tool': {
-      const input = required(values, 'input', 'Aadhaar number');
-      if (!/^[\d\s-]+$/u.test(input))
-        throw new Error(
-          'Aadhaar masking accepts digits, spaces, and hyphens only.',
-        );
-      const normalized = digits(input);
-      if (normalized.length !== 12)
-        throw new Error('Aadhaar input must contain exactly 12 digits.');
-      return `xxxx-xxxx-${normalized.slice(-4)}`;
-    }
-    case 'pan-masking-tool': {
-      const normalized = required(values, 'input', 'PAN value')
-        .replace(/\s+/gu, '')
-        .toUpperCase();
-      if (!/^[A-Z0-9]{10}$/u.test(normalized))
-        throw new Error('PAN masking expects exactly 10 letters/numbers.');
-      return `${'X'.repeat(6)}${normalized.slice(-4)}`;
-    }
+    // Both of these masked their one value with a rule of their own until
+    // 2026-09-21. They now call the same engine as the whole-text masker at
+    // /life-admin/aadhaar-pan-masker, so "what is an Aadhaar number" and "how
+    // much of it is hidden" are answered in one file rather than three.
+    case 'aadhaar-masking-tool':
+      return maskAadhaarValue(
+        required(values, 'input', 'Aadhaar number').trim(),
+      );
+    case 'pan-masking-tool':
+      return maskPanValue(required(values, 'input', 'PAN value').trim());
     case 'bank-account-masking-tool': {
       const normalized = required(values, 'input', 'account number').replace(
         /[\s-]+/gu,

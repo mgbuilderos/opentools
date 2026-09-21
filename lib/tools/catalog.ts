@@ -1514,6 +1514,37 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'aadhaar-pan-masker',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Aadhaar and PAN masker',
+    shortDescription:
+      'Find and mask every Aadhaar and PAN number in pasted text or a text file.',
+    category: 'Life Admin',
+    aliases: [
+      'mask aadhaar',
+      'aadhaar masking',
+      'masked aadhaar',
+      'mask pan',
+      'pan masking',
+      'redact aadhaar',
+      'hide aadhaar number',
+      'mask aadhaar in a document',
+    ],
+    jobs: [
+      'mask aadhaar numbers in a csv',
+      'hide pan numbers in text before sharing',
+      'redact identity numbers from a log file',
+    ],
+    href: '/life-admin/aadhaar-pan-masker',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['text.identifier.mask', 'text.identifier.recheck'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'life-admin-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1730,7 +1761,7 @@ export const toolGroups: ToolGroup[] = [
     id: 'life-admin',
     name: 'India & life admin',
     shortDescription: 'Indian paperwork, identifiers, and household admin.',
-    toolIds: ['life-admin-workbench'],
+    toolIds: ['aadhaar-pan-masker', 'life-admin-workbench'],
   },
 ];
 

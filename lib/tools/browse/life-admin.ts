@@ -9,10 +9,18 @@ export const SECTIONS: readonly BrowseSection[] = [
     description: 'Indian paperwork, identifiers, and household admin.',
     destinations: [
       {
+        id: 'aadhaar-pan-masker',
+        name: 'Aadhaar and PAN masker',
+        description:
+          'Find and mask every Aadhaar and PAN number in pasted text or a text file.',
+        href: '/life-admin/aadhaar-pan-masker',
+        workspaceId: 'aadhaar-pan-masker',
+      },
+      {
         id: 'life-admin-workbench:aadhaar-masking-tool',
         name: 'Aadhaar masking tool',
         description:
-          'Hide the first eight digits and retain only the last four.',
+          'Hide the first eight digits of one number and retain only the last four.',
         href: '/life-admin/workbench?tool=aadhaar-masking-tool',
         workspaceId: 'life-admin-workbench',
       },
@@ -20,7 +28,7 @@ export const SECTIONS: readonly BrowseSection[] = [
         id: 'life-admin-workbench:pan-masking-tool',
         name: 'PAN masking tool',
         description:
-          'Hide the first six characters of a ten-character PAN value.',
+          'Hide the first six characters of one ten-character PAN value.',
         href: '/life-admin/workbench?tool=pan-masking-tool',
         workspaceId: 'life-admin-workbench',
       },
@@ -207,4 +215,4 @@ export const SECTIONS: readonly BrowseSection[] = [
       },
     ],
   },
-];
+] as const;

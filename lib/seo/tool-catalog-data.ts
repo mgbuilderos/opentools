@@ -12420,6 +12420,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     destinationUrl: '/science/statistics-distribution-viewer',
   },
   {
+    id: 'india-and-life-admin.mask-aadhaar-and-pan-numbers',
+    slug: 'india-and-life-admin-mask-aadhaar-and-pan-numbers',
+    name: 'Mask Aadhaar and PAN Numbers',
+    category: 'India and Life Admin',
+    rank: 0,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'medium',
+    validationStatus: 'backlog-candidate',
+    notes:
+      'Text only. Masks Aadhaar (first 8 digits) and PAN numbers anywhere in a paste or text file, then re-checks the output with a separate, looser detector.',
+    destinationUrl: '/life-admin/aadhaar-pan-masker',
+  },
+  {
     id: 'india-and-life-admin.aadhaar-masking-tool',
     slug: 'india-and-life-admin-aadhaar-masking-tool',
     name: 'Aadhaar Masking Tool',

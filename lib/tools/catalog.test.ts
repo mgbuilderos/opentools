@@ -51,6 +51,12 @@ describe('public canary catalog', () => {
     expect(searchTools('capitalize text').map((tool) => tool.id)).toContain(
       'text-case-converter',
     );
+    expect(searchTools('mask aadhaar').map((tool) => tool.id)).toContain(
+      'aadhaar-pan-masker',
+    );
+    expect(searchTools('pan masking').map((tool) => tool.id)).toContain(
+      'aadhaar-pan-masker',
+    );
     expect(searchTools('unknown future tool')).toEqual([]);
     expect(searchTools('compress image').map((tool) => tool.id)).toContain(
       'image-optimize',
@@ -157,7 +163,9 @@ describe('public canary catalog', () => {
     // the sidebar reached 438 of them. Search found the rest; browsing did not.
     // 679 after the word cloud generator and ER-diagram-to-SQL converter;
     // 680 after PDF redaction, 682 after the two dedicated OCR destinations,
-    // then 683 when the PDF metadata viewer joined the PDF workspace.
+    // 683 when the PDF metadata viewer joined the PDF workspace, and 684 with
+    // the whole-text Aadhaar and PAN masker in the India & life admin group,
+    // beside the two single-number maskers it shares its engine with.
     const everyDestination = publicTools.reduce(
       (total, tool) => total + (tool.searchEntries?.length || 1),
       0,

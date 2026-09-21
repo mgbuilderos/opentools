@@ -56,6 +56,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/data/json',
   '/file/hash-calculator',
   '/file/archive',
+  '/life-admin/aadhaar-pan-masker',
   '/text/case-converter',
   '/developer/base64-encoder',
   '/developer/base64-decoder',

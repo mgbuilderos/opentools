@@ -21,6 +21,11 @@ export interface ToolMeta {
 }
 
 export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
+  'aadhaar-pan-masker': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Find and mask every Aadhaar and PAN number in pasted text or a text file.',
+  },
   'text-case-converter': {
     version: '0.1.0-canary',
     shortDescription: 'Change text to sentence, title, upper, or lower case.',
