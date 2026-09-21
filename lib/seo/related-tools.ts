@@ -66,7 +66,7 @@ export const WITHHELD_ROUTES: ReadonlySet<string> = new Set([
 ]);
 
 /** A workbench landing page, which lists its own tools and needs no help. */
-const HUB_ROUTE = /\/(?:workbench|advanced|writing)$/u;
+const HUB_ROUTE = /\/(?:bench|workbench|advanced|writing)$/u;
 
 export interface RelatedTool {
   /** A site-relative path that `isLiveToolUrl` accepts. */

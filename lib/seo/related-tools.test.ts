@@ -175,7 +175,7 @@ describe('related tools are real, live and never the withheld three', () => {
     const hubs: string[] = [];
     for (const route of ROUTES) {
       for (const tool of relatedToolsFor(route)) {
-        if (/\/(?:workbench|advanced|writing)$/u.test(tool.href)) {
+        if (/\/(?:bench|workbench|advanced|writing)$/u.test(tool.href)) {
           hubs.push(`${route} -> ${tool.href}`);
         }
       }
@@ -190,7 +190,7 @@ describe('related tools are real, live and never the withheld three', () => {
     // point at, which is the failure this file is here to catch.
     expect(
       unlinkedLiveRoutes().filter(
-        (route) => !/\/(?:workbench|advanced|writing)$/u.test(route),
+        (route) => !/\/(?:bench|workbench|advanced|writing)$/u.test(route),
       ),
       'a live tool route this module cannot see is a page nothing will link to',
     ).toEqual(['/image/background-remover']);

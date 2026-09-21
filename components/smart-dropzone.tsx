@@ -344,7 +344,13 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
   };
 }
 
-export function SmartDropzone() {
+export function SmartDropzone({
+  onFilesSelected,
+  multiple = false,
+}: {
+  onFilesSelected?: (files: readonly File[]) => void;
+  multiple?: boolean;
+} = {}) {
   const [dragOver, setDragOver] = useState(false);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [inputText, setInputText] = useState('');
@@ -406,7 +412,9 @@ export function SmartDropzone() {
       setDragOver(false);
 
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        const file = e.dataTransfer.files[0];
+        const selected = Array.from(e.dataTransfer.files);
+        onFilesSelected?.(selected);
+        const file = selected[0]!;
         handleProcessFile(file);
         return;
       }
@@ -422,12 +430,14 @@ export function SmartDropzone() {
         }
       }
     },
-    [handleProcessFile],
+    [handleProcessFile, onFilesSelected],
   );
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      handleProcessFile(e.target.files[0]);
+      const selected = Array.from(e.target.files);
+      onFilesSelected?.(selected);
+      handleProcessFile(selected[0]!);
     }
   };
 
@@ -482,6 +492,7 @@ export function SmartDropzone() {
       <input
         ref={fileInputRef}
         type="file"
+        multiple={multiple}
         aria-label="Upload file to inspect and detect tools"
         className="hidden"
         onChange={handleFileInputChange}
