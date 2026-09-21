@@ -16,7 +16,11 @@ export function detectSchemaFormat(input: string): SchemaFormat {
   if (/^\s*erDiagram\b/u.test(trimmed) || trimmed.includes('||--')) {
     return 'mermaid';
   }
-  if (/\bTable\s+\w+\s*\{/u.test(trimmed) && (trimmed.includes('Ref:') || /\[.*(?:pk|not null|unique).*\]/iu.test(trimmed))) {
+  if (
+    /\bTable\s+\w+\s*\{/u.test(trimmed) &&
+    (trimmed.includes('Ref:') ||
+      /\[.*(?:pk|not null|unique).*\]/iu.test(trimmed))
+  ) {
     return 'dbml';
   }
   if (/^\{[\s\S]*\}$/u.test(trimmed)) {
@@ -32,8 +36,12 @@ export function detectSchemaFormat(input: string): SchemaFormat {
   return 'sql-ddl';
 }
 
-export function parseSchema(input: string, format?: SchemaFormat | 'auto'): Schema {
-  const resolved = !format || format === 'auto' ? detectSchemaFormat(input) : format;
+export function parseSchema(
+  input: string,
+  format?: SchemaFormat | 'auto',
+): Schema {
+  const resolved =
+    !format || format === 'auto' ? detectSchemaFormat(input) : format;
 
   switch (resolved) {
     case 'sql-ddl':
@@ -74,7 +82,7 @@ export function emitSchema(
     case 'django':
       return emitDjangoModels(schema);
     default:
-      throw new Error(`Unsupported schema output format: ${format}`);
+      throw new Error(`Unsupported schema output format: ${String(format)}`);
   }
 }
 

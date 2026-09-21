@@ -60,7 +60,9 @@ export function parseHtmlTable(input: string): Table {
   const tableContent = tableMatch ? tableMatch[1] : input;
 
   let caption: string | undefined;
-  const captionMatch = /<caption\b[^>]*>([\s\S]*?)<\/caption>/iu.exec(tableContent);
+  const captionMatch = /<caption\b[^>]*>([\s\S]*?)<\/caption>/iu.exec(
+    tableContent,
+  );
   if (captionMatch) {
     caption = unescapeHtml(captionMatch[1].replace(/<[^>]+>/gu, '').trim());
   }
@@ -84,9 +86,15 @@ export function parseHtmlTable(input: string): Table {
       cells.push(unescapeHtml(rawText));
 
       if (rows.length === 0) {
-        if (/text-align:\s*center/iu.test(attrs) || /align=["']center["']/iu.test(attrs)) {
+        if (
+          /text-align:\s*center/iu.test(attrs) ||
+          /align=["']center["']/iu.test(attrs)
+        ) {
           alignments[colIndex] = 'center';
-        } else if (/text-align:\s*right/iu.test(attrs) || /align=["']right["']/iu.test(attrs)) {
+        } else if (
+          /text-align:\s*right/iu.test(attrs) ||
+          /align=["']right["']/iu.test(attrs)
+        ) {
           alignments[colIndex] = 'right';
         } else {
           alignments[colIndex] = 'left';

@@ -1,5 +1,5 @@
 import { emitAsciiDocTable, parseAsciiDocTable } from './asciidoc';
-import { emitCsv, parseCsv, sniffDelimiter } from './csv';
+import { emitCsv, parseCsv } from './csv';
 import { emitHtmlTable, parseHtmlTable } from './html';
 import { emitJsonTable, parseJsonTable } from './json';
 import { emitLatexTable, parseLatexTable } from './latex';
@@ -9,11 +9,21 @@ import { emitSqlTable, parseSqlTable } from './sql';
 import type { Table, TableEmitOptions, TableFormat } from './types';
 
 export * from './types';
-export { escapeLatex, unescapeLatex } from './latex';
+export * from './asciidoc';
+export * from './csv';
+export * from './html';
+export * from './json';
+export * from './latex';
+export * from './markdown';
+export * from './rst';
+export * from './sql';
 
 export function detectTableFormat(input: string): TableFormat {
   const trimmed = input.trim();
-  if (/^<table\b/iu.test(trimmed) || /<table\b[^>]*>[\s\S]*?<\/table>/iu.test(trimmed)) {
+  if (
+    /^<table\b/iu.test(trimmed) ||
+    /<table\b[^>]*>[\s\S]*?<\/table>/iu.test(trimmed)
+  ) {
     return 'html';
   }
   if (/\\begin\{(?:tabular|longtable|table)\}/u.test(trimmed)) {
@@ -27,7 +37,7 @@ export function detectTableFormat(input: string): TableFormat {
       // Not JSON
     }
   }
-  if (/INSERT\s+INTO\s+["`\[]?\w+["`\]]?/iu.test(trimmed)) {
+  if (/INSERT\s+INTO\s+["`[]?\w+["`\]]?/iu.test(trimmed)) {
     return 'sql';
   }
   if (/\|===[\s\S]*?\|===/u.test(trimmed)) {
@@ -45,12 +55,16 @@ export function detectTableFormat(input: string): TableFormat {
   return 'csv';
 }
 
-export function parseTable(input: string, format?: TableFormat | 'auto'): Table {
-  const resolvedFormat = !format || format === 'auto' ? detectTableFormat(input) : format;
+export function parseTable(
+  input: string,
+  format?: TableFormat | 'auto',
+): Table {
+  const resolvedFormat =
+    !format || format === 'auto' ? detectTableFormat(input) : format;
 
   switch (resolvedFormat) {
     case 'csv':
-      return parseCsv(input, ',');
+      return parseCsv(input);
     case 'tsv':
       return parseCsv(input, '\t');
     case 'markdown':
@@ -97,7 +111,7 @@ export function emitTable(
     case 'rst':
       return emitRstTable(table);
     default:
-      throw new Error(`Unsupported table output format: ${format}`);
+      throw new Error(`Unsupported table output format: ${String(format)}`);
   }
 }
 

@@ -1,7 +1,13 @@
 import type { Schema } from './types';
 
 export function emitPlantUml(schema: Schema): string {
-  const lines: string[] = ['@startuml', '!theme plain', 'hide circle', 'skinparam linetype ortho', ''];
+  const lines: string[] = [
+    '@startuml',
+    '!theme plain',
+    'hide circle',
+    'skinparam linetype ortho',
+    '',
+  ];
 
   for (const table of schema.tables) {
     lines.push(`entity "${table.name}" as ${table.name} {`);
@@ -16,7 +22,9 @@ export function emitPlantUml(schema: Schema): string {
     }
     for (const col of nonPks) {
       const isFk = schema.relations.some(
-        (r) => r.fromTable.toLowerCase() === table.name.toLowerCase() && r.fromColumn.toLowerCase() === col.name.toLowerCase(),
+        (r) =>
+          r.fromTable.toLowerCase() === table.name.toLowerCase() &&
+          r.fromColumn.toLowerCase() === col.name.toLowerCase(),
       );
       const req = col.nullable ? '' : '*';
       const tag = isFk ? ' <<FK>>' : '';

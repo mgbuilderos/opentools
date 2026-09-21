@@ -591,6 +591,20 @@ CREATE TABLE orders (
     expect(svg).toContain('PK');
     expect(svg).toContain('FK');
     expect(svg).toContain('stroke-dasharray="4,4"');
+
+    const mermaid = await runAdvancedDeveloperOperation('sql-to-er-diagram', {
+      sql,
+      format: 'mermaid',
+    });
+    expect(mermaid).toContain('erDiagram');
+    expect(mermaid).toContain('USERS ||--o{ ORDERS');
+
+    const dbml = await runAdvancedDeveloperOperation('sql-to-er-diagram', {
+      sql,
+      format: 'dbml',
+    });
+    expect(dbml).toContain('Table users {');
+    expect(dbml).toContain('Ref: orders.user_id > users.id');
   });
 
   it('converts JSON structures to type-safe Zod validation schemas', async () => {

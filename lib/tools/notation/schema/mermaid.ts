@@ -1,4 +1,9 @@
-import type { RelationKind, Schema, SchemaColumn, SchemaRelation, SchemaTable } from './types';
+import type {
+  RelationKind,
+  Schema,
+  SchemaRelation,
+  SchemaTable,
+} from './types';
 
 export function emitMermaidErDiagram(schema: Schema): string {
   const lines: string[] = ['erDiagram'];
@@ -7,7 +12,8 @@ export function emitMermaidErDiagram(schema: Schema): string {
   for (const rel of schema.relations) {
     const from = rel.fromTable.toUpperCase();
     const to = rel.toTable.toUpperCase();
-    const label = rel.label || (rel.fromColumn ? `"${rel.fromColumn}"` : 'references');
+    const label =
+      rel.label || (rel.fromColumn ? `"${rel.fromColumn}"` : 'references');
     // fromTable is child, toTable is parent
     // In Mermaid: PARENT ||--o{ CHILD : label
     lines.push(`    ${to} ||--o{ ${from} : ${label}`);
@@ -25,13 +31,17 @@ export function emitMermaidErDiagram(schema: Schema): string {
       if (col.primaryKey) keys.push('PK');
       if (col.unique && !col.primaryKey) keys.push('UK');
       const isFk = schema.relations.some(
-        (r) => r.fromTable.toLowerCase() === table.name.toLowerCase() && r.fromColumn.toLowerCase() === col.name.toLowerCase(),
+        (r) =>
+          r.fromTable.toLowerCase() === table.name.toLowerCase() &&
+          r.fromColumn.toLowerCase() === col.name.toLowerCase(),
       );
       if (isFk) keys.push('FK');
 
       const mType = mapTypeToMermaid(col.type);
       const keyStr = keys.length > 0 ? ` ${keys.join(',')}` : '';
-      const commentStr = col.comment ? ` "${col.comment.replace(/"/gu, "'")}"` : '';
+      const commentStr = col.comment
+        ? ` "${col.comment.replace(/"/gu, "'")}"`
+        : '';
 
       lines.push(`        ${mType} ${col.name}${keyStr}${commentStr}`);
     }
@@ -44,8 +54,15 @@ export function emitMermaidErDiagram(schema: Schema): string {
 function mapTypeToMermaid(type: string): string {
   const norm = type.trim().toLowerCase();
   if (norm.includes('int') || norm.includes('serial')) return 'int';
-  if (norm.includes('char') || norm.includes('text') || norm.includes('clob')) return 'string';
-  if (norm.includes('float') || norm.includes('double') || norm.includes('decimal') || norm.includes('numeric')) return 'decimal';
+  if (norm.includes('char') || norm.includes('text') || norm.includes('clob'))
+    return 'string';
+  if (
+    norm.includes('float') ||
+    norm.includes('double') ||
+    norm.includes('decimal') ||
+    norm.includes('numeric')
+  )
+    return 'decimal';
   if (norm.includes('bool')) return 'boolean';
   if (norm.includes('date') || norm.includes('time')) return 'datetime';
   return 'string';
@@ -70,7 +87,8 @@ export function parseMermaidErDiagram(input: string): Schema {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (!trimmed || trimmed === 'erDiagram' || trimmed.startsWith('%%')) continue;
+    if (!trimmed || trimmed === 'erDiagram' || trimmed.startsWith('%%'))
+      continue;
 
     // Entity block start: CUSTOMER {
     const entityStart = /^(\w+)\s*\{/u.exec(trimmed);
@@ -89,11 +107,15 @@ export function parseMermaidErDiagram(input: string): Schema {
 
     // Inside entity block: int id PK "comment"
     if (currentTable) {
-      const attrMatch = /^(\w+)\s+(\w+)(?:\s+([\w,]+))?(?:\s+"([^"]*)")?/u.exec(trimmed);
+      const attrMatch = /^(\w+)\s+(\w+)(?:\s+([\w,]+))?(?:\s+"([^"]*)")?/u.exec(
+        trimmed,
+      );
       if (attrMatch) {
         const type = mapMermaidToSqlType(attrMatch[1]);
         const name = attrMatch[2];
-        const keys = attrMatch[3] ? attrMatch[3].split(',').map((k) => k.trim().toUpperCase()) : [];
+        const keys = attrMatch[3]
+          ? attrMatch[3].split(',').map((k) => k.trim().toUpperCase())
+          : [];
         const comment = attrMatch[4];
 
         const isPk = keys.includes('PK');
@@ -112,9 +134,10 @@ export function parseMermaidErDiagram(input: string): Schema {
     }
 
     // Relationship line: PARENT ||--o{ CHILD : label
-    const relMatch = /^(\w+)\s+([|o}{]{2}--[|o}{]{2})\s+(\w+)(?:\s*:\s*(?:"([^"]*)"|(\S+)))?/u.exec(
-      trimmed,
-    );
+    const relMatch =
+      /^(\w+)\s+([|o}{]{2}--[|o}{]{2})\s+(\w+)(?:\s*:\s*(?:"([^"]*)"|(\S+)))?/u.exec(
+        trimmed,
+      );
     if (relMatch) {
       const parent = relMatch[1].toLowerCase();
       const card = relMatch[2];

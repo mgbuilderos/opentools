@@ -2,7 +2,7 @@ import type { Table } from './types';
 
 export function emitRstTable(table: Table): string {
   const colCount = table.headers.length;
-  const colWidths = new Array<number>(colCount).fill(3);
+  const colWidths = Array.from({ length: colCount }, () => 3);
 
   for (let i = 0; i < colCount; i++) {
     colWidths[i] = Math.max(colWidths[i], table.headers[i]?.length ?? 0);
@@ -14,7 +14,8 @@ export function emitRstTable(table: Table): string {
   }
 
   const border = colWidths.map((w) => '='.repeat(w)).join('  ');
-  const pad = (s: string, w: number) => s + ' '.repeat(Math.max(0, w - s.length));
+  const pad = (s: string, w: number) =>
+    s + ' '.repeat(Math.max(0, w - s.length));
 
   const lines: string[] = [];
   lines.push(border);
@@ -35,7 +36,9 @@ export function parseRstTable(input: string): Table {
     .filter((l) => l.trim().length > 0);
 
   if (lines.length < 4) {
-    throw new Error('reStructuredText table requires at least 4 lines (border, header, border, rows, border).');
+    throw new Error(
+      'reStructuredText table requires at least 4 lines (border, header, border, rows, border).',
+    );
   }
 
   // Find border lines (lines consisting only of '=' and spaces)
@@ -47,7 +50,9 @@ export function parseRstTable(input: string): Table {
   }
 
   if (borderIndices.length < 3) {
-    throw new Error('Could not find reStructuredText simple table delimiter borders (=== ===).');
+    throw new Error(
+      'Could not find reStructuredText simple table delimiter borders (=== ===).',
+    );
   }
 
   const borderLine = lines[borderIndices[0]];
@@ -57,7 +62,10 @@ export function parseRstTable(input: string): Table {
   for (let i = 0; i < borderLine.length; i++) {
     if (borderLine[i] === '=' && start === -1) {
       start = i;
-    } else if ((borderLine[i] === ' ' || i === borderLine.length - 1) && start !== -1) {
+    } else if (
+      (borderLine[i] === ' ' || i === borderLine.length - 1) &&
+      start !== -1
+    ) {
       const end = borderLine[i] === '=' ? i + 1 : i;
       colRanges.push({ start, end });
       start = -1;

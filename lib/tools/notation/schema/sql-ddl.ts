@@ -1,4 +1,10 @@
-import type { Schema, SchemaColumn, SchemaRelation, SchemaTable, SqlDialect } from './types';
+import type {
+  Schema,
+  SchemaColumn,
+  SchemaRelation,
+  SchemaTable,
+  SqlDialect,
+} from './types';
 
 export function quoteSqlIdentifier(name: string, dialect: SqlDialect): string {
   if (dialect === 'mysql') return `\`${name.replace(/`/gu, '``')}\``;
@@ -49,7 +55,7 @@ export function mapSqlType(type: string, targetDialect: SqlDialect): string {
 
 export function parseSqlDdl(input: string): Schema {
   const tableRegex =
-    /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`\[]?(?:\w+["`\]]?\s*\.\s*["`\[]?)?(\w+)["`\]]?\s*\(([\s\S]*?)\)\s*[^;()]*;/giu;
+    /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["`[]?(?:\w+["`\]]?\s*\.\s*["`[]?)?(\w+)["`\]]?\s*\(([\s\S]*?)\)\s*[^;()]*;/giu;
   const tables: SchemaTable[] = [];
   const relations: SchemaRelation[] = [];
 
@@ -76,7 +82,10 @@ export function parseSqlDdl(input: string): Schema {
     if (current.trim()) definitions.push(current.trim());
 
     const tablePks = new Set<string>();
-    const tableFks = new Map<string, { targetTable: string; targetCol: string }>();
+    const tableFks = new Map<
+      string,
+      { targetTable: string; targetCol: string }
+    >();
     const columns: SchemaColumn[] = [];
 
     // First pass: table-level constraints
@@ -86,19 +95,19 @@ export function parseSqlDdl(input: string): Schema {
       if (pkMatch) {
         pkMatch[1]
           .split(',')
-          .map((c) => c.trim().replace(/^["`\[]|["`\]]$/gu, ''))
+          .map((c) => c.trim().replace(/^["`[]|["`\]]$/gu, ''))
           .forEach((c) => tablePks.add(c));
         continue;
       }
 
       const fkMatch =
-        /^FOREIGN\s+KEY\s*\(([^)]+)\)\s*REFERENCES\s+["`\[]?(\w+)["`\]]?\s*\(([^)]+)\)/iu.exec(
+        /^FOREIGN\s+KEY\s*\(([^)]+)\)\s*REFERENCES\s+["`[]?(\w+)["`\]]?\s*\(([^)]+)\)/iu.exec(
           clean,
         );
       if (fkMatch) {
-        const fromCol = fkMatch[1].trim().replace(/^["`\[]|["`\]]$/gu, '');
+        const fromCol = fkMatch[1].trim().replace(/^["`[]|["`\]]$/gu, '');
         const targetTable = fkMatch[2].trim();
-        const targetCol = fkMatch[3].trim().replace(/^["`\[]|["`\]]$/gu, '');
+        const targetCol = fkMatch[3].trim().replace(/^["`[]|["`\]]$/gu, '');
         tableFks.set(fromCol, { targetTable, targetCol });
         continue;
       }
@@ -107,12 +116,14 @@ export function parseSqlDdl(input: string): Schema {
     // Second pass: columns and inline constraints
     for (const def of definitions) {
       const clean = def.replace(/,\s*$/u, '').trim();
-      if (/^(?:PRIMARY|FOREIGN|CONSTRAINT|KEY|CHECK|UNIQUE\s*\()/iu.test(clean)) {
+      if (
+        /^(?:PRIMARY|FOREIGN|CONSTRAINT|KEY|CHECK|UNIQUE\s*\()/iu.test(clean)
+      ) {
         continue;
       }
 
       const colMatch =
-        /^["`\[]?(\w+)["`\]]?\s+([A-Za-z0-9_]+(?:\s*\([^)]*\))?)([\s\S]*)$/iu.exec(
+        /^["`[]?(\w+)["`\]]?\s+([A-Za-z0-9_]+(?:\s*\([^)]*\))?)([\s\S]*)$/iu.exec(
           clean,
         );
       if (!colMatch) continue;
@@ -122,17 +133,21 @@ export function parseSqlDdl(input: string): Schema {
       const rest = colMatch[3] || '';
 
       const isPk =
-        tablePks.has(colName) || /\bPRIMARY\s+KEY\b/iu.test(rest) || /\bAUTOINCREMENT\b/iu.test(rest);
+        tablePks.has(colName) ||
+        /\bPRIMARY\s+KEY\b/iu.test(rest) ||
+        /\bAUTOINCREMENT\b/iu.test(rest);
       const isUnique = /\bUNIQUE\b/iu.test(rest);
       const isNotNull = isPk || /\bNOT\s+NULL\b/iu.test(rest);
 
       const defaultMatch = /\bDEFAULT\s+([^,()]+|\([^)]*\))/iu.exec(rest);
       const defaultValue = defaultMatch ? defaultMatch[1].trim() : undefined;
 
-      const inlineFk = /\bREFERENCES\s+["`\[]?(\w+)["`\]]?\s*(?:\(([^)]+)\))?/iu.exec(rest);
+      const inlineFk =
+        /\bREFERENCES\s+["`[]?(\w+)["`\]]?\s*(?:\(([^)]+)\))?/iu.exec(rest);
       if (inlineFk) {
         const targetTable = inlineFk[1];
-        const targetCol = inlineFk[2]?.trim().replace(/^["`\[]|["`\]]$/gu, '') || 'id';
+        const targetCol =
+          inlineFk[2]?.trim().replace(/^["`[]|["`\]]$/gu, '') || 'id';
         tableFks.set(colName, { targetTable, targetCol });
       }
 
@@ -174,7 +189,10 @@ export function parseSqlDdl(input: string): Schema {
   };
 }
 
-export function emitSqlDdl(schema: Schema, dialect: SqlDialect = 'postgresql'): string {
+export function emitSqlDdl(
+  schema: Schema,
+  dialect: SqlDialect = 'postgresql',
+): string {
   const statements: string[] = [];
 
   // Parents-first topological sort
@@ -186,10 +204,14 @@ export function emitSqlDdl(schema: Schema, dialect: SqlDialect = 'postgresql'): 
 
     for (const col of table.columns) {
       const qCol = quoteSqlIdentifier(col.name, dialect);
-      let qType = mapSqlType(col.type, dialect);
+      const qType = mapSqlType(col.type, dialect);
 
       // In SQLite, an autoincrement primary key MUST be defined inline as INTEGER PRIMARY KEY AUTOINCREMENT
-      if (dialect === 'sqlite' && col.primaryKey && /AUTOINCREMENT/iu.test(qType)) {
+      if (
+        dialect === 'sqlite' &&
+        col.primaryKey &&
+        /AUTOINCREMENT/iu.test(qType)
+      ) {
         lines.push(`  ${qCol} ${qType}`);
         continue;
       }
@@ -212,19 +234,30 @@ export function emitSqlDdl(schema: Schema, dialect: SqlDialect = 'postgresql'): 
       lines.push(parts.join(' '));
     }
 
-    if (pkCols.length > 1 || (pkCols.length === 1 && dialect === 'sqlite' && !lines[0]?.includes('PRIMARY KEY'))) {
-      lines.push(`  PRIMARY KEY (${pkCols.map((c) => quoteSqlIdentifier(c, dialect)).join(', ')})`);
+    if (
+      pkCols.length > 1 ||
+      (pkCols.length === 1 &&
+        dialect === 'sqlite' &&
+        !lines[0]?.includes('PRIMARY KEY'))
+    ) {
+      lines.push(
+        `  PRIMARY KEY (${pkCols.map((c) => quoteSqlIdentifier(c, dialect)).join(', ')})`,
+      );
     }
 
     // Foreign keys for this table
-    const tableRelations = schema.relations.filter((r) => r.fromTable === table.name);
+    const tableRelations = schema.relations.filter(
+      (r) => r.fromTable === table.name,
+    );
     for (const rel of tableRelations) {
       lines.push(
         `  FOREIGN KEY (${quoteSqlIdentifier(rel.fromColumn, dialect)}) REFERENCES ${quoteSqlIdentifier(rel.toTable, dialect)}(${quoteSqlIdentifier(rel.toColumn, dialect)})`,
       );
     }
 
-    statements.push(`CREATE TABLE ${quoteSqlIdentifier(table.name, dialect)} (\n${lines.join(',\n')}\n);`);
+    statements.push(
+      `CREATE TABLE ${quoteSqlIdentifier(table.name, dialect)} (\n${lines.join(',\n')}\n);`,
+    );
   }
 
   return statements.join('\n\n');

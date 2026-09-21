@@ -5,7 +5,9 @@ export function parseJsonTable(input: string): Table {
   try {
     data = JSON.parse(input);
   } catch (err) {
-    throw new Error(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+    throw new Error(
+      `Invalid JSON: ${err instanceof Error ? err.message : String(err)}`,
+    );
   }
 
   if (!Array.isArray(data) || data.length === 0) {
@@ -38,8 +40,10 @@ export function parseJsonTable(input: string): Table {
       return headers.map((h) => {
         const val = obj[h];
         if (val === null || val === undefined) return '';
-        if (typeof val === 'object') return JSON.stringify(val);
-        return String(val);
+        if (typeof val === 'string') return val;
+        if (typeof val === 'number' || typeof val === 'boolean')
+          return `${val}`;
+        return JSON.stringify(val);
       });
     });
 

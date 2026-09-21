@@ -203,9 +203,9 @@ export const SECTIONS: readonly BrowseSection[] = [
       },
       {
         id: 'document-workbench:latex-table-generator',
-        name: 'LaTeX table generator',
+        name: 'LaTeX Table Generator Online — Free CSV & Markdown to LaTeX',
         description:
-          'Convert strict CSV into an escaped LaTeX tabular environment.',
+          'Generate LaTeX tables online from CSV, TSV, or Markdown. Emits booktabs, longtable, captions, and siunitx decimal alignment with zero uploads.',
         href: '/documents/workbench?tool=latex-table-generator',
         workspaceId: 'document-workbench',
       },

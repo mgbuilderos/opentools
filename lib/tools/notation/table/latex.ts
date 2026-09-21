@@ -29,7 +29,9 @@ export function emitLatexTable(
   options: LatexEmitOptions = {},
 ): string {
   const style = options.style ?? 'booktabs';
-  const env = options.environment ?? (table.caption || options.caption ? 'table' : 'plain');
+  const env =
+    options.environment ??
+    (table.caption || options.caption ? 'table' : 'plain');
   const placement = options.placement ? `[${options.placement}]` : '';
   const caption = options.caption ?? table.caption;
   const label = options.label ?? table.label;
@@ -65,7 +67,9 @@ export function emitLatexTable(
   if (env === 'longtable') {
     lines.push(`\\begin{longtable}{${colSpec}}`);
     if (caption) {
-      lines.push(`  \\caption{${escapeLatex(caption)}}${label ? `\\label{${label}}` : ''} \\\\`);
+      lines.push(
+        `  \\caption{${escapeLatex(caption)}}${label ? `\\label{${label}}` : ''} \\\\`,
+      );
     }
     if (style === 'booktabs') {
       lines.push('  \\toprule');
@@ -194,7 +198,10 @@ export function parseLatexTable(input: string): Table {
   for (const rowText of rawRows) {
     // Filter out LaTeX rule commands and headers/footers
     const lineWithoutCommands = rowText
-      .replace(/\\(?:toprule|midrule|bottomrule|hline|endfirsthead|endhead|endfoot|endlastfoot)\b/gu, '')
+      .replace(
+        /\\(?:toprule|midrule|bottomrule|hline|endfirsthead|endhead|endfoot|endlastfoot)\b/gu,
+        '',
+      )
       .trim();
 
     if (!lineWithoutCommands) continue;

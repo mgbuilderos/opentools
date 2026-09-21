@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  convertTable,
   detectTableFormat,
   emitTable,
   escapeLatex,
@@ -140,7 +139,9 @@ describe('Table notation engine', () => {
       sql: { tableName: 'students', includeCreateTable: true },
     });
     expect(sql).toContain('CREATE TABLE "students"');
-    expect(sql).toContain('INSERT INTO "students" ("id", "name", "score") VALUES');
+    expect(sql).toContain(
+      'INSERT INTO "students" ("id", "name", "score") VALUES',
+    );
     const parsedBack = parseTable(sql, 'sql');
     const csvOutput = emitTable(parsedBack, 'csv');
     expect(csvOutput).toBe(csvSource);
@@ -170,15 +171,19 @@ describe('Table notation engine', () => {
     expect(detectTableFormat('a,b,c\n1,2,3')).toBe('csv');
     expect(detectTableFormat('a\tb\tc\n1\t2\t3')).toBe('tsv');
     expect(detectTableFormat('| a | b |\n|---|---|')).toBe('markdown');
-    expect(detectTableFormat('\\begin{tabular}{ll}\na & b \\\\\n\\end{tabular}')).toBe(
-      'latex',
+    expect(
+      detectTableFormat('\\begin{tabular}{ll}\na & b \\\\\n\\end{tabular}'),
+    ).toBe('latex');
+    expect(detectTableFormat('<table><tr><th>A</th></tr></table>')).toBe(
+      'html',
     );
-    expect(detectTableFormat('<table><tr><th>A</th></tr></table>')).toBe('html');
     expect(detectTableFormat('[{"a":1,"b":2}]')).toBe('json');
     expect(detectTableFormat('INSERT INTO users (a, b) VALUES (1, 2);')).toBe(
       'sql',
     );
-    expect(detectTableFormat('[cols="1,1"]\n|===\n| A | B\n|===')).toBe('asciidoc');
+    expect(detectTableFormat('[cols="1,1"]\n|===\n| A | B\n|===')).toBe(
+      'asciidoc',
+    );
   });
 
   it('refuses ragged markdown table by name (G7)', () => {

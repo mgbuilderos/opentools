@@ -39,7 +39,9 @@ export function parseMarkdownTable(input: string): Table {
   const headers = splitRow(tableLines[0]);
   const delimiterRow = splitRow(tableLines[1]);
 
-  const isDelimiter = delimiterRow.every((cell) => /^:?-+:?$/u.test(cell.trim()));
+  const isDelimiter = delimiterRow.every((cell) =>
+    /^:?-+:?$/u.test(cell.trim()),
+  );
   if (!isDelimiter) {
     throw new Error(
       'Second row must be a valid markdown table delimiter row (e.g. |:---|:---:|---:|).',
@@ -77,7 +79,7 @@ export function parseMarkdownTable(input: string): Table {
 
 export function emitMarkdownTable(table: Table): string {
   const colCount = table.headers.length;
-  const colWidths = new Array<number>(colCount).fill(3);
+  const colWidths = Array.from({ length: colCount }, () => 3);
 
   for (let i = 0; i < colCount; i++) {
     colWidths[i] = Math.max(colWidths[i], table.headers[i]?.length ?? 0);
@@ -109,7 +111,11 @@ export function emitMarkdownTable(table: Table): string {
     '| ' +
     table.headers
       .map((h, i) =>
-        pad(escapeMarkdownPipe(h), colWidths[i], table.alignments?.[i] ?? 'left'),
+        pad(
+          escapeMarkdownPipe(h),
+          colWidths[i],
+          table.alignments?.[i] ?? 'left',
+        ),
       )
       .join(' | ') +
     ' |';
@@ -119,7 +125,8 @@ export function emitMarkdownTable(table: Table): string {
     colWidths
       .map((w, i) => {
         const align = table.alignments?.[i] ?? 'left';
-        if (align === 'center') return ':' + '-'.repeat(Math.max(1, w - 2)) + ':';
+        if (align === 'center')
+          return ':' + '-'.repeat(Math.max(1, w - 2)) + ':';
         if (align === 'right') return '-'.repeat(Math.max(2, w - 1)) + ':';
         return ':' + '-'.repeat(Math.max(2, w - 1));
       })

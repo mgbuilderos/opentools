@@ -18,7 +18,9 @@ export function emitDataDictionary(schema: Schema): string {
       else if (col.unique) keyStr = 'UK';
       else {
         const isFk = schema.relations.some(
-          (r) => r.fromTable.toLowerCase() === table.name.toLowerCase() && r.fromColumn.toLowerCase() === col.name.toLowerCase(),
+          (r) =>
+            r.fromTable.toLowerCase() === table.name.toLowerCase() &&
+            r.fromColumn.toLowerCase() === col.name.toLowerCase(),
         );
         if (isFk) keyStr = 'FK';
       }
@@ -27,14 +29,18 @@ export function emitDataDictionary(schema: Schema): string {
       const defStr = col.default !== undefined ? `\`${col.default}\`` : '-';
       const notes = col.comment || '-';
 
-      sections.push(`| ${col.name} | \`${col.type}\` | ${nullStr} | ${keyStr} | ${defStr} | ${notes} |`);
+      sections.push(
+        `| ${col.name} | \`${col.type}\` | ${nullStr} | ${keyStr} | ${defStr} | ${notes} |`,
+      );
     }
     sections.push('');
   }
 
   if (schema.relations.length > 0) {
     sections.push('## Foreign Key Relationships', '');
-    sections.push('| Source Table | Source Column | Target Table | Target Column | Type |');
+    sections.push(
+      '| Source Table | Source Column | Target Table | Target Column | Type |',
+    );
     sections.push('| :--- | :--- | :--- | :--- | :--- |');
     for (const rel of schema.relations) {
       sections.push(

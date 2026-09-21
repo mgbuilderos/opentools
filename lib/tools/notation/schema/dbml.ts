@@ -1,4 +1,9 @@
-import type { Schema, SchemaColumn, SchemaRelation, SchemaTable } from './types';
+import type {
+  Schema,
+  SchemaColumn,
+  SchemaRelation,
+  SchemaTable,
+} from './types';
 
 export function emitDbml(schema: Schema): string {
   const blocks: string[] = [];
@@ -10,10 +15,13 @@ export function emitDbml(schema: Schema): string {
       if (col.primaryKey) settings.push('pk');
       if (col.unique && !col.primaryKey) settings.push('unique');
       if (!col.nullable && !col.primaryKey) settings.push('not null');
-      if (col.default !== undefined) settings.push(`default: \`${col.default}\``);
-      if (col.comment) settings.push(`note: '${col.comment.replace(/'/gu, "\\'")}'`);
+      if (col.default !== undefined)
+        settings.push(`default: \`${col.default}\``);
+      if (col.comment)
+        settings.push(`note: '${col.comment.replace(/'/gu, "\\'")}'`);
 
-      const settingsStr = settings.length > 0 ? ` [${settings.join(', ')}]` : '';
+      const settingsStr =
+        settings.length > 0 ? ` [${settings.join(', ')}]` : '';
       const type = col.type.toLowerCase().replace(/\s+/gu, '_');
       lines.push(`  ${col.name} ${type}${settingsStr}`);
     }
@@ -22,7 +30,9 @@ export function emitDbml(schema: Schema): string {
   }
 
   for (const rel of schema.relations) {
-    blocks.push(`Ref: ${rel.fromTable}.${rel.fromColumn} > ${rel.toTable}.${rel.toColumn}`);
+    blocks.push(
+      `Ref: ${rel.fromTable}.${rel.fromColumn} > ${rel.toTable}.${rel.toColumn}`,
+    );
   }
 
   return blocks.join('\n\n');

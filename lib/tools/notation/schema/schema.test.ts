@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  convertSchema,
-  detectSchemaFormat,
-  emitSchema,
-  parseSchema,
-} from './index';
+import { detectSchemaFormat, emitSchema, parseSchema } from './index';
 
 describe('Schema notation engine', () => {
   const sampleDdl = `
@@ -27,9 +22,15 @@ CREATE TABLE orders (
     expect(schema.tables[0].name.toLowerCase()).toBe('users');
     expect(schema.tables[1].name.toLowerCase()).toBe('orders');
 
-    const usersTable = schema.tables.find((t) => t.name.toLowerCase() === 'users')!;
-    expect(usersTable.columns.find((c) => c.name === 'id')?.primaryKey).toBe(true);
-    expect(usersTable.columns.find((c) => c.name === 'email')?.unique).toBe(true);
+    const usersTable = schema.tables.find(
+      (t) => t.name.toLowerCase() === 'users',
+    )!;
+    expect(usersTable.columns.find((c) => c.name === 'id')?.primaryKey).toBe(
+      true,
+    );
+    expect(usersTable.columns.find((c) => c.name === 'email')?.unique).toBe(
+      true,
+    );
 
     expect(schema.relations.length).toBe(1);
     expect(schema.relations[0].fromTable.toLowerCase()).toBe('orders');
@@ -64,11 +65,15 @@ CREATE TABLE orders (
 
     const schemaFromMermaid = parseSchema(mermaid, 'mermaid');
     expect(schemaFromMermaid.tables.length).toBe(2);
-    const usersCols = schemaFromMermaid.tables.find((t) => t.name === 'users')!.columns;
+    const usersCols = schemaFromMermaid.tables.find(
+      (t) => t.name === 'users',
+    )!.columns;
     expect(usersCols.find((c) => c.name === 'id')?.primaryKey).toBe(true);
     expect(usersCols.find((c) => c.name === 'email')?.unique).toBe(true);
 
-    const ddlBack = emitSchema(schemaFromMermaid, 'sql-ddl', { dialect: 'postgresql' });
+    const ddlBack = emitSchema(schemaFromMermaid, 'sql-ddl', {
+      dialect: 'postgresql',
+    });
     expect(ddlBack).toContain('CREATE TABLE "users"');
     expect(ddlBack).toContain('CREATE TABLE "orders"');
     expect(ddlBack).toContain('PRIMARY KEY');
@@ -156,12 +161,16 @@ CREATE TABLE categories (
 
   it('auto-detects schema formats accurately', () => {
     expect(detectSchemaFormat('erDiagram\n  A ||--o{ B : has')).toBe('mermaid');
-    expect(detectSchemaFormat('Table users { id int [pk] }\nRef: orders.u > users.id')).toBe(
-      'dbml',
-    );
-    expect(detectSchemaFormat('{"$schema": "http://json-schema.org/draft-07/schema#"}')).toBe(
-      'json-schema',
-    );
+    expect(
+      detectSchemaFormat(
+        'Table users { id int [pk] }\nRef: orders.u > users.id',
+      ),
+    ).toBe('dbml');
+    expect(
+      detectSchemaFormat(
+        '{"$schema": "http://json-schema.org/draft-07/schema#"}',
+      ),
+    ).toBe('json-schema');
     expect(detectSchemaFormat('CREATE TABLE users (id int);')).toBe('sql-ddl');
   });
 

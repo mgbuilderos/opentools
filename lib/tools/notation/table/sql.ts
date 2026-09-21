@@ -49,7 +49,9 @@ export function emitSqlTable(
     const colDefs = table.headers.map((h, i) => {
       return `  ${quote(h)} ${inferType(i)}`;
     });
-    statements.push(`CREATE TABLE ${quote(tableName)} (\n${colDefs.join(',\n')}\n);`);
+    statements.push(
+      `CREATE TABLE ${quote(tableName)} (\n${colDefs.join(',\n')}\n);`,
+    );
   }
 
   if (table.rows.length > 0) {
@@ -70,7 +72,7 @@ export function emitSqlTable(
 export function parseSqlTable(input: string): Table {
   // Parse INSERT INTO table (col1, col2) VALUES (v1, v2), (v3, v4);
   const insertRegex =
-    /INSERT\s+INTO\s+["`\[]?\w+["`\]]?\s*\(([^)]+)\)\s*VALUES\s*([\s\S]*?);/giu;
+    /INSERT\s+INTO\s+["`[]?\w+["`\]]?\s*\(([^)]+)\)\s*VALUES\s*([\s\S]*?);/giu;
   const match = insertRegex.exec(input);
 
   if (!match) {
@@ -84,7 +86,7 @@ export function parseSqlTable(input: string): Table {
 
   const headers = rawCols
     .split(',')
-    .map((c) => c.trim().replace(/^["`\[]|["`\]]$/gu, ''));
+    .map((c) => c.trim().replace(/^["`[]|["`\]]$/gu, ''));
 
   const rows: string[][] = [];
   const tupleRegex = /\(([^)]+)\)/gu;

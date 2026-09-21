@@ -1,4 +1,9 @@
 import { csvToRecords } from './structured';
+import {
+  emitLatexTable,
+  emitMarkdownTable,
+  parseTable,
+} from './notation/table';
 
 export interface DocumentField {
   id: string;
@@ -448,16 +453,36 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
   },
   {
     id: 'latex-table-generator',
-    name: 'LaTeX table generator',
+    name: 'LaTeX Table Generator Online — Free CSV & Markdown to LaTeX',
     description:
-      'Convert strict CSV into an escaped LaTeX tabular environment.',
+      'Generate LaTeX tables online from CSV, TSV, or Markdown. Emits booktabs, longtable, captions, and siunitx decimal alignment with zero uploads.',
     fields: [
-      area('csv', 'CSV table', 'Name,Score\nAda,91\nLin,84'),
+      area(
+        'csv',
+        'Table data (CSV, TSV, Markdown, or HTML table)',
+        'Name,Score\nAda,91\nLin,84',
+      ),
+      select('style', 'LaTeX table style', [
+        {
+          value: 'booktabs',
+          label: 'Booktabs (\\toprule, \\midrule, \\bottomrule)',
+        },
+        { value: 'tabular', label: 'Classic Tabular (\\hline)' },
+      ]),
       select('alignment', 'Column alignment', [
         { value: 'l', label: 'Left' },
         { value: 'c', label: 'Center' },
         { value: 'r', label: 'Right' },
+        { value: 'decimal', label: 'Decimal (siunitx S)' },
       ]),
+      select('environment', 'Environment', [
+        { value: 'plain', label: 'Plain tabular' },
+        { value: 'table', label: 'table float (with caption/label)' },
+        { value: 'table*', label: 'table* float (two-column layout)' },
+        { value: 'longtable', label: 'longtable (multi-page)' },
+      ]),
+      text('caption', 'Caption (optional)', ''),
+      text('label', 'Label (optional)', ''),
     ],
     outputExtension: 'tex',
   },
@@ -984,24 +1009,6 @@ function lcsDiff(before: string, after: string) {
   return output.reverse().join('\n');
 }
 
-function latex(value: string) {
-  const escapes: Record<string, string> = {
-    '\\': '\\textbackslash{}',
-    '#': '\\#',
-    $: '\\$',
-    '%': '\\%',
-    '&': '\\&',
-    _: '\\_',
-    '{': '\\{',
-    '}': '\\}',
-    '~': '\\textasciitilde{}',
-    '^': '\\textasciicircum{}',
-  };
-  return Array.from(value, (character) => escapes[character] ?? character).join(
-    '',
-  );
-}
-
 function escapeHtml(value: string) {
   return value
     .replaceAll('&', '&amp;')
@@ -1227,13 +1234,25 @@ export function runDocumentOperation(
       return `${author}. (${year}). ${title}. ${source}.${url ? ` ${url}` : ''}`;
     }
     case 'latex-table-generator': {
-      const data = csvToRecords(values.csv);
-      const columns = Array.from(
-        { length: data.headers.length },
-        () => values.alignment,
-      ).join('');
-      const row = (items: string[]) => `${items.map(latex).join(' & ')} \\\\`;
-      return `\\begin{tabular}{${columns}}\n${row(data.headers)}\n\\hline\n${data.rows.map((item) => row(data.headers.map((name) => item[name]))).join('\n')}\n\\end{tabular}`;
+      const raw = values.csv || values.data;
+      if (!raw?.trim()) throw new Error('Table data is required.');
+      const tbl = parseTable(raw);
+      const alignment = values.alignment;
+      if (alignment === 'decimal') {
+        tbl.alignments = tbl.headers.map(() => 'decimal');
+      } else if (alignment === 'l' || alignment === 'c' || alignment === 'r') {
+        const alignMap = { l: 'left', c: 'center', r: 'right' } as const;
+        tbl.alignments = tbl.headers.map(() => alignMap[alignment]);
+      }
+      return emitLatexTable(tbl, {
+        style: values.style === 'tabular' ? 'tabular' : 'booktabs',
+        environment:
+          (values.environment as 'table' | 'table*' | 'longtable' | 'plain') ||
+          (values.caption ? 'table' : 'plain'),
+        caption: values.caption?.trim() || undefined,
+        label: values.label?.trim() || undefined,
+        useSiunitx: alignment === 'decimal',
+      });
     }
     case 'markdown-to-slides': {
       const rawMarkdown = required(values.markdown, 'Presentation Markdown');
@@ -1587,66 +1606,14 @@ PRINTING INSTRUCTIONS:
 }
 
 function generateMarkdownTable(rawText: string, alignment: string): string {
-  const rawLines = rawText
-    .split(/\r?\n/gu)
-    .map((l) => l.trim())
-    .filter(Boolean);
-  if (rawLines.length === 0) {
+  const raw = rawText?.trim();
+  if (!raw) {
     throw new Error('Please provide at least one line of table data.');
   }
-
-  const matrix: string[][] = rawLines.map((line) => {
-    if (line.includes('|')) {
-      return line
-        .replace(/^\|/u, '')
-        .replace(/\|$/u, '')
-        .split('|')
-        .map((cell) => cell.trim());
-    }
-    if (line.includes('\t')) {
-      return line.split('\t').map((cell) => cell.trim());
-    }
-    return line.split(',').map((cell) => cell.trim());
-  });
-
-  const colCount = Math.max(...matrix.map((r) => r.length));
-  const normalized = matrix.map((r) => {
-    const row = [...r];
-    while (row.length < colCount) row.push('');
-    return row;
-  });
-
-  const colWidths = Array.from({ length: colCount }, (_, c) =>
-    Math.max(3, ...normalized.map((r) => r[c].length)),
-  );
-
-  const header = normalized[0];
-  const headerLine =
-    '| ' +
-    header.map((cell, c) => cell.padEnd(colWidths[c], ' ')).join(' | ') +
-    ' |';
-
-  let separatorCell = (len: number) => '-'.repeat(len);
-  if (alignment === 'center') {
-    separatorCell = (len: number) => `:${'-'.repeat(Math.max(1, len - 2))}:`;
-  } else if (alignment === 'right') {
-    separatorCell = (len: number) => `${'-'.repeat(Math.max(1, len - 1))}:`;
-  } else {
-    separatorCell = (len: number) => `:${'-'.repeat(Math.max(1, len - 1))}`;
-  }
-
-  const separatorLine =
-    '| ' + colWidths.map((w) => separatorCell(w)).join(' | ') + ' |';
-
-  const bodyLines = normalized.slice(1).map((row) => {
-    return (
-      '| ' +
-      row.map((cell, c) => cell.padEnd(colWidths[c], ' ')).join(' | ') +
-      ' |'
-    );
-  });
-
-  return [headerLine, separatorLine, ...bodyLines].join('\n');
+  const tbl = parseTable(raw);
+  const align = (alignment as 'left' | 'center' | 'right') || 'left';
+  tbl.alignments = tbl.headers.map(() => align);
+  return emitMarkdownTable(tbl);
 }
 
 function generateMarkdownResume(
