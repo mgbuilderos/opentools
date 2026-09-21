@@ -1,4 +1,10 @@
 /* oxlint-disable */
+import {
+  findRecipe,
+  sanitiseRecipeValues,
+  type RecipeValues,
+} from './tools/recipe-link';
+
 export const COMPLETION_EVENT = 'tools:completion';
 
 export interface CompletionMetric {
@@ -6,11 +12,28 @@ export interface CompletionMetric {
   value: string;
 }
 
+/**
+ * The settings the finished job ran with, so the receipt can offer to share
+ * them the moment the result appears.
+ *
+ * This is an id and values rather than a definition object because the event
+ * crosses a boundary: the tool dispatches, and a single dialog mounted once in
+ * the shell receives. Sending an id keeps the definition the one declared in
+ * `lib/tools/recipe-link.ts` — the receiver looks it up rather than trusting
+ * a shape handed to it, so a tool cannot widen what its own recipe may carry.
+ */
+export interface CompletionRecipe {
+  /** The `id` of a recipe declared in `lib/tools/recipe-link.ts`. */
+  id: string;
+  values: RecipeValues;
+}
+
 export interface CompletionDetail {
   operation: string;
   durationMs: number;
   summary?: string;
   metrics?: CompletionMetric[];
+  recipe?: CompletionRecipe;
 }
 
 function boundedDisplayText(value: string, maximum: number) {
@@ -29,6 +52,26 @@ export function formatCompletionDuration(durationMs: number) {
   return safe < 1000
     ? `${safe.toFixed(safe < 10 ? 1 : 0)} ms`
     : `${(safe / 1000).toFixed(2)} s`;
+}
+
+/**
+ * Reduce an announced recipe to what its own definition allows.
+ *
+ * Every other field on this event is display text, bounded and stripped above
+ * because it is shown to one person. A recipe is different in kind: it becomes
+ * a URL that gets pasted into a group chat. So it is not bounded, it is
+ * *filtered by the definition* — see `sanitiseRecipeValues`. An unknown id and
+ * a recipe left with no valid values both resolve to `undefined`, which the
+ * dialog renders as no share button at all rather than a link to nowhere.
+ */
+function normaliseRecipe(
+  recipe: CompletionRecipe | undefined,
+): CompletionRecipe | undefined {
+  if (!recipe) return undefined;
+  const definition = findRecipe(recipe.id);
+  if (!definition) return undefined;
+  const values = sanitiseRecipeValues(definition, recipe.values);
+  return Object.keys(values).length ? { id: definition.id, values } : undefined;
 }
 
 export function announceCompletion(detail: CompletionDetail) {
@@ -58,6 +101,7 @@ export function announceCompletion(detail: CompletionDetail) {
           ? boundedDisplayText(detail.summary, 180) || undefined
           : undefined,
         metrics: metrics?.length ? metrics : undefined,
+        recipe: normaliseRecipe(detail.recipe),
       },
     }),
   );

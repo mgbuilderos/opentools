@@ -25,12 +25,21 @@ export function RecipeShareButton({
   values,
   label = 'Copy setup link',
   subjectNoun = 'file',
+  emphasis = false,
 }: {
   definition: RecipeDefinition;
   values: RecipeValues;
   label?: string;
   /** What this tool takes in, so the reassurance names the right thing. */
   subjectNoun?: string;
+  /**
+   * Render as the primary action rather than a secondary one.
+   *
+   * Set where the share IS the point — the receipt that appears the instant a
+   * job finishes. In a tool's settings column it stays an outline button,
+   * because there it sits beside Clear and must not compete with Run.
+   */
+  emphasis?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState('');
@@ -52,10 +61,10 @@ export function RecipeShareButton({
   };
 
   return (
-    <div className="mt-3">
+    <div className={emphasis ? '' : 'mt-3'}>
       <Button
         type="button"
-        variant="outline"
+        variant={emphasis ? 'default' : 'outline'}
         className="h-11 w-full"
         onClick={() => void copy()}
       >

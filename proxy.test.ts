@@ -95,3 +95,67 @@ describe('proxy — self-host gate', () => {
     expect(log).toHaveBeenCalled();
   });
 });
+
+/**
+ * Whether the share loop is closing, answered from the server alone.
+ *
+ * The site has no client-side analytics and must not gain any, so nothing on
+ * the page may report an arrival. The edge already emits one structured event
+ * per page request; the only question is whether that event can tell a
+ * colleague who was sent a setup link apart from a visitor who searched. It
+ * could not, and these pin that it now can.
+ */
+describe('proxy — recipe arrivals are visible in the server counts', () => {
+  const logged = (path: string) => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    proxy(request(path));
+    const lines = log.mock.calls.map((call) => JSON.parse(String(call[0])));
+    return lines.find((line) => line.event === 'tool_impression');
+  };
+
+  it('marks a visit that arrived on a shared setup link', () => {
+    expect(logged('/image/optimize?format=png&quality=70')?.arrival).toBe(
+      'recipe',
+    );
+    expect(logged('/text/case-converter?mode=upper')?.arrival).toBe('recipe');
+  });
+
+  it('marks a visit that simply opened the tool', () => {
+    expect(logged('/image/optimize')?.arrival).toBe('direct');
+    expect(logged('/')?.arrival).toBe('direct');
+  });
+
+  it('does not credit a link the tool would ignore', () => {
+    expect(logged('/image/optimize?format=gif')?.arrival).toBe('direct');
+  });
+
+  /*
+   * The settings themselves must never reach the log. Knowing that a share
+   * worked needs a count; knowing what someone chose needs a reason, and there
+   * is not one. A log that holds settings is a log that grows an obligation.
+   */
+  it('records that a link was used and never what was in it', () => {
+    const event = logged('/image/optimize?format=png&quality=70&width=48');
+    expect(event?.arrival).toBe('recipe');
+
+    // `time` is dropped before the scan, and the first version of this test is
+    // why: it searched the whole serialised event for the shared values, and
+    // a millisecond clock contains any given pair of digits soon enough. It
+    // failed on '48' inside a timestamp, having asserted nothing about the
+    // fields it was written to guard. The param names are checked too, since
+    // leaking `quality=70` as a key is the same leak as leaking the number.
+    const recorded = { ...event };
+    delete recorded.time;
+    const serialised = JSON.stringify(recorded);
+    for (const secret of [
+      'png',
+      'format',
+      'quality',
+      'width',
+      '70',
+      '48',
+    ]) {
+      expect(serialised, `the log carried ${secret}`).not.toContain(secret);
+    }
+  });
+});

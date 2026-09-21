@@ -486,6 +486,15 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
           setStatus('success');
           announceCompletion({
             operation: 'PDF compressor',
+            recipe: {
+              id: PDF_COMPRESS_RECIPE.id,
+              values: {
+                recompress: options.recompressImages,
+                quality: options.imageQuality,
+                maxedge: String(options.maxImageDimension),
+                metadata: options.removeMetadata,
+              },
+            },
             durationMs,
             summary: `${message.pageCount} ${message.pageCount === 1 ? 'page' : 'pages'} rewritten and checked in this browser.`,
             metrics: [

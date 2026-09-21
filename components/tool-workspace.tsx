@@ -109,6 +109,7 @@ export function ToolWorkspace() {
         operation: `${textCaseOptions.find((item) => item.id === mode)?.label ?? 'Text case'} conversion`,
         durationMs: measurement.duration,
         summary: 'Your converted text is ready.',
+        recipe: { id: TEXT_CASE_RECIPE.id, values: { mode } },
         metrics: [
           { label: 'Characters', value: nextOutput.length.toLocaleString() },
           { label: 'Words', value: countWords(nextOutput).toLocaleString() },

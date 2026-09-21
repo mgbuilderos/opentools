@@ -31,10 +31,28 @@ import { testPng } from './fixtures';
  * pair in toPass retries the whole handshake, which is the idiom
  * `pdf-compress.spec.ts` already uses here for the same reason.
  */
+/**
+ * The control that opens the file chooser.
+ *
+ * WHY THIS IS A NAMED, ANCHORED PATTERN. It used to be `/choose (an )?image$/`,
+ * and `feat(image): add batch optimizer` renamed the button to "Choose
+ * image(s)" — which ends in `)`, so the locator stopped matching anything and
+ * every test in this file that loads an image has been failing since, on main,
+ * unnoticed. The assertions were never wrong; they simply never ran.
+ *
+ * Anchored at both ends on purpose. The hidden `input[type=file]` beside this
+ * button carries `aria-label="Choose image to optimize"` and Playwright maps a
+ * file input to the button role too, so an unanchored `/choose image/` matches
+ * two elements and fails on strict mode instead. Matching the label exactly
+ * picks the real button, and picks up its "Choose another" state once a file
+ * is already loaded.
+ */
+const CHOOSE_IMAGE = /^choose (image\(s\)|another)$/iu;
+
 async function chooseImage(page: Page, name = 'source.png') {
   await expect(async () => {
     const chooser = page.waitForEvent('filechooser', { timeout: 5_000 });
-    await page.getByRole('button', { name: /choose (an )?image$/iu }).click();
+    await page.getByRole('button', { name: CHOOSE_IMAGE }).click();
     await (
       await chooser
     ).setFiles({ name, mimeType: 'image/png', buffer: testPng(64) });
@@ -285,6 +303,116 @@ test.describe('Recipe links carry settings between people', () => {
     ).toHaveAttribute('aria-pressed', 'true');
 
     // End to end: the shared mode is the one the tool actually runs.
+    await page.getByRole('textbox', { name: 'Text to convert' }).fill('hello');
+    await page.getByRole('button', { name: 'Convert text' }).click();
+    await expect(page.getByText('HELLO', { exact: true })).toBeVisible();
+  });
+});
+
+/**
+ * THE LOOP, END TO END, THROUGH THE MOMENT IT HAS TO HAPPEN IN.
+ *
+ * The tests above prove a recipe link works when someone already has one. This
+ * proves the link can be *born* where it converts: in the receipt that appears
+ * the instant a job finishes, while the relief is still there. A share button
+ * that only exists in a settings column further up the page is read by nobody
+ * in that second, and the loop stays open.
+ *
+ * What is asserted, in order: a real job runs, a real download is clicked, the
+ * receipt appears with a share in it, the link it produces carries the settings
+ * that actually ran and not the file that was loaded, and opening it cold lands
+ * on the tool already configured. Every step is the thing itself — the file is
+ * a genuine attachment named like a private document, and the last leg is a
+ * fresh navigation, not a state check.
+ */
+test.describe('the share loop closes from the relief moment', () => {
+  test('a finished job offers a link that reopens the tool set up', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(String(error)));
+    await refuseClipboard(page);
+
+    await page.goto('/image/optimize');
+    // The file first, then the settings — choosing an image re-fits the
+    // dimension boxes, so settings made beforehand would be overwritten and
+    // this would be testing the wrong numbers.
+    await chooseImage(page, 'private-passport-scan.png');
+    await page
+      .getByRole('combobox', { name: /output format/iu })
+      .selectOption('image/jpeg');
+    await page.getByRole('spinbutton', { name: /max width/iu }).fill('720');
+
+    await page.getByRole('button', { name: 'Optimize image' }).click();
+
+    // A real download, because that is what the receipt waits for. Nothing
+    // here is synthesised: the receipt is only allowed to appear on a click
+    // the person actually made.
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Save image' }).click();
+    await download;
+
+    const receipt = page.getByRole('dialog');
+    await expect(receipt).toBeVisible({ timeout: 10_000 });
+
+    // The share is IN the receipt. Scoped to the dialog on purpose: the tool's
+    // own settings column carries a share too, and a test that matched either
+    // one would pass with the growth mechanic in exactly the place that does
+    // not work.
+    const shareInReceipt = receipt.getByRole('button', {
+      name: 'Copy setup link',
+    });
+    await expect(
+      shareInReceipt,
+      'the relief moment offered no way to send this on',
+    ).toBeVisible();
+
+    await shareInReceipt.click();
+    const link = await receipt
+      .getByRole('textbox', { name: /blocked the clipboard/iu })
+      .inputValue();
+
+    // The settings that actually ran.
+    expect(link).toContain('/image/optimize');
+    expect(link).toContain('format=jpeg');
+    expect(link).toContain('width=720');
+    // And nothing of the person's. The page is holding a file with this name
+    // at the moment the link is made, which is what makes the check mean
+    // something.
+    expect(link, 'a filename reached a link meant for a group chat').not.toContain(
+      'passport',
+    );
+    expect(link).not.toContain('private');
+    expect(link).not.toContain('.png');
+
+    // The colleague's side: a cold open of the link alone.
+    const shared = new URL(link);
+    await page.goto(`${shared.pathname}${shared.search}`);
+
+    await expect(
+      page.getByRole('status'),
+      'the link landed somewhere that did not apply the settings',
+    ).toContainText('JPEG');
+    await expect(
+      page.getByRole('combobox', { name: /output format/iu }),
+    ).toHaveValue('image/jpeg');
+    await expect(
+      page.getByRole('spinbutton', { name: /max width/iu }),
+    ).toHaveValue('720');
+
+    expect(errors, `page errors: ${errors.join(' | ')}`).toEqual([]);
+  });
+
+  test('a tool with no declared recipe still gets its receipt, without a share', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    // The receipt is shared by every tool, so the share must be additive: a
+    // tool that declares no recipe must still get its result and its receipt,
+    // and simply no link. Regressing this would break the support ask on most
+    // of the site in order to add a share to three tools.
+    await page.goto('/text/case-converter?mode=upper');
     await page.getByRole('textbox', { name: 'Text to convert' }).fill('hello');
     await page.getByRole('button', { name: 'Convert text' }).click();
     await expect(page.getByText('HELLO', { exact: true })).toBeVisible();

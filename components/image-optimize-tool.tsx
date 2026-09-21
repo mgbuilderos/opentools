@@ -356,6 +356,15 @@ export function ImageOptimizeTool() {
       setResult(next);
       announceCompletion({
         operation: 'Image optimizer',
+        recipe: {
+          id: IMAGE_OPTIMIZE_RECIPE.id,
+          values: {
+            format: targetFormat.split('/')[1],
+            quality: targetQuality,
+            width: targetMaxWidth,
+            height: targetMaxHeight,
+          },
+        },
         durationMs: next.durationMs,
         summary: `Image converted to ${optimized.format.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
         metrics: [

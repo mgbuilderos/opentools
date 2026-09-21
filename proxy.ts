@@ -6,6 +6,7 @@ import {
 } from './lib/security/content-security-policy';
 import { authorise, challengeResponse } from './lib/security/self-host-auth';
 import { siteRedirect } from './lib/seo/site-redirects';
+import { recipeArrivalShape } from './lib/tools/recipe-link';
 
 const responseHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -69,6 +70,23 @@ export function proxy(request: NextRequest) {
         referer_source: refererSource,
         path: pathname,
         tool,
+        /*
+         * Whether this visit came in on a shared setup link.
+         *
+         * This is the only way to see whether the share loop is closing. A
+         * recipe arrival and a search arrival are the same page view, so the
+         * path counts alone cannot separate them, and the site has no
+         * client-side analytics and must not gain any — no beacon, no script,
+         * no identifier. This is derived here at the edge from the shape of
+         * the request that already arrived, and is two words wide:
+         * `recipe` or `direct`. The settings themselves are never recorded;
+         * see `recipeArrivalShape` for why that question needs no answer.
+         *
+         * Reading the loop: `arrival=recipe` on a tool path is a colleague
+         * who was sent a link and landed on a working tool. Growth compounds
+         * only while that count rises faster than the sends that produced it.
+         */
+        arrival: recipeArrivalShape(pathname, request.nextUrl.search),
         lang: acceptLang.slice(0, 10),
         time: Date.now(),
       }),

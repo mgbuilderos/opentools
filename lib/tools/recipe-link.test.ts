@@ -13,6 +13,9 @@ import {
   describeRecipe,
   readRecipeValues,
   recipeParamNames,
+  findRecipe,
+  recipeArrivalShape,
+  sanitiseRecipeValues,
   type RecipeDefinition,
 } from './recipe-link';
 
@@ -225,5 +228,104 @@ describe('the declarations stay honest about the tools they describe', () => {
       '1600',
       '1000',
     ]);
+  });
+});
+
+/**
+ * The share now leaves from the completion receipt, which is a single dialog
+ * mounted once in the shell — not from inside the tool that did the work. So
+ * the settings travel as an id plus values across a component boundary, and
+ * the privacy rule has to survive that trip. These cover the two functions
+ * that carry it.
+ */
+describe('settings that cross the completion boundary', () => {
+  it('resolves only ids that are actually declared', () => {
+    for (const definition of ALL_RECIPES) {
+      expect(findRecipe(definition.id)).toBe(definition);
+    }
+    expect(findRecipe('not-a-recipe')).toBeNull();
+    expect(findRecipe('')).toBeNull();
+    expect(findRecipe('__proto__')).toBeNull();
+  });
+
+  // The same gate as the encoder's, applied at the new boundary: a tool that
+  // hands the receipt its whole state object must not be able to widen what
+  // its own recipe carries.
+  it('strips anything the definition does not declare', () => {
+    const smuggled = {
+      format: 'png',
+      filename: 'salary-slip-march.pdf',
+      text: 'confidential board minutes',
+      quality: 5000,
+      email: 'someone@example.com',
+    };
+    expect(sanitiseRecipeValues(IMAGE_OPTIMIZE_RECIPE, smuggled)).toEqual({
+      format: 'png',
+    });
+  });
+
+  it('keeps a full valid set of settings intact', () => {
+    for (const definition of ALL_RECIPES) {
+      const values = validValuesFor(definition);
+      expect(sanitiseRecipeValues(definition, values), definition.id).toEqual(
+        values,
+      );
+    }
+  });
+});
+
+/**
+ * Whether the loop is closing, read from the request alone.
+ *
+ * The site has no client-side analytics and must not gain any, so this is the
+ * only signal that separates "a colleague opened the link I sent" from "someone
+ * found us on a search engine". It has to be conservative in one direction:
+ * a link whose settings the tool would ignore must not be counted as a share
+ * that worked, or the number flatters itself.
+ */
+describe('a recipe arrival is distinguishable from a plain one', () => {
+  it('counts a real shared link as a recipe arrival', () => {
+    expect(
+      recipeArrivalShape('/image/optimize', '?format=png&quality=70'),
+    ).toBe('recipe');
+    expect(recipeArrivalShape('/text/case-converter', '?mode=upper')).toBe(
+      'recipe',
+    );
+    expect(recipeArrivalShape('/pdf/compress', '?metadata=on')).toBe('recipe');
+  });
+
+  it('counts someone who simply opened the tool as direct', () => {
+    expect(recipeArrivalShape('/image/optimize', '')).toBe('direct');
+    expect(recipeArrivalShape('/image/optimize', '?')).toBe('direct');
+  });
+
+  it('does not credit a link whose settings the tool would ignore', () => {
+    // Every one of these is dropped by the definition, so the recipient lands
+    // on plain defaults. Counting it as a working share would overstate the
+    // loop in exactly the direction that flatters it.
+    expect(recipeArrivalShape('/image/optimize', '?format=gif')).toBe('direct');
+    expect(recipeArrivalShape('/image/optimize', '?quality=5000')).toBe(
+      'direct',
+    );
+    expect(
+      recipeArrivalShape('/image/optimize', '?filename=passport.pdf'),
+    ).toBe('direct');
+  });
+
+  it('says direct for any path that declares no recipe', () => {
+    expect(recipeArrivalShape('/', '?format=png')).toBe('direct');
+    expect(recipeArrivalShape('/support', '?mode=upper')).toBe('direct');
+  });
+
+  // Every declared recipe must be observable, or a tool could be shared all
+  // day and never show up in the counts.
+  it('can see an arrival for every declared recipe', () => {
+    for (const definition of ALL_RECIPES) {
+      const search = buildRecipeSearch(definition, validValuesFor(definition));
+      expect(
+        recipeArrivalShape(definition.path, `?${search}`),
+        definition.id,
+      ).toBe('recipe');
+    }
   });
 });

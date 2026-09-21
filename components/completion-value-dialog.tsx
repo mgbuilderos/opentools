@@ -9,12 +9,14 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { RecipeShareButton } from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
 import {
   COMPLETION_EVENT,
   formatCompletionDuration,
   type CompletionDetail,
 } from '@/lib/completion';
+import { findRecipe } from '@/lib/tools/recipe-link';
 import {
   isLikelyIndiaVisitor,
   getBuyMeACoffeeUrl,
@@ -204,6 +206,10 @@ export function CompletionValueDialog() {
 
   if (!receipt) return null;
 
+  // Resolved from the id, never from a definition handed over in the event —
+  // see `CompletionRecipe`. An unrecognised id simply renders no share.
+  const shareRecipe = receipt.recipe ? findRecipe(receipt.recipe.id) : null;
+
   return (
     <dialog
       open
@@ -278,6 +284,49 @@ export function CompletionValueDialog() {
             <dd className="mt-1 text-base font-semibold">This browser</dd>
           </div>
         </dl>
+
+        {/*
+          THE SHARE, AND WHY IT IS HERE AND NOWHERE ELSE.
+
+          This is the growth mechanic, so its placement is the whole design.
+          The share sits in the receipt because this is the one second in the
+          entire session when the person has just felt the relief — the job is
+          done, the file is saving, and the thought "X should have this" is
+          available. A share button in a footer, on an about page or behind a
+          menu is read by nobody in that state, which is the same as not
+          shipping one.
+
+          It is placed ABOVE the support ask deliberately. Both are asks, and
+          only one of them compounds: money from this person ends with this
+          person, while a setup link that lands on a working tool can produce
+          the next relief moment, and the one after that. When only one ask
+          gets read, it should be the one that can come back.
+
+          WHAT IS SHARED. The settings, resolved from the recipe definition —
+          never the file, never its name, never anything typed in. That is held
+          by construction in `lib/tools/recipe-link.ts` and filtered again at
+          this boundary by `normaliseRecipe`, because the settings crossed a
+          component boundary to get here.
+        */}
+        {shareRecipe ? (
+          <div className="mb-4 rounded-xl border border-success/30 bg-success/10 p-3.5">
+            <p className="text-xs font-semibold leading-relaxed">
+              Someone else has this same job to do.
+            </p>
+            <p className="mb-3 mt-1 text-xs leading-relaxed text-muted-foreground">
+              Send them the tool already set up the way you just ran it — they
+              bring their own {shareRecipe.subjectNoun ?? 'file'} and get the
+              same result in one tap.
+            </p>
+            <RecipeShareButton
+              definition={shareRecipe}
+              values={receipt.recipe?.values ?? {}}
+              label="Copy setup link"
+              subjectNoun={shareRecipe.subjectNoun}
+              emphasis
+            />
+          </div>
+        ) : null}
 
         {/*
           The one thing this product may brand, and the only growth loop its own

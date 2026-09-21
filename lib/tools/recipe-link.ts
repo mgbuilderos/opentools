@@ -69,6 +69,12 @@ export type RecipeDefinition = {
   /** The page this recipe reopens, e.g. `/image/optimize`. */
   readonly path: string;
   readonly fields: readonly RecipeField[];
+  /**
+   * What this tool takes in, so a share offer names the right thing —
+   * "your PDF stays on this device", not "your file". Display only: it is
+   * never read by `buildRecipeSearch`, so it cannot reach a URL.
+   */
+  readonly subjectNoun?: string;
 };
 
 /** Settings as a tool component holds them. Primitives only, by design. */
@@ -218,6 +224,7 @@ export function buildRecipeUrl(
 export const IMAGE_OPTIMIZE_RECIPE: RecipeDefinition = {
   id: 'image-optimize',
   path: '/image/optimize',
+  subjectNoun: 'image',
   fields: [
     {
       // `webp`, not `image/webp`. The MIME type is what the component holds,
@@ -255,6 +262,7 @@ export const IMAGE_OPTIMIZE_RECIPE: RecipeDefinition = {
 export const PDF_COMPRESS_RECIPE: RecipeDefinition = {
   id: 'pdf-compress',
   path: '/pdf/compress',
+  subjectNoun: 'PDF',
   fields: [
     {
       kind: 'flag',
@@ -299,6 +307,7 @@ export const PDF_COMPRESS_RECIPE: RecipeDefinition = {
 export const TEXT_CASE_RECIPE: RecipeDefinition = {
   id: 'text-case',
   path: '/text/case-converter',
+  subjectNoun: 'text',
   fields: [
     {
       kind: 'choice',
@@ -325,3 +334,57 @@ export const ALL_RECIPES: readonly RecipeDefinition[] = [
   PDF_COMPRESS_RECIPE,
   TEXT_CASE_RECIPE,
 ];
+
+/** Look up a declared recipe by id. An unknown id yields null rather than throwing. */
+export function findRecipe(id: string): RecipeDefinition | null {
+  return ALL_RECIPES.find((recipe) => recipe.id === id) ?? null;
+}
+
+/**
+ * Drop everything a definition does not declare, by encoding and decoding
+ * again.
+ *
+ * The round trip is the point. `buildRecipeSearch` writes only declared,
+ * valid fields and `readRecipeValues` reads only declared, valid fields, so
+ * whatever survives both has been filtered twice by the definition and never
+ * once by the caller. That matters here because the completion event carries
+ * settings across a component boundary: the tool that announces a result is
+ * not the component that renders the share, so the guarantee cannot be held
+ * by either one of them reading the other's code carefully.
+ */
+export function sanitiseRecipeValues(
+  definition: RecipeDefinition,
+  values: RecipeValues,
+): RecipeValues {
+  return readRecipeValues(definition, buildRecipeSearch(definition, values));
+}
+
+/**
+ * Whether a request arrived carrying someone else's settings.
+ *
+ * WHY THIS IS SHAPE AND NOT ANALYTICS. The loop this product needs is one
+ * person finishing a job, sending a setup link, and a colleague arriving on a
+ * working tool. Whether that is happening is not observable from totals: a
+ * recipe arrival and a search arrival are the same page view. The site has no
+ * client-side analytics and must not gain any, so the only honest place to
+ * tell them apart is the edge, from the shape of the request itself.
+ *
+ * WHAT IT DELIBERATELY DOES NOT RETURN. The values. This answers "did someone
+ * arrive from a shared setup" and never "what setup", because the second
+ * question needs no answer to tell whether the loop is closing, and a log that
+ * holds settings is a log that grows a reason to be careful. Two words, no
+ * cardinality, nothing to correlate a person by.
+ *
+ * A path with no declared recipe, or one whose params all fail the
+ * definition's own validation, is `direct` — so a junk or hand-edited link
+ * that the tool ignores is not counted as a share that worked.
+ */
+export function recipeArrivalShape(
+  pathname: string,
+  search: string,
+): 'recipe' | 'direct' {
+  const definition = ALL_RECIPES.find((recipe) => recipe.path === pathname);
+  if (!definition) return 'direct';
+  const applied = readRecipeValues(definition, search);
+  return Object.keys(applied).length > 0 ? 'recipe' : 'direct';
+}

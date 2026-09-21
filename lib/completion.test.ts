@@ -9,6 +9,67 @@ import {
   formatCompletionDuration,
 } from './completion';
 
+/**
+ * The share leaves from the receipt, so the settings have to reach it — and
+ * nothing else may ride along. `recipe-link.test.ts` proves the filter; these
+ * prove the event actually applies it, which is the part that would rot if a
+ * later edit passed `detail.recipe` straight through.
+ */
+describe('the settings the receipt may offer to share', () => {
+  const announced = (recipe: unknown) => {
+    const dispatchEvent = vi.fn();
+    vi.stubGlobal('window', { dispatchEvent });
+    announceCompletion({
+      operation: 'Image optimizer',
+      durationMs: 12,
+      metrics: [{ label: 'After', value: '2 KB' }],
+      recipe: recipe as never,
+    });
+    const event = dispatchEvent.mock.calls[0][0] as CustomEvent;
+    vi.unstubAllGlobals();
+    return event.detail.recipe;
+  };
+
+  it('carries a declared recipe through to the receipt', () => {
+    expect(
+      announced({
+        id: 'image-optimize',
+        values: { format: 'png', quality: 70 },
+      }),
+    ).toEqual({ id: 'image-optimize', values: { format: 'png', quality: 70 } });
+  });
+
+  // THE GATE, restated at this boundary. A tool handing over its whole state
+  // object must not be able to put a filename into a link someone pastes into
+  // a group chat.
+  it('drops everything the definition does not declare', () => {
+    expect(
+      announced({
+        id: 'image-optimize',
+        values: {
+          format: 'png',
+          filename: 'passport-scan.png',
+          text: 'confidential board minutes',
+        },
+      }),
+    ).toEqual({ id: 'image-optimize', values: { format: 'png' } });
+  });
+
+  it('offers no share at all rather than a broken one', () => {
+    expect(announced(undefined)).toBeUndefined();
+    // An id nothing declares.
+    expect(
+      announced({ id: 'made-up', values: { format: 'png' } }),
+    ).toBeUndefined();
+    // Declared, but every value invalid — a share button here would copy a
+    // link carrying nothing, which is worse than no button.
+    expect(
+      announced({ id: 'image-optimize', values: { format: 'gif' } }),
+    ).toBeUndefined();
+    expect(announced({ id: 'image-optimize', values: {} })).toBeUndefined();
+  });
+});
+
 describe('completion value receipt', () => {
   it('formats measured durations without exaggerating precision', () => {
     expect(formatCompletionDuration(2.34)).toBe('2.3 ms');
