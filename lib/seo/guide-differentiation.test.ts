@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { DIFFERENTIATED_GUIDE_SLUGS, generateToolGuide } from './guide-content';
+import { hasPublishedGuide } from './guide-consolidation';
 import { LIVE_TOOL_CATALOG } from './live-tools';
 
 /**
@@ -104,6 +105,11 @@ function jaccard(a: Set<string>, b: Set<string>): number {
  */
 const UNDIFFERENTIATED: readonly string[] = LIVE_TOOL_CATALOG.filter(
   (tool) =>
+    // Only a guide that is actually served can read like the template. Since
+    // guide consolidation (2026-09-21) every guide outside the keep list 301s
+    // to its tool page and renders nothing, so a new tool owes hand-written
+    // guide content only if its guide is published.
+    hasPublishedGuide(tool.slug) &&
     (tool.releaseWave === 'P0' || tool.rank <= 3) &&
     !DIFFERENTIATED_GUIDE_SLUGS.has(tool.slug),
 ).map((tool) => tool.slug);
