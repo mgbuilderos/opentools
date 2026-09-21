@@ -535,7 +535,10 @@ export function WorkbookAuditTool({
                           </span>
 
                           {/* Location */}
-                          <span className="text-xs font-mono font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 px-2 py-0.5 rounded">
+                          <span
+                            data-testid="finding-location"
+                            className="text-xs font-mono font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 px-2 py-0.5 rounded"
+                          >
                             {finding.sheet ? `${finding.sheet}!` : ''}
                             {finding.cell ?? finding.range ?? 'Sheet-level'}
                           </span>
