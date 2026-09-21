@@ -69,6 +69,13 @@ function routeFor(pageFile: string): string {
  * expanded to the ids its own source names, and each one is then held to
  * exactly the same standard as a hand-written page.
  *
+ * The segment's own name is not the point — `app/convert/[pair]/page.tsx`
+ * expands the same way, to one route per from→to unit pair. What matters is
+ * that the prefix is registered in `ROUTED_TOOL_PREFIXES`, which is the single
+ * source the route file, the registry and this check all read. A bracketed
+ * path whose prefix is not registered still throws: that is the case where
+ * nobody can say what ships behind it.
+ *
  * Read from the source rather than imported, because importing a route module
  * pulls in the whole client component tree for a check about file layout.
  */
@@ -80,8 +87,9 @@ function expandDynamic(page: {
   if (!page.route.includes('[')) return [page];
 
   const prefix = page.route.slice(0, page.route.lastIndexOf('/'));
+  const segment = page.route.slice(page.route.lastIndexOf('/') + 1);
   const operations = routedToolIdsForPrefix(prefix);
-  if (page.route.endsWith('/[tool]') && operations) {
+  if (/^\[[a-z]+\]$/u.test(segment) && operations) {
     // The same source the route file and the registry both read, so the three
     // cannot disagree about which pages exist.
     return operations.map((operation) => ({

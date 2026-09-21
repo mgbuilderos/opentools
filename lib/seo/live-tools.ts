@@ -16,6 +16,7 @@ import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
+import { CONVERSION_PAIRS } from './conversion-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
@@ -125,9 +126,17 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>([
  * Derived from the operation lists rather than typed out, so a tool cannot be
  * added to a workbench and silently left without an address — the failure this
  * whole change exists to stop.
+ *
+ * `/convert` is the same idea taken one level down. A converter is not one
+ * search intent: "cm to inches" and "km to miles" are separate questions that
+ * the distance converter's single page answered with a single title. Its
+ * "operations" are the from→to pairs the converters themselves declare, one
+ * page each, so the same registration, the same sitemap and the same tests
+ * cover them with nothing new to remember. See `conversion-pairs.ts`.
  */
 const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
   new Map<string, readonly { id: string }[]>([
+    ['/convert', CONVERSION_PAIRS],
     ['/creator', CREATOR_OPERATIONS],
     ['/data', SPREADSHEET_OPERATIONS],
     ['/date', DATE_OPERATIONS],

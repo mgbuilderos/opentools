@@ -34,6 +34,54 @@ function elapsed(value: number) {
 }
 
 /*
+  One from->to unit pair, pre-set, with the facts about it worked out at build
+  time by the same function the tool runs. `app/convert/[pair]/page.tsx`
+  computes this and passes it in; nothing here is written by hand, so the
+  sentence above the converter and the number the converter returns cannot
+  disagree. The type is declared here rather than imported so that the pair
+  registry -- 512 entries -- stays out of the client bundle.
+*/
+export interface ConversionPairView {
+  title: string;
+  summary: string;
+  /** What the numbers prove about this pair; '' when nothing was proved. */
+  relationship: string;
+  examples: readonly { input: string; output: string }[];
+  from: string;
+  to: string;
+  /** Unit key -> label, for this converter only. */
+  units: Record<string, string>;
+  /** `${from}|${to}` -> pair slug, for this converter only. */
+  routes: Record<string, string>;
+}
+
+/** The reverse pair first, then the other conversions out of and into it. */
+function relatedPairs(pair: ConversionPairView) {
+  const label = (from: string, to: string) =>
+    `${pair.units[from] ?? from} to ${pair.units[to] ?? to}`;
+  return Object.entries(pair.routes)
+    .map(([key, slug]) => {
+      const [from = '', to = ''] = key.split('|');
+      return { from, to, slug, label: label(from, to) };
+    })
+    .filter((entry) => entry.from !== pair.from || entry.to !== pair.to)
+    .map((entry) => ({
+      ...entry,
+      rank:
+        entry.from === pair.to && entry.to === pair.from
+          ? 0
+          : entry.from === pair.from
+            ? 1
+            : entry.to === pair.to
+              ? 2
+              : 3,
+    }))
+    .filter((entry) => entry.rank < 3)
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, 12);
+}
+
+/*
   `initialOperationId` is what gives each calculator its own address.
 
   All 67 of these used to answer on one URL, `/math/workbench?tool=<id>`, with
@@ -50,8 +98,10 @@ function elapsed(value: number) {
 */
 export function MathWorkbenchTool({
   initialOperationId,
+  pair,
 }: {
   initialOperationId?: string;
+  pair?: ConversionPairView;
 } = {}) {
   const routed = MATH_OPERATIONS.find((item) => item.id === initialOperationId);
   const [operationId, setOperationId] = useState(
@@ -63,9 +113,13 @@ export function MathWorkbenchTool({
       MATH_OPERATIONS[0],
     [operationId],
   );
-  const [values, setValues] = useState<Record<string, string>>(() =>
-    defaults(routed ?? MATH_OPERATIONS[0]),
-  );
+  const [values, setValues] = useState<Record<string, string>>(() => ({
+    ...defaults(routed ?? MATH_OPERATIONS[0]),
+    // The pair in the URL is the pair the converter opens on. Without this the
+    // page would promise "centimetres to inches" and show the converter's own
+    // default units, which is the mismatch the whole route exists to end.
+    ...(pair ? { from: pair.from, to: pair.to } : {}),
+  }));
   const [output, setOutput] = useState('');
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState('');
@@ -122,6 +176,21 @@ export function MathWorkbenchTool({
   };
 
   const update = (id: string, value: string) => {
+    // On a pair page the units are the address. Choosing different ones means
+    // a different question, so it goes to that question's page rather than
+    // leaving the title, the factor and the worked examples describing a
+    // conversion the converter is no longer doing. A combination with no page
+    // of its own -- the same unit twice, or a pair another converter already
+    // answers -- is just applied here.
+    if (pair && (id === 'from' || id === 'to')) {
+      const from = id === 'from' ? value : values.from;
+      const to = id === 'to' ? value : values.to;
+      const slug = pair.routes[`${from}|${to}`];
+      if (slug) {
+        window.location.assign(`/convert/${slug}`);
+        return;
+      }
+    }
     setValues((current) => ({ ...current, [id]: value }));
   };
 
@@ -173,10 +242,16 @@ export function MathWorkbenchTool({
                 they both weigh most.
               */}
               <p className="text-xs font-medium text-muted-foreground">
-                Calculators / {MATH_OPERATIONS.length} related tools
+                {pair
+                  ? `Unit conversion / ${operation.name}`
+                  : `Calculators / ${MATH_OPERATIONS.length} related tools`}
               </p>
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                {routed ? routed.name : 'Math & unit workbench'}
+                {pair
+                  ? pair.title
+                  : routed
+                    ? routed.name
+                    : 'Math & unit workbench'}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
                 {/*
@@ -187,9 +262,11 @@ export function MathWorkbenchTool({
                   not assert a result about the wire that only the egress
                   protocol establishes. That evidence lives on /proof.
                 */}
-                {routed
-                  ? `${routed.description} It runs in this browser tab.`
-                  : 'Arithmetic, statistics, number theory, geometry, and unit conversion in one local workspace.'}
+                {pair
+                  ? pair.summary
+                  : routed
+                    ? `${routed.description} It runs in this browser tab.`
+                    : 'Arithmetic, statistics, number theory, geometry, and unit conversion in one local workspace.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -197,6 +274,38 @@ export function MathWorkbenchTool({
               On-device prototype
             </span>
           </header>
+
+          {/*
+            The part of the page that is only true of this pair, and the reason
+            the route is not another near-template family. Every string below
+            was produced at build time by running the converter, so the factor
+            and the examples are the tool's own output rather than prose about
+            it -- they cannot drift, and they are different on every page.
+          */}
+          {pair ? (
+            <section className="mt-6 rounded-xl border bg-card p-4 sm:p-5">
+              <h2 className="text-base font-semibold">
+                {pair.units[pair.from] ?? pair.from} to{' '}
+                {pair.units[pair.to] ?? pair.to}, worked out
+              </h2>
+              {pair.relationship ? (
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {pair.relationship}
+                </p>
+              ) : null}
+              <dl className="tabular mt-4 grid gap-2 sm:grid-cols-2">
+                {pair.examples.map((example) => (
+                  <div
+                    key={example.input}
+                    className="flex items-baseline justify-between gap-3 rounded-lg bg-muted px-3 py-2 font-mono text-sm"
+                  >
+                    <dt>{example.input}</dt>
+                    <dd className="font-semibold">= {example.output}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ) : null}
 
           <div className="mt-6 grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
             <section className="rounded-xl border bg-card p-4">
@@ -349,6 +458,32 @@ export function MathWorkbenchTool({
                 </div>
               </div>
             </section>
+          ) : null}
+
+          {/*
+            Without these every pair page is reachable only from the sitemap.
+            The reverse conversion comes first because it is the one people
+            want next, then the rest of this converter's grid.
+          */}
+          {pair ? (
+            <nav
+              aria-label="Related conversions"
+              className="mt-8 border-t pt-6"
+            >
+              <h2 className="text-sm font-semibold">Related conversions</h2>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {relatedPairs(pair).map((entry) => (
+                  <li key={entry.slug}>
+                    <a
+                      href={`/convert/${entry.slug}`}
+                      className="focus-ring inline-flex rounded-lg border px-3 py-2 text-sm hover:bg-muted"
+                    >
+                      {entry.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           ) : null}
 
           <footer className="mt-8 border-t py-5 text-xs leading-5 text-muted-foreground">
