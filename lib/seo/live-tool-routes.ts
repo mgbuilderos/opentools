@@ -744,12 +744,7 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>(
       ],
       [
         '/audio/mp3-toolkit',
-        [
-          'mp3-cut',
-          'mp3-join',
-          'mp3-tags',
-          'mp3-inspect',
-        ],
+        ['mp3-cut', 'mp3-join', 'mp3-tags', 'mp3-inspect'],
       ],
       [
         '/creator/workbench',

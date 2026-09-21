@@ -9,6 +9,7 @@
  * it duly did, the first time a change added routes. This makes regenerating it
  * a command instead of a transcription.
  */
+import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -17,9 +18,8 @@ const TARGET = path.join(ROOT, 'lib/seo/live-tool-routes.ts');
 
 // Static specifier: a computed import path is "too dynamic" for vite-node, so
 // run this with `npx tsx scripts/generate-live-tool-routes.mjs`.
-const { LIVE_TOOL_ROUTES, operationIdsForRoute } = await import(
-  '../lib/seo/live-tools.ts'
-);
+const { LIVE_TOOL_ROUTES, operationIdsForRoute } =
+  await import('../lib/seo/live-tools.ts');
 
 const routes = LIVE_TOOL_ROUTES.map((route) => `  '${route}',`).join('\n');
 
@@ -44,6 +44,15 @@ const next = source
   );
 
 writeFileSync(TARGET, next);
+
+// Format what we just wrote. Without this the generated file fails the FORMAT
+// gate, which is how it shipped unformatted the first time: the generator ran
+// after the last `npm run format` of the session, so nothing caught it.
+execFileSync(path.join(ROOT, 'node_modules/.bin/oxfmt'), [TARGET], {
+  cwd: ROOT,
+  stdio: 'inherit',
+});
+
 console.log(
   `live-tool-routes.ts: ${LIVE_TOOL_ROUTES.length} routes, ` +
     `${LIVE_TOOL_ROUTES.filter((r) => operationIdsForRoute(r)).length} with operation ids`,
