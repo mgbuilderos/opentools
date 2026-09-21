@@ -198,6 +198,30 @@ export function describeRecipe(
 }
 
 /**
+ * The path every shared link starts with.
+ *
+ * WHY A SHARED LINK GETS ITS OWN PATH. Whether the loop is closing is a
+ * question about arrivals, and the site has no client-side analytics and must
+ * not gain any — a script that reported an arrival would need a network call,
+ * and `connect-src 'none'` is the one thing here that does not bend. That
+ * leaves the request itself, and the request alone cannot answer it: tool
+ * pages are prerendered to static assets, which is deliberate and is why the
+ * 503s stopped, so a visit to `/image/optimize` never reaches the worker and
+ * cannot be logged or inspected at all. A query string changes none of that —
+ * the asset is served either way, and the counts group by path.
+ *
+ * So the distinction is put where a static-asset server can still see it: the
+ * path. `/shared/image/optimize` has no asset behind it, so it is both
+ * countable in the ordinary path counts and reaches the worker, which sends
+ * the visitor on to the tool. Nothing about prerendering changes, nothing
+ * renders that did not render before, and no script runs to report anything.
+ *
+ * It reads honestly too. Someone receiving `/shared/image/optimize?format=…`
+ * can see before clicking that this is a setup somebody sent them.
+ */
+export const RECIPE_LINK_PREFIX = '/shared';
+
+/**
  * The absolute link to copy. `origin` is passed in rather than read from
  * `window` so this stays testable and usable during server rendering.
  */
@@ -207,8 +231,21 @@ export function buildRecipeUrl(
   origin: string,
 ): string {
   const search = buildRecipeSearch(definition, values);
-  const base = `${origin.replace(/\/+$/, '')}${definition.path}`;
+  const base = `${origin.replace(/\/+$/, '')}${RECIPE_LINK_PREFIX}${definition.path}`;
   return search ? `${base}?${search}` : base;
+}
+
+/**
+ * The tool a shared path sends someone to, or null if this is not one.
+ *
+ * Matched against the declared recipes rather than by trimming the prefix, so
+ * `/shared/anything-at-all` is not an open redirect: the only destinations
+ * that exist are the handful of tool paths declared in this file.
+ */
+export function recipeLinkTarget(pathname: string): string | null {
+  if (!pathname.startsWith(`${RECIPE_LINK_PREFIX}/`)) return null;
+  const target = pathname.slice(RECIPE_LINK_PREFIX.length).replace(/\/+$/, '');
+  return ALL_RECIPES.some((recipe) => recipe.path === target) ? target : null;
 }
 
 /* -------------------------------------------------------------------------

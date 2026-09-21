@@ -15,6 +15,7 @@ import {
   recipeParamNames,
   findRecipe,
   recipeArrivalShape,
+  recipeLinkTarget,
   sanitiseRecipeValues,
   type RecipeDefinition,
 } from './recipe-link';
@@ -183,20 +184,49 @@ describe('the recipient can read what will happen before it happens', () => {
 });
 
 describe('the link that gets copied', () => {
-  it('is absolute and lands on the tool page', () => {
+  // The `/shared` prefix is what makes an arrival countable at all: tool pages
+  // are prerendered static assets and never reach the worker, so a visit to
+  // `/image/optimize` cannot be logged however it is decorated. See
+  // `RECIPE_LINK_PREFIX`.
+  it('is absolute and goes through the shared path', () => {
     expect(
       buildRecipeUrl(
         IMAGE_OPTIMIZE_RECIPE,
         { format: 'webp', quality: 82 },
         'https://getopentools.com',
       ),
-    ).toBe('https://getopentools.com/image/optimize?format=webp&quality=82');
+    ).toBe(
+      'https://getopentools.com/shared/image/optimize?format=webp&quality=82',
+    );
   });
 
   it('does not double the slash when the origin carries one', () => {
     expect(
       buildRecipeUrl(TEXT_CASE_RECIPE, {}, 'https://getopentools.com/'),
-    ).toBe('https://getopentools.com/text/case-converter');
+    ).toBe('https://getopentools.com/shared/text/case-converter');
+  });
+
+  it('sends every shared path back to the tool it names', () => {
+    for (const definition of ALL_RECIPES) {
+      const url = new URL(buildRecipeUrl(definition, {}, 'https://x.test'));
+      expect(recipeLinkTarget(url.pathname), definition.id).toBe(
+        definition.path,
+      );
+    }
+  });
+
+  /*
+   * The destinations are matched against the declared recipes, never produced
+   * by trimming the prefix — so this cannot become an open redirect, which is
+   * the usual way a path like this goes wrong.
+   */
+  it('refuses to forward anywhere that is not a declared tool', () => {
+    expect(recipeLinkTarget('/shared/not-a-tool')).toBeNull();
+    expect(recipeLinkTarget('/shared/')).toBeNull();
+    expect(recipeLinkTarget('/shared')).toBeNull();
+    expect(recipeLinkTarget('/image/optimize')).toBeNull();
+    expect(recipeLinkTarget('/shared//evil.test')).toBeNull();
+    expect(recipeLinkTarget('/shared/https://evil.test')).toBeNull();
   });
 });
 

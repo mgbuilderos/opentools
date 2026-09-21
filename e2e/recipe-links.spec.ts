@@ -231,8 +231,10 @@ test.describe('Recipe links carry settings between people', () => {
     await expect(
       page.getByRole('button', { name: 'Setup link copied' }),
     ).toBeVisible();
+    // Through `/shared`, which is what makes the arrival countable without any
+    // script on the page — see `RECIPE_LINK_PREFIX`.
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-      `${new URL(page.url()).origin}/text/case-converter?mode=title`,
+      `${new URL(page.url()).origin}/shared/text/case-converter?mode=title`,
     );
     // The fallback box is for when the write fails; it must not appear here.
     await expect(
@@ -388,7 +390,14 @@ test.describe('the share loop closes from the relief moment', () => {
 
     // The colleague's side: a cold open of the link alone.
     const shared = new URL(link);
+    expect(shared.pathname).toBe('/shared/image/optimize');
     await page.goto(`${shared.pathname}${shared.search}`);
+
+    // The shared path is a doorway, not a destination: it hands over to the
+    // real tool page, so the recipient ends up on the canonical URL.
+    await expect
+      .poll(() => new URL(page.url()).pathname)
+      .toBe('/image/optimize');
 
     await expect(
       page.getByRole('status'),

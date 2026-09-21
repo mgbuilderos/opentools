@@ -114,10 +114,46 @@ describe('proxy — recipe arrivals are visible in the server counts', () => {
   };
 
   it('marks a visit that arrived on a shared setup link', () => {
-    expect(logged('/image/optimize?format=png&quality=70')?.arrival).toBe(
+    expect(
+      logged('/shared/image/optimize?format=png&quality=70')?.arrival,
+    ).toBe('recipe');
+    expect(logged('/shared/text/case-converter?mode=upper')?.arrival).toBe(
       'recipe',
     );
-    expect(logged('/text/case-converter?mode=upper')?.arrival).toBe('recipe');
+  });
+
+  /*
+   * The shared path is what makes this countable. Tool pages are prerendered
+   * static assets and never reach the worker, so an arrival on the tool's own
+   * path cannot be observed here however the URL is decorated — which is why
+   * the link is given a path of its own instead.
+   */
+  it('counts the arrival under the tool it leads to', () => {
+    const event = logged('/shared/image/optimize?format=png');
+    expect(event?.path).toBe('/shared/image/optimize');
+    expect(event?.tool).toBe('/image/optimize');
+  });
+
+  it('sends a shared link on to the working tool, settings intact', () => {
+    const response = proxy(request('/shared/image/optimize?format=png&width=720'));
+    expect(response.status).toBe(307);
+    const location = new URL(String(response.headers.get('location')));
+    expect(location.pathname).toBe('/image/optimize');
+    expect(location.search).toBe('?format=png&width=720');
+  });
+
+  // Temporary, not permanent: a cached redirect would stop the second person
+  // opening the same link from ever reaching the server, undercounting exactly
+  // the links that were shared most.
+  it('does not let the redirect be cached away', () => {
+    expect(proxy(request('/shared/text/case-converter?mode=upper')).status).toBe(
+      307,
+    );
+  });
+
+  it('forwards nowhere that is not a declared tool', () => {
+    expect(proxy(request('/shared/not-a-tool')).status).not.toBe(307);
+    expect(proxy(request('/shared/https://evil.test')).status).not.toBe(307);
   });
 
   it('marks a visit that simply opened the tool', () => {
@@ -129,13 +165,20 @@ describe('proxy — recipe arrivals are visible in the server counts', () => {
     expect(logged('/image/optimize?format=gif')?.arrival).toBe('direct');
   });
 
+  // Links copied before the shared path existed still work; they simply land
+  // as an ordinary visit, which is honest — that visit is served from a static
+  // asset and is not observable here at all in production.
+  it('still recognises a settings link on the tool path itself', () => {
+    expect(logged('/image/optimize?format=png')?.arrival).toBe('recipe');
+  });
+
   /*
    * The settings themselves must never reach the log. Knowing that a share
    * worked needs a count; knowing what someone chose needs a reason, and there
    * is not one. A log that holds settings is a log that grows an obligation.
    */
   it('records that a link was used and never what was in it', () => {
-    const event = logged('/image/optimize?format=png&quality=70&width=48');
+    const event = logged('/shared/image/optimize?format=png&quality=70&width=48');
     expect(event?.arrival).toBe('recipe');
 
     // `time` is dropped before the scan, and the first version of this test is

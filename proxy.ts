@@ -6,7 +6,7 @@ import {
 } from './lib/security/content-security-policy';
 import { authorise, challengeResponse } from './lib/security/self-host-auth';
 import { siteRedirect } from './lib/seo/site-redirects';
-import { recipeArrivalShape } from './lib/tools/recipe-link';
+import { recipeArrivalShape, recipeLinkTarget } from './lib/tools/recipe-link';
 
 const responseHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -32,6 +32,14 @@ export function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  /*
+   * A shared setup link arrives on its own path — see `RECIPE_LINK_PREFIX`.
+   * Resolved before the visit log so the arrival is recorded, then sent on to
+   * the tool below. Null for every ordinary request, which is nearly all of
+   * them.
+   */
+  const sharedTarget = recipeLinkTarget(pathname);
+
   // Edge Telemetry Logging for non-static tool & page requests
   if (!pathname.startsWith('/_next/') && !pathname.includes('.')) {
     const country = request.headers.get('cf-ipcountry') || 'XX';
@@ -42,7 +50,8 @@ export function proxy(request: NextRequest) {
     const isMobile = /Mobile|Android|iPhone/i.test(userAgent);
     const isTablet = /iPad|Tablet/i.test(userAgent);
     const device = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
-    const tool = request.nextUrl.searchParams.get('tool') || pathname;
+    const tool =
+      sharedTarget || request.nextUrl.searchParams.get('tool') || pathname;
 
     let refererSource = 'direct';
     if (referer !== 'direct') {
@@ -86,10 +95,28 @@ export function proxy(request: NextRequest) {
          * who was sent a link and landed on a working tool. Growth compounds
          * only while that count rises faster than the sends that produced it.
          */
-        arrival: recipeArrivalShape(pathname, request.nextUrl.search),
+        arrival: sharedTarget
+          ? 'recipe'
+          : recipeArrivalShape(pathname, request.nextUrl.search),
         lang: acceptLang.slice(0, 10),
         time: Date.now(),
       }),
+    );
+  }
+
+  /*
+   * Send a shared link on to the tool, with its settings intact.
+   *
+   * 307 and not 308 on purpose. A permanent redirect is cached by the browser,
+   * so the second person to open the same link would never reach the server
+   * and the arrival would go uncounted — the count would quietly undercount
+   * exactly the links that were shared most. A temporary redirect costs one
+   * hop and keeps every arrival visible.
+   */
+  if (sharedTarget) {
+    return NextResponse.redirect(
+      new URL(`${sharedTarget}${request.nextUrl.search}`, request.url),
+      307,
     );
   }
 
