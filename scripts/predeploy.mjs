@@ -225,6 +225,7 @@ function checkGuards() {
     staleDist: Boolean(builtId && head && builtId !== head),
     dirty: dirtyWorktrees(),
     coverage: staticCoverage(),
+    withheld: withheldInSitemap(),
   };
 }
 
@@ -269,6 +270,29 @@ function staticCoverage() {
   });
 
   return { total: urls.length, uncovered };
+}
+
+/**
+ * Routes the owner asked, in writing, to keep unpublished pending a tech review.
+ *
+ * This has been breached THREE times, always the same way: a deploy built from
+ * a tree that predates the hold. `HELD_BACK` in
+ * `lib/seo/tool-page-registration.test.ts` cannot catch that, because a stale
+ * tree does not contain the test either — the check has to run against the
+ * ARTEFACT about to ship, which is what this file already does for coverage.
+ *
+ * Each breach was noticed by a person comparing the live sitemap by hand.
+ * That is not a mechanism. This is.
+ */
+const WITHHELD_ROUTES = ['/image/svg', '/image/colour', '/data/lists'];
+
+function withheldInSitemap() {
+  const sitemap = path.join(ROOT, 'dist/client/sitemap.xml');
+  if (!existsSync(sitemap)) return null;
+  const xml = readFileSync(sitemap, 'utf8');
+  return WITHHELD_ROUTES.filter((route) =>
+    new RegExp(`<loc>[^<]*${route}</loc>`).test(xml),
+  );
 }
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
@@ -368,10 +392,37 @@ async function main() {
     console.log('  ok   every worktree is committed');
   }
 
+  if (guards.withheld === null) {
+    console.log('  WARN no build to check for withheld routes');
+  } else if (guards.withheld.length) {
+    console.log(
+      `  STOP the sitemap publishes ${plural(guards.withheld.length, 'route')} the owner withheld:`,
+    );
+    for (const route of guards.withheld) console.log(`         ${route}`);
+  } else {
+    console.log('  ok   no withheld route is in the sitemap');
+  }
+
   console.log('\n  VERDICT');
   let blocked = false;
 
-  if (guards.staleDist) {
+  // Checked before everything else, because it is the only guard here that
+  // protects a person rather than a budget: these routes are withheld by a
+  // written owner instruction and have been published three times by accident.
+  // Unlike the KV verdict below, this one is not a judgement call to override.
+  if (guards.withheld?.length) {
+    console.log(
+      `  STOP. This build publishes ${plural(guards.withheld.length, 'route')} the owner asked to`,
+    );
+    console.log(
+      '  withhold pending a tech review. Deploying it would breach that',
+    );
+    console.log(
+      '  instruction for the fourth time. Rebuild from a tree that carries',
+    );
+    console.log('  the hold; do not edit this check to get past it.');
+    blocked = true;
+  } else if (guards.staleDist) {
     console.log(
       '  STOP. dist/ was not built from the commit you have checked out,',
     );
