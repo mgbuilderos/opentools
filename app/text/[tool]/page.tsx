@@ -4,7 +4,10 @@ import { TEXT_OPERATIONS } from '@/lib/tools/text-workbench';
 import { WritingWorkbenchTool } from '@/components/writing-workbench-tool';
 import { WRITING_OPERATIONS } from '@/lib/tools/writing-workbench';
 
-export const revalidate = 86400;
+// No `revalidate` here, deliberately. Every one of these pages is prerendered
+// into `dist/client/` and served as a static asset, so the Worker never renders
+// one and a KV page cache would buy nothing — while the ~600 of them would cost
+// ~1,200 writes against an allowance of ~1,000 a day. See docs/CACHE_BUDGET.md.
 
 /*
   One page per tool, generated from the operations the workbench already runs.

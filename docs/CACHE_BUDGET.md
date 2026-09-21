@@ -59,17 +59,18 @@ sets no `revalidate` at all; each page that should be cached exports its own.
 
 | What | Pages | Writes |
 |---|---|---|
-| Tool pages, homepage, hubs (static) | 43 | 86 |
+| Static pages — homepage, dedicated tool pages, hubs, `/guides`, `/support`, blog index | 59 | 118 |
 | `/guides/category/:category` | 18 | 36 |
-| Blog index + posts | 27 | 54 |
-| `/templates/:slug` | 15 | 30 |
-| `/support` | 1 | 2 |
+| `/blog/:slug` | 31 | 62 |
+| `/templates/:slug` | 18 | 36 |
 | `/guides-cached/:slug` — the 50 in `lib/seo/cached-guides.ts` | 50 | 100 |
-| **Total** | **153** | **306** |
+| **Total** | **176** | **352** |
 
-**Updated 2026-09-19.** Was 61 pages / 122 writes. `app/templates/page.tsx` is
-excluded because it is a `'use client'` component and route segment config
-cannot be exported from one.
+**Updated 2026-09-21.** Was 153 pages / 306 writes on 2026-09-19; the growth is
+blog posts and templates being written, not routes opting in. The fourteen
+`<category>/[tool]` routes left this table on the same day — see below.
+`app/templates/page.tsx` is excluded because it is a `'use client'` component
+and route segment config cannot be exported from one.
 
 306 writes against ~1,000 still leaves room for three full re-warms a day — but
 that ceiling stopped being the binding constraint on 2026-09-19, when the build
@@ -103,6 +104,28 @@ Verified locally: a guide page returns `x-vinext-cache: MISS` on every request
 and never becomes a `HIT`, which means it is never stored and therefore **costs
 no writes at all**. A cached page goes `MISS` then `HIT`.
 
+**The fourteen `<category>/[tool]` routes — about 600 pages.** `/math/:tool`,
+`/text/:tool`, `/data/:tool` and eleven more build one page per operation from
+the same lists the sitemap reads. All fourteen exported `revalidate = 86400`
+until 2026-09-21, and `cache-budget.test.ts` priced a whole route at a single
+page, so 600 pages were counted as 14. Counted honestly they are about 1,200
+writes; on top of the 352 above that is roughly **1,552 against an allowance of
+1,000** — the same shape of failure as the blanket `revalidate` in
+`app/layout.tsx`, and it would have ended the same way: every write refused,
+nothing cached, `no-store` on every page.
+
+The `revalidate` was removed rather than the budget raised, because it bought
+nothing in the first place. Prerendering is switched on for the whole build
+(`prerender: true` in `vite.config.ts`), not per route; what a route needs to
+be prerendered is `generateStaticParams` and `dynamicParams = false`, which all
+fourteen already have, and not `revalidate`. `app/guides/[slug]` is the proof:
+it has never exported `revalidate`, and all 567 of its pages sit in
+`dist/client/`. So these pages are served as static assets, the Worker never
+renders one, and `scripts/verify-static-coverage.mjs` fails the build if any
+sitemap URL loses its file. `scripts/predeploy.mjs` already prices deploys on
+exactly this basis: a page with a file in `dist/client/` is served as an asset,
+never renders, and so never writes.
+
 **`app/blog/**`, `app/templates/**` and `app/support/**`** are Antigravity-owned
 (board §2) and are not opted in by this change. Adding them would cost about 80
 more writes and still fit comfortably; it is a request on the board, not
@@ -111,8 +134,15 @@ something to take unilaterally.
 ## The rule to keep
 
 `lib/seo/cache-budget.test.ts` fails the build if the estimated write cost goes
-over **900**, if `app/layout.tsx` ever sets a blanket `revalidate` again, or if
-the guide long tail is opted in. Change the budget there and you have to mean it.
+over **900**, if `app/layout.tsx` ever sets a blanket `revalidate` again, if the
+guide long tail is opted in, or if a `<category>/[tool]` route opts itself back
+in. Change the budget there and you have to mean it.
+
+It also refuses to guess. A dynamic route is counted from the list its own
+`generateStaticParams` reads — `<prefix>/[tool]` from `routedToolIdsForPrefix`,
+everything else from `DYNAMIC_PAGE_COUNTS` — and a dynamic route with neither
+now throws instead of quietly counting as one page. That silent `1` is what let
+600 pages hide inside a 900-write budget.
 
 ## If the plan is ever upgraded
 
