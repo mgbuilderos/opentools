@@ -232,6 +232,44 @@ const STOP_WORDS = new Set([
 ]);
 
 /**
+ * Tools indexed by the meaningful words in their names, built once.
+ *
+ * WHY AN INDEX. The first version of `pickCrossCategoryLink` scanned the whole
+ * catalogue and re-split every candidate name on each call. `getRelatedToolLinks`
+ * runs once per tool, so that is O(n squared) over ~679 tools with string
+ * splitting inside the loop — about 460,000 iterations, which pushed
+ * `related-tools.test.ts` past its 5s budget and blocked QC. Building the map
+ * once turns each lookup into a handful of set reads.
+ *
+ * Lazily initialised rather than computed at module load, because this module
+ * is imported by pages that never ask for a related link.
+ */
+let wordIndex: Map<string, ToolCatalogEntry[]> | undefined;
+
+function toolsByWord(): Map<string, ToolCatalogEntry[]> {
+  if (wordIndex) return wordIndex;
+  const index = new Map<string, ToolCatalogEntry[]>();
+  for (const tool of LIVE_TOOL_CATALOG) {
+    for (const word of meaningfulWords(tool.name)) {
+      const bucket = index.get(word);
+      if (bucket) bucket.push(tool);
+      else index.set(word, [tool]);
+    }
+  }
+  wordIndex = index;
+  return index;
+}
+
+function meaningfulWords(name: string): Set<string> {
+  return new Set(
+    name
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 3 && !STOP_WORDS.has(word)),
+  );
+}
+
+/**
  * The best tool from another category that shares a meaningful name word.
  *
  * Returns undefined when nothing genuinely matches, because a link invented to
@@ -243,33 +281,33 @@ function pickCrossCategoryLink(
   alreadyChosen: readonly { tool: ToolCatalogEntry }[],
 ): ToolCatalogEntry | undefined {
   const taken = new Set(alreadyChosen.map((entry) => entry.tool.slug));
-  const currentWords = new Set(
-    current.name
-      .toLowerCase()
-      .split(/\s+/)
-      .filter((word) => word.length > 3 && !STOP_WORDS.has(word)),
-  );
+  const currentWords = meaningfulWords(current.name);
   if (currentWords.size === 0) return undefined;
 
-  let best: { tool: ToolCatalogEntry; score: number } | undefined;
-  for (const tool of LIVE_TOOL_CATALOG) {
-    if (tool.category === current.category) continue;
-    if (tool.slug === current.slug || taken.has(tool.slug)) continue;
-
-    let score = 0;
-    for (const word of tool.name.toLowerCase().split(/\s+/)) {
-      if (word.length > 3 && !STOP_WORDS.has(word) && currentWords.has(word)) {
-        score += 25;
-      }
+  const index = toolsByWord();
+  const scores = new Map<string, { tool: ToolCatalogEntry; score: number }>();
+  for (const word of currentWords) {
+    for (const tool of index.get(word) ?? []) {
+      if (tool.category === current.category) continue;
+      if (tool.slug === current.slug || taken.has(tool.slug)) continue;
+      const existing = scores.get(tool.slug);
+      if (existing) existing.score += 25;
+      else
+        scores.set(tool.slug, {
+          tool,
+          score: 25 + (tool.releaseWave === 'P0' ? 5 : 0),
+        });
     }
-    if (score === 0) continue;
-    if (tool.releaseWave === 'P0') score += 5;
+  }
+
+  let best: { tool: ToolCatalogEntry; score: number } | undefined;
+  for (const candidate of scores.values()) {
     if (
       !best ||
-      score > best.score ||
-      (score === best.score && tool.rank < best.tool.rank)
+      candidate.score > best.score ||
+      (candidate.score === best.score && candidate.tool.rank < best.tool.rank)
     ) {
-      best = { tool, score };
+      best = candidate;
     }
   }
   return best?.tool;
