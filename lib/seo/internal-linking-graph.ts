@@ -8,6 +8,7 @@ import {
   getLiveCategories,
   getLiveToolBySlug,
   getLiveToolsByCategory,
+  LIVE_TOOL_CATALOG,
 } from './live-tools';
 
 export interface CategoryPillarInfo {
@@ -163,6 +164,33 @@ export function getRelatedToolLinks(
 
   scored.sort((a, b) => b.score - a.score || a.tool.rank - b.tool.rank);
 
+  // RESERVE THE LAST SLOT FOR A DIFFERENT CATEGORY.
+  //
+  // Until this, candidates were filtered to `current.category` and nothing
+  // else, which made the guide graph 18 sealed islands: an audit of the built
+  // output on 2026-09-21 found 2,264 guide-to-guide links and **zero** of them
+  // crossing a category. A crawler entering the Image cluster could not reach a
+  // PDF guide except through the site chrome, which is byte-identical on every
+  // page and therefore carries no signal. Authority could not flow between
+  // clusters and a reader following the cards went in circles.
+  //
+  // One slot is enough to connect the graph — every island gains an edge — and
+  // keeps the other three genuinely close. The cross pick is chosen only by a
+  // shared, non-trivial word in the tool name, so it is a real relationship
+  // rather than filler: no shared word, no link, and the caller gets three.
+  // Whatever main's explicit workflow links did not claim is what is left to
+  // fill. Slicing to `count` here instead would let the cross-category pick
+  // push an explicit link off the end, which is the opposite of the intent:
+  // a hand-curated workflow edge outranks an automatic one.
+  const budget = Math.max(0, count - explicit.length);
+  const sameCategory = scored.slice(0, Math.max(0, budget - 1));
+  const crossPick =
+    budget > 0 ? pickCrossCategoryLink(current, sameCategory) : undefined;
+
+  const chosen = crossPick
+    ? [...sameCategory, { tool: crossPick, score: 0 }]
+    : scored.slice(0, budget);
+
   // The label states where the tool sits in the catalog. Nothing here measures
   // how people actually use it, so it must not imply that it does.
   return [
@@ -171,12 +199,78 @@ export function getRelatedToolLinks(
       guideHref: guideOrToolHref(tool, consolidation),
       relationship: 'Continue this OCR workflow',
     })),
-    ...scored
-      .slice(0, Math.max(0, count - explicit.length))
-      .map(({ tool }) => ({
-        tool,
-        guideHref: guideOrToolHref(tool, consolidation),
-        relationship: `Also in ${tool.category}`,
-      })),
+    // `chosen` is this lane's cross-category pick; `guideOrToolHref` is main's
+    // consolidation routing, which sends a link to the tool page when that
+    // guide is no longer published. Both are required: without the first the
+    // graph is 18 sealed islands, without the second a link points at a URL
+    // that now 301s.
+    ...chosen.map(({ tool }) => ({
+      tool,
+      guideHref: guideOrToolHref(tool, consolidation),
+      relationship:
+        tool.category === current.category
+          ? `Also in ${tool.category}`
+          : `Related in ${tool.category}`,
+    })),
   ];
+}
+
+/** Words too common across the catalog to signal a real relationship. */
+const STOP_WORDS = new Set([
+  'tool',
+  'online',
+  'free',
+  'generator',
+  'converter',
+  'calculator',
+  'editor',
+  'viewer',
+  'maker',
+  'checker',
+  'file',
+  'text',
+]);
+
+/**
+ * The best tool from another category that shares a meaningful name word.
+ *
+ * Returns undefined when nothing genuinely matches, because a link invented to
+ * fill a slot is worse than three honest ones — it teaches a reader that the
+ * cards are noise.
+ */
+function pickCrossCategoryLink(
+  current: ToolCatalogEntry,
+  alreadyChosen: readonly { tool: ToolCatalogEntry }[],
+): ToolCatalogEntry | undefined {
+  const taken = new Set(alreadyChosen.map((entry) => entry.tool.slug));
+  const currentWords = new Set(
+    current.name
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 3 && !STOP_WORDS.has(word)),
+  );
+  if (currentWords.size === 0) return undefined;
+
+  let best: { tool: ToolCatalogEntry; score: number } | undefined;
+  for (const tool of LIVE_TOOL_CATALOG) {
+    if (tool.category === current.category) continue;
+    if (tool.slug === current.slug || taken.has(tool.slug)) continue;
+
+    let score = 0;
+    for (const word of tool.name.toLowerCase().split(/\s+/)) {
+      if (word.length > 3 && !STOP_WORDS.has(word) && currentWords.has(word)) {
+        score += 25;
+      }
+    }
+    if (score === 0) continue;
+    if (tool.releaseWave === 'P0') score += 5;
+    if (
+      !best ||
+      score > best.score ||
+      (score === best.score && tool.rank < best.tool.rank)
+    ) {
+      best = { tool, score };
+    }
+  }
+  return best?.tool;
 }

@@ -65,7 +65,49 @@ describe('Internal Linking Graph & Topic Clusters', () => {
       // pages that answer 200 -- the point is that neither is a redirect.
       expect(link.guideHref).toBe(guideOrToolHref(link.tool));
       expect(link.relationship).toBeTruthy();
-      expect(link.tool.category).toBe('PDF');
+    }
+
+    // Most stay in the tool's own category; the last slot is deliberately
+    // reserved for another one. Requiring ALL FOUR to be PDF — as this did
+    // until 2026-09-21 — was what kept the guide graph in 18 sealed islands
+    // with zero links between them.
+    const sameCategory = links.filter((link) => link.tool.category === 'PDF');
+    expect(sameCategory.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('reaches out of its own category so the guide graph is connected', () => {
+    // Measured before the cross-category slot existed: 2,264 guide-to-guide
+    // links and not one crossing a category, so authority could not move
+    // between clusters and a reader following the cards went in circles.
+    let withCrossLink = 0;
+    for (const tool of LIVE_TOOL_CATALOG) {
+      const links = getRelatedToolLinks(tool.slug, 4);
+      if (links.some((link) => link.tool.category !== tool.category)) {
+        withCrossLink += 1;
+      }
+    }
+    expect(withCrossLink).toBeGreaterThan(200);
+  });
+
+  it('never invents a cross-category link with no real relationship', () => {
+    // A link added to fill a slot teaches a reader the cards are noise. The
+    // cross pick needs a shared, non-generic word in the tool name or it is
+    // simply not made, and the caller gets three links instead of four.
+    for (const tool of LIVE_TOOL_CATALOG.slice(0, 120)) {
+      for (const link of getRelatedToolLinks(tool.slug, 4)) {
+        if (link.tool.category === tool.category) continue;
+        const words = new Set(
+          tool.name
+            .toLowerCase()
+            .split(/\s+/)
+            .filter((word) => word.length > 3),
+        );
+        const shared = link.tool.name
+          .toLowerCase()
+          .split(/\s+/)
+          .some((word) => word.length > 3 && words.has(word));
+        expect(shared, `${tool.slug} -> ${link.tool.slug}`).toBe(true);
+      }
     }
   });
 

@@ -29,28 +29,28 @@
  * trustworthy and well-run, but the guarantee is a promise rather than a
  * property, and the difference is the entire point.
  *
- *   node scripts/egress-compare.mjs                     # default target list
- *   node scripts/egress-compare.mjs https://a https://b # explicit origins
+ *   node scripts/egress-compare.mjs https://a https://b
+ *   EGRESS_COMPARE_OUT=/tmp/report.json node scripts/egress-compare.mjs https://a
  */
 import { chromium } from '@playwright/test';
 import { writeFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.join(ROOT, 'lib/seo/egress-comparison.json');
+/** Where to write the report. Unset prints it, so nothing lands in the repo. */
+const OUT = process.env.EGRESS_COMPARE_OUT ?? '';
 
-/** Public homepages of widely used in-browser file tools, plus our own. */
-const DEFAULT_TARGETS = [
-  'https://getopentools.com',
-  'https://www.ilovepdf.com',
-  'https://smallpdf.com',
-  'https://tinypng.com',
-  'https://www.pdf24.org',
-  'https://stirlingpdf.io',
-];
+/*
+  There is deliberately no default target list.
 
+  `lib/seo/live-tools.test.ts` scans app/, components/, scripts/ and workers/
+  for competitor brand names and fails with "measure by argument, never by a
+  baked-in list". That rule is right, and not only for the legal reason: a list
+  frozen into the repository silently becomes a claim about who the rivals are
+  and goes stale without anyone noticing, while the measurement itself is
+  general — it works on any origin, including one added tomorrow.
+
+  Origins are supplied by whoever runs it, and results are written wherever
+  they say. Nothing about who was measured is committed.
+*/
 /** Read one directive out of a CSP header. */
 function directive(csp, name) {
   if (!csp) return null;
@@ -119,9 +119,15 @@ async function observe(browser, origin) {
   };
 }
 
-const targets = process.argv.slice(2).length
-  ? process.argv.slice(2)
-  : DEFAULT_TARGETS;
+const targets = process.argv.slice(2);
+if (targets.length === 0) {
+  console.error(
+    'Usage: node scripts/egress-compare.mjs <origin> [origin...]\n' +
+      '       EGRESS_COMPARE_OUT=/path/report.json node scripts/egress-compare.mjs <origin>...\n\n' +
+      'Origins are arguments on purpose: see the comment at the top of this file.',
+  );
+  process.exit(2);
+}
 
 const browser = await chromium.launch();
 const results = [];
@@ -145,14 +151,14 @@ const report = {
     'Content-Security-Policy and every distinct third-party host contacted. ' +
     'No file was uploaded, no account was created and no tool on another ' +
     'site was operated.',
-  reproduce: 'node scripts/egress-compare.mjs',
+  reproduce: `node scripts/egress-compare.mjs ${targets.join(' ')}`,
   results,
 };
-writeFileSync(OUT, `${JSON.stringify(report, null, 2)}\n`);
-try {
-  execFileSync('npx', ['oxfmt', OUT], { cwd: ROOT, stdio: 'ignore' });
-} catch {
-  console.warn(`Run \`npx oxfmt ${path.relative(ROOT, OUT)}\` before committing.`);
+if (OUT) {
+  writeFileSync(OUT, `${JSON.stringify(report, null, 2)}\n`);
+  console.log(`\nWritten to ${OUT}`);
+} else {
+  console.log(`\n${JSON.stringify(report, null, 2)}`);
 }
 
 const blocked = results.filter((r) => r.networkBlockedByPolicy).length;
