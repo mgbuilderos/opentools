@@ -54,7 +54,10 @@ test.describe('Image to text OCR', () => {
     page.on('request', (request) => {
       const url = new URL(request.url());
       if (url.pathname.startsWith('/ocr/')) ocrRequests.push(url.pathname);
-      if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
+      if (
+        ['http:', 'https:'].includes(url.protocol) &&
+        !['localhost', '127.0.0.1'].includes(url.hostname)
+      ) {
         offOrigin.push(request.url());
       }
     });
