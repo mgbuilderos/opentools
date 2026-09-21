@@ -449,9 +449,12 @@ describe('guide consolidation on', () => {
 describe('the shipped state', () => {
   const redirects = getGuideConsolidationRedirects();
 
-  it('keeps 15 guides and redirects the other 552', () => {
+  it('keeps 15 guides and redirects every other live guide', () => {
     expect(getPublishedGuideTools()).toHaveLength(15);
-    expect(redirects.size).toBe(552);
+    // Not a written-down number: new tools arrive on main between branches,
+    // and every one of them is consolidated unless it earns a place in the
+    // keep list. 2026-09-21: 570 live guides, so 555 redirects.
+    expect(redirects.size).toBe(LIVE_TOOL_CATALOG.length - 15);
     expect(getPublishedGuideTools().length + redirects.size).toBe(
       LIVE_TOOL_CATALOG.length,
     );

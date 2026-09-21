@@ -204,9 +204,12 @@ describe('sitemap', () => {
     }
     // Compress PDF is live now that /pdf/compress runs it, and it is kept.
     expect(guides).toContain('/guides/pdf-compress-pdf');
-    expect(guides).toContain('/guides/pdf-ocr-pdf');
-    expect(guides).toContain('/guides/image-image-to-text');
     expect(guides).not.toContain('/guides/video-video-to-gif');
+    // The OCR guides are live tools, but their guide pages are template text,
+    // so consolidation sends them to /pdf/ocr and /image/to-text like the
+    // other 550-odd. The tool pages are what the sitemap carries.
+    expect(guides).not.toContain('/guides/pdf-ocr-pdf');
+    expect(guides).not.toContain('/guides/image-image-to-text');
     // /image/exact-size really writes the file, so its guide is listed.
     expect(guides).toContain('/guides/image-resize-image-to-exact-kb');
     // Consolidated: live, but its tool page is the only page for it now.
