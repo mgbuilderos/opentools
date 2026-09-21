@@ -50,4 +50,42 @@ test.describe('The Bench', () => {
       page.getByRole('button', { name: 'Choose folder for ZIP' }),
     ).toBeVisible();
   });
+
+  test('measures one file against its dedicated workbench', async ({
+    page,
+  }, testInfo) => {
+    const fixture = {
+      name: 'timing.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('one two three'),
+    };
+
+    await page.goto('/text/workbench?tool=word-counter');
+    await expect(page.getByLabel('Text to count')).toBeVisible();
+    await page.waitForTimeout(500);
+    const dedicatedStarted = performance.now();
+    await page.getByLabel('Text to count').fill('one two three');
+    await expect(page.getByRole('heading', { name: /Done/u })).toBeVisible();
+    const dedicatedMs = performance.now() - dedicatedStarted;
+
+    await page.goto('/bench');
+    await expect(
+      page.getByRole('heading', { name: 'The Bench' }),
+    ).toBeVisible();
+    await page.waitForTimeout(500);
+    await page
+      .getByLabel('Upload file to inspect and detect tools')
+      .setInputFiles(fixture);
+    const benchStarted = performance.now();
+    await page.getByRole('button', { name: 'Run 1 files' }).click();
+    await expect(
+      page.getByTestId('outcomes').getByRole('listitem'),
+    ).toHaveCount(1);
+    const benchMs = performance.now() - benchStarted;
+
+    console.info(
+      `${testInfo.project.name} single-file timing: dedicated ${dedicatedMs.toFixed(1)} ms; Bench ${benchMs.toFixed(1)} ms`,
+    );
+    expect(benchMs).toBeLessThan(2_000);
+  });
 });
