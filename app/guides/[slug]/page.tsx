@@ -12,7 +12,7 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getGuideBySlug } from '@/lib/seo/guide-content';
-import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
+import { getPublishedGuideTools } from '@/lib/seo/guide-consolidation';
 
 interface GuidePageProps {
   params: Promise<{ slug: string }>;
@@ -23,15 +23,17 @@ const httpsOrigin = ['https:', '//', 'getopentools.com'].join('');
 // Every guide in the sitemap is built here. A narrower list (the first 50 by
 // wave and rank) left 523 guides rendering per request on a Worker capped at
 // 10ms CPU, which is what returned 503 to Google: 183 of 670 live URLs on
-// 2026-09-20, 177 of them guides. Keep this in step with `app/sitemap.ts`,
-// which enumerates the same catalog.
+// 2026-09-20, 177 of them guides. `getPublishedGuideTools()` is the same call
+// `app/sitemap.ts` enumerates, so the two cannot drift; with guide
+// consolidation off it is the whole live catalogue, exactly as before.
 /** A slug outside `generateStaticParams` is a 404, not a render. Without this,
  * any unknown URL -- a typo, a stale link, a crawler probing -- starts a React
- * render on a Worker with a 10ms CPU budget. */
+ * render on a Worker with a 10ms CPU budget. A consolidated guide is left out
+ * on purpose: having no file is what lets `proxy.ts` answer it with a 301. */
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  return LIVE_TOOL_CATALOG.map((tool) => ({ slug: tool.slug }));
+  return getPublishedGuideTools().map((tool) => ({ slug: tool.slug }));
 }
 
 export async function generateMetadata({

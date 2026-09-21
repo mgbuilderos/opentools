@@ -1,5 +1,10 @@
 import type { ToolCatalogEntry } from './tool-catalog-data';
 import {
+  GUIDE_CONSOLIDATION,
+  type GuideConsolidationState,
+  guideOrToolHref,
+} from './guide-consolidation';
+import {
   getLiveCategories,
   getLiveToolBySlug,
   getLiveToolsByCategory,
@@ -101,6 +106,7 @@ export function getAllCategoryPillars(): readonly CategoryPillarInfo[] {
 
 export interface RelatedToolLink {
   tool: ToolCatalogEntry;
+  /** The tool's guide, or the tool page when its guide is consolidated. */
   guideHref: string;
   relationship: string;
 }
@@ -116,6 +122,7 @@ const EXPLICIT_RELATED_SLUGS: Readonly<Record<string, readonly string[]>> = {
 export function getRelatedToolLinks(
   currentSlug: string,
   count = 4,
+  consolidation: GuideConsolidationState = GUIDE_CONSOLIDATION,
 ): readonly RelatedToolLink[] {
   const current = getLiveToolBySlug(currentSlug);
   if (!current) return [];
@@ -161,14 +168,14 @@ export function getRelatedToolLinks(
   return [
     ...explicit.map((tool) => ({
       tool,
-      guideHref: `/guides/${tool.slug}`,
+      guideHref: guideOrToolHref(tool, consolidation),
       relationship: 'Continue this OCR workflow',
     })),
     ...scored
       .slice(0, Math.max(0, count - explicit.length))
       .map(({ tool }) => ({
         tool,
-        guideHref: `/guides/${tool.slug}`,
+        guideHref: guideOrToolHref(tool, consolidation),
         relationship: `Also in ${tool.category}`,
       })),
   ];

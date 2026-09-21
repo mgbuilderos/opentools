@@ -10,7 +10,17 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
-import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
+import {
+  GUIDE_CONSOLIDATION,
+  getFeaturedGuideTools,
+  getPublishedGuideTools,
+  guideOrToolHref,
+} from '@/lib/seo/guide-consolidation';
+
+// After consolidation only some tools keep a guide, so "every" would be false.
+const guideScope = GUIDE_CONSOLIDATION.enabled
+  ? 'selected OpenTools utilities'
+  : 'every working OpenTools utility';
 
 const httpsScheme = ['https:', '//'].join('');
 const httpsOrigin = `${httpsScheme}getopentools.com`;
@@ -20,15 +30,13 @@ export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: 'Tool Guides — every OpenTools utility, step by step',
-  description:
-    'Step-by-step guides and FAQs for every working OpenTools utility. Each tool runs in your browser tab; your files and inputs never touch a server.',
+  description: `Step-by-step guides and FAQs for ${guideScope}. Each tool runs in your browser tab; your files and inputs never touch a server.`,
   alternates: {
     canonical: `${httpsOrigin}/guides`,
   },
   openGraph: {
     title: 'Tool Guides & Solution Playbooks | OpenTools',
-    description:
-      'Step-by-step guides, comparisons and FAQs for every working OpenTools utility.',
+    description: `Step-by-step guides, comparisons and FAQs for ${guideScope}.`,
     url: `${httpsOrigin}/guides`,
     siteName: 'OpenTools',
     type: 'website',
@@ -37,17 +45,18 @@ export const metadata: Metadata = {
 
 export default function GuidesDirectoryPage() {
   const pillars = getAllCategoryPillars();
-  const featuredTools = LIVE_TOOL_CATALOG.filter(
-    (t) => t.releaseWave === 'P0' || t.rank <= 5,
-  ).slice(0, 18);
-  const toolCount = LIVE_TOOL_CATALOG.length;
+  const featuredTools = getFeaturedGuideTools();
+  const toolCount = getPublishedGuideTools().length;
 
   const jsonLd = {
     '@context': schemaContext,
     '@type': 'CollectionPage',
     name: 'OpenTools In-Browser Tool Guides & Solutions',
-    description:
-      'Step-by-step guides for every OpenTools utility that runs in the browser tab, with no server upload.',
+    // Kept word for word as it was, so the switch changes no published text
+    // until it is actually turned on.
+    description: GUIDE_CONSOLIDATION.enabled
+      ? 'Step-by-step guides for selected OpenTools utilities that run in the browser tab, with no server upload.'
+      : 'Step-by-step guides for every OpenTools utility that runs in the browser tab, with no server upload.',
     url: `${httpsOrigin}/guides`,
     publisher: {
       '@type': 'Organization',
@@ -92,8 +101,12 @@ export default function GuidesDirectoryPage() {
             </h1>
             <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">
               Step-by-step tutorials, architecture diagrams and direct answers
-              for every working tool in the OpenTools catalog. Each one runs in
-              your browser tab; your files and inputs never touch a server.
+              for{' '}
+              {GUIDE_CONSOLIDATION.enabled
+                ? 'selected tools'
+                : 'every working tool'}{' '}
+              in the OpenTools catalog. Each one runs in your browser tab; your
+              files and inputs never touch a server.
             </p>
           </div>
 
@@ -220,7 +233,7 @@ export default function GuidesDirectoryPage() {
 
                   <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
                     <a
-                      href={`/guides/${tool.slug}`}
+                      href={guideOrToolHref(tool)}
                       aria-label={`Read ${tool.name} technical guide`}
                       className={cn(
                         buttonVariants({ variant: 'outline', size: 'sm' }),

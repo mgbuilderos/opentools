@@ -12,6 +12,10 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
+  guideOrToolHref,
+  publishedGuideHref,
+} from '@/lib/seo/guide-consolidation';
+import {
   getAllCategoryPillars,
   getCategoryBySlug,
   getCategoryPillar,
@@ -93,7 +97,7 @@ export default async function CategoryPillarPage({
             '@type': 'ListItem',
             position: index + 1,
             name: tool.name,
-            url: `${httpsOrigin}/guides/${tool.slug}`,
+            url: `${httpsOrigin}${guideOrToolHref(tool)}`,
           })),
         },
       },
@@ -249,54 +253,61 @@ export default async function CategoryPillarPage({
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {tools.map((tool) => (
-                <div
-                  key={tool.slug}
-                  className="flex flex-col justify-between rounded-xl border bg-card p-5"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs text-muted-foreground">
-                        {categoryName}
-                      </span>
-                      <span className="rounded-full border bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-                        {tool.executionMode}
-                      </span>
+              {tools.map((tool) => {
+                // A consolidated guide redirects, so only the tool is linked.
+                const guideHref = publishedGuideHref(tool.slug);
+                return (
+                  <div
+                    key={tool.slug}
+                    className="flex flex-col justify-between rounded-xl border bg-card p-5"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {categoryName}
+                        </span>
+                        <span className="rounded-full border bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
+                          {tool.executionMode}
+                        </span>
+                      </div>
+                      <h3 className="mt-3 text-base font-semibold text-foreground">
+                        {tool.name}
+                      </h3>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                        Run {tool.name.toLowerCase()} in your browser tab.
+                      </p>
                     </div>
-                    <h3 className="mt-3 text-base font-semibold text-foreground">
-                      {tool.name}
-                    </h3>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                      Run {tool.name.toLowerCase()} in your browser tab.
-                    </p>
-                  </div>
 
-                  <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
-                    <a
-                      href={`/guides/${tool.slug}`}
-                      aria-label={`Read ${tool.name} guide`}
-                      className={cn(
-                        buttonVariants({ variant: 'outline', size: 'sm' }),
-                        'h-9 w-full text-xs font-medium gap-1.5',
-                      )}
-                    >
-                      <BookOpen aria-hidden="true" className="size-3.5" />
-                      Read Guide
-                    </a>
-                    <a
-                      href={tool.destinationUrl}
-                      aria-label={`Launch ${tool.name} workbench`}
-                      className={cn(
-                        buttonVariants({ variant: 'default', size: 'sm' }),
-                        'h-9 w-full text-xs font-semibold gap-1.5',
-                      )}
-                    >
-                      Launch Tool
-                      <ArrowRight aria-hidden="true" className="size-3.5" />
-                    </a>
+                    <div className="mt-5 grid grid-cols-2 gap-2 border-t pt-4">
+                      {guideHref ? (
+                        <a
+                          href={guideHref}
+                          aria-label={`Read ${tool.name} guide`}
+                          className={cn(
+                            buttonVariants({ variant: 'outline', size: 'sm' }),
+                            'h-9 w-full text-xs font-medium gap-1.5',
+                          )}
+                        >
+                          <BookOpen aria-hidden="true" className="size-3.5" />
+                          Read Guide
+                        </a>
+                      ) : null}
+                      <a
+                        href={tool.destinationUrl}
+                        aria-label={`Launch ${tool.name} workbench`}
+                        className={cn(
+                          buttonVariants({ variant: 'default', size: 'sm' }),
+                          'h-9 w-full text-xs font-semibold gap-1.5',
+                          !guideHref && 'col-span-2',
+                        )}
+                      >
+                        Launch Tool
+                        <ArrowRight aria-hidden="true" className="size-3.5" />
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 

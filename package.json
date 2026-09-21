@@ -24,7 +24,9 @@
     "design:qc": "node scripts/design-system-qc.mjs",
     "predeploy": "node scripts/predeploy.mjs",
     "qc": "node scripts/run-qc.mjs",
-    "qc:release": "node scripts/run-qc.mjs --release"
+    "qc:release": "node scripts/run-qc.mjs --release",
+    "seo:guide-keep-list": "node scripts/guide-keep-list.mjs",
+    "seo:guide-distinctness": "node scripts/guide-distinctness-report.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

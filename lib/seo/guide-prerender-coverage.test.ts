@@ -4,8 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 /**
- * `app/sitemap.ts` submits a `/guides/:slug` URL for every tool in the
- * catalogue, so the build has to produce a page for every one of them.
+ * `app/sitemap.ts` submits a `/guides/:slug` URL for every guide it publishes,
+ * so the build has to produce a page for every one of them. Both sides read
+ * `getPublishedGuideTools()` (lib/seo/guide-consolidation.ts) -- the whole live
+ * catalogue while guide consolidation is off -- and this test is what stops one
+ * of them being narrowed on its own.
  *
  * A narrower `generateStaticParams` does not fail the build. It just leaves the
  * rest rendering per request on a Worker capped at 10ms CPU, which is how 177
@@ -33,13 +36,22 @@ function generateStaticParamsBody(pageFile: string): string {
 }
 
 describe('every guide in the sitemap is prerendered', () => {
-  it('builds from the whole catalogue, the same source the sitemap uses', () => {
+  it('builds from the same source the sitemap uses', () => {
     const body = generateStaticParamsBody('app/guides/[slug]/page.tsx');
+    const sitemap = readFileSync(
+      path.join(projectRoot, 'lib/seo/sitemap-entries.ts'),
+      'utf8',
+    );
 
-    expect(body).toContain('LIVE_TOOL_CATALOG.map(');
+    // One function answers "which guides exist" for both the pages that get
+    // built and the URLs handed to Google, so neither can be changed alone.
+    expect(body).toContain('getPublishedGuideTools().map(');
+    expect(sitemap).toContain('getPublishedGuideTools(');
   });
 
-  it('narrows the catalogue nowhere', () => {
+  // Narrowing belongs in `getPublishedGuideTools`, where the sitemap sees it
+  // too. Narrowing here would leave the difference rendering per request.
+  it('narrows the list nowhere of its own', () => {
     const body = generateStaticParamsBody('app/guides/[slug]/page.tsx');
     const narrowing = ['.slice(', '.filter(', '.splice('].filter((call) =>
       body.includes(call),

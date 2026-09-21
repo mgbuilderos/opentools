@@ -4,7 +4,7 @@ import {
   contentSecurityPolicy,
   loadsLocalModel,
 } from './lib/security/content-security-policy';
-import { removedToolRedirect } from './lib/seo/removed-tool-redirects';
+import { siteRedirect } from './lib/seo/site-redirects';
 
 const responseHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -63,10 +63,16 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  // Old links to tools removed by owner decision go to the closest live page.
-  const redirectTo = removedToolRedirect(pathname, request.nextUrl.search);
-  if (redirectTo) {
-    return NextResponse.redirect(new URL(redirectTo, request.url), 308);
+  // Old links to tools removed by owner decision (308) and thin guides merged
+  // into their tool page (301, off until the owner supplies Search Console
+  // data) go straight to the final live page; see lib/seo/site-redirects.ts.
+  // The target keeps its own query string (e.g. /developer/advanced?tool=x).
+  const redirect = siteRedirect(pathname, request.nextUrl.search);
+  if (redirect) {
+    return NextResponse.redirect(
+      new URL(redirect.location, request.url),
+      redirect.status,
+    );
   }
 
   const response = NextResponse.next();
