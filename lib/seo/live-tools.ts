@@ -16,6 +16,7 @@ import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
+import { CONVERSION_PAIRS } from './conversion-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
@@ -139,9 +140,17 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>([
  * the registry, so the registry can never promise a page the build skipped.
  * Only `PDF_PAGE_OPERATIONS` is listed for `/pdf`, not the 66 catalogue
  * entries aimed at that URL: see the note on `PDF_PAGE_TOOL_OPERATION_IDS`.
+ *
+ * `/convert` is the same idea taken one level down. A converter is not one
+ * search intent: "cm to inches" and "km to miles" are separate questions that
+ * the distance converter's single page answered with a single title. Its
+ * "operations" are the from→to pairs the converters themselves declare, one
+ * page each, so the same registration, the same sitemap and the same tests
+ * cover them with nothing new to remember. See `conversion-pairs.ts`.
  */
 const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
   new Map<string, readonly { id: string }[]>([
+    ['/convert', CONVERSION_PAIRS],
     ['/creator', CREATOR_OPERATIONS],
     ['/data', SPREADSHEET_OPERATIONS],
     ['/date', DATE_OPERATIONS],

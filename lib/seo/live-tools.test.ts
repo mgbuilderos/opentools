@@ -24,7 +24,9 @@ describe('live tool registry', () => {
   /**
    * A route has a page when `app/<route>/page.tsx` exists, or when a dynamic
    * segment one level up renders it — `app/math/[tool]/page.tsx` serves every
-   * `/math/<id>` its `generateStaticParams` names.
+   * `/math/<id>` its `generateStaticParams` names, and
+   * `app/convert/[pair]/page.tsx` every `/convert/<pair>`. The segment is
+   * found rather than named, so a third one does not need this line edited.
    *
    * The check stays as strict as it was. It is not "a dynamic parent exists,
    * so anything under it passes": the parent must actually generate this exact
@@ -33,8 +35,19 @@ describe('live tool registry', () => {
    */
   function pageFileFor(route: string) {
     if (existsSync(path.join(appRoot, 'app', route, 'page.tsx'))) return true;
-    const parent = route.slice(0, route.lastIndexOf('/'));
-    return existsSync(path.join(appRoot, 'app', parent, '[tool]', 'page.tsx'));
+    const parent = path.join(
+      appRoot,
+      'app',
+      route.slice(0, route.lastIndexOf('/')),
+    );
+    return (
+      existsSync(parent) &&
+      readdirSync(parent).some(
+        (entry) =>
+          entry.startsWith('[') &&
+          existsSync(path.join(parent, entry, 'page.tsx')),
+      )
+    );
   }
 
   it('only names routes that have a page', () => {
