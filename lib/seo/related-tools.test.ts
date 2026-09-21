@@ -64,22 +64,31 @@ describe('related tools are real, live and never the withheld three', () => {
     }
   });
 
-  it('suggests nothing that is not a live tool URL', () => {
-    // `isLiveToolUrl` is the gate every other surface on this site checks
-    // before offering a destination. A suggestion that fails it is a link to a
-    // page that is in no sitemap and may not answer at all.
-    const dead: string[] = [];
-    for (const route of ROUTES) {
-      for (const tool of relatedToolsFor(route)) {
-        if (!isLiveToolUrl(tool.href)) dead.push(`${route} -> ${tool.href}`);
+  // 20s, not the 5s default. This walks every one of ~679 routes and scores
+  // each against the whole catalogue, so it sits near the default budget on an
+  // idle machine and crosses it whenever anything else is compiling — which,
+  // in a repo several lanes build in at once, is most of the time. The
+  // assertion is about dead links and is unchanged; only the clock moved.
+  it(
+    'suggests nothing that is not a live tool URL',
+    { timeout: 20_000 },
+    () => {
+      // `isLiveToolUrl` is the gate every other surface on this site checks
+      // before offering a destination. A suggestion that fails it is a link to a
+      // page that is in no sitemap and may not answer at all.
+      const dead: string[] = [];
+      for (const route of ROUTES) {
+        for (const tool of relatedToolsFor(route)) {
+          if (!isLiveToolUrl(tool.href)) dead.push(`${route} -> ${tool.href}`);
+        }
       }
-    }
 
-    expect(
-      dead,
-      `suggestions pointing at a dead route: ${dead.join(', ')}`,
-    ).toEqual([]);
-  });
+      expect(
+        dead,
+        `suggestions pointing at a dead route: ${dead.join(', ')}`,
+      ).toEqual([]);
+    },
+  );
 
   it('suggests none of the three pages held back for the tech review', () => {
     const withheld: string[] = [];
