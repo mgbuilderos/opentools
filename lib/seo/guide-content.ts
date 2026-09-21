@@ -164,6 +164,193 @@ interface GuideDetail {
 }
 
 const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
+  // lib/tools/structured.ts (parseCsvRows, csvToRecords, csvToJson),
+  // lib/tools/structured.test.ts, components/structured-tools.tsx
+  // (CsvToJsonTool, EditorPair) and app/data/csv-to-json/page.tsx
+  'spreadsheet-and-data-csv-to-json': {
+    directAnswer:
+      'Paste a CSV into the box, or choose a .csv file of up to 20 MB, then press Convert to JSON. The first row becomes the keys, every later row becomes one object, and the result is a JSON array printed with two-space indentation that you can copy or download as converted.json. Every value arrives as a JSON string, because nothing here is read as a number, a date or a boolean.',
+    leadParagraph:
+      'This turns a comma-separated file into an array of JSON objects, one object per row, keyed by the header names in the first row. Values are carried through as text from parse to output — the page says so in its own footer, "Values remain strings by design" — so a postcode with a leading zero and a sixteen-digit account number come out with every character they went in with. The parser is strict rather than forgiving: every column needs a non-empty header, headers must be unique, and each row must carry exactly as many fields as there are headers, or the run stops and names the row. Fields are separated by commas only, so a semicolon-separated export reads as a single column and there is no setting to change the separator. The file picker accepts .csv up to 20 MB; the paste box has no character limit of its own, so a very large paste is bounded only by what the tab can hold.',
+    faqs: [
+      {
+        question: 'Does it convert numbers, dates and true or false values?',
+        answer:
+          'No, and that is the point. Every cell becomes a JSON string, so 007 stays 007, a long account or order number keeps all of its digits, and a value such as 1-2 is not turned into a date. Type coercion is where a CSV quietly loses information, because a value that is too long to be held exactly as a number comes back changed; the JSON tools in the same file refuse an integer outside the exact range rather than round it, which is the same hazard seen from the other side. Cast the values yourself afterwards, column by column, where you can see what you are deciding.',
+      },
+      {
+        question:
+          'How does it handle quotes, commas and line breaks inside a field?',
+        answer:
+          'It follows the usual CSV quoting rules. A field that begins with a double quote is read as quoted and may hold commas and line breaks, and two double quotes inside it mean one literal double quote. A double quote that appears after other characters in the same field is kept as an ordinary character rather than opening a quoted section. An opening quote that is never closed stops the run with "CSV contains an unclosed quoted field." A test in this repository parses a file with a quoted comma, a doubled quote and a line break inside a field, and requires all three back intact.',
+      },
+      {
+        question: 'Why was my file refused?',
+        answer:
+          'Three named checks reject a file. An empty cell anywhere in the first row gives "Every CSV column needs a header in the first row.", which usually means the export began with a title line or a blank column. Two identical headers give "CSV headers must be unique before conversion.", because a duplicate key would silently overwrite a column. A row with the wrong number of fields gives its row number and both counts, for example "Row 2 has 1 columns; expected 2." Nothing is padded or discarded to make a ragged file fit.',
+      },
+      {
+        question: 'What happens to blank lines and to a byte-order mark?',
+        answer:
+          'A byte-order mark at the very start of the file is removed before parsing, and blank lines at the end of the file are dropped. A blank line in the middle is not: in a file with more than one column it counts as a row holding one empty field, and it is refused with the row number like any other short row. Delete the stray line and run it again.',
+      },
+      {
+        question: 'What are the limits, and what does the download contain?',
+        answer:
+          'The file picker accepts .csv or text/csv and stops at 20 MB with "This candidate limits CSV files to 20 MB." The download button writes the JSON you see to a file named converted.json as UTF-8 JSON, and the result panel reports how many rows and columns were converted. The file is written from the page to your own disk; nothing is posted anywhere.',
+      },
+    ],
+  },
+
+  // components/audio-convert-tool.tsx, lib/tools/audio/decode.ts,
+  // lib/tools/audio/wav.ts (decodeWav, encodeWav, wavByteLength),
+  // lib/tools/audio/pcm.ts, lib/tools/audio/probe.ts and
+  // app/audio/convert/page.tsx
+  'audio-audio-to-wav': {
+    directAnswer:
+      'Choose an audio file of up to 100 MB, pick a bit depth, and convert. The samples are decoded inside the page at the rate the file\x27s own header declares and written straight back out as a WAV, so nothing is resampled unless you ask for it. Output is WAV only: there is no MP3 encoder on this page.',
+    leadParagraph:
+      'This converts audio to uncompressed WAV using the decoders your browser already carries, then writes the file byte by byte with this project\x27s own WAV writer. The trap it exists to avoid is silent resampling: the browser\x27s decodeAudioData resamples whatever it decodes to the rate of the audio context it was called on and says nothing about having done so, so the rate is read out of the file header first and the context is built at that rate. Where that cannot be honoured — Opus is always 48 kHz, some containers do not state a rate, and a rate outside 8,000 to 96,000 Hz is outside what a context can be built at — the page shows the original rate rather than leaving it unsaid. You can write 16-bit, 24-bit or 32-bit float, keep or change the sample rate, keep or mix the channels, trim, fade and normalise the peak. One file is limited to 100 MB and an output projected over 500 MB is refused before it is built, with a message naming the size.',
+    faqs: [
+      {
+        question: 'Which files can it open?',
+        answer:
+          'The picker accepts any audio type your browser offers plus .mp3, .m4a, .aac, .flac, .ogg, .opus, .oga, .wav, .aiff, .aif, .caf and .webm, and the decoding is done by your browser, so the real answer is whatever your browser can play. WAV and AIFF are the exception: this project reads those itself rather than handing them over, because a Chromium browser turns AIFF down where WebKit accepts it, and reading them directly also removes the resampling question entirely. When neither reader can make sense of a file you get "This browser could not decode that audio file." rather than a broken WAV.',
+      },
+      {
+        question: 'What bit depth and sample rate does the WAV come out at?',
+        answer:
+          'Bit depth is yours to choose: 16-bit, 24-bit, or 32-bit float. The 32-bit option writes IEEE floating-point samples with the extra format field and the fact chunk that makes such a file open widely, not 32-bit integers. Sample rate defaults to "Keep each source rate", so the file keeps the rate it arrived with; choosing 48,000, 44,100, 22,050 or 8,000 Hz renders the audio through the browser\x27s own resampler at that rate instead. Channel count is kept unless you ask for a mono mixdown or for only the left or the right channel.',
+      },
+      {
+        question: 'Does a 32-bit WAV decode correctly here?',
+        answer:
+          'Yes. This page\x27s WAV reader has a branch for every width it admits — 8-bit unsigned, 16-bit, 24-bit and 32-bit signed integers, and 32-bit or 64-bit floating point — and refuses any other width by name instead of reading it as something it is not. That matters because a reader with a missing branch produces silence rather than an error, and silence is the failure you only notice after you have saved the file. Play the result in the page before you save it either way.',
+      },
+      {
+        question: 'Why is my WAV so much larger than the file I started with?',
+        answer:
+          'Because WAV stores every sample uncompressed. A minute of 44,100 Hz 16-bit stereo is a little over ten megabytes whatever it was compressed to before, and 24-bit or 32-bit output is half again or twice that. The page projects the size before encoding and refuses anything over 500 MB with a message telling you to trim it or choose a lower bit depth or sample rate. Going the other way is not offered: there is no MP3 encoder here, because shipping one means shipping a licensed encoder and re-encoding would throw away quality the original still has.',
+      },
+      {
+        question: 'What do the trim, fade and normalise boxes do?',
+        answer:
+          'Start and end are in seconds and are clamped into the file, so asking for the first minute of a forty-second recording gives you the forty seconds; an end at or before the start is refused. Fades are linear in amplitude and are shortened to fit when they are longer than the audio. Normalise matches the loudest peak in the recording to the ceiling you type in decibels below full scale — both 3 and -3 mean three decibels down — which is not the same as making two recordings sound equally loud, a measurement this page does not make. Selecting several files at once applies one set of settings to all of them, and any file over 100 MB is skipped and reported rather than stopping the batch.',
+      },
+    ],
+  },
+
+  // lib/tools/pdf/pdf-to-word.ts, lib/tools/pdf/pdf-text.ts,
+  // lib/tools/docx/document.ts, lib/tools/pdf/pdf-to-word.test.ts and
+  // components/pdf-to-word-tool.tsx
+  'pdf-pdf-to-word': {
+    directAnswer:
+      'Choose a PDF of up to 150 MB and convert it. The text layer is read in the page, regrouped into lines and paragraphs by the coordinates of the characters, and written to a .docx named after your PDF. This recovers the words, not the page: it is a text extraction, and the page says so above the button.',
+    leadParagraph:
+      'A PDF stores glyphs at coordinates, not paragraphs, so reading order, line grouping and paragraph boundaries all have to be reconstructed from geometry — and that reconstruction is what you get. Reading order, paragraphs, page breaks and headings set in larger type do come across. Layout, columns, tables as tables, images and fonts do not, and calling the result a conversion rather than an extraction would be overstating it. A PDF with no text at all — a scan, or a photograph of paper — is refused by name rather than handed back as an empty document, with a button that passes the same file to the character-recognition tool on this site. A file over 150 MB is refused, and in a multi-file run it is skipped with "The 150 MB limit was exceeded."',
+    faqs: [
+      {
+        question: 'What happens to a scanned PDF?',
+        answer:
+          'It is refused, deliberately. The conversion counts the visible characters in the text layer first, and when that total is zero the run stops with a message saying every page is an image, which is what a scan or a phone photograph produces, and that there is nothing to copy into a Word file. The refusal carries a machine-readable reason, which is what lets the page offer you a button to open the same file in the character-recognition tool instead. A file that is not a PDF at all is refused separately, as unreadable.',
+      },
+      {
+        question: 'What is kept, and what is lost?',
+        answer:
+          'Kept: the words, the order they are read in, paragraph breaks, a real page break between every page, bold where the font name says bold, and headings. Lost: columns, tables as real tables, images, page furniture, colours, margins and the original fonts. A table will come through as its text in reading order, which is usually not the shape you want — the PDF to Excel tool on this site is the one that reconstructs a table as a grid.',
+      },
+      {
+        question: 'How does it decide what a heading is?',
+        answer:
+          'By size, against the whole document. The median character size across every page is taken as the body size, and any line set at least 1.18 times that is treated as a heading: it is written bold and at its own measured size. A document whose body text is already large and whose headings are only slightly larger will therefore have none detected, and a document with a lot of large display text will have several. Headings are written as direct formatting rather than as named Word styles, because the file carries no styles part, so they will not appear in a navigation pane.',
+      },
+      {
+        question: 'Why is my two-column page mixed up?',
+        answer:
+          'Because lines are grouped by their baseline. Two characters at the same height on a two-column page are treated as belonging to the same line whichever column they sit in, so a two-column layout reads across the page rather than down each column. There is no column detection in this tool. If the source is in columns, expect to reorder the paragraphs after the conversion, or to split the pages first.',
+      },
+      {
+        question: 'What does the Word file itself look like?',
+        answer:
+          'A minimal three-part .docx: paragraphs, runs carrying bold and a size, and page breaks. The page size written into it is fixed at A4, 11906 by 16838 twips, whatever size the PDF pages were, so a Letter-size original will reflow when you open it. Control characters that XML forbids are dropped during the write, because leaving one in makes the whole document refuse to open, which is a worse loss than one glyph. The result panel reports the page count, the paragraph count, the character count and how many pages carried no text, so a part-scanned document is not silently half-converted.',
+      },
+    ],
+  },
+
+  // components/pdf-to-excel-tool.tsx, lib/tools/pdf/tables.ts,
+  // lib/tools/pdf/rulings.ts, lib/tools/pdf/lattice.ts,
+  // lib/tools/pdf/cell-flags.ts, lib/tools/pdf/statement-values.ts,
+  // components/pdf-grid-overlay.tsx and lib/tools/spreadsheet/xlsx-writer.ts
+  'pdf-pdf-to-excel': {
+    directAnswer:
+      'Choose a statement or table PDF of up to 100 MB. The page finds the columns, rebuilds the rows, and shows you the table over an image of the page with the column dividers drawn on it so you can drag any that landed in the wrong place; then you label each column and export .xlsx or .csv. It extracts the one table it finds, not the whole document.',
+    leadParagraph:
+      'This is built for the kind of PDF that holds a grid of transactions — a bank or card statement, a ledger, a priced list — and it reconstructs that grid rather than dumping the text. Where the PDF draws its own table borders, the column positions are read from those lines and the panel says "Read from the drawn lines"; where it does not, they are worked out from the spacing and the panel says so, because an estimate presented as a fact is how a plausible, wrong table gets trusted. Descriptions that wrap onto a second line are merged back into their row, repeated headers on later pages are dropped, and footers such as "Page 1 of 5" or "continued on next page" are stripped. A PDF with no readable text is refused outright rather than guessed at with character recognition, which misreads digits and can corrupt a ledger without saying it has. Nothing outside the table — logos, addresses, covering text, images — is exported.',
+    faqs: [
+      {
+        question: 'What happens with a scanned statement?',
+        answer:
+          'It is refused, with a panel headed "Scanned / Image-Only PDF Refused" naming your file and explaining why. Reading a scan means character recognition, and in a financial table that turns an 8 into a 3 or drops a decimal point without telling you, so the tool declines to produce numbers it cannot stand behind. The panel points you at the three things that do work: download the digital PDF from your banking portal, use the portal\x27s own export, or scan with your scanner\x27s searchable-PDF setting so real text is embedded before you come back. A PDF that does have text but no table in it stops separately, with "No tabular statement data could be extracted" and your file\x27s name, rather than handing you an empty spreadsheet.',
+      },
+      {
+        question: 'How do I fix a column that landed in the wrong place?',
+        answer:
+          'Drag the divider. The page is drawn with each column boundary on top of it as a real button, so you can drag one with the mouse or focus it and move it with the arrow keys, and you can add or remove a divider as well. A divider running through the middle of a description is visible at a glance, which is the whole reason the page is shown rather than only the table. You can also edit any cell, delete a row and add a row before exporting; changing anything clears the prepared download so you cannot save a stale file.',
+      },
+      {
+        question: 'Do the amounts and dates come out as real numbers?',
+        answer:
+          'In the .xlsx, yes, when they can be read: you label each column as Date, Description, Debit, Credit, Amount, Running Balance or Ignore, and a labelled date becomes a real date and a labelled money column becomes a real number. The number convention is detected per column, so a European 1.234,56 and an Indian 1,23,456.78 are both read correctly. Anything that cannot be read is written as the original text rather than as a wrong number. The .csv is more conservative: dates are written in ISO form and every other value is written exactly as it appeared, because a CSV has no way to say what a cell is meant to be. Columns you set to Ignore are left out of both files, both downloads take your PDF\x27s name with a .xlsx or .csv ending, and the sheet inside the workbook is named after the file with the .pdf removed and cut to thirty characters.',
+      },
+      {
+        question: 'How do I know which cells to check?',
+        answer:
+          'The page names them instead of scoring them. There is no accuracy percentage anywhere, because the tool cannot measure your document. What it does is flag each cell with something checkable wrong with it: two separate figures sitting in one cell, a money column holding something that is not a number, a date column holding something that is not a date, a missing date, or a running balance that does not continue from the row before. Up to twelve are spelled out with their reasons and the rest stay outlined in the table. Most of them share one cause, a column boundary in the wrong place, which is the thing the dividers fix.',
+      },
+      {
+        question:
+          'Why is it asking me whether my dates are day or month first?',
+        answer:
+          'Because your date column is genuinely ambiguous — every value in it works read either way, so 03/04 could be the third of April or the fourth of March. Guessing is how a year of transactions ends up silently shifted, so the page asks and uses your answer for both exports. When the column settles the question by itself, for example because some day is above twelve, no question is asked and the format it settled on is shown to you.',
+      },
+    ],
+  },
+
+  // lib/tools/pdf/bates.ts, lib/tools/pdf/bates.test.ts,
+  // lib/tools/pdf/signature-placement.ts and components/pdf-bates-tool.tsx
+  'pdf-pdf-bates-numbering': {
+    directAnswer:
+      'Add the PDFs of a bundle, put them in the order you want with the up and down arrows, set a prefix, a starting number and a padding width, and stamp. Every page of every file is numbered, and the count carries on from one file into the next, so a two-page exhibit followed by a three-page exhibit runs 000001 to 000005 across both. Your originals are never touched: each file is stamped in the page and offered as a new download.',
+    leadParagraph:
+      'Bates numbering is the practice of putting one unbroken sequence across a whole production so any page can be cited by number, and that is what this does: prefix, a zero-padded number, optional suffix, on every page, continuing across the files in the list. The stamp is drawn into the page content in Helvetica at the size and margin you choose, and it is placed by the page as a reader shows it, so it sits upright and in the right corner on pages that carry a rotation of 90, 180 or 270 degrees and on pages with a crop box that does not start at the origin. There is no page-range box: the range is the whole bundle, and leaving pages out means leaving files out or splitting them first. Up to 100 MB of PDFs in total, checked as you add them, and an encrypted file is named and refused rather than half-read.',
+    faqs: [
+      {
+        question: 'What does the number look like, and can I change it?',
+        answer:
+          'It is a prefix, then the number padded with leading zeros, then an optional suffix — EXHIBIT-000001 by default. The prefix and suffix are free text, the starting number is yours from zero upwards, and the padding is 4, 5, 6, 7 or 8 digits or none at all, so PLTF-0005-CONF and DOC-7 are both available. A number longer than the padding is not cut: with six-digit padding, page one million stamps as 1000000. The page shows you the range the current settings would produce before you run it.',
+      },
+      {
+        question: 'Does the numbering continue across several files?',
+        answer:
+          'Yes, and that is the reason to use it on a bundle rather than a file at a time. The files are stamped top to bottom in the list, and the count carries straight on, so three exhibits of two, three and one pages run 000001 to 000002, then 000003 to 000005, then 000006. Each file comes back separately with -bates added to its name, and when there is more than one file you also get the whole bundle merged into a single exhibit-bundle-bates.pdf carrying the same numbers. Your originals are not written to: every file is read into the page, stamped on a copy held in memory, and offered to you as a new download.',
+      },
+      {
+        question: 'Where does the stamp go on the page?',
+        answer:
+          'Any of six positions — top left, top centre, top right, bottom left, bottom centre, bottom right — with bottom right as the default. The margin is 18, 24, 36, 48 or 72 points from the edge and the type is Helvetica in black at 8, 9, 10, 11, 12 or 14 point. There is no white box behind it, so the number is drawn over whatever is already in that corner; if a stamp lands on existing content, move it to another corner or increase the margin and run it again. It is ordinary page content rather than an annotation, so it cannot be switched off in a reader afterwards.',
+      },
+      {
+        question: 'Will the page numbers in my reader match the stamps?',
+        answer:
+          'Yes, unless you switch it off. By default the tool also writes page labels into the document, which is the part of the file a reader uses for its own page-number box, so a page stamped EXHIBIT-000042 is shown as EXHIBIT-000042 rather than as page 42 of 60. The merged bundle gets the same labels across all its pages. Turning the option off leaves the visible stamp in place and the reader back on ordinary counting.',
+      },
+      {
+        question: 'What will it refuse?',
+        answer:
+          'A password-protected or encrypted PDF, named as such — remove the password locally and try again. A file that will not parse, reported as a failure to parse that file by name. A PDF with no pages in it. And a prefix or suffix holding a character the standard PDF fonts cannot write: the tool names the offending character back to you, which is what happens to a rupee sign or an emoji, and asks for ordinary letters, numbers or punctuation instead.',
+      },
+    ],
+  },
   // lib/tools/ocr/{assets,runtime,layout}.ts and their tests
   'image-image-to-text': {
     directAnswer:
