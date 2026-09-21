@@ -54,6 +54,8 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/math/percentage-calculator',
   '/date/age-calculator',
   '/date/date-difference',
+  '/data/workbook-audit',
+  '/pdf/compare',
   '/creator/workbench',
   '/data/workbench',
   '/date/workbench',

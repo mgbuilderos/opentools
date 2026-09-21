@@ -1,5 +1,5 @@
 export type JsonTransformMode = 'pretty' | 'minify' | 'sort';
-import { emitJsonTable, parseCsv } from '@/lib/tools/notation/table';
+import { emitJsonTable, parseCsv } from './notation/table';
 
 export class StructuredDataError extends Error {
   constructor(message: string) {

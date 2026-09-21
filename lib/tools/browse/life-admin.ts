@@ -215,4 +215,4 @@ export const SECTIONS: readonly BrowseSection[] = [
       },
     ],
   },
-] as const;
+];

@@ -1,4 +1,4 @@
-import { htmlToMarkdown, markdownToHtml } from '@/lib/tools/notation';
+import { htmlToMarkdown, markdownToHtml } from './notation';
 
 export interface WritingField {
   id: string;
@@ -347,7 +347,6 @@ function escapeHtml(value: string) {
     .replace(/"/gu, '&quot;')
     .replace(/'/gu, '&#39;');
 }
-
 
 function lcsDiff(before: string, after: string) {
   const left = before.split(/\r?\n/gu);

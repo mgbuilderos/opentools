@@ -4,7 +4,7 @@ import {
   parseCsv,
   emitJsonTable,
   parseJsonTable,
-} from '@/lib/tools/notation/table';
+} from './notation/table';
 
 export interface DeveloperFieldOption {
   value: string;
@@ -498,16 +498,6 @@ function parseAbsoluteUrl(raw: string) {
 
 function safeJson(inputValue: string): unknown {
   return JSON.parse(transformJson(inputValue, 'minify')) as unknown;
-}
-
-function csvCell(cell: unknown) {
-  const raw =
-    typeof cell === 'string'
-      ? cell
-      : cell == null
-        ? ''
-        : (JSON.stringify(cell) ?? '');
-  return /[",\r\n]/u.test(raw) ? `"${raw.replace(/"/gu, '""')}"` : raw;
 }
 
 function queryToJson(inputValue: string) {

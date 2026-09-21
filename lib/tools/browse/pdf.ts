@@ -94,6 +94,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/pdf/metadata',
         workspaceId: 'pdf-metadata',
       },
+      {
+        id: 'pdf-compare',
+        name: 'Compare PDF Documents Online',
+        description:
+          'Whole-document stream comparison with reflow resilience. Detect insertions, deletions, moved clauses, and formatting changes between PDF contract drafts.',
+        href: '/pdf/compare',
+        workspaceId: 'pdf-compare',
+      },
     ],
   },
   {

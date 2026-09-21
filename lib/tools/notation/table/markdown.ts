@@ -83,12 +83,18 @@ export function emitMarkdownTable(table: Table): string {
   const colWidths = Array.from({ length: colCount }, () => 3);
 
   for (let i = 0; i < colCount; i++) {
-    colWidths[i] = Math.max(colWidths[i], escapeMarkdownPipe(table.headers[i] ?? '').length);
+    colWidths[i] = Math.max(
+      colWidths[i],
+      escapeMarkdownPipe(table.headers[i] ?? '').length,
+    );
   }
 
   for (const row of table.rows) {
     for (let i = 0; i < colCount; i++) {
-      colWidths[i] = Math.max(colWidths[i], escapeMarkdownPipe(row[i] ?? '').length);
+      colWidths[i] = Math.max(
+        colWidths[i],
+        escapeMarkdownPipe(row[i] ?? '').length,
+      );
     }
   }
 

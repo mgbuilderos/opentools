@@ -661,4 +661,3 @@ export function convertMermaidErDiagramToSql(
 
   return [...header, '', statements.join('\n\n'), ...footer].join('\n');
 }
-

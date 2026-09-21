@@ -52,7 +52,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'pdf',
     name: 'PDF',
     shortDescription: 'Merge, compress, extract, and reorder pages.',
-    destinationCount: 17,
+    destinationCount: 18,
     toolIds: [
       'pdf-merge',
       'pdf-compress',
@@ -66,6 +66,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       'pdf-to-word',
       'pdf-to-excel',
       'pdf-redact',
+      'pdf-compare',
     ],
   },
   {
@@ -125,13 +126,14 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'spreadsheets',
     name: 'Spreadsheets & data',
     shortDescription: 'JSON, CSV, Excel, and tabular data cleanup.',
-    destinationCount: 43,
+    destinationCount: 44,
     toolIds: [
       'spreadsheet-workbench',
       'excel-converter',
       'csv-to-json',
       'json-format',
       'list-hygiene',
+      'data-workbook-audit',
     ],
   },
   {

@@ -66,6 +66,8 @@ export const DEDICATED_TOOL_ROUTES = [
   '/math/percentage-calculator',
   '/date/age-calculator',
   '/date/date-difference',
+  '/data/workbook-audit',
+  '/pdf/compare',
 ] as const;
 
 /**

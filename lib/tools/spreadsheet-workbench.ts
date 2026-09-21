@@ -7,7 +7,7 @@ import {
   emitSqlTable,
   emitMarkdownTable,
   parseMarkdownTable,
-} from '@/lib/tools/notation/table';
+} from './notation/table';
 
 export interface SpreadsheetField {
   id: string;

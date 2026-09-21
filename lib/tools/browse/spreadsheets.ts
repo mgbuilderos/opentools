@@ -334,6 +334,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'excel-converter',
       },
       {
+        id: 'data-workbook-audit',
+        name: 'Excel Workbook Audit & Formula Inspector',
+        description:
+          'Forensic Excel spreadsheet audit. Detect hardcoded constants, broken formula runs, error cells, circular references, hidden sheets, and Benford statistical anomalies.',
+        href: '/data/workbook-audit',
+        workspaceId: 'data-workbook-audit',
+      },
+      {
         id: 'list-hygiene',
         name: 'Contact list hygiene and deduplicator',
         description:

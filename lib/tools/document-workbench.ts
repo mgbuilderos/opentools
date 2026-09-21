@@ -3,7 +3,7 @@ import {
   emitLatexTable,
   emitMarkdownTable,
   parseTable,
-} from '@/lib/tools/notation/table';
+} from './notation/table';
 
 export interface DocumentField {
   id: string;

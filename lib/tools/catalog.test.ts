@@ -180,7 +180,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(684);
+    expect(everyDestination).toBe(686);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -249,12 +249,13 @@ describe('public canary catalog', () => {
       'Bates numbering for PDFs',
       'Redact & Black Out PDF',
       'PDF metadata viewer and remover',
+      'Compare PDF Documents Online',
     ]);
-    expect(pdf).toHaveLength(17);
+    expect(pdf).toHaveLength(18);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(17);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(18);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

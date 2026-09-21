@@ -5,7 +5,7 @@ import {
   emitSchema,
   parseSchema,
   type SchemaFormat,
-} from '@/lib/tools/notation/schema';
+} from './notation/schema';
 
 export { convertMermaidErDiagramToSql };
 
@@ -4227,4 +4227,3 @@ export function convertJsonToZodSchema(
 
   return lines.join('\n');
 }
-

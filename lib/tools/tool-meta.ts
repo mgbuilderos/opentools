@@ -116,6 +116,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Turn an .xlsx into a CSV, or a CSV into a real Excel file, in this tab.',
   },
+  'data-workbook-audit': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Forensic Excel spreadsheet audit. Detect hardcoded constants, broken formula runs, error cells, circular references, hidden sheets, and Benford statistical anomalies.',
+  },
   'pdf-bates': {
     version: '0.1.0-canary',
     shortDescription:
@@ -130,6 +135,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     version: '0.1.0-canary',
     shortDescription:
       'See the author, the authoring program, the dates and the XMP packet held inside a PDF, then remove all of them.',
+  },
+  'pdf-compare': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Whole-document stream comparison with reflow resilience. Detect insertions, deletions, moved clauses, and formatting changes between PDF contract drafts.',
   },
   'docx-metadata': {
     version: '0.1.0-canary',
