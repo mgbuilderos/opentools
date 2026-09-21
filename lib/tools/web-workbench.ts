@@ -1,4 +1,4 @@
-import { emitHtmlTable, parseTable } from './notation/table';
+import { emitHtmlTable, parseTable } from '@/lib/tools/notation/table';
 
 export interface WebFieldOption {
   value: string;

@@ -3,7 +3,7 @@ import {
   emitLatexTable,
   emitMarkdownTable,
   parseTable,
-} from './notation/table';
+} from '@/lib/tools/notation/table';
 
 export interface DocumentField {
   id: string;
@@ -17,6 +17,8 @@ export interface DocumentField {
 export interface DocumentOperation {
   id: string;
   name: string;
+  searchTitle?: string;
+  searchDescription?: string;
   description: string;
   fields: readonly DocumentField[];
   notice?: string;
@@ -453,7 +455,8 @@ export const DOCUMENT_OPERATIONS: readonly DocumentOperation[] = [
   },
   {
     id: 'latex-table-generator',
-    name: 'LaTeX Table Generator Online — Free CSV & Markdown to LaTeX',
+    name: 'LaTeX table generator',
+    searchTitle: 'LaTeX Table Generator Online — Free CSV & Markdown to LaTeX',
     description:
       'Generate LaTeX tables online from CSV, TSV, or Markdown. Emits booktabs, longtable, captions, and siunitx decimal alignment with zero uploads.',
     fields: [

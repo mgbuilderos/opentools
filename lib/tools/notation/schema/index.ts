@@ -9,7 +9,11 @@ import type { Schema, SchemaEmitOptions, SchemaFormat } from './types';
 
 export * from './types';
 export { parseSqlDdl, emitSqlDdl } from './sql-ddl';
-export { parseMermaidErDiagram, emitMermaidErDiagram } from './mermaid';
+export {
+  parseMermaidErDiagram,
+  emitMermaidErDiagram,
+  convertMermaidErDiagramToSql,
+} from './mermaid';
 
 export function detectSchemaFormat(input: string): SchemaFormat {
   const trimmed = input.trim();

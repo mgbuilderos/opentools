@@ -796,7 +796,7 @@ export const SECTIONS: readonly BrowseSection[] = [
       },
       {
         id: 'developer-advanced-workbench:sql-to-er-diagram',
-        name: 'ER Diagram from SQL (ERD) — Generate Mermaid, DBML & SVG',
+        name: 'SQL Schema to Visual ER Diagram',
         description:
           'Create an ER diagram from SQL DDL online. Export interactive visual SVG, Mermaid erDiagram, DBML, and PlantUML in your browser with zero server uploads.',
         href: '/developer/advanced?tool=sql-to-er-diagram',

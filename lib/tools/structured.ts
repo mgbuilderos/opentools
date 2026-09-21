@@ -1,4 +1,5 @@
 export type JsonTransformMode = 'pretty' | 'minify' | 'sort';
+import { emitJsonTable, parseCsv } from '@/lib/tools/notation/table';
 
 export class StructuredDataError extends Error {
   constructor(message: string) {
@@ -166,5 +167,5 @@ export function csvToRecords(input: string): CsvResult {
 
 export function csvToJson(input: string) {
   const result = csvToRecords(input);
-  return { ...result, json: JSON.stringify(result.rows, null, 2) };
+  return { ...result, json: emitJsonTable(parseCsv(input)) };
 }

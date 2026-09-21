@@ -78,16 +78,17 @@ export function parseMarkdownTable(input: string): Table {
 }
 
 export function emitMarkdownTable(table: Table): string {
+  const escapeMarkdownPipe = (val: string) => val.replace(/\|/gu, '\\|');
   const colCount = table.headers.length;
   const colWidths = Array.from({ length: colCount }, () => 3);
 
   for (let i = 0; i < colCount; i++) {
-    colWidths[i] = Math.max(colWidths[i], table.headers[i]?.length ?? 0);
+    colWidths[i] = Math.max(colWidths[i], escapeMarkdownPipe(table.headers[i] ?? '').length);
   }
 
   for (const row of table.rows) {
     for (let i = 0; i < colCount; i++) {
-      colWidths[i] = Math.max(colWidths[i], row[i]?.length ?? 0);
+      colWidths[i] = Math.max(colWidths[i], escapeMarkdownPipe(row[i] ?? '').length);
     }
   }
 
@@ -104,8 +105,6 @@ export function emitMarkdownTable(table: Table): string {
     }
     return str + ' '.repeat(diff);
   };
-
-  const escapeMarkdownPipe = (val: string) => val.replace(/\|/gu, '\\|');
 
   const headerStr =
     '| ' +

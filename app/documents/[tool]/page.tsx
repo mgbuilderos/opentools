@@ -56,8 +56,8 @@ export async function generateMetadata({
   const operation = OPERATIONS.find((item) => item.id === tool);
   if (!operation) return {};
   return {
-    title: operation.name,
-    description: operation.description,
+    title: operation.searchTitle ?? operation.name,
+    description: operation.searchDescription ?? operation.description,
     alternates: { canonical: `${CANONICAL_ORIGIN}${BASE}/${operation.id}` },
   };
 }

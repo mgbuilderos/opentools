@@ -1,4 +1,13 @@
 import { csvToRecords } from './structured';
+import {
+  emitCsv,
+  parseCsv,
+  emitJsonTable,
+  parseJsonTable,
+  emitSqlTable,
+  emitMarkdownTable,
+  parseMarkdownTable,
+} from '@/lib/tools/notation/table';
 
 export interface SpreadsheetField {
   id: string;
@@ -524,28 +533,6 @@ function percentile(sorted: number[], fraction: number) {
   );
 }
 
-function parseJsonRows(value: string) {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(value);
-  } catch {
-    throw new Error('Input must be valid JSON.');
-  }
-  if (!Array.isArray(parsed) || !parsed.length || parsed.length > 100_000)
-    throw new Error(
-      'JSON must be a non-empty array of at most 100,000 objects.',
-    );
-  if (
-    parsed.some((row) => !row || Array.isArray(row) || typeof row !== 'object')
-  )
-    throw new Error('Every JSON array item must be an object.');
-  const rows = parsed as Record<string, unknown>[];
-  const headers = [...new Set(rows.flatMap((row) => Object.keys(row)))];
-  if (!headers.length || headers.length > 1_000)
-    throw new Error('Objects must contain from 1 to 1,000 distinct keys.');
-  return { headers, rows };
-}
-
 function parseDate(value: string, format: string) {
   const patterns: Record<string, RegExp> = {
     ISO: /^(\d{4})-(\d{2})-(\d{2})$/u,
@@ -568,13 +555,6 @@ function parseDate(value: string, format: string) {
   )
     throw new Error(`Invalid calendar date: ${value}.`);
   return date.toISOString().slice(0, 10);
-}
-
-function markdownCell(value: string) {
-  return value
-    .replaceAll('\\', '\\\\')
-    .replaceAll('|', '\\|')
-    .replace(/\r?\n/gu, '<br>');
 }
 
 export function runSpreadsheetOperation(
@@ -898,45 +878,21 @@ export function runSpreadsheetOperation(
       return toCsv(data.headers, rows);
     }
     case 'csv-to-json':
-      return JSON.stringify(table(values).rows, null, 2);
-    case 'json-to-csv': {
-      const data = parseJsonRows(values.input);
-      return toCsv(data.headers, data.rows);
-    }
-    case 'csv-to-tsv': {
-      const data = table(values);
-      const matrix = [
-        data.headers,
-        ...data.rows.map((row) => data.headers.map((name) => row[name])),
-      ];
-      if (matrix.some((row) => row.some((cell) => /[\t\r\n]/u.test(cell))))
-        throw new Error(
-          'TSV export does not support tabs or newlines inside cells.',
-        );
-      return matrix.map((row) => row.join('\t')).join('\n');
-    }
-    case 'tsv-to-csv': {
-      const rows = values.input
-        .split(/\r?\n/gu)
-        .filter((row) => row.length)
-        .map((row) => row.split('\t'));
-      if (!rows.length || rows.some((row) => row.length !== rows[0].length))
-        throw new Error('TSV must be a non-empty rectangular table.');
-      return rows.map((row) => row.map(csvCell).join(',')).join('\n');
-    }
+      return emitJsonTable(parseCsv(values.input));
+    case 'json-to-csv':
+      return emitCsv(parseJsonTable(values.input));
+    case 'csv-to-tsv':
+      return emitCsv(parseCsv(values.input), '\t');
+    case 'tsv-to-csv':
+      return emitCsv(parseCsv(values.input, '\t'), ',');
     case 'csv-to-sql': {
-      const data = table(values);
       const name = values.table.trim();
       if (!/^[A-Za-z_][A-Za-z0-9_]*$/u.test(name))
         throw new Error('Table name must be a simple SQL identifier.');
-      const identifier = (value: string) => `"${value.replaceAll('"', '""')}"`;
-      const literal = (value: string) => `'${value.replaceAll("'", "''")}'`;
-      return data.rows
-        .map(
-          (row) =>
-            `INSERT INTO ${identifier(name)} (${data.headers.map(identifier).join(', ')}) VALUES (${data.headers.map((column) => literal(row[column])).join(', ')});`,
-        )
-        .join('\n');
+      return emitSqlTable(parseCsv(values.input), {
+        tableName: name,
+        includeCreateTable: false,
+      });
     }
     case 'spreadsheet-formula-viewer': {
       const data = table(values);
@@ -1155,40 +1111,10 @@ export function runSpreadsheetOperation(
         })),
       );
     }
-    case 'table-to-markdown': {
-      const data = table(values);
-      const row = (items: string[]) =>
-        `| ${items.map(markdownCell).join(' | ')} |`;
-      return [
-        row(data.headers),
-        row(data.headers.map(() => '---')),
-        ...data.rows.map((item) => row(data.headers.map((name) => item[name]))),
-      ].join('\n');
-    }
-    case 'markdown-table-to-csv': {
-      const rows = values.input
-        .split(/\r?\n/gu)
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) =>
-          line
-            .replace(/^\||\|$/gu, '')
-            .split(/(?<!\\)\|/u)
-            .map((cell) =>
-              cell.trim().replaceAll('\\|', '|').replaceAll('\\\\', '\\'),
-            ),
-        );
-      if (rows.length < 2 || rows.some((row) => row.length !== rows[0].length))
-        throw new Error(
-          'Markdown table must be rectangular and include a separator row.',
-        );
-      if (!rows[1].every((cell) => /^:?-{3,}:?$/u.test(cell)))
-        throw new Error('Second row must be a Markdown separator row.');
-      return rows
-        .filter((_, index) => index !== 1)
-        .map((row) => row.map(csvCell).join(','))
-        .join('\n');
-    }
+    case 'table-to-markdown':
+      return emitMarkdownTable(parseCsv(values.input));
+    case 'markdown-table-to-csv':
+      return emitCsv(parseMarkdownTable(values.input));
     default:
       throw new Error('Choose a supported spreadsheet or CSV operation.');
   }

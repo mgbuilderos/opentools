@@ -1,4 +1,10 @@
-import { csvToJson, transformJson } from './structured';
+import { transformJson } from './structured';
+import {
+  emitCsv,
+  parseCsv,
+  emitJsonTable,
+  parseJsonTable,
+} from '@/lib/tools/notation/table';
 
 export interface DeveloperFieldOption {
   value: string;
@@ -17,6 +23,8 @@ export interface DeveloperField {
 export interface DeveloperOperation {
   id: string;
   name: string;
+  searchTitle?: string;
+  searchDescription?: string;
   description: string;
   fields: readonly DeveloperField[];
   notice?: string;
@@ -502,32 +510,6 @@ function csvCell(cell: unknown) {
   return /[",\r\n]/u.test(raw) ? `"${raw.replace(/"/gu, '""')}"` : raw;
 }
 
-function jsonToCsv(inputValue: string) {
-  const parsed = safeJson(inputValue);
-  if (!Array.isArray(parsed) || parsed.length === 0) {
-    throw new Error('JSON must be a non-empty array of objects.');
-  }
-  if (parsed.length > 50_000)
-    throw new Error('JSON to CSV is limited to 50,000 rows.');
-  if (
-    parsed.some((row) => !row || Array.isArray(row) || typeof row !== 'object')
-  ) {
-    throw new Error('Every array item must be a JSON object.');
-  }
-  const rows = parsed as Record<string, unknown>[];
-  const headers = [...new Set(rows.flatMap((row) => Object.keys(row)))];
-  if (headers.length === 0)
-    throw new Error('At least one object property is required.');
-  if (headers.length > 1_000)
-    throw new Error('JSON to CSV is limited to 1,000 columns.');
-  return [
-    headers.map(csvCell).join(','),
-    ...rows.map((row) =>
-      headers.map((header) => csvCell(row[header])).join(','),
-    ),
-  ].join('\n');
-}
-
 function queryToJson(inputValue: string) {
   const query = inputValue.trim().replace(/^\?/u, '');
   const params = new URLSearchParams(query);
@@ -841,9 +823,9 @@ export async function runDeveloperDataOperation(
     case 'json-sort-keys':
       return transformJson(inputValue, 'sort');
     case 'json-to-csv':
-      return jsonToCsv(inputValue);
+      return emitCsv(parseJsonTable(inputValue));
     case 'csv-to-json':
-      return csvToJson(inputValue).json;
+      return emitJsonTable(parseCsv(inputValue));
     case 'query-string-parser':
       return queryToJson(inputValue);
     case 'query-string-builder':
