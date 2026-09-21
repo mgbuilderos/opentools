@@ -87,8 +87,19 @@ if (releaseMode) {
   // already made a moment earlier. `e2e/global-setup.ts` still refuses to run
   // against a server whose app chunk is not this worktree's, so a stray
   // preview on 8788 fails the gate loudly instead of passing it silently.
-  const afterBuild = gates.findIndex((gate) => gate.name === 'BUILD') + 1;
-  gates.splice(afterBuild, 0, {
+  const buildIndex = gates.findIndex((gate) => gate.name === 'BUILD');
+  if (buildIndex < 0) {
+    // Not defensive noise: `findIndex` returns -1 when the gate is renamed,
+    // and -1 + 1 is 0, which would run the browser gate FIRST — against a
+    // `dist/` from some earlier pass, or none at all. Fail here, where the
+    // cause is obvious, rather than inside Playwright's global setup.
+    process.stderr.write(
+      '[QC] cannot place END-TO-END: no gate named BUILD. ' +
+        'If BUILD was renamed, update this lookup.\n',
+    );
+    process.exit(1);
+  }
+  gates.splice(buildIndex + 1, 0, {
     name: 'END-TO-END (BROWSER)',
     command: 'npx',
     args: ['playwright', 'test'],
