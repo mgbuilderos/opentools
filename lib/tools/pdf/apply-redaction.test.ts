@@ -1,7 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { PDFDocument, PDFName, rgb, StandardFonts } from 'pdf-lib';
+import { createCanvas } from '@napi-rs/canvas';
 import { applyRedaction } from './apply-redaction';
 import type { RedactionTarget } from './redaction-targets';
+
+function nodeCanvasFactory(width: number, height: number) {
+  const canvas = createCanvas(Math.floor(width), Math.floor(height));
+  const context = canvas.getContext('2d');
+  return {
+    canvas,
+    context,
+    toPng: async () => {
+      const buf = canvas.toBuffer('image/png');
+      return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    },
+  };
+}
 
 describe('apply-redaction engine', () => {
   async function createTestPdfWithMetadata(): Promise<Uint8Array> {
@@ -43,11 +57,16 @@ describe('apply-redaction engine', () => {
 
     // Set fake XMP metadata
     const catalog = doc.catalog;
-    const xmpStream = doc.context.stream('<x:xmpmeta>Secret Author Johnathan Doe</x:xmpmeta>');
+    const xmpStream = doc.context.stream(
+      '<x:xmpmeta>Secret Author Johnathan Doe</x:xmpmeta>',
+    );
     catalog.set(PDFName.of('Metadata'), doc.context.register(xmpStream));
 
     // Add an annotation to page 2
-    page2.node.set(PDFName.of('Annots'), doc.context.obj([doc.context.obj({ Subtype: 'Text' })]));
+    page2.node.set(
+      PDFName.of('Annots'),
+      doc.context.obj([doc.context.obj({ Subtype: 'Text' })]),
+    );
 
     return doc.save();
   }
@@ -79,7 +98,10 @@ describe('apply-redaction engine', () => {
       },
     ];
 
-    const result = await applyRedaction(pdfBytes, targets, { dpi: 150 });
+    const result = await applyRedaction(pdfBytes, targets, {
+      dpi: 150,
+      canvasFactory: nodeCanvasFactory,
+    });
 
     expect(result.redactedPagesCount).toBe(1);
     expect(result.unredactedPagesCount).toBe(1);
@@ -91,7 +113,10 @@ describe('apply-redaction engine', () => {
 
     // Verify output with pdfjs-dist
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-    const loading = pdfjs.getDocument({ data: result.bytes, useSystemFonts: false });
+    const loading = pdfjs.getDocument({
+      data: result.bytes,
+      useSystemFonts: false,
+    });
     const verifiedDoc = await loading.promise;
 
     expect(verifiedDoc.numPages).toBe(2);
@@ -105,7 +130,9 @@ describe('apply-redaction engine', () => {
     const p2 = await verifiedDoc.getPage(2);
     const c2 = await p2.getTextContent();
     expect(c2.items.length).toBeGreaterThan(0);
-    const page2Text = c2.items.map((i: any) => i.str).join(' ');
+    const page2Text = c2.items
+      .map((i: unknown) => (i as { str: string }).str)
+      .join(' ');
     expect(page2Text).toContain('General Terms & Conditions');
   });
 

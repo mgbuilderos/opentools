@@ -111,6 +111,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Stamp sequential exhibit numbers across a bundle of PDFs, continuing the count from one file to the next.',
   },
+  'pdf-redact': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Permanently black out text, rectangles, or sensitive PII. Rasterises redacted pages and purges metadata and annotations.',
+  },
   'docx-metadata': {
     version: '0.1.0-canary',
     shortDescription:

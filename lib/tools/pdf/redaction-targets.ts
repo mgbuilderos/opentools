@@ -58,7 +58,10 @@ export interface PageTextModel {
  * Builds a unified text model of a page with a 1:1 character mapping back
  * to original PdfTextItem instances and their coordinates.
  */
-export function buildPageTextModel(page: PdfPageGeometry, pageNumber: number): PageTextModel {
+export function buildPageTextModel(
+  page: PdfPageGeometry,
+  pageNumber: number,
+): PageTextModel {
   let text = '';
   const charMap: CharMapEntry[] = [];
   const items = page.items;
@@ -214,7 +217,11 @@ export function findSearchTargets(
       const matchIndex = match.index;
       if (matchIndex === undefined) continue;
       const matchText = match[0];
-      const rects = mapSpanToRects(model, matchIndex, matchIndex + matchText.length);
+      const rects = mapSpanToRects(
+        model,
+        matchIndex,
+        matchIndex + matchText.length,
+      );
 
       for (const rect of rects) {
         targets.push({
@@ -334,9 +341,7 @@ export function createManualTarget(
 /**
  * Convenience function to load and parse text models for all pages of a PDF.
  */
-export async function loadPdfTextModels(
-  pdfBytes: Uint8Array,
-): Promise<{
+export async function loadPdfTextModels(pdfBytes: Uint8Array): Promise<{
   models: PageTextModel[];
   pageCount: number;
   hasTextLayer: boolean;

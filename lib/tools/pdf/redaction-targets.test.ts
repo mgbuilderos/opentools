@@ -5,7 +5,6 @@ import {
   createManualTarget,
   findDetectionTargets,
   findSearchTargets,
-  type PageTextModel,
 } from './redaction-targets';
 import type { PdfPageGeometry } from './pdf-geometry';
 
@@ -15,11 +14,46 @@ describe('redaction-targets', () => {
     rotate: 0,
     segments: [],
     items: [
-      { text: 'Confidential Settlement Agreement', x: 50, y: 700, width: 250, fontSize: 16 },
-      { text: 'Client: Johnathan Doe', x: 50, y: 650, width: 150, fontSize: 12 },
-      { text: 'Contact email: john.doe@secretcorp.com for wire.', x: 50, y: 620, width: 320, fontSize: 12 },
-      { text: 'Card: 4111 1111 1111 1111 on file.', x: 50, y: 590, width: 220, fontSize: 12 },
-      { text: 'Server IP: 192.168.1.100 internal.', x: 50, y: 560, width: 200, fontSize: 12 },
+      {
+        text: 'Confidential Settlement Agreement',
+        x: 50,
+        y: 700,
+        width: 250,
+        fontSize: 16,
+        bold: false,
+      },
+      {
+        text: 'Client: Johnathan Doe',
+        x: 50,
+        y: 650,
+        width: 150,
+        fontSize: 12,
+        bold: false,
+      },
+      {
+        text: 'Contact email: john.doe@secretcorp.com for wire.',
+        x: 50,
+        y: 620,
+        width: 320,
+        fontSize: 12,
+        bold: false,
+      },
+      {
+        text: 'Card: 4111 1111 1111 1111 on file.',
+        x: 50,
+        y: 590,
+        width: 220,
+        fontSize: 12,
+        bold: false,
+      },
+      {
+        text: 'Server IP: 192.168.1.100 internal.',
+        x: 50,
+        y: 560,
+        width: 200,
+        fontSize: 12,
+        bold: false,
+      },
     ],
   };
 
@@ -33,7 +67,14 @@ describe('redaction-targets', () => {
   });
 
   it('computeSubItemRect calculates coordinates with ascender/descender padding', () => {
-    const item = { text: 'Hello World', x: 100, y: 500, width: 110, fontSize: 10 };
+    const item = {
+      text: 'Hello World',
+      x: 100,
+      y: 500,
+      width: 110,
+      fontSize: 10,
+      bold: false,
+    };
     const rect = computeSubItemRect(item, 0, 5); // 'Hello'
     expect(rect.x).toBeCloseTo(99, 1);
     expect(rect.width).toBeCloseTo(52, 1);
@@ -53,10 +94,14 @@ describe('redaction-targets', () => {
 
   it('findSearchTargets supports wholeWord matching', () => {
     const model = buildPageTextModel(dummyGeometry, 1);
-    const partialMatch = findSearchTargets([model], 'Johna', { wholeWord: true });
+    const partialMatch = findSearchTargets([model], 'Johna', {
+      wholeWord: true,
+    });
     expect(partialMatch.length).toBe(0); // 'Johnathan' should not match whole-word 'Johna'
 
-    const fullMatch = findSearchTargets([model], 'Johnathan', { wholeWord: true });
+    const fullMatch = findSearchTargets([model], 'Johnathan', {
+      wholeWord: true,
+    });
     expect(fullMatch.length).toBe(1);
   });
 
@@ -79,7 +124,12 @@ describe('redaction-targets', () => {
   });
 
   it('createManualTarget sanitizes and bounds dimensions', () => {
-    const manual = createManualTarget(2, { x: 50.123, y: 100.456, width: 80.789, height: 20.321 });
+    const manual = createManualTarget(2, {
+      x: 50.123,
+      y: 100.456,
+      width: 80.789,
+      height: 20.321,
+    });
     expect(manual.pageNumber).toBe(2);
     expect(manual.rect.x).toBe(50.12);
     expect(manual.rect.y).toBe(100.46);

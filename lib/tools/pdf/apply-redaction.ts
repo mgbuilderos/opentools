@@ -61,12 +61,13 @@ async function getOrCreateCanvas(
   }
 
   // Browser Window with DOM
-  if (typeof window !== 'undefined' && typeof window.document?.createElement === 'function') {
-    const canvas = window.document.createElement('canvas');
+  if (typeof document !== 'undefined') {
+    const canvas = document.createElement('canvas');
     canvas.width = Math.floor(width);
     canvas.height = Math.floor(height);
     const context = canvas.getContext('2d');
-    if (!context) throw new Error('Failed to get 2D canvas context in browser.');
+    if (!context)
+      throw new Error('Failed to get 2D canvas context in browser.');
 
     return {
       canvas,
@@ -86,7 +87,8 @@ async function getOrCreateCanvas(
   if (typeof OffscreenCanvas !== 'undefined') {
     const canvas = new OffscreenCanvas(Math.floor(width), Math.floor(height));
     const context = canvas.getContext('2d');
-    if (!context) throw new Error('Failed to get 2D context for OffscreenCanvas.');
+    if (!context)
+      throw new Error('Failed to get 2D context for OffscreenCanvas.');
 
     return {
       canvas,
@@ -99,26 +101,10 @@ async function getOrCreateCanvas(
     };
   }
 
-  // Node.js fallback using @napi-rs/canvas if installed
-  try {
-    // Dynamic import to avoid hard bundling in browser build
-    const canvasPkg = await import('@napi-rs/canvas');
-    const canvas = canvasPkg.createCanvas(Math.floor(width), Math.floor(height));
-    const context = canvas.getContext('2d');
-    return {
-      canvas,
-      context,
-      toPng: async () => {
-        const buf = canvas.toBuffer('image/png');
-        return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
-      },
-    };
-  } catch {
-    throw new Error(
-      'No canvas implementation available. In browser environments, HTML5 Canvas is used. ' +
-        'In headless Node environments, please provide a canvasFactory.',
-    );
-  }
+  throw new Error(
+    'No canvas implementation available. In browser environments, HTML5 Canvas is used. ' +
+      'In headless Node environments, please provide a canvasFactory in RedactionOptions.',
+  );
 }
 
 /**
@@ -130,7 +116,8 @@ async function ensurePdfWorker(pdfjs: {
   if (pdfjs.GlobalWorkerOptions.workerSrc) return;
   if (typeof Worker === 'undefined') return;
   try {
-    const workerModule = await import('pdfjs-dist/legacy/build/pdf.worker.mjs?url');
+    const workerModule =
+      await import('pdfjs-dist/legacy/build/pdf.worker.mjs?url');
     if (workerModule.default) {
       pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default;
     }
@@ -151,7 +138,9 @@ export async function applyRedaction(
 ): Promise<RedactionResult> {
   // 1. Validation and Refusal by Name (Guardrail G7)
   if (pdfBytes.byteLength === 0) {
-    throw new Error('This PDF file is empty (0 bytes). Cannot perform redaction.');
+    throw new Error(
+      'This PDF file is empty (0 bytes). Cannot perform redaction.',
+    );
   }
 
   let srcDoc: PDFDocument;
@@ -193,14 +182,31 @@ export async function applyRedaction(
   const scale = dpi / 72; // Standard PDF points are 1/72 inch
 
   // 2. Setup pdfjs-dist for rendering touched pages
-  let pdfjsDoc: any = null;
+  interface PdfjsPageLike {
+    getViewport: (options: { scale: number }) => {
+      width: number;
+      height: number;
+      convertToViewportPoint: (x: number, y: number) => [number, number];
+    };
+    render: (params: { canvasContext: unknown; viewport: unknown }) => {
+      promise: Promise<void>;
+    };
+  }
+
+  interface PdfjsDocLike {
+    getPage: (pageNumber: number) => Promise<PdfjsPageLike>;
+  }
+
+  let pdfjsDoc: PdfjsDocLike | null = null;
   if (targetsByPage.size > 0) {
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-    await ensurePdfWorker(pdfjs as unknown as Parameters<typeof ensurePdfWorker>[0]);
+    await ensurePdfWorker(
+      pdfjs as unknown as Parameters<typeof ensurePdfWorker>[0],
+    );
     const copy = new Uint8Array(pdfBytes.length);
     copy.set(pdfBytes);
     const task = pdfjs.getDocument({ data: copy, useSystemFonts: false });
-    pdfjsDoc = await task.promise;
+    pdfjsDoc = (await task.promise) as unknown as PdfjsDocLike;
   }
 
   // 3. Construct new sanitized document
@@ -218,6 +224,9 @@ export async function applyRedaction(
     } else {
       // Redacted page: rasterise to canvas, burn black rectangles, embed as clean image page
       rasterizedPages.push(p);
+      if (!pdfjsDoc) {
+        throw new Error('PDF renderer not initialized.');
+      }
       const pdfjsPage = await pdfjsDoc.getPage(p);
       const viewport = pdfjsPage.getViewport({ scale });
 
@@ -244,8 +253,14 @@ export async function applyRedaction(
         const rect = target.rect;
         // In PDF coordinates: rect.y is bottom-left.
         // Convert top-left (rect.x, rect.y + rect.height) and bottom-right (rect.x + rect.width, rect.y) to viewport
-        const [vx1, vy1] = viewport.convertToViewportPoint(rect.x, rect.y + rect.height);
-        const [vx2, vy2] = viewport.convertToViewportPoint(rect.x + rect.width, rect.y);
+        const [vx1, vy1] = viewport.convertToViewportPoint(
+          rect.x,
+          rect.y + rect.height,
+        );
+        const [vx2, vy2] = viewport.convertToViewportPoint(
+          rect.x + rect.width,
+          rect.y,
+        );
 
         const bx = Math.min(vx1, vx2);
         const by = Math.min(vy1, vy2);
@@ -274,7 +289,11 @@ export async function applyRedaction(
   }
 
   // 4. Purge Document-Wide Leak Vectors
-  options.onProgress?.(pageCount, pageCount, 'Purging metadata and hidden attachments');
+  options.onProgress?.(
+    pageCount,
+    pageCount,
+    'Purging metadata and hidden attachments',
+  );
 
   // A. Clear Document Info Dictionary
   outDoc.setTitle('');

@@ -1,9 +1,10 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { PDFDocument, PDFName } from 'pdf-lib';
+import { createCanvas } from '@napi-rs/canvas';
 import { applyRedaction } from './apply-redaction';
 import {
   findDetectionTargets,
@@ -11,6 +12,19 @@ import {
   loadPdfTextModels,
   type RedactionTarget,
 } from './redaction-targets';
+
+function nodeCanvasFactory(width: number, height: number) {
+  const canvas = createCanvas(Math.floor(width), Math.floor(height));
+  const context = canvas.getContext('2d');
+  return {
+    canvas,
+    context,
+    toPng: async () => {
+      const buf = canvas.toBuffer('image/png');
+      return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    },
+  };
+}
 
 const SECRETS_TO_CHECK = [
   'Johnathan Doe',
@@ -48,7 +62,10 @@ describe('redaction-proof & outside tool verification', () => {
     expect(allTargets.length).toBeGreaterThanOrEqual(6);
 
     // 2. Apply true redaction
-    const result = await applyRedaction(srcBytes, allTargets, { dpi: 200 });
+    const result = await applyRedaction(srcBytes, allTargets, {
+      dpi: 200,
+      canvasFactory: nodeCanvasFactory,
+    });
     expect(result.redactedPagesCount).toBe(1);
     expect(result.unredactedPagesCount).toBe(1);
     expect(result.rasterizedPages).toEqual([1]);
@@ -60,7 +77,10 @@ describe('redaction-proof & outside tool verification', () => {
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
     const pdfjsCopy = new Uint8Array(result.bytes.length);
     pdfjsCopy.set(result.bytes);
-    const loading = pdfjs.getDocument({ data: pdfjsCopy, useSystemFonts: false });
+    const loading = pdfjs.getDocument({
+      data: pdfjsCopy,
+      useSystemFonts: false,
+    });
     const verifiedDoc = await loading.promise;
 
     expect(verifiedDoc.numPages).toBe(2);
@@ -72,7 +92,9 @@ describe('redaction-proof & outside tool verification', () => {
     // Page 2 text must be intact
     const p2 = await verifiedDoc.getPage(2);
     const c2 = await p2.getTextContent();
-    const p2Text = c2.items.map((i: any) => i.str).join(' ');
+    const p2Text = c2.items
+      .map((i: unknown) => (i as { str: string }).str)
+      .join(' ');
     for (const pub of PUBLIC_STRINGS) {
       expect(p2Text).toContain(pub);
     }
@@ -94,7 +116,10 @@ describe('redaction-proof & outside tool verification', () => {
       }
     }
 
-    const allPdfContent = Buffer.concat([rawPdf, ...decompressedBuffers]).toString('utf8');
+    const allPdfContent = Buffer.concat([
+      rawPdf,
+      ...decompressedBuffers,
+    ]).toString('utf8');
 
     for (const secret of SECRETS_TO_CHECK) {
       expect(allPdfContent).not.toContain(secret);
@@ -123,8 +148,8 @@ describe('redaction-proof & outside tool verification', () => {
       for (const pub of PUBLIC_STRINGS) {
         expect(pdftotextOutput).toContain(pub);
       }
-    } catch (e: any) {
-      if (e.code !== 'ENOENT') throw e;
+    } catch (e: unknown) {
+      if ((e as { code?: string }).code !== 'ENOENT') throw e;
     }
   });
 
@@ -134,7 +159,7 @@ describe('redaction-proof & outside tool verification', () => {
     expect(goldenBytes.byteLength).toBeGreaterThan(10_000);
 
     // Golden bytes must not contain any secret strings
-    const goldenString = goldenBytes.toString('utf8');
+    const goldenString = new TextDecoder().decode(goldenBytes);
     for (const secret of SECRETS_TO_CHECK) {
       expect(goldenString).not.toContain(secret);
     }

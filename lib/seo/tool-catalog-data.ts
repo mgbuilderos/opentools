@@ -564,13 +564,13 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     name: 'Redact PDF',
     category: 'PDF',
     rank: 30,
-    executionMode: 'local-wasm',
+    executionMode: 'local-js',
     releaseWave: 'P1',
-    riskTier: 'medium',
-    validationStatus: 'backlog-candidate',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
     notes:
-      'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/pdf/page-tools?tool=redact-pdf',
+      'Permanently black out text, rectangles, or sensitive PII. Rasterises redacted pages and purges metadata and annotations.',
+    destinationUrl: '/pdf/redact',
   },
   {
     id: 'pdf.sign-pdf',

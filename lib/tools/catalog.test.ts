@@ -171,7 +171,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(679);
+    expect(everyDestination).toBe(680);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -237,12 +237,13 @@ describe('public canary catalog', () => {
       'PDF watermark',
       'PDF metadata editor',
       'Bates numbering for PDFs',
+      'Redact & Black Out PDF',
     ]);
-    expect(pdf).toHaveLength(14);
+    expect(pdf).toHaveLength(15);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(14);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(15);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

@@ -46,6 +46,7 @@ export const DEDICATED_TOOL_ROUTES = [
   // matching entries from HELD_BACK in lib/seo/tool-page-registration.test.ts.
   '/documents/metadata',
   '/pdf/bates',
+  '/pdf/redact',
   '/web/file-to-html',
   '/data/csv-to-json',
   '/data/json',

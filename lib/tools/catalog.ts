@@ -652,6 +652,36 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-redact',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Redact & Black Out PDF',
+    shortDescription:
+      'Permanently black out text, rectangles, or sensitive PII. Rasterises redacted pages and purges metadata and annotations.',
+    category: 'PDF',
+    aliases: [
+      'redact pdf',
+      'black out pdf',
+      'remove text from pdf',
+      'black out text in pdf',
+      'redact sensitive pdf text',
+      'pdf pii removal',
+    ],
+    jobs: [
+      'black out confidential text in a pdf',
+      'redact sensitive pii like emails or card numbers',
+      'draw black redaction boxes on a pdf',
+      'permanently remove private text and purge metadata',
+    ],
+    href: '/pdf/redact',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.page.redact', 'pdf.metadata.purge'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'docx-metadata',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1477,6 +1507,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-bates',
       'pdf-to-word',
       'pdf-to-excel',
+      'pdf-redact',
     ],
   },
   {
