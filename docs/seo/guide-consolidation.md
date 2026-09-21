@@ -5,12 +5,15 @@ tool page gradually, based on data. Keep full guides for roughly 30 to 50 tools
 that earn search traffic or have something distinct to say. Every other live
 guide redirects (301) to its tool page and leaves the sitemap.
 
-**The mechanism ships off and changes no URL.** The owner checked Search
-Console on 2026-09-17: the property was new and the Performance report had no
-rows. Until an export exists there is nothing to select on.
+**Status: ON since 2026-09-21, by owner decision.** 15 guides keep a page; the
+other 552 return 301 to their tool page and have left the sitemap. Search
+Console still has no rows — the property was new when the owner checked on
+2026-09-17 — so all 15 were picked on the distinctness evidence below rather
+than on traffic, and every entry carries `reason: 'distinct'`. The traffic path
+is untouched and waits for the first export.
 
 - Switch: `GUIDE_CONSOLIDATION_ENABLED` in `lib/seo/guide-consolidation-config.ts`
-- Keep list: `GUIDE_KEEP_LIST` in `lib/seo/guide-keep-list.ts` (currently empty)
+- Keep list: `GUIDE_KEEP_LIST` in `lib/seo/guide-keep-list.ts` (15 entries)
 - Logic: `lib/seo/guide-consolidation.ts`; redirects resolved in
   `lib/seo/site-redirects.ts`, served by `proxy.ts`
 - Sitemap body: `lib/seo/sitemap-entries.ts`; `llms.txt` bodies:
@@ -110,11 +113,15 @@ A plain `Pages.csv` works too; add `--queries Queries.csv` for query evidence.
 
 ## 5. Flip the switch
 
-1. Regenerate `lib/seo/cached-guides.ts` so no cached slug is missing from the
-   keep list. `next.config.ts` rewrites those 50 slugs to `/guides-cached/…`,
-   which is a page and not a redirect, so a cached guide that stopped being kept
-   would keep answering 200. `guide-consolidation.test.ts` fails on that
-   combination, and `cached-guides.test.ts` states the rule the list follows.
+1. The cached guide list takes care of itself: `lib/seo/cached-guides.ts` is
+   derived from `GUIDE_KEEP_LIST` (the only other file in `lib/seo/` with no
+   imports, so `next.config.ts` can still read it without pulling the tool
+   catalogue into config evaluation). It used to be 50 literal slugs. A rewrite
+   answers 200, not 301, so a cached guide that stopped being kept would have
+   out-answered its own redirect; deriving the list makes that impossible to
+   express. Changing the keep list changes the rewrites and the KV cost with
+   it — re-read `FULL_REWARM` in `scripts/predeploy.mjs` and
+   `docs/CACHE_BUDGET.md`.
 2. Set `GUIDE_CONSOLIDATION_ENABLED = true` in
    `lib/seo/guide-consolidation-config.ts`. A test refuses an empty keep list.
 3. Record the decision and the export it was based on in `docs/DECISION_LOG.md`
@@ -145,10 +152,22 @@ The owner asked for gradual. One way: start with a larger keep list (for example
 `--max-kept 150`), enable, watch for a few weeks, then regenerate from a later
 export with a lower cap. Each step is one keep-list commit plus a deploy.
 
-## Not verified
+## What was verified, and where
 
-Nothing in this file has been checked against the live site: the switch has
-never been on, and no Search Console export exists yet. What is verified is what
-the tests cover — the off state producing the previous sitemap, links and
-`llms.txt` byte for byte, and the on state's redirect targets, absence of
-chains, query-string handling and sitemap/prerender agreement.
+Checked on a production build served by `wrangler dev` on 2026-09-21, in
+Chromium, against this commit:
+
+- a kept guide (`/guides/pdf-merge-pdf`) answers 200 and renders its own
+  content;
+- a consolidated guide (`/guides/developer-and-data-jwt-decoder`) answers 301
+  with `Location: /developer/jwt-decoder`, and that URL answers 200;
+- a consolidated guide whose tool carries a query string keeps it;
+- following a `Location` once never produces a second redirect;
+- `sitemap.xml` lists the 15 kept guides and none of the 552 consolidated ones;
+- `/llms.txt` and `/guides` link tool pages where the guide is gone.
+
+Unit tests cover the rest, including the off state reproducing the previous
+sitemap, links and `llms.txt` exactly, so the switch can be turned back.
+
+**Not verified:** anything on getopentools.com itself. This has not been
+deployed, and the post-deploy checks in step 5 above have not been run.

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { guideOrToolHref } from './guide-consolidation';
 import {
   getAllCategoryPillars,
   getCategoryBySlug,
@@ -59,7 +60,10 @@ describe('Internal Linking Graph & Topic Clusters', () => {
     expect(new Set(slugs).size).toBe(4);
 
     for (const link of links) {
-      expect(link.guideHref).toBe(`/guides/${link.tool.slug}`);
+      // Guide consolidation decides where a related link points: the guide
+      // when that tool keeps one, otherwise the tool page itself. Both are
+      // pages that answer 200 -- the point is that neither is a redirect.
+      expect(link.guideHref).toBe(guideOrToolHref(link.tool));
       expect(link.relationship).toBeTruthy();
       expect(link.tool.category).toBe('PDF');
     }

@@ -34,12 +34,15 @@ const ACCOUNT = '00f21e5724f9ebf7b1ab0cb42ae76b1e';
 const DAILY_ALLOWANCE = 1000;
 /**
  * Ceiling, not a bill: a page costs its two writes only when someone actually
- * requests it, so a quiet day spends a fraction of this. 163 opted-in pages x 2
- * keys, as of 2026-09-19. KEEP IN SYNC with `lib/seo/cache-budget.test.ts` --
- * opting a route in there without changing this makes every verdict below
- * optimistic. `WRITE_BUDGET = 1` in that test prints the current count.
+ * requests it, so a quiet day spends a fraction of this. 155 opted-in pages x 2
+ * keys, counted on 2026-09-21 by the same rule `lib/seo/cache-budget.test.ts`
+ * applies. It had said 326 (163 pages) since 2026-09-19 and was already stale;
+ * the guide-consolidation change took the cached guide route from 50 pages to
+ * the 15 kept guides, which is most of the difference. KEEP IN SYNC with that
+ * test -- opting a route in there without changing this makes every verdict
+ * below optimistic. `WRITE_BUDGET = 1` in that test prints the current count.
  */
-const FULL_REWARM = 326;
+const FULL_REWARM = 310;
 const ROOT = path.resolve(import.meta.dirname, '..');
 const STATE = path.join(ROOT, '.predeploy-state.json');
 

@@ -1,73 +1,34 @@
+import { GUIDE_KEEP_LIST } from './guide-keep-list';
+
 /**
  * The guide slugs served from the cached route.
  *
- * WHY THIS IS A PLAIN LIST. `next.config.ts` builds one rewrite per entry, and
- * config is evaluated before anything else in the build -- importing
- * `live-tools` there would drag the whole tool catalogue and every workbench
- * module into config evaluation. So these are literal strings with no imports,
- * and `cached-guides.test.ts` fails the build if the list ever stops matching
- * the catalogue rule below.
+ * WHY THIS IS DERIVED FROM THE KEEP LIST, AND ONLY FROM IT. `next.config.ts`
+ * builds one rewrite per entry, and config is evaluated before anything else
+ * in the build -- importing `live-tools` there would drag the whole tool
+ * catalogue and every workbench module into config evaluation, which is why
+ * this was a literal list of 50 strings until 2026-09-21. `guide-keep-list.ts`
+ * has no imports at all: it is a typed array of data. So it can be read here
+ * without pulling anything behind it, and the two lists can no longer drift.
  *
- * WHY ONLY 50. All 550 guides cost 1,100 KV writes, which does not fit the free
- * plan's ~1,000/day at any setting (see docs/CACHE_BUDGET.md). 50 costs 100.
- * The selection is the same `releaseWave === 'P0' || rank <= 5` rule that
- * `generateStaticParams` already used, so nothing new is being guessed at.
+ * WHY IT SHRANK FROM 50 TO THE KEPT GUIDES. Guide consolidation
+ * (lib/seo/guide-consolidation-config.ts) redirects every guide that is not
+ * kept. A rewrite is not a redirect: `/guides/<slug>` rewritten to
+ * `/guides-cached/<slug>` renders that page and answers 200, so a cached slug
+ * that stopped being kept would quietly out-answer its own 301 and stay
+ * indexed. Deriving the list from the keep list makes that combination
+ * impossible to express; `guide-consolidation.test.ts` also asserts it.
  *
- * The other 500 guides keep rendering on demand and cost no writes at all.
+ * COST. Each cached page costs two KV writes and the free plan allows about
+ * 1,000 a day (docs/CACHE_BUDGET.md). 50 cost 100; the kept guides cost fewer.
+ * `cache-budget.test.ts` re-checks the whole site's total, and `FULL_REWARM`
+ * in `scripts/predeploy.mjs` is the same number stated once more for the
+ * deploy check -- change this list and re-read both.
  */
-export const CACHED_GUIDE_SLUGS = [
-  'subtitles-sync-fixer',
-  'subtitles-frame-rate-converter',
-  'subtitles-joiner',
-  'subtitles-caption-checker',
-  'audio-mp3-cutter',
-  'audio-mp3-joiner',
-  'pdf-merge-pdf',
-  'pdf-compress-pdf',
-  'pdf-rotate-pdf',
-  'pdf-reorder-pdf-pages',
-  'pdf-extract-pdf-pages',
-  'pdf-images-to-pdf',
-  'image-image-cropper',
-  'image-image-rotator',
-  'image-image-flipper',
-  'image-background-remover',
-  'image-exif-remover',
-  'image-image-to-text',
-  'audio-audio-trimmer',
-  'spreadsheet-and-data-csv-viewer',
-  'spreadsheet-and-data-csv-editor',
-  'spreadsheet-and-data-csv-cleaner',
-  'spreadsheet-and-data-csv-sorter',
-  'spreadsheet-and-data-csv-filter',
-  'text-and-writing-text-editor',
-  'text-and-writing-markdown-editor',
-  'text-and-writing-html-to-markdown',
-  'text-and-writing-markdown-to-html',
-  'developer-and-data-json-editor',
-  'developer-and-data-json-diff',
-  'developer-and-data-base64-encoder',
-  'developer-and-data-base64-decoder',
-  'developer-and-data-uuid-generator',
-  'developer-and-data-unix-timestamp-converter',
-  'web-and-seo-meta-tag-generator',
-  'web-and-seo-open-graph-generator',
-  'web-and-seo-twitter-card-generator',
-  'web-and-seo-serp-snippet-preview',
-  'web-and-seo-robots-txt-generator',
-  'qr-and-barcode-qr-code-generator',
-  'qr-and-barcode-url-qr-code',
-  'qr-and-barcode-text-qr-code',
-  'qr-and-barcode-wi-fi-qr-code',
-  'qr-and-barcode-upi-qr-code',
-  'math-and-units-basic-calculator',
-  'math-and-units-scientific-calculator',
-  'math-and-units-fraction-calculator',
-  'math-and-units-percentage-calculator',
-  'math-and-units-ratio-calculator',
-  'finance-and-business-loan-emi-calculator',
-] as const;
+export const CACHED_GUIDE_SLUGS: readonly string[] = GUIDE_KEEP_LIST.map(
+  (entry) => entry.slug,
+);
 
 export function isCachedGuideSlug(slug: string): boolean {
-  return (CACHED_GUIDE_SLUGS as readonly string[]).includes(slug);
+  return CACHED_GUIDE_SLUGS.includes(slug);
 }

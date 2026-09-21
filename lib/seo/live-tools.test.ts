@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
+import { getPublishedGuideTools } from './guide-consolidation';
 
 import sitemap from '../../app/sitemap';
 import { loadsLocalModel } from '../security/content-security-policy';
@@ -186,22 +187,30 @@ describe('execution mode claims', () => {
 });
 
 describe('sitemap', () => {
-  it('lists every live tool guide and no other guide', () => {
+  it('lists the guides that keep a page and no other guide', () => {
     const guides = sitemapUrls.filter((url) =>
       /^\/guides\/(?!category\/)[a-z0-9-]+$/u.test(url),
     );
+    // Since guide consolidation was enabled (2026-09-21) the sitemap lists the
+    // kept guides, not the whole catalogue: the rest 301 to their tool page,
+    // and a redirect has no business in a sitemap. A guide of a tool that is
+    // not live is still absent, as it always was (DECISION_LOG §7).
     expect(new Set(guides)).toEqual(
-      new Set(LIVE_TOOL_CATALOG.map((tool) => `/guides/${tool.slug}`)),
+      new Set(getPublishedGuideTools().map((tool) => `/guides/${tool.slug}`)),
     );
-    expect(guides).toContain('/guides/developer-and-data-jwt-decoder');
-    // Compress PDF is live now that /pdf/compress runs it; the guide that used
-    // to point at a control the page tool never had is back in the sitemap.
+    const live = new Set(LIVE_TOOL_CATALOG.map((tool) => tool.slug));
+    for (const url of guides) {
+      expect(live.has(url.slice('/guides/'.length)), url).toBe(true);
+    }
+    // Compress PDF is live now that /pdf/compress runs it, and it is kept.
     expect(guides).toContain('/guides/pdf-compress-pdf');
     expect(guides).toContain('/guides/pdf-ocr-pdf');
     expect(guides).toContain('/guides/image-image-to-text');
     expect(guides).not.toContain('/guides/video-video-to-gif');
     // /image/exact-size really writes the file, so its guide is listed.
     expect(guides).toContain('/guides/image-resize-image-to-exact-kb');
+    // Consolidated: live, but its tool page is the only page for it now.
+    expect(guides).not.toContain('/guides/developer-and-data-jwt-decoder');
   });
 
   it('leaves out placeholder pages and the roadmap', () => {

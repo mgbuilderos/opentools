@@ -83,9 +83,14 @@ const removedPaths = [
 ];
 
 describe('committed keep list and switch', () => {
-  it('ships switched off, because there is no Search Console data yet', () => {
-    expect(GUIDE_CONSOLIDATION_ENABLED).toBe(false);
-    expect(GUIDE_CONSOLIDATION.enabled).toBe(false);
+  it('ships switched on, with the guides the owner confirmed', () => {
+    expect(GUIDE_CONSOLIDATION_ENABLED).toBe(true);
+    expect(GUIDE_CONSOLIDATION.enabled).toBe(true);
+    expect(GUIDE_KEEP_LIST).toHaveLength(15);
+    // No Search Console export exists yet, so nothing was selected on traffic.
+    expect(GUIDE_KEEP_LIST.every((entry) => entry.reason === 'distinct')).toBe(
+      true,
+    );
   });
 
   it('lists only live guides, once each, with a reason and evidence', () => {
@@ -186,8 +191,29 @@ describe('guide consolidation off is the previous behaviour', () => {
 
   it('produces the same sitemap, entry for entry and in the same order', () => {
     expect(buildSitemap(OFF)).toEqual(previousSitemap());
-    // And the committed state is the off state, so the shipped file matches.
-    expect(buildSitemap()).toEqual(previousSitemap());
+  });
+
+  it('is the only thing the shipped sitemap drops', () => {
+    // The switch is on, so the shipped sitemap is the previous one minus the
+    // consolidated guides -- and nothing else. Every other entry survives, in
+    // the same order.
+    const kept = new Set(
+      getPublishedGuideTools().map((tool) => `${origin}/guides/${tool.slug}`),
+    );
+    const consolidated = new Set(
+      [...getGuideConsolidationRedirects().keys()].map(
+        (path) => `${origin}${path}`,
+      ),
+    );
+    expect(buildSitemap()).toEqual(
+      previousSitemap().filter((entry) => !consolidated.has(entry.url)),
+    );
+    expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
+      kept.size,
+    );
+    expect(previousSitemap().length - buildSitemap().length).toBe(
+      consolidated.size,
+    );
   });
 
   it('publishes every live guide and redirects none', () => {
@@ -209,9 +235,7 @@ describe('guide consolidation off is the previous behaviour', () => {
         expect(link.guideHref).toBe(`/guides/${link.tool.slug}`);
       }
     }
-    expect(getRelatedToolLinks('pdf-merge-pdf', 4)).toEqual(
-      getRelatedToolLinks('pdf-merge-pdf', 4, OFF),
-    );
+    expect(getRelatedToolLinks('pdf-merge-pdf', 4, OFF)).toHaveLength(4);
     // The guide index featured the same 18 tools by the same rule.
     expect(getFeaturedGuideTools(OFF)).toEqual(
       LIVE_TOOL_CATALOG.filter(
@@ -247,9 +271,7 @@ describe('guide consolidation off is the previous behaviour', () => {
       );
     }
     expect(full).not.toContain('| none |');
-    expect(full).toBe(buildLlmsFullTxt());
     const txt = buildLlmsTxt(OFF);
-    expect(txt).toBe(buildLlmsTxt());
     expect(guideLinksIn(txt).length).toBeGreaterThan(0);
     for (const slug of guideLinksIn(txt)) {
       expect(txt).toContain(` Guide: ${origin}/guides/${slug}`);
@@ -417,6 +439,64 @@ describe('guide consolidation on', () => {
     expect(
       full.split('\n').filter((line) => line.includes('| none |')),
     ).toHaveLength(redirects.size);
+  });
+});
+
+/**
+ * The state this commit actually ships, rather than a synthetic one built in
+ * the test. These are the numbers quoted in the commit message and the ledger.
+ */
+describe('the shipped state', () => {
+  const redirects = getGuideConsolidationRedirects();
+
+  it('keeps 15 guides and redirects the other 552', () => {
+    expect(getPublishedGuideTools()).toHaveLength(15);
+    expect(redirects.size).toBe(552);
+    expect(getPublishedGuideTools().length + redirects.size).toBe(
+      LIVE_TOOL_CATALOG.length,
+    );
+    expect(guidePaths(GUIDE_CONSOLIDATION)).toHaveLength(15);
+  });
+
+  it('sends every one of them to a live tool page that does not redirect', () => {
+    for (const [from, to] of redirects) {
+      expect(siteRedirect(from), from).toEqual({ location: to, status: 301 });
+      expect(isLiveToolUrl(to), `${from} -> ${to}`).toBe(true);
+      const target = new URL(to, origin);
+      expect(
+        siteRedirect(target.pathname, target.search),
+        `${to} redirects again`,
+      ).toBeNull();
+    }
+  });
+
+  it('answers 200 for every kept guide and lists it in the sitemap', () => {
+    for (const tool of getPublishedGuideTools()) {
+      expect(hasPublishedGuide(tool.slug)).toBe(true);
+      expect(siteRedirect(`/guides/${tool.slug}`), tool.slug).toBeNull();
+      expect(guidePaths(GUIDE_CONSOLIDATION)).toContain(`/guides/${tool.slug}`);
+    }
+  });
+
+  it('caches exactly the guides that still have a page', () => {
+    expect([...CACHED_GUIDE_SLUGS].sort()).toEqual(
+      getPublishedGuideTools()
+        .map((tool) => tool.slug)
+        .sort(),
+    );
+  });
+
+  it('names a tool page, not a redirect, in llms-full.txt', () => {
+    const full = buildLlmsFullTxt();
+    expect(
+      full.split('\n').filter((line) => line.includes('| none |')),
+    ).toHaveLength(redirects.size);
+    expect(new Set(guideLinksIn(full))).toEqual(
+      new Set(getPublishedGuideTools().map((tool) => tool.slug)),
+    );
+    for (const slug of guideLinksIn(buildLlmsTxt())) {
+      expect(redirects.has(`/guides/${slug}`), slug).toBe(false);
+    }
   });
 });
 
