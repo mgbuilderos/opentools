@@ -23,11 +23,21 @@
  *   sw-precache-body-<build>.js   the bytes, imported once inside `install`
  *   sw.js                         the worker, with `<build>` stamped into it
  *
- * `<build>` is a hash of the payload, so a deploy that changes nothing produces
- * byte-identical output and visitors keep the cache they already have, while
- * any real change renames all three files and the browser installs the new
- * worker. The hash is over content, never over the clock or a random id — the
- * mistake that threw away the KV cache on every deploy.
+ * `<build>` is a hash of the payload's own bytes — never the clock and never a
+ * random id, which is the mistake that threw away the KV cache on every deploy.
+ * Any real change renames all three files and the browser installs the new
+ * worker.
+ *
+ * What that does *not* currently buy is a stable id across rebuilds, and it is
+ * worth knowing why rather than assuming otherwise. Measured on 2026-09-22:
+ * two builds of an identical tree produced different `/_next/static/chunks/*`
+ * filenames throughout (`index-CYnqNf_i.js` then `index-Dt_YI4IA.js`), so the
+ * prerendered HTML differs, so the payload differs, so this hash differs. The
+ * non-determinism is upstream in the bundler, not here; while it lasts, every
+ * deploy costs an installed visitor the payload again. That is the same
+ * property that already renames every file under the year-long
+ * `/_next/static/*` cache rule, so it is a build question rather than a
+ * service-worker one.
  *
  * Runs after `prerender-to-assets.mjs`, because it reads what that wrote.
  */

@@ -142,10 +142,18 @@ one.
 
 ## Before you change this file
 
-- The `<build>` stamp is a hash of the payload, so an unchanged deploy produces
-  byte-identical output and visitors keep the cache they already have. Never
-  make it a timestamp or a random id — that is the mistake that threw away the
-  KV cache on every deploy.
+- The `<build>` stamp is a hash of the payload's own bytes. Never make it a
+  timestamp or a random id — that is the mistake that threw away the KV cache
+  on every deploy.
+
+  It does not yet give a stable id across rebuilds, and the reason is upstream.
+  Measured on 2026-09-22: two builds of an identical tree produced different
+  `/_next/static/chunks/*` filenames throughout (`index-CYnqNf_i.js`, then
+  `index-Dt_YI4IA.js`), which changes the prerendered HTML, which changes the
+  payload. While that lasts, every deploy costs an installed visitor the 0.69 MB
+  payload again — and, for the same reason, costs every visitor the whole of
+  `/_next/static/*` despite its day-long cache rule. Worth fixing in the build,
+  not here.
 - `activate` deletes every cache that is not the current one, which is how a
   broken predecessor's leftovers get cleaned up.
 - Keep `skipWaiting()` and `clients.claim()`. They are what let a corrective
