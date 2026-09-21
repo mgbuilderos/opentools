@@ -84,9 +84,12 @@ afterEach(() => {
 
 describe('kernel conformance', () => {
   it('executes or refuses every default without empty or generic success', async () => {
+    let successes = 0;
+    let refusals = 0;
     for (const operation of KERNEL_OPERATIONS) {
       const result = await outcome(operation);
       if (result.ok) {
+        successes += 1;
         if (result.value.kind === 'text')
           expect(
             result.value.text,
@@ -98,6 +101,7 @@ describe('kernel conformance', () => {
             `${operation.source}:${operation.id}`,
           ).toBeGreaterThan(0);
       } else {
+        refusals += 1;
         expect(
           result.error.message,
           `${operation.source}:${operation.id}`,
@@ -113,6 +117,7 @@ describe('kernel conformance', () => {
         }
       }
     }
+    expect({ successes, refusals }).toEqual({ successes: 593, refusals: 38 });
   }, 30_000);
 
   it('is deterministic when the descriptor says it is', async () => {
