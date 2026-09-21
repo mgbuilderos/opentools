@@ -6,6 +6,7 @@ import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
 import { readMetadata } from '../lib/tools/metadata';
+import { setFilesWhenLive } from './upload';
 
 const fixtureDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -17,9 +18,11 @@ const fixtureDir = path.join(
 );
 
 async function uploadPhoto(page: Page, filename: string) {
-  const filePath = path.join(fixtureDir, filename);
-  const input = page.locator('input[type="file"]');
-  await input.setInputFiles(filePath);
+  await setFilesWhenLive(
+    page.locator('input[type="file"]'),
+    path.join(fixtureDir, filename),
+    page.getByRole('button', { name: 'Strip & download clean photo' }),
+  );
 }
 
 test.describe('Photo Metadata Viewer & Stripper (/image/metadata)', () => {
@@ -156,13 +159,15 @@ test.describe('Photo Metadata Viewer & Stripper (/image/metadata)', () => {
     page,
   }) => {
     await page.goto('/image/metadata');
-    await page
-      .locator('input[type="file"]')
-      .setInputFiles([
+    await setFilesWhenLive(
+      page.locator('input[type="file"]'),
+      [
         path.join(fixtureDir, 'gps-camera-photo.jpg'),
         path.join(fixtureDir, 'sample-text.png'),
         path.join(fixtureDir, 'sample-exif.webp'),
-      ]);
+      ],
+      page.getByRole('button', { name: 'Strip all metadata' }),
+    );
 
     await page.getByRole('button', { name: 'Strip all metadata' }).click();
     await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3);
@@ -185,11 +190,15 @@ test.describe('Smart Dropzone Routing (/ page)', () => {
     const fileInput = page.getByLabel(
       'Upload file to inspect and detect tools',
     );
-    await fileInput.setInputFiles({
-      name: 'sample-clip.mp4',
-      mimeType: 'video/mp4',
-      buffer: Buffer.from('fake-video-content'),
-    });
+    await setFilesWhenLive(
+      fileInput,
+      {
+        name: 'sample-clip.mp4',
+        mimeType: 'video/mp4',
+        buffer: Buffer.from('fake-video-content'),
+      },
+      page.getByText('MP4 Video'),
+    );
 
     await expect(page.getByText('MP4 Video')).toBeVisible();
     const actionLink = page.getByRole('link', {
@@ -207,11 +216,15 @@ test.describe('Smart Dropzone Routing (/ page)', () => {
     const fileInput = page.getByLabel(
       'Upload file to inspect and detect tools',
     );
-    await fileInput.setInputFiles({
-      name: 'sample-audio.wav',
-      mimeType: 'audio/wav',
-      buffer: Buffer.from('fake-audio-content'),
-    });
+    await setFilesWhenLive(
+      fileInput,
+      {
+        name: 'sample-audio.wav',
+        mimeType: 'audio/wav',
+        buffer: Buffer.from('fake-audio-content'),
+      },
+      page.getByText('WAV Audio'),
+    );
 
     await expect(page.getByText('WAV Audio')).toBeVisible();
     const actionLink = page.getByRole('link', {

@@ -4,6 +4,7 @@ import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
 import { testPdf } from './fixtures';
+import { setFilesWhenLive } from './upload';
 
 /**
  * A PDF whose pages are drawings only — what a scan or a phone photo of paper
@@ -18,11 +19,11 @@ async function scannedPdf() {
 }
 
 async function choosePdf(page: Page, bytes: Buffer, name = 'source.pdf') {
-  await page.getByLabel('Choose a PDF').setInputFiles({
-    name,
-    mimeType: 'application/pdf',
-    buffer: bytes,
-  });
+  await setFilesWhenLive(
+    page.getByLabel('Choose a PDF'),
+    { name, mimeType: 'application/pdf', buffer: bytes },
+    page.getByRole('button', { name: 'Convert to Word' }),
+  );
 }
 
 async function savedDocx(page: Page) {
@@ -156,11 +157,15 @@ test.describe('PDF to Word', () => {
     test.setTimeout(120_000);
     const source = await testPdf(2);
     await page.goto('/pdf/to-word');
-    await page.getByLabel('Choose a PDF').setInputFiles([
-      { name: 'first.pdf', mimeType: 'application/pdf', buffer: source },
-      { name: 'second.pdf', mimeType: 'application/pdf', buffer: source },
-      { name: 'third.pdf', mimeType: 'application/pdf', buffer: source },
-    ]);
+    await setFilesWhenLive(
+      page.getByLabel('Choose a PDF'),
+      [
+        { name: 'first.pdf', mimeType: 'application/pdf', buffer: source },
+        { name: 'second.pdf', mimeType: 'application/pdf', buffer: source },
+        { name: 'third.pdf', mimeType: 'application/pdf', buffer: source },
+      ],
+      page.getByRole('button', { name: 'Convert all to Word' }),
+    );
 
     await page.getByRole('button', { name: 'Convert all to Word' }).click();
     await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3, {

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
+import { setFilesWhenLive } from './upload';
 
 const fixturesDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -25,6 +26,12 @@ const designFixturesDir = path.join(
 );
 
 test.describe('Designer Tools Suite', () => {
+  // Uploads here go through `setFilesWhenLive`, whose fallback re-selects the
+  // file if the first selection was lost to hydration. That fallback cannot
+  // finish inside the 30 s default, and a test that dies mid-retry reports the
+  // reaction locator as missing rather than the timeout as the cause.
+  test.describe.configure({ timeout: 120_000 });
+
   test.describe('SVG Optimizer & Raster Converter (/image/svg)', () => {
     test('optimizes SVG, sanitizes scripts, and exports PNG raster', async ({
       page,
@@ -38,8 +45,11 @@ test.describe('Designer Tools Suite', () => {
 
       // 2. Upload vector fixture
       const svgPath = path.join(fixturesDir, 'logo.svg');
-      const input = page.locator('input[type="file"]');
-      await input.setInputFiles([svgPath]);
+      await setFilesWhenLive(
+        page.locator('input[type="file"]'),
+        [svgPath],
+        page.getByText('Original Size'),
+      );
 
       // 3. Metrics bar appears
       await expect(page.getByText('Original Size')).toBeVisible();
@@ -84,11 +94,15 @@ test.describe('Designer Tools Suite', () => {
     }) => {
       const source = await readFile(path.join(fixturesDir, 'logo.svg'));
       await page.goto('/image/svg');
-      await page.locator('input[type="file"]').setInputFiles([
-        { name: 'first.svg', mimeType: 'image/svg+xml', buffer: source },
-        { name: 'second.svg', mimeType: 'image/svg+xml', buffer: source },
-        { name: 'third.svg', mimeType: 'image/svg+xml', buffer: source },
-      ]);
+      await setFilesWhenLive(
+        page.locator('input[type="file"]'),
+        [
+          { name: 'first.svg', mimeType: 'image/svg+xml', buffer: source },
+          { name: 'second.svg', mimeType: 'image/svg+xml', buffer: source },
+          { name: 'third.svg', mimeType: 'image/svg+xml', buffer: source },
+        ],
+        page.getByRole('button', { name: 'Optimize all SVGs' }),
+      );
 
       await page.getByRole('button', { name: 'Optimize all SVGs' }).click();
       await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3);
@@ -142,8 +156,11 @@ test.describe('Designer Tools Suite', () => {
 
       // Upload image fixture
       const imgPath = path.join(designFixturesDir, 'palette-sample.png');
-      const input = page.locator('input[type="file"]');
-      await input.setInputFiles([imgPath]);
+      await setFilesWhenLive(
+        page.locator('input[type="file"]'),
+        [imgPath],
+        page.getByText(/Extracted Swatches/i),
+      );
 
       // Palette results appear
       await expect(page.getByText(/Extracted Swatches/i)).toBeVisible();

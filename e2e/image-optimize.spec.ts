@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
+import { setFilesWhenLive } from './upload';
 
 const fixtureDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -21,11 +22,15 @@ test.describe('Image optimizer batches (/image/optimize)', () => {
   }) => {
     const product = await readFile(path.join(fixtureDir, 'product.png'));
     await page.goto('/image/optimize');
-    await page.locator('input[type="file"]').setInputFiles([
-      { name: 'first.png', mimeType: 'image/png', buffer: product },
-      { name: 'second.png', mimeType: 'image/png', buffer: product },
-      { name: 'third.png', mimeType: 'image/png', buffer: product },
-    ]);
+    await setFilesWhenLive(
+      page.locator('input[type="file"]'),
+      [
+        { name: 'first.png', mimeType: 'image/png', buffer: product },
+        { name: 'second.png', mimeType: 'image/png', buffer: product },
+        { name: 'third.png', mimeType: 'image/png', buffer: product },
+      ],
+      page.getByText('Batch of 3 files'),
+    );
 
     await expect(page.getByText('Batch of 3 files')).toBeVisible();
     await page.getByRole('button', { name: 'Optimize all' }).click();
@@ -46,15 +51,19 @@ test.describe('Image optimizer batches (/image/optimize)', () => {
   }) => {
     const product = await readFile(path.join(fixtureDir, 'product.png'));
     await page.goto('/image/optimize');
-    await page.locator('input[type="file"]').setInputFiles([
-      { name: 'first.png', mimeType: 'image/png', buffer: product },
-      {
-        name: 'deliberately-corrupt.png',
-        mimeType: 'image/png',
-        buffer: Buffer.from('not an image'),
-      },
-      { name: 'last.png', mimeType: 'image/png', buffer: product },
-    ]);
+    await setFilesWhenLive(
+      page.locator('input[type="file"]'),
+      [
+        { name: 'first.png', mimeType: 'image/png', buffer: product },
+        {
+          name: 'deliberately-corrupt.png',
+          mimeType: 'image/png',
+          buffer: Buffer.from('not an image'),
+        },
+        { name: 'last.png', mimeType: 'image/png', buffer: product },
+      ],
+      page.getByRole('button', { name: 'Optimize all' }),
+    );
 
     await page.getByRole('button', { name: 'Optimize all' }).click();
     await expect(page.locator('[data-batch-result="done"]')).toHaveCount(2);

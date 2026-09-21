@@ -29,12 +29,49 @@ const fixtureDir = path.join(
 const STEREO_WAV = 'tone-44k-stereo-s16.wav';
 const FLAC = 'tone-44k-stereo.flac';
 
+/**
+ * Hands the page files through its own chooser, and makes sure they landed.
+ *
+ * The input is server-rendered, so it exists before React has hydrated and
+ * attached `onChange`. Setting it in that window fires a change event into
+ * nothing: the page keeps its empty state and the failure surfaces later as a
+ * missing "Convert to WAV" button, which reads like a broken decoder rather
+ * than a lost event. Reproduced at three workers, and it moved between tests
+ * from run to run — the tell that it is a race and not a format gap.
+ *
+ * Driving the real chooser and retrying until the page reacts is the same
+ * guard `canvas-and-pdf-tools.spec.ts` and `pdf-to-excel.spec.ts` already
+ * carry. Reacting means either an accepted file or a stated refusal; both
+ * prove the handler is live, and the not-audio test needs the refusal.
+ */
+async function pick(
+  page: Page,
+  files: { name: string; mimeType: string; buffer: Buffer }[],
+) {
+  await expect(async () => {
+    const chooser = page.waitForEvent('filechooser', { timeout: 2_000 });
+    await page
+      .getByRole('button', { name: 'Choose an audio file' })
+      .first()
+      .click();
+    await (await chooser).setFiles(files);
+    await expect(
+      page
+        .getByRole('button', { name: /^Convert (to|all to) WAV$/ })
+        .or(page.getByRole('alert'))
+        .first(),
+    ).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 45_000 });
+}
+
 async function choose(page: Page, name: string, buffer?: Buffer) {
-  await page.getByLabel('Choose an audio file').setInputFiles({
-    name,
-    mimeType: name.endsWith('.wav') ? 'audio/wav' : 'application/octet-stream',
-    buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
-  });
+  await pick(page, [
+    {
+      name,
+      mimeType: name.endsWith('.wav') ? 'audio/wav' : 'application/octet-stream',
+      buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
+    },
+  ]);
 }
 
 async function saved(page: Page) {
@@ -63,7 +100,7 @@ test.describe('Audio to WAV converter', () => {
   }) => {
     const source = await readFile(path.join(fixtureDir, STEREO_WAV));
     await page.goto('/audio/convert');
-    await page.getByLabel('Choose an audio file').setInputFiles([
+    await pick(page, [
       { name: 'first.wav', mimeType: 'audio/wav', buffer: source },
       { name: 'second.wav', mimeType: 'audio/wav', buffer: source },
       { name: 'third.wav', mimeType: 'audio/wav', buffer: source },

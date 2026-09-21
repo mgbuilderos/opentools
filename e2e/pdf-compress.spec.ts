@@ -3,6 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
 import { testPdf, testPhotoPdf } from './fixtures';
+import { setFilesWhenLive } from './upload';
 
 /**
  * Compression is only worth shipping if the file a person ends up with is both
@@ -115,11 +116,15 @@ test.describe('Compress PDF', () => {
     test.setTimeout(120_000);
     const source = await testPdf(2);
     await page.goto('/pdf/compress');
-    await page.locator('input[type="file"]').setInputFiles([
-      { name: 'first.pdf', mimeType: 'application/pdf', buffer: source },
-      { name: 'second.pdf', mimeType: 'application/pdf', buffer: source },
-      { name: 'third.pdf', mimeType: 'application/pdf', buffer: source },
-    ]);
+    await setFilesWhenLive(
+      page.locator('input[type="file"]'),
+      [
+        { name: 'first.pdf', mimeType: 'application/pdf', buffer: source },
+        { name: 'second.pdf', mimeType: 'application/pdf', buffer: source },
+        { name: 'third.pdf', mimeType: 'application/pdf', buffer: source },
+      ],
+      page.getByRole('button', { name: 'Compress all' }),
+    );
 
     await page.getByRole('button', { name: 'Compress all' }).click();
     await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3, {

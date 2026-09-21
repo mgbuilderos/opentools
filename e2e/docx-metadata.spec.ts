@@ -6,6 +6,7 @@ import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { extractEntry, readZip } from '../lib/tools/archive/zip-reader';
 import { readDocxMetadata } from '../lib/tools/docx/metadata';
+import { setFilesWhenLive } from './upload';
 
 const fixtureDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -17,9 +18,11 @@ const fixtureDir = path.join(
 );
 
 async function uploadDocx(page: Page, filename: string) {
-  const filePath = path.join(fixtureDir, filename);
-  const input = page.locator('input[type="file"]');
-  await input.setInputFiles(filePath);
+  await setFilesWhenLive(
+    page.locator('input[type="file"]'),
+    path.join(fixtureDir, filename),
+    page.getByRole('button', { name: 'Clean & download .docx' }),
+  );
 }
 
 test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/metadata)', () => {
@@ -190,26 +193,30 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
   }) => {
     const fixture = await readFile(path.join(fixtureDir, 'tracked-doc.docx'));
     await page.goto('/documents/metadata');
-    await page.locator('input[type="file"]').setInputFiles([
-      {
-        name: 'first.docx',
-        mimeType:
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        buffer: fixture,
-      },
-      {
-        name: 'second.docx',
-        mimeType:
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        buffer: fixture,
-      },
-      {
-        name: 'third.docx',
-        mimeType:
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        buffer: fixture,
-      },
-    ]);
+    await setFilesWhenLive(
+      page.locator('input[type="file"]'),
+      [
+        {
+          name: 'first.docx',
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          buffer: fixture,
+        },
+        {
+          name: 'second.docx',
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          buffer: fixture,
+        },
+        {
+          name: 'third.docx',
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          buffer: fixture,
+        },
+      ],
+      page.getByRole('button', { name: 'Clean all documents' }),
+    );
 
     await page.getByRole('button', { name: 'Clean all documents' }).click();
     await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3);
