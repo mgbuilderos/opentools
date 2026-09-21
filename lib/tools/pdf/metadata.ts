@@ -13,8 +13,7 @@ import {
  * option, and it cleared the six Document Information fields — title, author,
  * subject, keywords, producer, creator. That is the metadata people know
  * about, and it is not where most of the risk lives. Measured on a file
- * carrying an XMP packet, the way anything saved by Word, InDesign or Acrobat
- * does:
+ * carrying an XMP packet, the way most editors and design programs write one:
  *
  *     after the old strip, the output bytes still contained
  *       "xmpmeta"                  YES

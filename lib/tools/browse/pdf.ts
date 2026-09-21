@@ -86,6 +86,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/pdf/redact',
         workspaceId: 'pdf-redact',
       },
+      {
+        id: 'pdf-metadata',
+        name: 'PDF metadata viewer and remover',
+        description:
+          'See the author, the authoring program, the dates and the XMP packet held inside a PDF, then remove all of them.',
+        href: '/pdf/metadata',
+        workspaceId: 'pdf-metadata',
+      },
     ],
   },
   {

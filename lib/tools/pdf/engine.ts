@@ -643,7 +643,7 @@ export async function compressPdf(
 
   if (options.removeMetadata) {
     // This used to blank the six Info fields by hand and stop there, which
-    // left the XMP packet — where Word and Acrobat also record the author and
+    // left the XMP packet — where most editors also record the author and
     // the title — fully intact. Measured on a file carrying one: the output
     // still contained the author's name after the option was ticked. See the
     // header of `./metadata` for the four places a PDF keeps identity.

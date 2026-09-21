@@ -4227,6 +4227,20 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     destinationUrl: '/documents/latex-table-generator',
   },
   {
+    id: 'pdf-and-documents.pdf-metadata',
+    slug: 'pdf-and-documents-pdf-metadata',
+    name: 'PDF Metadata Viewer and Remover',
+    category: 'PDF and Documents',
+    rank: 52,
+    executionMode: 'local-js',
+    releaseWave: 'P1',
+    riskTier: 'low',
+    validationStatus: 'priority-candidate',
+    notes:
+      'Reads the document properties, XMP packet, dates and file identifier held inside a PDF, and removes all of them on request.',
+    destinationUrl: '/pdf/metadata',
+  },
+  {
     id: 'documents-and-office.docx-metadata',
     slug: 'documents-and-office-docx-metadata',
     name: 'Word Document Metadata Viewer and Stripper',

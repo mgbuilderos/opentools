@@ -36,6 +36,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/data/excel',
   '/image/metadata',
   '/documents/metadata',
+  '/pdf/metadata',
   '/pdf/bates',
   '/pdf/redact',
   '/web/file-to-html',

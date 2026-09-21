@@ -52,7 +52,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'pdf',
     name: 'PDF',
     shortDescription: 'Merge, compress, extract, and reorder pages.',
-    destinationCount: 16,
+    destinationCount: 17,
     toolIds: [
       'pdf-merge',
       'pdf-compress',
@@ -62,6 +62,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       'images-to-pdf',
       'pdf-page-tools',
       'pdf-bates',
+      'pdf-metadata',
       'pdf-to-word',
       'pdf-to-excel',
       'pdf-redact',

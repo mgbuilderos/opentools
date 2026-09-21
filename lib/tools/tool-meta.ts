@@ -121,6 +121,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Permanently black out text, rectangles, or sensitive PII. Rasterises redacted pages and purges metadata and annotations.',
   },
+  'pdf-metadata': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'See the author, the authoring program, the dates and the XMP packet held inside a PDF, then remove all of them.',
+  },
   'docx-metadata': {
     version: '0.1.0-canary',
     shortDescription:

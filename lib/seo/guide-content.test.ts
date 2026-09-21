@@ -9,15 +9,15 @@ import {
 } from './tool-catalog-data';
 
 describe('Programmatic SEO Engine — Tool Catalog & Guides', () => {
-  it('contains exactly 983 catalog tools', () => {
-    expect(TOOL_CATALOG).toHaveLength(983);
+  it('contains exactly 984 catalog tools', () => {
+    expect(TOOL_CATALOG).toHaveLength(984);
   });
 
-  it('assigns unique, URL-safe slugs to all 983 tools', () => {
+  it('assigns unique, URL-safe slugs to all 984 tools', () => {
     const slugs = getAllToolSlugs();
-    expect(slugs).toHaveLength(983);
+    expect(slugs).toHaveLength(984);
     const uniqueSlugs = new Set(slugs);
-    expect(uniqueSlugs.size).toBe(983);
+    expect(uniqueSlugs.size).toBe(984);
 
     for (const slug of slugs) {
       expect(slug).toMatch(/^[a-z0-9-]+$/);

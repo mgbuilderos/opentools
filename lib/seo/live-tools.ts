@@ -48,6 +48,7 @@ export const DEDICATED_TOOL_ROUTES = [
   // by deleting this comment and restoring the three routes, and remove the
   // matching entries from HELD_BACK in lib/seo/tool-page-registration.test.ts.
   '/documents/metadata',
+  '/pdf/metadata',
   '/pdf/bates',
   '/pdf/redact',
   '/web/file-to-html',
