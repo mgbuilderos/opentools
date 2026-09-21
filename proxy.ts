@@ -4,6 +4,7 @@ import {
   contentSecurityPolicy,
   loadsLocalModel,
 } from './lib/security/content-security-policy';
+import { authorise, challengeResponse } from './lib/security/self-host-auth';
 import { siteRedirect } from './lib/seo/site-redirects';
 
 const responseHeaders = {
@@ -17,6 +18,17 @@ const responseHeaders = {
 } as const;
 
 export function proxy(request: NextRequest) {
+  // Self-host gate, first thing and before the visit log: an instance that
+  // refuses a request should not record it either. Off unless
+  // OPENTOOLS_AUTH_USER and OPENTOOLS_AUTH_PASSWORD are both set, which is
+  // never the case for the public site — no account is the product there.
+  if (
+    authorise(process.env, request.headers.get('authorization')).kind ===
+    'challenge'
+  ) {
+    return challengeResponse();
+  }
+
   const pathname = request.nextUrl.pathname;
 
   // Edge Telemetry Logging for non-static tool & page requests

@@ -39,12 +39,46 @@ observability are all switched off in the image.
 | `PORT` | `8796` | Port inside the container |
 | `OPENTOOLS_STATE_DIR` | `/tmp/opentools-state` | Where the KV page cache is persisted |
 | `WRANGLER_LOG_LEVEL` | `info` | Wrangler log verbosity |
+| `OPENTOOLS_AUTH_USER` | unset | Username for the optional access gate |
+| `OPENTOOLS_AUTH_PASSWORD` | unset | Password for the optional access gate |
 
 The state directory is inside the container, so the page cache starts empty
 after every restart. Mount a volume there if you would rather it survive.
 
 The container runs as the unprivileged `node` user and has a healthcheck that
-fetches `/robots.txt` from inside itself.
+fetches `/robots.txt` from inside itself. It counts `401` as healthy: with the
+access gate on, a refusal is the correct answer and still proves the server is
+up.
+
+### The access gate
+
+Off by default. Set both variables and the instance asks for a username and
+password before serving anything:
+
+```bash
+docker run --rm -p 8796:8796 \
+  -e OPENTOOLS_AUTH_USER=ops \
+  -e OPENTOOLS_AUTH_PASSWORD='choose something long' \
+  opentools-selfhost:local
+```
+
+`docker/start.sh` forwards both to Wrangler as `--var`, which `nodejs_compat`
+exposes as `process.env` inside workerd — measured with a throwaway Worker that
+printed the two values back, not assumed. `proxy.ts` reads them through
+`lib/security/self-host-auth.ts` before anything else runs, so a refused request
+is never written to the visit log either.
+
+This exists for one deployment only: an organisation running the container on
+its own network, where "anyone who can reach the port gets the site" is what
+stops a security reviewer from signing it off. **The public site never has it
+on** — no account, no signup, is the product there.
+
+What it is: HTTP Basic, compared in constant time, failing closed if only one of
+the two variables is set. What it is not: TLS, SSO, user accounts, or any record
+of who anyone is. It answers "is this person allowed to reach this instance at
+all" and nothing else, because anything more would mean storing people, which
+this product does not do. Terminate TLS in front of it — Basic credentials over
+plain HTTP are readable in transit.
 
 ## Running with no network at all
 
@@ -79,7 +113,10 @@ It is not a claim about what a browser does with the pages it is given.
 ## What this does not include
 
 - No TLS. Put it behind a reverse proxy if you expose it beyond localhost.
-- No authentication. Anyone who can reach the port gets the site.
+- No TLS for the access gate. It is HTTP Basic; without a reverse proxy
+  terminating TLS the credentials travel in clear text.
+- No SSO, no user accounts, no per-user audit trail. The gate is one shared
+  credential for the whole instance.
 - One container, one process. There is no clustering and no shared cache
   between replicas.
 - No published image. `.github/workflows/selfhost-image.yml` builds the image on
