@@ -18,6 +18,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { RelatedTools } from '@/components/related-tools';
+import { ToolExplainer } from '@/components/tool-explainer';
+import { getToolExplainer } from '@/lib/seo/guide-content';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import type { RelatedTool } from '@/lib/seo/related-tools';
@@ -663,6 +665,22 @@ export function SchemaWorkbenchTool({
             </section>
           ) : null}
 
+          {/*
+            The explainer only appears on a routed tool page, never on the bare
+            workbench URL. On the workbench the operation changes as you pick
+            from the list, so a fixed block of prose about one tool would be
+            wrong the moment somebody switched — and the workbench URL is not
+            the page a search result lands on. `routedBasePath` is set only by
+            `app/<category>/[tool]/page.tsx`, so it is exactly the signal for
+            "this page is about one tool".
+          */}
+          {routedBasePath ? (
+            <ToolExplainerSection
+              toolUrl={`${routedBasePath}/${initial.id}`}
+              toolName={initial.name}
+            />
+          ) : null}
+
           <RelatedTools tools={relatedTools} />
 
           <footer className="mt-7 border-t py-5 text-xs leading-5 text-muted-foreground">
@@ -673,4 +691,17 @@ export function SchemaWorkbenchTool({
       </section>
     </AppShell>
   );
+}
+
+/** Renders the hand-written explainer for a routed tool, when one exists. */
+function ToolExplainerSection({
+  toolUrl,
+  toolName,
+}: {
+  toolUrl: string;
+  toolName: string;
+}) {
+  const detail = getToolExplainer(toolUrl);
+  if (!detail) return null;
+  return <ToolExplainer detail={detail} toolName={toolName} />;
 }

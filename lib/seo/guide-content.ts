@@ -3,7 +3,7 @@ import {
   loadsLocalModel,
 } from '../security/content-security-policy';
 import type { ToolCatalogEntry } from './tool-catalog-data';
-import { getLiveToolBySlug } from './live-tools';
+import { getLiveToolBySlug, LIVE_TOOL_CATALOG } from './live-tools';
 import {
   type CategoryPillarInfo,
   type RelatedToolLink,
@@ -157,7 +157,7 @@ export function generateArchitectureDiagramSvg(
  * tool actually does or where it stops. Every sentence here is backed by the
  * tool's own code and tests.
  */
-interface GuideDetail {
+export interface GuideDetail {
   directAnswer: string;
   leadParagraph: string;
   faqs: readonly GuideFaq[];
@@ -2309,6 +2309,30 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
 export const DIFFERENTIATED_GUIDE_SLUGS: ReadonlySet<string> = new Set(
   Object.keys(GUIDE_DETAILS),
 );
+
+/**
+ * The hand-written explainer for a tool URL, or undefined when there is none.
+ *
+ * WHY THIS EXISTS. Guide consolidation left 15 guide pages published and sent
+ * the other 552 URLs to their tool pages by 301. Measured on production
+ * 2026-09-21, those tool pages carry between 37 and 259 visible words — the
+ * redirects now land somewhere thinner than what they replaced. Meanwhile 45
+ * of the 60 entries below describe tools whose guide no longer renders, so the
+ * writing exists and simply has nowhere to appear.
+ *
+ * This maps a routed tool URL such as `/data/csv-to-json` back to its catalogue
+ * slug and returns that entry, so the tool page can show what the guide would
+ * have. The lookup is by `destinationUrl` with the query stripped, because a
+ * workbench tool's catalogue URL may carry `?tool=` while the routed page does
+ * not.
+ */
+export function getToolExplainer(toolUrl: string): GuideDetail | undefined {
+  const path = toolUrl.split('?')[0];
+  const entry = LIVE_TOOL_CATALOG.find(
+    (tool) => tool.destinationUrl.split('?')[0] === path,
+  );
+  return entry ? GUIDE_DETAILS[entry.slug] : undefined;
+}
 
 export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   const runtime =
