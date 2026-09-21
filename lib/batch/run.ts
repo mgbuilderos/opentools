@@ -1,4 +1,5 @@
 import { createZip } from '@/lib/tools/docx/zip';
+import { uniqueFilename } from '@/lib/tools/html/converter';
 
 export interface NamedBatchInput {
   name: string;
@@ -173,21 +174,6 @@ export async function runBatch<TInput extends NamedBatchInput, TOutput>(
 function safeArchiveName(name: string): string {
   const safe = name.replace(/[^\w.-]/gu, '_');
   return safe || 'result';
-}
-
-function uniqueFilename(name: string, taken: Set<string>): string {
-  if (!taken.has(name)) {
-    taken.add(name);
-    return name;
-  }
-  const dot = name.lastIndexOf('.');
-  const stem = dot > 0 ? name.slice(0, dot) : name;
-  const extension = dot > 0 ? name.slice(dot) : '';
-  let suffix = 2;
-  while (taken.has(`${stem}-${suffix}${extension}`)) suffix += 1;
-  const unique = `${stem}-${suffix}${extension}`;
-  taken.add(unique);
-  return unique;
 }
 
 /** Build one deterministic ZIP, numbering duplicate output names. */
