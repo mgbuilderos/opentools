@@ -47,6 +47,7 @@ const PARAM_TYPES = new Set([
 ]);
 
 function paramFor(
+  operationId: string,
   field: FieldLike,
   serialisableTextParams: ReadonlySet<string>,
 ): OperationParam {
@@ -63,7 +64,7 @@ function paramFor(
       type === 'number' ||
       type === 'select' ||
       type === 'boolean' ||
-      serialisableTextParams.has(field.id),
+      serialisableTextParams.has(`${operationId}:${field.id}`),
   };
 }
 
@@ -117,7 +118,11 @@ export function adaptTextWorkbench(
     const params = fields
       .filter((field) => field.id !== contentField?.id)
       .map((field) =>
-        paramFor(field, options.serialisableTextParams ?? new Set()),
+        paramFor(
+          operation.id,
+          field,
+          options.serialisableTextParams ?? new Set(),
+        ),
       );
     return {
       id: operation.id,

@@ -8,4 +8,8 @@ export const documentOperations = adaptTextWorkbench({
   source: 'document',
   operations: DOCUMENT_OPERATIONS,
   run: runDocumentOperation,
+  nondeterministic: new Set([
+    'presentation-outline-builder',
+    'calendar-ics-generator',
+  ]),
 });

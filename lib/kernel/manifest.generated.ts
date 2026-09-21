@@ -2130,7 +2130,7 @@ export const KERNEL_MANIFEST = [
         label: 'JavaScript flags',
         type: 'text',
         defaultValue: 'iu',
-        serialisable: false,
+        serialisable: true,
       },
     ],
     output: {
@@ -3226,7 +3226,7 @@ export const KERNEL_MANIFEST = [
         label: 'Flags (g, i, m, s, u)',
         type: 'text',
         defaultValue: 'gi',
-        serialisable: false,
+        serialisable: true,
       },
       {
         id: 'testText',
@@ -4369,7 +4369,7 @@ export const KERNEL_MANIFEST = [
         label: 'Regular expression',
         type: 'text',
         defaultValue: '\\d+',
-        serialisable: false,
+        serialisable: true,
       },
       {
         id: 'flags',
@@ -4425,7 +4425,7 @@ export const KERNEL_MANIFEST = [
         label: 'Regular expression',
         type: 'text',
         defaultValue: '\\d+',
-        serialisable: false,
+        serialisable: true,
       },
       {
         id: 'flags',
@@ -4489,7 +4489,7 @@ export const KERNEL_MANIFEST = [
         label: 'Regular expression',
         type: 'text',
         defaultValue: '\\d+',
-        serialisable: false,
+        serialisable: true,
       },
       {
         id: 'flags',
@@ -5994,7 +5994,7 @@ export const KERNEL_MANIFEST = [
       extension: 'md',
     },
     runtime: 'pure',
-    deterministic: true,
+    deterministic: false,
   },
   {
     id: 'calendar-ics-generator',
@@ -6053,7 +6053,7 @@ export const KERNEL_MANIFEST = [
       extension: 'ics',
     },
     runtime: 'pure',
-    deterministic: true,
+    deterministic: false,
   },
   {
     id: 'passport-photo-sheet',

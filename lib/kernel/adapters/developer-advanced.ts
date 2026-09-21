@@ -14,4 +14,10 @@ export const developerAdvancedOperations = adaptAsyncTextWorkbench({
     'random-token-generator',
     'password-generator',
   ]),
+  serialisableTextParams: new Set([
+    'regex-tester:pattern',
+    'regex-tester:flags',
+    'regex-explainer:pattern',
+    'regex-explainer:flags',
+  ]),
 });
