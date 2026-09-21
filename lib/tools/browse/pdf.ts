@@ -70,6 +70,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/pdf/bates',
         workspaceId: 'pdf-bates',
       },
+      {
+        id: 'pdf-redact',
+        name: 'Redact & Black Out PDF',
+        description:
+          'Permanently black out text, rectangles, or sensitive PII. Rasterises redacted pages and purges metadata and annotations.',
+        href: '/pdf/redact',
+        workspaceId: 'pdf-redact',
+      },
     ],
   },
   {
