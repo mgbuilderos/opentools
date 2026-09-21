@@ -15,6 +15,14 @@ test.describe('the install offer', () => {
     'beforeinstallprompt and programmatic installation are Chromium-only',
   );
 
+  /*
+   * Each of these drives a real tool run through a real page load, and the
+   * dismissal test does it twice. On a machine already busy — this site's own
+   * worker unpacks a 0.69 MB offline payload and writes 74 cache entries on
+   * first visit — that does not reliably fit the default 30s.
+   */
+  test.describe.configure({ timeout: 90_000 });
+
   /**
    * Chromium fires `beforeinstallprompt` only when its own installability
    * heuristics are satisfied, which they are not in an automated run, and the
@@ -88,7 +96,16 @@ test.describe('the install offer', () => {
       buffer: Buffer.from('%PDF-1.7 a small file to checksum'),
     });
     await page.getByRole('button', { name: 'Calculate hash' }).click();
-    await page.waitForTimeout(2000);
-    await expect(banner(page), 'the install offer came back after a dismissal').toHaveCount(0);
+    // Wait for the job to have actually finished rather than for a fixed
+    // stretch of time. A sleep here made the test a race against whatever else
+    // the machine was doing — including this site's own worker unpacking its
+    // offline payload — and it lost that race once.
+    await expect(page.getByText('Done — SHA-256 calculated')).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(
+      banner(page),
+      'the install offer came back after a dismissal',
+    ).toHaveCount(0);
   });
 });
