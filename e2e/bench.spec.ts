@@ -1,6 +1,23 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('The Bench', () => {
+  test('is discoverable from the home page and opens from search', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    // The prerendered input exists before its React change handler is hydrated.
+    await page.waitForTimeout(500);
+    await page.getByRole('combobox', { name: 'Search tools' }).fill('The Bench');
+    const benchResult = page.getByRole('option', { name: /The Bench/u });
+    await expect(benchResult).toBeVisible();
+    await benchResult.click();
+
+    await expect(page).toHaveURL(/\/bench$/u);
+    await expect(
+      page.getByRole('heading', { name: 'The Bench' }),
+    ).toBeVisible();
+  });
+
   test('previews and runs files without external egress', async ({ page }) => {
     const external: string[] = [];
     page.on('request', (request) => {

@@ -17,6 +17,7 @@ import { SUBTITLE_OPERATIONS } from './subtitle-workbench';
 import { TEXT_OPERATIONS } from './text-workbench';
 import { WEB_OPERATIONS } from './web-workbench';
 import { WRITING_OPERATIONS } from './writing-workbench';
+import { KERNEL_MANIFEST } from '../kernel/manifest';
 
 function searchEntries(
   href: string,
@@ -1268,6 +1269,24 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'bench',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'The Bench',
+    shortDescription:
+      'Run any of 631 operations over a whole folder, on this machine.',
+    category: 'File',
+    aliases: KERNEL_MANIFEST.map((operation) => operation.name),
+    jobs: KERNEL_MANIFEST.map((operation) => operation.description),
+    href: '/bench',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['file.bytes.transform', 'file.batch.run'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'developer-data-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1744,7 +1763,7 @@ export const toolGroups: ToolGroup[] = [
     id: 'files',
     name: 'Files & archives',
     shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
-    toolIds: ['file-hash', 'archive-toolkit', 'file-workbench'],
+    toolIds: ['file-hash', 'archive-toolkit', 'file-workbench', 'bench'],
   },
   {
     id: 'text-data',

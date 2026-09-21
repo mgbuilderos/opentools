@@ -264,6 +264,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/file/workbench?tool=exif-metadata-stripper',
         workspaceId: 'file-workbench',
       },
+      {
+        id: 'bench',
+        name: 'The Bench',
+        description:
+          'Run any of 631 operations over a whole folder, on this machine.',
+        href: '/bench',
+        workspaceId: 'bench',
+      },
     ],
   },
 ];

@@ -21,6 +21,11 @@ export interface ToolMeta {
 }
 
 export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
+  bench: {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Run any of 631 operations over a whole folder, on this machine.',
+  },
   'aadhaar-pan-masker': {
     version: '0.1.0-canary',
     shortDescription:
