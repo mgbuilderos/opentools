@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:782c3bc0-fe40-4605-9319-cf273d78d7f0",
+  "serialNumber": "urn:uuid:e5641b66-fa38-48aa-9ae8-ac7d215f7555",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-17T04:28:00.967Z",
+    "timestamp": "2026-09-21T05:56:09.214Z",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -6135,6 +6135,34 @@
       ]
     },
     {
+      "bom-ref": "@tesseract.js-data/eng@1.0.0",
+      "type": "library",
+      "name": "@tesseract.js-data/eng",
+      "version": "1.0.0",
+      "scope": "required",
+      "purl": "pkg:npm/%40tesseract.js-data/eng@1.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@tesseract.js-data/eng/-/eng-1.0.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "99b4ee9a6e8a40f507cb34cf41a17739b5d89f1d12aaa7d5da769ba855500700fa2a5ecf84648b4b33a57c54d6cb43f7063821692280d96f46075f4993e65c4e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "@tybys/wasm-util@0.10.3",
       "type": "library",
       "name": "@tybys/wasm-util",
@@ -7561,6 +7589,34 @@
         {
           "alg": "SHA-512",
           "content": "175f8af046df399138f5db683ed9b1510ae95da048977202bdab0b87e9c9b5ad31933fbd905ffbb9eb7d7cb9f02aa843ae68fa83ee8add3c3dc903d483691ae6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "bmp-js@0.1.0",
+      "type": "library",
+      "name": "bmp-js",
+      "version": "0.1.0",
+      "scope": "required",
+      "purl": "pkg:npm/bmp-js@0.1.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/bmp-js/-/bmp-js-0.1.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "bc7752d7d0a763787088d7646aa93ddc3be354b7db11c23c9b2b38523b96ae55f585a0e6ae8a3ca38c42ce1e300fa0c657a1f1442c9abb084746a3137c446d8f"
         }
       ],
       "licenses": [
@@ -9053,6 +9109,34 @@
       ]
     },
     {
+      "bom-ref": "idb-keyval@6.3.0",
+      "type": "library",
+      "name": "idb-keyval",
+      "version": "6.3.0",
+      "scope": "required",
+      "purl": "pkg:npm/idb-keyval@6.3.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/idb-keyval/-/idb-keyval-6.3.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ba6fb6760016998b2eeb5e445e9595c1299aa4984e3741b8deddca6bf1156a88733d05d232a284a9e0cafe8216dcec3e057685d8fbd273ea014c5a7bf770393b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "is-extglob@2.1.1",
       "type": "library",
       "name": "is-extglob",
@@ -9154,6 +9238,34 @@
         {
           "alg": "SHA-512",
           "content": "e350a27e483a7bc4f2952a5db53a5e2d532abd20445734edb47bc4443ef8d7ea6767c00dbf4d34e0c44be3740a3c394af5c1af369e8d6566540656c65d8c719e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "is-url@1.2.4",
+      "type": "library",
+      "name": "is-url",
+      "version": "1.2.4",
+      "scope": "required",
+      "purl": "pkg:npm/is-url@1.2.4",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-url/-/is-url-1.2.4.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "213bc68a6f058518987b8210e6e1d2923ee955a3c3ac24e435ddf2ab7715ee26407097474d430f3041dca923b2f7167da857a7402be2fb6c231fd6b59d7a87c3"
         }
       ],
       "licenses": [
@@ -10075,6 +10187,34 @@
       ]
     },
     {
+      "bom-ref": "node-fetch@2.7.0",
+      "type": "library",
+      "name": "node-fetch",
+      "version": "2.7.0",
+      "scope": "required",
+      "purl": "pkg:npm/node-fetch@2.7.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.7.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7381517d49bf75b71667b53ed56ab40300b214bfb79edd9b130d39c1fc52cfe0d6a56b22b609928189b2d9d41d5b2282d7af7810b3ea32cfd8cd448da332edf0"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "node-releases@2.0.54",
       "type": "library",
       "name": "node-releases",
@@ -10181,6 +10321,34 @@
         {
           "alg": "SHA-512",
           "content": "69dcce7beeee23b94acfaa5035b02c2cc41dd85ab92619a8c5df0b66326bf26dcabdb172898c91c51882e7bfd75c3fa36f5f2fa29a63786023a199ac9171beec"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "opencollective-postinstall@2.0.3",
+      "type": "library",
+      "name": "opencollective-postinstall",
+      "version": "2.0.3",
+      "scope": "required",
+      "purl": "pkg:npm/opencollective-postinstall@2.0.3",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "f0057fb02b6ecd4793a3c8102b9a83673011aee941dde82d2f3160b5ea81dad713e0cc3b07c2adec97031e696d8f3e853801ecbd37af93bd206446e1338652f5"
         }
       ],
       "licenses": [
@@ -11005,6 +11173,34 @@
         {
           "alg": "SHA-512",
           "content": "ac53b554967e707f591fa846cbdfaa988b2664766908c2896578561ea4fbd549d27e0fb0f96fa0c2bc29e7c315ccca9d16ab86f0617573a0bcab4386a6190476"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "regenerator-runtime@0.13.11",
+      "type": "library",
+      "name": "regenerator-runtime",
+      "version": "0.13.11",
+      "scope": "required",
+      "purl": "pkg:npm/regenerator-runtime@0.13.11",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "918d40655af645afadfa9895689e20c5a15a45e6551f8d0028da3b5025fa5be744c01a3fda8649cea7ee375a8bab5a0be39a39e9c3da4d710bc2b4e1f05a6082"
         }
       ],
       "licenses": [
@@ -11942,6 +12138,62 @@
       ]
     },
     {
+      "bom-ref": "tesseract.js@7.0.0",
+      "type": "library",
+      "name": "tesseract.js",
+      "version": "7.0.0",
+      "scope": "required",
+      "purl": "pkg:npm/tesseract.js@7.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/tesseract.js/-/tesseract.js-7.0.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7b13c191dfb3fb033506e324c7f063bf8dce78b07184be64296b33ffd258f835dc5dd8818e201c874578f50477a0026a09a2f9a94444d2fc7d128f86e5813b98"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "tesseract.js-core@7.0.0",
+      "type": "library",
+      "name": "tesseract.js-core",
+      "version": "7.0.0",
+      "scope": "required",
+      "purl": "pkg:npm/tesseract.js-core@7.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-7.0.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5a7347e75f0dce66d2abdce04cf7a817c73ec668a54bcac5225d5829b93fa6dbae73ba7a70b3442cdb8f033726b18c38e7471ae9b2daf23dedd1502dab8df957"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "tiny-inflate@1.0.3",
       "type": "library",
       "name": "tiny-inflate",
@@ -12147,6 +12399,34 @@
         {
           "alg": "SHA-512",
           "content": "eb93fb8b3e97e7212bd5cc1c82f4316db230ed493780ecb974876d678ac3bde2ea86b7493fe2e2fc7c7ab722b43446fed860b29de08c2621aaac00c248d93cb1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "tr46@0.0.3",
+      "type": "library",
+      "name": "tr46",
+      "version": "0.0.3",
+      "scope": "required",
+      "purl": "pkg:npm/tr46@0.0.3",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "37758cb2ea95eba953df40ab5cd6c48f1e06130968c37bfaaebe2609cbfaa6b9dfc214b4d6b920c857633cd05877d6ebecba57575f849a1d357c79ead86760af"
         }
       ],
       "licenses": [
@@ -13023,6 +13303,34 @@
       ]
     },
     {
+      "bom-ref": "wasm-feature-detect@1.9.0",
+      "type": "library",
+      "name": "wasm-feature-detect",
+      "version": "1.9.0",
+      "scope": "required",
+      "purl": "pkg:npm/wasm-feature-detect@1.9.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/wasm-feature-detect/-/wasm-feature-detect-1.9.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ce89c4fb1948218b713f2fbe2f6e28c348400fc08809be3e1603f244e7776eec9722ab09bd410390181f082a1739dd47bb70d4af418e7e73c875c195f98a4d68"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "watchpack@2.5.2",
       "type": "library",
       "name": "watchpack",
@@ -13079,6 +13387,34 @@
       ]
     },
     {
+      "bom-ref": "webidl-conversions@3.0.1",
+      "type": "library",
+      "name": "webidl-conversions",
+      "version": "3.0.1",
+      "scope": "required",
+      "purl": "pkg:npm/webidl-conversions@3.0.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "d89027df3f0047aae32bc4a6f28ad10b487f6dc97f0ea2fbb513dd199e08d428dd17e11a30b998c411f25ee28bf38f5eb9c3c586f068c4cb1f95f39bf24c5a79"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "webpack@5.110.3",
       "type": "library",
       "name": "webpack",
@@ -13124,6 +13460,34 @@
         {
           "alg": "SHA-512",
           "content": "8f2ba218976dbd8e37e33e5b519ae3cfaeefefafde3cdbc5653a7d31dcf6f48947e3e18fb20c868e2bf47ca23e33b05d914e800e3ba551c280777b542b75a513"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "whatwg-url@5.0.0",
+      "type": "library",
+      "name": "whatwg-url",
+      "version": "5.0.0",
+      "scope": "required",
+      "purl": "pkg:npm/whatwg-url@5.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "b1a139ee7ba9c64eafdc7637e7e8f307061ad2b292cb45d1f094b164fc202ebef2b34201ce11af880d7f4d41892e6495aacf296fd027bc809712e3872e9ad84f"
         }
       ],
       "licenses": [
@@ -13497,6 +13861,34 @@
           }
         }
       ]
+    },
+    {
+      "bom-ref": "zlibjs@0.3.1",
+      "type": "library",
+      "name": "zlibjs",
+      "version": "0.3.1",
+      "scope": "required",
+      "purl": "pkg:npm/zlibjs@0.3.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/zlibjs/-/zlibjs-0.3.1.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "f89f51ae04ca3a69711520c7a34a48d7133a04b554bfea34653f4036d0b11a48c8542094771f5a95417c1a6f9d18b29b9249227562071436470cca5f213b78fb"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
     }
   ],
   "dependencies": [
@@ -13504,6 +13896,7 @@
       "ref": "local-tools-canary@0.1.0",
       "dependsOn": [
         "@base-ui/react@1.7.0",
+        "@tesseract.js-data/eng@1.0.0",
         "@vinext/cloudflare@1.0.0-beta.7",
         "class-variance-authority@0.7.1",
         "clsx@2.1.1",
@@ -13515,6 +13908,7 @@
         "react-dom@19.2.8",
         "react-server-dom-webpack@19.2.8",
         "tailwind-merge@3.6.0",
+        "tesseract.js@7.0.0",
         "vinext@1.0.0-beta.9",
         "@cloudflare/vite-plugin@1.54.11",
         "@cloudflare/workers-types@5.20260917.1",
@@ -14484,6 +14878,10 @@
       ]
     },
     {
+      "ref": "@tesseract.js-data/eng@1.0.0",
+      "dependsOn": []
+    },
+    {
       "ref": "@tybys/wasm-util@0.10.3",
       "dependsOn": [
         "tslib@2.8.1"
@@ -14802,6 +15200,10 @@
       "dependsOn": []
     },
     {
+      "ref": "bmp-js@0.1.0",
+      "dependsOn": []
+    },
+    {
       "ref": "braces@3.0.3",
       "dependsOn": [
         "fill-range@7.1.1"
@@ -15079,6 +15481,10 @@
       "dependsOn": []
     },
     {
+      "ref": "idb-keyval@6.3.0",
+      "dependsOn": []
+    },
+    {
       "ref": "is-extglob@2.1.1",
       "dependsOn": []
     },
@@ -15094,6 +15500,10 @@
     },
     {
       "ref": "is-number@7.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "is-url@1.2.4",
       "dependsOn": []
     },
     {
@@ -15259,6 +15669,12 @@
       "dependsOn": []
     },
     {
+      "ref": "node-fetch@2.7.0",
+      "dependsOn": [
+        "whatwg-url@5.0.0"
+      ]
+    },
+    {
       "ref": "node-releases@2.0.54",
       "dependsOn": []
     },
@@ -15280,6 +15696,10 @@
         "platform@1.3.6",
         "protobufjs@7.6.6"
       ]
+    },
+    {
+      "ref": "opencollective-postinstall@2.0.3",
+      "dependsOn": []
     },
     {
       "ref": "oxfmt@0.61.0",
@@ -15487,6 +15907,10 @@
         "neo-async@2.6.2",
         "webpack-sources@3.5.1"
       ]
+    },
+    {
+      "ref": "regenerator-runtime@0.13.11",
+      "dependsOn": []
     },
     {
       "ref": "require-directory@2.1.1",
@@ -15703,6 +16127,24 @@
       "dependsOn": []
     },
     {
+      "ref": "tesseract.js@7.0.0",
+      "dependsOn": [
+        "bmp-js@0.1.0",
+        "idb-keyval@6.3.0",
+        "is-url@1.2.4",
+        "node-fetch@2.7.0",
+        "opencollective-postinstall@2.0.3",
+        "regenerator-runtime@0.13.11",
+        "tesseract.js-core@7.0.0",
+        "wasm-feature-detect@1.9.0",
+        "zlibjs@0.3.1"
+      ]
+    },
+    {
+      "ref": "tesseract.js-core@7.0.0",
+      "dependsOn": []
+    },
+    {
       "ref": "tiny-inflate@1.0.3",
       "dependsOn": []
     },
@@ -15734,6 +16176,10 @@
       "dependsOn": [
         "is-number@7.0.0"
       ]
+    },
+    {
+      "ref": "tr46@0.0.3",
+      "dependsOn": []
     },
     {
       "ref": "tslib@2.8.1",
@@ -15938,6 +16384,10 @@
       ]
     },
     {
+      "ref": "wasm-feature-detect@1.9.0",
+      "dependsOn": []
+    },
+    {
       "ref": "watchpack@2.5.2",
       "dependsOn": [
         "graceful-fs@4.2.11"
@@ -15945,6 +16395,10 @@
     },
     {
       "ref": "web-vitals@4.2.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "webidl-conversions@3.0.1",
       "dependsOn": []
     },
     {
@@ -15974,6 +16428,13 @@
     {
       "ref": "webpack-sources@3.5.1",
       "dependsOn": []
+    },
+    {
+      "ref": "whatwg-url@5.0.0",
+      "dependsOn": [
+        "tr46@0.0.3",
+        "webidl-conversions@3.0.1"
+      ]
     },
     {
       "ref": "which-module@2.0.1",
@@ -16070,6 +16531,10 @@
         "@poppinss/exception@1.2.3",
         "error-stack-parser-es@1.0.5"
       ]
+    },
+    {
+      "ref": "zlibjs@0.3.1",
+      "dependsOn": []
     }
   ]
 }
