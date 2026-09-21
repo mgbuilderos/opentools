@@ -153,6 +153,98 @@ describe('redaction-proof & outside tool verification', () => {
     }
   });
 
+  /**
+   * The other half of the guarantee, and the half that was missing.
+   *
+   * Rasterising the page destroys the text layer, so every "no extractable
+   * text" assertion above passes **whether or not a black box was ever
+   * drawn**. Verified by mutation on 2026-09-21: replacing the
+   * `ctx.fillRect(bx, by, bw, bh)` in `apply-redaction.ts` with a no-op left
+   * this file entirely green, while the rendered page showed the name,
+   * the card number and the SSN in plain sight. Unreadable by a parser and
+   * perfectly readable by a human is not redaction — it is the failure this
+   * tool exists to prevent, wearing the proof's own badge.
+   *
+   * So: render the redacted page and check the pixels where each secret used
+   * to be are actually covered.
+   *
+   * The threshold is not a guess. Measured over all six targets on this
+   * fixture: shipped code covers 77.6%-84.7% of each region, and with the box
+   * removed the same regions read 5.6%-10.5% (the glyph strokes themselves).
+   * 50% sits between the two with a wide margin on both sides.
+   */
+  // Renders a whole page and reads its pixels back, so it is heavier than the
+  // parsing tests beside it and needs more than the 5s default when the full
+  // suite is running. 150 dpi is one of the settings the page actually offers,
+  // and the coverage ratio does not depend on the scale.
+  it(
+    'covers the pixels, not only the text layer',
+    { timeout: 60_000 },
+    async () => {
+      const srcBytes = new Uint8Array(readFileSync(srcPath));
+      const { models } = await loadPdfTextModels(srcBytes);
+      const targets: RedactionTarget[] = [
+        ...findSearchTargets(models, 'Johnathan Doe'),
+        ...findSearchTargets(models, '000-12-3456'),
+        ...findSearchTargets(models, '$5,000,000'),
+        ...findDetectionTargets(models),
+      ];
+      const dpi = 150;
+      const result = await applyRedaction(srcBytes, targets, {
+        dpi,
+        canvasFactory: nodeCanvasFactory,
+      });
+
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      const copy = new Uint8Array(result.bytes.length);
+      copy.set(result.bytes);
+      const doc = await pdfjs.getDocument({ data: copy, useSystemFonts: false })
+        .promise;
+      const page = await doc.getPage(1);
+      const scale = dpi / 72;
+      const viewport = page.getViewport({ scale });
+      const { canvas, context } = nodeCanvasFactory(
+        viewport.width,
+        viewport.height,
+      );
+      // `@napi-rs/canvas` is structurally compatible at runtime but not in the
+      // DOM types, which is why `apply-redaction.ts` types its factory's canvas
+      // as `unknown`. Same narrow cast here, at the one call that needs it.
+      await page.render({
+        canvas: canvas as unknown as HTMLCanvasElement,
+        canvasContext: context as unknown as CanvasRenderingContext2D,
+        viewport,
+      }).promise;
+
+      const pageHeight = page.getViewport({ scale: 1 }).height;
+      const onPageOne = targets.filter((target) => target.pageNumber === 1);
+      expect(onPageOne.length).toBeGreaterThanOrEqual(5);
+
+      for (const target of onPageOne) {
+        const { x, y, width, height } = target.rect;
+        // PDF user space has its origin bottom-left; the canvas is top-left.
+        const left = Math.max(0, Math.round(x * scale));
+        const top = Math.max(
+          0,
+          Math.round((pageHeight - (y + height)) * scale),
+        );
+        const w = Math.max(1, Math.round(width * scale));
+        const h = Math.max(1, Math.round(height * scale));
+
+        const { data } = context.getImageData(left, top, w, h);
+        let dark = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          if ((data[i] ?? 255) < 60) dark += 1;
+        }
+        const covered = dark / (w * h);
+        expect(
+          covered,
+          `${target.label} at page 1 (${left},${top} ${w}x${h}) is only ${(covered * 100).toFixed(1)}% covered — the text layer is gone but the ink is still legible`,
+        ).toBeGreaterThan(0.5);
+      }
+    },
+  );
+
   it('matches committed frozen golden file byte-level invariants', () => {
     expect(existsSync(goldenPath)).toBe(true);
     const goldenBytes = readFileSync(goldenPath);
