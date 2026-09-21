@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { expect, test, type Download, type Page } from '@playwright/test';
 
+import { readZip } from '../lib/tools/archive/zip-reader';
 import { testPdf } from './fixtures';
 
 /**
@@ -147,5 +148,32 @@ test.describe('PDF to Word', () => {
     await expect(body).toContainText('does not');
     await expect(body).toContainText(/columns/iu);
     await expect(body).toContainText(/never sent to a server/iu);
+  });
+
+  test('converts three PDFs and downloads every Word file as a ZIP', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const source = await testPdf(2);
+    await page.goto('/pdf/to-word');
+    await page.getByLabel('Choose a PDF').setInputFiles([
+      { name: 'first.pdf', mimeType: 'application/pdf', buffer: source },
+      { name: 'second.pdf', mimeType: 'application/pdf', buffer: source },
+      { name: 'third.pdf', mimeType: 'application/pdf', buffer: source },
+    ]);
+
+    await page.getByRole('button', { name: 'Convert all to Word' }).click();
+    await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3, {
+      timeout: 60_000,
+    });
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as ZIP' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('word-documents.zip');
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+    expect(
+      readZip(new Uint8Array(await readFile(downloadPath!))).entries,
+    ).toHaveLength(3);
   });
 });

@@ -23,6 +23,11 @@ import {
 } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import {
@@ -55,6 +60,8 @@ export function DesignSvgTool() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
 
   const [pngUrl, setPngUrl] = useState<string | null>(null);
   const [webpUrl, setWebpUrl] = useState<string | null>(null);
@@ -98,6 +105,8 @@ export function DesignSvgTool() {
   }, [svgUrl, pngUrl, webpUrl]);
 
   const resetAll = useCallback(() => {
+    batch.reset();
+    setBatchFiles([]);
     setRawSvg('');
     setFilename('vector.svg');
     setErrorMessage(null);
@@ -106,12 +115,27 @@ export function DesignSvgTool() {
     if (webpUrl) URL.revokeObjectURL(webpUrl);
     setPngUrl(null);
     setWebpUrl(null);
-  }, [pngUrl, webpUrl]);
+  }, [batch, pngUrl, webpUrl]);
 
-  const handleFiles = useCallback(async (fileList: FileList | File[]) => {
+  const handleFiles = async (fileList: FileList | File[]) => {
     setErrorMessage(null);
-    const file = fileList[0];
-    if (!file) return;
+    const selected = Array.from(fileList);
+    if (selected.length === 0 || isProcessing || batch.running) return;
+    if (selected.length > 1) {
+      setRawSvg('');
+      setFilename('vector.svg');
+      if (pngUrl) URL.revokeObjectURL(pngUrl);
+      if (webpUrl) URL.revokeObjectURL(webpUrl);
+      setPngUrl(null);
+      setWebpUrl(null);
+      batch.reset();
+      setBatchFiles(selected);
+      return;
+    }
+
+    const file = selected[0]!;
+    batch.reset();
+    setBatchFiles([]);
 
     if (
       !file.name.toLowerCase().endsWith('.svg') &&
@@ -132,7 +156,39 @@ export function DesignSvgTool() {
         err instanceof Error ? err.message : 'Failed to read SVG file.',
       );
     }
-  }, []);
+  };
+
+  const startBatch = () => {
+    setErrorMessage(null);
+    const options = {
+      precision,
+      removeMetadata,
+      removeComments,
+      removeEmptyGroups,
+    };
+    void batch.start(batchFiles, async (file, _index, signal) => {
+      if (
+        !file.name.toLowerCase().endsWith('.svg') &&
+        file.type !== 'image/svg+xml'
+      ) {
+        return { status: 'skipped', reason: 'Only SVG files are supported.' };
+      }
+      if (signal.aborted) {
+        return { status: 'skipped', reason: 'Batch cancelled.' };
+      }
+      const result = optimizeSvg(await file.text(), options);
+      const safeName = file.name.replace(/[^\w.-]/g, '_');
+      return {
+        status: 'done',
+        output: {
+          blob: new Blob([result.optimizedSvg], {
+            type: 'image/svg+xml;charset=utf-8',
+          }),
+          fileName: `optimized_${safeName}`,
+        },
+      };
+    });
+  };
 
   const handleExportRaster = useCallback(
     async (format: 'image/png' | 'image/webp') => {
@@ -222,6 +278,7 @@ export function DesignSvgTool() {
         <input
           ref={fileInputRef}
           type="file"
+          multiple
           id="svg-file-input"
           aria-label="Upload SVG vector file"
           accept=".svg,image/svg+xml"
@@ -262,9 +319,10 @@ export function DesignSvgTool() {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <FilePlus2 className="mr-2 h-4 w-4" />
-                Choose SVG File
+                Choose SVG File(s)
               </Button>
             </div>
+            <BatchLocalPromise />
             <div className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
               <span>
@@ -274,6 +332,69 @@ export function DesignSvgTool() {
             </div>
           </div>
         )}
+
+        {batchFiles.length > 1 ? (
+          <section className="rounded-xl border bg-card p-5">
+            <h2 className="text-sm font-semibold">Batch optimizer settings</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              These settings apply to every selected SVG.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-4 text-xs">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={removeMetadata}
+                  disabled={batch.running}
+                  onChange={(event) => setRemoveMetadata(event.target.checked)}
+                />
+                Remove editor metadata
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={removeComments}
+                  disabled={batch.running}
+                  onChange={(event) => setRemoveComments(event.target.checked)}
+                />
+                Strip XML comments
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={removeEmptyGroups}
+                  disabled={batch.running}
+                  onChange={(event) =>
+                    setRemoveEmptyGroups(event.target.checked)
+                  }
+                />
+                Remove empty groups
+              </label>
+            </div>
+            <label className="mt-4 block max-w-sm text-xs font-semibold">
+              Coordinate precision: {precision}
+              <input
+                type="range"
+                min="0"
+                max="5"
+                value={precision}
+                disabled={batch.running}
+                onChange={(event) => setPrecision(Number(event.target.value))}
+                className="mt-2 w-full accent-foreground"
+              />
+            </label>
+          </section>
+        ) : null}
+
+        {batchFiles.length > 1 ? (
+          <BatchRunnerPanel
+            files={batchFiles}
+            runner={batch}
+            startLabel="Optimize all SVGs"
+            zipName="optimized-svgs.zip"
+            onStart={startBatch}
+            onClear={resetAll}
+          />
+        ) : null}
 
         {/* Error notification */}
         {errorMessage && (

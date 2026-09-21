@@ -184,4 +184,43 @@ test.describe('Word Document (.docx) Metadata Viewer & Stripper (/documents/meta
     ).toBeVisible();
     await expect(page.getByText('tracked-doc.docx')).not.toBeVisible();
   });
+
+  test('cleans three documents and downloads all outputs as a ZIP', async ({
+    page,
+  }) => {
+    const fixture = await readFile(path.join(fixtureDir, 'tracked-doc.docx'));
+    await page.goto('/documents/metadata');
+    await page.locator('input[type="file"]').setInputFiles([
+      {
+        name: 'first.docx',
+        mimeType:
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        buffer: fixture,
+      },
+      {
+        name: 'second.docx',
+        mimeType:
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        buffer: fixture,
+      },
+      {
+        name: 'third.docx',
+        mimeType:
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        buffer: fixture,
+      },
+    ]);
+
+    await page.getByRole('button', { name: 'Clean all documents' }).click();
+    await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3);
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as ZIP' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('clean-documents.zip');
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+    expect(
+      readZip(new Uint8Array(await readFile(downloadPath!))).entries,
+    ).toHaveLength(3);
+  });
 });

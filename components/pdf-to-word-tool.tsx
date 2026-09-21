@@ -10,6 +10,11 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import {
+  BatchLocalPromise,
+  BatchRunnerPanel,
+  useFileBatchRunner,
+} from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { offerFile } from '@/lib/file-handoff';
@@ -53,12 +58,22 @@ function docxNameFor(pdfName: string) {
   return `${trimmed || 'document'}.docx`;
 }
 
+function docxBlob(bytes: Uint8Array) {
+  const buffer = bytes.buffer.slice(
+    bytes.byteOffset,
+    bytes.byteOffset + bytes.byteLength,
+  ) as ArrayBuffer;
+  return new Blob([buffer], { type: DOCX_MIME_TYPE });
+}
+
 export function PdfToWordTool() {
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [canOpenOcr, setCanOpenOcr] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const batch = useFileBatchRunner();
   const fileRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -100,6 +115,22 @@ export function PdfToWordTool() {
     setFile(next);
   }
 
+  function chooseFiles(files?: FileList | File[]) {
+    const selected = Array.from(files ?? []);
+    if (selected.length === 0 || busy || batch.running) return;
+    if (selected.length === 1) {
+      batch.reset();
+      setBatchFiles([]);
+      chooseFile(selected[0]);
+      return;
+    }
+    clearReceipt();
+    setFile(null);
+    setError('');
+    batch.reset();
+    setBatchFiles(selected);
+  }
+
   async function convert() {
     if (!file || busy) return;
     setBusy(true);
@@ -113,14 +144,7 @@ export function PdfToWordTool() {
       const response = await convertPdfToWord(new Uint8Array(buffer));
       const durationMs = performance.now() - startedAt;
 
-      // Hand Blob a plain ArrayBuffer: a Uint8Array view is not a BlobPart
-      // once the Workers types narrow ArrayBufferLike.
-      const view = response.bytes;
-      const docxBuffer = view.buffer.slice(
-        view.byteOffset,
-        view.byteOffset + view.byteLength,
-      ) as ArrayBuffer;
-      const blob = new Blob([docxBuffer], { type: DOCX_MIME_TYPE });
+      const blob = docxBlob(response.bytes);
       const url = URL.createObjectURL(blob);
       urlRef.current = url;
       setReceipt({
@@ -170,6 +194,40 @@ export function PdfToWordTool() {
     if (!file) return;
     await offerFile(file);
     window.location.assign('/pdf/ocr');
+  }
+
+  function clearAll() {
+    batch.reset();
+    setBatchFiles([]);
+    setFile(null);
+    clearReceipt();
+    setError('');
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  function startBatch() {
+    setError('');
+    void batch.start(batchFiles, async (source, _index, signal) => {
+      if (source.size > MAX_BYTES) {
+        return { status: 'skipped', reason: 'The 150 MB limit was exceeded.' };
+      }
+      if (!source.name.toLowerCase().endsWith('.pdf')) {
+        return { status: 'skipped', reason: 'Only PDF files are supported.' };
+      }
+      if (signal.aborted) {
+        return { status: 'skipped', reason: 'Batch cancelled.' };
+      }
+      const response = await convertPdfToWord(
+        new Uint8Array(await source.arrayBuffer()),
+      );
+      return {
+        status: 'done',
+        output: {
+          blob: docxBlob(response.bytes),
+          fileName: docxNameFor(source.name),
+        },
+      };
+    });
   }
 
   return (
@@ -255,10 +313,11 @@ export function PdfToWordTool() {
             <input
               ref={fileRef}
               type="file"
+              multiple
               accept="application/pdf,.pdf"
               aria-label="Choose a PDF"
               className="sr-only"
-              onChange={(event) => chooseFile(event.target.files?.[0])}
+              onChange={(event) => chooseFiles(event.target.files ?? [])}
             />
 
             {file ? (
@@ -273,6 +332,7 @@ export function PdfToWordTool() {
                   <Button
                     variant="outline"
                     className="h-10"
+                    disabled={batch.running}
                     onClick={() => fileRef.current?.click()}
                   >
                     Choose another
@@ -282,9 +342,7 @@ export function PdfToWordTool() {
                     className="h-10"
                     aria-label="Remove the chosen PDF"
                     onClick={() => {
-                      setFile(null);
-                      clearReceipt();
-                      setError('');
+                      clearAll();
                     }}
                   >
                     <Trash2 aria-hidden="true" className="size-4" />
@@ -298,13 +356,15 @@ export function PdfToWordTool() {
                 </p>
                 <Button
                   className="h-11"
+                  disabled={batch.running}
                   onClick={() => fileRef.current?.click()}
                 >
                   <FileText aria-hidden="true" className="mr-2 size-4" />
-                  Choose a PDF
+                  Choose PDF file(s)
                 </Button>
               </div>
             )}
+            <BatchLocalPromise />
 
             {file ? (
               <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -326,6 +386,17 @@ export function PdfToWordTool() {
               </div>
             ) : null}
           </section>
+
+          {batchFiles.length > 1 ? (
+            <BatchRunnerPanel
+              files={batchFiles}
+              runner={batch}
+              startLabel="Convert all to Word"
+              zipName="word-documents.zip"
+              onStart={startBatch}
+              onClear={clearAll}
+            />
+          ) : null}
 
           {receipt ? (
             <section

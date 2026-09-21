@@ -22,7 +22,7 @@ export interface RawFileInput {
  * Keeps `logo.png` and a second, different `logo.png` apart by numbering the
  * later one, extension intact so the file still opens as what it is.
  */
-function uniqueFilename(name: string, taken: Set<string>): string {
+export function uniqueFilename(name: string, taken: Set<string>): string {
   if (!taken.has(name)) {
     taken.add(name);
     return name;

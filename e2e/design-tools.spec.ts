@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 import { expect, test } from '@playwright/test';
 
+import { readZip } from '../lib/tools/archive/zip-reader';
+
 const fixturesDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   '..',
@@ -75,6 +77,30 @@ test.describe('Designer Tools Suite', () => {
 
       const downloadedPngPath = await pngDownload.path();
       expect(downloadedPngPath).toBeTruthy();
+    });
+
+    test('optimizes three SVGs and downloads all vectors as a ZIP', async ({
+      page,
+    }) => {
+      const source = await readFile(path.join(fixturesDir, 'logo.svg'));
+      await page.goto('/image/svg');
+      await page.locator('input[type="file"]').setInputFiles([
+        { name: 'first.svg', mimeType: 'image/svg+xml', buffer: source },
+        { name: 'second.svg', mimeType: 'image/svg+xml', buffer: source },
+        { name: 'third.svg', mimeType: 'image/svg+xml', buffer: source },
+      ]);
+
+      await page.getByRole('button', { name: 'Optimize all SVGs' }).click();
+      await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3);
+      const downloadPromise = page.waitForEvent('download');
+      await page.getByRole('button', { name: 'Download all as ZIP' }).click();
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe('optimized-svgs.zip');
+      const downloadPath = await download.path();
+      expect(downloadPath).toBeTruthy();
+      expect(
+        readZip(new Uint8Array(await readFile(downloadPath!))).entries,
+      ).toHaveLength(3);
     });
   });
 

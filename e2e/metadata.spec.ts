@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { expect, test, type Download, type Page } from '@playwright/test';
 
+import { readZip } from '../lib/tools/archive/zip-reader';
 import { readMetadata } from '../lib/tools/metadata';
 
 const fixtureDir = path.join(
@@ -149,6 +150,31 @@ test.describe('Photo Metadata Viewer & Stripper (/image/metadata)', () => {
     ).toBeVisible();
     await expect(page.getByText('Author')).toBeVisible();
     await expect(page.getByText('OpenTools Contributor')).toBeVisible();
+  });
+
+  test('strips three photos and downloads all clean copies as a ZIP', async ({
+    page,
+  }) => {
+    await page.goto('/image/metadata');
+    await page
+      .locator('input[type="file"]')
+      .setInputFiles([
+        path.join(fixtureDir, 'gps-camera-photo.jpg'),
+        path.join(fixtureDir, 'sample-text.png'),
+        path.join(fixtureDir, 'sample-exif.webp'),
+      ]);
+
+    await page.getByRole('button', { name: 'Strip all metadata' }).click();
+    await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3);
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as ZIP' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('clean-photos.zip');
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+    expect(
+      readZip(new Uint8Array(await readFile(downloadPath!))).entries,
+    ).toHaveLength(3);
   });
 });
 

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 
+import { readZip } from '../lib/tools/archive/zip-reader';
 import { testPdf, testPhotoPdf } from './fixtures';
 
 /**
@@ -106,5 +107,32 @@ test.describe('Compress PDF', () => {
       /could not be read as a supported PDF/iu,
       { timeout: 30_000 },
     );
+  });
+
+  test('compresses three PDFs and downloads all outputs as a ZIP', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const source = await testPdf(2);
+    await page.goto('/pdf/compress');
+    await page.locator('input[type="file"]').setInputFiles([
+      { name: 'first.pdf', mimeType: 'application/pdf', buffer: source },
+      { name: 'second.pdf', mimeType: 'application/pdf', buffer: source },
+      { name: 'third.pdf', mimeType: 'application/pdf', buffer: source },
+    ]);
+
+    await page.getByRole('button', { name: 'Compress all' }).click();
+    await expect(page.locator('[data-batch-result="done"]')).toHaveCount(3, {
+      timeout: 60_000,
+    });
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as ZIP' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('compressed-pdfs.zip');
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+    expect(
+      readZip(new Uint8Array(await readFile(downloadPath!))).entries,
+    ).toHaveLength(3);
   });
 });
