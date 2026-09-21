@@ -113,14 +113,11 @@ branch; it is eight small XML strings in a ZIP.
 
 ## Not done
 
-0. **Golden files for the writer, on the same rule as the video one.** openpyxl
-   is installed here and is **not** installed everywhere — and LibreOffice was
-   assumed present on this machine and turned out to be a dangling symlink, which
-   is exactly how this kind of assumption fails. So the writer's verified output
-   must be committed as bytes and compared by a test that needs nothing
-   installed, the way `lib/tools/video/golden.test.ts` does. Write the `.xlsx`
-   once, confirm openpyxl reads it, commit those bytes, and compare against them
-   from then on. **Do not leave the guarantee as "re-run openpyxl by hand".**
+0. ~~Golden files for the writer, on the same rule as the video one.~~ **Done.**
+   `golden-written.xlsx` is committed as bytes, verified with openpyxl 3.1.5 on
+   2026-09-19, and `xlsx-writer.test.ts` compares against it with nothing
+   installed — the same guarantee `lib/tools/video/golden.test.ts` gives. This
+   item was left open in the list after it had been closed in the code.
 
 1. ~~The writer.~~ **Done**, and its output is frozen as `golden-written.xlsx`.
    CSV → `.xlsx`. Needs `[Content_Types].xml`, `_rels/.rels`,
@@ -140,5 +137,23 @@ branch; it is eight small XML strings in a ZIP.
    with a file the owner nominates before launch.
 6. **Preview is capped at 50 rows and 20 columns.** Everything is converted; only
    the drawing is cut, and the caption says so.
-7. **Very large sheets are not streamed.** The whole workbook is parsed into
-   memory. A 100k-row sheet will be slow and should be measured before launch.
+7. **Very large sheets are not streamed** — the whole workbook is parsed into
+   memory. **Measured 2026-09-21, so this is no longer a guess.** Ten columns of
+   mixed strings, numbers and dates, written then read back:
+
+   | Rows | Cells | Write | Read | Total | File | Heap |
+   |---:|---:|---:|---:|---:|---:|---:|
+   | 10,000 | 100k | 305 ms | 189 ms | 493 ms | 0.5 MB | 50 MB |
+   | 50,000 | 500k | 811 ms | 746 ms | 1.6 s | 2.7 MB | 154 MB |
+   | 100,000 | 1M | 1,322 ms | 1,227 ms | 2.5 s | 5.3 MB | 189 MB |
+
+   **Time is not the problem and scaling is linear, not quadratic** — there is no
+   cliff between 10k and 100k rows. **Memory is the thing to watch:** roughly
+   190 MB of heap for a million cells, which is the figure that would decide
+   whether a low-end phone survives a large file.
+
+   **What this measurement is not.** It ran in Node on an Apple-silicon
+   development machine, not in a browser on a mid-range phone, so treat the
+   timings as a floor rather than a promise. The honest remaining task before
+   launch is the same measurement on a real mobile browser; streaming is not
+   worth building until that says it is needed.
