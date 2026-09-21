@@ -96,8 +96,17 @@ const worktree = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '..',
 );
-const lockPath = path.join(sharedRoot(), LOCK_NAME);
-const tokenPath = path.join(worktree, TOKEN_NAME);
+/**
+ * Overridable so the tests never touch the real lock.
+ *
+ * Without this the suite exercised the live `.deploy-lock.json`: running
+ * `npm test` while an agent genuinely held the lock would have deleted it in
+ * `afterEach`. A test that can sabotage production is worse than no test.
+ */
+const lockPath =
+  process.env.DEPLOY_LOCK_FILE ?? path.join(sharedRoot(), LOCK_NAME);
+const tokenPath =
+  process.env.DEPLOY_LOCK_TOKEN_FILE ?? path.join(worktree, TOKEN_NAME);
 
 const sha256 = (text) => createHash('sha256').update(text).digest('hex');
 

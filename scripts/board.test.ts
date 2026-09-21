@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { isStashCommit } from './board.mjs';
+import { classify, isStashCommit } from './board.mjs';
 
 const run = promisify(execFile);
 const script = path.join(
@@ -133,4 +133,66 @@ describe('the generated block', () => {
       expect(first.split('BEGIN')[0]).toBe(second.split('BEGIN')[0]);
     },
   );
+});
+
+describe('deciding what is actually at risk', () => {
+  interface Tree {
+    name: string;
+    branch: string | null;
+    containedBy?: string[];
+    dirty: number;
+    ahead: number;
+  }
+  const tree = (over: Partial<Tree> = {}): Tree => ({
+    name: 'w',
+    branch: 'claude/x',
+    containedBy: ['claude/x'],
+    dirty: 0,
+    ahead: 0,
+    ...over,
+  });
+
+  /**
+   * The false positive this replaced. The first version flagged every
+   * detached worktree as at risk and named two that were both safe — one of
+   * them checked out at `main`'s own tip. Detached is not the danger;
+   * unreachable is.
+   */
+  it('does not call a detached HEAD stranded when a branch contains it', () => {
+    const { stranded } = classify([
+      tree({ branch: null, containedBy: ['main'], ahead: 4 }),
+    ]);
+    expect(stranded).toEqual([]);
+  });
+
+  it('does call it stranded when nothing contains it', () => {
+    const { stranded } = classify([
+      tree({ name: 'lost', branch: null, containedBy: [], ahead: 2 }),
+    ]);
+    expect(stranded.map((t: Tree) => t.name)).toEqual(['lost']);
+  });
+
+  it('treats a missing containedBy as stranded rather than assuming safety', () => {
+    const { stranded } = classify([
+      tree({ name: 'unknown', branch: null, containedBy: undefined }),
+    ]);
+    expect(stranded.map((t: Tree) => t.name)).toEqual(['unknown']);
+  });
+
+  it('reports a detached-but-held worktree as unpushed, not as safe-and-silent', () => {
+    const { unpushed, stranded } = classify([
+      tree({ name: 'held', branch: null, containedBy: ['main'], ahead: 4 }),
+    ]);
+    expect(stranded).toEqual([]);
+    expect(unpushed.map((t: Tree) => t.name)).toEqual(['held']);
+  });
+
+  it('keeps uncommitted separate from both', () => {
+    const { uncommitted, stranded, unpushed } = classify([
+      tree({ name: 'dirty', dirty: 3 }),
+    ]);
+    expect(uncommitted.map((t: Tree) => t.name)).toEqual(['dirty']);
+    expect(stranded).toEqual([]);
+    expect(unpushed).toEqual([]);
+  });
 });

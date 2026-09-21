@@ -119,6 +119,27 @@ export function isStashCommit(subject) {
   return /^(index on|On|untracked files on|WIP on) /.test(subject ?? '');
 }
 
+/**
+ * Sorts worktrees into the three states that need different answers.
+ *
+ * Separated out and exported because the first version got it wrong in the
+ * way that matters: it called any detached HEAD "at risk" and named two
+ * worktrees that were both safe — one of them sitting on `main`'s own tip.
+ * **Detached is not the danger; unreachable is.** A commit some branch still
+ * contains cannot be lost, however the worktree is checked out.
+ */
+export function classify(trees) {
+  return {
+    // Nothing points at these commits. This is the state that loses work.
+    stranded: trees.filter(
+      (t) => !t.branch && (t.containedBy?.length ?? 0) === 0,
+    ),
+    uncommitted: trees.filter((t) => t.dirty > 0),
+    // On a branch, just not on origin/main. Safe, but not shipped.
+    unpushed: trees.filter((t) => t.ahead > 0),
+  };
+}
+
 /** Every worktree git knows about, with the facts prose kept getting wrong. */
 async function worktrees() {
   const out = [];
@@ -138,14 +159,25 @@ async function worktrees() {
     out.map(async (tree) => {
       tree.name = path.basename(tree.dir);
       // Three calls, run together: status, one log line, one ahead/behind.
-      const [dirty, head, counts] = await Promise.all([
+      const [dirty, head, counts, containing] = await Promise.all([
         gitP(['status', '--porcelain'], tree.dir),
         gitP(['log', '-1', '--format=%h%x00%cr'], tree.dir),
         gitP(
           ['rev-list', '--left-right', '--count', 'origin/main...HEAD'],
           tree.dir,
         ),
+        // A detached HEAD only loses work if nothing else points at the
+        // commit. The first version of this file called every detached
+        // worktree "at risk" and named two that were both safe — one sitting
+        // on `main`'s own tip. A warning list with false alarms in it is one
+        // people stop reading, which is the failure this script exists to
+        // prevent.
+        gitP(['branch', '-a', '--contains', 'HEAD'], tree.dir),
       ]);
+      tree.containedBy = containing
+        .split('\n')
+        .map((line) => line.replace(/^[*+]?\s*/, '').trim())
+        .filter((name) => name && !name.startsWith('(HEAD detached'));
       tree.dirty = dirty ? dirty.split('\n').filter(Boolean).length : 0;
       const [sha, when] = head.split('\0');
       tree.head = sha ?? '';
@@ -244,23 +276,50 @@ async function report() {
     );
   }
 
-  const risky = trees.filter((t) => t.dirty > 0 || t.ahead > 0 || !t.branch);
+  const { stranded, uncommitted, unpushed } = classify(trees);
+
   lines.push('');
-  if (risky.length === 0) {
+  if (stranded.length === 0) {
     lines.push(
-      '**Nothing is at risk:** every worktree is clean and level with `origin/main`.',
+      '**Nothing is stranded.** Every commit in every worktree is reachable from some branch.',
     );
   } else {
     lines.push(
-      '**Work that exists only here.** Not a reprimand — just what would be lost if these trees were cleaned:',
+      '**Stranded — a detached HEAD no branch points at.** This is the one that',
+      'actually loses work. Give it a branch now:',
+      '`git -C apps/<name> switch -c <branch>`.',
+      '',
     );
+    for (const t of stranded) {
+      lines.push(
+        `- \`${t.name}\` — detached at \`${t.head}\`, no branch contains it`,
+      );
+    }
+  }
+
+  if (uncommitted.length > 0) {
     lines.push('');
-    for (const t of risky) {
-      const bits = [];
-      if (!t.branch) bits.push('**detached HEAD**');
-      if (t.ahead > 0) bits.push(`${t.ahead} commit(s) not on \`origin/main\``);
-      if (t.dirty > 0) bits.push(`${t.dirty} uncommitted file(s)`);
-      lines.push(`- \`${t.name}\` — ${bits.join(', ')}`);
+    lines.push(
+      '**Uncommitted files.** Real, but ordinary — several of these are an agent mid-task:',
+      '',
+    );
+    for (const t of uncommitted) {
+      lines.push(`- \`${t.name}\` — ${t.dirty} file(s)`);
+    }
+  }
+
+  if (unpushed.length > 0) {
+    lines.push('');
+    lines.push(
+      '**On a branch but not on `origin/main`.** Safe from loss; listed so nobody',
+      'assumes it shipped:',
+      '',
+    );
+    for (const t of unpushed) {
+      const where = t.branch
+        ? `on \`${t.branch}\``
+        : `detached, held by ${t.containedBy.slice(0, 2).join(', ')}`;
+      lines.push(`- \`${t.name}\` — ${t.ahead} commit(s) ${where}`);
     }
   }
 

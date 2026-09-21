@@ -1,9 +1,16 @@
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const run = promisify(execFile);
 
@@ -12,23 +19,41 @@ const worktree = path.resolve(
   '..',
 );
 const script = path.join(worktree, 'scripts', 'deploy-lock.mjs');
-const tokenPath = path.join(worktree, '.deploy-lock-token');
 
-/** The lock lives beside AGENT_BOARD.md so every worktree sees one file. */
-function lockPath() {
-  let dir = worktree;
-  for (let up = 0; up < 8; up += 1) {
-    if (existsSync(path.join(dir, 'AGENT_BOARD.md')))
-      return path.join(dir, '.deploy-lock.json');
-    dir = path.dirname(dir);
-  }
-  throw new Error('no AGENT_BOARD.md above the worktree');
-}
+/**
+ * Every test gets its own lock and token file.
+ *
+ * The first version used the real `.deploy-lock.json`, so `npm test` would
+ * have deleted a lock an agent was actually holding — a test that can
+ * sabotage production. It also made the suite flaky, because parallel files
+ * raced for one path.
+ */
+let sandbox: string;
+let lockFile: string;
+let tokenFile: string;
+
+beforeEach(() => {
+  sandbox = mkdtempSync(path.join(tmpdir(), 'deploy-lock-'));
+  lockFile = path.join(sandbox, 'lock.json');
+  tokenFile = path.join(sandbox, 'token');
+});
+
+afterEach(() => {
+  rmSync(sandbox, { recursive: true, force: true });
+});
+
+const lockPath = () => lockFile;
+const tokenPath = () => tokenFile;
 
 /** Exit code and output, without throwing on a non-zero exit. */
 async function lock(...args: string[]) {
+  const env = {
+    ...process.env,
+    DEPLOY_LOCK_FILE: lockFile,
+    DEPLOY_LOCK_TOKEN_FILE: tokenFile,
+  };
   try {
-    const { stdout, stderr } = await run('node', [script, ...args]);
+    const { stdout, stderr } = await run('node', [script, ...args], { env });
     return { code: 0, out: stdout + stderr };
   } catch (error) {
     const e = error as { code?: number; stdout?: string; stderr?: string };
@@ -37,11 +62,9 @@ async function lock(...args: string[]) {
 }
 
 const clean = () => {
-  rmSync(lockPath(), { force: true });
-  rmSync(tokenPath, { force: true });
+  rmSync(lockFile, { force: true });
+  rmSync(tokenFile, { force: true });
 };
-
-afterEach(clean);
 
 describe('the deploy lock', () => {
   /**
@@ -81,28 +104,28 @@ describe('the deploy lock', () => {
     // The lock is world-readable so others can see who holds it, so it must
     // not carry the secret that grants release.
     const record = JSON.parse(readFileSync(lockPath(), 'utf8'));
-    const token = readFileSync(tokenPath, 'utf8').trim();
+    const token = readFileSync(tokenPath(), 'utf8').trim();
     expect(record.tokenHash).not.toBe(token);
     expect(JSON.stringify(record)).not.toContain(token);
   });
 
   it('refuses assert from a worktree that does not hold it', async () => {
     await lock('acquire', '--owner', 'holder');
-    const saved = readFileSync(tokenPath, 'utf8');
-    rmSync(tokenPath);
+    const saved = readFileSync(tokenPath(), 'utf8');
+    rmSync(tokenPath());
     const denied = await lock('assert');
     expect(denied.code).toBe(1);
     expect(denied.out).toContain('REFUSING TO DEPLOY');
-    writeFileSync(tokenPath, saved);
+    writeFileSync(tokenPath(), saved);
   });
 
   it('refuses release by anyone but the holder', async () => {
     await lock('acquire', '--owner', 'holder');
-    const saved = readFileSync(tokenPath, 'utf8');
-    rmSync(tokenPath);
+    const saved = readFileSync(tokenPath(), 'utf8');
+    rmSync(tokenPath());
     expect((await lock('release')).code).toBe(1);
     expect(existsSync(lockPath())).toBe(true);
-    writeFileSync(tokenPath, saved);
+    writeFileSync(tokenPath(), saved);
   });
 
   it('refuses to steal a lock that is not stale', async () => {
@@ -118,7 +141,7 @@ describe('the deploy lock', () => {
     const record = JSON.parse(readFileSync(lockPath(), 'utf8'));
     record.takenAt = new Date(Date.now() - 1000 * 60 * 120).toISOString();
     writeFileSync(lockPath(), JSON.stringify(record));
-    rmSync(tokenPath);
+    rmSync(tokenPath());
 
     const taken = await lock('acquire', '--owner', 'successor', '--steal');
     expect(taken.code).toBe(0);
