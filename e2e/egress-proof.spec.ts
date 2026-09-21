@@ -36,7 +36,8 @@ import { expect, test } from '@playwright/test';
  * the protocol could only ever be pointed at localhost.
  */
 let SAME_ORIGIN = new URL(
-  process.env.EGRESS_BASE_URL ?? 'http://localhost:8788',
+  process.env.EGRESS_BASE_URL ??
+    `http://localhost:${process.env.E2E_PORT ?? 8788}`,
 ).host;
 
 /**
