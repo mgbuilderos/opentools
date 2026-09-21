@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MathWorkbenchTool } from '@/components/math-workbench-tool';
+import { relatedToolsFor } from '@/lib/seo/related-tools';
 import {
   CONVERSION_PAIRS,
   conversionFacts,
@@ -73,6 +74,7 @@ export default async function Page({
   return (
     <MathWorkbenchTool
       initialOperationId={pair.operationId}
+      relatedTools={relatedToolsFor(`/convert/${slug}`)}
       pair={{
         title: pair.title,
         summary: facts.description,

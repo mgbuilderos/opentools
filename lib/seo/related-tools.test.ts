@@ -7,7 +7,11 @@ import {
   unlinkedLiveRoutes,
   WITHHELD_ROUTES,
 } from './related-tools';
-import { isLiveToolUrl, LIVE_TOOL_ROUTES } from './live-tools';
+import {
+  isLiveToolUrl,
+  LIVE_TOOL_ROUTES,
+  routedToolPrefixes,
+} from './live-tools';
 
 /**
  * A suggestion that goes nowhere is worse than no suggestion. It spends the
@@ -207,24 +211,51 @@ describe('related tools are real, live and never the withheld three', () => {
 });
 
 describe('the suggestions reach the page', () => {
-  const routePages = readdirSync(path.join(projectRoot, 'app'), {
-    withFileTypes: true,
-  })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) =>
-      path.join(projectRoot, 'app', entry.name, '[tool]/page.tsx'),
-    )
-    .filter((file) => {
-      try {
-        readFileSync(file);
-        return true;
-      } catch {
-        return false;
-      }
-    });
+  /*
+    Found by looking for a dynamic segment under a prefix the tool registry
+    knows about -- not by looking for the literal name `[tool]`.
+
+    This scan used to join `app/<dir>/[tool]/page.tsx`, so it saw fourteen
+    routes and missed `app/convert/[pair]/page.tsx` entirely: 512 conversion
+    pages, 28% of the site, published with no way out of the converter and no
+    failing test, because the segment was called `[pair]`. The name of a
+    directory is not what makes a page a tool page. Being under a prefix in
+    `routedToolPrefixes()` is, and that is the registry the sitemap and
+    `generateStaticParams` already read.
+
+    `/blog`, `/guides` and `/templates` also have dynamic segments; none of
+    them is a routed tool prefix, so none is scanned here.
+  */
+  const routePages = routedToolPrefixes().flatMap((prefix) => {
+    const dir = path.join(projectRoot, 'app', prefix.replace(/^\//u, ''));
+    let segments: string[];
+    try {
+      segments = readdirSync(dir, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && /^\[.+\]$/u.test(entry.name))
+        .map((entry) => entry.name);
+    } catch {
+      return [];
+    }
+    return segments
+      .map((segment) => path.join(dir, segment, 'page.tsx'))
+      .filter((file) => {
+        try {
+          readFileSync(file);
+          return true;
+        } catch {
+          return false;
+        }
+      });
+  });
 
   it('finds every per-tool route file', () => {
-    expect(routePages.length).toBeGreaterThanOrEqual(14);
+    // Fifteen: the fourteen `[tool]` routes plus `convert/[pair]`. If a prefix
+    // is registered and its route file stops being found, every assertion
+    // below silently stops checking it.
+    expect(routePages.length).toBeGreaterThanOrEqual(15);
+    expect(
+      routePages.map((file) => path.relative(projectRoot, file)),
+    ).toContain('app/convert/[pair]/page.tsx');
   });
 
   it('computes them in every per-tool route file', () => {

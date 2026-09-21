@@ -489,9 +489,17 @@ export function MathWorkbenchTool({
                 ))}
               </ul>
             </nav>
-          ) : (
-            <RelatedTools tools={relatedTools} />
-          )}
+          ) : null}
+
+          {/*
+            Both, on a conversion page. The nav above keeps someone inside the
+            converter, which is what they usually want next; this strip is the
+            way out of it. With only the nav, the 512 `/convert` pages linked
+            to each other and to nothing else on the site -- a closed silo that
+            neither passes a visitor on to the other tools nor tells a crawler
+            those tools are related to it.
+          */}
+          <RelatedTools tools={relatedTools} />
 
           <footer className="mt-8 border-t py-5 text-xs leading-5 text-muted-foreground">
             Local JavaScript · Results use finite-number and exact-integer
