@@ -88,11 +88,18 @@ describe('text workbench', () => {
   });
 
   it('generates bounded local placeholder and random words', () => {
-    expect(
-      runTextOperation('lorem-ipsum-generator', '', { count: 2 }).output.split(
-        '\n\n',
-      ),
-    ).toHaveLength(2);
+    const placeholder = runTextOperation('lorem-ipsum-generator', '', {
+      count: 2,
+    }).output.split('\n\n');
+    expect(placeholder).toHaveLength(2);
+    // Filler that repeats one paragraph reads as a stuck tool and cannot show
+    // how a layout copes with uneven text, so the paragraphs must differ.
+    expect(placeholder[0]).not.toBe(placeholder[1]);
+    expect(placeholder[0]).toMatch(/^Lorem ipsum dolor sit amet, consectetur/);
+    for (const paragraph of placeholder) {
+      expect(paragraph.trim()).not.toBe('');
+      expect(paragraph).toMatch(/\.$/);
+    }
     expect(
       runTextOperation('random-word-generator', '', { count: 3 }, () => 0)
         .output,

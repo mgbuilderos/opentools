@@ -395,8 +395,180 @@ const NATO: Record<string, string> = {
   9: 'Niner',
 };
 
-const LOREM =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae justo sed sapien posuere consequat. Curabitur non sem at neque facilisis feugiat.';
+// Placeholder copy is meant to stand in for real writing, so it has to vary:
+// three identical paragraphs read as a stuck tool, not as filler, and they are
+// useless for judging how a layout handles uneven text. The opening clause is
+// the conventional one because that is what people check for.
+const LOREM_OPENING =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+const LOREM_WORDS = [
+  'a',
+  'ac',
+  'accumsan',
+  'ad',
+  'aenean',
+  'aliquam',
+  'aliquet',
+  'ante',
+  'arcu',
+  'at',
+  'auctor',
+  'augue',
+  'blandit',
+  'commodo',
+  'condimentum',
+  'congue',
+  'consequat',
+  'convallis',
+  'cras',
+  'cursus',
+  'dapibus',
+  'diam',
+  'dictum',
+  'dignissim',
+  'donec',
+  'dui',
+  'egestas',
+  'eget',
+  'eleifend',
+  'elementum',
+  'enim',
+  'erat',
+  'eros',
+  'est',
+  'et',
+  'etiam',
+  'eu',
+  'euismod',
+  'facilisis',
+  'fames',
+  'faucibus',
+  'felis',
+  'fermentum',
+  'feugiat',
+  'fringilla',
+  'fusce',
+  'gravida',
+  'habitant',
+  'hendrerit',
+  'iaculis',
+  'id',
+  'imperdiet',
+  'in',
+  'integer',
+  'interdum',
+  'ipsum',
+  'justo',
+  'lacinia',
+  'lacus',
+  'laoreet',
+  'lectus',
+  'leo',
+  'libero',
+  'ligula',
+  'lorem',
+  'luctus',
+  'maecenas',
+  'magna',
+  'malesuada',
+  'massa',
+  'mattis',
+  'mauris',
+  'metus',
+  'mi',
+  'molestie',
+  'mollis',
+  'morbi',
+  'nam',
+  'nec',
+  'neque',
+  'nibh',
+  'nisi',
+  'nisl',
+  'non',
+  'nulla',
+  'nullam',
+  'nunc',
+  'odio',
+  'orci',
+  'ornare',
+  'pellentesque',
+  'phasellus',
+  'placerat',
+  'porta',
+  'porttitor',
+  'posuere',
+  'praesent',
+  'pretium',
+  'proin',
+  'pulvinar',
+  'purus',
+  'quam',
+  'quis',
+  'quisque',
+  'rhoncus',
+  'risus',
+  'rutrum',
+  'sagittis',
+  'sapien',
+  'scelerisque',
+  'sed',
+  'sem',
+  'semper',
+  'sit',
+  'sodales',
+  'sollicitudin',
+  'suscipit',
+  'suspendisse',
+  'tellus',
+  'tempor',
+  'tempus',
+  'tincidunt',
+  'tortor',
+  'tristique',
+  'turpis',
+  'ullamcorper',
+  'ultrices',
+  'ultricies',
+  'urna',
+  'ut',
+  'varius',
+  'vehicula',
+  'vel',
+  'velit',
+  'venenatis',
+  'vestibulum',
+  'vitae',
+  'vivamus',
+  'viverra',
+  'volutpat',
+  'vulputate',
+] as const;
+
+function loremPick(random: () => number) {
+  return LOREM_WORDS[Math.floor(random() * LOREM_WORDS.length)]!;
+}
+
+function loremSentence(random: () => number) {
+  const length = 6 + Math.floor(random() * 9);
+  const words: string[] = Array.from({ length }, () => loremPick(random));
+  // One comma in the longer sentences, never at either end, so the shape of
+  // the text varies the way real prose does.
+  if (length > 9) {
+    const breakAt = 3 + Math.floor(random() * (length - 6));
+    words[breakAt] = `${words[breakAt]},`;
+  }
+  const body = words.join(' ');
+  return `${body.charAt(0).toUpperCase()}${body.slice(1)}.`;
+}
+
+function loremParagraph(random: () => number, opening: boolean) {
+  const sentences = Array.from({ length: 3 + Math.floor(random() * 3) }, () =>
+    loremSentence(random),
+  );
+  if (opening) sentences.unshift(LOREM_OPENING);
+  return sentences.join(' ');
+}
 const RANDOM_WORDS = [
   'amber',
   'bridge',
@@ -643,7 +815,9 @@ export function runTextOperation(
       break;
     case 'lorem-ipsum-generator': {
       const count = clampCount(options.count, 20);
-      output = Array.from({ length: count }, () => LOREM).join('\n\n');
+      output = Array.from({ length: count }, (_unused, index) =>
+        loremParagraph(random, index === 0),
+      ).join('\n\n');
       summary = `${count.toLocaleString()} placeholder ${count === 1 ? 'paragraph' : 'paragraphs'} generated`;
       break;
     }

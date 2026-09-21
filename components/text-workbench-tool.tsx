@@ -70,7 +70,7 @@ export function TextWorkbenchTool({
   const [find, setFind] = useState('');
   const [replacement, setReplacement] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(true);
-  const [numericOption, setNumericOption] = useState(3);
+  const [numericOption, setNumericOption] = useState('3');
   const [separator, setSeparator] = useState(',');
   const [normalization, setNormalization] =
     useState<TextOperationOptions['normalization']>('NFC');
@@ -141,6 +141,9 @@ export function TextWorkbenchTool({
 
   const run = () => {
     const started = performance.now();
+    const parsedOption = numericOption.trim()
+      ? Number(numericOption)
+      : undefined;
     try {
       if (input.length > TEXT_LIMIT) {
         throw new Error(
@@ -151,8 +154,8 @@ export function TextWorkbenchTool({
         find,
         replacement,
         caseSensitive,
-        repeatCount: numericOption,
-        count: numericOption,
+        repeatCount: parsedOption,
+        count: parsedOption,
         separator,
         normalization,
         sortDirection,
@@ -186,12 +189,15 @@ export function TextWorkbenchTool({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Nothing to work on yet. Every operation here throws "Enter some text
-      // first." on empty input, and this effect runs once on mount, so the
-      // page opened with a red error box -- and the error effect above moved
-      // keyboard focus onto it -- before the visitor had typed a character.
-      // Measured on 31 of the routes the catalog advertises.
-      if (!input) {
+      // Nothing to work on yet. Every operation that reads the input throws
+      // "Enter some text first." on empty input, and this effect runs once on
+      // mount, so the page opened with a red error box -- and the error effect
+      // above moved keyboard focus onto it -- before the visitor had typed a
+      // character. Measured on 31 of the routes the catalog advertises.
+      // The generators (needsInput: false) are the exception: empty input is
+      // their normal state, and skipping them here left them producing nothing
+      // at all. runTextOperation applies the same rule at text-workbench.ts:503.
+      if (operation.needsInput !== false && !input) {
         clearResult();
         return;
       }
@@ -200,6 +206,7 @@ export function TextWorkbenchTool({
     return () => clearTimeout(timer);
   }, [
     operationId,
+    operation,
     input,
     find,
     replacement,
@@ -352,7 +359,17 @@ export function TextWorkbenchTool({
                     max={operation.id === 'lorem-ipsum-generator' ? 20 : 100}
                     value={numericOption}
                     onChange={(event) => {
-                      setNumericOption(Number(event.target.value));
+                      setNumericOption(event.target.value);
+                    }}
+                    // Tidy the box once they leave it, not while they type:
+                    // "03" runs as 3 either way, but leaving the zero on
+                    // screen reads as a tool that did not hear the keystroke.
+                    onBlur={() => {
+                      setNumericOption((current) =>
+                        current.trim() && Number.isFinite(Number(current))
+                          ? String(Number(current))
+                          : current,
+                      );
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-lg border bg-background px-3"
                   />
