@@ -42,9 +42,33 @@ function elapsed(milliseconds: number) {
     : `${(milliseconds / 1000).toFixed(2)} s`;
 }
 
-export function FileWorkbenchTool() {
+/*
+  `initialOperationId` and `routedBasePath` let this workbench also serve as one
+  tool on its own page — `/file/hex-viewer` rather than
+  `/file/workbench?tool=hex-viewer`.
+
+  A workbench answers on one URL with one title for every operation it hosts, so
+  none of them can rank for its own name and none reach the sitemap: a query
+  parameter is not a page. When `routedBasePath` is set the path is what decides
+  which tool is open, so the query-string sync stands down, the heading becomes
+  the tool rather than the workspace, and picking another tool navigates to that
+  tool's own page. Unset, every behaviour below is exactly what it was.
+*/
+export function FileWorkbenchTool({
+  initialOperationId,
+  routedBasePath,
+}: {
+  initialOperationId?: string;
+  routedBasePath?: string;
+} = {}) {
   const initial = FILE_WORKBENCH_OPERATIONS[0];
-  const [operationId, setOperationId] = useState(initial.id);
+  // Only treat this as a per-tool page when the id really names an operation,
+  // so a bad route falls back to workbench behaviour rather than heading a page
+  // after a tool it is not showing.
+  const routed = FILE_WORKBENCH_OPERATIONS.find(
+    (item) => item.id === initialOperationId,
+  );
+  const [operationId, setOperationId] = useState(routed?.id ?? initial.id);
   const operation = useMemo(
     () =>
       FILE_WORKBENCH_OPERATIONS.find((item) => item.id === operationId) ??
@@ -52,7 +76,7 @@ export function FileWorkbenchTool() {
     [operationId, initial],
   );
   const [values, setValues] = useState<Record<string, string>>(() =>
-    defaults(initial),
+    defaults(routed ?? initial),
   );
   const [files, setFiles] = useState<File[]>([]);
   const [result, setResult] = useState<FileWorkbenchResult | null>(null);
@@ -75,6 +99,7 @@ export function FileWorkbenchTool() {
   // synchronise React state to an external system, the address bar, which is
   // what the rule's own guidance says an effect is for.
   useEffect(() => {
+    if (routed) return; // The path decides on a per-tool page.
     const requested = new URLSearchParams(window.location.search).get('tool');
     const selected = FILE_WORKBENCH_OPERATIONS.find(
       (item) => item.id === requested,
@@ -105,6 +130,12 @@ export function FileWorkbenchTool() {
   const selectOperation = (nextId: string) => {
     const next =
       FILE_WORKBENCH_OPERATIONS.find((item) => item.id === nextId) ?? initial;
+    // On a per-tool page each tool is a real page: go to it, so the address
+    // bar, the back button and a crawler all agree on what is open.
+    if (routed) {
+      window.location.assign(`${routedBasePath}/${next.id}`);
+      return;
+    }
     setOperationId(next.id);
     setValues(defaults(next));
     setFiles([]);
@@ -208,12 +239,20 @@ export function FileWorkbenchTool() {
                 Files & local bytes / {FILE_WORKBENCH_OPERATIONS.length} related
                 tools
               </p>
+              {/*
+                On a per-tool page the heading is the tool, not the workspace.
+                A page titled "Hex viewer" whose only <h1> reads "File
+                workbench" tells a reader and a crawler two different things
+                about what it is, and the heading is the one they both weigh
+                most.
+              */}
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                File workbench
+                {routed ? routed.name : 'File workbench'}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                Inspect, hash, split, join, rename, encode, and package selected
-                bytes inside this browser tab. Originals are never overwritten.
+                {routed
+                  ? `${routed.description} It runs on the selected bytes in this browser tab, and never overwrites the original.`
+                  : 'Inspect, hash, split, join, rename, encode, and package selected bytes inside this browser tab. Originals are never overwritten.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">

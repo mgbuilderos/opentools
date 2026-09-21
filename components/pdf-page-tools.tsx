@@ -65,7 +65,76 @@ async function toWorkerInput(source: { id: string; file: File }) {
   } satisfies PdfWorkerInput;
 }
 
-export function PdfPageTools() {
+/*
+  Six distinct jobs live on this one page: rotate, reorder, delete pages, page
+  numbers, watermark and metadata. Each is a separate thing a person searches
+  for, and until now all six shared one URL and one title ("Organize PDF
+  pages"), so none could rank for its own name.
+
+  `initialOperationId` is what app/pdf/[tool]/page.tsx passes so that
+  /pdf/rotate-pdf is genuinely a page about rotating a PDF: the heading, the
+  description and the stated task are that operation's, not the generic
+  workspace's. The controls are all present either way — this page has always
+  been one pass over a document — so naming the task is an honest difference,
+  not a template with two words swapped.
+*/
+const PAGE_TOOL_TASKS: ReadonlyMap<
+  string,
+  { name: string; description: string }
+> = new Map([
+  [
+    'rotate-pdf',
+    {
+      name: 'Rotate PDF',
+      description: 'Turn pages 90, 180 or 270 degrees and save the result.',
+    },
+  ],
+  [
+    'reorder-pdf-pages',
+    {
+      name: 'Reorder PDF pages',
+      description: 'Put the pages of a PDF into the order you want.',
+    },
+  ],
+  [
+    'delete-pdf-pages',
+    {
+      name: 'Delete PDF pages',
+      description: 'Remove the pages you do not want and keep the rest.',
+    },
+  ],
+  [
+    'pdf-page-numbers',
+    {
+      name: 'Add page numbers to a PDF',
+      description: 'Number the pages of a PDF before you send it.',
+    },
+  ],
+  [
+    'pdf-watermark',
+    {
+      name: 'Watermark a PDF',
+      description: 'Stamp text across every page of a PDF.',
+    },
+  ],
+  [
+    'pdf-metadata-editor',
+    {
+      name: 'Edit PDF metadata',
+      description: 'Change the title, author and subject stored inside a PDF.',
+    },
+  ],
+]);
+
+export function PdfPageTools({
+  initialOperationId,
+}: {
+  initialOperationId?: string;
+} = {}) {
+  const task = initialOperationId
+    ? PAGE_TOOL_TASKS.get(initialOperationId)
+    : undefined;
+
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -273,14 +342,15 @@ export function PdfPageTools() {
               <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                 <span>PDF</span>
                 <span aria-hidden="true">/</span>
-                <span>Page tools</span>
+                <span>{task ? task.name : 'Page tools'}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Organize PDF pages
+                {task ? task.name : 'Organize PDF pages'}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Reorder, remove, rotate, number, watermark, and label a PDF in
-                one local pass.
+                {task
+                  ? `${task.description} Everything happens in this browser tab.`
+                  : 'Reorder, remove, rotate, number, watermark, and label a PDF in one local pass.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">

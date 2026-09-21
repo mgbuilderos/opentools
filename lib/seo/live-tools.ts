@@ -1,4 +1,4 @@
-import { IMAGE_EDITOR_OPERATIONS } from '../tools/catalog';
+import { IMAGE_EDITOR_OPERATIONS, PDF_PAGE_OPERATIONS } from '../tools/catalog';
 import { CREATOR_OPERATIONS } from '../tools/creator-workbench';
 import { DATE_OPERATIONS } from '../tools/date-workbench';
 import { ADVANCED_DEVELOPER_OPERATIONS } from '../tools/developer-advanced-workbench';
@@ -63,17 +63,19 @@ export const DEDICATED_TOOL_ROUTES = [
 
 /**
  * Controls on the combined PDF page tool (components/pdf-page-tools.tsx).
- * Flatten, PDF-to-images, reverse and split ranges are listed elsewhere but
- * have no control on that page, so they are not live.
+ *
+ * 66 catalogue entries point at `/pdf/page-tools`; six of them name something
+ * the page has a control for. Flatten, PDF-to-images, reverse, split ranges and
+ * the other 60 are listed elsewhere but have no control there, so they are not
+ * live and must never be given a page — a page whose title promises a tool the
+ * component cannot run is worse than no page.
+ *
+ * This is the same list `PDF_PAGE_OPERATIONS` already holds with names and
+ * descriptions, so it is read from there rather than typed out a second time:
+ * the route that generates the pages and the registry that publishes them now
+ * cannot disagree about which six exist.
  */
-const PDF_PAGE_TOOL_OPERATION_IDS = [
-  'rotate-pdf',
-  'reorder-pdf-pages',
-  'delete-pdf-pages',
-  'pdf-page-numbers',
-  'pdf-watermark',
-  'pdf-metadata-editor',
-];
+const PDF_PAGE_TOOL_OPERATION_IDS = PDF_PAGE_OPERATIONS.map(({ id }) => id);
 
 const ids = (operations: readonly { id: string }[]) =>
   new Set(operations.map(({ id }) => id));
@@ -125,6 +127,15 @@ const OPERATION_IDS_BY_ROUTE = new Map<string, ReadonlySet<string>>([
  * Derived from the operation lists rather than typed out, so a tool cannot be
  * added to a workbench and silently left without an address — the failure this
  * whole change exists to stop.
+ *
+ * `/file`, `/image` and `/pdf` were the last three on the query parameter, and
+ * they are the awkward ones: `/image` and `/pdf` already hold nine and seven
+ * hand-written folders between them, and a literal folder always beats a
+ * dynamic segment. The ids each prefix generates are therefore filtered
+ * against `DEDICATED_TOOL_ROUTES` below, in the same expression that builds
+ * the registry, so the registry can never promise a page the build skipped.
+ * Only `PDF_PAGE_OPERATIONS` is listed for `/pdf`, not the 66 catalogue
+ * entries aimed at that URL: see the note on `PDF_PAGE_TOOL_OPERATION_IDS`.
  */
 const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
   new Map<string, readonly { id: string }[]>([
@@ -136,9 +147,12 @@ const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
       [...ADVANCED_DEVELOPER_OPERATIONS, ...DEVELOPER_DATA_OPERATIONS],
     ],
     ['/documents', DOCUMENT_OPERATIONS],
+    ['/file', FILE_WORKBENCH_OPERATIONS],
     ['/finance', FINANCE_OPERATIONS],
+    ['/image', IMAGE_EDITOR_OPERATIONS],
     ['/life-admin', LIFE_ADMIN_OPERATIONS],
     ['/math', MATH_OPERATIONS],
+    ['/pdf', PDF_PAGE_OPERATIONS],
     ['/productivity', PRODUCTIVITY_OPERATIONS],
     ['/qr', QR_BARCODE_OPERATIONS],
     ['/science', SCIENCE_OPERATIONS],
@@ -150,15 +164,16 @@ const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly { id: string }[]> =
 /**
  * A literal folder always wins over a dynamic segment, so an id that already
  * has its own hand-written page is served by that page and must not be claimed
- * here as well — `generateStaticParams` excludes the same ids.
+ * here as well — `generateStaticParams` excludes the same ids, through the same
+ * `dedicatedToolIdsForPrefix` this reads.
  */
-const DEDICATED_ROUTE_SET = new Set<string>(DEDICATED_TOOL_ROUTES);
-
 const ROUTED_TOOL_ROUTES = [...ROUTED_TOOL_PREFIXES].flatMap(
-  ([prefix, operations]) =>
-    operations
-      .map((operation) => `${prefix}/${operation.id}`)
-      .filter((route) => !DEDICATED_ROUTE_SET.has(route)),
+  ([prefix, operations]) => {
+    const dedicated = dedicatedToolIdsForPrefix(prefix);
+    return operations
+      .filter((operation) => !dedicated.has(operation.id))
+      .map((operation) => `${prefix}/${operation.id}`);
+  },
 );
 
 /** Every route that renders a working tool. */
@@ -173,6 +188,29 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
 /** The operations a `[tool]` route generates a page for, by prefix. */
 export function routedToolIdsForPrefix(prefix: string) {
   return ROUTED_TOOL_PREFIXES.get(prefix);
+}
+
+/**
+ * Ids under `prefix` that already have their own hand-written folder.
+ *
+ * A literal segment beats a dynamic one, so `app/pdf/merge/page.tsx` answers
+ * `/pdf/merge` and `app/pdf/[tool]/page.tsx` never sees it. Listing such an id
+ * in `generateStaticParams` would ask the build for a page that is already
+ * spoken for; the registry filters the same ids out of `ROUTED_TOOL_ROUTES`,
+ * so both read this one function and cannot drift apart.
+ *
+ * Nested routes are ignored: only a single segment under the prefix can
+ * collide with a `[tool]` slug.
+ */
+export function dedicatedToolIdsForPrefix(prefix: string): ReadonlySet<string> {
+  return new Set(
+    DEDICATED_TOOL_ROUTES.filter((route) =>
+      route.startsWith(`${prefix}/`),
+    ).flatMap((route) => {
+      const id = route.slice(prefix.length + 1);
+      return id.includes('/') ? [] : [id];
+    }),
+  );
 }
 
 /** Operation ids the route runs, or undefined for a single-tool route. */

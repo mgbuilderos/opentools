@@ -109,11 +109,74 @@ function formatDuration(durationMs: number) {
     : `${(durationMs / 1000).toFixed(2)} s`;
 }
 
+/*
+  Six distinct jobs live on this one editor: crop, flip, rotate, brightness,
+  contrast and greyscale. Each is something people search for by name, and
+  until now all six shared one URL and one title ("Edit image"), so none could
+  rank for its own.
+
+  `initialOperationId` is what app/image/[tool]/page.tsx passes so /image/image-rotator
+  is genuinely a page about rotating an image: the heading and the description
+  are that job's. Every control stays available — this editor has always been
+  one pass over one picture — so naming the task is an honest difference rather
+  than a template with two words swapped.
+*/
+const EDITOR_TASKS: ReadonlyMap<string, { name: string; description: string }> =
+  new Map([
+    [
+      'image-cropper',
+      {
+        name: 'Crop an image',
+        description: 'Trim a picture to exact pixel coordinates.',
+      },
+    ],
+    [
+      'image-flipper',
+      {
+        name: 'Flip an image',
+        description: 'Mirror a picture horizontally or vertically.',
+      },
+    ],
+    [
+      'image-rotator',
+      {
+        name: 'Rotate an image',
+        description: 'Turn a picture in 90 degree steps.',
+      },
+    ],
+    [
+      'image-brightness',
+      {
+        name: 'Adjust image brightness',
+        description: 'Lighten or darken a picture before saving it.',
+      },
+    ],
+    [
+      'image-contrast',
+      {
+        name: 'Adjust image contrast',
+        description: 'Strengthen or soften the contrast of a picture.',
+      },
+    ],
+    [
+      'image-grayscale',
+      {
+        name: 'Convert an image to greyscale',
+        description: 'Turn a colour picture black and white.',
+      },
+    ],
+  ]);
+
 export function ImageEditorTool({
   defaultRemoveBackground = false,
+  initialOperationId,
 }: {
   defaultRemoveBackground?: boolean;
+  initialOperationId?: string;
 }) {
+  const task = initialOperationId
+    ? EDITOR_TASKS.get(initialOperationId)
+    : undefined;
   const fileRef = useRef<HTMLInputElement>(null);
   const sourceRef = useRef<SourceImage | null>(null);
   const resultRef = useRef<Result | null>(null);
@@ -424,14 +487,18 @@ export function ImageEditorTool({
                 <span>{defaultRemoveBackground ? 'Background' : 'Edit'}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                {defaultRemoveBackground
-                  ? 'Remove solid background'
-                  : 'Edit image'}
+                {task
+                  ? task.name
+                  : defaultRemoveBackground
+                    ? 'Remove solid background'
+                    : 'Edit image'}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                {defaultRemoveBackground
-                  ? 'Make a white or selected plain-color background transparent, with adjustable edge tolerance.'
-                  : 'Crop, rotate, flip, and tune one static image without uploading it.'}
+                {task
+                  ? `${task.description} It runs in this browser tab.`
+                  : defaultRemoveBackground
+                    ? 'Make a white or selected plain-color background transparent, with adjustable edge tolerance.'
+                    : 'Crop, rotate, flip, and tune one static image without uploading it.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
