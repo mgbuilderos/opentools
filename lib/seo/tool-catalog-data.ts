@@ -12428,7 +12428,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     executionMode: 'local-js',
     releaseWave: 'P1',
     riskTier: 'medium',
-    validationStatus: 'backlog-candidate',
+    validationStatus: 'priority-candidate',
     notes:
       'Text only. Masks Aadhaar (first 8 digits) and PAN numbers anywhere in a paste or text file, then re-checks the output with a separate, looser detector.',
     destinationUrl: '/life-admin/aadhaar-pan-masker',
