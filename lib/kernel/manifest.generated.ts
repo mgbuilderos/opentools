@@ -9504,7 +9504,8 @@ export const KERNEL_MANIFEST = [
     id: 'aadhaar-masking-tool',
     source: 'life-admin',
     name: 'Aadhaar masking tool',
-    description: 'Hide the first eight digits and retain only the last four.',
+    description:
+      'Hide the first eight digits of one number and retain only the last four.',
     input: 'text',
     params: [],
     output: {
@@ -9513,13 +9514,14 @@ export const KERNEL_MANIFEST = [
     runtime: 'pure',
     deterministic: true,
     notice:
-      'Masking follows UIDAI’s displayed masked-Aadhaar pattern. This does not validate, authenticate, store, or retrieve Aadhaar data.',
+      'Masking follows UIDAI’s displayed masked-Aadhaar pattern. This does not validate, authenticate, store, or retrieve Aadhaar data. For a whole document or paste, use the Aadhaar and PAN masker.',
   },
   {
     id: 'pan-masking-tool',
     source: 'life-admin',
     name: 'PAN masking tool',
-    description: 'Hide the first six characters of a ten-character PAN value.',
+    description:
+      'Hide the first six characters of one ten-character PAN value.',
     input: 'text',
     params: [],
     output: {
@@ -9528,7 +9530,7 @@ export const KERNEL_MANIFEST = [
     runtime: 'pure',
     deterministic: true,
     notice:
-      'Privacy transform only. It does not validate PAN structure, ownership, status, or tax records.',
+      'Privacy transform only. It does not validate PAN structure, ownership, status, or tax records. For a whole document or paste, use the Aadhaar and PAN masker.',
   },
   {
     id: 'bank-account-masking-tool',
