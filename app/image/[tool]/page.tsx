@@ -1,5 +1,10 @@
 import type { Metadata } from 'next';
 import { ImageEditorTool } from '@/components/image-editor-tool';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
 import { IMAGE_EDITOR_OPERATIONS } from '@/lib/tools/catalog';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
@@ -41,7 +46,6 @@ export const revalidate = 86400;
 */
 
 const BASE = '/image';
-const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
@@ -69,11 +73,12 @@ export async function generateMetadata({
   const { tool } = await params;
   const operation = OPERATIONS.find((item) => item.id === tool);
   if (!operation) return {};
-  return {
-    title: operation.name,
-    description: operation.description,
-    alternates: { canonical: `${CANONICAL_ORIGIN}${BASE}/${operation.id}` },
-  };
+  /*
+    Title, description and the self-canonical come from
+    `lib/seo/tool-page-depth.ts` rather than from the operation's one-line
+    catalogue entry, which names the control rather than the search.
+  */
+  return toolPageMetadata(`${BASE}/${operation.id}`);
 }
 
 export default async function Page({
@@ -84,10 +89,12 @@ export default async function Page({
   const { tool } = await params;
   if (!OPERATIONS.some((operation) => operation.id === tool)) return null;
   return (
-    <ImageEditorTool
-      initialOperationId={tool}
-      relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
-      {...propsFor(tool)}
-    />
+    <PageDepthProvider content={requireToolPageDepth(`${BASE}/${tool}`)}>
+      <ImageEditorTool
+        initialOperationId={tool}
+        relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
+        {...propsFor(tool)}
+      />
+    </PageDepthProvider>
   );
 }

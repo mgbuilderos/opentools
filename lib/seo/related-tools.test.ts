@@ -290,7 +290,12 @@ describe('the suggestions reach the page', () => {
     const components = new Set<string>();
     for (const file of routePages) {
       for (const match of readFileSync(file, 'utf8').matchAll(
-        /from '@\/components\/([\w-]+)'/gu,
+        // The component that renders the tool, by the naming convention
+        // `lib/seo/tool-page-registration.test.ts` relies on as well. A route
+        // file may import other things from `@/components` -- since 2026-09-23
+        // these files also pull in `page-depth-provider`, which supplies the
+        // page's written half and has no business rendering a link strip.
+        /from '@\/components\/([\w-]*tool[\w-]*)'/gu,
       )) {
         components.add(match[1]!);
       }

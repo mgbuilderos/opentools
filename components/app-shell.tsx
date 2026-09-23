@@ -41,6 +41,8 @@ import {
   showInstallDialog,
   subscribeInstall,
 } from '@/lib/pwa-install';
+import { PageDepthContent } from '@/components/page-depth-content';
+import { usePageDepth } from '@/components/page-depth-provider';
 import { MilestoneModal } from './milestone-modal';
 import { ReviewModal } from './review-modal';
 
@@ -77,6 +79,12 @@ export function AppShell({
   );
   const [reviewOpen, setReviewOpen] = useState(false);
   const [domainLocked, setDomainLocked] = useState(false);
+  /**
+   * The written half of a PDF or image tool page, supplied by the page through
+   * `PageDepthProvider`. `null` on every other page, which renders nothing.
+   * See `components/page-depth-provider.tsx` for why it arrives this way.
+   */
+  const toolDepth = usePageDepth();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -765,6 +773,7 @@ export function AppShell({
         data-design-system="operator-v1"
       >
         {children}
+        {toolDepth ? <PageDepthContent content={toolDepth} /> : null}
       </main>
 
       <MilestoneModal />

@@ -114,3 +114,42 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   `lib/seo/removed-tool-redirects.test.ts` asserts that the path stays
   unredirected and that no blog post publishes that slug, so the redirect
   cannot be added back silently.
+
+### 8. PDF and image tool pages carry their own guide; seven guides now 301
+
+- **Date:** 2026-09-23. **Status:** implemented on a branch, not deployed.
+- **Measured first.** `/pdf/merge` carried 281 visible words and the title
+  `Merge PDF · OpenTools`; `/guides/pdf-merge-pdf` carried 1,348 and
+  `Merge PDF — free, in your browser, no upload · OpenTools`. Even
+  `/convert/l100km-to-mpg-us`, a page with close to no search demand, carried
+  579. The optimised page was the one that cannot merge anything, and the two
+  were competing for the same query.
+- **What changed.** All 19 live PDF and 13 live image tool pages now carry a
+  search-intent title and description and at least 800 words of their own
+  content — the steps, the engine, the limits, what the tool refuses, and the
+  questions people ask — from `lib/seo/tool-page-depth.ts`, rendered by
+  `components/page-depth-content.tsx` and emitted as `HowTo` and `FAQPage`
+  structured data from the same strings a reader sees. Each of those pages also
+  gained a self-canonical; they had been inheriting `alternates.canonical: '/'`
+  from `app/layout.tsx`, which told Google that 32 tool pages were the home
+  page.
+- **Seven guides left the keep list**, so `/guides/pdf-merge-pdf`,
+  `pdf-compress-pdf`, `pdf-pdf-to-word`, `pdf-pdf-to-excel`,
+  `pdf-pdf-bates-numbering`, `image-background-remover` and
+  `image-resize-image-to-exact-kb` now 301 to their tool page and leave the
+  sitemap, through the ordinary consolidation path in
+  `lib/seo/guide-consolidation.ts` — no new redirect table. This **extends**
+  the consolidation decision rather than reversing it: the stated reason for
+  keeping a guide is that it says something distinct from its tool page, and
+  once the tool page carries that text the reason is gone. Eight guides remain,
+  all of tools whose page is a workbench hosting several operations, where the
+  guide is still about one of them rather than about the page.
+- **The claims are held to tests.** `lib/seo/tool-page-depth.test.ts` enforces
+  the 800-word floor, unique titles under the snippet length, a self-canonical
+  per page, no remote URL literal, no competitor name, and — the one that
+  matters — that `offlineReady`, the only thing that renders a badge about
+  working with the network off, is set only for routes in the service worker's
+  precache list in `scripts/build-service-worker-precache.mjs`. The mechanism
+  itself is proved by `e2e/share-target.spec.ts`, which disconnects the browser
+  and loads `/pdf/merge`.
+- **Not verified:** anything on getopentools.com. This has not been deployed.

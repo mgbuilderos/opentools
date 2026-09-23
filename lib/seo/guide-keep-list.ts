@@ -8,15 +8,35 @@
  * committing. See docs/seo/guide-consolidation.md.
  *
  * WHY EVERY ENTRY IS `distinct` TODAY. Search Console had no rows when the
- * owner checked on 2026-09-17, so there is no traffic to select on. These 15
- * were chosen on the evidence `npm run seo:guide-distinctness` measures — a
- * tool's own route, a blog article about that exact tool URL, a template
- * linking to it, an end-to-end spec, a local model — and confirmed by the
- * owner on 2026-09-21. Re-run the generator when an export exists; it keeps
- * these and fills the remaining slots from traffic.
+ * owner checked on 2026-09-17, so there is no traffic to select on. These were
+ * chosen on the evidence `npm run seo:guide-distinctness` measures — a tool's
+ * own route, a blog article about that exact tool URL, a template linking to
+ * it, an end-to-end spec, a local model — and confirmed by the owner on
+ * 2026-09-21. Re-run the generator when an export exists; it keeps these and
+ * fills the remaining slots from traffic.
+ *
+ * WHY SEVEN PDF AND IMAGE GUIDES LEFT THE LIST ON 2026-09-23. The reason all
+ * fifteen were kept was distinctness: the guide said something about the tool
+ * that the tool page did not. For `pdf-merge-pdf`, `pdf-compress-pdf`,
+ * `pdf-pdf-to-word`, `pdf-pdf-to-excel`, `pdf-pdf-bates-numbering`,
+ * `image-background-remover` and `image-resize-image-to-exact-kb` that stopped
+ * being true in the same commit that removed them: their whole substance —
+ * the steps, the limits, the refusals, the questions people ask — now renders
+ * on the tool page itself, from `lib/seo/tool-page-depth.ts`.
+ *
+ * With the text on both, the two URLs compete for one query and the one that
+ * wins may be the page that cannot do the job. Measured on 2026-09-23,
+ * `/pdf/merge` carried 281 words and the title `Merge PDF`, while
+ * `/guides/pdf-merge-pdf` carried 1,348 and `Merge PDF — free, in your
+ * browser, no upload`. The tool page is the one that should rank, so the guide
+ * now 301s to it through the ordinary consolidation path and leaves the
+ * sitemap with the other 550-odd. This extends the owner's decision (§11) on
+ * its own terms rather than reversing it: a guide is kept while it has
+ * something distinct to say, and these no longer do.
  *
  * Last generated from: hand-picked from the distinctness report, owner
- * decision 2026-09-21; no Search Console export exists yet
+ * decision 2026-09-21; seven entries retired 2026-09-23 when their content
+ * moved onto their tool pages; no Search Console export exists yet
  */
 
 export type GuideKeepReason = 'traffic' | 'distinct';
@@ -30,22 +50,6 @@ export interface GuideKeepEntry {
 }
 
 export const GUIDE_KEEP_LIST: readonly GuideKeepEntry[] = [
-  {
-    // Highest-scoring guide on the site: its own page, two blog articles and a
-    // template all say something about merging PDFs that the tool page cannot.
-    slug: 'pdf-merge-pdf',
-    reason: 'distinct',
-    evidence:
-      'distinctness 11: own page /pdf/merge, blog how-to-merge-pdf-contracts-privately and legal-document-workflow-in-browser-privacy, template court-exhibit-binder-assembly-checklist, e2e, P0',
-  },
-  {
-    // The only tool that loads a local model, so its privacy section is the
-    // one page on the site where `connect-src 'self'` has to be explained.
-    slug: 'image-background-remover',
-    reason: 'distinct',
-    evidence:
-      'distinctness 10: own page /image/background-remover, blog local-ai-image-background-removal-wasm, local model (the CSP exception), e2e, P0',
-  },
   {
     // "Lossless MP3 cutting" is a claim that needs a page to justify it.
     slug: 'audio-mp3-cutter',
@@ -86,11 +90,6 @@ export const GUIDE_KEEP_LIST: readonly GuideKeepEntry[] = [
       'distinctness 6: own page /audio/convert, blog audio-to-wav-conversion-silent-resampling-trap, e2e. Chosen over the m4a and flac guides, which share this URL.',
   },
   {
-    slug: 'pdf-compress-pdf',
-    reason: 'distinct',
-    evidence: 'distinctness 6: own page /pdf/compress, e2e, P0',
-  },
-  {
     slug: 'math-and-units-percentage-calculator',
     reason: 'distinct',
     evidence:
@@ -101,34 +100,5 @@ export const GUIDE_KEEP_LIST: readonly GuideKeepEntry[] = [
     reason: 'distinct',
     evidence:
       'distinctness 6: own page /date/date-difference, template freelance-time-tracking-invoicing-model, P0',
-  },
-  {
-    // An exact KB ceiling at exact pixels and DPI is a promise no other tool
-    // on the site makes, and it needs the limits stated alongside it.
-    slug: 'image-resize-image-to-exact-kb',
-    reason: 'distinct',
-    evidence: 'distinctness 5: own page /image/exact-size, e2e',
-  },
-  {
-    slug: 'pdf-pdf-to-word',
-    reason: 'distinct',
-    evidence: 'distinctness 5: own page /pdf/to-word, e2e',
-  },
-  {
-    slug: 'pdf-pdf-to-excel',
-    reason: 'distinct',
-    evidence: 'distinctness 5: own page /pdf/to-excel, e2e',
-  },
-  {
-    // The fifteenth pick. Same score as the two other unclaimed 5s
-    // (documents-and-office-docx-metadata, web-and-seo-file-to-html) and the
-    // same evidence shape, so the tie was broken on search intent: "Bates
-    // numbering" is a named legal term with its own conventions -- prefix,
-    // start number, page range, exhibit order -- which is material a guide can
-    // carry and a tool page cannot. The other two describe generic operations
-    // their own page already names.
-    slug: 'pdf-pdf-bates-numbering',
-    reason: 'distinct',
-    evidence: 'distinctness 5: own page /pdf/bates, e2e',
   },
 ];

@@ -1,18 +1,29 @@
-import type { Metadata } from 'next';
-
 import { PdfCompareTool } from '@/components/pdf-compare-tool';
+import { PageDepthProvider } from '@/components/page-depth-provider';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
 
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/pdf/compare' },
-  title: 'Compare PDF Documents Online — Visual Redline & Text Diff',
-  description:
-    'Whole-document stream comparison with reflow resilience. Detect insertions, deletions, moved clauses, and formatting changes between PDF contract drafts. Export annotated PDF, Word redline (.docx), and CSV change lists locally in your browser.',
-};
+/*
+  The title, the description, the self-canonical and the written half of this
+  page all come from `lib/seo/tool-page-depth.ts`, which `PageDepthProvider`
+  hands to the app shell. See `lib/seo/tool-page-depth.test.ts` for the floor
+  they are held to.
+*/
+
+const ROUTE = '/pdf/compare';
+
+export const metadata = toolPageMetadata(ROUTE);
 
 export default function Page() {
-  const related = relatedToolsFor('/pdf/compare');
-  return <PdfCompareTool relatedTools={related} />;
+  const related = relatedToolsFor(ROUTE);
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <PdfCompareTool relatedTools={related} />
+    </PageDepthProvider>
+  );
 }
