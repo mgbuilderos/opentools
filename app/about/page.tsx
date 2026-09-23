@@ -24,7 +24,7 @@ const CANONICAL = ['https:', '//', 'getopentools.com', '/about'].join('');
 export const metadata: Metadata = {
   title: 'About OpenTools — why it exists and how it is paid for',
   description:
-    'An independent, MIT-licensed collection of everyday file and text tools that run inside your browser. Why it was built, how it stays free, and the things it will never do.',
+    'An independent, MIT-licensed collection of everyday file and text tools that run inside your browser. Why it was built, and how it stays free to use.',
   alternates: { canonical: CANONICAL },
 };
 

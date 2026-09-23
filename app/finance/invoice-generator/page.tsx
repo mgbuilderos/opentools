@@ -26,7 +26,7 @@ const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 export const metadata: Metadata = {
   title: BRIEF.heading,
   description:
-    'Lay out a print-ready professional fee bill in your browser, with rupee amounts grouped in lakh and crore and dates as you type them. Not a tax invoice under the GST law: there is no GSTIN, HSN or place-of-supply field.',
+    'Lay out a print-ready professional fee bill in your browser, with rupee amounts grouped in lakh and crore. Not a tax invoice: there is no GSTIN or HSN field.',
   alternates: { canonical: `${CANONICAL_ORIGIN}${BRIEF.route}` },
 };
 

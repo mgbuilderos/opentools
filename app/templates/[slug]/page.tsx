@@ -46,7 +46,12 @@ export async function generateMetadata({
   if (!template) return { title: 'Template Not Found' };
 
   return {
-    title: `${template.title} | Free Open-Source Template`,
+    /*
+      The template's own name. The ` | Free Open-Source Template` suffix spent
+      28 characters, plus the layout's twelve, saying what the page below it
+      already says -- and truncated every one of the 18 template titles.
+    */
+    title: template.title,
     description: template.metaDescription,
     keywords: [...template.keywords],
     alternates: {

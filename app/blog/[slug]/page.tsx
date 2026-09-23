@@ -44,7 +44,13 @@ export async function generateMetadata({
   if (!post) return { title: 'Article Not Found' };
 
   return {
-    title: `${post.title} | OpenTools Engineering Blog`,
+    /*
+      The post's own title, and nothing else. `| OpenTools Engineering Blog`
+      cost 29 characters before the layout's ` · OpenTools` added twelve more,
+      which put all 30 posts past what a result shows -- the site was named
+      three times over and the article once, at the end.
+    */
+    title: post.title,
     description: post.metaDescription,
     keywords: [...post.keywords],
     alternates: {

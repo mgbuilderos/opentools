@@ -12,7 +12,7 @@ const schemaContext = `${httpsScheme}schema.org`;
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Blog & Engineering Playbooks — 100% Private In-Browser Tools',
+  title: 'Blog & Engineering Playbooks on In-Browser Tools',
   description:
     'In-depth technical tutorials, security deep-dives, and workflow playbooks for modern developers, creators, and professionals using private browser tools.',
   alternates: {

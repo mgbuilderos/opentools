@@ -45,7 +45,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   PDF: 'Merge PDFs, extract pages, build a PDF from images, and rotate, reorder, delete, number, watermark or retitle pages in your browser.',
   Image:
     'Resize, compress and convert images, fit a photo under a KB limit at exact pixels and DPI, crop and rotate them, and make a plain-colour background transparent.',
-  Audio: 'Trim a WAV file to the section you want.',
+  Audio:
+    'Trim a WAV file to the section you want, in your browser tab: set the start and the end, and download just that part of the recording.',
   'Documents and Office':
     'Inspect and convert document text: Markdown, HTML, plain text and structured document fields.',
   'Spreadsheet and Data':
@@ -89,7 +90,7 @@ export function getCategoryPillar(
   const tools = getLiveToolsByCategory(categoryName);
   const description =
     CATEGORY_DESCRIPTIONS[categoryName] ??
-    `In-browser utilities for ${categoryName.toLowerCase()} tasks.`;
+    `In-browser utilities for ${categoryName.toLowerCase()} tasks. Every tool listed here runs inside your own browser tab, with no upload, no account and no paywall.`;
 
   return {
     name: categoryName,

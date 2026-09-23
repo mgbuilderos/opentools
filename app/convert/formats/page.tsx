@@ -3,12 +3,12 @@ import type { Metadata } from 'next';
 import { FormatConverterTool } from '@/components/format-converter-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
 import {
-  FILE_FORMATS,
   FORMAT_PAIRS,
   formatFacts,
   formatHubPair,
   formatPairIndex,
 } from '@/lib/seo/format-pairs';
+import { formatHubMeta } from '@/lib/seo/format-pairs';
 
 /*
   The hub the 103 pair pages hang off.
@@ -33,8 +33,7 @@ const pair = formatHubPair();
 const facts = formatFacts(pair);
 
 export const metadata: Metadata = {
-  title: 'File format converter — CSV, JSON, YAML, XML, Markdown, SQL',
-  description: `Convert between ${FILE_FORMATS.length} table and data formats in this browser tab: ${FORMAT_PAIRS.length} conversions, one page each, with the quoting and escaping each format needs applied for you.`,
+  ...formatHubMeta(),
   alternates: { canonical: `${CANONICAL_ORIGIN}/convert/formats` },
 };
 

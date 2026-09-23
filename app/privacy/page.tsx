@@ -33,7 +33,7 @@ const CANONICAL = ['https:', '//', 'getopentools.com', '/privacy'].join('');
 export const metadata: Metadata = {
   title: 'Privacy — what OpenTools does and does not collect',
   description:
-    'Every tool runs inside your browser tab, so your files are never sent anywhere. This page lists the one server-side log in full, every key stored in your browser, and how to verify all of it yourself.',
+    'Every tool runs inside your browser tab, so your files are never sent anywhere. This page lists the one server-side log in full and every key stored locally.',
   alternates: { canonical: CANONICAL },
 };
 

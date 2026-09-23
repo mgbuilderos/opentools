@@ -20,8 +20,6 @@ export interface AdvancedDeveloperField {
 export interface AdvancedDeveloperOperation {
   id: string;
   name: string;
-  searchTitle?: string;
-  searchDescription?: string;
   description: string;
   fields: readonly AdvancedDeveloperField[];
   notice?: string;
@@ -1003,7 +1001,6 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     {
       id: 'sql-to-er-diagram',
       name: 'SQL Schema to Visual ER Diagram',
-      searchTitle: 'ER Diagram from SQL (ERD) — Generate Mermaid, DBML & SVG',
       description:
         'Create an ER diagram from SQL DDL online. Export interactive visual SVG, Mermaid erDiagram, DBML, and PlantUML in your browser with zero server uploads.',
       fields: [

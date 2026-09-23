@@ -10,6 +10,7 @@ import {
   getCategoryPillar,
   getRelatedToolLinks,
 } from './internal-linking-graph';
+import { TITLE_SUFFIX_LENGTH } from './title-budget';
 
 export interface GuideStep {
   name: string;
@@ -4682,7 +4683,18 @@ export function generateToolGuide(tool: ToolCatalogEntry): ToolGuideData {
   // searcher saw. Leading with the name also matches what people actually
   // type: every query in Search Console on 2026-09-20 was a tool name
   // ("latex table generator", "er diagram from sql"), not a how-to phrase.
-  const metaTitle = `${tool.name} — free, in your browser, no upload`;
+  /*
+    The fullest of these that still fits a result snippet, the site's own
+    twelve-character title suffix counted. A fixed suffix put
+    `Date Difference Calculator` 13 characters past what Google shows, so the
+    guide's subject was cut off by the promise attached to it.
+  */
+  const metaTitle =
+    [
+      `${tool.name} — free, in your browser, no upload`,
+      `${tool.name} — free, no upload, no sign-up`,
+      `${tool.name} — free, no upload`,
+    ].find((title) => title.length + TITLE_SUFFIX_LENGTH <= 60) ?? tool.name;
   const metaDescription = `${tool.name} runs in your own browser tab. Your files and inputs never touch a server, no account is needed, and there is no paywall.`;
   const eyebrow = `${tool.category} / Free Browser Utility`;
   const heading = `${tool.name} — online, without uploading your files`;

@@ -31,7 +31,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/optimize': {
     title: 'Compress Image Online — Free JPG, PNG and WebP',
     description:
-      'Resize, compress and convert JPEG, PNG and WebP in your own browser. Real before and after sizes, batch mode with a ZIP download, and the saved file is decoded again to check its dimensions.',
+      'Resize, compress and convert JPEG, PNG and WebP in your own browser. Real before and after sizes, and batch mode with a ZIP download when you have a folder.',
     heading: 'About this image optimiser',
     offlineReady: true,
     directAnswer:
@@ -127,7 +127,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/exact-size': {
     title: 'Resize Image to Exact KB — Pixels and DPI, Free',
     description:
-      'Fit a photo or signature under a KB limit at exact pixels with a real DPI, in your browser. Every requirement is checked against the saved bytes and shown as a pass or fail table.',
+      'Fit a photo or signature under a KB limit at exact pixels with a real DPI, in your browser. Every requirement is checked against the saved bytes and shown.',
     heading: 'About this exact-size image tool',
     directAnswer:
       'To resize an image to an exact KB size without uploading it: enter the maximum KB, the pixels and the DPI your form asks for, and choose Fit to size. The browser re-encodes the image with Canvas, binary-searches the JPEG quality until the file fits, writes the DPI into the file itself, and then reads the saved bytes back and shows you a pass or fail for every requirement you set.',
@@ -229,7 +229,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/background-remover': {
     title: 'Remove Image Background — Free, Runs in Your Tab',
     description:
-      'Cut a subject out of a photo with a U²-Net model that runs in your own browser, or clear one plain colour. The model is served from this site; the picture is never uploaded.',
+      'Cut a subject out of a photo with a U²-Net model that runs in your own browser, or clear one plain colour. The picture itself is never uploaded.',
     heading: 'About this background remover',
     directAnswer:
       'Choose a JPEG, PNG or WebP and the cut-out starts on its own. AI Subject mode runs the U²-Net small model in a Web Worker inside your tab; Solid Color mode instead clears every pixel within a distance you set of one colour you pick. Save the result as PNG or WebP, the two formats that can hold transparency.',
@@ -325,7 +325,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/editor': {
     title: 'Photo Editor Online — Free Crop, Rotate, No Upload',
     description:
-      'Crop to exact pixels, rotate in quarter turns, flip, adjust brightness, contrast, greyscale and sepia, then save as WebP, JPEG or PNG. One pass over one picture, entirely in your browser.',
+      'Crop to exact pixels, rotate in quarter turns, flip, and adjust brightness, contrast, greyscale and sepia, then save as WebP, JPEG or PNG — all in your browser.',
     heading: 'About this local photo editor',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB, then set a crop by typing X, Y, width and height in the image’s own pixels, turn it in quarter turns, flip it horizontally or vertically, adjust brightness, contrast, greyscale and sepia, and save as WebP, JPEG or PNG. Everything is applied in a single canvas pass and the saved file is decoded again to confirm its dimensions.',
@@ -416,7 +416,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/to-text': {
     title: 'Image to Text Online — Free OCR, Nothing Uploaded',
     description:
-      'Read printed English text out of a screenshot, photo or scan in your own browser. Nothing downloads until you press the button, and the button states its exact size in bytes.',
+      'Read printed English text out of a screenshot, photo or scan in your own browser. Nothing downloads until you press the button, which states its exact size.',
     heading: 'About this image to text tool',
     directAnswer:
       'Choose one or more pictures containing printed text and press the button, which names the exact number of bytes it is about to download. Recognition runs in a Tesseract worker inside your browser, the text appears in a box you can copy or save as a .txt, and every word the engine was unsure about is highlighted so you can check it rather than trust it.',
@@ -512,7 +512,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/metadata': {
     title: 'EXIF Viewer and Remover — Free, No Re-encoding',
     description:
-      'See the camera, GPS location and shot settings inside a JPEG, PNG or WebP, then strip them. The picture is never re-encoded: the compressed image data is copied byte for byte.',
+      'See the camera, GPS location and shot settings inside a JPEG, PNG or WebP, then strip them. The image data is copied byte for byte and never re-encoded.',
     heading: 'About this photo metadata tool',
     directAnswer:
       'To strip EXIF from a photo without uploading it: choose a JPEG, PNG or WebP file up to 50 MB, read what it found, then save the cleaned copy. The tool rewrites the container only: it deletes the metadata blocks and copies the compressed image data through untouched, so the picture is never re-encoded and loses no quality.',
@@ -607,7 +607,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-cropper': {
     title: 'Crop Image Online — Free, Exact Pixels, No Upload',
     description:
-      'Crop a JPEG, PNG or WebP to exact pixel coordinates in your own browser. Four numbers rather than a dragged box, so the same crop is repeatable, and the saved size is verified.',
+      'Crop a JPEG, PNG or WebP to exact pixel coordinates in your own browser. Four numbers rather than a dragged box, so the same crop repeats exactly.',
     heading: 'About this image cropper',
     directAnswer:
       'To crop an image to exact pixel coordinates: choose a JPEG, PNG or WebP of up to 25 MB, type the crop’s X, Y, width and height into the four boxes, and export. The rectangle is taken from the source pixels with the browser’s canvas, and the saved file’s dimensions are read back and compared with what was asked for before the download is offered.',
@@ -695,7 +695,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-rotator': {
     title: 'Rotate Image Online — Free 90° Steps, No Upload',
     description:
-      'Turn a JPEG, PNG or WebP in quarter turns and save it that way, in your own browser. No interpolation, no invented pixels, and the saved dimensions are verified before you download.',
+      'Turn a JPEG, PNG or WebP in quarter turns and save it that way, in your own browser. No interpolation, no invented pixels, and the size is verified.',
     heading: 'About this image rotator',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and press Rotate to step the image a quarter turn clockwise each time — 90, 180, 270 and back to none. Saving draws the turned image onto a canvas and encodes it as WebP, JPEG or PNG, and the saved file is decoded again to confirm the dimensions came out as expected.',
@@ -780,7 +780,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-flipper': {
     title: 'Flip Image Online — Free Mirror Tool, No Upload',
     description:
-      'Mirror a JPEG, PNG or WebP horizontally, vertically or both, in your own browser. The flip is written into the pixels, so it survives being sent on, and nothing is uploaded.',
+      'Mirror a JPEG, PNG or WebP horizontally, vertically or both, in your own browser. The flip is written into the pixels, so it survives being sent on.',
     heading: 'About this image flipper',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and press Flip H to mirror it left to right, Flip V to mirror it top to bottom, or both to turn it through 180 degrees. Saving draws the mirrored image onto a canvas and encodes it as WebP, JPEG or PNG, and the saved dimensions are checked before the download is offered.',
@@ -866,7 +866,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-brightness': {
     title: 'Brighten or Darken an Image Online — Free Tool',
     description:
-      'Lighten or darken a JPEG, PNG or WebP in your own browser with a percentage you can write down and repeat. No upload, no account, and the saved dimensions are verified.',
+      'Lighten or darken a JPEG, PNG or WebP in your own browser with a percentage you can write down and repeat. No upload and no account needed.',
     heading: 'About this image brightness tool',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and move the brightness slider, which runs from 0 to 200 per cent with 100 meaning unchanged. Below 100 darkens, above 100 lightens. The adjustment is applied in the same canvas pass as any crop, turn, flip and other colour change, and the result is saved as WebP, JPEG or PNG.',
@@ -952,7 +952,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-contrast': {
     title: 'Adjust Image Contrast Online — Free, No Upload',
     description:
-      'Strengthen or soften the contrast of a JPEG, PNG or WebP in your browser with a repeatable percentage. Applied in one pass with brightness, greyscale and sepia. Nothing is uploaded.',
+      'Strengthen or soften the contrast of a JPEG, PNG or WebP in your browser with a repeatable percentage, in one pass with brightness and greyscale.',
     heading: 'About this image contrast tool',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and move the contrast slider, which runs from 0 to 200 per cent with 100 meaning unchanged. Below 100 flattens the image towards a uniform grey, above 100 pushes light and dark further apart. The adjustment is applied in the same canvas pass as any crop, turn, flip, brightness, greyscale and sepia change.',
@@ -1038,7 +1038,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-grayscale': {
     title: 'Image to Black and White Online — Free Greyscale',
     description:
-      'Convert a JPEG, PNG or WebP towards greyscale in your own browser, at any strength from 0 to 100 per cent. No upload, no account, and the saved file is verified before download.',
+      'Convert a JPEG, PNG or WebP towards greyscale in your own browser, at any strength from 0 to 100 per cent. The saved file is verified before download.',
     heading: 'About this greyscale converter',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and move the greyscale slider, which runs from 0 to 100 per cent. At 100 the image is fully greyscale; anything in between is a partial desaturation that keeps some of the original colour. The conversion is applied in the same canvas pass as any crop, turn, flip, brightness and contrast change, and saved as WebP, JPEG or PNG.',
@@ -1124,7 +1124,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/solid-background-remover': {
     title: 'Remove White Background Online — Free, No Upload',
     description:
-      'Make a plain white or single-colour background transparent in your browser. Pick the colour, set the tolerance and edge softness, and save as PNG or WebP. Nothing is uploaded.',
+      'Make a plain white or single-colour background transparent in your browser. Pick the colour, set tolerance and edge softness, and save as PNG or WebP.',
     heading: 'About this solid background remover',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB, switch to Solid Color mode, pick the background colour, and every pixel within the tolerance you set of that colour is made transparent. A softness setting fades the pixels just outside the tolerance instead of cutting them off. Save as PNG or WebP, the two formats that can hold transparency, and the panel reports how many pixels were cleared.',

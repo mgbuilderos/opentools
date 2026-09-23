@@ -23,8 +23,6 @@ export interface DeveloperField {
 export interface DeveloperOperation {
   id: string;
   name: string;
-  searchTitle?: string;
-  searchDescription?: string;
   description: string;
   fields: readonly DeveloperField[];
   notice?: string;
