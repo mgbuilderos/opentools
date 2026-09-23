@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 
 test.describe('The Bench', () => {
@@ -55,6 +56,20 @@ test.describe('The Bench', () => {
     await expect(
       page.getByTestId('outcomes').getByRole('listitem'),
     ).toHaveCount(2);
+    const receipt = page.getByTestId('receipt');
+    await expect(receipt).toContainText('Inputs: 2');
+    await expect(receipt).toContainText('Succeeded: 2');
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download receipt.txt' }).click();
+    const receiptDownload = await downloadPromise;
+    expect(receiptDownload.suggestedFilename()).toBe('receipt.txt');
+    const receiptPath = await receiptDownload.path();
+    expect(receiptPath).not.toBeNull();
+    const receiptText = await readFile(receiptPath!, 'utf8');
+    expect(receiptText.endsWith(
+      'Bytes uploaded: 0 - this page cannot make a network request.',
+    )).toBe(true);
     expect(external).toEqual([]);
   });
 
