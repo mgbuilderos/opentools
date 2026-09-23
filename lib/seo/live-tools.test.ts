@@ -234,11 +234,29 @@ describe('sitemap', () => {
     }
   });
 
+  /**
+   * Until 2026-09-23 this asserted that no entry carried a `lastModified` at
+   * all, which was the only way to state the real rule while the site had no
+   * truthful dates to give: the hazard is a lastmod stamped from the clock,
+   * because it tells Google all 1,410 URLs changed on every deploy and Google
+   * responds by ignoring the field for the domain from then on.
+   *
+   * Every entry now carries a date derived from the commit that last changed
+   * the page's source (`scripts/build-sitemap-lastmod.mjs`), so the assertion
+   * is written against the hazard itself rather than against its absence: no
+   * date may be the build's own clock. `sitemap-lastmod.test.ts` covers the
+   * rest of the contract.
+   */
   it('has no duplicate URLs and no build-time lastModified', () => {
     expect(new Set(sitemapUrls).size).toBe(sitemapUrls.length);
+    const buildMinute = new Date().toISOString().slice(0, 16);
     for (const entry of sitemap()) {
       if (entry.url.includes('/blog/')) continue;
-      expect(entry.lastModified, entry.url).toBeUndefined();
+      const stamped = new Date(entry.lastModified as string);
+      expect(Number.isNaN(stamped.getTime()), entry.url).toBe(false);
+      expect(stamped.toISOString().slice(0, 16), entry.url).not.toBe(
+        buildMinute,
+      );
     }
   });
 });

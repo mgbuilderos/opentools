@@ -22,12 +22,33 @@ const APP_DIR = path.join(__dirname, '..', '..', 'app');
  * Routes `app/robots.ts` disallows are never crawled, so a canonical on them
  * would say nothing to anyone. Read from robots.ts rather than listed here,
  * so opening a path to crawlers also brings it under this guard.
+ *
+ * A `disallow` array may spread a named const -- `SCANNER_PATHS` holds the two
+ * dozen vulnerability-scanner prefixes, and writing them out twice would let
+ * the two rules drift apart. The spread is resolved here so the guard still
+ * sees the whole list: if it silently did not, every one of those prefixes
+ * would quietly stop excluding anything, which is the failure this reads
+ * robots.ts to avoid in the first place.
  */
 const DISALLOWED: readonly string[] = (() => {
   const robots = readFileSync(path.join(APP_DIR, 'robots.ts'), 'utf8');
+  const literalsIn = (source: string) =>
+    [...source.matchAll(/'([^']+)'/g)].map((match) => match[1]);
   const found = new Set<string>();
   for (const list of robots.matchAll(/disallow:\s*\[([^\]]*)\]/g)) {
-    for (const entry of list[1].matchAll(/'([^']+)'/g)) found.add(entry[1]);
+    for (const entry of literalsIn(list[1])) found.add(entry);
+    for (const spread of list[1].matchAll(/\.\.\.([A-Za-z_$][\w$]*)/g)) {
+      const declaration = robots.match(
+        new RegExp(`const ${spread[1]}\\s*=\\s*\\[([^\\]]*)\\]`),
+      );
+      if (!declaration) {
+        throw new Error(
+          `robots.ts spreads ...${spread[1]} into a disallow list, but no ` +
+            `\`const ${spread[1]} = [...]\` was found to resolve it.`,
+        );
+      }
+      for (const entry of literalsIn(declaration[1])) found.add(entry);
+    }
   }
   return [...found];
 })();
@@ -90,6 +111,34 @@ describe('canonical coverage', () => {
 
   it('finds the app routes at all, so an empty sweep cannot pass', () => {
     expect(files.length).toBeGreaterThan(50);
+  });
+
+  /**
+   * The disallow reader above is a regex over another file, so it can fail
+   * open: a change to how robots.ts writes its lists would leave `DISALLOWED`
+   * empty and every assertion below would still pass, having quietly stopped
+   * excluding `/guides-cached/`. Assert what it must always contain.
+   */
+  it('reads the disallow list out of robots.ts, spreads included', () => {
+    expect(DISALLOWED).toContain('/api/');
+    expect(DISALLOWED).toContain('/guides-cached/');
+    expect(DISALLOWED).toContain('/wp-json/');
+  });
+
+  /**
+   * A disallowed prefix removes every matching route from this sweep, so a
+   * prefix that shadows a real route disables the guard for it silently. The
+   * scanner prefixes are meant to match nothing under `app/`; the two real
+   * ones are named here so the check is about the accident, not the intent.
+   */
+  it('has no scanner prefix shadowing a real route', () => {
+    const intentional = new Set(['/api/', '/guides-cached/']);
+    const shadowing = DISALLOWED.filter(
+      (prefix) =>
+        !intentional.has(prefix) &&
+        pageFiles(APP_DIR).some((file) => routeFor(file).startsWith(prefix)),
+    );
+    expect(shadowing).toEqual([]);
   });
 
   /**
