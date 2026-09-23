@@ -225,4 +225,35 @@ describe('canonical coverage', () => {
     }
     expect(wrong).toEqual([]);
   });
+
+  /**
+   * Dynamic routes (`[tool]` and `[pair]`) generate 1,200+ of the site's pages.
+   * Skipping them in the static test let dynamic pages ship without their
+   * prefix-bound canonical targets being checked.
+   */
+  it('guarantees every dynamic page file generates self-canonical URLs with its route prefix', () => {
+    const dynamicFiles = files.filter((file) => routeFor(file).includes('['));
+    const wrong: string[] = [];
+    for (const file of dynamicFiles) {
+      const source = readFileSync(file, 'utf8');
+      const route = routeFor(file);
+      const prefix = route.slice(0, route.indexOf('[') - 1);
+      const usesHelper = CANONICAL_HELPERS.some(([name]) =>
+        source.includes(`${name}(`),
+      );
+      const bindsPrefix =
+        source.includes(`${prefix}/`) ||
+        source.includes(`BASE = '${prefix}'`) ||
+        source.includes(`BASE = "${prefix}"`) ||
+        source.includes(`'${prefix}'`);
+      const declaresCanon = DECLARES.test(source);
+      if (!declaresCanon && !usesHelper) {
+        wrong.push(`${route}: missing canonical declaration`);
+      } else if (!usesHelper && !bindsPrefix) {
+        wrong.push(`${route}: canonical does not bind route prefix "${prefix}"`);
+      }
+    }
+    expect(wrong).toEqual([]);
+  });
 });
+
