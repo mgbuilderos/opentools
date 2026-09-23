@@ -14476,6 +14476,1307 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'vlookup-generator', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-vlookup-generator': {
+    directAnswer:
+      'Build valid Excel and Google Sheets VLOOKUP formulas directly in your browser by specifying search lookup keys, table array coordinates, return column indices, and approximate or exact match criteria. The tool constructs syntax-checked formula strings entirely client-side in memory to ensure corporate financial models, private customer spreadsheets, and proprietary inventory databases remain completely confidential.',
+    leadParagraph:
+      'Constructing vertical lookup formulas in extensive spreadsheets often leads to syntax errors, miscalculated column offset numbers, or omitted exact-match booleans that return incorrect row figures. This browser-based VLOOKUP generator guides data analysts, administrative staff, and accountants through configuring lookup keys, defining table arrays with absolute dollar-sign locking references ($A$2:$F$100), and designating exact column return offsets. The tool formats ready-to-paste spreadsheet formulas for Microsoft Excel, LibreOffice Calc, and Google Sheets while explaining how the lookup behaves when target records cannot be located. Formulating lookup expressions directly in your browser eliminates syntax confusion during financial reporting and inventory reconciliations. Because business spreadsheets frequently involve sensitive payroll records, pricing data, or customer transactions, all formula generation runs locally in client browser memory. No spreadsheet parameters are ever transmitted to remote web servers. Mastering VLOOKUP syntax ensures spreadsheet models remain resilient and transparent during financial audits and operational reporting reviews.',
+    faqs: [
+      {
+        question:
+          'Why should exact match mode usually be specified in VLOOKUP?',
+        answer:
+          'Specifying exact match (FALSE or 0) ensures the formula retrieves only identical key matches, preventing dangerous approximate matches when lookup tables are unsorted.',
+      },
+      {
+        question: 'How does column index numbering work in a VLOOKUP formula?',
+        answer:
+          'The column index number counts from left to right within the selected table array, where column 1 represents the leftmost search key column.',
+      },
+      {
+        question:
+          'Why do spreadsheet formulas use dollar signs in table ranges?',
+        answer:
+          'Dollar signs create absolute cell references ($A$2:$D$50) that lock coordinate boundaries in place when copying the formula down through subsequent spreadsheet rows.',
+      },
+      {
+        question:
+          'Are my spreadsheet column headers or formula values uploaded?',
+        answer:
+          'No. All formula construction logic runs client-side in browser memory with zero outbound network calls, ensuring complete privacy for your financial spreadsheets.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'spelling-variant-converter', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-spelling-variant-converter': {
+    directAnswer:
+      'Convert spelling between British English, American English, Canadian English, and Australian English directly in your browser. The tool systematically normalises regional orthography including our/or endings, ise/ize suffixes, and doubled consonants entirely client-side in memory to ensure confidential manuscripts, technical documentation, and marketing drafts remain completely private. The lexical engine runs entirely client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Publishing manuscripts, global marketing collateral, and software documentation requires maintaining consistent regional English spelling conventions tailored to target international readerships. This client-side spelling variant converter identifies regional vocabulary distinctions and orthographic patterns, allowing writers and editors to translate text seamlessly between British, American, Canadian, and Australian conventions. The tool systematically maps spelling patterns—such as colour versus color, organise versus organize, catalogue versus catalog, and cancelled versus canceled—while preserving casing, surrounding punctuation, and unaffected vocabulary. Converting spelling variants directly in local browser memory saves editorial teams time during proofreading passes without copying sensitive draft manuscripts into remote cloud translation utilities. Because unpublished manuscripts, corporate press releases, and technical documentation contain proprietary intellectual property, all lexical transformations run locally within browser memory. No text is ever uploaded to external servers. Tailoring spelling variants locally ensures publishing teams meet international style guide standards without risking document leakage.',
+    faqs: [
+      {
+        question:
+          'What regional English spelling conventions can be converted?',
+        answer:
+          'The tool supports standard British, American, Canadian, and Australian English conventions, mapping characteristic suffix, prefix, and vocabulary differences accurately across text.',
+      },
+      {
+        question:
+          'How does the converter handle word capitalization during transformation?',
+        answer:
+          'The converter preserves existing word casing, properly adapting uppercase, lowercase, and title-case variants when replacing spelling terms across document sentences.',
+      },
+      {
+        question:
+          'Does the converter distinguish homophones or context-sensitive terms?',
+        answer:
+          'The tool uses comprehensive lexical dictionaries to distinguish context, accurately handling terms like practice versus practise according to regional grammatical rules.',
+      },
+      {
+        question:
+          'Are my confidential manuscripts or article drafts saved online?',
+        answer:
+          'No. All text parsing and spelling conversions execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-flexbox-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-flexbox-generator': {
+    directAnswer:
+      'Generate modern CSS Flexbox layout code directly in your browser by configuring flex-direction, justify-content, align-items, flex-wrap, gap, and item flex-grow properties. The tool renders live responsive previews and exports production-ready CSS snippets entirely client-side in memory to ensure unreleased website designs and interface layouts remain confidential. The generator formats CSS flexbox declarations locally in browser memory to keep UI prototypes private.',
+    leadParagraph:
+      'CSS Flexible Box Layout (Flexbox) is an indispensable layout model for designing one-dimensional user interface components, navigation headers, responsive card groups, and centered dialog boxes. This client-side CSS Flexbox generator lets front-end web developers and UI designers configure container directives (including flex-direction, justify-content, align-items, flex-wrap, and modern gap spacing) alongside child item overrides (such as flex-grow, flex-shrink, and align-self) through intuitive visual controls. The tool renders layout adjustments in real time on an interactive viewport canvas, formatting clean CSS and HTML code ready for direct copying into production stylesheets. Prototyping flex layouts directly in browser memory accelerates component authoring without requiring local development environment setups. Because digital product mockups and proprietary user interface architectures require commercial secrecy, all visual rendering and CSS snippet generation execute locally within browser memory. No design configurations are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What is the fundamental difference between main axis and cross axis in Flexbox?',
+        answer:
+          'The main axis runs along the defined flex-direction (horizontal in row mode, vertical in column mode), while the cross axis runs perpendicular to it.',
+      },
+      {
+        question:
+          'How does justify-content differ from align-items in Flexbox layouts?',
+        answer:
+          'justify-content distributes flex items along the primary main axis, whereas align-items aligns items across the perpendicular cross axis of the container.',
+      },
+      {
+        question:
+          'Is the modern CSS gap property supported in Flexbox layouts?',
+        answer:
+          'Yes. All modern desktop and mobile browsers support the gap property on flex containers, providing clean gutters without clumsy margin hacks on child items.',
+      },
+      {
+        question:
+          'Are my website layout designs or CSS code snippets sent online?',
+        answer:
+          'No. All visual layout rendering and CSS code generation execute client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'volume-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-volume-calculator': {
+    directAnswer:
+      'Calculate three-dimensional volumes directly in your browser across cubes, rectangular prisms, cylinders, spheres, cones, pyramids, ellipsoids, and capsules. The tool provides exact geometric formulas, fractional pi expressions, and high-precision decimal results entirely client-side in memory to ensure engineering drafting specifications and academic coursework remain completely confidential. All calculations execute client-side in browser memory to keep technical drafts private.',
+    leadParagraph:
+      'Determining three-dimensional cubic volume is a fundamental requirement in mechanical engineering, fluid storage tank design, civil concrete pouring, packaging logistics, and school geometry. This client-side volume calculator provides accurate geometric solutions for standard spatial solids, including cubes, rectangular boxes, circular cylinders, spheres, conical vessels, square pyramids, and capsules. Users can enter relevant dimensions—such as base radius, length, width, height, or diameter—to calculate internal cubic capacities with automatic unit conversions across litres, cubic metres, gallons, and cubic inches. Evaluating solid volumes directly in your browser runtime provides instant mathematical verification for construction material estimators and engineering students without requiring specialized computer-aided modeling software. Because technical blueprints and academic assignments require computational privacy, all geometric calculations run locally inside browser memory. No dimensional parameters or calculation steps are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What three-dimensional solids are supported by the volume calculator?',
+        answer:
+          'The tool calculates volumes for cubes, rectangular prisms, cylinders, spheres, cones, regular pyramids, ellipsoids, and hemispherical capsules accurately with formula steps.',
+      },
+      {
+        question:
+          'How is the volume of a circular cylinder calculated mathematically?',
+        answer:
+          'Cylinder volume equals the base circular area multiplied by height (V = πr²h), representing the interior cubic displacement of the cylindrical vessel.',
+      },
+      {
+        question:
+          'Can I convert calculated volume results between metric and imperial units?',
+        answer:
+          'Yes. The calculator displays cubic results across standard metric units (litres, cubic metres) and imperial standards (gallons, cubic feet, fluid ounces).',
+      },
+      {
+        question:
+          'Are my fabrication dimensions or volume calculations logged online?',
+        answer:
+          'No. All volumetric geometric calculations run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your blueprints.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'pivot-table-planner', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-pivot-table-planner': {
+    directAnswer:
+      'Plan and structure spreadsheet pivot table layouts directly in your browser by mapping raw data columns into row groups, column dimensions, aggregate value metrics, and filter criteria. The tool previews consolidated cross-tabulations entirely client-side in memory to ensure corporate financial models, private customer spreadsheets, and business intelligence remain completely secure.',
+    leadParagraph:
+      'Constructing multi-dimensional pivot tables from raw tabular datasets can feel intimidating when navigating complex spreadsheet interface menus. This browser-based pivot table planner enables data analysts, financial planners, and administrative coordinators to drag and drop uploaded spreadsheet columns into structured pivot quadrants: Row Labels, Column Fields, Calculated Values (such as sum, average, count, min, or max), and Report Filters. The tool generates an interactive visual cross-tabulation preview directly in your browser, helping users validate grouping logic and summarisation hierarchies before configuring final tables in Excel or Google Sheets. Planning aggregation schemas directly in browser memory accelerates business reporting and data auditing workflows. Because corporate spreadsheets frequently contain confidential payroll numbers, sales margins, or customer records, all data aggregation runs locally in client browser memory. No tabular files or field values are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What four functional quadrants define a spreadsheet pivot table?',
+        answer:
+          'Pivot tables organize data into Row Labels (horizontal grouping), Column Fields (vertical grouping), Values (numerical aggregations), and Filters (dataset slicing).',
+      },
+      {
+        question:
+          'What aggregation mathematical functions can be applied to values?',
+        answer:
+          'You can apply standard aggregation functions including total sum, arithmetic average, record count, minimum, maximum, and percentage share of column total.',
+      },
+      {
+        question:
+          'What file formats can be loaded into the pivot table planner?',
+        answer:
+          'The planner supports comma-separated values (.csv), tab-separated values (.tsv), and modern OpenXML spreadsheet workbooks (.xlsx, .xlsm) for comprehensive table mapping.',
+      },
+      {
+        question:
+          'Are my corporate sales records or spreadsheet tables uploaded?',
+        answer:
+          'No. All dataset parsing and cross-tabulation previews execute client-side in browser memory with zero outbound network calls, maintaining total data confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'smart-quote-converter', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-smart-quote-converter': {
+    directAnswer:
+      'Convert between straight typewriter quotation marks and curly typographic smart quotes directly in your browser. The tool transforms double quotes, single quotes, apostrophes, and primes entirely client-side in memory to ensure confidential book manuscripts, software code snippets, and draft documents remain completely private. All quote replacements run client-side in browser memory to keep private manuscripts completely secure.',
+    leadParagraph:
+      "Typesetting professional publications requires curved typographic quotation marks ('curly' quotes and directional apostrophes), whereas software source code, JSON payloads, and command-line scripts require straight ASCII quotes to avoid execution syntax errors. This client-side smart quote converter gives editors, copywriters, and software developers bidirectional conversion control. Users can curlify straight quotes into opening and closing curved quotes based on grammatical context or straighten typographic curly quotes back into standard ASCII double and single marks. The tool accurately distinguishes between opening quotes, closing quotes, contraction apostrophes (such as don't), and measurement primes. Processing typography directly in local browser memory saves editorial teams time during publishing pre-flight checks without sharing draft copy with third-party web services. Because manuscripts, corporate copy, and technical documentation contain proprietary content, all string processing runs locally within browser memory. No text is ever uploaded to external servers.",
+    faqs: [
+      {
+        question:
+          'Why do programmers need to convert smart quotes to straight quotes?',
+        answer:
+          'Typographic smart quotes cause fatal syntax errors in programming languages, JSON parsers, and command shells that accept only standard straight ASCII quotes.',
+      },
+      {
+        question:
+          'How does the converter know whether a curly quote is opening or closing?',
+        answer:
+          'The converter inspects surrounding whitespace and punctuation; characters preceded by spaces are curled as opening quotes, while those following letters become closing quotes.',
+      },
+      {
+        question:
+          'Does the converter handle contraction apostrophes accurately?',
+        answer:
+          "Yes. Word-internal apostrophes (such as it is contracted to it's) are curled correctly into closing apostrophe glyphs without being mistaken for opening single quotes.",
+      },
+      {
+        question:
+          'Are my confidential document drafts or code snippets saved online?',
+        answer:
+          'No. All string parsing and quote transformations execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-clamp-calculator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-clamp-calculator': {
+    directAnswer:
+      'Calculate fluid typography and responsive CSS clamp() formulas directly in your browser by specifying minimum viewport widths, maximum viewport widths, and target font sizes in rem or px. The tool calculates exact slope and y-axis intercept values entirely client-side in memory to ensure unreleased website designs and design system tokens remain confidential.',
+    leadParagraph:
+      'Implementing modern fluid typography and responsive container spacing allows website text and component padding to scale smoothly between mobile viewports and wide desktop displays without jarring media query jumps. This client-side CSS clamp() calculator determines the exact mathematical slope and base rem offset required for CSS clamp(min, val, max) declarations. Users enter their baseline mobile viewport width (such as 375px), desktop target width (such as 1440px), and desired minimum and maximum font sizes; the calculator computes the linear scaling equation (vw + rem) with real-time graphical preview. Generating clamp formulas directly in browser memory accelerates front-end design system development and improves responsive page performance. Because website design systems and digital branding guidelines represent proprietary commercial assets, all mathematical calculations and snippet formatting run locally in browser memory. No parameters are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What are the three mathematical parameters inside a CSS clamp function?',
+        answer:
+          'CSS clamp() accepts a minimum bound, a preferred fluid value that scales with viewport width, and a maximum upper bound (clamp(min, preferred, max)).',
+      },
+      {
+        question:
+          'Why is combining viewport units (vw) with rem units recommended?',
+        answer:
+          'Combining vw with rem allows fluid scaling while respecting user browser font size zoom preferences for accessibility, satisfying WCAG standards.',
+      },
+      {
+        question:
+          'Can CSS clamp() be used for padding and margins as well as typography?',
+        answer:
+          'Yes. CSS clamp works effectively across padding, margin, width, gap, and grid track dimensions, enabling completely fluid page layouts across modern browsers.',
+      },
+      {
+        question:
+          'Are my design tokens or styling calculations shared with servers?',
+        answer:
+          'No. All mathematical derivations and CSS snippet generation execute client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'surface-area-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-surface-area-calculator': {
+    directAnswer:
+      'Calculate the total surface area of 3D geometric solids directly in your browser across cubes, rectangular prisms, cylinders, spheres, cones, capsules, and pyramids. The tool provides exact algebraic derivations, base area breakdowns, and high-precision decimal results entirely client-side in memory to ensure manufacturing drafting specifications and academic coursework remain completely confidential.',
+    leadParagraph:
+      'Evaluating exterior surface area is a critical engineering calculation for estimating paint coverage, thermal heat dissipation, packaging cardboard consumption, sheet metal stamping, and chemical reaction rates. This client-side surface area calculator provides comprehensive mathematical solutions for common three-dimensional solids, including cubes, rectangular boxes, circular cylinders, spheres, conical containers, square pyramids, and capsules. Users can enter primary dimensions—such as radius, height, width, slant height, or edge length—to calculate total outer surface area alongside lateral surface area breakdowns. Solving geometric surface areas directly in your browser provides rapid numerical validation for architectural estimators, industrial designers, and students without desktop CAD software. Because mechanical schematics and student coursework require computational privacy, all surface area formulas execute locally inside browser memory. No dimensional values or calculation histories are ever sent across external networks. Understanding three-dimensional surface areas enables engineers and estimators to compute accurate material allocations and fabrication costs.',
+    faqs: [
+      {
+        question:
+          'What is the distinction between total surface area and lateral surface area?',
+        answer:
+          'Lateral surface area measures the area of the vertical surrounding walls of a solid, whereas total surface area includes top and bottom base surfaces.',
+      },
+      {
+        question:
+          'How is the total surface area of a closed cylinder calculated?',
+        answer:
+          'A closed cylinder surface area equals the sum of two circular bases plus the lateral curved wall (A = 2πr² + 2πrh = 2πr(r + h)).',
+      },
+      {
+        question:
+          'What formula determines the surface area of a geometric sphere?',
+        answer:
+          'The surface area of a sphere equals four times the area of its great circular cross-section (A = 4πr²), scaling with the square of the radius.',
+      },
+      {
+        question:
+          'Are my manufacturing measurements or surface calculations saved online?',
+        answer:
+          'No. All surface area geometric calculations run locally in client browser memory with zero network traffic, ensuring complete privacy for your blueprints.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'grade-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-grade-calculator': {
+    directAnswer:
+      'Calculate overall course grades, assignment averages, and required final exam scores directly in your browser. The tool evaluates weighted coursework, converts percentage marks to letter grades (A, B, C, D, F), and maps grade scale boundaries entirely client-side in memory to keep academic performance records and student marks completely confidential.',
+    leadParagraph:
+      'Managing academic coursework and predicting final term marks requires structured grade tracking across homework assignments, quizzes, laboratory reports, midterm exams, and final projects. This browser-based grade calculator allows high school and university students to itemise course components, enter earned marks alongside maximum possible points, and calculate current cumulative grade percentages. The tool features a predictive target grade mode that calculates the exact percentage score required on an upcoming final exam to achieve a desired overall course letter grade. Calculating academic standings directly in browser memory eliminates grading guesswork during stressful examination weeks without requiring software downloads. Because academic marks, student records, and personal target grades involve sensitive educational data, all calculations execute locally within client browser memory. No course marks or student evaluations are ever transmitted to external web services.',
+    faqs: [
+      {
+        question: 'How do I calculate what score I need on the final exam?',
+        answer:
+          'Enter your current cumulative grade percentage, final exam weight percentage, and desired target grade; the tool calculates the required exam score mathematically.',
+      },
+      {
+        question:
+          'Can the calculator handle drop-lowest-grade course policies?',
+        answer:
+          'Yes. You can mark lowest quiz or assignment scores for exclusion, allowing the tool to compute your standing based on remaining top marks.',
+      },
+      {
+        question: 'What grading scales and letter equivalents are supported?',
+        answer:
+          'The tool supports standard 10-point letter grading scales (A = 90-100%, B = 80-89%) as well as plus/minus academic grading tiers.',
+      },
+      {
+        question:
+          'Are my academic exam marks or course grades uploaded to servers?',
+        answer:
+          'No. All grading calculations run client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your academic records.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'data-sampling-tool', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-data-sampling-tool': {
+    directAnswer:
+      'Extract random, stratified, or systematic sample subsets from spreadsheet datasets directly in your browser. The tool draws representative sample rows from Excel and CSV files with configurable sample sizes or percentages entirely client-side in memory to ensure confidential customer records, audit logs, and proprietary data tables remain completely secure. The tool samples data client-side in browser memory to keep corporate records private.',
+    leadParagraph:
+      'Auditing massive database exports, conducting statistical surveys, or preparing test datasets for machine learning often requires extracting unbiased representative sample subsets from extensive data tables. This client-side data sampling tool allows researchers, auditors, and data scientists to upload Excel (.xlsx) and CSV files, configure sampling methodologies (such as simple random sampling, systematic interval sampling, or stratified sampling by category), and extract target sample row counts or percentages. The tool employs cryptographically strong pseudorandom generation to ensure unbiased sampling selection, preserving original table column structures and data types in the exported sample subset. Sampling datasets directly in your browser saves time when inspecting large files without uploading proprietary tables to external cloud servers. Because enterprise data frequently contains sensitive consumer records, financial transactions, or health records, all sampling algorithms execute locally inside browser memory. No data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'What sampling methods are supported by this data sampling tool?',
+        answer:
+          'The tool supports simple random sampling (unbiased selection), systematic sampling (regular interval steps), and stratified sampling across categorical column groups.',
+      },
+      {
+        question:
+          'Does the tool guarantee that sampling selections are unbiased?',
+        answer:
+          'Yes. The sampling engine uses browser crypto.getRandomValues() cryptographic entropy to ensure statistically sound, uniform, and cryptographically unbiased row selection across datasets.',
+      },
+      {
+        question:
+          'Can I specify a sample percentage instead of an exact row count?',
+        answer:
+          'Yes. You can request a specific percentage of the total dataset (such as 10 percent) or enter an exact target number of sampled rows.',
+      },
+      {
+        question:
+          'Are my confidential spreadsheet records or sample exports uploaded?',
+        answer:
+          'No. All dataset decoding and sampling operations occur strictly within local browser memory with zero network calls, guaranteeing absolute data confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'unicode-normalizer', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-unicode-normalizer': {
+    directAnswer:
+      'Normalise Unicode text strings directly in your browser using standard canonical and compatibility normalization forms (NFC, NFD, NFKC, NFKD). The tool decomposes accented glyphs, standardises ligature characters, and resolves search inconsistencies entirely client-side in memory to ensure private manuscripts, source code, and linguistic research remain completely confidential. All normalization forms run client-side in browser memory to keep source code private.',
+    leadParagraph:
+      "Unicode text representation allows multiple binary byte sequences to represent visually identical characters—such as a single precomposed accented letter 'é' (U+00E9) versus an unaccented 'e' followed by a combining acute accent (U+0065 + U+0301). These discrepancies cause database search failures, string comparison mismatches, and hash inconsistencies across software applications. This client-side Unicode normalizer transforms entered text into standardized Unicode Consortium normalization forms: Canonical Composition (NFC), Canonical Decomposition (NFD), Compatibility Composition (NFKC), and Compatibility Decomposition (NFKD). Users can inspect code point sequences, convert typographic ligatures (such as fi or fl) into distinct letters, and prepare clean text streams for internationalized software ingestion. Normalising Unicode directly in browser memory accelerates data preparation for software developers and computational linguists. Because text processing frequently involves proprietary source code or private manuscripts, all normalization executes locally within browser memory. No text is ever uploaded to remote servers.",
+    faqs: [
+      {
+        question:
+          'What is the distinction between NFC and NFD Unicode normalization?',
+        answer:
+          'NFC composes characters and combining diacritics into precomposed single code points, whereas NFD decomposes precomposed characters into base letters plus separate accent marks.',
+      },
+      {
+        question:
+          'When should compatibility normalization (NFKC or NFKD) be applied?',
+        answer:
+          'Compatibility forms decompose typographic formatting variants, converting superscripts, circled characters, and ligatures into standard plain alphanumeric characters for uniform text search.',
+      },
+      {
+        question:
+          'Why is Unicode normalization critical for database string searches?',
+        answer:
+          'Normalization ensures visually identical characters share identical binary code point representations, preventing search query misses and index fragmentation in databases.',
+      },
+      {
+        question:
+          'Are my text strings or Unicode characters transmitted to servers?',
+        answer:
+          'No. All character inspection and normalization algorithms execute client-side in local browser memory with zero outbound network calls, ensuring total text privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'responsive-breakpoint-tester', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-responsive-breakpoint-tester': {
+    directAnswer:
+      'Test responsive website breakpoints and device viewport dimensions directly in your browser. The tool provides interactive preview frames for mobile phones, tablets, laptops, and ultra-wide desktop screens with rotation toggles entirely client-side in memory to ensure staging website links, unreleased interface mockups, and private development builds remain confidential. All layout testing executes client-side in browser memory to keep staging links private.',
+    leadParagraph:
+      'Ensuring that web applications deliver flawless user experiences across modern mobile smartphones, tablets, folding screens, and desktop displays requires testing layout behaviour at diverse viewport dimensions. This client-side responsive breakpoint tester allows front-end developers, UI designers, and QA engineers to simulate responsive web layouts across standard media query thresholds (including mobile 320px, 375px, 414px; tablet 768px, 1024px; and desktop 1280px, 1440px, 1920px). Users can toggle portrait and landscape orientations, inspect CSS media query triggers, and evaluate layout reflows interactively within sandboxed preview frames. Testing responsive breakpoints directly in browser memory accelerates front-end quality assurance cycles without requiring physical device testing labs. Because staging URLs and pre-launch digital interfaces represent confidential commercial intellectual property, all frame rendering occurs locally in browser memory. No website addresses or preview interactions are ever logged or shared across external networks.',
+    faqs: [
+      {
+        question:
+          'What standard device viewport dimensions are included in the tester?',
+        answer:
+          'The tester includes common mobile devices (375x667, 390x844), tablets (768x1024, 820x1180), laptops (1280x800, 1440x900), and desktop monitors (1920x1080) for layout preview.',
+      },
+      {
+        question:
+          'Can I toggle between portrait and landscape device orientations?',
+        answer:
+          'Yes. An interactive orientation toggle swaps width and height dimensions instantly to simulate rotating physical phones and tablets during responsive testing.',
+      },
+      {
+        question: 'Can I test local development servers running on localhost?',
+        answer:
+          'Yes. Because the tester runs in your own browser tab, you can enter localhost and private intranet staging URLs that external testing clouds cannot access.',
+      },
+      {
+        question:
+          'Are my staging web addresses or tested website pages tracked online?',
+        answer:
+          'No. All iframe rendering and dimension simulations execute locally in client browser memory with zero network traffic, ensuring complete privacy for development builds.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'distance-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-distance-converter': {
+    directAnswer:
+      'Convert linear distance and length measurements directly in your browser across kilometres, metres, centimetres, millimetres, miles, yards, feet, inches, and nautical miles. The tool delivers exact conversion ratios and high-precision decimal solutions entirely client-side in memory to ensure engineering drafting specifications and scientific calculations remain completely confidential. The tool converts distance units client-side in browser memory to keep engineering models private.',
+    leadParagraph:
+      'Converting linear distance measurements between metric and imperial systems is an everyday requirement in mechanical drafting, civil engineering, international travel planning, athletic tracking, and academic physics. This client-side distance converter provides simultaneous conversions across standard international units: kilometres, metres, centimetres, millimetres, micrometres, miles, yards, feet, inches, and nautical miles. Users can input any single value to view equivalent lengths across all other measurement standards instantly, alongside exact fractional ratios and scientific notation representations. Converting linear units directly in your browser runtime delivers rapid computational verification for construction estimators, fabricators, and students without desktop conversion utilities. Because architectural schematics and technical project parameters involve proprietary specifications, all conversion calculations execute locally within browser memory. No distance values or calculation histories are ever sent across external networks. Understanding dimensional length relationships provides essential clarity for civil engineering, architectural drafting, and international travel logistics.',
+    faqs: [
+      {
+        question:
+          'What distance measurement units are supported by the converter?',
+        answer:
+          'The tool converts kilometres, metres, centimetres, millimetres, micrometres, statute miles, yards, feet, inches, and international nautical miles accurately across units.',
+      },
+      {
+        question:
+          'How does an international nautical mile differ from a statute mile?',
+        answer:
+          'An international nautical mile is standardized at exactly 1,852 metres (approx. 1.1508 statute miles), based on one minute of latitude arc around Earth.',
+      },
+      {
+        question:
+          'What exact ratio defines an international inch in metric units?',
+        answer:
+          'Under the 1959 international yard and pound agreement, one international inch is defined mathematically as exactly 25.4 millimetres across all measurement applications.',
+      },
+      {
+        question:
+          'Are my measurement distances or engineering values logged online?',
+        answer:
+          'No. All distance conversions run strictly inside local client browser memory with zero outbound network calls, maintaining total privacy for your calculations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'gpa-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-gpa-calculator': {
+    directAnswer:
+      'Calculate cumulative Grade Point Average (GPA) directly in your browser across standard 4.0, 5.0 weighted, and custom academic grading scales. The tool tallies course credit hours, earned letter grades, and total quality points entirely client-side in memory to keep university academic transcripts and student marks completely confidential. All grade point calculations execute client-side in browser memory to keep academic transcripts private.',
+    leadParagraph:
+      'Tracking semester and cumulative Grade Point Averages (GPA) is essential for university students monitoring academic honors eligibility, scholarship renewal thresholds, and graduate school admissions requirements. This browser-based GPA calculator enables students to input individual course titles, assigned credit hours, and earned letter marks, computing unweighted 4.0 scale averages alongside weighted 5.0 scales for advanced honors and AP coursework. The tool displays total attempted credit hours, cumulative earned quality points, and overall GPA metrics in real time with semester-by-semester breakdown summaries. Evaluating academic standing directly in browser memory eliminates calculation errors when planning upcoming course schedules or setting study targets. Because student grades, course transcripts, and personal academic trajectories represent private educational data, all calculations execute locally within client browser memory. No academic marks or student profiles are ever stored on external web servers.',
+    faqs: [
+      {
+        question: 'How is Grade Point Average (GPA) calculated mathematically?',
+        answer:
+          'GPA is calculated by multiplying each course grade point value by its credit hours to get quality points, then dividing total quality points by total credit hours.',
+      },
+      {
+        question:
+          'What is the distinction between unweighted and weighted GPA scales?',
+        answer:
+          'Unweighted scales cap grades at 4.0 regardless of course rigor, while weighted scales award up to 5.0 for advanced honors, AP, or International Baccalaureate courses.',
+      },
+      {
+        question:
+          'Can I calculate cumulative GPA by combining past semesters with current courses?',
+        answer:
+          'Yes. You can enter prior cumulative credit hours and starting GPA to combine past academic records with current semester courses seamlessly.',
+      },
+      {
+        question:
+          'Are my university grades or student transcript records uploaded?',
+        answer:
+          'No. All GPA calculations occur strictly within client browser memory with zero network traffic, ensuring complete confidentiality for your educational records.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'random-row-selector', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-random-row-selector': {
+    directAnswer:
+      'Select randomized rows from spreadsheet files directly in your browser for raffle drawings, contest winners, audit samples, and lottery picks. The tool picks random rows from Excel and CSV files without replacement entirely client-side in memory to ensure participant lists, customer spreadsheets, and contest rosters remain completely secure. The tool selects rows client-side in browser memory to keep participant rosters private.',
+    leadParagraph:
+      'Conducting fair, verifiable promotional giveaways, picking random lottery winners from customer rosters, or selecting random files for compliance auditing requires impartial row selection without manual bias. This client-side random row selector allows contest managers, teachers, and business auditors to upload Excel (.xlsx) and CSV files, specify the desired quantity of winning rows or sample items, and draw selections with or without replacement. The tool uses cryptographically secure random entropy from the browser Web Crypto API to ensure provably fair selections, preserving all associated column data for chosen rows and allowing instant export of winner lists. Running random selection directly in browser memory guarantees integrity during live presentations without relying on third-party cloud drawing services. Because participant rosters frequently contain confidential contact information, email addresses, or transaction numbers, all row picking executes locally inside browser memory. No spreadsheet files are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'How does the random row selector ensure fairness during drawings?',
+        answer:
+          'The selector uses browser crypto.getRandomValues() cryptographic entropy, ensuring provably fair, uniform, and mathematically unbiased selection of table rows during drawings.',
+      },
+      {
+        question:
+          'Can I draw multiple random rows without selecting the same record twice?',
+        answer:
+          'Yes. The default sampling mode operates without replacement, guaranteeing that each unique participant or spreadsheet row can be selected at most once.',
+      },
+      {
+        question:
+          'What spreadsheet file formats are supported for random selection?',
+        answer:
+          'The tool supports standard OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for unbiased drawing selection.',
+      },
+      {
+        question:
+          'Are my customer contact lists or participant rosters uploaded?',
+        answer:
+          'No. All spreadsheet decoding and random row selection execute client-side in browser memory with zero outbound network calls, maintaining total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'diacritic-remover', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-diacritic-remover': {
+    directAnswer:
+      'Strip accent marks, umlauts, cedillas, tildes, and diacritics from text strings directly in your browser. The tool decomposes Latin characters and removes combining marks to produce clean ASCII text entirely client-side in memory to ensure confidential customer lists, proprietary databases, and private documents remain completely secure. All accent stripping executes client-side in browser memory to keep customer datasets secure.',
+    leadParagraph:
+      "Processing international names, preparing URL slugs, and sanitizing customer databases for legacy IT systems often requires stripping diacritical marks while preserving the underlying base Latin letters (converting 'café' to 'cafe' or 'Zürich' to 'Zurich'). This client-side diacritic remover uses standard Unicode normalization (NFD decomposition) to separate base characters from their combining accent marks, systematically discarding diacritical code points (Unicode block U+0300–U+036F) while leaving base alphanumeric characters intact. The tool provides options to map non-decomposable characters such as German eszett (ß to ss) or Scandinavian letters (ø to o, æ to ae) to phonetic equivalents. Stripping diacritics directly in local browser memory accelerates data sanitization for database administrators and software developers without third-party web tools. Because customer rosters and subscriber databases involve sensitive personal data, all text sanitization runs locally inside browser memory. No text data is ever transmitted across external networks.",
+    faqs: [
+      {
+        question:
+          'How does the diacritic remover strip accents without losing base letters?',
+        answer:
+          'The tool applies Unicode NFD normalization to separate characters into base letters and combining diacritic glyphs, then strips the accent marks via regular expressions.',
+      },
+      {
+        question:
+          'How are special ligatures like German ß or Scandinavian æ handled?',
+        answer:
+          'You can enable custom transliteration mappings to convert ligatures and special symbols into standard Latin approximations (such as ß to ss, æ to ae).',
+      },
+      {
+        question:
+          'Does the tool preserve character capitalization during accent stripping?',
+        answer:
+          'Yes. Uppercase and lowercase base characters maintain their original casing perfectly when diacritics and accent marks are removed from sentences.',
+      },
+      {
+        question:
+          'Are my contact lists or database records uploaded to external servers?',
+        answer:
+          'No. All character parsing and accent removal occur strictly within client browser memory with zero network traffic, ensuring complete data security.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'viewport-size-calculator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-viewport-size-calculator': {
+    directAnswer:
+      'Inspect and calculate browser viewport dimensions, CSS pixel ratios, screen resolutions, and orientation properties directly in your browser. The tool evaluates innerWidth, innerHeight, and devicePixelRatio in real time entirely client-side in memory to keep unreleased web app architectures and debugging sessions confidential. All dimension calculations execute client-side in browser memory to keep debugging sessions private.',
+    leadParagraph:
+      'Debugging responsive web layouts and verifying high-density Retina display assets requires immediate, accurate readings of current browser viewport dimensions, available screen area, and hardware device pixel ratios. This client-side viewport size calculator inspects active window properties in real time, displaying inner viewport width and height in CSS pixels, physical hardware resolution, color depth, and window orientation. The tool includes live resize event listeners that update dimensions dynamically as you adjust browser window boundaries, alongside handy reference tables detailing standard mobile and tablet viewport thresholds. Checking viewport metrics directly in browser memory accelerates front-end debugging cycles without requiring external analytics scripts or extensions. Because pre-launch digital prototypes and testing sessions require confidentiality, all dimension inspection runs locally within browser memory. No device metrics or browsing telemetry are ever sent to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What is the distinction between CSS pixels and physical hardware pixels?',
+        answer:
+          'CSS pixels represent layout coordinate units used by browsers, whereas physical pixels represent the actual hardware light emitters on the display screen.',
+      },
+      {
+        question:
+          'What does devicePixelRatio indicate in modern display monitors?',
+        answer:
+          'devicePixelRatio expresses the ratio of physical screen pixels to CSS pixels (for example, a 2.0 ratio on Apple Retina screens means 4 physical pixels per CSS pixel).',
+      },
+      {
+        question:
+          'Does viewport size include browser scrollbars and window chrome?',
+        answer:
+          'Window innerWidth and innerHeight measure the viewable webpage canvas area, excluding operating system title bars, address bars, and peripheral browser chrome.',
+      },
+      {
+        question:
+          'Are my hardware display specifications or device metrics tracked?',
+        answer:
+          'No. All viewport evaluations execute client-side in browser memory with zero outbound network calls, maintaining total privacy for your testing environment.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'area-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-area-converter': {
+    directAnswer:
+      'Convert two-dimensional area measurements directly in your browser across square metres, square kilometres, hectares, square feet, square yards, acres, and square miles. The tool delivers exact conversion ratios and high-precision decimal solutions entirely client-side in memory to ensure land surveying deeds and architectural drafting specifications remain completely confidential. All area conversions execute client-side in browser memory to keep property deeds private.',
+    leadParagraph:
+      'Converting surface area measurements between metric and imperial systems is an essential daily requirement in real estate property valuation, agricultural land management, architectural floor planning, and civil engineering. This client-side area converter provides simultaneous conversions across standard international units: square metres (m²), square kilometres (km²), hectares (ha), square centimetres (cm²), square millimetres (mm²), square feet (sq ft), square yards (sq yd), acres, and square miles (sq mi). Users can enter any single measurement value to view equivalent areas across all other units instantly, alongside land acreage breakdowns and scientific notation for massive geographic tracts. Converting land and surface units directly in your browser runtime provides instant computational answers for real estate estimators and surveyors without desktop conversion software. Because land purchase agreements and architectural floor plans involve confidential commercial figures, all conversion calculations execute locally within browser memory. No property measurements are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What land and surface measurement units are supported by the converter?',
+        answer:
+          'The tool converts square metres, square kilometres, hectares, square centimetres, square feet, square yards, acres, and square miles accurately across international systems.',
+      },
+      {
+        question:
+          'How many square feet are in one standard international acre?',
+        answer:
+          'One standard acre contains exactly 43,560 square feet, which corresponds to approximately 4,046.86 square metres or 0.4047 hectares in metric territory measurements.',
+      },
+      {
+        question:
+          'What is the relationship between a hectare and a square metre?',
+        answer:
+          'One hectare (ha) is defined as exactly 10,000 square metres, representing the area of a square measuring 100 metres on each side.',
+      },
+      {
+        question:
+          'Are my real estate property dimensions or land measurements logged online?',
+        answer:
+          'No. All area conversions run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your land and property records.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'cgpa-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-cgpa-calculator': {
+    directAnswer:
+      'Calculate Cumulative Grade Point Average (CGPA) directly in your browser across multiple semesters and academic years. The tool aggregates semester GPAs, tallies total credit units, and computes percentage equivalents entirely client-side in memory to keep university academic transcripts, degree classifications, and student marks completely confidential. All academic calculations run locally in browser memory to keep student marks private.',
+    leadParagraph:
+      'Tracking Cumulative Grade Point Average (CGPA) across undergraduate or postgraduate degree programmes is crucial for university students monitoring degree honors classifications, scholarship eligibility, and employment recruitment benchmarks. This browser-based CGPA calculator enables students to input individual semester GPA scores alongside corresponding semester credit hours, computing a weighted overall CGPA across their complete academic journey. The tool includes standard conversion formulas to translate cumulative CGPA into approximate percentage marks according to university guidelines (such as the standard CBSE and university 9.5 multiplier factor), highlighting cumulative grade progress semester by semester. Calculating multi-year academic standing directly in browser memory eliminates manual arithmetic mistakes during scholarship and job application preparations. Because degree transcripts and student performance histories represent sensitive personal data, all calculations execute locally within client browser memory. No student marks or educational records are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question: 'How does CGPA differ from a single semester GPA?',
+        answer:
+          'GPA measures academic performance within a single semester, whereas CGPA calculates cumulative weighted performance across all completed semesters combined throughout degree courses.',
+      },
+      {
+        question: 'How is CGPA converted to an approximate percentage mark?',
+        answer:
+          'Many universities and academic boards use the standard formula where percentage equals CGPA multiplied by 9.5 (for example, 8.0 CGPA equals 76%).',
+      },
+      {
+        question:
+          'Can I calculate CGPA if different semesters carry different credit weights?',
+        answer:
+          'Yes. The calculator uses weighted averaging, multiplying each semester GPA by its credit count so that heavier semesters contribute proportionally to CGPA.',
+      },
+      {
+        question:
+          'Are my university grades or degree marks saved on remote servers?',
+        answer:
+          'No. All CGPA calculations run client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your academic records.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'column-statistics', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-column-statistics': {
+    directAnswer:
+      'Calculate comprehensive column statistics directly in your browser from spreadsheet files. The tool computes sum, mean, median, mode, standard deviation, variance, minimum, maximum, and quartile ranges from Excel and CSV columns entirely client-side in memory to ensure corporate financial models, private customer spreadsheets, and business analytics remain completely secure. The tool computes all metrics client-side in browser memory to keep business data private.',
+    leadParagraph:
+      'Analyzing numerical trends, financial variances, and distribution properties across columns of spreadsheet data is a daily task for business analysts, auditors, and scientific researchers. This client-side spreadsheet column statistics tool parses uploaded Excel (.xlsx) and CSV files, automatically identifying numeric columns and computing essential descriptive statistical metrics: sample count, valid entries, null counts, total sum, arithmetic mean, median, statistical mode, standard deviation, variance, and interquartile ranges (Q1, Q3, IQR). The tool displays formatted summary tables with one-click export to clipboard or JSON, helping analysts spot data skews, measure spread, and detect outliers instantly. Computing column statistics directly in browser memory accelerates exploratory data analysis without launching heavy statistical packages. Because enterprise spreadsheets frequently contain confidential payroll numbers, transaction ledgers, or customer metrics, all statistical processing executes locally inside browser memory. No data records are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What descriptive statistical metrics are computed for each column?',
+        answer:
+          'The tool computes total count, valid values, nulls, sum, mean, median, mode, sample standard deviation, population variance, min, max, and quartiles.',
+      },
+      {
+        question:
+          'How does the tool handle blank cells or text values in numeric columns?',
+        answer:
+          'Empty cells and non-numeric text values are excluded from mathematical calculations while being catalogued in null and invalid count summaries.',
+      },
+      {
+        question:
+          'What spreadsheet file formats can be analyzed with this tool?',
+        answer:
+          'The statistics analyzer supports modern OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for complete statistical reporting.',
+      },
+      {
+        question:
+          'Are my corporate spreadsheets or financial data uploaded anywhere?',
+        answer:
+          'No. All spreadsheet decoding and statistical evaluations occur client-side in browser memory with zero outbound network calls, ensuring total data security.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'emoji-remover', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-emoji-remover': {
+    directAnswer:
+      'Remove emoji pictograms, emoticons, and decorative graphical symbols from text strings directly in your browser. The tool strips Unicode emoji code points, variation selectors, and skin tone modifiers while preserving underlying alphanumeric characters and punctuation entirely client-side in memory to ensure confidential manuscripts, customer databases, and private documents remain completely secure.',
+    leadParagraph:
+      'Processing user comments, customer feedback rosters, and social media text for automated sentiment analysis, database storage, or formal documentation frequently requires stripping informal emoji symbols that cause database encoding faults or disrupt natural language processing pipelines. This client-side emoji remover detects and excises Unicode emoji symbols across all modern standard blocks—including emoticons, transport symbols, miscellaneous pictographs, supplemental symbols, skin tone modifiers, and zero-width joiner sequences—without stripping standard punctuation or international alphanumeric glyphs. Users can toggle options to replace emojis with spaces, collapse resulting duplicate whitespace, or review occurrence statistics before copying sanitized copy. Stripping emojis directly in local browser memory accelerates data cleaning for data engineers and content managers without third-party web tools. Because customer comments and subscriber databases involve private personal data, all text sanitization runs locally inside browser memory. No text data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'How does the tool distinguish emojis from foreign language letters?',
+        answer:
+          'The remover targets specific Unicode emoji symbol blocks and properties while strictly preserving non-Latin alphabets including Arabic, Cyrillic, Chinese, and Devanagari characters.',
+      },
+      {
+        question:
+          'Are compound multi-person and skin tone emojis stripped completely?',
+        answer:
+          'Yes. The algorithm handles zero-width joiner (ZWJ) sequences, regional flag indicator pairs, and skin tone modifiers, stripping complete compound glyphs cleanly.',
+      },
+      {
+        question:
+          'Can I replace emojis with single spaces rather than deleting them?',
+        answer:
+          'Yes. You can choose to replace each emoji with a space character to maintain word separation before collapsing redundant adjacent whitespace runs.',
+      },
+      {
+        question:
+          'Are my private customer messages or survey comments uploaded?',
+        answer:
+          'No. All text parsing and emoji removal execute client-side in local browser memory with zero network traffic, ensuring complete confidentiality for your text.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'aspect-ratio-calculator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-aspect-ratio-calculator': {
+    directAnswer:
+      'Calculate display aspect ratios and proportional pixel dimensions directly in your browser across standard screen formats including 16:9, 4:3, 21:9, 1:1, and 9:16. The tool computes missing width or height values, determines greatest common divisors, and exports CSS aspect-ratio rules entirely client-side in memory to ensure video production assets and website designs remain confidential.',
+    leadParagraph:
+      'Maintaining consistent dimensional proportions across responsive images, embedded video players, and social media banners is critical to avoid image distortion and layout shifts (CLS). This client-side aspect ratio calculator enables digital video creators, web developers, and graphic designers to input source pixel dimensions (such as 1920x1080 or 3840x2160) to compute reduced proportional ratios using greatest common divisor (GCD) mathematics. Users can enter any target width to calculate the proportional height, or enter height to determine width, while generating standards-compliant CSS aspect-ratio properties ready for responsive stylesheets. Evaluating aspect ratios directly in browser memory accelerates UI prototyping and video editing workflows without requiring photo editing desktop packages. Because video production assets and pre-launch website mockups represent proprietary intellectual property, all aspect ratio calculations execute locally within browser memory. No pixel dimensions or design assets are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question:
+          'How does the calculator determine the simplified aspect ratio of an image?',
+        answer:
+          'The calculator computes the greatest common divisor (GCD) of width and height using Euclidean algorithm, dividing both dimensions by the GCD to simplify ratios.',
+      },
+      {
+        question:
+          'What are the most common aspect ratios in modern digital media?',
+        answer:
+          'Widescreen video uses 16:9 (1080p, 4K), social mobile stories use 9:16, square avatars use 1:1, cinema uses 21:9, and legacy displays use 4:3.',
+      },
+      {
+        question:
+          'How does the modern CSS aspect-ratio property prevent layout shift?',
+        answer:
+          'Declaring CSS aspect-ratio reserves display canvas space before media assets download, preventing cumulative layout shift (CLS) penalties in web Core Vitals.',
+      },
+      {
+        question:
+          'Are my video dimensions or design specifications sent online?',
+        answer:
+          'No. All aspect ratio calculations and CSS rule generation occur client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'favicon-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'image-favicon-generator': {
+    directAnswer:
+      'Generate complete multi-resolution favicon packages directly in your browser from any uploaded logo or graphic. The tool crops, rescales, and exports standard 16x16, 32x32, 48x48 ICO files, 180x180 Apple touch icons, and 192x192 Android manifests entirely client-side in memory to ensure unreleased corporate branding and website visual assets remain completely private.',
+    leadParagraph:
+      'Delivering properly dimensioned website icons across browser tabs, mobile bookmarks, taskbars, and search engine previews requires producing an entire suite of specifically sized icon graphics. This client-side favicon generator processes source PNG, SVG, or JPEG images directly within an HTML5 canvas element, generating multi-layer ICO container binaries (combining 16x16, 32x32, and 48x48 pixel frames), high-resolution Apple Touch bookmark icons (180x180), and Android home screen tiles (192x192, 512x512). The tool generates complete HTML link header tags ready for direct insertion into your website <head> markup. Generating icon packages directly in browser memory accelerates site launch preparations without watermarks or third-party web tracking. Because corporate branding assets and pre-launch digital logos involve confidential intellectual property, all image scaling and binary assembly execute locally within browser memory. No source graphics or generated icon packages are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What icon dimensions are included in the generated favicon package?',
+        answer:
+          'The generator creates standard 16x16 and 32x32 browser tab icons, 48x48 taskbar icons, 180x180 Apple Touch icons, and 192x192 Android manifest icons.',
+      },
+      {
+        question:
+          'Does the tool bundle multiple resolutions into a single ICO file?',
+        answer:
+          'Yes. The tool encodes standard multi-resolution ICO binary containers that allow operating systems to select the optimal resolution without blurry scaling.',
+      },
+      {
+        question:
+          'Can I generate favicons from vector SVG files without quality loss?',
+        answer:
+          'Yes. Uploading vector SVG graphics rasterises sharply at each target icon dimension, ensuring crisp edges across both small browser tabs and high-density mobile screens.',
+      },
+      {
+        question:
+          'Are my logo images or brand graphics uploaded to external servers?',
+        answer:
+          'No. All canvas rendering, image resizing, and ICO binary generation occur client-side in browser memory with zero network traffic, ensuring complete visual privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'volume-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-volume-converter': {
+    directAnswer:
+      'Convert liquid and dry volume measurements directly in your browser across litres, millilitres, cubic metres, cubic centimetres, US gallons, imperial gallons, quarts, pints, cups, fluid ounces, tablespoons, and teaspoons. The tool delivers exact conversion ratios entirely client-side in memory to ensure culinary recipes, chemical laboratory proportions, and industrial logistics specifications remain completely confidential.',
+    leadParagraph:
+      'Converting volumetric capacities between metric, US customary, and British imperial measurement systems is an everyday necessity in commercial baking, chemical laboratory compounding, pharmaceutical dosing, and fuel logistics. This client-side volume converter provides simultaneous conversions across standard international units: litres (L), millilitres (mL), cubic metres (m³), cubic centimetres (cm³ or cc), US liquid gallons, UK imperial gallons, quarts, pints, cups, fluid ounces (fl oz), tablespoons, and teaspoons. Users can enter any single volume value to view equivalent capacities across all other measurement standards instantly, alongside exact fractional ratios and cooking measurement breakdowns. Converting volume units directly in your browser runtime delivers rapid computational verification for culinary professionals, laboratory technicians, and logistics managers without desktop conversion utilities. Because chemical formulations and proprietary recipes involve commercial trade secrets, all conversion calculations execute locally within browser memory. No volume measurements are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'How does a US liquid gallon differ from a British imperial gallon?',
+        answer:
+          'A US liquid gallon equals approximately 3.785 litres, whereas a British imperial gallon equals exactly 4.54609 litres, making the imperial gallon roughly twenty percent larger.',
+      },
+      {
+        question:
+          'How many millilitres are contained in one standard US fluid ounce?',
+        answer:
+          'One standard US fluid ounce equals approximately 29.5735 millilitres, whereas an imperial fluid ounce equals approximately 28.4131 millilitres in metric volumetric calculations.',
+      },
+      {
+        question:
+          'What is the relationship between a cubic centimetre and a millilitre?',
+        answer:
+          'One cubic centimetre (cm³ or cc) is physically and mathematically identical to one millilitre (mL), representing the volume of a 1cm cube.',
+      },
+      {
+        question:
+          'Are my recipe quantities or laboratory volume numbers saved online?',
+        answer:
+          'No. All volumetric conversions run strictly inside local client browser memory with zero network traffic, ensuring complete confidentiality for your formulations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'exam-score-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-exam-score-calculator': {
+    directAnswer:
+      'Calculate test scores, examination percentages, and point deductions directly in your browser by entering total test questions and missed items. The tool displays comprehensive grading charts, percentage marks, and letter grade equivalents entirely client-side in memory to keep student test evaluations, academic assessment rosters, and teacher records completely confidential. The calculator executes all grading formulas client-side in browser memory with zero network traffic.',
+    leadParagraph:
+      'Grading classroom examinations, standardized quizzes, and academic tests requires calculating accurate percentage scores and point deductions without manual arithmetic errors. This browser-based exam score calculator allows teachers, professors, and students to enter the total number of test questions alongside missed or correct answers, generating an instant score percentage and corresponding letter mark. The tool can generate complete quick-grading reference tables (easy-grader format) that map every possible missed question count to its resulting percentage score, accelerating the grading of paper test batches. Calculating test scores directly in browser memory eliminates grading mistakes and speeds up evaluation workflows for educators during exam periods. Because classroom assessment marks and student testing records represent sensitive educational data, all calculations execute locally within client browser memory. No test scores or grading rosters are ever transmitted to external web services.',
+    faqs: [
+      {
+        question: 'How is test score percentage calculated mathematically?',
+        answer:
+          'Test percentage equals the number of correct questions divided by total test questions multiplied by 100 ((total - missed) / total × 100).',
+      },
+      {
+        question:
+          'Can the calculator generate a quick-grading reference chart for teachers?',
+        answer:
+          'Yes. The tool generates an easy-grader chart showing scores for every possible number of wrong questions from zero up to the total question count.',
+      },
+      {
+        question: 'Can partial credit and negative marking be accommodated?',
+        answer:
+          'Yes. You can enter decimal question values to account for half-credit answers or configure penalty point deductions for incorrect multiple-choice responses.',
+      },
+      {
+        question:
+          'Are my classroom test scores or grading rosters stored online?',
+        answer:
+          'No. All test grading calculations execute client-side in browser memory with zero outbound network calls, maintaining total confidentiality for student examination records.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'missing-value-analyzer', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-missing-value-analyzer': {
+    directAnswer:
+      'Analyze missing values, empty cells, and null patterns in spreadsheet datasets directly in your browser. The tool scans Excel and CSV files to report missing value counts, column completeness percentages, and row-level gap distributions entirely client-side in memory to ensure corporate financial models, private customer records, and survey tables remain completely secure.',
+    leadParagraph:
+      'Data gaps, unrecorded fields, and null values in raw spreadsheet datasets create significant problems for automated data pipelines, econometric regressions, and machine learning classifiers. This client-side missing value analyzer allows data analysts, researchers, and database engineers to upload Excel (.xlsx) and CSV files, evaluating completeness across every column and row. The tool identifies blank strings, standard null markers (such as NA, N/A, null, NaN, and void), and unpopulated cells, computing missingness percentages and flagging columns that exceed critical gap thresholds. Users can view visual completeness summaries and export data hygiene audit reports directly from client browser memory. Analyzing data completeness locally accelerates dataset preparation without risking proprietary data leaks. Because enterprise spreadsheets frequently contain confidential customer contact information, medical survey data, or financial transactions, all data scanning executes locally inside browser memory. No data records are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What string representations of null or missing data does the tool detect?',
+        answer:
+          'The analyzer detects blank cells, whitespace strings, and common textual null representations including NA, N/A, null, NaN, None, and #N/A.',
+      },
+      {
+        question:
+          'Can I filter or drop columns that exceed a specific missing percentage?',
+        answer:
+          'Yes. You can identify columns where missingness exceeds defined thresholds (such as 30 percent) to decide whether to impute or drop those features.',
+      },
+      {
+        question:
+          'What spreadsheet file formats can be analyzed for missing values?',
+        answer:
+          'The analyzer supports modern OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for data health inspection.',
+      },
+      {
+        question:
+          'Are my private enterprise datasets uploaded during missing value analysis?',
+        answer:
+          'No. All spreadsheet decoding and missing value scans occur client-side in browser memory with zero outbound network calls, ensuring total data security.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'emoji-extractor', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-emoji-extractor': {
+    directAnswer:
+      'Extract emoji pictograms, skin tone modifiers, and graphical symbols from text passages directly in your browser. The tool isolates unique emojis, calculates frequency counts, and groups symbols by Unicode category entirely client-side in memory to ensure confidential customer feedback, social media logs, and private messages remain completely secure. All character extraction routines execute client-side in browser memory with zero outbound network calls.',
+    leadParagraph:
+      'Analyzing social media sentiments, categorizing user reviews, and auditing digital communications often requires isolating emoji characters to quantify customer reactions and visual tone. This client-side emoji extractor parses entered text or uploaded document files, detecting all standard Unicode emoji code points, flag sequences, and compound skin tone variants. The tool produces an organized inventory of every emoji discovered, computing total symbol occurrences, unique symbol counts, and frequency distributions. Users can copy the extracted emojis as a clean deduplicated string, view breakdown lists categorized by sentiment or theme, or export analytical frequency tables. Extracting emojis directly in local browser memory gives social media researchers and marketing analysts rapid insights without copying private messages into third-party web tools. Because customer feedback and direct message logs involve sensitive personal data, all symbol extraction runs locally inside browser memory. No text data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'Does the tool extract compound zero-width joiner (ZWJ) emojis properly?',
+        answer:
+          'Yes. The extractor preserves compound ZWJ sequences, profession variations, and skin tone modifiers as cohesive visual emoji units during extraction.',
+      },
+      {
+        question: 'Can I view frequency counts for each extracted emoji?',
+        answer:
+          'Yes. The tool counts occurrences of each unique emoji discovered, ranking them by frequency to highlight dominant emotional sentiments in text.',
+      },
+      {
+        question: 'Can I export the extracted emojis as a deduplicated list?',
+        answer:
+          'Yes. You can copy unique emojis as a continuous character sequence or export a formatted list with Unicode names and occurrence tallies.',
+      },
+      {
+        question:
+          'Are my private messages or document files sent to external servers?',
+        answer:
+          'No. All text parsing and emoji extraction execute client-side in local browser memory with zero network traffic, ensuring complete document confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'html-table-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-html-table-generator': {
+    directAnswer:
+      'Generate semantic, accessible HTML tables directly in your browser with interactive row and column editing, header styling, cell alignment, and border controls. The tool exports clean, responsive HTML markup and CSS code snippets entirely client-side in memory to ensure unreleased website designs and data tables remain confidential. The tool formats HTML table markup locally in client browser memory with zero network calls.',
+    leadParagraph:
+      'Presenting structured tabular data on websites requires writing semantic HTML table markup (using <table>, <thead>, <tbody>, <th>, and <td> elements) that satisfies web accessibility standards while maintaining clean responsive styling. This client-side HTML table generator allows front-end web developers and content authors to design tabular layouts visually, adding or removing rows and columns, designating header cells with scope attributes, and configuring text alignments. The tool generates standards-compliant HTML markup alongside optional modern CSS styling rules ready for immediate pasting into web pages or markdown blogs. Creating HTML tables directly in browser memory accelerates content management workflows without requiring desktop code editors. Because corporate data tables and pre-launch website mockups involve sensitive commercial information, all table generation executes locally within browser memory. No table contents or HTML snippets are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Does the generated HTML table markup follow accessibility guidelines?',
+        answer:
+          'Yes. The tool generates semantic <th> header tags with scope=col and scope=row attributes to ensure screen readers navigate tabular data accurately.',
+      },
+      {
+        question:
+          'Can I import CSV data directly into the HTML table generator?',
+        answer:
+          'Yes. You can paste comma-separated or tab-separated text to populate the visual table grid automatically before generating styled HTML code.',
+      },
+      {
+        question:
+          'Does the tool generate responsive CSS styles for mobile screens?',
+        answer:
+          'Yes. You can toggle responsive CSS styles that enable horizontal scrolling wrappers or card-based reflow layouts on mobile device viewports.',
+      },
+      {
+        question: 'Are my tabular datasets or HTML code snippets saved online?',
+        answer:
+          'No. All visual grid editing and HTML code generation execute client-side in browser memory with zero outbound network calls, maintaining total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'bank-account-masking-tool', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-bank-account-masking-tool': {
+    directAnswer:
+      'Mask bank account numbers directly in your browser by concealing initial digits with asterisk or X placeholders while preserving the last 3 or 4 digits for verification. The tool sanitizes financial account numbers entirely client-side in memory to ensure personal banking details and corporate payroll rosters remain completely confidential. The masking tool executes client-side in browser memory with zero network transmissions to ensure privacy.',
+    leadParagraph:
+      'Sharing invoices, customer reimbursement receipts, payroll ledgers, and bank confirmation slips frequently requires obscuring sensitive bank account numbers to prevent financial identity theft and fraud. Regulatory guidelines and financial security practices mandate that account numbers be masked so that only the final digits remain visible for transaction reconciliation. This browser-based bank account masking tool allows individuals, business accountants, and human resources teams to mask single account numbers or bulk lists, replacing leading numeric digits with customizable masking characters (such as asterisks or X symbols). The tool preserves necessary formatting prefixes while sanitizing sensitive account digits across customer records. Because personal bank account numbers represent highly sensitive financial data prone to banking fraud, all masking operations execute locally in client browser memory. No financial numbers or account records are ever stored on external web servers.',
+    faqs: [
+      {
+        question:
+          'Why is masking bank account numbers recommended before sharing?',
+        answer:
+          'Masking hides sensitive account digits from unauthorized viewers while preserving the final digits, allowing recipients to verify identity without risking fraud.',
+      },
+      {
+        question: 'Can I choose how many ending digits remain unmasked?',
+        answer:
+          'Yes. You can configure the tool to reveal the final 2, 3, or 4 digits according to your banking institution or compliance verification policies.',
+      },
+      {
+        question: 'Can I mask bulk lists of employee or vendor bank accounts?',
+        answer:
+          'Yes. The tool processes multi-line lists of bank account numbers in one batch pass, applying consistent masking across all rows instantly.',
+      },
+      {
+        question: 'Are my private bank account numbers uploaded to any server?',
+        answer:
+          'No. All text parsing and numeric masking execute client-side in browser memory with zero outbound network transmissions, ensuring absolute banking privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'mass-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-mass-converter': {
+    directAnswer:
+      'Convert mass and weight measurements directly in your browser across kilograms, grams, milligrams, metric tonnes, pounds, ounces, stones, grains, and carats. The tool delivers exact conversion ratios and high-precision decimal solutions entirely client-side in memory to ensure laboratory formulations and commercial shipping weights remain completely confidential. All mass conversions run client-side in browser memory to keep technical formulas completely private.',
+    leadParagraph:
+      'Converting mass and weight metrics between metric, British imperial, and US customary measurement systems is an everyday requirement in freight shipping, chemical pharmacy compounding, athletic nutrition, and academic physics. This client-side mass converter provides simultaneous conversions across standard international units: metric tonnes (t), kilograms (kg), grams (g), milligrams (mg), micrograms (μg), imperial stones (st), pounds (lb), ounces (oz), grains (gr), and jewellery carats (ct). Users can enter any single measurement value to view equivalent weights across all other units instantly, alongside exact fractional ratios and scientific notation for microgram or heavy tonnage quantities. Converting mass units directly in your browser runtime delivers rapid computational verification for laboratory researchers, freight forwarders, and students without desktop conversion utilities. Because chemical formulas and proprietary shipping weights involve confidential business figures, all conversion calculations execute locally within browser memory. No mass values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What mass and weight measurement units are supported by the converter?',
+        answer:
+          'The tool converts kilograms, grams, milligrams, metric tonnes, pounds, ounces, stones, grains, micrograms, and carats accurately across international measurement standards.',
+      },
+      {
+        question:
+          'What exact ratio defines an international pound in metric units?',
+        answer:
+          'Under the 1959 international agreement, one international avoirdupois pound is standardized mathematically as exactly 0.45359237 kilograms (approx. 453.59 grams) for global trade.',
+      },
+      {
+        question:
+          'How many ounces are contained in one standard avoirdupois pound?',
+        answer:
+          'One standard avoirdupois pound contains exactly 16 ounces, which corresponds to 7,000 grains or approximately 453.592 grams in metric units.',
+      },
+      {
+        question:
+          'Are my laboratory weights or commercial shipping numbers logged online?',
+        answer:
+          'No. All mass conversions run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your weight calculations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'weighted-grade-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-weighted-grade-calculator': {
+    directAnswer:
+      'Calculate weighted course grades directly in your browser by assigning percentage weights to homework, quizzes, laboratory exercises, and exams. The tool computes cumulative weighted averages and target final exam scores entirely client-side in memory to keep university academic transcripts, degree performance, and student marks completely confidential. The tool computes weighted averages client-side in browser memory to keep student marks private.',
+    leadParagraph:
+      'Most high school and university courses do not treat all assignments equally; instead, syllabi assign proportional category weights where exams count for 50 percent, homework 20 percent, and laboratory work 30 percent of the final mark. This browser-based weighted grade calculator allows students to enter distinct coursework categories, assign their syllabus percentage weights, and record earned marks to calculate overall weighted course standings. The tool automatically validates that entered category weights sum to 100 percent, highlighting current weighted averages and calculating the exact exam score required on an upcoming final evaluation to secure a target letter grade. Calculating weighted grades directly in browser memory eliminates grading confusion and helps students prioritize revision efforts during examination weeks. Because student grades and academic performance trajectories represent sensitive personal data, all calculations execute locally within client browser memory. No academic marks or student profiles are ever stored on external web servers.',
+    faqs: [
+      {
+        question:
+          'How are weighted grades calculated from syllabus category percentages?',
+        answer:
+          'Each category average is multiplied by its assigned decimal weight, and the resulting weighted points are summed to determine the final course percentage.',
+      },
+      {
+        question:
+          'What happens if syllabus category weights do not total 100 percent?',
+        answer:
+          'The calculator normalises weights proportionally against the current entered total, giving an accurate running standing even if some categories remain pending.',
+      },
+      {
+        question:
+          'Can I calculate the score required on the final exam to get an A?',
+        answer:
+          'Yes. Enter your target grade percentage and final exam category weight; the tool calculates the exact percentage mark needed on the exam.',
+      },
+      {
+        question:
+          'Are my academic grades or course weights uploaded to external servers?',
+        answer:
+          'No. All weighted grade evaluations execute client-side in browser memory with zero network traffic, ensuring complete confidentiality for your academic records.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'outlier-detector', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-outlier-detector': {
+    directAnswer:
+      'Detect statistical outliers in spreadsheet columns directly in your browser using Interquartile Range (IQR) and Z-score methodologies. The tool flags extreme anomalies and data entry errors in Excel and CSV files entirely client-side in memory to ensure corporate financial models, private customer records, and survey tables remain completely secure. The tool evaluates outlier statistics client-side in browser memory to keep business data secure.',
+    leadParagraph:
+      'Data entry typos, measurement sensor glitches, and extreme transaction amounts can significantly distort statistical modeling, regression analyses, and business forecasts if left unaddressed in raw spreadsheets. This client-side outlier detector allows data scientists, financial auditors, and quality control engineers to inspect uploaded Excel (.xlsx) and CSV files, identifying anomalous data points across numeric columns. The tool provides dual detection methodologies: the Tukey Interquartile Range method (flagging values beyond 1.5 times the IQR from quartiles) and the standard Z-score method (highlighting values beyond 2 or 3 standard deviations from the mean). Users can view identified anomaly rows, inspect statistical boundary limits, and export filtered datasets with outliers flagged or isolated. Running anomaly detection directly in browser memory accelerates exploratory data analysis without uploading sensitive tables to third-party cloud services. Because enterprise spreadsheets frequently contain confidential payroll numbers, transaction ledgers, or customer metrics, all outlier scanning executes locally inside browser memory. No data records are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'How does the Interquartile Range (IQR) method detect outliers?',
+        answer:
+          'The IQR method flags any value falling below Q1 - 1.5×IQR or above Q3 + 1.5×IQR, providing resilient detection unaffected by extreme values.',
+      },
+      {
+        question:
+          'When should Z-score outlier detection be preferred over IQR?',
+        answer:
+          'Z-score detection is ideal for normally distributed Gaussian data, flagging observations situated more than 2 or 3 standard deviations from the mean.',
+      },
+      {
+        question:
+          'Can I export a cleaned dataset with identified outliers removed?',
+        answer:
+          'Yes. You can download a filtered spreadsheet with anomalous rows removed or export an isolated list containing only the flagged outlier records.',
+      },
+      {
+        question:
+          'Are my corporate financial records or customer tables uploaded?',
+        answer:
+          'No. All spreadsheet parsing and outlier detection algorithms execute client-side in browser memory with zero outbound network calls, ensuring total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'punctuation-cleaner', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-punctuation-cleaner': {
+    directAnswer:
+      'Clean, fix, and standardise punctuation marks in text documents directly in your browser. The tool removes repetitive punctuation (such as !!! or ???), fixes spacing before and after commas, repairs unclosed brackets, and strips stray symbols entirely client-side in memory to ensure confidential manuscripts, technical documentation, and marketing drafts remain completely private.',
+    leadParagraph:
+      'Cleaning unedited text drafts, fixing messy OCR document scans, and sanitizing customer comments often requires resolving repetitive punctuation, missing sentence spaces, and stray formatting characters. This client-side punctuation cleaner automatically normalises punctuation formatting across text documents. The tool collapses multiple consecutive exclamation points or question marks into single punctuation marks, inserts missing spaces after commas, periods, and colons, strips spaces preceding punctuation, and standardises inconsistent quotation mark pairings. Writers, copy editors, and administrative professionals can configure individual cleaning rules to preserve specific stylistic elements while correcting typographical blemishes across long passages. Sanitizing punctuation directly in local browser memory saves editorial teams time during proofreading passes without copying sensitive draft manuscripts into remote cloud tools. Because unpublished manuscripts, corporate press releases, and technical documentation contain proprietary content, all punctuation transformations run locally within browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'What common punctuation formatting mistakes does the tool fix?',
+        answer:
+          'The tool fixes missing spaces after commas and periods, removes awkward spaces before punctuation, collapses multiple exclamation marks, and repairs quotes.',
+      },
+      {
+        question:
+          'Can I preserve ellipsis dots while collapsing multiple periods?',
+        answer:
+          'Yes. The cleaner distinguishes deliberate three-dot ellipses (...) from accidental duplicate periods, preserving standard typographic ellipsis structures throughout document paragraphs.',
+      },
+      {
+        question:
+          'Does the tool strip or retain standard sentence capitalisation?',
+        answer:
+          'The cleaner preserves existing character capitalization while providing an optional toggle to ensure letters following terminal punctuation marks are capitalized consistently.',
+      },
+      {
+        question:
+          'Are my document drafts or manuscript copy saved on remote servers?',
+        answer:
+          'No. All text parsing and punctuation cleaning algorithms execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'hourly-to-salary-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-hourly-to-salary-calculator': {
+    directAnswer:
+      'Convert hourly wage rates into annual, monthly, bi-weekly, and weekly salary equivalents directly in your browser. The tool accounts for weekly working hours, paid time off, and overtime multipliers entirely client-side in memory to keep personal salary negotiations, job offer comparisons, and household income figures completely confidential. The wage calculator executes client-side in browser memory to keep personal salary data private.',
+    leadParagraph:
+      'Evaluating job offers, negotiating freelance consulting rates, and planning annual household budgets requires converting wage rates between hourly pay and annual salary equivalents. This client-side wage calculator converts hourly earnings into daily, weekly, bi-weekly, semi-monthly, monthly, and annual gross compensation based on customizable weekly work hours (such as standard 40-hour workweeks). The tool allows users to factor in unpaid vacation weeks, paid holidays, and expected overtime hours to calculate realistic gross annual earnings rather than theoretical baselines. Converting wage rates directly in your browser runtime provides instant financial clarity during job negotiations and budgeting discussions without software installations. Because personal compensation figures, freelance billing rates, and household earnings represent private financial records, all calculations execute locally within browser memory. No salary figures or employment parameters are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'How is an hourly wage converted to an annual salary baseline?',
+        answer:
+          'In a standard 40-hour workweek with 52 weeks per year (2,080 working hours), annual salary equals hourly wage multiplied by 2,080.',
+      },
+      {
+        question:
+          'Can I adjust the calculation for unpaid vacation or part-time schedules?',
+        answer:
+          'Yes. You can customize weekly working hours (such as 35 or 20 hours) and specify unpaid vacation weeks to reflect actual annual working schedules.',
+      },
+      {
+        question:
+          'Does the calculator estimate net take-home pay after income taxes?',
+        answer:
+          'The calculator computes gross earnings before statutory payroll taxes, pension deductions, and health insurance premiums are withheld from employee paychecks.',
+      },
+      {
+        question:
+          'Are my wage numbers or salary calculations logged on a server?',
+        answer:
+          'No. All compensation conversions run strictly inside local client browser memory with zero network communication, ensuring complete privacy for your salary figures.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'upi-id-format-checker', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-upi-id-format-checker': {
+    directAnswer:
+      'Validate and check Unified Payments Interface (UPI) virtual payment address (VPA) formats directly in your browser. The tool verifies username character rules, handles handle separators (@), and validates banking payment handles entirely client-side in memory to ensure payment recipient addresses and financial identifiers remain completely confidential. The checker verifies payment handles locally in client browser memory with zero network traffic.',
+    leadParagraph:
+      'Unified Payments Interface (UPI) virtual payment addresses (such as username@bankhandle) are the dominant digital payment mechanism across India for peer-to-peer transfers, merchant checkouts, and bill settlements. Entering a malformed UPI ID—such as containing invalid special characters, spaces, or unrecognized payment provider handles—causes immediate payment failures and delayed business transactions. This browser-based UPI ID format checker validates entered payment addresses against National Payments Corporation of India (NPCI) syntax specifications. The tool verifies handle structures, checks known bank and fintech provider handles (including @okhdfcbank, @okicici, @paytm, @ybl, @axl), and sanitizes surrounding whitespace. Validating payment addresses directly in client browser memory ensures transaction readiness before executing merchant payments or initiating customer refunds. Because payment handles and recipient identifiers represent private financial data, all format checking executes locally in client browser memory. No payment IDs are ever logged or sent to external servers.',
+    faqs: [
+      {
+        question:
+          'What syntactic structure defines a valid UPI payment address?',
+        answer:
+          'A valid UPI ID consists of a username (alphanumeric characters, dots, or hyphens) followed by an @ symbol and a recognized payment service provider handle.',
+      },
+      {
+        question:
+          'Does this tool check if a UPI ID is actively registered with a bank?',
+        answer:
+          'No. The tool verifies structural syntax and recognized bank handle formats offline in browser memory without sending financial verification queries to NPCI.',
+      },
+      {
+        question:
+          'What characters are permitted in the username portion of a UPI ID?',
+        answer:
+          'Standard UPI usernames permit lowercase and uppercase letters, numeric digits, periods, and hyphens; spaces and special symbols like commas are prohibited.',
+      },
+      {
+        question:
+          'Are my payment addresses or UPI IDs tracked on external servers?',
+        answer:
+          'No. All format validation occurs strictly within client browser memory with zero network traffic, ensuring complete privacy for your payment details.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'temperature-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-temperature-converter': {
+    directAnswer:
+      'Convert thermal temperatures directly in your browser across Celsius, Fahrenheit, Kelvin, and Rankine scales. The tool provides exact algebraic formulas and high-precision decimal solutions entirely client-side in memory to ensure scientific laboratory experiments, weather measurements, and culinary recipes remain completely confidential. All thermal conversions execute client-side in browser memory to keep laboratory temperature logs private.',
+    leadParagraph:
+      'Converting temperature readings between metric Celsius, imperial Fahrenheit, and thermodynamic Kelvin scales is a fundamental everyday task in chemical engineering, meteorology, culinary baking, HVAC environmental control, and physics education. This client-side temperature converter provides instantaneous multi-way conversions across Celsius (°C), Fahrenheit (°F), Kelvin (K), and Rankine (°R) scales using exact thermodynamic transformation formulas. Users can input any single temperature reading to view equivalent thermal values across all scales simultaneously, alongside physical context benchmarks such as water freezing point, boiling point, and absolute zero. Evaluating temperature scales directly in your browser runtime provides rapid computational verification for culinary professionals, laboratory researchers, and students without desktop conversion utilities. Because scientific experiment logs and industrial temperature recipes involve proprietary specifications, all conversion calculations execute locally within browser memory. No temperature figures are ever sent across external networks.',
+    faqs: [
+      {
+        question: 'What mathematical formula converts Celsius to Fahrenheit?',
+        answer:
+          'Fahrenheit equals Celsius multiplied by 9/5 plus 32 (°F = (°C × 9/5) + 32), accounting for both scale interval scaling and freezing point offset.',
+      },
+      {
+        question:
+          'What is the absolute zero temperature in Celsius and Kelvin?',
+        answer:
+          'Absolute zero is exactly 0 Kelvin (0 K), which corresponds to -273.15 degrees Celsius (-459.67 degrees Fahrenheit), representing zero thermodynamic energy.',
+      },
+      {
+        question:
+          'At what temperature are Celsius and Fahrenheit values identical?',
+        answer:
+          'Celsius and Fahrenheit scales intersect at exactly -40 degrees (-40°C equals -40°F), where both scales report identical numerical temperature values.',
+      },
+      {
+        question:
+          'Are my scientific laboratory temperatures or recipe figures saved online?',
+        answer:
+          'No. All temperature conversions run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your thermal calculations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'attendance-percentage-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-attendance-percentage-calculator': {
+    directAnswer:
+      'Calculate student attendance percentages directly in your browser by entering total classes conducted and sessions attended. The tool calculates current attendance ratios and determines how many consecutive future classes must be attended to satisfy mandatory institutional thresholds (such as 75% or 80%) entirely client-side in memory to keep student attendance records confidential.',
+    leadParagraph:
+      'Universities and professional academic boards strictly enforce minimum attendance percentage requirements (typically 75 or 80 percent) as a prerequisite for sitting semester examinations or maintaining scholarship eligibility. When students miss classes due to illness or personal circumstances, knowing their exact current attendance standing and how many future lectures they must attend consecutively to regain compliance is vital. This browser-based attendance percentage calculator computes current attendance percentages, identifies whether attendance meets institutional criteria, and provides predictive future planning: calculating exactly how many consecutive upcoming classes a student must attend to reach target percentages or how many classes they can afford to miss without falling below thresholds. Evaluating attendance directly in browser memory eliminates manual tracking mistakes during semester planning. Because academic attendance records and student identities involve private personal data, all calculations execute locally in client browser memory. No attendance records are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question: 'How is attendance percentage calculated mathematically?',
+        answer:
+          'Attendance percentage equals total attended classes divided by total conducted classes multiplied by 100 ((attended / total) × 100) for term evaluations.',
+      },
+      {
+        question:
+          'How does the calculator determine classes needed to reach 75 percent?',
+        answer:
+          'The tool solves the linear inequality (attended + x) / (total + x) ≥ 0.75, where x represents the exact number of consecutive future classes required.',
+      },
+      {
+        question: 'Can I calculate how many future classes I can safely miss?',
+        answer:
+          'Yes. If your current attendance exceeds the threshold, the tool calculates how many consecutive upcoming classes you can miss while staying above the minimum.',
+      },
+      {
+        question:
+          'Are my personal university attendance figures stored on any server?',
+        answer:
+          'No. All attendance calculations occur strictly within client browser memory with zero outbound network calls, ensuring complete privacy for your academic records.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'date-column-normalizer', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-date-column-normalizer': {
+    directAnswer:
+      'Normalise inconsistent date formats across spreadsheet columns directly in your browser. The tool transforms mixed date representations (MM/DD/YYYY, DD/MM/YYYY, ISO 8601 YYYY-MM-DD, and textual dates) into unified standard formats in Excel and CSV files entirely client-side in memory to ensure corporate financial models, private customer spreadsheets, and transaction logs remain completely secure.',
+    leadParagraph:
+      'Consolidating transaction logs, regional sales reports, and customer databases often results in chaotic date columns containing mixed formats—such as US style month-first dates (04/05/2026), international day-first dates (05/04/2026), ISO timestamps, and written textual dates (April 5, 2026). These inconsistencies break chronological sorting, fail database imports, and cause miscalculated aging buckets in financial reports. This client-side spreadsheet date column normalizer parses uploaded Excel (.xlsx) and CSV files, detects date columns, and standardises every entry into your chosen uniform format (such as ISO 8601 YYYY-MM-DD). The tool resolves ambiguous date patterns interactively, validates calendar validity, and exports cleaned tables ready for database loading. Normalising date columns directly in browser memory saves data engineers and accountants hours of manual data wrangling without third-party web services. Because business spreadsheets frequently contain sensitive corporate transactions or customer records, all date parsing runs locally inside browser memory. No spreadsheet files are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question: 'How does the tool resolve ambiguous dates like 03/04/2026?',
+        answer:
+          'You can specify your source dataset primary regional convention (month-first US or day-first European) to resolve ambiguous day-month integers consistently.',
+      },
+      {
+        question:
+          'Why is ISO 8601 (YYYY-MM-DD) recommended for spreadsheet dates?',
+        answer:
+          'ISO 8601 sorts alphabetically in true chronological order, avoids regional day-month confusion, and integrates seamlessly into SQL database import engines.',
+      },
+      {
+        question:
+          'What spreadsheet file formats can be normalised with this tool?',
+        answer:
+          'The normalizer supports modern OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for thorough date cleaning.',
+      },
+      {
+        question:
+          'Are my confidential business transactions or spreadsheet records uploaded?',
+        answer:
+          'No. All spreadsheet decoding and date normalisations occur client-side in browser memory with zero outbound network calls, maintaining total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'accessibility-contrast-checker', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-accessibility-contrast-checker': {
+    directAnswer:
+      'Check color contrast ratios directly in your browser against Web Content Accessibility Guidelines (WCAG 2.1) AA and AAA standards. The tool evaluates foreground text and background color combinations for normal text, large text, and user interface components entirely client-side in memory to ensure unreleased website designs and branding palettes remain confidential.',
+    leadParagraph:
+      'Ensuring that web content is legible for individuals with low vision or color vision deficiencies is both an ethical responsibility and a legal requirement under accessibility mandates like Section 508 and the European Accessibility Act. This client-side accessibility contrast checker calculates relative luminance values between text foreground colours and container backgrounds, determining exact contrast ratios according to the official W3C WCAG 2.1 formula. The tool provides instant pass or fail compliance ratings across WCAG AA and AAA criteria for standard body copy (minimum 4.5:1 ratio), large headline text (minimum 3:1 ratio), and user interface graphical components. Web designers and front-end developers can adjust RGB, HEX, or HSL color sliders interactively to discover accessible color combinations that preserve brand aesthetics. Testing contrast compliance directly in browser memory accelerates design audits without transmitting proprietary color schemes to external services. Because pre-launch digital designs and branding tokens require commercial discretion, all color evaluations execute locally within browser memory. No design data is ever sent to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What are the minimum contrast ratios required by WCAG 2.1 AA standards?',
+        answer:
+          'WCAG 2.1 AA requires a minimum contrast ratio of 4.5:1 for regular text and 3:1 for large text (18pt or 14pt bold) and user interface components.',
+      },
+      {
+        question: 'What higher threshold is mandated for WCAG AAA compliance?',
+        answer:
+          'WCAG AAA requires an enhanced contrast ratio of 7:1 for normal body text and 4.5:1 for large typography, maximizing readability for visual impairments.',
+      },
+      {
+        question:
+          'How does the checker calculate relative luminance between colors?',
+        answer:
+          'The checker applies the official W3C formula, converting sRGB color channels to linear values and weighting red (0.2126), green (0.7152), and blue (0.0722).',
+      },
+      {
+        question:
+          'Are my brand color palettes or styling tokens shared online?',
+        answer:
+          'No. All color luminance calculations and accessibility rating checks execute client-side in browser memory with zero network traffic, ensuring complete design privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'overtime-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-overtime-calculator': {
+    directAnswer:
+      'Calculate overtime pay and total gross wages directly in your browser based on standard hourly rates, regular working hours, and overtime hours worked. The tool models time-and-a-half (1.5x), double-time (2.0x), and custom pay multipliers entirely client-side in memory to keep employee payroll records, timesheets, and earnings completely confidential. The payroll calculator runs client-side in browser memory to keep employee compensation private.',
+    leadParagraph:
+      'Calculating total employee compensation during peak operating periods or holiday shifts requires accurate accounting for statutory overtime pay rates. Under labor standards such as the US Fair Labor Standards Act (FLSA) and international labor laws, non-exempt employees working beyond standard weekly thresholds (typically 40 hours per week or 8 hours per day) are entitled to overtime premiums, commonly paid at time-and-a-half (1.5 times regular hourly wage) or double-time for weekend and holiday work. This browser-based overtime calculator allows employees, payroll specialists, and freelance contractors to enter standard hourly rates, regular hours worked, and overtime hours under standard or custom multipliers to determine exact gross wage totals. Calculating payroll figures directly in browser memory eliminates manual payroll calculation errors and ensures fair compensation transparency. Because personal wage numbers and employee timesheet records represent sensitive financial data, all calculations execute locally within client browser memory. No wage records or payroll figures are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What is the standard multiplier for time-and-a-half overtime pay?',
+        answer:
+          'Time-and-a-half pays 1.5 times the standard hourly wage rate for all qualifying hours worked beyond the baseline 40-hour weekly statutory threshold.',
+      },
+      {
+        question:
+          'When is double-time pay typically applied in employment contracts?',
+        answer:
+          'Double-time (2.0 times regular pay) is commonly applied for work performed on statutory public holidays, weekend shifts, or hours exceeding 12 hours in a single workday.',
+      },
+      {
+        question:
+          'Can I calculate compensation with multiple different overtime rates?',
+        answer:
+          'Yes. You can enter separate hours for regular pay, time-and-a-half (1.5x), and double-time (2.0x) to compute total aggregate gross earnings accurately.',
+      },
+      {
+        question:
+          'Are my payroll numbers or hourly wage records saved on any server?',
+        answer:
+          'No. All compensation calculations run strictly inside local client browser memory with zero outbound network calls, ensuring complete financial privacy for your wages.',
+      },
+    ],
+  },
 };
 
 /**
