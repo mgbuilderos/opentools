@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
 import { CACHED_GUIDE_SLUGS } from './cached-guides';
+import { COMPARE_ROUTES } from './compare-pages';
 import { GUIDE_CONSOLIDATION_ENABLED } from './guide-consolidation-config';
 import {
   GUIDE_CONSOLIDATION,
@@ -151,6 +152,11 @@ describe('guide consolidation off is the previous behaviour', () => {
       '/guides',
       '/blog',
       '/templates',
+      // Added after d032150 and mirrored here for the same reason every other
+      // core route is: this function's job is to rebuild the shipped sitemap
+      // minus consolidation, so a core route missing from it would be scored
+      // as a guide the switch dropped.
+      ...COMPARE_ROUTES,
     ].map((route) => ({
       url: `${origin}${route}`,
       changeFrequency: route === '' ? ('daily' as const) : ('weekly' as const),
