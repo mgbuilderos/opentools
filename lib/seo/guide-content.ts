@@ -165,6 +165,260 @@ export interface GuideDetail {
 }
 
 const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-percentile-calculator': {
+    directAnswer:
+      'Calculate percentiles, quartiles, and percentile ranks directly in your browser from raw numeric datasets. The tool computes k-th percentiles and interquartile ranges using standard linear interpolation entirely client-side in memory to ensure academic examination results, employee compensation benchmarks, clinical pediatric percentiles, demographic surveys, and private research metrics remain completely confidential.',
+    leadParagraph:
+      'Percentiles divide an ordered set of numerical observations into one hundred equal parts, indicating the relative standing of an individual measurement within a broader population distribution. This browser-based percentile calculator evaluates arbitrary numeric datasets, computing standard quartiles (first quartile Q1, median Q2, and third quartile Q3), deciles, and arbitrary k-th percentiles without transmitting data across external networks. The calculator supports standard statistical interpolation methods (including NIST linear interpolation and nearest rank algorithms) and generates full five-number summaries alongside interquartile range (IQR) outlier thresholds. Calculating percentile ranks allows educators, paediatricians, human resource compensation analysts, and researchers to assess whether individual test scores, child growth measurements, or salary bands align with expected demographic distributions. Because array sorting, rank indexing, and linear interpolation execute entirely client-side in local browser memory, proprietary compensation structures, student examination grades, and confidential clinical growth data remain strictly protected on your personal device.',
+    faqs: [
+      {
+        question:
+          'What is the difference between a percentile and a percentage?',
+        answer:
+          'A percentage represents a proportion out of one hundred, whereas a percentile indicates the proportion of scores in a distribution that fall at or below a specific observation.',
+      },
+      {
+        question: 'Which interpolation method does the calculator use?',
+        answer:
+          'The calculator applies standard linear interpolation between adjacent ordered ranks, matching the default percentile calculation methodologies used in statistical analysis packages.',
+      },
+      {
+        question: 'Can this tool calculate quartiles and interquartile range?',
+        answer:
+          'Yes. The tool automatically computes the 25th percentile (Q1), the 50th percentile (median), the 75th percentile (Q3), and the resulting interquartile range.',
+      },
+      {
+        question: 'Are my confidential survey figures sent over the web?',
+        answer:
+          'No. All dataset sorting and percentile interpolation routines run client-side in local browser memory with zero network traffic, ensuring complete data confidentiality.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-correlation-calculator': {
+    directAnswer:
+      'Calculate Pearson correlation coefficients (r), Spearman rank correlations, and covariance directly in your browser for paired bivariate datasets. The tool determines linear association strength and statistical significance entirely client-side in memory to ensure scientific research observations, financial market metrics, econometric models, academic survey results, and private laboratory experiments remain completely confidential.',
+    leadParagraph:
+      'Correlation analysis quantifies the strength and direction of linear association between two paired continuous variables, providing foundational insights for empirical science, financial portfolio management, and social research. This browser-based correlation calculator computes Pearson product-moment correlation coefficients (r), sample covariance, and coefficients of determination (r-squared) from paired data series (X and Y) without transmitting observations across external networks. The tool evaluates correlation coefficients along the standard spectrum from negative one (perfect inverse relationship) to positive one (perfect direct relationship), displaying intermediate sums of squares and cross-products for manual verification. Calculating correlation coefficients enables researchers and analysts to determine whether variations in one variable correspond systematically to shifts in another before building predictive regression models. Because all bivariate arithmetic, standard deviation scalings, and cross-multiplications execute entirely client-side in local browser memory, proprietary financial trading logs, clinical trial measurements, and sensitive research datasets remain strictly protected behind your browser boundary.',
+    faqs: [
+      {
+        question: 'What does a Pearson correlation coefficient (r) indicate?',
+        answer:
+          'The Pearson correlation coefficient measures linear relationship strength, ranging from minus one (perfect negative correlation) through zero (no linear relationship) to plus one (perfect positive correlation).',
+      },
+      {
+        question: 'What is the meaning of the r-squared value?',
+        answer:
+          'The coefficient of determination (r-squared) indicates the proportion of variance in the dependent variable that is predictable from the independent variable in the linear relationship.',
+      },
+      {
+        question:
+          'Does correlation imply a causal relationship between variables?',
+        answer:
+          'No. Statistical correlation establishes that two variables move together systematically, but it does not prove that changes in one variable cause changes in the other.',
+      },
+      {
+        question:
+          'Is my bivariate experimental data transmitted to any server?',
+        answer:
+          'No. All covariance calculations and correlation matrix routines execute strictly client-side in local browser memory with zero network requests, guaranteeing complete privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-linear-regression-calculator': {
+    directAnswer:
+      'Calculate simple linear regression equations (y = mx + b), slopes, y-intercepts, and R-squared values directly in your browser from paired numeric datasets. The tool computes ordinary least squares trendlines entirely client-side in memory to ensure economic forecasts, scientific experiment measurements, laboratory data records, and engineering test calibrations remain completely confidential.',
+    leadParagraph:
+      'Simple linear regression models the functional relationship between an independent explanatory variable (X) and a dependent response variable (Y), establishing a best-fit mathematical equation for trend forecasting and experimental calibration. This browser-based linear regression calculator applies Ordinary Least Squares (OLS) estimation to paired bivariate datasets without transmitting research data across external networks. The tool computes the regression slope (m), y-axis intercept (b), standard error of the estimate, Pearson correlation coefficient (r), and coefficient of determination (R^2), formulating the complete linear equation y = mx + b. It also generates predicted values (y-hat) and residual errors for each observation, helping users diagnose whether data distributions satisfy linear assumptions. Because all matrix inversions, sums of squares, and parameter estimations execute entirely client-side in local browser memory, proprietary econometric models, manufacturing tolerance calibrations, and private clinical trial metrics remain confidential behind your local browser boundary.',
+    faqs: [
+      {
+        question:
+          'How does Ordinary Least Squares (OLS) find the best-fit line?',
+        answer:
+          'Ordinary Least Squares minimizes the sum of squared vertical differences (residuals) between observed data points and the fitted mathematical regression line.',
+      },
+      {
+        question:
+          'What does the slope (m) in the regression equation represent?',
+        answer:
+          'The slope represents the estimated change in the dependent response variable (y) for every single unit increase in the independent explanatory variable (x).',
+      },
+      {
+        question: 'Can I use the generated equation to make predictions?',
+        answer:
+          'Yes. You can insert arbitrary x values into the resulting y = mx + b equation to calculate predicted y outcomes within the observed data domain.',
+      },
+      {
+        question: 'Are my regression datasets sent across the network?',
+        answer:
+          'No. All least squares computations and parameter estimations run client-side in local browser memory with zero network calls, ensuring complete privacy for your data.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-sample-size-calculator': {
+    directAnswer:
+      'Calculate required statistical sample sizes directly in your browser for public opinion polls, market surveys, and scientific clinical trials. The tool evaluates confidence levels (90%, 95%, 99%), margins of error, and population sizes entirely client-side in memory to ensure research budgets, clinical protocols, and private survey plans remain completely confidential.',
+    leadParagraph:
+      'Determining the correct sample size is a vital preparatory step in experimental design, market research surveys, and scientific clinical studies, ensuring that empirical findings achieve statistical power without incurring unnecessary field expenses. This browser-based sample size calculator evaluates statistical requirements based on target confidence levels (such as 90%, 95%, or 99%), desired margins of error, expected population proportions, and finite population bounds without transmitting research parameters over the internet. The tool applies standard Cochran sample size formulas and automatically introduces finite population correction adjustments when sampling from constrained respondent pools. Calculating required sample sizes in advance protects research projects from being underpowered (risking false negative conclusions) or oversized (wasting participant recruitment resources). Because all z-score selections, statistical power calculations, and finite corrections execute entirely client-side in local browser memory, proprietary customer polling projects, pharmaceutical trial designs, and strategic research proposals remain completely secure on your personal machine.',
+    faqs: [
+      {
+        question:
+          'What is the standard formula used for sample size determination?',
+        answer:
+          "The calculator uses Cochran's formula: n = (z^2 * p * (1 - p)) / e^2, where z is critical score, p is proportion, and e is margin of error.",
+      },
+      {
+        question: 'Why is 50% used as the default expected proportion (p)?',
+        answer:
+          'An assumed proportion of 50% produces the maximum possible variance (p * (1 - p) = 0.25), guaranteeing a conservative sample size recommendation for unknown populations.',
+      },
+      {
+        question:
+          'How does finite population correction affect the sample size?',
+        answer:
+          'When the target population is known and relatively small, finite population correction reduces the required sample size because a larger fraction of the group is surveyed.',
+      },
+      {
+        question: 'Are my clinical or market research plans uploaded anywhere?',
+        answer:
+          'No. All sample size formulas and parameter adjustments execute strictly client-side in local browser memory with zero network requests, ensuring complete research privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-random-number-generator': {
+    directAnswer:
+      'Generate random integers, decimal values, and random sequences directly in your browser using cryptographically secure browser entropy. The tool supports custom numerical ranges, non-repeating draws, and sorted outputs entirely client-side in memory to ensure lottery draws, statistical sampling sets, cryptographic keys, scientific simulations, and private gaming sessions remain completely secure.',
+    leadParagraph:
+      'Generating unbiased random numbers is essential across statistical sampling, cryptographic nonce creation, board gaming, procedural simulation, and randomized prize giveaways. This browser-based random number generator produces random integers and floating-point decimal values within user-configured minimum and maximum bounds without transmitting requests over external servers. The generator leverages the Web Cryptography API (crypto.getRandomValues) to draw high-entropy, cryptographically unguessable randomness directly from underlying hardware noise, avoiding the predictable periodicity associated with legacy pseudo-random algorithms. Users can specify batch quantities, enforce unique non-repeating draws (sampling without replacement), and sort generated numbers in ascending or descending sequence for immediate verification. Because all entropy collection, rejection sampling, and array formatting execute entirely client-side in local browser memory, private tournament seedings, randomized raffle tickets, and confidential cryptographic parameters remain strictly protected on your personal device. Hardware-generated cryptographic randomness ensures that sequential outcomes cannot be reverse-engineered or predicted by outside observers.',
+    faqs: [
+      {
+        question:
+          'Does this generator use cryptographically secure random sources?',
+        answer:
+          "Yes. The generator employs the browser's native Web Cryptography API (crypto.getRandomValues), utilizing hardware entropy sources to provide cryptographically secure, unpredictable numbers.",
+      },
+      {
+        question: 'Can I generate unique random numbers without duplicates?',
+        answer:
+          'Yes. You can select sampling without replacement to ensure that all generated numbers within your specified batch are distinct and non-repeating.',
+      },
+      {
+        question:
+          'Can I generate floating-point decimal numbers as well as integers?',
+        answer:
+          'Yes. The tool supports both discrete integer generation and continuous decimal floating-point numbers configured to your chosen decimal place precision.',
+      },
+      {
+        question:
+          'Are generated random numbers logged or transmitted over the internet?',
+        answer:
+          'No. All random number generation and array sorting routines execute locally in browser memory with zero network traffic, ensuring complete session confidentiality.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-dice-roller': {
+    directAnswer:
+      'Roll polyhedral tabletop dice and custom sided dice directly in your browser with modifier adjustments, roll history tracking, and outcome distribution statistics. The tool computes fair random rolls entirely client-side in memory to ensure tabletop gaming sessions, roleplaying campaigns, board games, classroom simulations, probability demonstrations, and private gaming logs remain completely confidential.',
+    leadParagraph:
+      'Tabletop roleplaying games (such as Dungeons & Dragons and Pathfinder), board games, and probability classes frequently require rolling multiple polyhedral dice with positive or negative mathematical modifiers. This browser-based dice roller simulates standard gaming dice (including d4, d6, d8, d10, d12, d20, and d100 percentile dice) alongside arbitrary custom-sided dice without sending game rolls across external networks. The roller utilizes hardware-backed browser randomness to guarantee fair, uniform probability distributions across all faces, preventing digital roll bias. Users can configure complex dice notations (such as 3d6 + 5 or 2d20 drop lowest), view cumulative roll totals, track complete roll history logs, and review statistical frequency distributions over repeated trials. Because all random selections, modifier additions, and history tallies execute entirely client-side in local browser memory, tabletop campaign storylines, private gaming outcomes, and classroom probability demonstrations remain strictly private on your personal machine.',
+    faqs: [
+      {
+        question: 'Which standard polyhedral dice does the roller support?',
+        answer:
+          'The tool supports all standard tabletop RPG dice, including four-sided (d4), six-sided (d6), eight-sided (d8), ten-sided (d10), twelve-sided (d12), twenty-sided (d20), and percentile dice (d100).',
+      },
+      {
+        question: 'Can I add numerical modifiers to my dice rolls?',
+        answer:
+          'Yes. You can append positive or negative modifiers (such as +3 or -2) to individual dice or aggregate roll pools, calculating final results automatically.',
+      },
+      {
+        question:
+          'How does the tool ensure that dice rolls are fair and unbiased?',
+        answer:
+          'The dice roller employs browser cryptographic entropy via the Web Cryptography API, ensuring uniform probability distribution without mechanical or algorithmic bias.',
+      },
+      {
+        question: 'Is my gaming history or dice roll data shared online?',
+        answer:
+          'No. All dice rolling logic and history logging occur strictly client-side in local browser memory with zero network calls, keeping your gaming private.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-coin-flipper': {
+    directAnswer:
+      'Flip fair or weighted virtual coins directly in your browser with batch flipping, cumulative streak analysis, and head-to-tail ratio statistics. The tool simulates Bernoulli trials entirely client-side in memory to ensure coin toss decisions, classroom probability experiments, sports tournament seedings, scientific trials, game outcomes, and private decision choices remain completely confidential.',
+    leadParagraph:
+      'A simple coin flip is the universal standard for fair binary decision-making, sports kick-off seedings, and introductory probability education illustrating Bernoulli trials and the Law of Large Numbers. This browser-based coin flipper provides instantaneous single flips and high-volume batch simulations (flipping hundreds or thousands of coins simultaneously) without transmitting requests across external networks. The simulation utilizes hardware cryptographic entropy to ensure that each flip has an exact fifty-percent probability of landing on heads or tails, while also offering options to test custom weighted coins for probability demonstrations. The interface tracks running totals, percentage distributions, longest consecutive heads or tails streaks, and real-time convergence towards theoretical equilibrium. Because all random trial selections, streak counters, and summary charts execute entirely client-side in local browser memory, tournament bracket decisions, recreational coin toss games, and academic probability trials remain strictly confidential on your personal computer.',
+    faqs: [
+      {
+        question: 'How many coins can I flip in a single batch?',
+        answer:
+          'You can simulate single individual coin flips or execute batch simulations ranging up to thousands of flips simultaneously to analyse empirical probability distributions.',
+      },
+      {
+        question:
+          'How does the tool ensure that coin flips are truly fifty-fifty?',
+        answer:
+          "The flipper uses cryptographically secure hardware entropy through the browser's crypto API, guaranteeing an uncorrupted, perfectly fair fifty-percent probability for each coin.",
+      },
+      {
+        question: 'Does the tool track consecutive streaks of heads and tails?',
+        answer:
+          'Yes. The tool records real-time statistics, including total counts, percentage ratios, and the longest recorded consecutive streaks for both heads and tails.',
+      },
+      {
+        question: 'Is my coin flipping history uploaded to any remote server?',
+        answer:
+          'No. All coin toss simulations, streak tracking, and ratio calculations run client-side in local browser memory with zero network traffic, ensuring complete privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-sequence-generator': {
+    directAnswer:
+      'Generate mathematical number sequences directly in your browser across arithmetic progressions, geometric series, Fibonacci numbers, and prime numbers. The tool computes sequence terms and cumulative series sums entirely client-side in memory to ensure academic mathematics assignments, computer algorithm test cases, classroom demonstrations, algorithmic models, and number theory explorations remain completely confidential.',
+    leadParagraph:
+      'Number sequences form the bedrock of discrete mathematics, computer algorithms, financial amortisation schedules, and number theory. This browser-based sequence generator produces standard mathematical sequences, including arithmetic progressions (where terms increase by a constant difference), geometric progressions (where terms increase by a constant common ratio), Fibonacci sequences, triangular numbers, and prime sequences without sending parameters across external networks. Users can configure initial seed values, common differences or ratios, term count limits, and step boundaries, viewing both formatted term lists and cumulative running sums. The tool handles positive and negative sequences, integer scales, and fractional progressions, allowing data export into comma-separated lists or formatted tables for classroom problem sets or algorithmic validation. Because all iterative sequence computations, ratio multiplications, and summation routines execute entirely client-side in local browser memory, proprietary algorithmic tests, academic examination solutions, and recreational mathematics explorations remain completely secure on your personal device.',
+    faqs: [
+      {
+        question: 'Which sequence types can I generate with this tool?',
+        answer:
+          'The generator supports arithmetic progressions, geometric progressions, Fibonacci sequences, prime number sequences, square numbers, triangular numbers, and custom step sequences.',
+      },
+      {
+        question: 'Can the tool compute the sum of the sequence terms?',
+        answer:
+          'Yes. The generator displays both individual sequence terms and the cumulative series sum (sigma notation) for the generated mathematical progression.',
+      },
+      {
+        question:
+          'Does the generator support negative steps and fractional ratios?',
+        answer:
+          'Yes. You can specify negative differences for descending progressions, as well as decimal or fractional common ratios for decaying geometric sequences.',
+      },
+      {
+        question:
+          'Are my mathematical sequence parameters sent to external servers?',
+        answer:
+          'No. All sequence calculations and series summation algorithms run client-side in local browser memory with zero network communication, ensuring complete research privacy.',
+      },
+    ],
+  },
+
   // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
   'text-and-writing-caesar-cipher': {
     directAnswer:
