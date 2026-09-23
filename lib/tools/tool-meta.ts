@@ -21,6 +21,36 @@ export interface ToolMeta {
 }
 
 export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
+  'latex-hub': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Research-grade academic tools: multi-format table generation, LaTeX table reader, BibTeX deduplication and cleaning, TeXcount word counts, and symbol lookup.',
+  },
+  'schema-hub': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Browser database modeling: SQL to ER diagram (Mermaid, DBML, PlantUML), ERD to DDL, SQL dialect conversion, ORM models (Prisma, Django, SQLAlchemy), and schema diffing.',
+  },
+  'pdf-drawing-register': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Extract drawing numbers, titles, revisions, dates, and authors from architectural drawing set title blocks into CSV spreadsheets.',
+  },
+  'audio-loudness': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Measure ITU-R BS.1770-4 integrated LUFS, true peak (dBTP), loudness range (LRA), and noise floor against streaming and ACX standards.',
+  },
+  'pdf-preflight': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Inspect TrimBox alignment, 3mm bleed margins, font embedding, and image resolution (PPI) before sending to commercial press.',
+  },
+  'pdf-burst': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Split bulk PDF statements and invoices by bookmark, blank page, or regex pattern match with dynamic output file naming.',
+  },
   bench: {
     version: '0.1.0-canary',
     shortDescription:

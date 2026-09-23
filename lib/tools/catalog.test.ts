@@ -180,7 +180,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(688);
+    expect(everyDestination).toBe(694);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -250,12 +250,15 @@ describe('public canary catalog', () => {
       'Redact & Black Out PDF',
       'PDF metadata viewer and remover',
       'Compare PDF Documents Online',
+      'PDF Drawing Register from Title Blocks',
+      'PDF Print Preflight Checker',
+      'Burst PDF by Rule and Dynamic Naming',
     ]);
-    expect(pdf).toHaveLength(18);
+    expect(pdf).toHaveLength(21);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(18);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(21);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

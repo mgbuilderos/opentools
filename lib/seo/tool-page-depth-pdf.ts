@@ -1853,4 +1853,296 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  '/pdf/drawing-register': {
+    title: 'PDF Drawing Register from Title Blocks — Free, Local',
+    description:
+      'Extract drawing numbers, titles, revisions, dates, and authors from architectural drawing set title blocks into CSV spreadsheets without Bluebeam subscriptions.',
+    heading: 'About this architectural drawing register extractor',
+    offlineReady: false,
+    directAnswer:
+      'To build a drawing register from an architectural PDF set: drop the combined PDF into the upload area. The parser inspects the bottom-right and right-edge title block zone on every sheet, parses vector text streams into coordinate-sorted text lines, runs heuristic pattern matching for drawing numbers, revisions, sheet titles, dates, and authors, and displays the structured register in an interactive table ready for instant CSV export.',
+    lead: 'Architects, structural engineers, general contractors, and BIM coordinators spend hours manually transcribing drawing numbers, titles, and revision dates from drawing sets into Excel document registers. Dedicated construction software like Bluebeam Revu charges hundreds of dollars per seat for drawing set management. This tool extracts drawing schedules and registers locally in your browser tab using pdf-lib and client-side vector text stream parsing. It reads multi-sheet architectural sets, locates title block regions across ISO A-series and ANSI drawing sheet sizes, extracts key metadata fields, highlights scanned pages that lack vector text, and provides one-click CSV export and batch bursting into cleanly named individual drawing files.',
+    steps: [
+      {
+        name: 'Upload the architectural drawing set',
+        text: 'Select or drag and drop a multi-page PDF drawing set. The parser accepts combined sets containing dozens or hundreds of sheets. Files are processed entirely in browser memory without sending blueprints across the internet.',
+      },
+      {
+        name: 'Automatic title block zone inspection',
+        text: 'For each page in the document, the parser checks page dimensions (MediaBox) and inspects the primary title block zones—specifically the lower-right quadrant and right-hand title margins where architectural drawing numbers and revision blocks standardly reside according to ISO 5457 and BS 1192 standards.',
+      },
+      {
+        name: 'Heuristic metadata extraction',
+        text: 'The engine parses font operators, text matrix transformations, and literal strings, reconstructing text blocks with precise coordinates. It identifies drawing numbers matching standard patterns (such as A-101, S-202, MEP-01, or 001-Rev-B), revision letters or integers, drawing sheet titles, sheet scales, dates, and authors.',
+      },
+      {
+        name: 'Review register and export CSV',
+        text: 'Examine the populated drawing register in the interactive preview table. Search and filter rows, identify any scanned pages flagged for optical character recognition, and click Export Register CSV to download a clean spreadsheet ready for immediate import into Excel, Procore, or Autodesk Construction Cloud.',
+      },
+      {
+        name: 'Optional drawing sheet burst',
+        text: 'If your project requires individual drawing files rather than a bound book, click Burst Sheets by Drawing No to automatically split the PDF into separate single-sheet files named according to each sheet’s extracted drawing number and title.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'How architectural title block parsing works',
+        body: [
+          'Architectural, structural, and civil engineering drawings almost universally position title blocks in the lower-right quadrant or along the right-hand border of the sheet. National and international standards—including ISO 5457, BS EN ISO 7200, and the US National CAD Standard—dictate specific layouts for title block content, requiring drawing identification numbers, project names, sheet titles, revisions, and approval dates to occupy predictable relative locations.',
+          'When you load a PDF drawing set, this tool opens the PDF context using pdf-lib and parses the content stream of every page. Rather than treating the page as a flat bitmap or running heavy neural network models, it directly interprets PDF graphics state operators and text rendering commands, specifically text positioning operators (such as Td, TD, Tm, and T*), text show operators (Tj, TJ, \', and "), and font dictionary resources. Text fragments are transformed into absolute page coordinates and grouped into lines based on horizontal proximity and vertical baseline alignment.',
+          'The parser then evaluates text located in the title block bounding box. It applies regular expression heuristics designed to distinguish project numbers from drawing numbers, revisions (e.g., Rev A, Rev 01, P1, C2), scale indications (1:100, 1/4" = 1\'-0"), drawing titles (such as First Floor Plan, North Elevation, Structural Details), and creation or issue dates. Extracted fields are normalised, deduplicated, and mapped to structured register records.',
+        ],
+      },
+      {
+        heading: 'Handling vector PDFs versus scanned blueprints',
+        body: [
+          'This tool is engineered for native vector PDFs generated from BIM and CAD software such as Revit, AutoCAD, ArchiCAD, Vectorworks, and MicroStation. Vector PDFs embed true text objects with searchable character strings and coordinate positions, allowing instantaneous and 100% accurate metadata extraction.',
+          'In contrast, scanned blueprints, photocopied plans, and drawings printed to raster images contain only image streams (XObject /Image dictionaries) without underlying text operators. When the parser detects that a page contains no text operators or fewer than 5 characters, it flags the sheet in the register table as "Scanned / No Text" and increments the scanned page counter. For scanned drawing sets, users can process the document through our client-side PDF OCR tool first, which synthesizes a searchable text layer that this drawing register tool can then extract.',
+        ],
+      },
+      {
+        heading: 'One-click sheet bursting and automated renaming',
+        body: [
+          'A persistent frustration in construction document administration is receiving a 300-page combined drawing book from an architect or engineer and having to manually extract and rename each sheet before uploading to document management platforms. Bluebeam and Adobe charge premium enterprise licensing fees for batch slip-sheeting and document splitting features.',
+          'This tool includes a built-in Burst Sheets function. Once the drawing register is extracted, clicking Burst Sheets instructs the client-side pdf-lib engine to isolate each sheet into an individual single-page PDF document. Each generated file is automatically named using the extracted drawing number and sheet title (for example, "A-101 - Ground Floor Plan.pdf"). The burst files are generated entirely within browser memory and downloaded directly to your local file system without intermediary server storage.',
+        ],
+      },
+      {
+        heading:
+          'Complete document privacy for proprietary architectural plans',
+        body: [
+          'Architectural sets, structural calculations, and building schematics often represent confidential intellectual property, subject to non-disclosure agreements, bidding embargoes, and commercial secrecy. Uploading construction drawings to cloud-based conversion utilities exposes sensitive building floor plans, security designs, and proprietary specifications to third-party server logging and retention risks.',
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which CAD and BIM software produces compatible PDFs?',
+        answer:
+          'Any software that exports standard vector PDFs with text layers is compatible, including Autodesk Revit, AutoCAD, Civil 3D, Graphisoft ArchiCAD, Nemetschek Vectorworks, Bentley MicroStation, Bluebeam Revu, and Rhino.',
+      },
+      {
+        question: 'Does this tool work on scanned drawings?',
+        answer:
+          'If a drawing set consists of raster scans without a text layer, the parser will flag the sheets as scanned. To extract data from scanned plans, first run the file through our browser-based PDF OCR tool to generate a searchable text layer, then upload the resulting file here.',
+      },
+      {
+        question:
+          'Can I export the register to Microsoft Excel or Google Sheets?',
+        answer:
+          'Yes. Clicking Export Register CSV produces a comma-separated values (.csv) file containing Sheet Number, Drawing Number, Sheet Title, Revision, Date, and Author columns that opens seamlessly in Microsoft Excel, Google Sheets, LibreOffice Calc, or Procore.',
+      },
+      {
+        question: 'What drawing number formats are supported?',
+        answer:
+          'The parser recognizes standard discipline-based CAD numbering formats such as A-101, S-201, M-301, E-401, P-501, ISO-style numbering (e.g., 1024-DRG-ARC-001), UK Uniclass numbering, and numeric sheet sequences (001, 002, 003) alongside revision indicators.',
+      },
+      {
+        question: 'Is there a limit on the number of pages or file size?',
+        answer:
+          'Because processing occurs in browser memory via WebAssembly and JavaScript, drawing sets with hundreds of pages and files up to several hundred megabytes process reliably on modern desktop browsers without arbitrary server timeouts.',
+      },
+      {
+        question: 'Are my architectural drawings uploaded or stored anywhere?',
+        answer:
+          'No. All text parsing, title block analysis, CSV generation, and file bursting happen entirely inside your local browser tab. No document data is ever transmitted across the internet.',
+      },
+    ],
+  },
+  '/pdf/preflight': {
+    title: 'PDF Print Preflight Checker — Bleed, Trim & Fonts',
+    description:
+      'Inspect TrimBox alignment, 3mm bleed margins, font embedding, and image resolution (PPI) before sending to commercial press without expensive desktop subscriptions.',
+    heading: 'About this commercial print preflight checker',
+    offlineReady: false,
+    directAnswer:
+      'To preflight a PDF for commercial print: upload your print-ready document. The analyzer parses page boundary boxes (MediaBox, CropBox, BleedBox, TrimBox), verifies whether bleed margins meet the commercial standard of at least 8.5 pt (3mm), inspects embedded font descriptor dictionaries to catch non-embedded fonts, checks image XObjects for RGB color space usage, and calculates effective image PPI against placed page dimensions.',
+    lead: 'Commercial offset and digital printers reject customer files every day due to missing bleed margins, un-embedded fonts, low-resolution raster imagery, and RGB color space mismatches. Commercial desktop preflight software charges steep monthly subscriptions or hundreds of dollars for prepress profiles. This client-side preflight inspector provides graphic designers, print production managers, and self-publishing authors with an instant, objective technical inspection of PDF files directly in the browser. It uncovers missing bleed allowances, identifies un-embedded PostScript and TrueType fonts, highlights RGB images that need CMYK conversion, and calculates image pixel density to ensure crisp 300 PPI print reproduction.',
+    steps: [
+      {
+        name: 'Upload the print-ready PDF',
+        text: 'Select or drag your PDF artwork file into the dropzone. The preflight engine inspects file header structures and opens the document dictionary entirely in local browser memory.',
+      },
+      {
+        name: 'Analyze page geometry and box boundaries',
+        text: 'The inspector extracts the MediaBox (physical sheet dimension), TrimBox (finished cut dimension), and BleedBox (artwork extension boundary) for every page, calculating margin differences to determine whether standard 3mm (8.5 pt) or 5mm bleed exists.',
+      },
+      {
+        name: 'Inspect font embedding status',
+        text: 'The analyzer traverses page resource dictionaries and font descriptors. It checks whether each font is fully embedded or subset-embedded (indicated by standard 6-character tag prefixes), flagging any un-embedded system fonts that would risk text reflow at the print shop.',
+      },
+      {
+        name: 'Examine image color spaces and PPI',
+        text: 'Image XObjects embedded within page streams are evaluated for color spaces (DeviceCMYK, DeviceGray, or DeviceRGB) and bit depth. The engine calculates estimated placed PPI against page dimensions, highlighting raster assets under 300 PPI.',
+      },
+      {
+        name: 'Review preflight report and export JSON',
+        text: 'Inspect page-by-page findings and the overall executive summary. Export the technical findings as a structured JSON report to share with print bureaus, clients, or prepress operators.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Why print preflight inspection is critical',
+        body: [
+          'In commercial printing, submitting a PDF with technical flaws leads to costly reprints, production delays, and ruined print runs. Unlike screen display where RGB colors shine and missing fonts can fallback to system defaults, commercial offset lithography and high-speed digital presses require strict adherence to mechanical and physical constraints.',
+          'Three issues account for the vast majority of commercial print rejections: missing bleed margins, un-embedded fonts, and low image resolution. Bleed is required because guillotine paper cutters have physical tolerances; without artwork extending beyond the trim line, paper shifts during cutting cause unsightly white paper borders along finished edges. Un-embedded fonts force RIP (Raster Image Processor) software to substitute generic typefaces, ruining typographic layout. Low-resolution images appear pixelated and blurry when screened onto paper.',
+        ],
+      },
+      {
+        heading: 'Understanding PDF geometry: MediaBox, TrimBox, and BleedBox',
+        body: [
+          'A professional PDF contains up to five distinct rectangular boundaries defined in points (1/72 inch): MediaBox, CropBox, BleedBox, TrimBox, and ArtBox.',
+          'The MediaBox defines the total physical page medium upon which the printer prints. The TrimBox specifies the exact dimensions of the finished printed product after cutting and binding (for example, 210 × 297 mm for A4). The BleedBox specifies the boundary to which the artwork content should be clipped when output in a production environment. For commercial printing, the BleedBox must extend at least 3 mm (8.504 points), and ideally 5 mm (14.17 points), beyond the TrimBox on all four sides. This tool verifies the presence of both boxes and mathematically verifies that the bleed margin satisfies minimum industry tolerances.',
+        ],
+      },
+      {
+        heading: 'Font embedding rules and subsetting verification',
+        body: [
+          'PDF documents can reference fonts in three distinct manners: fully embedded, subset-embedded, or un-embedded. Fully embedded fonts include the entire font file in the PDF stream. Subset fonts include only the glyphs actually utilized in the document, designated by a standard six-letter tag followed by a plus sign (e.g., "ABCDEF+Helvetica").',
+          'Un-embedded fonts include only font metadata (name, metrics, encoding) and rely on the host operating system or RIP to supply the actual glyph outlines. If a commercial RIP does not possess that specific typeface, it substitutes Courier or Arial, shifting baseline alignments and breaking text flow. This preflight checker inspects font dictionaries and FontDescriptor streams (FontFile, FontFile2, FontFile3) to guarantee that 100% of fonts are properly embedded before submission.',
+        ],
+      },
+      {
+        heading: 'Image resolution (PPI) and color space verification',
+        body: [
+          'For commercial printing, raster images must maintain an effective resolution of at least 300 pixels per inch (PPI) at 100% reproduction scale. While web graphics display sharply at 72–150 PPI, half-tone printing screens require high pixel density to avoid visible pixelation and jagged stair-stepping artifacts.',
+          'Furthermore, commercial printing presses operate using cyan, magenta, yellow, and black (CMYK) ink separations rather than red, green, and blue (RGB) light primaries. Images saved in DeviceRGB must be converted via ICC color profiles to CMYK; un-managed RGB conversions at the RIP often result in muted, muddy, or unexpected color shifts. This tool scans all image streams, identifies color models, and flags RGB assets and sub-300 PPI images.',
+        ],
+      },
+      {
+        heading: 'Engineering scope boundaries and local privacy guarantee',
+        body: [
+          'This tool provides comprehensive geometric, font descriptor, and image stream preflight analysis in client-side JavaScript. It does not perform full PostScript RIP rendering, ICC device-link color profiling, or overprint/trapping simulation. For spot color separations (Pantone PMS matching) or specialized ink coverage (Total Area Coverage / TAC) measurements, specialized prepress workflow software may still be required.',
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'What is the standard bleed margin required for commercial printing?',
+        answer:
+          'The standard minimum bleed margin across North America and Europe is 3 mm (approximately 8.5 points) beyond the trim line. Some large-format packaging and book cover printers require 5 mm. This tool checks that your BleedBox extends at least 8.5 points beyond your TrimBox.',
+      },
+      {
+        question: 'What happens if a font is not embedded in my PDF?',
+        answer:
+          'If a font is not embedded, the print shop’s raster image processor must substitute a local font. This frequently alters kerning, line heights, and character widths, causing text overlap, missing characters, or dropped lines on the printed page.',
+      },
+      {
+        question: 'Why are RGB images flagged in the preflight report?',
+        answer:
+          'Commercial presses use CMYK inks (cyan, magenta, yellow, black). RGB images must be converted to CMYK, which often shifts bright saturated blues, greens, and oranges to duller shades. Converting images to CMYK in your design program before exporting ensures you see accurate color proofs.',
+      },
+      {
+        question: 'What does the PPI check measure?',
+        answer:
+          'The preflight tool calculates the effective pixel density by dividing image pixel dimensions by the rendered point dimensions on the page. Images with effective resolution below 300 PPI are flagged because they risk appearing pixelated or blurry in print.',
+      },
+      {
+        question:
+          'Does this preflight tool upload my artwork to a cloud server?',
+        answer:
+          'No. All page box calculations, font dictionary inspections, image header analysis, and report generation execute 100% locally in your web browser. No document pages or artwork assets ever leave your device.',
+      },
+    ],
+  },
+  '/pdf/burst': {
+    title: 'Burst PDF by Rule and Dynamic Naming — Free, Local',
+    description:
+      'Split bulk PDF statements, drawings, and invoices by bookmark, blank page, or regex pattern match with dynamic output file naming in browser memory.',
+    heading: 'About this rule-based PDF splitter and burster',
+    offlineReady: false,
+    directAnswer:
+      'To burst a combined PDF into separate documents by rule: upload the document, select a splitting rule (blank page separation, regular expression text match, text value change, or fixed page intervals), configure the dynamic naming template with placeholders like {index}, {match}, {startPage}, and {endPage}, preview the generated split plan, and click Burst & Download to receive individual, cleanly named PDF documents.',
+    lead: 'Organizations regularly generate massive combined PDF files—monthly billing statements containing thousands of invoices, employee payroll runs, scanned batches separated by barcode slips, or architectural sets. Manually splitting these documents into individual files and naming each one by customer number or invoice ID is an excruciating, error-prone manual task. Desktop utility software charges recurring subscription fees for rule-based PDF bursting. This browser-based burster enables administrators, billing clerks, and document managers to split multi-page documents locally using configurable splitting rules and dynamic template naming patterns without sending sensitive customer records to cloud processing services.',
+    steps: [
+      {
+        name: 'Upload the combined PDF document',
+        text: 'Select or drag your batch PDF file into the dropzone. The file is opened securely in browser memory without server transmission.',
+      },
+      {
+        name: 'Select a burst rule type',
+        text: 'Choose your preferred separation logic: Blank Page separation (common in scanner batch jobs), Regular Expression pattern matching (e.g., splitting wherever "Invoice # [0-9]+" occurs), Value Change detection (splitting when a customer ID changes), or Fixed Interval page counts.',
+      },
+      {
+        name: 'Configure dynamic naming templates',
+        text: 'Define your desired output filename syntax using dynamic variables such as {index} for sequential numbering, {match} for extracted text values, {startPage}, and {endPage} (e.g., "Invoice_{match}_{index}.pdf").',
+      },
+      {
+        name: 'Preview and verify the burst plan',
+        text: 'Review the generated splitting plan table. Inspect document start pages, end pages, page counts, extracted pattern values, and projected output filenames before executing the split.',
+      },
+      {
+        name: 'Execute the burst and download files',
+        text: 'Click Burst & Download to split the source PDF into individual documents in browser memory and save each output file directly to your local file system.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Versatile bursting rules for batch document workflows',
+        body: [
+          'Different document processing pipelines require different separation strategies. This tool provides four distinct bursting algorithms to accommodate diverse enterprise and administrative workflows:',
+          '1. Blank Page Separation: High-speed office scanners often use blank separator sheets between invoices, medical records, or legal discovery documents. The blank page rule detects pages containing no text operators or white-space-only content, using them as boundary markers and automatically discarding the blank pages from the final output.',
+          '2. Regular Expression Pattern Matching: Batch ERP and accounting exports frequently consolidate hundreds of multi-page invoices into a single print spool file. The regex rule inspects page text streams for specific patterns (such as "(?i)Invoice\\\\s+(?:No|#)\\\\s*([A-Z0-9-]+)" or "Account\\\\s+Number:\\\\s*(\\\\d+)"), initiating a new document segment each time the pattern matches.',
+          '3. Value Change Detection: When documents have varying lengths but maintain a consistent identifier on every page (such as a customer account number in the page header), the value change rule tracks the extracted string and splits the PDF only when the identified value transitions from one unique string to another.',
+          '4. Fixed Interval Splitting: For standardized multi-page packets, such as 2-page tax forms or 5-page employment agreements, the fixed interval rule splits the document precisely every N pages.',
+        ],
+      },
+      {
+        heading: 'Dynamic file naming with regex extraction tokens',
+        body: [
+          'A split document is only useful if it can be identified and filed without manual renaming. Standard PDF splitters produce generic output filenames such as "document_part_1.pdf", forcing users to open every file to determine which customer or invoice it belongs to.',
+          'This tool features an advanced template engine that dynamically substitutes metadata tokens into output filenames. Available tokens include {index} (zero-padded sequential numbering), {match} (the exact text captured by your regex search pattern or capture group), {startPage} (the starting page number in the original document), and {endPage} (the concluding page number). For example, a template configured as "{match}_Pages_{startPage}-{endPage}.pdf" automatically outputs "INV-9821_Pages_1-3.pdf" and "INV-9822_Pages_4-5.pdf".',
+        ],
+      },
+      {
+        heading: 'High-performance in-memory PDF extraction',
+        body: [
+          'Splitting a large document into hundreds of constituent files can place significant demand on system resources. This tool executes PDF page extraction using an optimized pdf-lib context pipeline in WebAssembly and JavaScript.',
+          'Rather than decompressing and re-encoding raster imagery, the burster copies raw page dictionaries, content streams, and resource references directly from the source document to target output documents. This ensures lightning-fast execution, zero image re-compression degradation, and perfectly intact vector text typography and layout fidelity.',
+        ],
+      },
+      {
+        heading:
+          'Total privacy for financial statements and confidential records',
+        body: [
+          'Batch PDF files frequently contain highly confidential records: payroll reports detailing employee compensation, patient medical billing summaries, banking statements, and legal depositions. Submitting bulk PDF records to third-party cloud conversion services introduces severe data compliance and confidentiality risks.',
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How does blank page detection work?',
+        answer:
+          'The parser inspects text operators and stream contents on each page. A page containing zero characters or only whitespace is identified as a blank separator sheet. The burster splits the document at that boundary and excludes the blank separator sheet from the exported files.',
+      },
+      {
+        question:
+          'Can I extract the invoice number from the document into the filename?',
+        answer:
+          'Yes. Configure the Regular Expression rule with a capture group matching your invoice number (e.g., "Invoice # ([0-9]+)") and include the {match} token in your naming template (e.g., "Invoice_{match}.pdf"). The burster will name each file with its specific invoice number.',
+      },
+      {
+        question: 'Are split PDF pages re-compressed or degraded in quality?',
+        answer:
+          'No. The burster performs lossless dictionary copying of page streams and font resources without re-compressing images or re-rendering text, preserving 100% of the original document fidelity.',
+      },
+      {
+        question: 'How many files can I download at once?',
+        answer:
+          'When bursting multiple files, the browser triggers direct downloads for the generated documents. For large batches, modern browsers will prompt you to permit multi-file downloads from the site.',
+      },
+      {
+        question: 'Is my data stored or sent across the internet?',
+        answer:
+          'No. The entire bursting pipeline—including text inspection, regex parsing, document splitting, and file creation—operates strictly within your local browser memory.',
+      },
+    ],
+  },
 };

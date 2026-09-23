@@ -85,6 +85,12 @@ export const DEDICATED_TOOL_ROUTES = [
   '/date/date-difference',
   '/data/workbook-audit',
   '/pdf/compare',
+  '/latex',
+  '/schema',
+  '/pdf/drawing-register',
+  '/audio/loudness',
+  '/pdf/preflight',
+  '/pdf/burst',
 ] as const;
 
 /**
@@ -235,6 +241,88 @@ const ROUTED_PREFIX_ENTRIES: readonly (readonly [
   ['/subtitles', SUBTITLE_OPERATIONS],
   ['/text', [...TEXT_OPERATIONS, ...WRITING_OPERATIONS]],
   ['/web', WEB_OPERATIONS],
+  [
+    '/latex',
+    [
+      {
+        id: 'table-generator',
+        name: 'Multi-Format Table Generator',
+        description:
+          'Convert tables between 8 technical formats: LaTeX, Markdown, HTML, CSV, TSV, JSON, SQL, and AsciiDoc.',
+      },
+      {
+        id: 'table-reader',
+        name: 'LaTeX Table Reader',
+        description:
+          'Parse LaTeX tabular and booktabs code into clean structured CSV, Markdown, JSON, and TSV tables.',
+      },
+      {
+        id: 'bibtex',
+        name: 'BibTeX Workbench',
+        description:
+          'Validate required fields, deduplicate by DOI and title, normalise page ranges, and format clean .bib files.',
+      },
+      {
+        id: 'word-count',
+        name: 'LaTeX Word Count',
+        description:
+          'Accurate journal word count for LaTeX documents: separates prose body words from headers, captions, and equations.',
+      },
+      {
+        id: 'symbols',
+        name: 'LaTeX Symbol Finder',
+        description:
+          'Searchable LaTeX symbol directory: Greek letters, operators, relations, arrows, and delimiters.',
+      },
+      {
+        id: 'equations',
+        name: 'LaTeX Matrix & Equation Builder',
+        description:
+          'Interactive visual matrix and equation builder: generate pmatrix, bmatrix, vmatrix, and piecewise cases.',
+      },
+    ],
+  ],
+  [
+    '/schema',
+    [
+      {
+        id: 'erd',
+        name: 'SQL to ER Diagram',
+        description:
+          'Generate interactive entity-relationship diagrams from SQL DDL: Mermaid erDiagram, DBML, and PlantUML notation.',
+      },
+      {
+        id: 'erd-to-sql',
+        name: 'Mermaid ERD to SQL DDL Generator',
+        description:
+          'Convert Mermaid erDiagram text models directly into executable CREATE TABLE SQL DDL for PostgreSQL, MySQL, and SQLite.',
+      },
+      {
+        id: 'dialect-converter',
+        name: 'SQL Dialect Converter',
+        description:
+          'Translate database DDL syntax between PostgreSQL, MySQL, SQLite, and SQL Server.',
+      },
+      {
+        id: 'orm-models',
+        name: 'SQL DDL to ORM Models',
+        description:
+          'Generate Prisma schema models, Django models.py classes, and SQLAlchemy Declarative definitions from SQL DDL.',
+      },
+      {
+        id: 'data-dictionary',
+        name: 'Automated Data Dictionary Generator',
+        description:
+          'Compile SQL DDL into clean documentation-ready Markdown data dictionaries with tables, columns, and keys.',
+      },
+      {
+        id: 'schema-diff',
+        name: 'SQL Schema Diff & Migration Generator',
+        description:
+          'Compare two SQL DDL database schemas and generate forward SQL migration scripts.',
+      },
+    ],
+  ],
 ];
 
 const ROUTED_TOOL_PREFIXES: ReadonlyMap<string, readonly RoutedOperation[]> =

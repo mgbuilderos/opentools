@@ -104,6 +104,30 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/pdf/compare',
         workspaceId: 'pdf-compare',
       },
+      {
+        id: 'pdf-drawing-register',
+        name: 'PDF Drawing Register from Title Blocks',
+        description:
+          'Extract drawing numbers, titles, revisions, dates, and authors from architectural drawing set title blocks into CSV spreadsheets.',
+        href: '/pdf/drawing-register',
+        workspaceId: 'pdf-drawing-register',
+      },
+      {
+        id: 'pdf-preflight',
+        name: 'PDF Print Preflight Checker',
+        description:
+          'Inspect TrimBox alignment, 3mm bleed margins, font embedding, and image resolution (PPI) before sending to commercial press.',
+        href: '/pdf/preflight',
+        workspaceId: 'pdf-preflight',
+      },
+      {
+        id: 'pdf-burst',
+        name: 'Burst PDF by Rule and Dynamic Naming',
+        description:
+          'Split bulk PDF statements and invoices by bookmark, blank page, or regex pattern match with dynamic output file naming.',
+        href: '/pdf/burst',
+        workspaceId: 'pdf-burst',
+      },
     ],
   },
   {

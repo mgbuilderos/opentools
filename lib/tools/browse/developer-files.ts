@@ -820,6 +820,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/developer/advanced?tool=json-to-zod-schema',
         workspaceId: 'developer-advanced-workbench',
       },
+      {
+        id: 'schema-hub',
+        name: 'Schema Architecture & Data Modeling Hub',
+        description:
+          'Browser database modeling: SQL to ER diagram (Mermaid, DBML, PlantUML), ERD to DDL, SQL dialect conversion, ORM models (Prisma, Django, SQLAlchemy), and schema diffing.',
+        href: '/schema',
+        workspaceId: 'schema-hub',
+      },
     ],
   },
 ];

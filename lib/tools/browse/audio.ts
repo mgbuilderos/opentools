@@ -51,6 +51,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/audio/convert',
         workspaceId: 'audio-convert',
       },
+      {
+        id: 'audio-loudness',
+        name: 'Audio Loudness & Delivery Check',
+        description:
+          'Measure ITU-R BS.1770-4 integrated LUFS, true peak (dBTP), loudness range (LRA), and noise floor against streaming and ACX standards.',
+        href: '/audio/loudness',
+        workspaceId: 'audio-loudness',
+      },
     ],
   },
 ];

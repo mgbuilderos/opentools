@@ -12,6 +12,14 @@ export const SECTIONS: readonly BrowseSection[] = [
       'Word and office documents, LaTeX tables, citations, and letters.',
     destinations: [
       {
+        id: 'latex-hub',
+        name: 'LaTeX Authoring & Academic Notation Hub',
+        description:
+          'Research-grade academic tools: multi-format table generation, LaTeX table reader, BibTeX deduplication and cleaning, TeXcount word counts, and symbol lookup.',
+        href: '/latex',
+        workspaceId: 'latex-hub',
+      },
+      {
         id: 'docx-metadata',
         name: 'Word document metadata viewer and stripper',
         description:

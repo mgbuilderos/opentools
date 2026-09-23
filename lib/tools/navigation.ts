@@ -52,7 +52,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'pdf',
     name: 'PDF',
     shortDescription: 'Merge, compress, extract, and reorder pages.',
-    destinationCount: 18,
+    destinationCount: 21,
     toolIds: [
       'pdf-merge',
       'pdf-compress',
@@ -67,6 +67,9 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       'pdf-to-excel',
       'pdf-redact',
       'pdf-compare',
+      'pdf-drawing-register',
+      'pdf-preflight',
+      'pdf-burst',
     ],
   },
   {
@@ -89,8 +92,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     name: 'Audio',
     shortDescription:
       'Cut, join and tag MP3s without re-encoding, and convert other audio to WAV.',
-    destinationCount: 5,
-    toolIds: ['mp3-toolkit', 'audio-convert'],
+    destinationCount: 6,
+    toolIds: ['mp3-toolkit', 'audio-convert', 'audio-loudness'],
   },
   {
     id: 'video',
@@ -105,8 +108,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     name: 'Documents & office',
     shortDescription:
       'Word and office documents, LaTeX tables, citations, and letters.',
-    destinationCount: 39,
-    toolIds: ['document-workbench', 'docx-metadata'],
+    destinationCount: 40,
+    toolIds: ['document-workbench', 'docx-metadata', 'latex-hub'],
   },
   {
     id: 'files',
@@ -141,7 +144,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'developer-files',
     name: 'Developer',
     shortDescription: 'Base64, UUIDs, timestamps, regex, and schema tools.',
-    destinationCount: 104,
+    destinationCount: 105,
     toolIds: [
       'base64-encode',
       'base64-decode',
@@ -149,6 +152,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       'unix-timestamp',
       'developer-data-workbench',
       'developer-advanced-workbench',
+      'schema-hub',
     ],
   },
   {
