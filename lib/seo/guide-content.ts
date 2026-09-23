@@ -13183,6 +13183,1299 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // components/subtitle-workbench-tool.tsx, lib/tools/subtitle-workbench.ts (SUBTITLE_OPERATIONS 'subtitle-to-vtt', runSubtitleOperation) and app/subtitles/subtitle-to-vtt/page.tsx
+  'subtitles-srt-to-vtt': {
+    directAnswer:
+      'Convert SubRip (SRT) subtitle files into WebVTT (VTT) format directly in your browser. The tool converts comma millisecond delimiters into decimal points, appends the standard WEBVTT header declaration, and preserves cue numbers and dialogue formatting. The conversion executes entirely client-side in browser memory to keep private video scripts and unreleased media transcriptions completely confidential.',
+    leadParagraph:
+      'Integrating video dialogue across HTML5 video players, streaming web platforms, and modern web browsers requires the Web Video Text Tracks (WebVTT) caption format. This client-side subtitle converter parses standard SubRip (.srt) caption files and transforms them into specification-compliant WebVTT files. The conversion engine automatically inserts the mandatory WEBVTT header banner, converts comma millisecond separators (00:01:23,456) into standard WebVTT decimal points (00:01:23.456), and preserves cue identifiers alongside dialogue text styling. Video editors, e-learning creators, and web developers can convert caption tracks instantly without installing desktop command-line utilities. Because video subtitles frequently belong to unreleased film projects, internal enterprise training, or confidential webinars, all file transformations occur locally in client browser memory. No subtitle files are ever transmitted to external web servers. Converting caption files locally guarantees reliable playback across modern browsers without risking data leakage or service downtime.',
+    faqs: [
+      {
+        question: 'How does WebVTT syntax differ from standard SRT subtitles?',
+        answer:
+          'WebVTT requires a WEBVTT header at the top and uses full stops to separate milliseconds (00:00:01.000) instead of commas used in SubRip files.',
+      },
+      {
+        question:
+          'Are voice tags and italic text formatting preserved during conversion?',
+        answer:
+          'Yes. Standard styling tags such as italics, bold markers, and voice span annotations are preserved cleanly within the converted WebVTT caption stream.',
+      },
+      {
+        question:
+          'Can I convert large movie subtitle files without browser freezing?',
+        answer:
+          'Yes. The lightweight text parsing algorithm runs efficiently in client memory, processing multi-hour film subtitle tracks containing thousands of cues without delay.',
+      },
+      {
+        question:
+          'Are my private video subtitles or movie scripts uploaded online?',
+        answer:
+          'No. All subtitle conversions execute entirely client-side in browser memory with zero outbound network calls, maintaining total privacy for your creative media transcripts.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-splitter', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-splitter': {
+    directAnswer:
+      'Split long text documents into manageable chunks directly in your browser by character count, word count, line intervals, or custom delimiter strings. The tool outputs formatted segment lists or batch downloadable parts entirely client-side in memory to ensure confidential manuscripts, large log files, and proprietary datasets remain secure. The tool performs all text parsing client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Large text documents, transcript files, and application logs often exceed input window constraints on translation services, machine learning models, and content management platforms. This browser-based text splitter divides extensive text passages into structured fragments based on customizable character lengths, maximum word limits, paragraph breaks, or custom delimiter tokens. Users can preview segment boundaries, review fragment size statistics, and copy individual chunks or download split text archives directly. Splitting text directly in local browser memory saves time when preparing training datasets or chunking draft book chapters for editorial review. Because text dividing frequently involves proprietary source code, unpublished manuscripts, or private personal writing, all string splitting executes locally inside browser memory. No text passages are ever transmitted across external networks. Preparing segment batches directly in the browser accelerates content preparation for machine translation and natural language processing pipelines.',
+    faqs: [
+      {
+        question:
+          'Can I split text while preserving complete grammatical words?',
+        answer:
+          'Yes. You can enable word-boundary snapping to ensure splits occur at space characters rather than breaking individual words across adjacent chunk boundaries.',
+      },
+      {
+        question: 'What splitting criteria can be configured in this tool?',
+        answer:
+          'You can segment text by character count, maximum word count, regular line intervals, double line breaks (paragraphs), or custom regex delimiter sequences.',
+      },
+      {
+        question:
+          'Is there a document size limit when splitting large text files?',
+        answer:
+          'The splitter operates within browser memory limits, comfortably segmenting extensive documents containing tens of thousands of words without remote upload lag.',
+      },
+      {
+        question:
+          'Are my confidential documents or private notes saved on servers?',
+        answer:
+          'No. All text parsing and string chunking execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'browser-compatibility-checklist', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-browser-compatibility-checklist': {
+    directAnswer:
+      'Review cross-browser compatibility requirements directly in your browser by auditing HTML5, CSS3, and JavaScript feature support across modern rendering engines including Blink, WebKit, and Gecko. The checklist highlights vendor prefix requirements, fallback strategies, and baseline compatibility tiers entirely client-side in memory to keep unreleased web app architectures confidential. The checklist audits technical specifications locally in client browser memory with zero outbound network calls.',
+    leadParagraph:
+      'Ensuring that modern web applications function reliably across Chrome, Safari, Firefox, and mobile browsers requires systematic verification of modern web APIs, CSS layout features, and multimedia codecs. This client-side browser compatibility checklist organizes web development standards into actionable audit categories, including CSS Grid, Flexbox gap, WebP and AVIF image formats, WebAssembly, and Progressive Web App service workers. Web developers and QA engineers can evaluate required polyfills, inspect fallback styling approaches, and cross-reference browser release support matrices interactively. Auditing compatibility standards directly in browser memory accelerates front-end release preparations without relying on third-party telemetry scripts. Because pre-launch architecture blueprints and feature roadmaps involve sensitive commercial strategy, all checklist evaluations run locally within browser memory. No feature audits are ever uploaded to remote servers. Verifying modern API support systematically helps development teams avoid unexpected layout quirks and maintain consistent user experiences across devices.',
+    faqs: [
+      {
+        question:
+          'What browser rendering engines are evaluated in this checklist?',
+        answer:
+          'The checklist covers major rendering engines including Blink (Google Chrome and Microsoft Edge), WebKit (Apple Safari), and Gecko (Mozilla Firefox).',
+      },
+      {
+        question:
+          'Why is checking Safari WebKit compatibility specifically important?',
+        answer:
+          'Apple iOS mandates WebKit for all mobile browsers, meaning unique WebKit rendering behaviours and API support schedules impact all mobile iPhone web traffic.',
+      },
+      {
+        question:
+          'Can I use this checklist to plan progressive enhancement fallbacks?',
+        answer:
+          'Yes. The checklist outlines recommended CSS feature queries (@supports) and JavaScript modern fallbacks to ensure graceful degradation on older browsers.',
+      },
+      {
+        question:
+          'Are my internal technical architecture plans uploaded or tracked?',
+        answer:
+          'No. All compatibility checklist inspections take place client-side in browser memory with zero outbound network calls, maintaining total project confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'document-expiry-tracker', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-document-expiry-tracker': {
+    directAnswer:
+      'Track renewal schedules for passports, driving licences, insurance policies, visas, and identification documents directly in your browser. The tool calculates days remaining until expiration, flags impending renewal windows, and prioritises overdue credentials entirely client-side in memory to ensure personal identity dates and official record numbers remain completely confidential. The tracking engine executes locally in client browser memory with zero outbound network transmissions.',
+    leadParagraph:
+      'Managing renewal timetables for personal identity documents, vehicle registrations, passport booklets, lease agreements, and professional licences is critical to avoid administrative penalties, legal lapses, or travel disruptions. This browser-based document expiry tracker enables individuals and families to catalog official credentials, enter issuance and expiry dates, and review color-coded urgency indicators that highlight upcoming expiration deadlines. Users can sort documents by days remaining, filter by family members or document categories, and plan required renewal lead times well in advance of final validity dates. Because identity document numbers, passport details, and renewal schedules represent sensitive personal data prone to identity theft risks, all tracking calculations execute locally in client browser memory. No document dates or personal records are ever stored on external servers. Proactive document expiry management provides peace of mind and prevents last-minute administrative scrambles during international travel or official paperwork.',
+    faqs: [
+      {
+        question:
+          'How much advance time is typically recommended for passport renewal?',
+        answer:
+          'Most international destinations require at least six months of remaining passport validity upon entry, making renewal advisable nine months before expiration.',
+      },
+      {
+        question:
+          'Can I categorize documents across different family members or vehicles?',
+        answer:
+          'Yes. You can assign category tags and owner labels to organise passports, driving licences, vehicle fitness certificates, and insurance policies separately.',
+      },
+      {
+        question:
+          'How does the tracker calculate remaining document validity days?',
+        answer:
+          'The tracker computes the calendar day difference between the current local system date and your entered document expiration timestamp with day-level accuracy.',
+      },
+      {
+        question:
+          'Are my passport numbers or sensitive expiry dates saved online?',
+        answer:
+          'No. All date calculations and document records exist strictly in local client browser memory with zero network traffic, ensuring total privacy for personal records.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'root-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-root-calculator': {
+    directAnswer:
+      'Calculate square roots, cube roots, and general n-th roots directly in your browser by specifying radicands and root degrees. The calculator computes exact radical simplifications, fractional exponents, and high-precision decimal values entirely client-side in memory to ensure academic exercises and technical calculations remain completely private. All radical calculations run client-side in browser memory to keep coursework numbers completely secure.',
+    leadParagraph:
+      'Root calculations are fundamental across geometry, physics wave equations, electrical impedance evaluations, and statistical variance analyses. This client-side root calculator evaluates square roots (degree 2), cube roots (degree 3), and arbitrary positive or negative n-th roots with floating-point numerical accuracy. The tool automatically simplifies square roots into radical coefficient forms (such as expressing the square root of 72 as 6√2) while providing equivalent fractional exponent representations. Calculating mathematical roots directly in the browser runtime gives students, educators, and engineers instant numerical validation without installing heavy desktop calculation suites. Because academic assignments, statistical research, and engineering figures require computational privacy, all root evaluations take place locally in browser memory. No equations or calculation histories are ever sent across external networks. Mastering radical simplification builds strong analytical foundations for advanced calculus, physics problems, and engineering systems.',
+    faqs: [
+      {
+        question:
+          'What is the mathematical relationship between roots and exponents?',
+        answer:
+          'An n-th root is mathematically equivalent to raising a base number to the reciprocal fractional power 1/n (for example, the cube root of x is x^(1/3)).',
+      },
+      {
+        question: 'Can the calculator evaluate real roots of negative numbers?',
+        answer:
+          'Odd-degree roots of negative numbers yield valid real negative solutions (such as the cube root of -8 being -2), whereas even roots require imaginary numbers.',
+      },
+      {
+        question:
+          'How does the tool simplify radical expressions into exact form?',
+        answer:
+          'The calculator factors out perfect squares or perfect powers from under the radical sign to present simplified canonical coefficient radical representations.',
+      },
+      {
+        question:
+          'Are my mathematical calculations or problem sets logged remotely?',
+        answer:
+          'No. All root calculations run strictly inside local client browser memory with zero network communication, ensuring complete privacy for academic and technical work.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'itf-14-generator', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-itf-14-generator': {
+    directAnswer:
+      'Generate compliant ITF-14 shipping container barcodes directly in your browser by encoding 13 packaging digits or entering a full 14-digit sequence with bearer bars. The tool computes the mandatory modulo-10 checksum and renders resolution-independent vector graphics entirely client-side in memory to ensure master carton inventory codes remain confidential. All barcode rendering occurs client-side in browser memory to keep master carton distribution codes private.',
+    leadParagraph:
+      'The Interleaved 2 of 5 (ITF-14) barcode format is the global packaging standard for corrugated master cartons, shipping cases, and pallet containers handled across freight logistics and warehousing hubs. Characterized by thick surrounding bearer bars that prevent partial scans and support flexographic printing on rough cardboard surfaces, ITF-14 encodes 14 numeric digits based on GS1 packaging hierarchies. This client-side ITF-14 barcode generator creates specification-compliant symbols, automatically calculating the mandatory modulo-10 check digit from 13 input digits or confirming a 14-digit master code. Users can customize bearer bar thickness, quiet zones, and aspect ratios before exporting vector SVG or high-resolution PNG images ready for packaging print houses. Because shipping logistics codes and unreleased distribution identifiers require commercial discretion, all barcode rendering runs locally in browser memory. No carton codes are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question:
+          'Why do ITF-14 barcodes feature thick surrounding bearer bars?',
+        answer:
+          'Bearer bars equalize printing plate pressure on corrugated cardboard and prevent optical scanners from registering misreads if the scanning beam wanders off-edge.',
+      },
+      {
+        question: 'How is the mandatory ITF-14 checksum digit calculated?',
+        answer:
+          'The check digit uses a standard GS1 modulo-10 algorithm multiplying alternating digits by weights of 3 and 1 from right to left before modulo subtraction.',
+      },
+      {
+        question: 'What packaging level does an ITF-14 barcode represent?',
+        answer:
+          'ITF-14 identifies outer shipping cartons or wholesale cases containing multiple retail units, distinguishing case packaging from individual retail point-of-sale items.',
+      },
+      {
+        question:
+          'Are my warehouse shipping codes or carton serials sent online?',
+        answer:
+          'No. All barcode generation executes client-side in local browser memory with zero outbound network calls, ensuring total confidentiality for logistics operations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'magnification-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-magnification-calculator': {
+    directAnswer:
+      'Calculate optical magnification directly in your browser by comparing image height to object height (M = hi / ho) or image distance to object distance (M = -di / do). The tool computes linear and angular magnification across lenses, microscopes, and telescopes entirely client-side in memory to keep laboratory measurements and physics exercises private.',
+    leadParagraph:
+      'Determining the scaling power of optical systems is fundamental in biological microscopy, astronomical telescope design, photographic macro lenses, and introductory physics education. This client-side optical magnification calculator solves for transverse linear magnification (M), image dimensions, object heights, and optical conjugate distances. The tool automatically indicates whether an image is enlarged (M > 1), diminished (M < 1), upright (positive sign), or inverted (negative sign) in accordance with standard Cartesian optical conventions. Evaluating magnification parameters directly in your browser enables laboratory students and optics technicians to verify ray-tracing diagrams and camera focal setups without installing proprietary optical software. Because laboratory observations and experimental physics datasets require complete confidentiality, all calculations execute locally within browser memory. No experimental variables or problem solutions are ever sent to remote web servers. Understanding optical magnification principles enables students and optical technicians to verify physical experiment setups and image projections accurately.',
+    faqs: [
+      {
+        question:
+          'What does a negative magnification value indicate in optics?',
+        answer:
+          'A negative magnification value signifies an inverted image relative to the source object, which is standard for real images produced by converging convex lenses.',
+      },
+      {
+        question: 'How is compound microscope magnification calculated?',
+        answer:
+          'Total compound microscope magnification equals the product of objective lens magnification multiplied by eyepiece magnification (M_total = M_obj × M_eye).',
+      },
+      {
+        question:
+          'Can I calculate object height when image height and magnification are known?',
+        answer:
+          'Yes. Entering any two parameters allows the calculator to rearrange the magnification equation (M = hi / ho) to determine the unknown third variable.',
+      },
+      {
+        question:
+          'Are my physics parameters or optics calculation histories uploaded?',
+        answer:
+          'No. Every formula evaluation runs locally in client browser memory with zero network traffic, ensuring complete computational privacy for laboratory research.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'spreadsheet-cell-inspector', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-spreadsheet-cell-inspector': {
+    directAnswer:
+      'Inspect spreadsheet cell contents, data types, underlying formulas, formatting rules, and coordinate metadata directly in your browser. The tool analyzes Excel and CSV grid cells without opening desktop software. All cell inspection routines execute client-side in browser memory to keep corporate financial models and proprietary spreadsheets confidential. All cell inspections take place client-side in browser memory to keep financial records completely confidential.',
+    leadParagraph:
+      'Investigating anomalies in extensive financial spreadsheets often requires examining individual cell properties, underlying formulas, date serial representations, and numeric precisions that are masked by visible display formatting. This client-side spreadsheet cell inspector allows data analysts, accountants, and software developers to inspect uploaded spreadsheet files cell by cell, uncovering hidden string types masquerading as numbers, examining formula dependencies, and verifying data validation rules. The tool reveals exact floating-point values, identifies corrupted characters, and flags null or whitespace-only cells across complex multi-sheet workbooks. Because business spreadsheets frequently contain sensitive enterprise payroll records, proprietary pricing formulas, or quarterly earnings figures, all file parsing runs locally inside browser memory. No spreadsheet files or cell values are ever transmitted to external web services. Auditing cell metadata in browser memory ensures model validation remains private and prevents accidental corruption of critical spreadsheet formulas.',
+    faqs: [
+      {
+        question:
+          'Can I inspect raw underlying values separate from displayed formatting?',
+        answer:
+          'Yes. The inspector displays both the raw unformatted cell value and the rendered visual string, helping you spot discrepancies caused by custom cell number formats.',
+      },
+      {
+        question:
+          'Does the inspector detect numbers mistakenly stored as text strings?',
+        answer:
+          'Yes. The tool identifies numbers stored as text strings that fail mathematical aggregation functions in downstream spreadsheet and database calculations.',
+      },
+      {
+        question: 'What file formats can be analyzed with the cell inspector?',
+        answer:
+          'The inspector supports modern OpenXML spreadsheet formats (.xlsx, .xlsm) as well as standard comma-separated (.csv) and tab-separated (.tsv) data tables.',
+      },
+      {
+        question:
+          'Are my corporate spreadsheets or financial data uploaded anywhere?',
+        answer:
+          'No. All spreadsheet binary decoding and cell inspection execute client-side in browser memory with zero outbound network calls, ensuring total data confidentiality.',
+      },
+    ],
+  },
+  // components/subtitle-workbench-tool.tsx, lib/tools/subtitle-workbench.ts (SUBTITLE_OPERATIONS 'subtitle-to-srt', runSubtitleOperation) and app/subtitles/subtitle-to-srt/page.tsx
+  'subtitles-vtt-to-srt': {
+    directAnswer:
+      'Convert WebVTT (VTT) subtitles into SubRip (SRT) format directly in your browser. The tool strips WebVTT headers and cue position styling, converts decimal millisecond points into commas, and adds sequential numeric cue indices. The conversion executes entirely client-side in browser memory to keep private video captions and media transcriptions completely confidential.',
+    leadParagraph:
+      'While WebVTT is the standard format for modern web video players, legacy desktop media software, hardware television media boxes, and offline editing suites frequently require standard SubRip (.srt) caption files. This client-side subtitle converter parses WebVTT tracks, removing WEBVTT header banners, metadata comment blocks, and CSS cue alignment directives (such as line, position, and align parameters) while preserving dialogue and timestamps. The engine converts WebVTT decimal millisecond separators (00:00:10.500) into standard SubRip commas (00:00:10,500) and sequences numeric cue counters accurately from start to finish. Converting caption files directly in browser memory saves video creators and localization teams time during media authoring workflows. Because subtitles frequently contain confidential video content or unreleased broadcast material, all parsing occurs locally in browser memory. No files are ever uploaded to remote servers. Running format conversions locally in browser memory preserves original styling integrity and protects proprietary video content from unauthorized exposure.',
+    faqs: [
+      {
+        question:
+          'How are WebVTT positioning tags handled during conversion to SRT?',
+        answer:
+          'The converter strips WebVTT-specific positioning parameters (such as line:50% or align:middle) to ensure the generated SRT file maintains clean subtitle syntax.',
+      },
+      {
+        question:
+          'Does the converter generate sequential cue numbering automatically?',
+        answer:
+          'Yes. The tool verifies and numbers all subtitle cues sequentially starting from 1, ensuring compliance with strict media player SRT parsing requirements.',
+      },
+      {
+        question:
+          'What happens to WebVTT styling tags like italics and bolding?',
+        answer:
+          'Standard HTML formatting tags (such as <i> and <b>) are preserved in the SRT output, maintaining dialogue emphasis across compatible media players.',
+      },
+      {
+        question:
+          'Are my subtitle files or video transcripts shared with servers?',
+        answer:
+          'No. All subtitle conversions execute entirely client-side in browser memory with zero network traffic, ensuring complete privacy for your caption files.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-deduplicator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-deduplicator': {
+    directAnswer:
+      'Remove duplicate lines and repeated words directly in your browser with case-sensitive filtering, whitespace trimming, and duplicate occurrence statistics. The tool cleans text lists and datasets while preserving original sorting order. All deduplication routines execute client-side in browser memory to keep proprietary email lists, customer records, and private documents secure.',
+    leadParagraph:
+      'Cleaning repetitive lists of email addresses, consolidating database query outputs, and sanitizing keyword research logs often requires rapid line deduplication. This client-side text deduplicator parses multi-line text blocks, identifying and eliminating identical entries while providing exact counts of removed redundant lines. Users can choose to preserve original line sequencing, sort outputs alphabetically, ignore case variations, or trim surrounding whitespace before matching. Sanitizing text lists directly in local browser memory saves administrative professionals and data engineers time without copying proprietary lists into remote third-party web tools. Because customer contact lists, subscriber databases, and inventory rosters contain sensitive business intelligence, all deduplication algorithms run locally inside browser memory. No text data is ever transmitted across external networks. Deduplicating records locally accelerates list cleaning workflows for marketing teams, developers, and administrators without risking third-party data leaks.',
+    faqs: [
+      {
+        question:
+          'Can I deduplicate lists while preserving their original order?',
+        answer:
+          'Yes. The tool retains the first occurrence of each unique entry in its original relative order, stripping only subsequent repetitive lines.',
+      },
+      {
+        question:
+          'How does case-insensitive deduplication handle capitalization differences?',
+        answer:
+          'When case-insensitive mode is enabled, entries like Apple and apple are treated as identical duplicates, retaining the first instance encountered in the list.',
+      },
+      {
+        question:
+          'Does the tool remove empty or whitespace-only lines automatically?',
+        answer:
+          'You can configure options to strip leading and trailing whitespace, collapse redundant blank lines, or retain whitespace according to your formatting needs.',
+      },
+      {
+        question: 'Are my contact lists or customer datasets uploaded online?',
+        answer:
+          'No. All list parsing and line deduplication occur strictly within client browser memory with zero network calls, maintaining absolute data privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-gradient-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-gradient-generator': {
+    directAnswer:
+      'Generate modern CSS linear, radial, and conic gradients directly in your browser with interactive color stop controls, angle rotations, and live visual preview. The tool exports clean, cross-browser CSS code snippets entirely client-side in memory to ensure unreleased website design prototypes and brand styling remain confidential. The tool formats CSS gradient declarations locally in browser memory to keep design work private.',
+    leadParagraph:
+      'Crafting eye-catching background gradients is a staple of modern web design, giving hero headers, UI cards, and call-to-action buttons visual depth and contemporary polish. This client-side CSS gradient generator lets front-end developers and web designers construct linear, radial, and conic color transitions with interactive color stops, opacity sliders, and angle adjustments. The tool generates clean, standards-compliant CSS code including vendor prefixes where appropriate and RGBA/HEX declarations ready for immediate copying into style sheets. Visualizing color blends directly in browser memory accelerates UI prototyping without requiring heavy graphic design desktop software. Because pre-launch digital prototypes and corporate brand color schemes require design secrecy, all canvas rendering and CSS code generation execute locally within browser memory. No design assets or gradient configurations are ever transmitted to remote servers. Testing modern color palettes directly in the browser helps web designers refine visual aesthetics and ensure high-contrast accessibility standards across pages.',
+    faqs: [
+      {
+        question: 'What gradient types are supported by this CSS generator?',
+        answer:
+          'The generator supports linear gradients (directional angles), radial gradients (circular and elliptical spreads), and conic gradients (sweep-angle transitions) with live preview.',
+      },
+      {
+        question: 'Can I add multiple color stops and adjust color opacity?',
+        answer:
+          'Yes. You can add unlimited color stops along the gradient track, reposition percentage boundaries, and adjust RGBA alpha transparency sliders interactively.',
+      },
+      {
+        question:
+          'Is the generated CSS code compatible across modern browsers?',
+        answer:
+          'Yes. The tool outputs standard CSS3 gradient syntax supported natively by all modern web browsers, including fallback solid colors for legacy compatibility.',
+      },
+      {
+        question:
+          'Are my brand color combinations or design assets tracked online?',
+        answer:
+          'No. All visual rendering and CSS code generation take place client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'vat-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-vat-calculator': {
+    directAnswer:
+      'Calculate Value Added Tax (VAT) additions and subtractions directly in your browser across standard, reduced, and custom international tax percentages. The tool determines gross prices, net amounts, and exact tax levies entirely client-side in memory to keep corporate invoices, product pricing, and business financial figures confidential. The tax calculator executes client-side in browser memory to keep corporate sales figures and pricing private.',
+    leadParagraph:
+      'Calculating Value Added Tax (VAT) accurately is an everyday necessity for ecommerce merchants, international freelancers, and accounting teams managing cross-border commercial transactions. This browser-based VAT calculator allows businesses to compute VAT-inclusive gross prices from net amounts or extract VAT liabilities and base prices from gross receipts. Users can select preset national VAT rates across the United Kingdom, European Union member states, and global jurisdictions, or supply custom percentage rates to verify transaction figures. Calculating tax liabilities directly in client-side memory gives financial administrators instant arithmetic verification for invoicing, budgeting, and quarterly tax returns. Because commercial sales transactions, proprietary product pricing, and invoice sums represent sensitive business data, all financial computations run locally in browser memory. No transaction figures are ever shared across external networks. Confirming tax rates directly in browser memory helps international merchants and freelance professionals maintain accurate accounting records across jurisdictions.',
+    faqs: [
+      {
+        question:
+          'How do I extract the net price from a VAT-inclusive gross amount?',
+        answer:
+          'To extract the net price, divide the gross amount by one plus the tax rate as a decimal (for example, gross divided by 1.20 for a 20 percent VAT rate).',
+      },
+      {
+        question:
+          'Can I calculate VAT using custom or reduced tax percentage rates?',
+        answer:
+          'Yes. You can choose from international preset tax brackets or enter custom decimal percentages to model reduced, standard, or zero-rated goods accurately.',
+      },
+      {
+        question:
+          'How does VAT differ structurally from standard retail sales tax?',
+        answer:
+          'VAT is assessed incrementally at each stage of production and distribution based on added value, whereas sales tax is collected exclusively on final retail sales.',
+      },
+      {
+        question:
+          'Are my commercial invoice amounts or pricing calculations logged?',
+        answer:
+          'No. All tax calculations execute client-side in browser memory with zero network traffic, ensuring complete financial privacy for your commercial business records.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'warranty-expiry-tracker', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-warranty-expiry-tracker': {
+    directAnswer:
+      'Track warranty coverage and protection plan expirations for home appliances, electronics, automobiles, and equipment directly in your browser. The tool calculates days remaining until expiration, highlights active claim windows, and categorises assets entirely client-side in memory to keep personal purchase records and serial numbers confidential. The tool calculates coverage windows locally in client browser memory with zero network traffic.',
+    leadParagraph:
+      'Consumer electronics, household white goods, mobile handsets, and automobiles often carry manufacturer warranties or extended service agreements that expire quietly without consumer notice. When equipment malfunctions, having organized visibility into warranty coverage prevents unnecessary repair expenses. This browser-based warranty expiry tracker enables consumers and office managers to log purchased products, record purchase dates and warranty duration months, and monitor remaining days of coverage through clear visual indicators. Users can categorize items by manufacturer, store receipt references, and track impending deadlines for warranty extension options before original coverage lapses. Because purchase dates, appliance serial numbers, and invoice costs represent private personal information, all tracking calculations execute locally in client browser memory. No product records or purchase histories are ever stored on external web servers. Maintaining an up-to-date warranty catalog helps consumers maximize product protection value and avoid unnecessary replacement costs for repairable goods.',
+    faqs: [
+      {
+        question:
+          'How does the tracker calculate remaining warranty coverage periods?',
+        answer:
+          'The tracker adds warranty duration months to your recorded purchase date, calculating the exact calendar expiration date and computing days remaining.',
+      },
+      {
+        question:
+          'Can I track extended warranties or third-party service contracts?',
+        answer:
+          'Yes. You can record extended warranty agreements, annual maintenance contracts (AMC), or third-party protection plans alongside original manufacturer coverage terms.',
+      },
+      {
+        question:
+          'Why is monitoring warranty expiration deadlines important for consumers?',
+        answer:
+          'Tracking warranties ensures you schedule repairs for minor hardware defects before coverage lapses, preventing out-of-pocket repair costs on household appliances.',
+      },
+      {
+        question:
+          'Are my equipment serial numbers or purchase receipts uploaded?',
+        answer:
+          'No. All warranty calculations and record inventories exist strictly in local client browser memory with zero network calls, ensuring complete asset privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'geometry-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-geometry-calculator': {
+    directAnswer:
+      'Calculate geometric dimensions, perimeters, surface areas, and volumes directly in your browser across 2D shapes and 3D solids including circles, triangles, spheres, cylinders, and cones. The tool provides exact algebraic formulas and decimal results entirely client-side in memory to ensure architectural schematics and coursework remain completely confidential. All geometry formulas execute client-side in browser memory to keep technical drafts private.',
+    leadParagraph:
+      'Geometric calculations are fundamental across architectural drafting, carpentry, civil engineering, mechanical modeling, and high school physics. This client-side geometry calculator provides comprehensive solutions for two-dimensional figures (rectangles, triangles, circles, trapezoids, regular polygons) and three-dimensional solids (cubes, rectangular prisms, cylinders, spheres, cones, pyramids). Users can enter known radii, side lengths, heights, or angles to compute unknown perimeters, surface areas, and internal cubic volumes with step-by-step formula explanations. Evaluating spatial dimensions directly in the browser helps construction estimators, students, and engineers verify material quantities and surface measurements without installing specialized computer-aided design software. Because technical blueprints and academic coursework require computational privacy, all geometric calculations run locally inside browser memory. No dimensional parameters or calculation steps are ever sent across external networks. Evaluating geometric figures in client memory gives students, architects, and designers instant computational answers for spatial problem solving and planning.',
+    faqs: [
+      {
+        question:
+          'What 2D and 3D geometric shapes can be calculated with this tool?',
+        answer:
+          'The tool supports 2D circles, triangles, rectangles, polygons, and trapezoids alongside 3D spheres, cylinders, cones, pyramids, and rectangular prisms with exact solutions.',
+      },
+      {
+        question:
+          'Does the calculator show intermediate mathematical formulas?',
+        answer:
+          'Yes. The interface displays canonical mathematical equations alongside intermediate calculation steps, helping students learn geometric derivations and verify their numerical results accurately.',
+      },
+      {
+        question:
+          'How are unit measurements converted between metric and imperial systems?',
+        answer:
+          'You can select consistent measurement units such as millimetres, centimetres, metres, inches, or feet, with automatic scaling for area and volume metrics.',
+      },
+      {
+        question:
+          'Are my architectural dimensions or engineering calculations uploaded?',
+        answer:
+          'No. All geometric calculations execute client-side in browser memory with zero network traffic, ensuring complete confidentiality for construction and design work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'sound-intensity-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-sound-intensity-calculator': {
+    directAnswer:
+      'Calculate acoustic sound intensity, sound power, and propagation distance directly in your browser using the inverse-square law (I = P / 4πr²). The calculator determines sound intensity levels in watts per square metre and decibels entirely client-side in memory to ensure acoustic engineering studies and laboratory measurements remain confidential. The tool evaluates acoustic formulas client-side in browser memory to keep research private.',
+    leadParagraph:
+      'Acoustic wave intensity decreases systematically as distance from a sound source increases, following the inverse-square law for spherical wave propagation in free air. This client-side sound intensity calculator models acoustic energy distribution, solving for sound intensity (I in watts per square metre), source acoustic power (P in watts), and observer distance (r in metres). The tool simultaneously converts physical intensity into logarithmic sound intensity levels expressed in decibels (dB SIL) relative to the human hearing threshold (10^-12 W/m²). Evaluating acoustic dispersion directly in your browser runtime helps acoustic consultants, audio engineers, and physics students predict noise exposure levels and design speaker configurations without specialized software. Because industrial noise assessments and architectural acoustic designs involve proprietary parameters, all calculations execute locally within browser memory. No acoustic figures are ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'What mathematical law governs sound intensity over distance?',
+        answer:
+          'Sound intensity follows the inverse-square law (I = P / 4πr²), where intensity diminishes inversely with the square of the distance from a point source.',
+      },
+      {
+        question:
+          'What reference value is used to calculate decibel sound intensity level?',
+        answer:
+          'Decibel sound intensity level is calculated relative to the standard human threshold of hearing, which is defined physically as 10^-12 watts per square metre.',
+      },
+      {
+        question:
+          'How does doubling the distance from a sound source affect decibels?',
+        answer:
+          'Doubling the distance from an acoustic point source in free space reduces the observed sound level by approximately 6 decibels due to spherical spreading.',
+      },
+      {
+        question:
+          'Are my acoustic parameters or engineering measurements saved online?',
+        answer:
+          'No. Every formula evaluation runs locally in client browser memory with zero network traffic, ensuring complete computational privacy for acoustic research.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'spreadsheet-duplicate-finder', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-spreadsheet-duplicate-finder': {
+    directAnswer:
+      'Find and highlight duplicate rows or matching cell values across spreadsheet columns directly in your browser. The tool scans Excel and CSV files to flag redundant records and isolate unique rows entirely client-side in memory to ensure confidential customer lists, proprietary databases, and financial tables remain secure. The tool isolates matching rows client-side in browser memory to keep proprietary records secure.',
+    leadParagraph:
+      'Duplicate entries in corporate spreadsheets create reporting inaccuracies, inflated customer counts, and skewed analytics results. This client-side spreadsheet duplicate finder allows data managers, accountants, and marketing specialists to inspect uploaded Excel (.xlsx) and CSV files, pinpointing redundant rows based on selected key columns or entire row matches. Users can highlight duplicates visually, view redundancy occurrence summaries, and export clean datasets with duplicates filtered out or isolated into separate review tables. Isolating duplicate records directly in browser memory accelerates data quality audits without relying on external cloud processing services. Because business spreadsheets frequently contain confidential customer contact information, employee rosters, or proprietary pricing schedules, all scanning runs locally inside browser memory. No spreadsheet files or customer records are ever uploaded to remote servers. Eliminating redundant spreadsheet records ensures corporate databases maintain high data integrity standards for reliable business intelligence and client reporting.',
+    faqs: [
+      {
+        question:
+          'Can I detect duplicates based on specific columns rather than whole rows?',
+        answer:
+          'Yes. You can select specific key columns (such as email addresses or product SKUs) to identify duplicate entities even if other column fields differ.',
+      },
+      {
+        question: 'Does the tool allow me to download a cleaned spreadsheet?',
+        answer:
+          'Yes. You can export a deduped spreadsheet retaining unique records or download an isolated list containing only the identified duplicate rows for review.',
+      },
+      {
+        question:
+          'What spreadsheet file formats are supported for duplicate detection?',
+        answer:
+          'The tool supports standard OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for thorough duplicate inspection.',
+      },
+      {
+        question:
+          'Are my private customer spreadsheets or contact databases uploaded?',
+        answer:
+          'No. All spreadsheet decoding and duplicate detection execute client-side in browser memory with zero outbound network calls, maintaining total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'lorem-ipsum-generator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-lorem-ipsum-generator': {
+    directAnswer:
+      'Generate placeholder pseudo-Latin text directly in your browser by paragraph count, word count, sentence count, or list items. The tool creates standard Cicero-derived dummy copy for layout design, typography mockups, and web development wireframes entirely client-side in memory to ensure unreleased project layouts remain private. All dummy text generation runs client-side in browser memory to keep layout prototypes private.',
+    leadParagraph:
+      "Graphic designers, web developers, and typesetters rely on placeholder text to showcase visual layouts, test font pairings, and balance typographic hierarchies without distracting viewers with readable draft copy. This client-side Lorem Ipsum generator creates classic pseudo-Latin dummy text derived from Cicero's philosophical writings, allowing users to generate exact quantities of paragraphs, sentences, words, or bullet points. Users can choose to start with the traditional 'Lorem ipsum dolor sit amet' opening sentence, generate HTML paragraph tags for direct code insertion, or create naturalistic length variations across generated paragraphs. Generating placeholder text directly in local browser memory gives designers instant mock copy without loading third-party advertising scripts or tracking pixels. Because design mockups and staging wireframes involve sensitive commercial launches, all text generation executes locally within browser memory. No data is ever sent across external networks.",
+    faqs: [
+      {
+        question:
+          'What is the historical origin of traditional Lorem Ipsum text?',
+        answer:
+          'Lorem Ipsum originates from a scrambled passage of Cicero philosophical work written in 45 BC, used by print typesetters since the 1500s.',
+      },
+      {
+        question:
+          'Can I generate placeholder text formatted with HTML paragraph tags?',
+        answer:
+          'Yes. You can toggle HTML markup output to generate text wrapped in <p> tags, list elements, or clean plaintext ready for code integration.',
+      },
+      {
+        question:
+          'Can I specify exact word or paragraph counts for my layout design?',
+        answer:
+          'Yes. You can generate precise numbers of paragraphs, sentences, or individual words to fit exact spatial constraints in your design layouts.',
+      },
+      {
+        question:
+          'Are my generated layout texts or mockup templates tracked online?',
+        answer:
+          'No. All dummy text generation runs locally inside client browser memory with zero network traffic, ensuring complete privacy for your design workflow.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-shadow-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-shadow-generator': {
+    directAnswer:
+      'Generate realistic CSS box-shadow and text-shadow rules directly in your browser with interactive horizontal offsets, vertical offsets, blur radii, spread distances, and color opacity controls. The tool creates layered smooth shadows entirely client-side in memory to ensure website design mockups and UI styling remain confidential. All shadow rendering and CSS generation execute locally in browser memory to keep UI designs private.',
+    leadParagraph:
+      'Applying refined elevation shadows gives modern web interfaces depth, hierarchy, and tactile realism, making cards, dropdowns, and modal dialogs feel distinct from the background. This client-side CSS shadow generator allows front-end developers and web designers to design single and multi-layered box-shadow or text-shadow effects interactively. Users can adjust horizontal and vertical offsets, blur radius, spread distance, and RGBA shadow colours with live visual preview on light and dark surfaces, including inset shadow toggles. Layering subtle multiple shadows produces soft, photorealistic ambient lighting effects that elevate UI components above harsh default styling. Because creative interface styling and pre-launch brand aesthetics require design secrecy, all visual rendering and CSS code generation execute locally within browser memory. No design configurations or styling codes are ever transmitted to remote web servers. Applying subtle box and text shadows enhances card components and button controls, creating clear tactile hierarchies across responsive website layouts.',
+    faqs: [
+      {
+        question:
+          'What is the visual advantage of layering multiple box shadows?',
+        answer:
+          'Layering multiple shadows with increasing blur radii creates naturalistic, diffuse ambient occlusion shadows that look considerably smoother than a single harsh shadow.',
+      },
+      {
+        question:
+          'What is the difference between blur radius and spread radius?',
+        answer:
+          'Blur radius softens and feathers the shadow edges, whereas spread radius expands or contracts the physical surface area of the shadow mask.',
+      },
+      {
+        question: 'Can I create inner shadows for pressed button UI states?',
+        answer:
+          'Yes. Toggling the inset keyword directs the shadow inside the container boundary, creating sunken or recessed appearances ideal for pressed controls.',
+      },
+      {
+        question:
+          'Are my custom CSS styles or visual mockups uploaded anywhere?',
+        answer:
+          'No. All shadow rendering and CSS snippet generation execute client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'sales-tax-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-sales-tax-calculator': {
+    directAnswer:
+      'Calculate retail sales tax additions and reverse deductions directly in your browser by entering item purchase prices alongside state, county, or municipal tax rates. The tool computes gross totals, net prices, and collected tax amounts entirely client-side in memory to keep consumer purchases and commercial sales figures confidential. All calculations run locally in browser memory to keep shopping receipts and sales records private.',
+    leadParagraph:
+      'Retail sales taxes vary substantially across state, provincial, and municipal jurisdictions, making quick tax calculations essential for retail shoppers, small business owners, and accounting staff reconciling receipts. This client-side sales tax calculator determines total transaction costs by applying sales tax percentages to pre-tax amounts, or extracts base product prices and sales tax collected from final receipt totals. The tool allows users to enter state and local combined tax rates, adjust item quantities, and model tax-exempt items with instant arithmetic updates. Computing sales tax directly in browser memory eliminates calculation guesswork during budgeting, checkout auditing, and expense tracking. Because personal shopping expenditures and business receipt reconciliations represent private financial records, all calculations execute locally within your browser runtime. No purchase amounts or tax records are ever transmitted to remote servers. Verifying sales tax amounts locally helps retailers and shoppers avoid checkout billing mistakes and maintain accurate expense tracking.',
+    faqs: [
+      {
+        question:
+          'How do I calculate the base pre-tax price from a total receipt?',
+        answer:
+          'Divide the total receipt cost by one plus the tax rate as a decimal (for instance, divide by 1.08 for an 8 percent tax rate) to find the pre-tax price.',
+      },
+      {
+        question: 'Can I combine multiple local, county, and state tax rates?',
+        answer:
+          'Yes. You can enter the combined aggregate sales tax percentage or sum individual district rates to calculate the exact total tax levied.',
+      },
+      {
+        question:
+          'How does sales tax differ from corporate income tax for businesses?',
+        answer:
+          'Sales tax is a consumption tax collected directly from purchasers on retail transactions, whereas income tax is levied on net corporate business profits.',
+      },
+      {
+        question:
+          'Are my retail purchase figures or business receipts saved online?',
+        answer:
+          'No. All sales tax calculations run strictly inside local client browser memory with zero network traffic, ensuring complete confidentiality for your financial records.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'emi-due-date-planner', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-emi-due-date-planner': {
+    directAnswer:
+      'Plan loan Equated Monthly Installment (EMI) payment dates and cash flow schedules directly in your browser. The tool tracks recurring monthly due dates, calculates days until payment, and maps payment timelines entirely client-side in memory to ensure personal bank loan obligations and household liabilities remain completely confidential. The planner maps payment schedules locally in browser memory to keep personal loan data private.',
+    leadParagraph:
+      'Managing recurring loan commitments across home mortgages, automobile loans, educational borrowings, and personal lines requires synchronized payment scheduling to ensure bank accounts maintain sufficient liquidity. Missing an Equated Monthly Installment (EMI) due date can trigger hefty bounce charges, late payment fees, and damaging credit score penalties. This browser-based EMI due date planner allows borrowers to catalog multiple loans, record monthly deduction dates, and monitor countdown timers to upcoming installment debits. Users can view total monthly loan debt obligations, align debit dates with monthly salary credits, and avoid account overdrafts through organized calendar planning. Because personal loan amounts, bank debit dates, and debt obligations represent sensitive financial records, all planning calculations run locally in client browser memory. No debt records or payment dates are ever transmitted to external web services. Consolidating EMI dates in local browser memory gives borrowers a dependable roadmap for personal liquidity management and debt discipline.',
+    faqs: [
+      {
+        question:
+          'Why is aligning EMI due dates with salary credit dates advisable?',
+        answer:
+          'Scheduling EMIs a few days after your monthly salary credit ensures adequate account liquidity, preventing auto-debit bounce fees and credit score penalties.',
+      },
+      {
+        question:
+          'Can I track multiple loans simultaneously within the planner?',
+        answer:
+          'Yes. You can record home loans, vehicle installments, education loans, and consumer EMIs in one consolidated dashboard to review total monthly commitments.',
+      },
+      {
+        question:
+          'What consequences occur if an automated EMI deduction bounces?',
+        answer:
+          'Bounced EMIs incur bank return charges, lender penalty fees, and negative default notations on national credit bureau reports that impair future borrowing.',
+      },
+      {
+        question: 'Are my personal loan balances or bank debit dates uploaded?',
+        answer:
+          'No. All installment schedules and planning calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'triangle-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-triangle-calculator': {
+    directAnswer:
+      "Solve triangle properties directly in your browser using trigonometry, Pythagorean theorem, and Heron's formula. Enter any valid combination of sides and angles (SSS, SAS, ASA, AAS, or RHS) to compute missing side lengths, interior angles, perimeter, and total surface area. All trigonometric calculations execute client-side in browser memory to keep architectural blueprints and mathematical problem sets completely confidential.",
+    leadParagraph:
+      'Triangle trigonometry is foundational to surveying, structural mechanics, navigation, roof framing, and high school mathematics. This client-side triangle calculator processes right-angled, acute, and obtuse triangles, automatically applying the law of sines, law of cosines, and Heron formula to resolve missing dimensions from minimal geometric inputs. The tool validates triangle inequality conditions, detects ambiguous SSA cases where multiple valid geometric solutions exist, and delivers exact fractional and decimal results alongside perimeter and circumradius metrics. Solving triangle geometry directly in your browser provides immediate visual and numerical confirmation for construction estimators and engineering students. Because proprietary mechanical drafts and academic problem sets require privacy, all calculations execute locally within browser memory. No dimensional parameters are ever transmitted across external networks. Understanding triangle properties provides fundamental structural insights across mechanical engineering, civil truss design, and navigational triangulation.',
+    faqs: [
+      {
+        question: 'What input combinations are supported to solve a triangle?',
+        answer:
+          'The calculator supports SSS (three sides), SAS (two sides and included angle), ASA, AAS, and right-angled RHS configurations with full geometric validation.',
+      },
+      {
+        question:
+          'How does the calculator handle ambiguous SSA triangle configurations?',
+        answer:
+          'When provided with two sides and a non-included angle (SSA), the tool tests the sine ratio to identify whether zero, one, or two valid triangles exist.',
+      },
+      {
+        question: 'What is Heron formula used for in triangle calculations?',
+        answer:
+          'Heron formula calculates total triangle area using only the lengths of all three sides (s = semiperimeter; Area = √(s(s-a)(s-b)(s-c))) without requiring height.',
+      },
+      {
+        question:
+          'Are my geometric dimensions or calculations logged on a server?',
+        answer:
+          'No. All trigonometric equations run strictly inside local client browser memory with zero network traffic, ensuring complete confidentiality for your architectural and academic work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'decibel-converter', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-decibel-converter': {
+    directAnswer:
+      'Convert linear power and voltage ratios into logarithmic decibels (dB, dBm, dBW, dBu, dBV) directly in your browser. The tool computes sound pressure, electrical signal gain, and attenuation using standard logarithmic scaling. All decibel conversions execute client-side in browser memory to keep telecommunications engineering schematics and laboratory acoustic measurements completely private.',
+    leadParagraph:
+      'Decibels provide a convenient logarithmic scale for expressing immense dynamic ranges encountered in acoustics, radio frequency (RF) engineering, audio signal processing, and telecommunications. This client-side decibel converter transforms linear power ratios (using 10 log10) and voltage or field amplitude ratios (using 20 log10) into standardized decibel metrics. Users can convert between absolute decibel units such as dBm (referenced to 1 milliwatt), dBW (referenced to 1 watt), dBu (referenced to 0.775 volts), and acoustic sound pressure levels (dB SPL). Converting logarithmic ratios directly in your browser enables electrical engineers, audio technicians, and physics researchers to verify amplifier gain stages and signal attenuation without specialized desktop software. Because telecommunications link budgets and acoustic experimental data involve proprietary engineering parameters, all conversion algorithms run locally within browser memory. No signal values are ever sent to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Why do power and voltage decibel calculations use different factors?',
+        answer:
+          'Power scales with the square of voltage (P = V² / R), making a voltage ratio factor of 20 log10 equivalent to a power ratio factor of 10 log10.',
+      },
+      {
+        question: 'What reference power level does the dBm unit represent?',
+        answer:
+          'dBm expresses power levels relative to 1 milliwatt (mW) into a standard 50-ohm or 600-ohm impedance load, commonly used in RF and telecommunications.',
+      },
+      {
+        question: 'What does a 3 dB change signify in electrical signal power?',
+        answer:
+          'An increase or decrease of 3 decibels represents an approximate doubling or halving of physical power, whereas a 6 dB shift corresponds to doubling voltage amplitude.',
+      },
+      {
+        question:
+          'Are my RF engineering values or acoustic data uploaded online?',
+        answer:
+          'No. Every formula evaluation runs locally in client browser memory with zero network traffic, ensuring complete computational privacy for engineering and laboratory calculations.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'spreadsheet-blank-row-remover', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-spreadsheet-blank-row-remover': {
+    directAnswer:
+      'Remove empty rows, blank columns, and whitespace-only table gaps from spreadsheet files directly in your browser. The tool cleans Excel and CSV files to produce compact, contiguous data grids ready for database ingestion. All table cleanup operations run client-side in browser memory to keep corporate financial models and proprietary datasets confidential.',
+    leadParagraph:
+      'Exporting tabular records from legacy accounting suites or web scraping utilities often introduces scattered empty rows, blank padding columns, or cells containing only unprintable whitespace characters. These gaps cause errors during automated database imports and disrupt formula ranges in spreadsheet pivot tables. This client-side spreadsheet blank row remover parses uploaded Excel (.xlsx, .xlsm) and CSV files, detecting completely empty rows or rows lacking substantive data and excising them while preserving contiguous table headers and column alignment. Users can preview cleaned table layouts, view statistics on excised lines, and download compacted files immediately. Sanitizing spreadsheet records directly in browser memory accelerates data preparation workflows for business analysts and database administrators. Because enterprise spreadsheets frequently contain confidential payroll numbers or customer rosters, all file cleaning runs locally in browser memory. No spreadsheet files are ever transmitted to external web services.',
+    faqs: [
+      {
+        question:
+          'Does the tool treat cells with spaces or tabs as blank rows?',
+        answer:
+          'Yes. You can enable whitespace trimming so that rows containing only blank spaces, non-breaking spaces, or tabs are identified and removed as empty rows.',
+      },
+      {
+        question:
+          'Can I remove blank columns alongside empty rows simultaneously?',
+        answer:
+          'Yes. The tool provides options to purge completely vacant columns alongside empty rows, collapsing horizontal and vertical gaps in one cleaning pass.',
+      },
+      {
+        question:
+          'What spreadsheet formats can be processed with this cleanup tool?',
+        answer:
+          'The cleaner supports modern OpenXML workbooks (.xlsx, .xlsm) as well as comma-separated values (.csv) and tab-separated (.tsv) data tables for thorough table gap removal.',
+      },
+      {
+        question:
+          'Are my sensitive corporate tables or spreadsheet files uploaded?',
+        answer:
+          'No. All spreadsheet parsing and row stripping occur strictly within local browser memory with zero network calls, guaranteeing absolute confidentiality for enterprise datasets.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'random-word-generator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-random-word-generator': {
+    directAnswer:
+      'Generate random words directly in your browser from curated dictionaries filtered by part of speech, letter length, starting letter, or syllable count. The tool produces randomized vocabulary lists for creative writing prompts, mnemonic passphrases, and linguistic exercises. All word generation executes client-side in browser memory to keep creative ideas and password seeds completely confidential.',
+    leadParagraph:
+      'Overcoming writer block, designing memorable multi-word passphrases (Diceware style), and creating engaging vocabulary games requires randomized word selection without predictable human selection biases. This client-side random word generator draws from comprehensive English dictionaries, allowing users to filter candidate words by grammatical category (nouns, verbs, adjectives), target character lengths, specific initial letters, or syllable constraints. The tool outputs formatted lists separated by spaces, hyphens, commas, or newlines, ready for immediate copying into writing drafts or security applications. Generating random vocabulary lists directly in local browser memory provides instant creative inspiration without loading third-party advertising scripts or tracking cookies. Because generated words may serve as foundational seeds for cryptographic passphrases or unreleased book plots, all dictionary sampling runs locally within browser memory. No word lists are ever transmitted across external networks. Having a randomized vocabulary generator in your local browser aids creative authors and game designers without external reliance.',
+    faqs: [
+      {
+        question:
+          'Can I filter generated words by grammatical parts of speech?',
+        answer:
+          'Yes. You can restrict generation to specific categories such as nouns, verbs, adjectives, or adverbs according to your creative writing or linguistic requirements.',
+      },
+      {
+        question: 'Can this generator produce secure multi-word passphrases?',
+        answer:
+          'Yes. You can generate hyphen-separated random word sequences suitable for memorable Diceware-style security passphrases using local cryptographically strong pseudorandom entropy.',
+      },
+      {
+        question: 'Can I specify exact word lengths or starting characters?',
+        answer:
+          'Yes. The interface includes filters for minimum and maximum character lengths, syllable counts, and required initial or ending letters to refine word selection.',
+      },
+      {
+        question:
+          'Are my generated passphrases or writing prompts saved online?',
+        answer:
+          'No. All word generation logic executes client-side in local browser memory with zero outbound network transmissions, ensuring absolute privacy for your ideas.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-border-radius-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-border-radius-generator': {
+    directAnswer:
+      'Generate custom CSS border-radius styles directly in your browser with interactive corner sliders, 8-point asymmetric radius handles, and real-time visual preview. The tool exports clean, cross-browser CSS code snippets entirely client-side in memory to ensure unreleased user interface designs and web styling mockups remain confidential. The tool formats CSS border-radius rules locally in client browser memory with zero network traffic.',
+    leadParagraph:
+      'Modern user interface design frequently incorporates soft rounded corners, pill-shaped buttons, and organic blob shapes that require advanced 8-value CSS border-radius declarations. This client-side border-radius generator enables front-end developers and web designers to customize individual corner curves interactively, adjusting horizontal and vertical radii independently across top-left, top-right, bottom-right, and bottom-left vertices. The tool renders changes on live preview surfaces and formats production-ready CSS snippet code ready for immediate integration into stylesheets. Experimenting with organic geometric curves directly in browser memory accelerates UI prototyping without requiring vector graphic editing software. Because proprietary design mockups and pre-launch brand aesthetics require design secrecy, all visual rendering and CSS code generation execute locally within browser memory. No interface assets or styling configurations are ever transmitted to remote servers. Fine-tuning asymmetric border curves gives modern web interfaces unique brand character and visual distinctiveness.',
+    faqs: [
+      {
+        question:
+          'How does 8-value CSS border-radius syntax function technically?',
+        answer:
+          'The syntax separates horizontal and vertical radii with a slash (horizontal / vertical), allowing elliptical corner curvatures that form organic asymmetrical shapes.',
+      },
+      {
+        question:
+          'Can I configure uniform corners for standard UI cards and buttons?',
+        answer:
+          'Yes. You can link all four corners together with a single slider to apply uniform rounded styling across standard interface components.',
+      },
+      {
+        question:
+          'Is the generated CSS code compatible across modern browsers?',
+        answer:
+          'Yes. The tool outputs standard CSS3 border-radius properties supported natively by all modern desktop and mobile browsers without requiring vendor prefixes.',
+      },
+      {
+        question:
+          'Are my visual styling prototypes or design codes tracked online?',
+        answer:
+          'No. All canvas rendering and CSS code generation take place client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'school-fee-planner', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-school-fee-planner': {
+    directAnswer:
+      'Plan and budget academic school and college tuition installments directly in your browser. The tool itemises admission fees, term tuition, transportation charges, uniform costs, and activity dues to calculate total annual academic expenditure and monthly savings targets entirely client-side in memory to keep personal household budgets and family finances completely private.',
+    leadParagraph:
+      'Financing academic education for multiple children requires structured cash flow planning to meet recurring quarterly or semester fee deadlines without disrupting household savings. Academic institutions charge an assortment of distinct fees, from core tuition and laboratory levies to bus transportation, uniforms, extracurricular coaching, and annual development funds. This browser-based school fee planner enables parents to itemise expenses across multiple children and terms, calculate total annual academic commitments, and determine the exact monthly savings allocation required to cover upcoming term payments smoothly. Users can track payment due dates, review term-by-term cash requirements, and avoid costly late-payment surcharges. Because family educational expenses and personal savings budgets involve confidential household records, all calculations execute locally in client browser memory. No school fee records or household budget entries are ever stored on external web servers.',
+    faqs: [
+      {
+        question:
+          'How does the planner calculate required monthly educational savings?',
+        answer:
+          'The tool aggregates total projected annual education costs and divides them across twelve months, establishing a predictable recurring monthly savings quota.',
+      },
+      {
+        question:
+          'Can I plan educational fee schedules for multiple children together?',
+        answer:
+          'Yes. You can add separate child profiles to itemise distinct school tuition schedules, extracurricular costs, and transportation fees in one consolidated overview.',
+      },
+      {
+        question:
+          'Can one-time admission fees be separated from recurring term dues?',
+        answer:
+          'Yes. The planner distinguishes non-recurring initial capital or admission deposits from quarterly tuition fees to avoid skewing ongoing recurring monthly budgets.',
+      },
+      {
+        question:
+          'Are my family education details or income targets saved online?',
+        answer:
+          'No. All financial calculations occur entirely in client browser memory with zero network traffic, ensuring complete confidentiality for your personal household planning.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'circle-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-circle-calculator': {
+    directAnswer:
+      'Calculate circle radius, diameter, circumference, and surface area directly in your browser. Enter any one known metric to instantly determine all remaining circle properties with exact pi expressions and high-precision decimal solutions. All geometric evaluations execute client-side in browser memory to keep engineering schematics and academic coursework completely confidential. All calculations run locally in browser memory to keep technical drafts private.',
+    leadParagraph:
+      'Circular geometry is central to mechanical engineering, civil pipe design, architectural drafting, robotics wheel kinematics, and foundational mathematics. This client-side circle calculator enables students, machinists, and engineers to solve circle dimensions by providing any single known parameter: radius (r), diameter (d), circumference (C), or surface area (A). The tool applies canonical circular formulas (C = 2πr, A = πr²), presenting results as exact multiples of π alongside high-precision floating-point approximations. Calculating circular metrics directly in your browser delivers instant numerical feedback for material cutting estimates and drafting layouts without needing complex CAD packages. Because technical fabrication measurements and academic assignments require privacy, all geometric calculations run locally inside browser memory. No dimensional parameters or calculation histories are ever sent across external networks. Mastering circular geometry calculations builds confidence for engineering students, architects, and technical drafting specialists.',
+    faqs: [
+      {
+        question:
+          'What single parameter is needed to calculate all circle dimensions?',
+        answer:
+          'Entering any one metric (radius, diameter, circumference, or area) provides sufficient mathematical constraints to derive all other circle properties accurately.',
+      },
+      {
+        question:
+          'Does the calculator display results in terms of pi and decimals?',
+        answer:
+          'Yes. The interface displays both exact symbolic multiples of pi (such as 25π) and rounded floating-point decimal equivalents for practical workshop use.',
+      },
+      {
+        question:
+          'How does doubling the circle radius affect its surface area?',
+        answer:
+          'Because area scales with the square of the radius (A = πr²), doubling the radius quadruples the total surface area of the resulting circle.',
+      },
+      {
+        question:
+          'Are my mechanical dimensions or circle calculations saved online?',
+        answer:
+          'No. All circular geometric calculations run locally in client browser memory with zero outbound network calls, maintaining total privacy for your calculations.',
+      },
+    ],
+  },
+  // components/pdf-redact-tool.tsx, workers/pdf-merge.worker.ts, lib/tools/pdf/page-selection.ts and app/pdf/redact/page.tsx
+  'pdf-redact-pdf': {
+    directAnswer:
+      'Redact sensitive text, social security numbers, account details, and private imagery from PDF documents directly in your browser. The tool permanently burns black redaction masks into the underlying PDF content stream and strips concealed underlying text entirely in memory to ensure confidential legal discovery and private medical records remain secure.',
+    leadParagraph:
+      'Distributing legal discovery documents, public records, and healthcare files requires permanent redaction of personally identifiable information (PII) to prevent regulatory non-compliance and privacy breaches. Unlike naive visual highlighter tools that merely draw translucent shapes over selectable text layers, this client-side PDF redaction tool permanently excises underlying text characters, vector vectors, and raster pixels beneath designated redaction rectangles. Documents are re-encoded within your local browser runtime via Web Workers, ensuring redacted words cannot be copied, searched, or extracted from raw document byte streams. Because documents undergoing redaction frequently contain sensitive court depositions, classified business intelligence, or personal health records, all PDF processing runs locally inside browser memory. No unredacted document bytes are ever uploaded to remote servers. Permanent client-side document sanitization guarantees regulatory compliance with GDPR, HIPAA, and legal privilege rules without transferring unredacted documents over public web connections.',
+    faqs: [
+      {
+        question:
+          'Does this tool permanently remove text or merely draw black boxes?',
+        answer:
+          'The tool permanently excises underlying text characters and vector streams from the PDF content dictionary, preventing data extraction or copy-pasting.',
+      },
+      {
+        question:
+          'Can redacted text be uncovered using PDF inspection software?',
+        answer:
+          'No. True redaction physically deletes the underlying glyphs from the document binary, ensuring redacted information cannot be recovered or searched.',
+      },
+      {
+        question: 'Can I redact specific page ranges or individual pages?',
+        answer:
+          'Yes. You can navigate through document pages interactively, selecting rectangular redaction zones across any individual page prior to final document export.',
+      },
+      {
+        question:
+          'Are my unredacted PDF documents uploaded to external servers?',
+        answer:
+          'No. All PDF byte parsing and redaction transformations execute client-side in browser memory using Web Workers with zero network calls, guaranteeing total confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'astronomy-unit-converter', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-astronomy-unit-converter': {
+    directAnswer:
+      'Convert astronomical distances directly in your browser across kilometres, miles, astronomical units (AU), light-years (ly), and parsecs (pc). The tool calculates cosmic scales with scientific notation and astronomical reference comparisons entirely client-side in memory to ensure astrophysics research and academic problem sets remain completely confidential. The tool calculates all cosmic distances client-side in browser memory to keep research private.',
+    leadParagraph:
+      'Measuring immense distances between planets, stars, and distant galaxies requires specialized astronomical distance units that convey cosmic scales intuitively. This client-side astronomy unit converter transforms distance metrics between planetary scales (astronomical units, representing the mean Sun-Earth distance), interstellar scales (light-years, the distance light travels in one Julian year), and galactic scales (parsecs, derived from stellar parallax angles). The tool provides simultaneous conversions across standard SI units (kilometres and metres) and imperial miles, displaying results in standard scientific notation alongside context notes comparing distances to landmark cosmic bodies. Evaluating astronomical scales directly in your browser enables astrophysics students, educators, and amateur stargazers to compute orbital baselines without complex calculation software. Because research datasets and student problem sets require privacy, all conversions execute locally within browser memory. No inputs are ever sent to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What is the physical definition of an astronomical unit (AU)?',
+        answer:
+          'An astronomical unit (AU) represents the approximate mean distance between Earth and the Sun, standardized scientifically as exactly 149,597,870,700 metres.',
+      },
+      {
+        question: 'How does a parsec relate mathematically to a light-year?',
+        answer:
+          'One parsec (pc) equals approximately 3.26 light-years (ly) or 206,265 astronomical units, defined as the distance at which 1 AU subtends one arcsecond of parallax.',
+      },
+      {
+        question:
+          'Why do astronomers prefer parsecs over light-years in professional research?',
+        answer:
+          'Parsecs relate directly to observable trigonometric parallax measurements made by astrometric space telescopes when calculating distances to nearby galactic stars.',
+      },
+      {
+        question:
+          'Are my astronomy research values or calculation logs saved online?',
+        answer:
+          'No. All unit conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your scientific work.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'spreadsheet-data-profiler', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-spreadsheet-data-profiler': {
+    directAnswer:
+      'Profile spreadsheet datasets directly in your browser by analyzing column data types, missing value percentages, unique record distributions, and summary statistics. The tool generates comprehensive data health reports entirely client-side in memory to ensure confidential customer records and proprietary business intelligence remain completely secure. The profiler audits dataset health locally in browser memory to keep corporate records private.',
+    leadParagraph:
+      'Before feeding spreadsheet records into machine learning models, business intelligence dashboards, or corporate databases, data analysts must assess overall dataset health, column completeness, and statistical distributions. This client-side spreadsheet data profiler parses uploaded Excel (.xlsx) and CSV files, evaluating each column to detect data types, null counts, unique cardinality ratios, and frequency distributions. For numeric fields, the tool computes minimum, maximum, mean, median, and variance metrics, highlighting potential outliers and missing value clusters. Profiling datasets directly in your browser runtime accelerates exploratory data analysis and quality assurance checks without requiring heavy Python or R data science environments. Because enterprise datasets frequently contain sensitive customer transactions, employee salary records, or proprietary trade figures, all data profiling executes locally inside browser memory. No data records are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What statistical metrics are generated for numerical data columns?',
+        answer:
+          'The profiler computes row count, null count, minimum, maximum, mean, median, standard deviation, and quartile ranges for each numeric column.',
+      },
+      {
+        question:
+          'Does the profiler detect mixed data types in a single column?',
+        answer:
+          'Yes. The tool identifies columns containing mixed types (such as text strings mixed with numbers or dates) that could cause pipeline ingestion failures.',
+      },
+      {
+        question:
+          'Can I export the dataset profiling report for documentation?',
+        answer:
+          'Yes. You can copy the generated summary statistics or export the data quality profile as a structured JSON or tabular audit report.',
+      },
+      {
+        question:
+          'Are my private enterprise datasets uploaded during data profiling?',
+        answer:
+          'No. All spreadsheet decoding and statistical evaluations occur client-side in browser memory with zero outbound network calls, ensuring total data security.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'anagram-finder', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-anagram-finder': {
+    directAnswer:
+      'Find exact anagrams and sub-anagram words directly in your browser by unscrambling letters against comprehensive English lexicons. Filter candidate anagrams by word length, letter counts, and prefix patterns entirely client-side in memory to ensure creative writing puzzles, game strategies, and linguistic research remain completely confidential. The search engine runs client-side in browser memory with zero outbound network calls.',
+    leadParagraph:
+      'Solving word puzzles, optimizing tournament Scrabble gameplay, and creating captivating linguistic riddles requires exploring letter permutations rapidly. This client-side anagram finder processes any entered word, name, or jumbled character string, searching an extensive dictionary to identify exact anagrams (using all letters) and partial sub-anagrams (words formed from subsets of the letters). The tool categorizes results by word length, displays letter point valuations, and allows filtering by specific prefixes or suffixes. Finding word permutations directly in local browser memory gives vocabulary enthusiasts and game designers instant anagram solutions without loading intrusive third-party ads or tracking scripts. Because puzzle solutions, unreleased game scripts, and creative writing prompts involve private intellectual work, all dictionary lookups execute locally within browser memory. No search strings are ever transmitted across external networks. Exploring word anagrams locally in browser memory gives linguists and word game players rapid feedback without privacy concerns.',
+    faqs: [
+      {
+        question:
+          'What is the distinction between exact anagrams and sub-anagrams?',
+        answer:
+          'An exact anagram uses all original letters in a different order, while a sub-anagram uses a smaller subset of those letters to form shorter valid words.',
+      },
+      {
+        question:
+          'Can I use blank tiles or wildcard characters in letter searches?',
+        answer:
+          'Yes. You can input question marks or wildcard symbols to represent blank letters, allowing flexible pattern matching for word board games.',
+      },
+      {
+        question:
+          'What dictionary lexicons power the client-side anagram finder?',
+        answer:
+          'The tool uses standard tournament and general English lexicons, providing comprehensive vocabulary coverage for word games, anagram competitions, and crossword puzzles.',
+      },
+      {
+        question:
+          'Are my search letters or puzzle solutions tracked on external servers?',
+        answer:
+          'No. All letter permutations and dictionary lookups occur strictly in client browser memory with zero network traffic, ensuring complete privacy for your searches.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-clip-path-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-clip-path-generator': {
+    directAnswer:
+      'Create complex CSS clip-path shapes directly in your browser with interactive polygon point dragging, preset geometric masks (triangles, hexagons, stars, chevrons), and live visual preview. The tool exports cross-browser CSS code snippets entirely client-side in memory to ensure unreleased website designs and graphic styling remain confidential. The tool generates CSS clip-path rules locally in browser memory to keep UI prototypes private.',
+    leadParagraph:
+      'Clipping HTML elements into non-rectangular geometries brings visual dynamism and creative modern flair to web headers, hero images, and interactive card layouts. This client-side CSS clip-path generator allows web developers and UI designers to sculpt custom geometric clipping masks by dragging polygon control handles across an interactive canvas in real time. Users can select from curated geometric presets (including circles, ellipses, triangles, trapezoids, hexagons, and multi-point stars) or add custom anchor points to design bespoke silhouettes. The tool exports standards-compliant CSS clip-path declarations with percentage-based coordinates ready for immediate integration into stylesheets. Visualizing clipping boundaries directly in browser memory accelerates creative UI prototyping without heavy desktop graphic software. Because pre-launch digital prototypes and proprietary brand designs require design secrecy, all visual rendering and CSS code generation execute locally within browser memory. No design assets are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question:
+          'What CSS clip-path functions are supported by this generator?',
+        answer:
+          'The generator supports polygon(), circle(), ellipse(), and inset() clipping functions, providing comprehensive geometrical masking across modern web elements and UI cards.',
+      },
+      {
+        question:
+          'Can I add and delete custom polygon coordinate points interactively?',
+        answer:
+          'Yes. You can click anywhere along the polygon boundary to add new vertices or double-click existing points to remove them from the clipping path.',
+      },
+      {
+        question:
+          'Do clipped CSS elements trigger mouse events outside clipped areas?',
+        answer:
+          'No. Portions of the element outside the defined clip-path boundary do not register pointer events or mouse clicks, behaving as truly transparent areas.',
+      },
+      {
+        question:
+          'Are my custom shape designs or website graphics sent online?',
+        answer:
+          'No. All canvas rendering and CSS snippet generation execute client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'wedding-budget-planner', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-wedding-budget-planner': {
+    directAnswer:
+      'Plan and monitor wedding celebration expenditures directly in your browser across venue rentals, catering, jewellery, photography, attire, and decor categories. The tool tracks estimated versus actual costs, vendor payment milestones, and remaining budget headroom entirely client-side in memory to keep personal celebration budgets and family savings completely private. The planner tracks celebration costs locally in client browser memory to keep family finances private.',
+    leadParagraph:
+      'Organising wedding ceremonies and multi-day celebrations involves dozens of distinct vendor commitments, deposits, and fluctuating guest count expenses that can quickly exceed initial financial projections. This browser-based wedding budget planner enables couples and families to allocate total celebration capital across essential expense categories, including venue fees, banquet catering, photography and videography, attire, jewellery, invitations, musical entertainment, and accommodation. The tool contrasts estimated budgets against actual contracted vendor figures, tracks deposit payment schedules, and displays category percentage distributions to prevent budget overruns. Organizing wedding finances directly in local browser memory provides financial clarity and coordination across family members. Because wedding budgets, personal savings targets, and vendor fee agreements represent sensitive personal financial matters, all calculations run locally in client browser memory. No budget figures or vendor records are ever stored on external web servers.',
+    faqs: [
+      {
+        question:
+          'What percentage of a wedding budget is typically allocated to venue and catering?',
+        answer:
+          'In typical wedding planning, venue rental and banquet catering combined account for roughly 40 to 50 percent of the total wedding expenditure.',
+      },
+      {
+        question:
+          'How does the planner track vendor payment installments and deposits?',
+        answer:
+          'You can record initial booking deposits, intermediate milestone payments, and remaining final balances for each vendor to track outstanding obligations.',
+      },
+      {
+        question:
+          'Can I include a contingency reserve fund for unexpected expenses?',
+        answer:
+          'Yes. Financial planners recommend allocating 5 to 10 percent of your total budget toward emergency contingencies for last-minute guest additions or weather shifts.',
+      },
+      {
+        question:
+          'Are my personal celebration expenses or savings figures saved online?',
+        answer:
+          'No. All budget calculations exist strictly in local client browser memory with zero network traffic, ensuring complete privacy for your family celebration planning.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'rectangle-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-rectangle-calculator': {
+    directAnswer:
+      'Calculate rectangle area, perimeter, and diagonal length directly in your browser. Enter any two known geometric properties (width, height, area, perimeter, or diagonal) to compute all remaining dimensional metrics using Pythagorean theorem and algebraic relations. All geometric calculations execute client-side in browser memory to keep architectural drafting dimensions and technical problem sets completely confidential.',
+    leadParagraph:
+      'Rectangular geometry is the most prevalent structural shape in architecture, carpentry, floor plan drafting, screen aspect ratio calculations, and land surveying. This client-side rectangle calculator solves for width (w), height (h), total surface area (A = w × h), boundary perimeter (P = 2w + 2h), and corner-to-corner diagonal distance (d = √(w² + h²)). By entering any two valid dimensional parameters, users can derive all other rectangular metrics with step-by-step mathematical explanations and exact decimal precision. Evaluating rectangular proportions directly in your browser runtime helps construction estimators, students, and graphic designers calculate material requirements and spatial layouts without desktop CAD software. Because architectural measurements and proprietary room blueprints require confidentiality, all calculations execute locally within browser memory. No dimensional parameters or calculation steps are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'How is the diagonal of a rectangle calculated mathematically?',
+        answer:
+          'The diagonal is calculated using the Pythagorean theorem (d = √(width² + height²)), representing the hypotenuse of the right triangle formed by rectangle sides.',
+      },
+      {
+        question:
+          'Can I find width and height if only area and perimeter are known?',
+        answer:
+          'Yes. The calculator sets up and solves a quadratic system using perimeter and area to determine the exact width and height dimensions.',
+      },
+      {
+        question: 'How does aspect ratio relate to rectangle dimensions?',
+        answer:
+          'Aspect ratio is the proportional ratio of width to height (w:h), describing display screen geometries and photographic print formats independently of units.',
+      },
+      {
+        question:
+          'Are my drafting dimensions or rectangular calculations logged online?',
+        answer:
+          'No. All rectangular geometric calculations run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your blueprints.',
+      },
+    ],
+  },
+  // components/pdf-sign-tool.tsx, workers/pdf-merge.worker.ts, lib/tools/pdf/page-selection.ts and app/pdf/sign/page.tsx
+  'pdf-sign-pdf': {
+    directAnswer:
+      'Sign PDF documents directly in your browser by drawing handwritten signatures, typing stylized names, or uploading signature images. The tool places signature stamps onto document pages using client-side Web Workers entirely in memory to ensure confidential contracts, non-disclosure agreements, and legal forms remain completely private. The tool stamps signatures client-side in browser memory with zero network transmissions to ensure privacy.',
+    leadParagraph:
+      'Executing commercial contracts, real estate agreements, employment offers, and nondisclosure covenants requires reliable digital signature stamping without printing, scanning, or routing sensitive agreements through third-party cloud document portals. This browser-based PDF signing tool enables users to draw signatures on touchscreens or trackpads, type stylized digital signatures, or upload transparent PNG signature graphics. Users can position signature marks precisely on any document page, scale dimensions, and flatten the resulting PDF binary directly within client browser memory. Because legal contracts, financial leases, and proprietary corporate agreements frequently contain sensitive trade secrets or personal identification numbers, all PDF rendering and byte rebuilding execute locally using Web Workers. No signed documents or signature assets are ever uploaded to remote servers. Executing digital agreements directly within browser memory accelerates business contracts and personal paperwork while guaranteeing that sensitive legal documents never touch remote servers.',
+    faqs: [
+      {
+        question: 'What signature creation methods are supported by this tool?',
+        answer:
+          'You can draw a signature directly using a mouse or touchscreen, type your name to generate stylized script typography, or upload an existing signature image.',
+      },
+      {
+        question:
+          'Does signing a PDF alter the underlying document text layers?',
+        answer:
+          'No. The signature is composited as a new visual vector or image overlay onto the page description, preserving the original underlying text and layout.',
+      },
+      {
+        question: 'Can I position signatures on multiple pages of a document?',
+        answer:
+          'Yes. You can navigate through multi-page agreements, placing signature stamps, initials, or date annotations across specific designated signature blocks throughout the document.',
+      },
+      {
+        question:
+          'Are my confidential signed contracts uploaded to external web servers?',
+        answer:
+          'No. All PDF binary manipulations occur strictly inside browser memory using local Web Workers with zero outbound network calls, ensuring total contract privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'planet-weight-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-planet-weight-calculator': {
+    directAnswer:
+      'Calculate your weight across Solar System planets, moons, and the Sun directly in your browser by applying local gravitational accelerations (W = m × g). The tool compares planetary surface gravities to Earth gravity entirely client-side in memory to ensure physics coursework and educational science exercises remain completely confidential. The calculator executes planetary gravity formulas locally in client browser memory with zero network calls.',
+    leadParagraph:
+      'While mass remains constant across the cosmos, weight varies depending on the gravitational acceleration exerted by the celestial body beneath your feet. This client-side planet weight calculator demonstrates Newton law of universal gravitation, converting Earth weight into equivalent values across Mercury, Venus, the Moon, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, and the Sun. The tool displays surface gravity ratios relative to Earth standard 1g (9.81 m/s²), helping physics students, educators, and astronomy enthusiasts understand how planetary mass and radius govern local gravitational pull. Calculating cosmic weights directly in your browser provides engaging astronomical insights and instant computational answers for classroom demonstrations without specialized software. Because educational exercises and classroom datasets require privacy, all gravitational formulas execute locally within browser memory. No weight figures or calculation histories are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'Why does weight change across planets while mass remains identical?',
+        answer:
+          'Mass measures the total quantity of matter in an object, whereas weight is the downward gravitational force exerted on that mass by a celestial body.',
+      },
+      {
+        question:
+          'Which Solar System planet produces the strongest surface gravity?',
+        answer:
+          'Jupiter exerts the strongest surface gravity among planets at approximately 24.79 m/s², causing an object to weigh roughly 2.5 times its Earth weight.',
+      },
+      {
+        question:
+          'How does your weight on the Moon compare to your Earth weight?',
+        answer:
+          'The Moon surface gravity is roughly 1.62 m/s², meaning an individual weighs approximately one-sixth (16.6 percent) of their normal Earth weight on the lunar surface.',
+      },
+      {
+        question:
+          'Are my personal body weight numbers or calculations saved online?',
+        answer:
+          'No. Every formula evaluation runs locally in client browser memory with zero network traffic, ensuring complete computational privacy for your classroom science exercises.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'palindrome-checker', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-palindrome-checker': {
+    directAnswer:
+      'Check whether words, phrases, numbers, or sentences are palindromes directly in your browser. The tool normalises text by stripping whitespace, punctuation, and capitalization to evaluate symmetrical character sequences entirely client-side in memory to ensure private writing puzzles, game scripts, and linguistic research remain confidential. The checker analyzes character symmetry locally in client browser memory with zero network calls.',
+    leadParagraph:
+      "Palindromic sequences—phrases or numbers that read identically forwards and backwards—are widely explored in recreational linguistics, word games, cryptographic hash tests, and introductory computer programming algorithms. This browser-based palindrome checker analyzes entered text strings, offering customizable normalisation options such as ignoring letter case, stripping spaces, and removing punctuation marks to evaluate complex sentence palindromes (such as 'A man, a plan, a canal: Panama'). The tool highlights character symmetry pairs interactively, displays reversed text strings, and counts character frequencies in real time. Testing text symmetry directly in local browser memory provides instant verification for crossword compilers and puzzle enthusiasts without loading third-party advertising scripts. Because creative manuscripts and puzzle designs represent private intellectual work, all string processing runs locally within browser memory. No text is ever uploaded to external servers. Evaluating palindromes directly in browser memory gives writers and software developers rapid feedback without external network delays.",
+    faqs: [
+      {
+        question:
+          'How does the tool evaluate complex multi-word sentence palindromes?',
+        answer:
+          'The checker normalises input text by removing spaces, punctuation marks, and uppercase formatting, then checks whether the remaining character stream is symmetrical.',
+      },
+      {
+        question:
+          'Can the tool check numerical palindromes like dates and serials?',
+        answer:
+          'Yes. The checker processes numeric strings, evaluating calendar dates, timestamp sequences, and identification numbers for symmetrical digit order across sequences.',
+      },
+      {
+        question:
+          'What is the algorithmic complexity of checking a palindrome?',
+        answer:
+          'Palindrome verification runs in linear time O(n) using a two-pointer approach comparing characters symmetrically from the outer boundaries toward the center.',
+      },
+      {
+        question: 'Are my input texts or puzzle words saved on remote servers?',
+        answer:
+          'No. All string parsing and symmetry verifications execute client-side in local browser memory with zero network calls, maintaining absolute document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'css-grid-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-css-grid-generator': {
+    directAnswer:
+      'Design responsive CSS Grid layouts directly in your browser with interactive column and row track sizing (fr, px, %, auto), grid gap controls, and named grid areas. The tool exports clean, cross-browser CSS and HTML code snippets entirely client-side in memory to ensure unreleased website wireframes and interface prototypes remain confidential.',
+    leadParagraph:
+      'CSS Grid Layout is the most comprehensive two-dimensional layout system available in modern web browsers, enabling developers to build intricate, responsive web interfaces without clumsy float hacks or nested container wrappers. This client-side CSS grid generator enables front-end developers and UI designers to configure row and column tracks, specify fractional (fr) units, define grid-gap spacing, and drag to define named template areas visually. The tool generates clean HTML markup alongside production-ready CSS grid rules ready for immediate integration into web development projects. Visualizing multi-column grids directly in browser memory accelerates website wireframing and prototyping without requiring heavy graphic design suites. Because pre-launch digital wireframes and proprietary interface blueprints require design secrecy, all visual rendering and code generation execute locally within browser memory. No design configurations are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What track measurement units can be used in the CSS grid generator?',
+        answer:
+          'You can configure grid tracks using flexible fractional units (fr), pixels (px), percentages (%), minmax() constraints, and automatic sizing (auto).',
+      },
+      {
+        question:
+          'Can I define named grid template areas for responsive components?',
+        answer:
+          'Yes. You can assign semantic area names (such as header, sidebar, main, footer) to visual grid cells to generate clean grid-template-areas declarations.',
+      },
+      {
+        question:
+          'Is the generated CSS Grid code supported across modern browsers?',
+        answer:
+          'Yes. CSS Grid is supported natively by all modern web browsers including Chrome, Safari, Firefox, and Edge without requiring external polyfills.',
+      },
+      {
+        question:
+          'Are my custom website wireframes or layout codes saved online?',
+        answer:
+          'No. All visual grid rendering and CSS code generation execute client-side in browser memory with zero outbound network calls, maintaining total design privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'polygon-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-polygon-calculator': {
+    directAnswer:
+      'Calculate regular polygon geometry directly in your browser across pentagons, hexagons, octagons, and n-sided polygons. The tool computes interior angles, exterior angles, side lengths, perimeters, apothem distances, and total surface areas entirely client-side in memory to keep architectural drafting plans and mathematical coursework completely confidential. All regular polygon formulas execute client-side in browser memory to keep engineering models private.',
+    leadParagraph:
+      'Regular polygons—equilateral and equiangular two-dimensional shapes—are fundamental in architectural tiling, mechanical fastener engineering, tessellation art, and high school geometry. This client-side regular polygon calculator computes dimensional properties for regular shapes with any number of sides (n ≥ 3), including pentagons, hexagons, heptagons, octagons, decagons, and dodecagons. Users can enter side length, circumradius, inradius (apothem), or total area to determine all remaining geometric properties alongside individual interior angle degrees and exterior turn angles. Evaluating polygon dimensions directly in your browser gives engineers, machinists, and students rapid mathematical verification for laser cutting templates and geometric proofs without desktop CAD suites. Because structural blueprints and academic problem sets require privacy, all calculations execute locally within browser memory. No dimensional parameters or calculation steps are ever sent across external networks. Understanding regular polygon geometry accelerates workflow efficiency for laser cutting templates, structural framing, and geometric drafting.',
+    faqs: [
+      {
+        question:
+          'How is the interior angle of a regular n-sided polygon calculated?',
+        answer:
+          'The interior angle equals ((n - 2) × 180°) / n, where n represents the total number of equal sides belonging to the regular polygon.',
+      },
+      {
+        question: 'What is the apothem of a regular polygon in geometry?',
+        answer:
+          'The apothem is the perpendicular line segment drawn from the central origin of the polygon to the midpoint of any one of its outer sides.',
+      },
+      {
+        question:
+          'Can I calculate polygon properties from the circumscribed radius?',
+        answer:
+          'Yes. Providing the circumradius allows the calculator to derive side length, apothem, perimeter, and total enclosed area using standard trigonometry.',
+      },
+      {
+        question:
+          'Are my geometric dimensions or polygon calculations uploaded?',
+        answer:
+          'No. All polygon geometric calculations run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your drafting work.',
+      },
+    ],
+  },
+  // components/pdf-sign-tool.tsx, workers/pdf-merge.worker.ts, lib/tools/pdf/page-selection.ts and app/pdf/sign/page.tsx
+  'pdf-fill-pdf-form': {
+    directAnswer:
+      'Fill interactive PDF form fields directly in your browser including text inputs, checkboxes, radio buttons, dropdown choices, and signature fields. The tool writes form responses directly into PDF AcroForm structures using client-side Web Workers entirely in memory to ensure confidential tax filings, loan applications, and medical forms remain private. All form responses are processed client-side in browser memory to keep private data secure.',
+    leadParagraph:
+      'Completing official government tax forms, bank loan applications, employment onboarding packs, and medical questionnaires requires reliable interactive PDF form filling without risking identity disclosure on commercial web conversion platforms. This browser-based PDF form filler parses interactive AcroForm field dictionaries, allowing users to enter text responses, toggle checkboxes, select radio button options, pick dropdown values, and stamp digital signatures into existing fillable fields. Users can review entered answers across multi-page documents and export the populated, flattened PDF file directly from client browser memory. Because official government forms and financial questionnaires frequently contain sensitive social security numbers, banking information, or health histories, all PDF parsing and byte re-encoding execute locally using Web Workers. No document files or form responses are ever uploaded to remote web servers. Filling interactive PDF questionnaires directly in your browser ensures that private identity details and personal financial records remain completely under your control.',
+    faqs: [
+      {
+        question:
+          'What interactive PDF form fields can be filled with this tool?',
+        answer:
+          'The tool supports standard AcroForm field types including single-line and multi-line text boxes, checkboxes, radio groups, and dropdown choice menus.',
+      },
+      {
+        question:
+          'Can I flatten the PDF form after filling to prevent further edits?',
+        answer:
+          'Yes. You can flatten the form fields during export to convert entered responses into permanent visual text layers that cannot be modified by subsequent readers.',
+      },
+      {
+        question: 'Are non-interactive static scanned PDF documents supported?',
+        answer:
+          'For static scanned documents lacking AcroForm fields, users can use the text stamping and signature tools to place text boxes manually over designated form lines.',
+      },
+      {
+        question:
+          'Are my sensitive tax documents or personal form answers uploaded?',
+        answer:
+          'No. All PDF form processing occurs strictly within client browser memory using local Web Workers with zero network calls, ensuring total form privacy.',
+      },
+    ],
+  },
 };
 
 /**
