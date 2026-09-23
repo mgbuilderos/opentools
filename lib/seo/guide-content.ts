@@ -10621,6 +10621,1290 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'electricity-bill-unit-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-electricity-bill-unit-calculator': {
+    directAnswer:
+      'Enter appliance wattage ratings, daily operating hours, and local electricity tariff rates to compute kilowatt-hour (kWh) power consumption and monthly electricity bills directly in your browser. The tool evaluates domestic power usage in client memory without transmitting your household utility records or energy bills across the network. The calculator executes locally in browser memory to keep domestic electricity budgets and household routines completely private. The calculator executes locally in browser memory to keep domestic electricity budgets and household routines completely private.',
+    leadParagraph:
+      'This electricity bill unit calculator estimates monthly energy consumption in kilowatt-hours (kWh) and predicts electricity utility expenses for homeowners, tenants, and small business operators. High seasonal electricity bills often stem from power-hungry cooling appliances, immersion water heaters, or continuous computing equipment running unnoticed; however, entering household appliance inventories into cloud energy auditing sites risks exposing personal lifestyle routines. You input device wattage ratings, operating hours per day, and regional tariff slab rates per unit. The engine calculates daily kilowatt-hours (wattage * hours / 1000), aggregates monthly electricity units, and estimates total energy costs based on your stated rate. Running completely client-side in browser memory under CSP connect-src none directives, your domestic power budgets and household appliances remain strictly confidential on your personal device. Tracking domestic energy consumption locally gives families clear visibility into monthly utility bills without sharing living habits with external platforms. Tracking domestic energy consumption locally gives families clear visibility into monthly utility bills without sharing living habits with external platforms.',
+    faqs: [
+      {
+        question: 'How is one electricity unit (kWh) calculated?',
+        answer:
+          'One electricity unit equals one kilowatt-hour (kWh), which is 1,000 watts of electrical power consumed continuously over one hour of operation.',
+      },
+      {
+        question:
+          'Can I calculate consumption for multiple household appliances?',
+        answer:
+          'Yes. You can calculate individual device wattages or sum multiple appliances to project total monthly household power usage and electricity charges.',
+      },
+      {
+        question:
+          'Does this calculator include tiered tariff slabs or fixed meter fees?',
+        answer:
+          'This tool computes usage based on the flat unit tariff you provide; you can adjust the rate to approximate tiered utility bill structures.',
+      },
+      {
+        question:
+          'Are my household electricity bills or utility details recorded online?',
+        answer:
+          'No. All power unit calculations run locally in browser tab memory with zero outbound network calls, ensuring complete privacy for household expenses.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'prime-factorization', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-prime-factorization': {
+    directAnswer:
+      'Decompose positive integers into their unique prime factor representations with canonical exponential notation directly in your browser. The calculator evaluates prime factors using optimized trial division algorithms in client memory without transmitting your cryptographic keys, algorithm variables, or mathematical numbers across the network. The tool executes factorization algorithms locally in client memory to maintain complete privacy for your mathematical research. The tool executes factorization algorithms locally in client memory to maintain complete privacy for your mathematical research.',
+    leadParagraph:
+      'This prime factorization calculator decomposes composite positive integers into their unique constituent prime numbers according to the Fundamental Theorem of Arithmetic. Deconstructing numbers into prime factors is foundational for calculating greatest common divisors, reducing fractions, solving modular equations, and understanding cryptographic public-key structures; however, calculating large prime decompositions by hand is tedious and prone to mental arithmetic errors. You enter any positive integer into the tool. The engine eliminates factors of 2 and 3, applies optimized trial division across odd integers, records factor multiplicities, and displays canonical prime factorizations (such as 360 = 2^3 * 3^2 * 5). Operating entirely inside local browser tab memory under strict CSP restrictions, your mathematical research calculations and algorithm parameters remain strictly confidential. Breaking composite numbers down to their prime factors helps students verify algebra proofs and provides computer scientists with key insights into number complexity. Breaking composite numbers down to their prime factors helps students verify algebra proofs and provides computer scientists with key insights into number complexity.',
+    faqs: [
+      {
+        question: 'What is the Fundamental Theorem of Arithmetic?',
+        answer:
+          'It states that every integer greater than 1 is either prime itself or can be represented uniquely as a product of prime numbers up to order.',
+      },
+      {
+        question: 'How does the calculator display repeated prime factors?',
+        answer:
+          'The engine groups repeated factors into exponential prime notation (for example, 2 * 2 * 2 * 3 * 3 is formatted as 2^3 * 3^2).',
+      },
+      {
+        question: 'What algorithm does the tool use to find prime factors?',
+        answer:
+          'The tool uses an optimized trial division algorithm that factors out small primes quickly and checks potential divisors up to the square root of n.',
+      },
+      {
+        question:
+          'Are my factored numbers or mathematical calculations logged on any server?',
+        answer:
+          'No. All integer factorizations execute client-side in browser memory with zero network traffic, ensuring complete privacy for your mathematical computations.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'qr-code-svg-export', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-qr-code-svg-export': {
+    directAnswer:
+      'Generate high-resolution, resolution-independent SVG vector QR codes with customizable dimensions and error correction levels directly in your browser. The tool draws vector paths client-side without raster pixelation, producing clean graphics for print publishing and architectural signage without uploading your URLs or private text payloads to remote servers. The tool draws vector paths directly in browser memory to protect proprietary target destinations and campaign branding. The tool draws vector paths directly in browser memory to protect proprietary target destinations and campaign branding.',
+    leadParagraph:
+      'This QR code SVG export tool generates scalable vector graphics (SVG) QR codes for graphic designers, commercial printers, product packaging engineers, and web developers. Raster formats like PNG or JPEG blur, pixelate, and lose edge sharpness when scaled up for large promotional banners or down for small product labels; however, using online vector generators often involves paid subscriptions or watermarks on SVG downloads. You input your text content or website URL, choose error correction tolerances (L, M, Q, H), and define pixel dimensions. The engine generates pure vector path elements with crisp rectangular modules and exports an SVG file ready for Adobe Illustrator, Figma, or direct web embedding. Operating completely client-side in browser tab memory with CSP connect-src none controls, your target links and brand assets remain completely confidential. Generating crisp SVG vectors guarantees flawless printing results across commercial packaging, architectural displays, and marketing publications. Generating crisp SVG vectors guarantees flawless printing results across commercial packaging, architectural displays, and marketing publications.',
+    faqs: [
+      {
+        question:
+          'Why is an SVG QR code preferred over PNG for print publishing?',
+        answer:
+          'SVG uses resolution-independent vector paths that scale to any billboard or packaging dimension without pixelation, blurriness, or loss of scanning contrast.',
+      },
+      {
+        question:
+          'Can I import the exported SVG file into professional design tools?',
+        answer:
+          'Yes. The generated SVG opens cleanly in Adobe Illustrator, Figma, Inkscape, CorelDRAW, and vector publishing software for custom color styling.',
+      },
+      {
+        question:
+          'How does error correction impact the density of the SVG QR code?',
+        answer:
+          'Higher error correction levels (Q and H) increase the matrix module count, allowing symbols to remain scannable even if partially covered by logos.',
+      },
+      {
+        question: 'Are my URLs or encoded text payloads sent to cloud servers?',
+        answer:
+          'No. Vector path calculation and SVG rendering execute locally in browser memory with zero network traffic, ensuring total payload privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'kinetic-energy-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-kinetic-energy-calculator': {
+    directAnswer:
+      'Enter object mass in kilograms and velocity in meters per second to calculate translational kinetic energy in joules directly in your browser. The calculator solves Newtonian mechanics formulas client-side, deriving kinetic energy, velocity, or mass without transmitting your physics experiments or ballistic research parameters to remote servers. The calculator evaluates mechanics formulas client-side in browser memory to maintain complete confidentiality for your scientific data. The calculator evaluates mechanics formulas client-side in browser memory to maintain complete confidentiality for your scientific data.',
+    leadParagraph:
+      'This kinetic energy calculator computes the mechanical work and energy possessed by an object due to its motion for physics students, mechanical engineers, and automotive safety analysts. Understanding kinetic energy is essential for crash impact simulations, ballistics engineering, roller coaster physics, and energy storage flywheel designs; however, performing calculations involving squared velocities by hand often introduces exponent calculation errors. You input object mass (in kg, grams, or pounds) and velocity (in m/s, km/h, or mph). The engine applies classical Newtonian mechanics (KE = 0.5 * m * v^2) and displays the resulting kinetic energy in joules, kilojoules, and foot-pounds. It can also solve backwards for required velocity or mass given target energy. Operating under strict CSP connect-src none directives, your experimental physics data and mechanical parameters remain strictly confidential. Computing kinetic energy accurately allows automotive and aerospace engineers to evaluate deceleration forces and model impact resilience effectively. Computing kinetic energy accurately allows automotive and aerospace engineers to evaluate deceleration forces and model impact resilience effectively.',
+    faqs: [
+      {
+        question:
+          'What is the standard formula for translational kinetic energy?',
+        answer:
+          'The formula is KE = 0.5 * m * v^2, where m represents object mass in kilograms and v represents velocity in meters per second.',
+      },
+      {
+        question: 'Why does doubling velocity quadruple kinetic energy?',
+        answer:
+          'Because velocity is squared in the kinetic energy equation, doubling speed results in four times the kinetic energy and braking distance.',
+      },
+      {
+        question:
+          'Can the calculator solve for velocity given mass and kinetic energy?',
+        answer:
+          'Yes. By rearranging the formula (v = sqrt(2 * KE / m)), the tool derives object velocity from known energy and mass values.',
+      },
+      {
+        question:
+          'Are my mechanical calculations or research figures recorded online?',
+        answer:
+          'No. All physics evaluations execute locally inside browser memory with zero outbound network requests, maintaining complete research confidentiality across all calculations.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-schema-inferer', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-schema-inferer': {
+    directAnswer:
+      'Inspect raw CSV files to automatically infer column data types, nullable constraints, string length bounds, and date formats directly in your browser. The tool generates SQL DDL schemas and JSON Schema specifications without uploading your proprietary company spreadsheets or customer records to third-party database tools. The tool inspects datasets locally in browser tab memory to protect sensitive corporate numbers and internal database schemas. The tool inspects datasets locally in browser tab memory to protect sensitive corporate numbers and internal database schemas.',
+    leadParagraph:
+      'This CSV schema inferer analyzes tabular datasets to automatically deduce column data types (integer, float, boolean, date, timestamp, string) and structural schema constraints for database administrators, data engineers, and backend developers. Loading raw CSV data into relational databases like PostgreSQL, MySQL, or Snowflake requires defining rigorous table schemas; however, guessing column data types or uploading confidential company spreadsheets to online schema generators creates grave data exposure risks. You paste or load your CSV sample. The engine parses data rows, inspects value patterns across every column, detects nullability, infers optimal SQL column types, and outputs ready-to-run CREATE TABLE statements alongside standard JSON Schema declarations. Running completely inside browser tab memory under strict CSP restrictions, your enterprise data schemas and customer records remain strictly private on your computer. Inferring clean database schemas directly from raw CSV files simplifies migration planning and prevents data truncation errors during database imports. Inferring clean database schemas directly from raw CSV files simplifies migration planning and prevents data truncation errors during database imports.',
+    faqs: [
+      {
+        question:
+          'What data types can the schema inferer detect from CSV rows?',
+        answer:
+          'The engine detects boolean flags, integers, floating-point numbers, ISO dates, timestamps, UUIDs, and variable-length text strings across table columns for database creation.',
+      },
+      {
+        question:
+          'Does the tool generate executable SQL CREATE TABLE statements?',
+        answer:
+          'Yes. It produces ANSI-compliant SQL DDL table scripts featuring inferred column data types, nullability rules, and primary key recommendations for relational databases.',
+      },
+      {
+        question:
+          'How does the tool handle columns containing mixed data types?',
+        answer:
+          'When columns contain mixed numerical and textual values, the inferer widens the inferred type to VARCHAR or TEXT to prevent data truncation.',
+      },
+      {
+        question:
+          'Are my spreadsheet rows or corporate datasets uploaded online?',
+        answer:
+          'No. All CSV parsing and type inference algorithms execute locally in browser tab memory with zero network traffic, ensuring complete data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'duplicate-line-remover', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-duplicate-line-remover': {
+    directAnswer:
+      'Deduplicate text files and line lists with case sensitivity options, whitespace trimming, and original ordering preservation directly in your browser. The tool removes redundant rows and reports duplicate counts client-side without sending your customer email lists, inventory codes, or private logs to external servers. The tool deduplicates records locally in browser memory to ensure your customer contact details and private logs remain confidential. The tool deduplicates records locally in browser memory to ensure your customer contact details and private logs remain confidential.',
+    leadParagraph:
+      'This duplicate line remover cleans redundant entries, duplicate email lists, repeating log statements, and recurring code lines for writers, data analysts, and system administrators. Aggregating data from multiple sources often produces repetitive line items that inflate file sizes and distort statistical counts; however, pasting sensitive customer contact directories or proprietary inventory lists into online deduplicators creates significant regulatory and privacy risks. You paste your text into the editor and choose deduplication settings: case-sensitive comparison, leading/trailing whitespace trimming, and whether to preserve the original line sequence. The engine scans lines in memory, eliminates subsequent duplicate occurrences, and outputs clean unique lines with an exact duplicate count summary. Operating completely in browser tab memory under CSP connect-src none directives, your private contact lists and sensitive logs remain strictly confidential. Removing redundant rows accelerates data processing pipelines and eliminates repetitive text entries across large data collections and customer databases. Removing redundant rows accelerates data processing pipelines and eliminates repetitive text entries across large data collections and customer databases.',
+    faqs: [
+      {
+        question:
+          'Does the duplicate line remover preserve the original line order?',
+        answer:
+          'Yes. The tool keeps the first occurrence of each unique line in its original position while cleanly removing subsequent duplicate rows.',
+      },
+      {
+        question: 'Can I perform case-insensitive duplicate line removal?',
+        answer:
+          'Yes. You can toggle case sensitivity so that lines like "Apple" and "apple" are recognized and deduplicated as identical entries.',
+      },
+      {
+        question:
+          'How does the tool treat leading or trailing whitespace on lines?',
+        answer:
+          'You can enable whitespace trimming to ignore accidental spaces before comparing lines, ensuring thorough and accurate deduplication across rows in your text document.',
+      },
+      {
+        question:
+          'Are my customer contact lists or text logs uploaded externally?',
+        answer:
+          'No. All line comparisons and deduplication operations execute locally in browser memory with zero network calls, guaranteeing total content privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'redirect-chain-planner', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-redirect-chain-planner': {
+    directAnswer:
+      'Plan, map, and consolidate multi-hop URL redirects to eliminate redirect chains and loops directly in your browser. The tool collapses intermediate redirect hops into direct 301 or 308 rules and generates web server configuration directives without sending your site migration roadmaps or staging URLs to remote servers. The planner maps redirects client-side in browser memory to keep your site restructuring plans and staging URLs private. The planner maps redirects client-side in browser memory to keep your site restructuring plans and staging URLs private.',
+    leadParagraph:
+      'This redirect chain planner maps and flattens multi-step URL redirects for web developers, technical SEO consultants, and site migration teams. Redirect chains (where URL A points to URL B, which in turn redirects to URL C) dilute search engine ranking equity, increase page latency, and waste crawl budgets; however, pasting unreleased URL restructuring plans or internal staging paths into cloud SEO audit platforms exposes site migration architectures to competitors. You input your source and destination URL pairs. The engine detects circular loops, identifies intermediate redirect hops, collapses chains into direct one-hop mappings, and exports ready-to-deploy configuration rules for Nginx, Apache (.htaccess), and Cloudflare. Running entirely client-side in browser memory under strict CSP restrictions, your site migration roadmaps and confidential URL architectures remain completely secure. Consolidating multi-step redirect paths into direct destination links preserves search ranking signals and improves page loading speeds for website visitors. Consolidating multi-step redirect paths into direct destination links preserves search ranking signals and improves page loading speeds for website visitors.',
+    faqs: [
+      {
+        question:
+          'Why are redirect chains harmful to website performance and SEO?',
+        answer:
+          'Redirect chains slow down page load times by triggering multiple round-trip HTTP requests and can cause search engine crawlers to abandon link indexing.',
+      },
+      {
+        question: 'How does the planner resolve multi-hop redirect chains?',
+        answer:
+          'The engine traces the entire redirection path and rewrites the starting URL to point directly to the final destination in a single hop.',
+      },
+      {
+        question:
+          'What server configuration formats can I export from this tool?',
+        answer:
+          'You can generate direct 301 redirect rules formatted for Nginx rewrite blocks, Apache .htaccess RedirectMatch rules, or Cloudflare bulk redirects.',
+      },
+      {
+        question:
+          'Are my site migration plans or staging domain paths sent online?',
+        answer:
+          'No. All path tracing and redirect rule generation execute locally in browser memory with zero network traffic, ensuring complete architectural privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'annuity-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-annuity-calculator': {
+    directAnswer:
+      'Calculate the future accumulated value and total payments of an ordinary annuity directly in your browser. Enter regular periodic payment amounts, periodic interest rate percentages, and total contribution periods to evaluate annuity compounding without transmitting your private retirement goals or financial savings figures across the network. The calculator runs compound annuity calculations locally in browser memory to ensure personal wealth targets remain completely private. The calculator runs compound annuity calculations locally in browser memory to ensure personal wealth targets remain completely private.',
+    leadParagraph:
+      'This annuity calculator computes the future accumulated value and total contribution sums of an ordinary annuity for retirement savers, insurance planners, and financial analysts. Investing a regular fixed amount at uniform intervals (such as monthly pension contributions or annual endowment deposits) leverages steady compound growth over decades; however, sharing personal retirement targets or corporate pension fund contributions on cloud financial websites creates significant financial privacy hazards. You enter the recurring payment amount, the interest rate per period, and the total number of payment periods. The engine calculates future value using the standard ordinary annuity formula (FV = PMT * ((1 + r)^n - 1) / r), computes total principal contributed, and displays net interest earnings. Operating strictly within browser memory under CSP connect-src none controls, your financial planning figures and retirement budgets remain strictly confidential.',
+    faqs: [
+      {
+        question:
+          'What is the formula used for ordinary annuity future value calculations?',
+        answer:
+          'The calculator uses FV = PMT * ((1 + r)^n - 1) / r, where PMT is regular payment, r is interest rate per period, and n is total periods.',
+      },
+      {
+        question:
+          'What is the difference between an ordinary annuity and an annuity due?',
+        answer:
+          'An ordinary annuity assumes payments occur at the end of each period, whereas an annuity due assumes payments are made at the beginning.',
+      },
+      {
+        question:
+          'Can I calculate monthly retirement contributions with this tool?',
+        answer:
+          'Yes. Input your monthly contribution amount, monthly equivalent interest rate, and total months to project your accumulated retirement fund balance over time.',
+      },
+      {
+        question:
+          'Are my personal contribution amounts or retirement goals saved online?',
+        answer:
+          'No. All financial calculations run locally in client browser memory with zero outbound network calls, maintaining total financial privacy for planning retirement.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'lpg-consumption-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-lpg-consumption-calculator': {
+    directAnswer:
+      'Input domestic LPG cylinder weight in kilograms, daily cooking burner hours, and family size to calculate cylinder lifespan in days and estimated refill dates directly in your browser. The calculator models household gas consumption locally without transmitting your domestic cooking habits or utility schedules to external servers. The calculator runs entirely within browser memory to ensure household gas consumption and domestic cooking habits remain private. The calculator runs entirely within browser memory to ensure household gas consumption and domestic cooking habits remain private.',
+    leadParagraph:
+      'This LPG consumption calculator estimates domestic cooking gas cylinder lifespan and forecasts cylinder replacement dates for Indian households, joint families, and culinary enthusiasts. Running out of cooking gas unexpectedly during meal preparation causes major household disruption, while booking refills too early ties up domestic cash flows; however, tracking household consumption on online portals often requires intrusive account registrations or advertising trackers. You input standard cylinder capacity (typically 14.2 kg for domestic Indian cylinders), the number of active stove burners, average daily cooking hours, and family size. The engine computes average daily gas burn rates in grams and predicts expected cylinder duration in days alongside recommended refill booking windows. Running completely client-side in browser memory under strict CSP restrictions, your household routines and family details remain strictly private. Estimating cylinder duration accurately allows families to manage domestic utility budgets effectively and schedule timely refills without disruption. Estimating cylinder duration accurately allows families to manage domestic utility budgets effectively and schedule timely refills without disruption.',
+    faqs: [
+      {
+        question:
+          'What is the standard gas capacity of a domestic Indian LPG cylinder?',
+        answer:
+          'A standard domestic Indian LPG cylinder contains 14.2 kilograms of liquefied petroleum gas, while commercial cylinders typically hold 19 kilograms.',
+      },
+      {
+        question:
+          'How does family size and cooking duration affect LPG cylinder lifespan?',
+        answer:
+          'Larger families and extended daily cooking hours consume more grams of gas per day, proportionately shortening cylinder lifespan between refills.',
+      },
+      {
+        question: 'When should a household book an LPG cylinder refill?',
+        answer:
+          'It is advisable to book a replacement cylinder when remaining capacity drops to approximately 4 to 5 days of estimated usage.',
+      },
+      {
+        question:
+          'Are my household cooking habits or family details logged online?',
+        answer:
+          'No. All consumption calculations run locally inside browser tab memory with zero network traffic, ensuring total privacy for domestic routines.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'gcd-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-gcd-calculator': {
+    directAnswer:
+      'Compute the Greatest Common Divisor (GCD) or Highest Common Factor (HCF) of two or more integers directly in your browser. The calculator implements the Euclidean division algorithm in client memory, displaying step-by-step division remainders without transmitting your mathematical numbers or research data across the network. The tool executes the Euclidean algorithm locally in browser memory to keep proprietary mathematical numbers and research data secure. The tool executes the Euclidean algorithm locally in browser memory to keep proprietary mathematical numbers and research data secure.',
+    leadParagraph:
+      'This greatest common divisor (GCD) calculator finds the largest positive integer that divides two or more numbers without leaving a remainder for students, educators, and software engineers. Calculating the greatest common factor is essential for simplifying algebraic fractions, finding common denominators, configuring gear ratios, and executing modular arithmetic in cryptography; however, computing GCD for large multi-digit integers manually via prime factor trees is slow and error-prone. You input two or more integers separated by commas or spaces. The engine executes the Euclidean algorithm (repeated modulo division until remainder zero), tracks intermediate quotients and remainders, and displays the exact GCD. Operating entirely within local browser tab memory under strict Content Security Policy directives, your mathematical computations and research numbers remain strictly confidential. Calculating greatest common divisors simplifies fraction reduction in engineering designs and provides core modular calculations for cryptographic key generation. Calculating greatest common divisors simplifies fraction reduction in engineering designs and provides core modular calculations for cryptographic key generation.',
+    faqs: [
+      {
+        question: 'What algorithm does the calculator use to determine GCD?',
+        answer:
+          'The calculator uses the Euclidean algorithm, repeatedly computing remainders (GCD(a, b) = GCD(b, a mod b)) until the remainder reaches zero.',
+      },
+      {
+        question:
+          'Can I calculate the GCD of more than two numbers simultaneously?',
+        answer:
+          'Yes. The engine generalizes across multiple integers by computing GCD(a, b, c) = GCD(GCD(a, b), c) iteratively for all supplied numbers.',
+      },
+      {
+        question: 'What does it mean if the GCD of two numbers is 1?',
+        answer:
+          'If the greatest common divisor of two integers is 1, the numbers are coprime (or relatively prime), sharing no common factors other than 1.',
+      },
+      {
+        question:
+          'Are my mathematical calculations or integers sent over the internet?',
+        answer:
+          'No. All Euclidean algorithm steps execute locally in browser memory with zero outbound network calls, ensuring complete privacy for your mathematical computations.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'qr-code-logo-embedder', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-qr-code-logo-embedder': {
+    directAnswer:
+      'Generate branded QR codes with custom logos centered within the symbol and export clean SVG graphics directly in your browser. The tool leverages Reed-Solomon high error correction (Level H) client-side to ensure reliable scanning without uploading your brand logos, vector artwork, or destination URLs to external servers. The tool embeds logos locally in browser tab memory to ensure your brand trademarks and destination URLs remain secure. The tool embeds logos locally in browser tab memory to ensure your brand trademarks and destination URLs remain secure.',
+    leadParagraph:
+      'This QR code logo embedder creates branded vector barcodes featuring company logos, brand icons, or profile pictures centered within the QR matrix for marketing agencies, brand managers, and packaging designers. Plain black-and-white QR codes lack visual identity, but overlaying logos incorrectly can obscure critical data modules and prevent smartphone cameras from decoding the barcode; however, using cloud branding tools requires uploading proprietary vector trademarks to untrusted third parties. You input your URL or text, select a logo image or SVG icon, and define logo sizing margins. The engine renders the QR matrix using Level H error correction (capable of recovering up to 30% corrupted data), clears a centered keep-out zone, embeds your logo, and outputs a sharp SVG file. Operating completely client-side in browser memory under CSP connect-src none directives, your trademark graphics and destination URLs remain secure.',
+    faqs: [
+      {
+        question:
+          'How does a QR code remain scannable with a logo covering the center?',
+        answer:
+          'The tool uses Level H Reed-Solomon error correction, which mathematically reconstructs missing data even when up to 30% of the symbol is covered.',
+      },
+      {
+        question:
+          'What image formats can I embed into the center of the QR code?',
+        answer:
+          'You can embed SVG vector icons, PNG images with transparent backgrounds, or JPEG graphics centered with automatic keep-out margins for high visual scanning clarity.',
+      },
+      {
+        question:
+          'What size should the central logo be relative to the QR code?',
+        answer:
+          'The logo should occupy no more than 20% to 25% of the total symbol area to guarantee reliable scanning across diverse smartphone cameras.',
+      },
+      {
+        question:
+          'Are my company logos or destination links uploaded to any server?',
+        answer:
+          'No. All logo scaling, masking, and SVG composite generation run locally in browser memory with zero network traffic, ensuring complete brand privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'potential-energy-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-potential-energy-calculator': {
+    directAnswer:
+      'Calculate gravitational potential energy in joules from object mass, elevation height, and gravitational acceleration directly in your browser. The calculator evaluates mechanical potential energy formulas client-side without transmitting your experimental physics measurements or engineering parameters to external servers. The calculator evaluates gravitational formulas locally in browser memory to keep your physics experiments and mechanical parameters confidential. The calculator evaluates gravitational formulas locally in browser memory to keep your physics experiments and mechanical parameters confidential.',
+    leadParagraph:
+      'This gravitational potential energy calculator computes the stored mechanical energy of an object elevated within a gravitational field for physics students, civil engineers, and mechanical system designers. Gravitational potential energy calculations determine hydroelectric reservoir capacities, pile driver impact forces, roller coaster launch requirements, and structural counterweight sizing; however, calculating intermediate values with non-standard gravity constants or imperial height units manually creates frequent unit conversion mistakes. You enter object mass (in kg or lbs), height above reference level (in meters or feet), and gravitational acceleration (defaulting to standard Earth gravity 9.80665 m/s^2 or custom values for other planets). The engine computes potential energy (PE = m * g * h) in joules, kilojoules, and calories. Operating completely client-side in browser memory under strict CSP restrictions, your experimental figures and engineering designs remain strictly confidential.',
+    faqs: [
+      {
+        question: 'What is the formula for gravitational potential energy?',
+        answer:
+          'The formula is PE = m * g * h, where m is mass in kilograms, g is gravitational acceleration in m/s^2, and h is height in meters.',
+      },
+      {
+        question:
+          'Can I calculate potential energy under different planetary gravities?',
+        answer:
+          'Yes. You can customize the gravitational acceleration constant (such as 1.62 m/s^2 for the Moon or 3.71 m/s^2 for Mars).',
+      },
+      {
+        question:
+          'What happens to potential energy when an object falls freely?',
+        answer:
+          'Under the law of conservation of energy, gravitational potential energy converts directly into kinetic energy as the object accelerates downwards.',
+      },
+      {
+        question:
+          'Are my physics parameters or engineering calculations stored online?',
+        answer:
+          'No. All potential energy calculations execute locally inside browser memory with zero network calls, ensuring total research confidentiality for scientific experiments.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-type-converter', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-type-converter': {
+    directAnswer:
+      'Cast and convert CSV column values into explicit data types (integers, floats, booleans, dates, and sanitized strings) directly in your browser. The tool normalises date formats, cleans currency symbols, and validates column types client-side without uploading your confidential corporate spreadsheets to third-party conversion servers. The tool casts column types locally in browser tab memory to protect sensitive corporate records and financial figures. The tool casts column types locally in browser tab memory to protect sensitive corporate records and financial figures.',
+    leadParagraph:
+      'This CSV type converter casts, sanitizes, and reformats column values in tabular datasets for database engineers, data scientists, and business analysts. Raw CSV exports from legacy ERP software or web scrapers often mix numeric formatting (such as dollar signs, commas, or parentheses for negatives) with text, causing database bulk copy operations (COPY or LOAD DATA) to fail; however, uploading proprietary company ledgers to online CSV cleanup tools risks severe confidentiality breaches. You paste your CSV data, select target columns, and assign explicit casting rules (such as stripping currency symbols, parsing dates into ISO 8601 format, or converting text booleans). The engine transforms the values row by row and outputs clean standardized CSV data. Running entirely inside browser tab memory under strict CSP restrictions, your financial numbers and sensitive data records remain completely secure.',
+    faqs: [
+      {
+        question:
+          'What column transformations can this CSV type converter perform?',
+        answer:
+          'It converts text numbers to clean digits, strips currency symbols, standardises date strings to ISO format, and casts boolean values.',
+      },
+      {
+        question:
+          'How does the tool handle currency symbols like dollar signs or commas?',
+        answer:
+          'The engine strips non-numeric symbols like currency marks and thousand separators, converting strings into clean decimal floats for databases and statistical tools.',
+      },
+      {
+        question:
+          'Can I standardise varied date formats into uniform ISO 8601?',
+        answer:
+          'Yes. You can parse varied date formats (like DD/MM/YYYY or MM-DD-YYYY) and convert them into uniform YYYY-MM-DD ISO representations for database tables.',
+      },
+      {
+        question:
+          'Are my corporate records or financial spreadsheets sent to cloud servers?',
+        answer:
+          'No. All CSV parsing and data type casting execute locally in browser memory with zero network traffic, ensuring complete data sovereignty.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'line-sorter', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-line-sorter': {
+    directAnswer:
+      'Sort lines of text alphabetically (A-Z or Z-A), numerically, by line length, or in natural order directly in your browser. The tool handles case sensitivity and international Unicode collation client-side without uploading your customer lists, source code lines, or sensitive manuscripts to remote servers. The tool sorts text lines locally in browser memory to maintain complete privacy for customer directories and private notes. The tool sorts text lines locally in browser memory to maintain complete privacy for customer directories and private notes.',
+    leadParagraph:
+      'This text line sorter organizes lines of text alphabetically, numerically, or by character length for writers, programmers, researchers, and data managers. Organizing unordered lists (such as bibliography entries, customer names, numerical IDs, or CSS properties) manually is slow and error-prone, particularly when sorting numbers where standard ASCII sorting misplaces multi-digit values (like placing 10 before 2); however, pasting sensitive customer directories or proprietary code into online text sorters creates data exposure hazards. You paste your text into the editor and select your sorting criteria: alphabetical, reverse alphabetical, natural alphanumeric sort, numerical sort, or line length. The engine sorts lines in memory using Unicode-aware collation and outputs organized text. Operating completely in browser tab memory under strict CSP restrictions, your private lists and confidential notes remain completely secure on your machine.',
+    faqs: [
+      {
+        question:
+          'What is natural sorting and how does it handle numbers in text?',
+        answer:
+          'Natural sorting treats multi-digit numbers as complete values rather than individual characters, correctly ordering "file2" before "file10" in numeric text lists.',
+      },
+      {
+        question:
+          'Can I sort lines by character length instead of alphabetically?',
+        answer:
+          'Yes. You can sort lines in ascending or descending order of length, useful for formatting poetry, word lists, or code definitions.',
+      },
+      {
+        question:
+          'Does the line sorter support international Unicode alphabets?',
+        answer:
+          'Yes. The engine uses localized Unicode collation rules, accurately ordering accented characters and non-Latin alphabets across diverse global languages and scripts.',
+      },
+      {
+        question:
+          'Are my text lines or customer lists transmitted over the internet?',
+        answer:
+          'No. All sorting algorithms execute client-side in browser memory with zero network communication, ensuring complete privacy for your text files and lists.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'url-normalizer', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-url-normalizer': {
+    directAnswer:
+      'Normalize and canonicalize URLs by lowercasing schemes and hostnames, sorting query parameters, stripping tracking tokens, and removing redundant slashes directly in your browser. The tool standardises web addresses client-side without transmitting your unreleased website links or internal URL structures to third-party servers. The tool canonicalizes web addresses locally in browser memory to keep internal URL structures and staging links confidential. The tool canonicalizes web addresses locally in browser memory to keep internal URL structures and staging links confidential.',
+    leadParagraph:
+      'This URL normalizer standardises and canonicalizes web addresses to prevent duplicate content indexing, improve web caching hit rates, and ensure consistent URL tracking for web developers, SEO specialists, and data engineers. Search engines treat URLs with differing trailing slashes, un-sorted query parameters, default port numbers, or mixed character casing as distinct addresses, fragmenting link equity; however, testing internal URL architectures on cloud SEO tools exposes pre-release site structures to external logging. You paste raw URLs into the normalizer. The engine decodes percent-encoded characters where safe, lowercases hostnames, removes default ports (80 for HTTP, 443 for HTTPS), sorts query parameters alphabetically, strips specified marketing tracking tags, and resolves relative dot segments. Running entirely inside browser tab memory with CSP connect-src none directives, your confidential URL structures remain completely private. Normalising URLs before site publication ensures search engines index canonical versions and prevents link fragmentation across distributed marketing campaigns. Normalising URLs before site publication ensures search engines index canonical versions and prevents link fragmentation across distributed marketing campaigns.',
+    faqs: [
+      {
+        question: 'What URL normalization rules are applied by the tool?',
+        answer:
+          'The tool lowercases hostnames, removes default port numbers, normalises trailing slashes, sorts query keys, and removes redundant dot path segments.',
+      },
+      {
+        question:
+          'Can the normalizer strip marketing tracking parameters like UTM tags?',
+        answer:
+          'Yes. You can strip marketing parameters (such as utm_source, utm_medium, and gclid) to reveal clean canonical destination web addresses for site navigation.',
+      },
+      {
+        question: 'Why is sorting query parameters important for web caching?',
+        answer:
+          'Sorting query parameters alphabetically ensures that requests with identical keys in different orders hit the same edge server cache entry.',
+      },
+      {
+        question:
+          'Are my web URLs or internal staging links sent to external servers?',
+        answer:
+          'No. All URL parsing and canonicalization execute locally in browser memory with zero network traffic, maintaining complete link confidentiality for staging URLs.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'retirement-corpus-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-retirement-corpus-calculator': {
+    directAnswer:
+      'Enter current age, target retirement age, expected monthly living expenses, assumed inflation rate, and post-retirement investment returns to calculate your required retirement corpus in your browser. The calculator models retirement capital needs client-side without transmitting your personal financial assets or retirement plans across the network. The calculator evaluates retirement needs locally in browser memory to keep your personal wealth targets and living budgets confidential. The calculator evaluates retirement needs locally in browser memory to keep your personal wealth targets and living budgets confidential.',
+    leadParagraph:
+      'This retirement corpus calculator estimates the total capital wealth required to sustain post-retirement living expenses while factoring in inflation, life expectancy, and investment compounding. Underestimating retirement requirements due to long-term inflation or healthcare costs creates severe financial vulnerability in later years; however, inputting personal wealth figures and living expenses into online retirement portals exposes sensitive household finances to commercial marketing and data profiling. You enter current age, planned retirement age, life expectancy, current monthly expenses, expected inflation rate, and pre/post-retirement investment yields. The engine projects future living expenses at retirement age and applies capital depletion formulas to calculate the exact lump-sum corpus needed to sustain cash flows. Operating completely in browser tab memory under strict CSP restrictions, your personal net worth and financial goals remain strictly confidential. Calculating a personalized retirement corpus helps savers balance present expenditures with future capital stability, accounting for long-term inflation trends. Calculating a personalized retirement corpus helps savers balance present expenditures with future capital stability, accounting for long-term inflation trends.',
+    faqs: [
+      {
+        question:
+          'How does inflation affect the required retirement corpus size?',
+        answer:
+          'Inflation compounds over working years, meaning a household requiring 50,000 monthly today will need substantially more nominal capital at retirement.',
+      },
+      {
+        question:
+          'Does the calculator account for post-retirement investment returns?',
+        answer:
+          'Yes. It models continued compound growth on your remaining capital balance throughout retirement years alongside regular living withdrawals and inflation adjustments.',
+      },
+      {
+        question:
+          'What is the safe withdrawal rate principle in retirement planning?',
+        answer:
+          'The safe withdrawal principle (such as the 4% rule) suggests withdrawing a sustainable percentage annually to preserve capital over multi-decade retirements.',
+      },
+      {
+        question:
+          'Are my personal wealth figures or retirement savings recorded online?',
+        answer:
+          'No. All calculations run strictly client-side in browser memory with zero outbound network calls, ensuring total financial privacy for planning.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'fuel-cost-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-fuel-cost-calculator': {
+    directAnswer:
+      'Input journey distance in kilometers, vehicle fuel economy in kilometers per liter, and local fuel price per liter to calculate total fuel cost and required fuel volume in your browser. The calculator computes travel fuel expenditures client-side without transmitting your private travel routes or personal commuting budgets to remote servers.',
+    leadParagraph:
+      'This fuel cost calculator computes total fuel expenditure and fuel consumption volume for road trips, daily vehicle commutes, and corporate transport logistics. Budgeting vehicle travel expenses before departing prevents unexpected costs and simplifies splitting road trip expenses among passengers; however, calculating fractional fuel economy across varying route distances manually is slow and inconvenient. You input one-way or round-trip travel distance in kilometers (or miles), vehicle fuel mileage (km/L or MPG), and current petrol, diesel, or CNG prices per liter. The engine calculates the exact liters of fuel required (distance / mileage) and multiplies by current pump prices to yield total journey cost and per-kilometer travel expenditure. Running completely client-side in browser memory under CSP connect-src none directives, your personal commuting habits and travel destinations remain strictly confidential. Calculating travel fuel expenditure before departing gives motorists financial predictability and simplifies carpooling cost distributions across long journeys. Calculating travel fuel expenditure before departing gives motorists financial predictability and simplifies carpooling cost distributions across long journeys.',
+    faqs: [
+      {
+        question: 'What is the formula used to calculate journey fuel cost?',
+        answer:
+          'The calculator divides journey distance by vehicle fuel efficiency (km/L) to determine required liters, then multiplies by fuel price per liter.',
+      },
+      {
+        question: 'Can I calculate round-trip travel fuel costs automatically?',
+        answer:
+          'Yes. You can toggle round-trip calculation to double one-way distance and compute total fuel expense for return journeys across all vehicle types.',
+      },
+      {
+        question:
+          'How can I calculate individual fuel shares for group carpools?',
+        answer:
+          'Divide the total calculated fuel cost by the number of vehicle occupants to arrive at fair, transparent passenger cost contributions.',
+      },
+      {
+        question:
+          'Are my travel destinations or vehicle fuel figures stored online?',
+        answer:
+          'No. All fuel cost arithmetic executes locally in browser tab memory with zero network traffic, ensuring complete privacy for travel expenses.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'lcm-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-lcm-calculator': {
+    directAnswer:
+      'Calculate the Least Common Multiple (LCM) of two or more integers directly in your browser. The calculator derives common multiples using prime factorization and the Euclidean algorithm in client memory, displaying step-by-step arithmetic without transmitting your mathematical numbers or research figures across the network. The tool evaluates common multiples locally in client memory to keep proprietary mathematical calculations and research data confidential. The tool evaluates common multiples locally in client memory to keep proprietary mathematical calculations and research data confidential.',
+    leadParagraph:
+      'This least common multiple (LCM) calculator finds the smallest positive integer that is evenly divisible by two or more numbers for students, educators, and software engineers. Finding the least common multiple is essential for adding or subtracting fractions with differing denominators, synchronizing periodic repeating events, and solving modular congruence equations; however, computing LCM for multiple large integers manually through listing multiples is tedious and prone to calculation slips. You enter two or more integers separated by commas or spaces. The engine computes the LCM using the mathematical relationship LCM(a, b) = |a * b| / GCD(a, b) alongside prime factorization steps, displaying both intermediate results and the final common multiple. Operating entirely in local browser tab memory under strict CSP restrictions, your mathematical calculations and research numbers remain strictly confidential.',
+    faqs: [
+      {
+        question:
+          'What is the relationship between LCM and GCD of two numbers?',
+        answer:
+          'For any two positive integers a and b, their product equals the product of their LCM and GCD: a * b = LCM(a, b) * GCD(a, b).',
+      },
+      {
+        question:
+          'Can I find the least common multiple of three or more integers?',
+        answer:
+          'Yes. The calculator generalizes across multiple numbers by computing LCM(a, b, c) = LCM(LCM(a, b), c) iteratively for all supplied values.',
+      },
+      {
+        question: 'How is LCM used in practical real-world applications?',
+        answer:
+          'LCM synchronizes periodic repeating events, such as determining when traffic lights cycle simultaneously or when transit buses align schedules in urban networks.',
+      },
+      {
+        question:
+          'Are my mathematical calculations or integers recorded on external servers?',
+        answer:
+          'No. All LCM calculations execute client-side in browser memory with zero outbound network calls, ensuring complete computational privacy for research.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'qr-code-batch-generator', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-qr-code-batch-generator': {
+    directAnswer:
+      'Generate multiple QR codes in bulk from a list of URLs or text lines and download them as individual SVG files or consolidated ZIP archives directly in your browser. The tool processes batch payloads client-side without rate limits, monthly fees, or uploading your confidential data lists to third-party servers. The tool generates batch barcodes locally in browser memory to keep customer rosters and internal serial numbers completely private. The tool generates batch barcodes locally in browser memory to keep customer rosters and internal serial numbers completely private.',
+    leadParagraph:
+      'This batch QR code generator produces dozens or hundreds of individualized QR codes from lists of URLs, inventory asset IDs, student numbers, or event ticket codes. Generating barcodes one by one for mass mailings, event badges, or product packaging is impractical; however, commercial bulk QR services charge steep monthly subscription fees and store user data on remote databases. You paste your list of text lines or web addresses (one per line) and choose your target SVG size and error correction tier. The engine iterates through the entries in browser memory, generates individual vector QR symbols for each line, and provides direct downloads as standalone files or a consolidated archive. Operating completely client-side in browser memory under strict CSP restrictions, sensitive customer lists, student rosters, and internal inventory serial numbers remain strictly private.',
+    faqs: [
+      {
+        question:
+          'How many QR codes can I generate simultaneously in a single batch?',
+        answer:
+          'Because generation runs in local browser memory without server rate limits, you can generate dozens or hundreds of QR codes in minutes.',
+      },
+      {
+        question: 'What input format is required for the batch list?',
+        answer:
+          'Enter items one per line in the text area (for example, URLs, serial numbers, employee IDs, or inventory SKU codes).',
+      },
+      {
+        question: 'Can I download the generated batch as vector SVG files?',
+        answer:
+          'Yes. The batch tool exports crisp, resolution-independent SVG vector graphics suitable for commercial print production, packaging labels, and automated workflows.',
+      },
+      {
+        question:
+          'Are my batch lists or customer URLs transmitted to external servers?',
+        answer:
+          'No. All QR code generation executes locally in browser tab memory with zero network traffic, ensuring complete batch data privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'projectile-motion-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-projectile-motion-calculator': {
+    directAnswer:
+      'Enter initial launch velocity, launch angle in degrees, and initial height to calculate maximum projectile height, total time of flight, horizontal range, and trajectory coordinates directly in your browser. The calculator solves kinematic motion equations in client memory without transmitting your ballistic research parameters to remote servers. The tool calculates trajectories locally in browser memory to keep experimental physics data and aerodynamic figures confidential. The tool calculates trajectories locally in browser memory to keep experimental physics data and aerodynamic figures confidential.',
+    leadParagraph:
+      'This projectile motion calculator evaluates classical kinematic trajectories for objects launched into gravitational fields for physics students, aerospace engineers, ballistics researchers, and sports biomechanists. Analyzing parabolic trajectories requires decomposing velocity vectors into independent horizontal and vertical components while factoring in gravitational acceleration; however, performing multi-step trigonometric trajectory derivations by hand is slow and prone to angle conversion errors. You input initial launch speed (m/s or ft/s), launch angle in degrees, initial launch elevation, and gravitational constant (default 9.80665 m/s^2). The engine calculates peak trajectory height, total flight duration, horizontal impact distance, and trajectory coordinates along the flight path. Running completely client-side in browser memory with strict CSP connect-src none directives, your experimental physics computations remain strictly confidential on your computer. Analyzing trajectory equations in a local browser tool gives students and engineers instant insights into flight mechanics without needing specialized mathematical software. Analyzing trajectory equations in a local browser tool gives students and engineers instant insights into flight mechanics without needing specialized mathematical software.',
+    faqs: [
+      {
+        question:
+          'What launch angle yields the maximum horizontal range on flat ground?',
+        answer:
+          'In an ideal vacuum on level ground, a 45-degree launch angle produces the maximum horizontal distance for a given initial velocity.',
+      },
+      {
+        question:
+          'How does the calculator account for initial launch elevation above ground?',
+        answer:
+          'The engine includes initial height h in the vertical kinematic equation (y = h + Vy*t - 0.5*g*t^2), solving the quadratic for total flight time.',
+      },
+      {
+        question:
+          'Does this projectile calculator factor in atmospheric air resistance?',
+        answer:
+          'This tool models ideal parabolic motion under constant gravity without aerodynamic drag; atmospheric drag requires numerical differential integration over time.',
+      },
+      {
+        question:
+          'Are my ballistic research figures or projectile calculations logged online?',
+        answer:
+          'No. All kinematic evaluations run locally inside browser memory with zero outbound network calls, maintaining complete research confidentiality for experimental physics.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'line-shuffler', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-line-shuffler': {
+    directAnswer:
+      'Randomize and shuffle lines of text using a cryptographically unbiased Fisher-Yates algorithm directly in your browser. The tool reorders list items, raffle entries, flashcards, or randomized test questions client-side without sending your private participant rosters or confidential study materials to remote servers. The shuffler executes randomizations entirely in browser memory to ensure participant lists and private test items remain secure. The shuffler executes randomizations entirely in browser memory to ensure participant lists and private test items remain secure.',
+    leadParagraph:
+      'This text line shuffler randomly permutes lines of text using an in-memory Fisher-Yates (Knuth) shuffling algorithm for educators, event organizers, researchers, and software testers. Generating truly unbiased random permutations is critical when conducting prize draws, randomizing exam questions to discourage cheating, or shuffling training data lines for machine learning validation; however, pasting participant rosters or proprietary question banks into ad-funded online shufflers exposes private names and email addresses. You paste your text into the editor. The engine splits the text into discrete lines, generates cryptographically sound random indices, swaps array elements uniformly, and outputs a freshly randomized line list. Running entirely inside browser tab memory under strict CSP restrictions, your participant rosters, quiz questions, and private data lists remain strictly confidential. Shuffling text lines directly within your browser guarantees fair randomization without risking data exposure to third-party web services. Shuffling text lines directly within your browser guarantees fair randomization without risking data exposure to third-party web services.',
+    faqs: [
+      {
+        question: 'What randomization algorithm does the line shuffler use?',
+        answer:
+          'The tool uses the standard Fisher-Yates (Knuth) shuffle algorithm, ensuring an mathematically unbiased permutation where every ordering has equal probability.',
+      },
+      {
+        question: 'Can I re-shuffle the same text list multiple times?',
+        answer:
+          'Yes. You can trigger the shuffle operation repeatedly to produce new randomized arrangements of your text lines instantly in memory.',
+      },
+      {
+        question: 'Does the shuffler modify or delete any text characters?',
+        answer:
+          'No. The tool preserves every line exactly as entered, only modifying the vertical sequence order of the rows in your list.',
+      },
+      {
+        question: 'Are my participant names or test questions logged online?',
+        answer:
+          'No. All shuffling operations execute client-side in browser memory with zero network traffic, ensuring total confidentiality for sensitive lists and contest entries.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'utm-builder', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-utm-builder': {
+    directAnswer:
+      'Construct standard Google Analytics campaign tracking URLs with utm_source, utm_medium, utm_campaign, utm_term, and utm_content tags directly in your browser. The tool validates URL grammar and encodes query parameters client-side without transmitting your unreleased marketing strategies or internal campaign tags to external servers. The builder runs locally in browser memory to ensure your advertising campaigns and promotional destinations remain completely confidential. The builder runs locally in browser memory to ensure your advertising campaigns and promotional destinations remain completely confidential.',
+    leadParagraph:
+      'This UTM builder creates standardized Urchin Tracking Module (UTM) campaign parameters for digital marketers, media buyers, social media managers, and email marketing specialists. Accurate attribution across paid advertising, email newsletters, influencer sponsorships, and organic social posts relies on uniformly formatted query parameters; however, hand-typing URLs often introduces unescaped spaces, inconsistent capitalization (like mixing "Email" and "email"), or malformed question marks that break analytics tracking. You enter your destination URL and specify campaign parameters (source, medium, campaign name, term, and content). The engine validates destination protocols, lowercases tracking tags for consistency, safely encodes URI components, and generates a formatted campaign URL. Operating completely client-side in browser memory with CSP connect-src none directives, your confidential advertising budgets and marketing roadmaps remain completely private. Generating standardized tracking tags ensures analytics dashboards accurately attribute leads across diverse marketing initiatives and campaigns. Generating standardized tracking tags ensures analytics dashboards accurately attribute leads across diverse marketing initiatives and campaigns.',
+    faqs: [
+      {
+        question: 'What are the five standard UTM tracking parameters?',
+        answer:
+          'The parameters are utm_source (referrer like newsletter), utm_medium (channel like cpc), utm_campaign (promotion name), utm_term (keywords), and utm_content (ad variation).',
+      },
+      {
+        question: 'Why is consistent lowercase parameter casing recommended?',
+        answer:
+          'Analytics engines like Google Analytics treat "email" and "Email" as separate channels, fragmenting campaign performance metrics unless casing is standardised.',
+      },
+      {
+        question:
+          'How does the builder handle destination URLs that already contain query strings?',
+        answer:
+          'The engine inspects existing parameters and appends UTM parameters using ampersands (&) rather than duplicating the initial question mark (?).',
+      },
+      {
+        question:
+          'Are my marketing campaign names or promotional URLs tracked online?',
+        answer:
+          'No. All URL assembly and parameter encoding run locally in browser tab memory with zero network traffic, maintaining complete campaign confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'emergency-fund-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-emergency-fund-calculator': {
+    directAnswer:
+      'Input essential monthly living expenses, target coverage months (typically 3 to 12 months), and current savings balances to calculate your required emergency fund reserve in your browser. The calculator computes savings targets client-side without transmitting your personal monthly household expenses across the network. The calculator executes savings evaluations client-side to ensure your household budgets and personal finances remain strictly private. The calculator executes savings evaluations client-side to ensure your household budgets and personal finances remain strictly private.',
+    leadParagraph:
+      'This emergency fund calculator computes the total cash buffer required to safeguard households against unexpected job disruptions, medical emergencies, or urgent vehicle repairs for personal finance planners and families. Financial resilience requires keeping several months of non-negotiable living costs (rent, groceries, utilities, debt minimums, insurance) in liquid cash; however, typing sensitive monthly living budgets and bank balances into commercial budgeting apps exposes personal finances to marketing brokers and credit scoring trackers. You input mandatory monthly survival expenses, desired safety buffer duration in months (typically 3 to 6 months for salaried professionals, 9 to 12 for freelancers), and current liquid savings. The engine computes target fund totals, determines remaining funding shortfalls, and calculates monthly savings milestones. Operating entirely within local browser tab memory under strict CSP restrictions, your household spending data remains strictly confidential.',
+    faqs: [
+      {
+        question: 'How many months of expenses should an emergency fund cover?',
+        answer:
+          'Financial advisors generally recommend maintaining 3 to 6 months of essential living expenses for salaried workers, and 6 to 12 months for freelancers or volatile incomes.',
+      },
+      {
+        question:
+          'Which expenses should be included in emergency fund calculations?',
+        answer:
+          'Include only essential survival expenses: rent or mortgage payments, groceries, utilities, mandatory debt service, health insurance, and essential transportation costs.',
+      },
+      {
+        question: 'Where should an emergency fund reserve be kept?',
+        answer:
+          'Keep emergency funds in liquid, capital-safe accounts such as high-yield savings accounts or short-term bank fixed deposits rather than volatile market equities.',
+      },
+      {
+        question:
+          'Are my household budget figures or personal savings logged on remote servers?',
+        answer:
+          'No. All calculations run strictly client-side in browser memory with zero outbound network calls, ensuring total financial privacy for planning.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'mileage-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-mileage-calculator': {
+    directAnswer:
+      'Enter starting odometer reading, ending odometer reading, and fuel volume filled in liters to calculate real-world vehicle fuel mileage in kilometers per liter (km/L) in your browser. The calculator computes tank-to-tank fuel efficiency client-side without sending your vehicle records or driving habits to external servers. The calculator computes fuel efficiency client-side to ensure your driving distances and vehicle expenses remain private. The calculator computes fuel efficiency client-side to ensure your driving distances and vehicle expenses remain private.',
+    leadParagraph:
+      'This vehicle mileage calculator determines accurate tank-to-tank fuel economy (in km/L or MPG) and running costs per kilometer for car owners, motorcyclists, and commercial fleet managers. Dashboard digital fuel displays often overestimate real-world vehicle efficiency by 5% to 15%, masking engine performance degradation or low tire pressure; however, tracking odometer readings on cloud automotive portals requires user accounts that monetize vehicle maintenance data. You input your previous odometer reading, current odometer reading, and the liters of fuel required to refill the tank back to full. The engine calculates net distance driven, divides distance by liters consumed to yield exact fuel mileage (km/L), and computes the cost per kilometer based on fuel price. Operating completely in browser tab memory with CSP connect-src none directives, your vehicle numbers and driving data remain strictly confidential.',
+    faqs: [
+      {
+        question:
+          'What is the full-tank to full-tank fuel mileage calculation method?',
+        answer:
+          'Fill the tank completely, note the odometer reading, drive normally, refill the tank completely, and divide distance travelled by the liters needed to refill.',
+      },
+      {
+        question:
+          'Why is tank-to-tank measurement more accurate than dashboard meters?',
+        answer:
+          'Dashboard meters estimate fuel use from instantaneous fuel injection pulses, whereas tank-to-tank measures physical liquid volume consumed over actual distance.',
+      },
+      {
+        question: 'Can I calculate fuel cost per kilometer using this tool?',
+        answer:
+          'Yes. Providing the fuel price per liter allows the calculator to determine your exact operating fuel cost per kilometer driven.',
+      },
+      {
+        question:
+          'Are my odometer records or vehicle commute distances uploaded online?',
+        answer:
+          'No. All mileage calculations execute locally inside browser memory with zero network traffic, ensuring total privacy for vehicle records and daily commute logs.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'quadratic-equation-solver', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-quadratic-equation-solver': {
+    directAnswer:
+      'Input quadratic coefficients a, b, and c to solve the equation ax^2 + bx + c = 0 for real or complex roots directly in your browser. The solver computes the discriminant, vertex coordinates, and step-by-step quadratic formula solutions client-side without transmitting your mathematical calculations across the network. The solver evaluates polynomials directly in client memory to keep proprietary research calculations and mathematical data confidential. The solver evaluates polynomials directly in client memory to keep proprietary research calculations and mathematical data confidential.',
+    leadParagraph:
+      'This quadratic equation solver finds the roots of second-degree polynomial equations (ax^2 + bx + c = 0) for students, physics researchers, and engineering analysts. Solving quadratic equations is foundational for parabolic projectile calculations, electrical circuit resonance, structural beam deflections, and optimization problems; however, calculating the discriminant and square root operations manually often leads to sign mistakes and algebra errors. You input numerical coefficients a, b, and c. The engine evaluates the discriminant (b^2 - 4ac), identifies whether roots are distinct real numbers, repeated real numbers, or complex conjugate pairs, and applies the quadratic formula (x = (-b ± sqrt(b^2 - 4ac)) / (2a)). It also computes parabola vertex coordinates. Operating completely client-side in browser memory under strict CSP restrictions, your equations and mathematical research remain strictly confidential. Finding exact roots and turning points quickly simplifies algebraic modeling across physical simulations and educational research projects. Finding exact roots and turning points quickly simplifies algebraic modeling across physical simulations and educational research projects.',
+    faqs: [
+      {
+        question:
+          'What does the discriminant (b^2 - 4ac) indicate about equation roots?',
+        answer:
+          'A positive discriminant indicates two distinct real roots; zero indicates one repeated real root; a negative discriminant yields two complex conjugate roots.',
+      },
+      {
+        question:
+          'Does the solver support complex roots with imaginary numbers?',
+        answer:
+          'Yes. When the discriminant is negative, the solver outputs complex roots in standard a + bi form with exact floating-point precision.',
+      },
+      {
+        question: 'Can this tool find the parabola vertex coordinates (h, k)?',
+        answer:
+          'Yes. The solver calculates the vertex turning point coordinates using h = -b / (2a) and k = c - b^2 / (4a) for graphing analysis.',
+      },
+      {
+        question:
+          'Are my equations or mathematical homework entries sent over the internet?',
+        answer:
+          'No. All algebraic evaluations execute locally in browser tab memory with zero outbound network calls, ensuring complete computational privacy for students and researchers.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'qr-code-contact-sheet', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-qr-code-contact-sheet': {
+    directAnswer:
+      'Organize multiple QR codes with human-readable text labels into printable multi-column grid contact sheets directly in your browser. The tool arranges vector symbols client-side for asset tags, inventory stickers, and conference badges without transmitting your internal SKU lists or confidential attendee names to external servers. The tool formats printable barcode grids locally in browser memory to keep employee rosters and asset identifiers confidential. The tool formats printable barcode grids locally in browser memory to keep employee rosters and asset identifiers confidential.',
+    leadParagraph:
+      'This QR code contact sheet generator formats collections of QR codes into aligned, printable multi-column grid layouts for conference badge printing, warehouse bin labeling, asset tracking, and merchandise packaging. Printing individual barcodes one by one onto sticker sheets creates misaligned margins, uneven margins, and wasted adhesive paper; however, uploading proprietary inventory codes or employee rosters to cloud sticker services exposes operational data. You input a list of items (pairing encoded payloads with human-readable label captions) and select column grid settings (such as 2, 3, or 4 columns). The engine generates crisp vector QR symbols, centers corresponding label captions below each barcode, and formats a printable contact sheet. Running completely client-side in browser memory under strict CSP restrictions, your inventory catalogs and participant rosters remain completely secure. Formatting contact sheets directly in browser memory eliminates layout misalignment when preparing printable sticker paper for retail and inventory applications. Formatting contact sheets directly in browser memory eliminates layout misalignment when preparing printable sticker paper for retail and inventory applications.',
+    faqs: [
+      {
+        question: 'How does the contact sheet lay out multiple QR codes?',
+        answer:
+          'The engine arranges sequential QR barcodes and their text labels into a uniform multi-column grid matching standard paper sheet printing dimensions.',
+      },
+      {
+        question:
+          'Can I include text descriptions below each generated QR code?',
+        answer:
+          'Yes. You can pair each payload with a human-readable title or SKU number that displays centered directly beneath the corresponding barcode.',
+      },
+      {
+        question:
+          'What applications are best suited for QR code contact sheets?',
+        answer:
+          'Contact sheets are ideal for printing inventory warehouse bin labels, asset management tags, event name badges, and classroom study cards.',
+      },
+      {
+        question:
+          'Are my asset tags or customer names uploaded to remote servers?',
+        answer:
+          'No. All barcode generation and grid layout rendering execute locally in browser memory with zero network traffic, ensuring total privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'free-fall-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-free-fall-calculator': {
+    directAnswer:
+      'Enter fall time, drop height, or impact velocity to calculate gravitational free fall kinematics directly in your browser. The calculator evaluates acceleration, terminal velocity approximations, and impact speed client-side without transmitting your experimental physics data or engineering test figures to remote servers. The calculator evaluates kinematic equations locally in browser memory to keep experimental physics measurements and research figures confidential. The calculator evaluates kinematic equations locally in browser memory to keep experimental physics measurements and research figures confidential.',
+    leadParagraph:
+      'This free fall calculator computes the motion, velocity, and elapsed time of an object falling under the influence of gravity for physics students, educators, and mechanical test engineers. Analyzing free fall motion is essential for understanding gravitational acceleration, designing drop test fixtures for product durability testing, and calculating cliff heights; however, solving kinematic square roots and handling gravity constants manually frequently leads to arithmetic mistakes. You supply any one known variable: drop height (in meters or feet), elapsed fall duration (measured in elapsed seconds), or final impact velocity (in m/s or mph). The engine applies free fall equations (v = g * t, d = 0.5 * g * t^2, and v = sqrt(2 * g * d)), assuming standard gravity (9.80665 m/s^2) or custom gravitational accelerations. Operating completely in browser tab memory under strict CSP restrictions, your experimental figures remain strictly confidential.',
+    faqs: [
+      {
+        question:
+          'What are the core equations governing gravitational free fall?',
+        answer:
+          'The equations are v = g * t (velocity from time), d = 0.5 * g * t^2 (distance from time), and v = sqrt(2 * g * d) (velocity from distance).',
+      },
+      {
+        question:
+          'Does the free fall calculator assume a vacuum without air resistance?',
+        answer:
+          'Yes. The basic tool computes ideal free fall in a vacuum; objects falling through atmosphere eventually reach terminal velocity due to aerodynamic drag.',
+      },
+      {
+        question:
+          'Can I calculate free fall on other planets like the Moon or Mars?',
+        answer:
+          'Yes. You can override standard Earth gravity with custom planetary acceleration values (such as 1.62 m/s^2 for the Moon or 3.71 m/s^2 for Mars).',
+      },
+      {
+        question:
+          'Are my test measurements or drop calculations recorded online?',
+        answer:
+          'No. All physics computations execute locally in browser memory with zero outbound network calls, maintaining complete research confidentiality across all laboratory tests.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'json-to-csv', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-json-to-csv': {
+    directAnswer:
+      'Convert arrays of JSON objects into standardized, RFC 4180 compliant CSV files with flattened nested properties directly in your browser. The tool parses data client-side, extracts column headers, and formats delimiter-separated text without uploading your private API payloads or database records to third-party conversion servers. The converter transforms data structures locally in browser memory to keep private customer registries and internal API payloads secure. The converter transforms data structures locally in browser memory to keep private customer registries and internal API payloads secure.',
+    leadParagraph:
+      'This JSON to CSV converter transforms structured JSON datasets into tabular comma-separated values (CSV) for database administrators, software developers, and financial analysts. API responses, NoSQL database dumps (MongoDB), and webhook events export nested JSON objects that cannot be directly opened in spreadsheet software like Excel or LibreOffice Calc; however, uploading proprietary company records or customer datasets to online JSON formatters creates serious data exposure risks. You paste raw JSON arrays into the editor. The engine parses the JSON, unrolls top-level objects, flattens nested keys, extracts union column headers, escapes internal commas and quotation marks, and produces clean RFC 4180 CSV output. Running completely client-side in browser memory under CSP connect-src none directives, your confidential customer databases and internal API payloads remain strictly secure. Converting hierarchical JSON payloads into clean rectangular CSV tables accelerates database imports and spreadsheet analysis across analytics workflows. Converting hierarchical JSON payloads into clean rectangular CSV tables accelerates database imports and spreadsheet analysis across analytics workflows.',
+    faqs: [
+      {
+        question: 'What JSON structures can this converter translate into CSV?',
+        answer:
+          'The converter translates arrays of JSON objects, single JSON records, and nested dictionaries into clean, standardized tabular CSV rows ready for spreadsheets.',
+      },
+      {
+        question:
+          'How does the converter handle nested JSON objects and arrays?',
+        answer:
+          'The engine flattens nested objects into dot-notated column headers (like user.address.city) and serializes scalar arrays cleanly within quoted fields for database imports.',
+      },
+      {
+        question:
+          'Does the tool escape commas and quotation marks according to RFC 4180?',
+        answer:
+          'Yes. Fields containing internal commas, double quotes, or newlines are wrapped in double quotes, with internal quotes escaped as two double quotes.',
+      },
+      {
+        question:
+          'Are my proprietary JSON payloads or customer records uploaded online?',
+        answer:
+          'No. All JSON parsing and CSV generation execute locally in browser memory with zero network traffic, ensuring complete data sovereignty.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'line-number-adder', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-line-number-adder': {
+    directAnswer:
+      'Prepend sequential line numbers to text documents with customizable starting offsets, delimiter formatting, and zero-padding directly in your browser. The tool formats line numbering client-side without uploading your source code files, legal briefs, or confidential transcripts to third-party servers. The tool numbers lines directly in browser memory to maintain complete confidentiality for legal transcripts and private source code snippets. The tool numbers lines directly in browser memory to maintain complete confidentiality for legal transcripts and private source code snippets.',
+    leadParagraph:
+      'This line number adder prefixes sequential line counts to text, source code snippets, poetry, and legal deposition transcripts for programmers, legal clerks, editors, and students. Referencing specific lines during code reviews, legal discovery hearings, or editorial proofreading requires clear, numbered lines; however, pasting proprietary source code or unreleased legal transcripts into online formatting utilities creates severe confidentiality hazards. You paste your text into the editor and choose your numbering preferences: starting index (default 1), separator delimiter (period, colon, parenthesis, or tab), and optional zero-padding (such as 001, 002). The engine scans lines in memory, prefixes the sequential numbers with consistent indentation, and outputs cleanly formatted text. Operating completely client-side in browser memory under strict CSP restrictions, your private documents and source code remain completely confidential. Prepending clean sequential line numbers simplifies document proofreading and clarifies clause references during legal audits and team code reviews. Prepending clean sequential line numbers simplifies document proofreading and clarifies clause references during legal audits and team code reviews.',
+    faqs: [
+      {
+        question: 'Can I customize the starting number and step increment?',
+        answer:
+          'Yes. You can specify custom starting numbers (such as starting at line 100 for code excerpts) and choose custom numbering delimiters.',
+      },
+      {
+        question:
+          'Does the tool support zero-padded line numbers like 001, 002?',
+        answer:
+          'Yes. You can enable zero-padding to keep line numbers aligned across multi-digit documents containing hundreds or thousands of lines for visual uniformity.',
+      },
+      {
+        question:
+          'Can I number only non-empty lines while skipping blank lines?',
+        answer:
+          'Yes. You can configure the tool to number all lines sequentially or skip empty lines to match specific academic and legal citation guidelines.',
+      },
+      {
+        question:
+          'Is my source code or legal transcript sent over the internet?',
+        answer:
+          'No. All line counting and prefix formatting execute locally inside browser tab memory with zero outbound network calls, ensuring total privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'utm-parser', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-utm-parser': {
+    directAnswer:
+      'Paste campaign tracking URLs to parse, decode, and extract utm_source, utm_medium, utm_campaign, utm_term, and utm_content parameters directly in your browser. The tool breaks down marketing links client-side without sending your advertising URLs or campaign structures to external tracking services. The parser decodes campaign parameters locally in browser memory to maintain complete confidentiality for marketing links and tracking strategies. The parser decodes campaign parameters locally in browser memory to maintain complete confidentiality for marketing links and tracking strategies.',
+    leadParagraph:
+      'This UTM parser deconstructs campaign tracking links into their component marketing parameters for digital marketing auditors, media buyers, and SEO consultants. Verifying that paid links adhere to internal attribution standards, contain correct tracking codes, and omit broken characters is necessary before launching multi-thousand-dollar ad campaigns; however, testing internal tracking URLs on cloud marketing portals logs proprietary campaign structures and target audience keywords to third-party databases. You paste long campaign URLs into the parser. The engine parses the URL structure, decodes percent-encoded query strings, extracts standard UTM keys alongside custom tracking tags, and presents them in a structured key-value table. Running completely in browser tab memory with CSP connect-src none directives, your confidential marketing strategies and ad campaigns remain completely private on your machine. Deconstructing campaign parameters into clean key-value tables helps auditors verify marketing attribution tags before launching expensive promotional campaigns. Deconstructing campaign parameters into clean key-value tables helps auditors verify marketing attribution tags before launching expensive promotional campaigns.',
+    faqs: [
+      {
+        question:
+          'What tracking parameters does the UTM parser extract from URLs?',
+        answer:
+          'The tool extracts utm_source, utm_medium, utm_campaign, utm_term, utm_content, and any custom query parameters present in the link across all URLs.',
+      },
+      {
+        question:
+          'Does the parser automatically decode percent-encoded URL characters?',
+        answer:
+          'Yes. The engine decodes escaped characters (such as %20 for spaces and %2B for plus signs), displaying clean readable parameter values.',
+      },
+      {
+        question:
+          'Can I copy extracted UTM values as structured key-value pairs?',
+        answer:
+          'Yes. The parsed parameters are displayed in an exportable table that you can copy directly into spreadsheet audit reports and analytics documentation.',
+      },
+      {
+        question:
+          'Are my marketing campaign URLs or landing page destinations recorded online?',
+        answer:
+          'No. All URL parsing and parameter extraction execute locally in browser memory with zero network traffic, ensuring complete campaign secrecy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'savings-goal-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-savings-goal-calculator': {
+    directAnswer:
+      'Enter target savings amount, planning timeframe in months or years, starting deposit balance, and expected annual interest rate to calculate the required monthly savings contribution in your browser. The calculator computes savings trajectories client-side without transmitting your private financial goals or personal savings balances across the network. The calculator evaluates savings targets client-side to keep your personal wealth goals and bank deposit balances strictly private. The calculator evaluates savings targets client-side to keep your personal wealth goals and bank deposit balances strictly private.',
+    leadParagraph:
+      'This savings goal calculator computes the exact monthly savings deposit required to reach specific financial milestones (such as home down payments, education funds, vehicle purchases, or wedding budgets) for savers and families. Setting ambitious financial goals without calculating required monthly contributions and compound interest often results in missed target dates; however, entering personal savings goals and current account balances into cloud banking apps exposes financial plans to online tracking. You input target goal amount, starting capital balance, target achievement date or duration, and anticipated annual savings yield. The engine computes monthly contribution amounts using compound interest equations, tracks cumulative interest earnings, and displays total principal deposits needed. Operating completely client-side in browser memory under strict CSP restrictions, your personal financial goals and savings balances remain strictly confidential. Projecting compound interest contributions helps savers set achievable monthly targets and measure progress toward significant financial milestones. Projecting compound interest contributions helps savers set achievable monthly targets and measure progress toward significant financial milestones.',
+    faqs: [
+      {
+        question:
+          'How does compound interest reduce the required monthly savings deposit?',
+        answer:
+          'As interest accrues on accumulated balances, compound earnings cover a portion of the target goal, reducing the required out-of-pocket monthly contribution.',
+      },
+      {
+        question:
+          'Can I calculate the time required to reach a goal with a fixed monthly deposit?',
+        answer:
+          'Yes. You can solve backwards to determine how many months will be needed to reach your savings target given a fixed monthly deposit amount.',
+      },
+      {
+        question:
+          'Does this calculator support starting from an initial deposit balance?',
+        answer:
+          'Yes. You can include current savings balances, which continue to compound alongside your new monthly contributions towards the target throughout the duration.',
+      },
+      {
+        question:
+          'Are my personal savings goals or financial balances stored online?',
+        answer:
+          'No. All calculations run strictly client-side in browser tab memory with zero outbound network calls, maintaining total financial privacy for planning purposes.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'road-trip-cost-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-road-trip-cost-calculator': {
+    directAnswer:
+      'Input road trip travel distance, vehicle fuel mileage, fuel price, highway toll charges, food budgets, and passenger counts to calculate total trip costs and fair per-person expenses in your browser. The calculator models group travel budgets client-side without transmitting your vacation itineraries or passenger lists across the network. The calculator models journey expenses locally in browser memory to keep private travel itineraries and family holiday budgets confidential. The calculator models journey expenses locally in browser memory to keep private travel itineraries and family holiday budgets confidential.',
+    leadParagraph:
+      'This road trip cost calculator estimates comprehensive travel expenditures (fuel, highway tolls, vehicle maintenance buffers, food, and lodging) and calculates fair per-passenger cost shares for holidaymakers, group road trips, and carpooling commuters. Planning multi-city driving holidays without factoring in highway tolls and fuel consumption leads to budget shortfalls and awkward post-trip bill splitting; however, entering personal vacation itineraries into shared budgeting websites exposes travel plans and passenger contacts to third parties. You input total distance, vehicle fuel efficiency (km/L or MPG), fuel price, estimated toll plaza fees, accommodation/food expenses, and passenger counts. The engine calculates total journey expenditure and outputs transparent individual passenger contributions. Running completely client-side in browser memory with strict CSP connect-src none controls, your vacation routes and travel budgets remain completely private. Estimating full road trip costs in advance gives travelers peace of mind and provides a transparent framework for dividing expenses among participants. Estimating full road trip costs in advance gives travelers peace of mind and provides a transparent framework for dividing expenses among participants.',
+    faqs: [
+      {
+        question:
+          'What expenditure categories does the road trip calculator include?',
+        answer:
+          'The calculator incorporates fuel expenses, highway toll charges, parking fees, food allowances, and overnight lodging costs into total trip expenditure.',
+      },
+      {
+        question:
+          'How are per-person travel expenses determined for carpool groups?',
+        answer:
+          'The engine sums all collective trip costs (fuel, tolls, shared amenities) and divides equally by the total number of vehicle occupants.',
+      },
+      {
+        question:
+          'Can I calculate costs for multi-day road trips across multiple cities?',
+        answer:
+          'Yes. You can aggregate cumulative driving distances, multi-toll receipts, and daily food budgets to project full multi-day vacation costs across states.',
+      },
+      {
+        question:
+          'Are my holiday travel routes or passenger budgets uploaded online?',
+        answer:
+          'No. All road trip budget calculations execute locally in browser tab memory with zero network traffic, ensuring complete privacy for travel plans.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'linear-equation-solver', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-linear-equation-solver': {
+    directAnswer:
+      'Solve single-variable linear equations (ax + b = c) and systems of two simultaneous linear equations using substitution or elimination directly in your browser. The solver computes exact fractional and decimal solutions client-side without transmitting your mathematical equations or research calculations across the network. The solver evaluates algebraic equations client-side to ensure proprietary research formulas and student calculations remain confidential. The solver evaluates algebraic equations client-side to ensure proprietary research formulas and student calculations remain confidential.',
+    leadParagraph:
+      "This linear equation solver computes exact solutions for single-variable linear equations and two-variable systems of simultaneous equations for algebra students, scientists, and financial modelers. Linear relationships model constant rates of change, supply-and-demand equilibriums, Ohm's law resistances, and budget constraints; however, solving simultaneous equations manually with fractions often leads to sign inversion errors and arithmetic slips. You enter equations in standard algebraic notation (such as 3x + 5 = 20 or system pairs like 2x + 3y = 12 and x - y = 1). The engine applies matrix elimination and algebraic substitution, verifies linear independence, detects parallel inconsistent lines or infinite dependent solutions, and outputs exact solutions. Operating completely client-side in browser memory under strict CSP restrictions, your equations and mathematical calculations remain strictly confidential. Solving linear systems quickly helps researchers analyze equilibrium points and verify algebraic steps across science and economics applications. Solving linear systems quickly helps researchers analyze equilibrium points and verify algebraic steps across science and economics applications.",
+    faqs: [
+      {
+        question: 'What types of linear equations can this solver evaluate?',
+        answer:
+          'The solver evaluates standard single-variable equations (ax + b = c) and two-variable simultaneous linear systems (ax + by = e and cx + dy = f).',
+      },
+      {
+        question:
+          'How does the solver handle inconsistent or parallel linear systems?',
+        answer:
+          'If lines are parallel with no intersection, the solver reports no solution; if equations are collinear, it identifies infinite dependent solutions.',
+      },
+      {
+        question:
+          'Does the solver display exact fractional results or decimals?',
+        answer:
+          'The engine provides exact reduced fraction solutions alongside standard decimal approximations for comprehensive algebraic verification, homework checks, and clear classroom study.',
+      },
+      {
+        question:
+          'Are my algebraic equations or homework inputs logged on any server?',
+        answer:
+          'No. All equation solving algorithms run locally inside browser memory with zero outbound network calls, ensuring complete student and research privacy.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'qr-code-error-correction-tester', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-qr-code-error-correction-tester': {
+    directAnswer:
+      'Simulate data damage, module erasure, and visual occlusion across QR codes generated with L, M, Q, and H error correction tiers directly in your browser. The tool tests Reed-Solomon recovery thresholds client-side without transmitting your confidential payload text or barcode images to external servers. The tool evaluates recovery thresholds client-side in browser memory to keep your product serial numbers and barcode payloads private. The tool evaluates recovery thresholds client-side in browser memory to keep your product serial numbers and barcode payloads private.',
+    leadParagraph:
+      'This QR code error correction tester analyzes and simulates barcode recovery capabilities across the four standardized Reed-Solomon error correction levels (L ~7%, M ~15%, Q ~25%, H ~30%) for barcode quality engineers and packaging designers. Barcodes printed on outdoor signage, industrial packaging, or vehicle decals frequently suffer from physical tears, dirt smudges, or partial logo obstructions that can render symbols unreadable; however, testing barcode resilience on cloud testing tools requires uploading proprietary product serial numbers and URLs. You input your payload and compare side-by-side renderings across error correction tiers while simulating progressive module occlusion. The engine demonstrates mathematical recovery thresholds and verifies readability before print manufacturing. Operating completely client-side in browser tab memory with CSP connect-src none directives, your barcode payloads remain strictly private. Testing error correction resilience before printing confirms that barcodes remain functional even when damaged by environmental factors or handling scuffs. Testing error correction resilience before printing confirms that barcodes remain functional even when damaged by environmental factors or handling scuffs.',
+    faqs: [
+      {
+        question:
+          'What are the four standardized QR code error correction levels?',
+        answer:
+          'The levels are Level L (recovers up to 7% damage), Level M (up to 15%), Level Q (up to 25%), and Level H (recovers up to 30% corrupted data).',
+      },
+      {
+        question:
+          'Why should packaging designers test error correction levels?',
+        answer:
+          'Testing confirms whether a barcode remains scannable when centered logos, curved bottle surfaces, or packaging folds partially obscure data modules.',
+      },
+      {
+        question:
+          'What is the trade-off of selecting higher error correction like Level H?',
+        answer:
+          'Higher error correction adds more redundant Reed-Solomon data blocks, resulting in a denser QR matrix with smaller individual modules across the symbol.',
+      },
+      {
+        question:
+          'Are my tested barcodes or payload texts sent over the internet?',
+        answer:
+          'No. All barcode generation and error correction simulations execute locally in browser memory with zero network traffic, ensuring complete privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'momentum-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-momentum-calculator': {
+    directAnswer:
+      'Calculate linear momentum (p = m * v) in kilogram meters per second (kg*m/s) from object mass and velocity directly in your browser. The calculator evaluates momentum conservation and impulse change client-side without transmitting your experimental physics data or engineering test figures to remote servers. The calculator computes momentum values client-side in browser memory to keep collision test parameters and experimental measurements confidential. The calculator computes momentum values client-side in browser memory to keep collision test parameters and experimental measurements confidential.',
+    leadParagraph:
+      "This momentum calculator evaluates linear momentum, velocity changes, and impulse forces for physics students, collision investigators, and mechanical engineers. In classical Newtonian mechanics, linear momentum represents the product of an object's mass and velocity, acting as a conserved quantity in all closed physical systems (such as vehicle collisions, rocket propulsion, and sports ball impacts); however, calculating vector momentum across multiple interacting bodies manually is slow and prone to directional sign errors. You enter object mass (in kg or lbs) and velocity (in m/s, km/h, or mph). The engine computes linear momentum (p = m * v) and derives impulse force requirements (J = F * delta_t = delta_p) for halting or accelerating the mass. Operating completely client-side in browser memory under strict CSP restrictions, your experimental physics figures remain strictly confidential on your machine.",
+    faqs: [
+      {
+        question:
+          'What is the formula for linear momentum in Newtonian physics?',
+        answer:
+          'Linear momentum is defined as p = m * v, where p is momentum in kg*m/s, m is mass in kilograms, and v is velocity in meters per second.',
+      },
+      {
+        question:
+          'What is the physical relationship between impulse and momentum?',
+        answer:
+          'Impulse (J = F * delta_t) equals the change in momentum (delta_p); applying a force over time directly changes the momentum of an object.',
+      },
+      {
+        question:
+          'How does the law of conservation of momentum apply to collisions?',
+        answer:
+          'In an isolated system with no external forces, the total momentum of colliding bodies before impact equals the total momentum after impact.',
+      },
+      {
+        question:
+          'Are my physics parameters or collision measurements stored online?',
+        answer:
+          'No. All momentum and impulse calculations execute locally inside browser tab memory with zero network requests, ensuring total research confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-to-tsv', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-to-tsv': {
+    directAnswer:
+      'Convert Comma-Separated Values (CSV) files into Tab-Separated Values (TSV) documents directly in your browser. The tool parses quoted fields, replaces delimiters cleanly, and preserves internal line breaks client-side without uploading your confidential corporate spreadsheets, bioinformatics records, or customer datasets to remote servers. The converter transforms delimiter formats locally in browser memory to maintain complete privacy for customer spreadsheets and enterprise data. The converter transforms delimiter formats locally in browser memory to maintain complete privacy for customer spreadsheets and enterprise data.',
+    leadParagraph:
+      'This CSV to TSV converter transforms comma-delimited tabular data into tab-delimited text for bioinformaticians, database engineers, data scientists, and Linux CLI practitioners. Command-line data processing tools (such as awk, cut, and sort) and scientific gene-sequencing pipelines rely on tab delimiters because textual fields frequently contain commas, causing split-column errors; however, uploading proprietary company tables or medical genomic records to online format converters creates severe privacy and regulatory hazards. You paste your CSV data into the editor. The engine parses RFC 4180 compliant CSV lines, unquotes fields that no longer require escaping, substitutes tab characters (	) as the primary column separator, and exports clean TSV text. Running completely inside browser tab memory under strict CSP restrictions, your corporate records and sensitive datasets remain strictly private on your computer. Converting CSV to TSV directly in your browser tab ensures reliable pipeline execution in UNIX environments without leaking private records online. Converting CSV to TSV directly in your browser tab ensures reliable pipeline execution in UNIX environments without leaking private records online.',
+    faqs: [
+      {
+        question:
+          'Why is TSV preferred over CSV in command-line and scientific pipelines?',
+        answer:
+          'TSV uses tab characters as delimiters, avoiding delimiter clashes when text fields contain commas and making UNIX utilities like awk easier to use.',
+      },
+      {
+        question:
+          'How does the converter handle commas inside quoted CSV cells?',
+        answer:
+          'Commas inside quoted fields are preserved as literal text while the surrounding comma separators are cleanly converted to tab characters.',
+      },
+      {
+        question:
+          'Can I convert large datasets with thousands of rows locally?',
+        answer:
+          'Yes. Because processing runs in client-side browser memory, the engine can quickly convert large files without encountering network upload timeouts.',
+      },
+      {
+        question:
+          'Are my spreadsheet rows or confidential datasets uploaded online?',
+        answer:
+          'No. All CSV parsing and TSV formatting execute locally in browser memory with zero network traffic, ensuring complete data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-reverser', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-reverser': {
+    directAnswer:
+      'Reverse entire text strings, reverse word order, or reverse each line individually directly in your browser. The tool handles full Unicode characters, emoji pairs, and punctuation client-side without transmitting your private notes, code strings, or cryptographic ciphers to remote servers. The tool reverses strings directly in browser memory to maintain complete privacy for personal puzzle drafts and private research notes. The tool reverses strings directly in browser memory to maintain complete privacy for personal puzzle drafts and private research notes.',
+    leadParagraph:
+      'This text reverser flips letter sequences, word orders, and lines for writers, programmers, cryptographers, and puzzle enthusiasts. Reversing text strings is useful for inspecting palindrome structures, reversing DNA sequences in biological analysis, debugging bidirectional text layouts, and building word puzzles; however, pasting sensitive strings or unreleased puzzle drafts into online text tools creates data privacy risks. You paste your text into the tool and select your reversal mode: reverse all characters, reverse word order within sentences, or reverse the vertical order of lines. The engine handles Unicode grapheme clusters (ensuring multi-byte emojis and combining diacritical marks remain intact) and produces clean reversed text. Operating completely client-side in browser memory with CSP connect-src none directives, your text strings remain strictly confidential on your personal machine. Reversing character and word sequences locally provides researchers with instant structural feedback without sending text to external web servers. Reversing character and word sequences locally provides researchers with instant structural feedback without sending text to external web servers.',
+    faqs: [
+      {
+        question: 'What reversal modes are available in this text tool?',
+        answer:
+          'You can reverse all characters backward, flip the sequence of words while keeping word spelling intact, or reverse the top-to-bottom line order.',
+      },
+      {
+        question:
+          'How does the tool handle emojis and multi-byte Unicode characters?',
+        answer:
+          'The engine uses grapheme cluster segmentation, preventing emoji modifier sequences and accented characters from splitting or corrupting during reversal operations.',
+      },
+      {
+        question: 'Can this tool be used for genetic DNA sequence reversal?',
+        answer:
+          'Yes. You can reverse nucleotide character sequences (A, C, G, T) to assist in bioinformatics analysis and complementary strand verification.',
+      },
+      {
+        question:
+          'Are my text strings or reversed messages sent over the internet?',
+        answer:
+          'No. All character reversing algorithms run locally inside browser memory with zero network traffic, ensuring complete content privacy for your text.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'query-string-builder', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-query-string-builder': {
+    directAnswer:
+      'Construct valid, properly encoded URL query strings from key-value parameter pairs directly in your browser. The tool formats question mark prefixes, encodes special characters, handles array keys, and outputs clean API request parameters without sending your sensitive API tokens or internal parameters to third-party servers. The tool builds query strings locally in browser tab memory to ensure internal endpoint parameters and API tokens remain secure. The tool builds query strings locally in browser tab memory to ensure internal endpoint parameters and API tokens remain secure.',
+    leadParagraph:
+      'This query string builder constructs standard URL search parameter strings from key-value pairs for web developers, API engineers, and technical marketers. Manually formatting query strings for complex API requests or tracking destinations frequently results in unencoded spaces, unescaped ampersands (&), or malformed equal signs (=) that break server query parsers; however, pasting internal API keys or proprietary database query parameters into online URL builders exposes sensitive credentials. You enter key-value pairs, specify array formatting preferences (bracket notation or repeated keys), and choose separator delimiters. The engine validates keys, applies standard RFC 3986 percent-encoding to values, appends the leading question mark, and generates formatted query strings ready for API endpoints. Running entirely inside browser tab memory under strict CSP restrictions, your internal parameter names and credentials remain completely secure. Assembling query parameters directly in browser memory prevents escaping errors and ensures reliable data transfer across web APIs and webhooks. Assembling query parameters directly in browser memory prevents escaping errors and ensures reliable data transfer across web APIs and webhooks.',
+    faqs: [
+      {
+        question:
+          'How does the query string builder encode special characters?',
+        answer:
+          'The engine uses standard RFC 3986 percent-encoding (such as %20 for spaces and %26 for ampersands), ensuring safe transmission across web servers.',
+      },
+      {
+        question: 'Does the tool support multi-value array query parameters?',
+        answer:
+          'Yes. You can format array parameters using bracket notation (tags[]=a&tags[]=b), comma-separated values, or repeated keys according to your API requirements.',
+      },
+      {
+        question: 'Can I append generated query strings directly to base URLs?',
+        answer:
+          'Yes. You can provide an optional base endpoint URL, and the tool will join the query string using proper question mark and ampersand delimiters.',
+      },
+      {
+        question:
+          'Are my API parameter keys or credentials transmitted online?',
+        answer:
+          'No. All query string assembly and percent-encoding execute client-side in browser memory with zero network traffic, ensuring complete credential privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'debt-payoff-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-debt-payoff-calculator': {
+    directAnswer:
+      'Calculate debt elimination timelines and total interest costs under the debt avalanche (highest interest first) and debt snowball (smallest balance first) strategies directly in your browser. The calculator models repayment schedules client-side without transmitting your personal loans, credit card balances, or interest rates across the network. The calculator computes debt repayment timelines client-side to keep your personal credit balances and interest rates completely confidential. The calculator computes debt repayment timelines client-side to keep your personal credit balances and interest rates completely confidential.',
+    leadParagraph:
+      'This debt payoff calculator computes repayment timelines, interest savings, and debt-free dates across credit cards, student loans, mortgages, and personal loans for individuals and financial advisors. Managing multiple debt obligations requires choosing an effective repayment strategy—either the debt avalanche method (prioritizing high-interest accounts to minimize overall interest) or the debt snowball method (knocking out smallest balances first for psychological momentum); however, entering sensitive debt balances and interest rates into commercial debt portals exposes personal credit health to predatory lenders. You input debt accounts pairing outstanding balance, annual interest rate (APR), and minimum monthly payment, plus optional extra monthly payments. The engine computes monthly amortization schedules and displays interest costs. Operating strictly in browser memory under CSP connect-src none directives, your personal debt figures remain strictly private. Comparing avalanche and snowball repayment schedules provides clear financial transparency, helping borrowers choose the most sustainable path to debt freedom. Comparing avalanche and snowball repayment schedules provides clear financial transparency, helping borrowers choose the most sustainable path to debt freedom.',
+    faqs: [
+      {
+        question:
+          'What is the difference between the debt avalanche and debt snowball methods?',
+        answer:
+          'Debt avalanche pays off debts with the highest interest rate first to minimize interest expense, while debt snowball tackles smallest balances first for motivation.',
+      },
+      {
+        question:
+          'How does making extra monthly payments accelerate debt freedom?',
+        answer:
+          'Extra payments go directly toward reducing loan principal, dramatically shortening amortization schedules and reducing compound interest costs over time across all loans.',
+      },
+      {
+        question:
+          'Can I calculate payoff schedules for multiple loans simultaneously?',
+        answer:
+          'Yes. You can enter multiple credit cards, mortgages, and auto loans to model consolidated repayment timelines and total interest across all accounts.',
+      },
+      {
+        question:
+          'Are my personal debt balances or loan details stored on remote servers?',
+        answer:
+          'No. All amortization calculations run locally in client browser memory with zero network calls, maintaining total financial confidentiality for household records.',
+      },
+    ],
+  },
+  // components/image-editor-tool.tsx, lib/tools/image.ts, lib/tools/image.test.ts and app/image/editor/page.tsx
+  'image-image-grayscale': {
+    directAnswer:
+      'Convert color JPEG, PNG, and WebP images to monochrome grayscale directly in your browser using HTML5 Canvas processing. The tool desaturates color channels client-side with adjustable intensity levels without uploading your private family photos, confidential identity documents, or proprietary design graphics to remote servers. The editor transforms images locally in browser tab memory to ensure sensitive photos and confidential personal documents remain completely private. The editor transforms images locally in browser tab memory to ensure sensitive photos and confidential personal documents remain completely private.',
+    leadParagraph:
+      'This image grayscale converter transforms color photographs, scanned documents, product mockups, and illustrations into high-contrast monochrome and black-and-white images. Converting graphics to grayscale is essential for architectural print publications, reducing document file sizes for digital archiving, creating classic portraiture, and preparing images for optical character recognition; however, uploading private photo albums or confidential identity cards to cloud photo editing websites creates severe privacy risks. You load an image into the editor and adjust the grayscale filter intensity (0% to 100%). The engine draws image pixels into an HTML5 Canvas in browser tab memory, applies luminance-weighted desaturation across RGB channels (typically using the ITU-R BT.601 standard: 0.299R + 0.587G + 0.114B), and exports the result. Running completely client-side under strict CSP restrictions, your private photos never leave your machine. Processing grayscale transformations client-side allows designers and document managers to sanitize and format graphics without relying on third-party cloud services. Processing grayscale transformations client-side allows designers and document managers to sanitize and format graphics without relying on third-party cloud services.',
+    faqs: [
+      {
+        question:
+          'How does the tool calculate monochrome grayscale from RGB color values?',
+        answer:
+          'The engine uses human perceptual luminance weighting (approximately 0.299 Red, 0.587 Green, and 0.114 Blue) to preserve natural visual contrast in black and white.',
+      },
+      {
+        question:
+          'What image formats can I convert to grayscale with this tool?',
+        answer:
+          'The tool supports standard web image formats including PNG, JPEG, and WebP, maintaining original image dimensions and transparency where applicable.',
+      },
+      {
+        question:
+          'Can I adjust the intensity of the grayscale effect before exporting?',
+        answer:
+          'Yes. You can adjust the grayscale slider between 0% (full color) and 100% (complete monochrome) to create custom muted or vintage photo effects.',
+      },
+      {
+        question:
+          'Are my private photographs or identity documents uploaded to any server?',
+        answer:
+          'No. All canvas rendering and pixel color transformations execute entirely inside your local browser memory with zero outbound network requests.',
+      },
+    ],
+  },
 };
 
 /**
