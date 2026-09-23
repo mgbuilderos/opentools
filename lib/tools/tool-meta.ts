@@ -50,6 +50,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Validate, format, minify, or sort JSON without sending it away.',
   },
+  'format-converter': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert CSV, TSV, JSON, YAML, XML, Markdown, HTML, LaTeX, SQL, AsciiDoc and reStructuredText tables into one another.',
+  },
   'csv-to-json': {
     version: '0.1.0-canary',
     shortDescription: 'Turn quoted CSV rows into structured JSON in this tab.',

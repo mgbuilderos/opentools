@@ -195,6 +195,43 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    /*
+      One manifest for the whole file-format grid, pointing at its hub.
+      Listing the 103 pairs here instead would put 103 rows in one workspace
+      menu; the hub indexes them, which is what makes them browsable.
+    */
+    id: 'format-converter',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'File format converter',
+    shortDescription:
+      'Convert CSV, TSV, JSON, YAML, XML, Markdown, HTML, LaTeX, SQL, AsciiDoc and reStructuredText tables into one another.',
+    category: 'Data',
+    aliases: [
+      'csv to yaml',
+      'json to yaml',
+      'json to xml',
+      'xml to json',
+      'yaml to json',
+      'csv to markdown',
+      'sql to json',
+      'markdown to latex',
+      'latex to markdown',
+    ],
+    jobs: [
+      'convert a data file to another format',
+      'turn a spreadsheet export into JSON or YAML',
+      'paste a table into a README or a paper',
+    ],
+    href: '/convert/formats',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['data.table.convert'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'json-format',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1779,6 +1816,7 @@ export const toolGroups: ToolGroup[] = [
       'spreadsheet-workbench',
       'excel-converter',
       'csv-to-json',
+      'format-converter',
       'json-format',
       'list-hygiene',
       'data-workbook-audit',

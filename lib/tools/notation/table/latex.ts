@@ -206,12 +206,24 @@ export function parseLatexTable(input: string): Table {
 
     if (!lineWithoutCommands) continue;
 
-    // Split row cells by & (respecting braces)
+    // Split row cells by & (respecting braces, and never on an escaped \&).
+    //
+    // `escapeLatex` writes an ampersand inside a cell as `\&` -- it has to, or
+    // the cell would become two columns in the document. The splitter did not
+    // know that, so a cell reading "R&D" came back out as two cells, "R\" and
+    // "D", and every row after it was one column too wide. Found by round-
+    // tripping the format grid's fixture through each emitter and back; see
+    // `format-grid.test.ts`.
     const cells: string[] = [];
     let curCell = '';
     let depth = 0;
     for (let i = 0; i < lineWithoutCommands.length; i++) {
       const c = lineWithoutCommands[i];
+      if (c === '\\' && lineWithoutCommands[i + 1] !== undefined) {
+        curCell += c + lineWithoutCommands[i + 1];
+        i++;
+        continue;
+      }
       if (c === '{') depth++;
       else if (c === '}') depth = Math.max(0, depth - 1);
 

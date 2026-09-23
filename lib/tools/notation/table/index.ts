@@ -6,6 +6,8 @@ import { emitLatexTable, parseLatexTable } from './latex';
 import { emitMarkdownTable, parseMarkdownTable } from './markdown';
 import { emitRstTable, parseRstTable } from './rst';
 import { emitSqlTable, parseSqlTable } from './sql';
+import { emitXmlTable, parseXmlTable } from './xml';
+import { emitYamlTable, parseYamlTable } from './yaml';
 import type { Table, TableEmitOptions, TableFormat } from './types';
 
 export * from './types';
@@ -17,6 +19,8 @@ export * from './latex';
 export * from './markdown';
 export * from './rst';
 export * from './sql';
+export * from './xml';
+export * from './yaml';
 
 export function detectTableFormat(input: string): TableFormat {
   const trimmed = input.trim();
@@ -28,6 +32,14 @@ export function detectTableFormat(input: string): TableFormat {
   }
   if (/\\begin\{(?:tabular|longtable|table)\}/u.test(trimmed)) {
     return 'latex';
+  }
+  // After the HTML check on purpose: an HTML table is also well-formed XML,
+  // and the caller who pasted `<table>` meant HTML.
+  if (
+    /^<\?xml\b/iu.test(trimmed) ||
+    /^<[A-Za-z_][\w.:-]*[\s>/]/u.test(trimmed)
+  ) {
+    return 'xml';
   }
   if (/^\[[\s\S]*\]$/u.test(trimmed)) {
     try {
@@ -48,6 +60,12 @@ export function detectTableFormat(input: string): TableFormat {
   }
   if (/\|[^\r\n]+\|[\r\n]+\|[ :-]+[-| ]+\|/u.test(trimmed)) {
     return 'markdown';
+  }
+  // A sequence of mappings, which is the only YAML shape a table can be.
+  if (
+    /^\s*-\s+(?:"[^"\n]*"|'[^'\n]*'|[^\s:#][^:\n]*):(?:\s|$)/mu.test(trimmed)
+  ) {
+    return 'yaml';
   }
   if (trimmed.includes('\t')) {
     return 'tsv';
@@ -81,6 +99,10 @@ export function parseTable(
       return parseAsciiDocTable(input);
     case 'rst':
       return parseRstTable(input);
+    case 'yaml':
+      return parseYamlTable(input);
+    case 'xml':
+      return parseXmlTable(input);
     default:
       return parseCsv(input);
   }
@@ -110,6 +132,10 @@ export function emitTable(
       return emitAsciiDocTable(table);
     case 'rst':
       return emitRstTable(table);
+    case 'yaml':
+      return emitYamlTable(table);
+    case 'xml':
+      return emitXmlTable(table);
     default:
       throw new Error(`Unsupported table output format: ${String(format)}`);
   }
