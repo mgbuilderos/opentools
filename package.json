@@ -32,7 +32,8 @@
     "qc": "node scripts/run-qc.mjs",
     "qc:release": "node scripts/run-qc.mjs --release",
     "seo:guide-keep-list": "node scripts/guide-keep-list.mjs",
-    "seo:guide-distinctness": "node scripts/guide-distinctness-report.mjs"
+    "seo:guide-distinctness": "node scripts/guide-distinctness-report.mjs",
+    "audit:live": "node scripts/audit-live-seo.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
