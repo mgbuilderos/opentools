@@ -165,6 +165,1297 @@ export interface GuideDetail {
 }
 
 const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-caesar-cipher': {
+    directAnswer:
+      'Encode and decode text using classical Caesar shift ciphers directly in your browser with configurable alphabet shift keys (1 through 25). The tool shifts Latin letters while preserving case, spacing, and punctuation entirely client-side in memory to ensure educational cryptography problem sets, recreational puzzle games, and private text drafts remain completely confidential.',
+    leadParagraph:
+      "The Caesar cipher—attributed historically to Julius Caesar for protecting Roman military dispatches—is the earliest classical substitution cipher in recorded history. Each letter in the plaintext is shifted by a fixed numeric key along the 26-letter Latin alphabet (such as shifting by 3 positions to turn 'A' into 'D'). This client-side Caesar cipher workbench enables students, puzzle enthusiasts, and educators to encode secret messages, decode ciphertext with known shift keys, or generate complete 25-shift brute-force decryption tables to crack unknown ciphers instantaneously. The tool preserves uppercase and lowercase letter distinctions while leaving numeric digits and punctuation marks untouched. Exploring classical ciphers directly in local browser memory assists computer science students without third-party web tools. Because classroom problem sets, geocaching puzzle clues, and private writing involve sensitive intellectual property, all cipher transformations run locally within browser memory. No text is ever uploaded to external servers.",
+    faqs: [
+      {
+        question: 'How does the Caesar cipher shift characters mathematically?',
+        answer:
+          'Each letter is mapped to a zero-indexed integer (A=0, Z=25) and shifted using modular arithmetic: C = (P + k) mod 26, where k is the shift key.',
+      },
+      {
+        question:
+          'Can I decrypt a Caesar cipher without knowing the shift key?',
+        answer:
+          'Yes. The integrated brute-force view displays all 25 possible alphabet shifts simultaneously, allowing you to identify the readable English plaintext immediately.',
+      },
+      {
+        question:
+          'Does the cipher alter numbers, spaces, or punctuation marks?',
+        answer:
+          'No. Standard Caesar ciphers rotate only alphabetic Latin letters (A-Z, a-z), leaving punctuation marks, spaces, and numbers unaltered in the output.',
+      },
+      {
+        question:
+          'Are my encrypted messages or puzzle texts saved on remote servers?',
+        answer:
+          'No. All rotational cipher transformations execute client-side in local browser memory with zero network traffic, ensuring complete document privacy and security.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-tip-calculator': {
+    directAnswer:
+      'Calculate restaurant gratuities, total dining bills, and per-person split payments directly in your browser. Enter bill amounts, select standard tip percentages (15%, 18%, 20%, or custom amounts), and divide costs evenly across dining party members entirely client-side in memory to ensure dining budgets, personal restaurant expenses, and payment calculations remain completely confidential.',
+    leadParagraph:
+      'Settling restaurant dining tabs, calculating appropriate service gratuities, and splitting banquet checks fairly among dining companions often causes awkward delays at checkout. Confusion between pre-tax and post-tax gratuity baselines or uneven bill distributions can strain group gatherings. This client-side tip calculator allows diners to input meal totals, choose standard gratuity tiers (such as 15 percent for standard service, 18 percent for good service, or 20 percent for exceptional hospitality), or enter custom percentages to calculate tip amounts and gross bill totals instantly. The tool includes an integrated bill splitter that divides total amounts evenly across party members, with round-up options to ensure clean cash settlements. Calculating gratuities directly in your browser runtime provides rapid arithmetic verification without requiring mobile phone app downloads. Because personal dining expenses and group party bills represent private financial matters, all calculations execute locally within browser memory. No bill amounts or payment figures are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Should tips be calculated on the pre-tax or post-tax bill total?',
+        answer:
+          'Standard etiquette recommends calculating gratuities on the pre-tax food and beverage subtotal, though many diners tip on the post-tax final total for convenience.',
+      },
+      {
+        question:
+          'What are standard customary tip percentages for restaurant service?',
+        answer:
+          'In North American dining, 15 percent represents standard baseline service, 18 percent indicates attentive hospitality, and 20 percent or higher rewards exceptional service.',
+      },
+      {
+        question:
+          'Can the calculator split total bills evenly across multiple diners?',
+        answer:
+          'Yes. Enter the total number of dining companions to divide the gross bill (including tip) into equal, individual payment shares instantly.',
+      },
+      {
+        question:
+          'Are my restaurant spending figures or dining bills saved online?',
+        answer:
+          'No. All gratuity and bill splitting calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-frequency-converter': {
+    directAnswer:
+      'Convert wave oscillation frequencies directly in your browser across hertz (Hz), kilohertz (kHz), megahertz (MHz), gigahertz (GHz), terahertz (THz), radians per second, and revolutions per minute (RPM). The tool delivers exact conversion ratios entirely client-side in memory to ensure telecommunications link budgets, audio acoustics, and mechanical engineering schematics remain completely confidential.',
+    leadParagraph:
+      'Converting wave frequency metrics across acoustic audio bands, radio frequency (RF) telecommunications spectra, microchip clock cycles, and rotational engine speeds is an everyday necessity in electrical engineering, acoustics, and mechanical physics. This client-side frequency converter provides simultaneous conversions across standard international units: hertz (Hz), kilohertz (kHz), megahertz (MHz), gigahertz (GHz), terahertz (THz), angular radians per second (rad/s), and rotational revolutions per minute (RPM). Users can enter any single frequency value to view equivalent oscillation rates across all other measurement standards instantly, alongside exact scientific notation and wave period durations (T = 1/f). Evaluating frequency units directly in your browser runtime delivers rapid computational verification for radio engineers, audio technicians, and physics students without desktop conversion utilities. Because telecommunications frequency bands and proprietary clock specifications involve confidential parameters, all conversion calculations execute locally within browser memory. No frequency values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What frequency measurement units are supported by the converter?',
+        answer:
+          'The tool converts hertz, kilohertz, megahertz, gigahertz, terahertz, radians per second, and revolutions per minute accurately across all scientific and engineering scales.',
+      },
+      {
+        question:
+          'How does linear frequency in hertz relate to angular frequency in radians per second?',
+        answer:
+          'Angular frequency (omega) equals linear frequency (f) multiplied by 2pi, representing angular displacement traversed per second across periodic oscillatory cycles.',
+      },
+      {
+        question:
+          'What is the relationship between wave frequency and time period?',
+        answer:
+          'Frequency and wave period are reciprocals (f = 1/T); a 1 kHz frequency corresponds to an elapsed wave cycle period of exactly 1 millisecond.',
+      },
+      {
+        question:
+          'Are my radio frequency specifications or clock benchmarks logged online?',
+        answer:
+          'No. All frequency conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts and lib/seo/live-tool-routes.ts
+  'science-and-education-unit-circle-viewer': {
+    directAnswer:
+      'Inspect trigonometric unit circle coordinates, angle radian measures, angle degree values, and exact radical ratios (sine, cosine, and tangent) directly in your browser. The tool visualizes coordinates on an interactive Cartesian circle entirely client-side in memory to ensure trigonometry coursework, physics problem sets, and technical engineering schematics remain completely confidential.',
+    leadParagraph:
+      'The trigonometric unit circle—a circle with a radius of one centered at the origin (0,0)—is the essential mathematical foundation for defining sine, cosine, and tangent functions across all real angle values. Memorizing coordinate points, special angle radials (such as π/6, π/4, π/3, π/2), and exact radical coordinates (such as √3/2, √2/2) often challenges high school and university mathematics students. This client-side unit circle viewer provides an interactive graphical exploration environment: dragging an angle arm around the circle displays active angles in degrees and radians, exact coordinate pairs (x = cos θ, y = sin θ), and reciprocal functions (secant, cosecant, cotangent) in real time. Exploring trigonometric coordinates directly in browser memory accelerates mathematical conceptual understanding without requiring proprietary graphing software. Because academic exercises and student problem sets involve private coursework, all geometric rendering executes locally within client browser memory. No angle inputs or student sessions are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Why is the radius of the trigonometric unit circle defined as one?',
+        answer:
+          'Setting radius to one simplifies trigonometric definitions, making the x-coordinate directly equal to cosine (cos θ) and the y-coordinate directly equal to sine (sin θ).',
+      },
+      {
+        question:
+          'What are the exact coordinate values for standard 30, 45, and 60 degree angles?',
+        answer:
+          'Standard coordinates are (root 3 divided by 2, 1/2) for 30 degrees (pi/6), (root 2 divided by 2, root 2 divided by 2) for 45 degrees (pi/4), and (1/2, root 3 divided by 2) for 60 degrees (pi/3).',
+      },
+      {
+        question:
+          'How does the tangent trigonometric function relate to unit circle coordinates?',
+        answer:
+          'Tangent equals y divided by x (tan θ = sin θ / cos θ), representing the geometric slope of the terminal radius ray passing through the origin.',
+      },
+      {
+        question:
+          'Are my trigonometry study sessions or angle calculations saved online?',
+        answer:
+          'No. All unit circle rendering and coordinate derivations occur client-side in browser memory with zero outbound network calls, ensuring complete privacy for your studies.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-vigenere-cipher': {
+    directAnswer:
+      'Encrypt and decrypt text using polyalphabetic Vigenere ciphers directly in your browser with custom passphrase keys and interactive tabula recta coordinate tables. The tool shifts letters according to repeating keyword characters entirely client-side in memory to ensure educational cryptography exercises, puzzle game scripts, classroom demonstrations, and private communications remain completely confidential.',
+    leadParagraph:
+      "The Vigenère cipher—historically heralded as 'le chiffre indéchiffrable' (the unbreakable cipher) for over three centuries—improved upon monoalphabetic Caesar shifts by using a repeating secret keyword to apply varying alphabet shifts across subsequent letters. Each plaintext character is encrypted using a Caesar shift determined by the corresponding letter of the key, flattening letter frequency distributions and resisting basic single-letter frequency cryptanalysis. This client-side Vigenère cipher workbench allows students, puzzle creators, and cybersecurity enthusiasts to encrypt messages, decrypt ciphertext with secret passphrases, and inspect letter-by-letter key alignments against an interactive 26x26 Tabula Recta matrix. The tool preserves original letter casing while leaving spaces and punctuation marks untouched. Exploring historical cryptography directly in local browser memory assists computer science students without third-party web tools. Because classroom exercises, geocaching clues, and private drafts involve sensitive intellectual work, all cipher operations run locally within browser memory. No text is ever uploaded to external servers.",
+    faqs: [
+      {
+        question:
+          'How does a Vigenere cipher differ from a classical Caesar cipher?',
+        answer:
+          'Caesar uses a single fixed shift for all letters, whereas Vigenere uses a repeating keyword to apply distinct alphabet shifts to each successive letter.',
+      },
+      {
+        question: 'What is the Tabula Recta in Vigenere cipher encryption?',
+        answer:
+          'The Tabula Recta is a 26x26 grid of alphabets, each shifted by one letter, used to look up intersections between plaintext letters and keyword letters.',
+      },
+      {
+        question:
+          'Does the cipher alter numbers and punctuation marks during encryption?',
+        answer:
+          'Standard Vigenere encryption shifts only alphabetic letters (A-Z, a-z), leaving punctuation marks, spaces, and numbers completely unaltered in the output.',
+      },
+      {
+        question:
+          'Are my secret encryption keys or ciphertexts logged on a server?',
+        answer:
+          'No. All Vigenere encryption and decryption algorithms execute client-side in local browser memory with zero network traffic, ensuring complete cryptographic privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-split-bill-calculator': {
+    directAnswer:
+      'Split restaurant dining checks, shared apartment expenses, and event bills directly in your browser across equal shares or itemised individual orders with custom tip and tax additions. The tool calculates exact payment responsibilities entirely client-side in memory to ensure group spending budgets, personal dining expenses, and household financial figures remain completely confidential.',
+    leadParagraph:
+      'Dividing group dining bills, shared vacation rentals, and apartment utility costs fairly among friends or colleagues frequently causes payment confusion when participants consume differing items or share communal appetizers. Clumsy manual mental math often leads to shortfalls where the last person pays an unfair remainder. This client-side split bill calculator allows group organizers to divide expenses using two distinct modes: equal division (splitting gross bill, tip, and tax equally across party members) or itemised allocation (assigning specific food items, drinks, and shared dishes to individual diners with proportional tax and tip scaling). The tool calculates exact individual payment shares down to the cent, generating clear share summaries ready for messaging apps. Splitting bills directly in your browser runtime provides rapid arithmetic verification without requiring account registrations or software downloads. Because personal dining expenses and group financial shares represent private financial records, all calculations execute locally within browser memory. No bill details or participant names are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Can the bill splitter assign individual menu items to specific people?',
+        answer:
+          'Yes. Itemised mode allows you to list individual dishes and assign them to specific people, sharing communal items proportionally across diners.',
+      },
+      {
+        question:
+          'How are sales tax and gratuity distributed across itemised bills?',
+        answer:
+          'Tax and tip are distributed proportionally based on each person subtotal spending, ensuring diners who ordered less do not overpay shared overhead.',
+      },
+      {
+        question:
+          'Can I share the calculated bill breakdown with my dining group?',
+        answer:
+          'Yes. The tool formats a clean text summary itemising each person share and payment total, ready for copying into group chat and messaging apps.',
+      },
+      {
+        question:
+          'Are my restaurant spending receipts or group dining figures saved online?',
+        answer:
+          'No. All bill splitting calculations execute client-side in browser memory with zero outbound network calls, maintaining total financial privacy for your group.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-data-size-converter': {
+    directAnswer:
+      'Convert digital data storage and memory sizes directly in your browser across decimal SI units (MB, GB, TB) and binary IEC standards (MiB, GiB, TiB). The tool delivers exact byte counts and power-of-two calculations entirely client-side in memory to ensure cloud infrastructure budgets, hard drive provisioning, and software engineering benchmarks remain completely confidential.',
+    leadParagraph:
+      'Navigating discrepancies between decimal SI storage units (base 10, where 1 kilobyte = 1,000 bytes) used by hard drive manufacturers and binary IEC units (base 2, where 1 kibibyte = 1,024 bytes) utilized by operating systems is a frequent source of storage confusion. A hard drive marketed as 1 Terabyte (1,000,000,000,000 bytes) reports as approximately 931 GiB in Windows, leading consumers to believe storage capacity is missing. This client-side data size converter provides simultaneous conversions across standard units: bits (b), bytes (B), kilobytes (KB), megabytes (MB), gigabytes (GB), terabytes (TB), petabytes (PB), kibibytes (KiB), mebibytes (MiB), gibibytes (GiB), tebibytes (TiB), and pebibytes (PiB). Users can input any single value to view equivalent storage capacities across both decimal and binary standards instantly. Evaluating data units directly in your browser runtime provides rapid computational verification for cloud architects, systems administrators, and software engineers without desktop utilities. Because server specifications and storage budgets involve proprietary architectures, all conversion calculations execute locally within browser memory. No data values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What is the distinction between a gigabyte (GB) and a gibibyte (GiB)?',
+        answer:
+          'A gigabyte uses decimal base 10 (10^9 = 1,000,000,000 bytes), while a gibibyte uses binary base 2 (2^30 = 1,073,741,824 bytes), approximately 7.37% larger.',
+      },
+      {
+        question:
+          'Why do computer operating systems report smaller disk capacities than advertised?',
+        answer:
+          'Hard drive manufacturers market capacity using decimal gigabytes (1,000^3), but operating systems measure space using binary gibibytes (1,024^3), creating an apparent difference.',
+      },
+      {
+        question: 'How many bits are contained in one standard byte?',
+        answer:
+          'One standard byte contains exactly 8 bits; data transmission speeds are typically quoted in bits (Gbps) while file storage uses bytes (GB).',
+      },
+      {
+        question:
+          'Are my storage provisioning numbers or server capacities logged online?',
+        answer:
+          'No. All data storage conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts and lib/seo/live-tool-routes.ts
+  'science-and-education-truth-table-generator': {
+    directAnswer:
+      'Generate formal boolean logic truth tables directly in your browser by entering logical expressions with AND (∧), OR (∨), NOT (¬), XOR (⊕), IMPLIES (→), and IFF (↔) operators. The tool evaluates all variable combinations entirely client-side in memory to ensure computer engineering circuit designs, discrete mathematics problem sets, and logic proofs remain completely confidential.',
+    leadParagraph:
+      'Evaluating compound propositional logic statements, designing digital logic circuits, and constructing mathematical proofs requires systematic truth table generation across all binary input permutations. Constructing truth tables manually for statements with three, four, or more propositional variables (resulting in 8, 16, or more rows) is tedious and prone to evaluation errors. This client-side truth table generator parses logical propositions, automatically identifying variables and evaluating sub-expressions step by step across all possible boolean truth assignments (True/False or 1/0). The tool supports standard logical operators: conjunction (AND), disjunction (OR), negation (NOT), exclusive OR (XOR), material implication (IMPLIES), and biconditional equivalence (IFF), clearly indicating whether statements are tautologies, contradictions, or contingent. Generating truth tables directly in browser memory accelerates learning for computer science and philosophy students without requiring desktop modeling suites. Because digital circuit designs and academic proofs represent sensitive intellectual property, all boolean evaluations execute locally within client browser memory. No logic expressions are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What logical boolean operators are supported by the generator?',
+        answer:
+          'The generator supports AND (∧, &), OR (∨, |), NOT (¬, !), XOR (⊕, ^), material conditional (→, ->), and biconditional equivalence (↔, <->).',
+      },
+      {
+        question:
+          'How many rows are generated for an expression with n variables?',
+        answer:
+          'A truth table generates 2^n rows, meaning two variables produce 4 rows, three variables produce 8 rows, and four variables generate 16 evaluation rows.',
+      },
+      {
+        question:
+          'What is the distinction between a tautology and a contradiction?',
+        answer:
+          'A tautology evaluates to True across every row of the truth table, whereas a contradiction evaluates to False across every possible variable combination.',
+      },
+      {
+        question:
+          'Are my logical expressions or academic truth tables stored online?',
+        answer:
+          'No. All boolean logic parsing and truth table generation occur client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your work.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-text-summarization-workspace': {
+    directAnswer:
+      'Summarize lengthy articles, research papers, and meeting notes directly in your browser using client-side extractive text summarization algorithms. The tool ranks key sentences by lexical centrality, word frequency, and position entirely client-side in memory to ensure confidential corporate reports, legal discovery transcripts, press releases, and private research documents remain completely secure.',
+    leadParagraph:
+      'Extracting core insights and key sentences from dense whitepapers, extensive academic literature, executive briefing memos, and interview transcripts is a vital daily task for knowledge workers and researchers. Unlike cloud-based AI summarizers that transmit proprietary documents to remote neural network data centers, this client-side text summarization workspace applies extractive text rank algorithms directly within your local browser runtime. The tool evaluates sentence frequency, word co-occurrence centrality, and position weighting to score and extract the most informative sentences, allowing users to configure summary length percentages (from 10% to 50%) or specify exact target sentence counts. Summarizing documents directly in local browser memory saves administrative professionals and students time without exposing proprietary text to third-party data harvesting. Because corporate memos, draft contracts, and research manuscripts contain sensitive business intelligence, all sentence scoring runs locally inside browser memory. No text data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'How does extractive text summarization function algorithmically?',
+        answer:
+          'Extractive summarization scores existing sentences based on word frequency, semantic centrality, and structural position, selecting the top-scoring sentences verbatim without rewriting.',
+      },
+      {
+        question:
+          'Can I adjust the length and compression ratio of the summary?',
+        answer:
+          'Yes. You can select summary compression percentages (such as 20% or 30% of original length) or specify an exact target number of key sentences.',
+      },
+      {
+        question:
+          'Does the tool send my document text to external AI cloud servers?',
+        answer:
+          'No. The extractive algorithm executes completely client-side in local browser memory using deterministic linguistic scoring with zero network calls or server transmissions.',
+      },
+      {
+        question:
+          'Are my confidential business reports or research notes saved online?',
+        answer:
+          'No. All document parsing and sentence extraction occur strictly within client browser memory with zero outbound network traffic, guaranteeing total document privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-fuel-economy-converter': {
+    directAnswer:
+      'Convert automotive fuel consumption and economy ratings directly in your browser across miles per gallon (US MPG), miles per imperial gallon (UK MPG), litres per 100 kilometres (L/100km), and kilometres per litre (km/L). The tool delivers exact conversion ratios entirely client-side in memory to ensure vehicle road trip budgeting, automotive engineering specs, and fleet analytics remain completely confidential.',
+    leadParagraph:
+      'Converting automobile fuel efficiency ratings across international automotive standards is an everyday necessity for cross-border vehicle buyers, logistics fleet operators, and road trip travelers. While the United States measures fuel economy in miles per US gallon (MPG US) and the United Kingdom uses miles per imperial gallon (MPG UK, which is approximately 20 percent larger due to gallon volume differences), continental Europe and international standards measure inverse consumption in litres per 100 kilometres (L/100km). Because L/100km is an inverse reciprocal scale (where lower numerical values represent superior efficiency), converting ratings manually often causes errors. This client-side fuel economy converter provides simultaneous conversions across standard international units: US MPG, UK imperial MPG, L/100km, and km/L with instant reciprocal calculations. Evaluating fuel metrics directly in your browser runtime provides rapid computational verification for car buyers, fleet coordinators, and travelers without desktop conversion utilities. Because fleet consumption data and vehicle travel budgets involve proprietary figures, all conversion calculations execute locally within browser memory. No fuel values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What fuel economy measurement units are supported by the converter?',
+        answer:
+          'The tool converts miles per US gallon, miles per imperial gallon (UK MPG), litres per 100 kilometres (L/100km), and kilometres per litre (km/L) accurately.',
+      },
+      {
+        question:
+          'Why is converting between MPG and L/100km an inverse reciprocal calculation?',
+        answer:
+          'MPG measures distance per volume of fuel (higher is better), while L/100km measures fuel volume per fixed distance (lower is better, requiring inverse reciprocal math).',
+      },
+      {
+        question:
+          'Why do US MPG and UK MPG report different numerical values for the same vehicle?',
+        answer:
+          'An imperial gallon (approx. 4.546 L) is twenty percent larger than a US gallon (approx. 3.785 L), meaning UK MPG figures are roughly 20% higher than US MPG.',
+      },
+      {
+        question:
+          'Are my automotive fleet records or fuel consumption numbers logged online?',
+        answer:
+          'No. All fuel economy conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-outline-builder': {
+    directAnswer:
+      'Build, organize, and structure hierarchical document outlines directly in your browser with multi-level indentation, roman numeral schemes, bullet points, and reordering controls. The tool exports formatted Markdown and structured text entirely client-side in memory to ensure book plots, academic dissertations, essay structures, research drafts, and proprietary project roadmaps remain completely confidential.',
+    leadParagraph:
+      'Structuring long-form essays, non-fiction book chapters, legal briefs, and technical specifications requires organizing ideas into a coherent hierarchical outline before drafting narrative prose. Developing outlines with unstructured word processors often leads to formatting struggles with inconsistent indentation, broken bullet hierarchies, and clumsy outline reordering. This client-side outline builder allows writers, students, and project managers to create multi-tiered outline trees using keyboard shortcuts (Tab to indent, Shift-Tab to outdent), drag-and-drop node reordering, and customizable numbering schemes (including standard alphanumeric, Roman numerals, decimal legal numbering, and markdown headers). Users can collapse and expand sections to focus on specific topics and export the completed hierarchy as formatted Markdown or structured plaintext. Building outlines directly in local browser memory assists authors without requiring account registrations or software downloads. Because book plots, research dissertations, and project blueprints represent sensitive intellectual property, all outline authoring executes locally within browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'What numbering schemes are supported by the outline builder?',
+        answer:
+          'The tool supports standard alphanumeric outlines (I, A, 1, a, i), decimal legal numbering (1.0, 1.1, 1.1.1), bullet points, and Markdown heading formats.',
+      },
+      {
+        question:
+          'Can I reorder and adjust outline hierarchy using keyboard shortcuts?',
+        answer:
+          'Yes. You can press Tab to indent a point to a sub-level, Shift-Tab to promote it, and use arrow keys or drag handles to reorder items.',
+      },
+      {
+        question:
+          'Can I export the finished outline into Markdown or plain text?',
+        answer:
+          'Yes. You can export your outline as indented plaintext, GitHub Flavored Markdown headers (#, ##, ###), or bulleted lists for immediate word processor use.',
+      },
+      {
+        question:
+          'Are my novel outlines or corporate project roadmaps saved on remote servers?',
+        answer:
+          'No. All outline construction and hierarchy exports execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-cooking-unit-converter': {
+    directAnswer:
+      'Convert culinary recipe measurements directly in your browser across cups, tablespoons, teaspoons, fluid ounces, millilitres, grams, ounces, and pounds. The tool provides exact ingredient density conversions and recipe scaling multipliers entirely client-side in memory to ensure proprietary restaurant recipes, commercial baking formulas, kitchen preparations, and culinary formulations remain completely confidential.',
+    leadParagraph:
+      'Converting recipe measurements between volumetric spoons and cups, weight measurements (grams and ounces), and international metric standards is an essential requirement for professional bakers, commercial culinary chefs, and home cooks. Unlike liquids where volume directly maps to mass, dry baking ingredients (such as all-purpose flour, granulated sugar, cocoa powder, and butter) have distinct physical densities where a cup of sifted flour weighs substantially less than a cup of packed brown sugar. This client-side cooking unit converter transforms culinary volume measurements (cups, tablespoons, teaspoons, fluid ounces, millilitres, litres) and weight metrics (grams, kilograms, ounces, pounds) with integrated ingredient density profiles for flour, sugar, butter, oil, and salt. The tool includes recipe yield scaling multipliers (such as halving or doubling batches) with instant fractional fraction displays. Converting culinary measures directly in your browser runtime delivers rapid kitchen calculations without third-party web apps. Because restaurant recipes and proprietary bakery formulations involve trade secrets, all conversion calculations execute locally within browser memory. No recipe values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'Why is measuring baking ingredients by weight more accurate than by volume?',
+        answer:
+          'Volume measurements vary based on how tightly an ingredient is packed or sifted, whereas weight in grams remains constant and ensures reproducible baking results.',
+      },
+      {
+        question:
+          'How many teaspoons are contained in one standard tablespoon?',
+        answer:
+          'One standard US tablespoon contains exactly 3 teaspoons, which corresponds to approximately 0.5 fluid ounces or 14.79 millilitres of liquid volume.',
+      },
+      {
+        question:
+          'Can the calculator scale recipe ingredient quantities up or down?',
+        answer:
+          'Yes. Enter a recipe scaling multiplier (such as 0.5 for half batch or 2.5 for catering) to scale all ingredient quantities proportionally in real time.',
+      },
+      {
+        question:
+          'Are my proprietary restaurant recipes or culinary measurements logged online?',
+        answer:
+          'No. All recipe conversions run strictly inside local client browser memory with zero network traffic, ensuring complete confidentiality for your culinary formulations.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts and lib/seo/live-tool-routes.ts
+  'science-and-education-set-calculator': {
+    directAnswer:
+      'Perform set theory operations directly in your browser across union (A ∪ B), intersection (A ∩ B), difference (A \\ B), symmetric difference (A △ B), Cartesian product (A × B), and power sets. The tool evaluates elements entirely client-side in memory to ensure discrete mathematics coursework, database relational logic, and scientific datasets remain completely confidential.',
+    leadParagraph:
+      'Set theory provides the fundamental mathematical framework underlying database relational algebra (SQL joins), computer science data structures, probability theory, and discrete mathematics. Calculating set operations manually for extensive groups of elements often leads to overlooked duplicates or omitted intersection elements. This client-side set theory calculator processes user-entered element sets, automatically discarding duplicate entries and computing core mathematical set relations: Union (elements belonging to either set), Intersection (elements common to both sets), Difference (elements belonging exclusively to one set), Symmetric Difference (elements in either set but not both), Cartesian Product (ordered pairs of elements), and complete Power Sets (all possible subsets). The tool displays element cardinalities, verifies subset and superset relationships, and formats clean mathematical notation. Evaluating set operations directly in browser memory accelerates learning for computer science and mathematics students without requiring desktop modeling suites. Because research datasets and student problem sets represent sensitive intellectual property, all set operations execute locally within client browser memory. No elements are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What core mathematical set operations are evaluated by the calculator?',
+        answer:
+          'The calculator computes Union (A ∪ B), Intersection (A ∩ B), Relative Difference (A \\ B), Symmetric Difference (A △ B), Cartesian Product, and Power Sets.',
+      },
+      {
+        question:
+          'How does the calculator handle duplicate elements in input sets?',
+        answer:
+          'By the formal definition of a mathematical set, duplicate elements are automatically deduplicated so that each unique element is counted and evaluated once.',
+      },
+      {
+        question:
+          'How many subsets are contained in the power set of a set with n elements?',
+        answer:
+          'The power set contains exactly 2^n subsets, including the empty null set (∅) and the original complete set itself as valid subsets.',
+      },
+      {
+        question:
+          'Are my mathematical element sets or calculation results saved online?',
+        answer:
+          'No. All set theory operations occur client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your coursework.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-prompt-template-builder': {
+    directAnswer:
+      'Build, customize, and test structured prompt templates directly in your browser with dynamic variable placeholders ({variable}), default values, and live text preview. The tool formats standardized prompts entirely client-side in memory to ensure proprietary engineering instructions, marketing workflows, system parameters, agent variables, and private AI system prompts remain completely secure.',
+    leadParagraph:
+      'Developing consistent, reproducible prompt templates for artificial intelligence workflows, customer support canned replies, code generation assistants, and team operating procedures requires parameterizing text passages with dynamic variables. Manually editing template parameters in word processors often leads to missed variable tags or inconsistent formatting. This client-side prompt template builder allows prompt engineers, software developers, and copywriters to compose prompt blueprints using bracketed variable tags (such as {topic}, {tone}, {target_audience}). The tool automatically detects all defined placeholder variables, generating dedicated input fields with optional default fallback text and live real-time preview of the populated prompt string. Users can copy the formatted prompt with one click or export reusable JSON prompt definitions. Building prompt templates directly in local browser memory assists engineering teams without exposing proprietary workflow templates to third-party web tools. Because system instructions, internal operating prompts, and marketing workflows involve sensitive trade secrets, all template formatting runs locally inside browser memory. No prompt text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question: 'How are dynamic variables defined inside a prompt template?',
+        answer:
+          'Variables are defined by enclosing variable names in curly braces (for example, {user_role} or {topic}), which the builder detects as dynamic fields.',
+      },
+      {
+        question: 'Can I assign default fallback values to template variables?',
+        answer:
+          'Yes. You can specify default values for each variable that populate automatically unless overridden with custom input during prompt generation.',
+      },
+      {
+        question: 'Can I export prompt templates for software API integration?',
+        answer:
+          'Yes. You can export prompt templates as structured JSON schemas or formatted text strings ready for integration into automated software development pipelines.',
+      },
+      {
+        question:
+          'Are my proprietary prompt templates or variable values saved on remote servers?',
+        answer:
+          'No. All prompt template generation and variable parsing execute client-side in local browser memory with zero network traffic, ensuring complete prompt privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-inventory-turnover-calculator': {
+    directAnswer:
+      'Calculate inventory turnover ratios and days sales of inventory (DSI) directly in your browser by entering cost of goods sold (COGS) and average inventory valuations. The tool evaluates retail inventory velocity and holding efficiency entirely client-side in memory to ensure commercial supply chain budgets, retail sales records, and wholesale financial figures remain completely confidential.',
+    leadParagraph:
+      'Managing working capital in wholesale distribution, retail merchandising, and ecommerce requires monitoring how rapidly inventory cycles through warehouses into completed sales. A low inventory turnover ratio indicates sluggish sales velocity, excess holding costs, and heightened risk of product obsolescence, while an excessively high ratio may trigger stockouts and lost revenue. This client-side inventory turnover calculator processes cost of goods sold (COGS) alongside beginning and ending inventory balances to determine average inventory valuations. The tool calculates the annual inventory turnover ratio and days sales of inventory (DSI)—representing the average number of days required to sell through current inventory stock. Evaluating inventory velocity directly in your browser runtime provides rapid financial validation during working capital reviews and supplier purchasing discussions without spreadsheet setup. Because inventory holding values, COGS ledgers, and supply chain margins represent sensitive commercial trade secrets, all financial computations run locally in browser memory. No business figures are ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'How is the inventory turnover ratio calculated mathematically?',
+        answer:
+          'Inventory turnover equals cost of goods sold divided by average inventory ((beginning inventory + ending inventory) / 2) across the financial period.',
+      },
+      {
+        question:
+          'What does Days Sales of Inventory (DSI) measure in retail business?',
+        answer:
+          'Days Sales of Inventory measures the average number of days required to turn inventory into sales, calculated as 365 divided by the turnover ratio.',
+      },
+      {
+        question:
+          'What is considered a healthy inventory turnover ratio in retail?',
+        answer:
+          'Healthy turnover ratios vary by industry; grocery retail typically ranges between 10 and 20, whereas luxury goods and consumer electronics average between 3 and 6.',
+      },
+      {
+        question:
+          'Are my commercial inventory numbers or COGS ledgers saved online?',
+        answer:
+          'No. All inventory turnover calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your commercial records.',
+      },
+    ],
+  },
+
+  // components/pdf-metadata-tool.tsx, lib/seo/tool-page-depth.ts and app/pdf/metadata/page.tsx
+  'pdf-and-documents-pdf-metadata': {
+    directAnswer:
+      'Inspect and strip hidden metadata embedded within PDF documents directly in your browser. The tool reads and deletes title, author, subject, keywords, creator software, and modification timestamps entirely client-side in memory using Web Workers to ensure legal briefs, confidential contracts, financial disclosures, internal reports, and private personal documents remain completely secure.',
+    leadParagraph:
+      'PDF documents created by desktop word processors, scanner utilities, and enterprise software suites frequently carry hidden document information dictionaries and XMP metadata packets. These metadata records expose author names, corporate organization titles, file creation dates, software versions, and local machine usernames that can compromise privacy when distributing documents to opposing counsel, clients, or the public. This browser-based PDF metadata viewer and remover parses binary PDF structures directly within your browser runtime via Web Workers. Users can inspect all embedded metadata properties, review document creation timelines, and execute permanent metadata stripping—sanitizing author, title, producer, and XMP streams while leaving visible page text, layout geometry, and vector diagrams completely intact. Sanitizing PDF metadata directly in browser memory allows legal teams, authors, and administrative professionals to scrub file properties without uploading confidential documents to third-party web servers. Because legal filings, contracts, and financial audits involve sensitive business secrets, all byte-level sanitization executes locally inside browser memory. No PDF documents are ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'What metadata properties does the PDF metadata cleaner remove?',
+        answer:
+          'The cleaner strips document information dictionary fields (title, author, subject, keywords, creator, producer) and clears embedded XMP metadata packets completely.',
+      },
+      {
+        question:
+          'Does removing metadata alter visible page text or formatting in the PDF?',
+        answer:
+          'No. The tool cleans only internal document catalog metadata streams, leaving all visible text, vector drawings, fonts, and page layouts completely untouched.',
+      },
+      {
+        question:
+          'Why is clearing both document info and XMP metadata packets essential?',
+        answer:
+          'PDF files store author and title facts in two separate places; failing to sanitize both the dictionary and XMP packet leaves personal details exposed.',
+      },
+      {
+        question:
+          'Are my confidential PDF documents uploaded to external servers during cleaning?',
+        answer:
+          'No. All PDF binary parsing and byte rebuilding execute client-side in browser memory using Web Workers with zero network calls, guaranteeing total document confidentiality.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts and lib/seo/live-tool-routes.ts
+  'science-and-education-venn-diagram-data-builder': {
+    directAnswer:
+      'Build, configure, and visualize two-set and three-set Venn diagram datasets directly in your browser. The tool computes set intersection counts, exclusive subset elements, and symmetric differences with interactive diagram previews entirely client-side in memory to ensure educational lesson plans, market segmentation research, statistical surveys, and scientific datasets remain completely confidential.',
+    leadParagraph:
+      'Visualizing logical relationships, data overlap distributions, and categorical intersections across sets is essential in probability education, market research segmentation, genomics, and statistical analysis. Calculating overlapping Venn diagram set counts manually for two or three intersecting categories (including regions A only, B only, C only, A∩B, B∩C, A∩C, and A∩B∩C) frequently results in counting discrepancies where overlapping items are tallied multiple times. This client-side Venn diagram data builder allows educators, researchers, and data analysts to input element lists for two or three sets, automatically computing unique subset memberships and intersection cardinalities. The tool renders an interactive graphical Venn diagram preview with area-labeled counts, allowing instant export of set membership data as formatted tables or structured JSON. Building Venn diagrams directly in browser memory accelerates data visualization without requiring specialized graphic illustration software. Because market research groups and scientific datasets represent sensitive intellectual work, all set calculations execute locally within client browser memory. No data is ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'How many distinct overlapping regions exist in a three-set Venn diagram?',
+        answer:
+          'A standard three-set Venn diagram contains 7 distinct internal regions: three exclusive areas, three pairwise intersections, and one central three-way intersection.',
+      },
+      {
+        question:
+          'Can I paste raw item lists to compute Venn diagram intersections automatically?',
+        answer:
+          'Yes. You can paste lists of words, email addresses, or IDs into Set A, B, and C boxes; the tool calculates exact intersection memberships automatically.',
+      },
+      {
+        question: 'Does the tool export set intersection data as clean lists?',
+        answer:
+          'Yes. You can view and copy the specific items belonging to each unique Venn intersection region or export the summary counts as a data table.',
+      },
+      {
+        question:
+          'Are my research datasets or categorical item lists saved online?',
+        answer:
+          'No. All set parsing and Venn diagram calculations occur client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-email-signature-generator': {
+    directAnswer:
+      'Generate professional HTML email signatures directly in your browser with contact details, company branding, social media links, and disclaimer text. The tool formats responsive, table-based HTML email signatures entirely client-side in memory to ensure employee contact rosters, corporate branding templates, internal staff directories, and private communication details remain completely secure.',
+    leadParagraph:
+      'Presenting a cohesive, polished brand identity across corporate email correspondence requires designing email signatures that render consistently across desktop and mobile email clients (including Outlook, Apple Mail, and Gmail). Hand-coding HTML email signatures often leads to broken layouts or misaligned icons, as email clients lack modern CSS support and require legacy HTML table markup with inline styling. This client-side email signature generator allows professionals, sales teams, and corporate administrators to enter contact credentials (full name, job title, company name, phone, website, and office address) and configure social profile links. The tool formats responsive, table-based HTML code with inline styles, offering a live visual preview and a one-click rich-text copy button for immediate pasting into email client signature preferences. Creating email signatures directly in local browser memory accelerates corporate onboarding without requiring paid marketing subscription platforms. Because employee contact details, direct phone extensions, and corporate branding represent confidential business information, all HTML generation runs locally within browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'Why are email signatures built using HTML tables rather than modern CSS Flexbox?',
+        answer:
+          'Email clients like Microsoft Outlook rely on legacy rendering engines that do not support modern CSS Flexbox or Grid, requiring HTML tables for reliable layout.',
+      },
+      {
+        question:
+          'How do I install the generated signature into my email client?',
+        answer:
+          'Use the one-click rich-text copy button, open your email client signature settings (in Gmail, Outlook, or Apple Mail), and paste the formatted signature directly.',
+      },
+      {
+        question: 'Can I include social media profile icons in the signature?',
+        answer:
+          'Yes. You can configure links for LinkedIn, Twitter, GitHub, and websites, generating properly dimensioned, clickable social icon links within the signature.',
+      },
+      {
+        question:
+          'Are my personal contact details or employee rosters uploaded online?',
+        answer:
+          'No. All HTML signature formatting and visual preview rendering execute client-side in local browser memory with zero network traffic, ensuring complete contact privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-customer-acquisition-cost-calculator': {
+    directAnswer:
+      'Calculate Customer Acquisition Cost (CAC) directly in your browser by tallying total sales and marketing expenditures against new acquired customers. The tool evaluates channel efficiency and customer acquisition payback periods entirely client-side in memory to ensure marketing advertising budgets, sales salaries, campaign expenditures, and corporate acquisition metrics remain completely confidential.',
+    leadParagraph:
+      'Evaluating marketing investment efficiency and unit economics is the central metric for assessing startup sustainability and commercial sales growth. Customer Acquisition Cost (CAC) quantifies the total financial outlay required to convince a prospective customer to purchase a product or subscription service. Failing to include all associated acquisition costs—such as advertising spend, creative production fees, marketing software tooling, and sales team salaries—artificially depresses CAC and gives a false sense of business health. This client-side customer acquisition cost calculator processes total marketing advertising expenditures, sales compensation, and software tooling against new customers acquired during the financial period. The tool computes overall blended CAC and paid CAC, highlighting payback periods when paired with customer lifetime revenues. Calculating acquisition metrics directly in your browser runtime provides rapid financial validation during board presentations and marketing budget planning without spreadsheet setup. Because marketing expenditures, sales compensation, and customer acquisition numbers represent sensitive commercial secrets, all financial computations run locally in browser memory. No business figures are ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'How is Customer Acquisition Cost (CAC) calculated mathematically?',
+        answer:
+          'CAC equals total sales and marketing expenses (advertising, salaries, tools) divided by the total number of new customers acquired during the same period.',
+      },
+      {
+        question: 'What is the distinction between blended CAC and paid CAC?',
+        answer:
+          'Blended CAC divides total marketing spend across all new customers (including organic referrals), while paid CAC measures cost specifically per paid ad acquisition.',
+      },
+      {
+        question:
+          'What is considered a healthy Customer Lifetime Value to CAC ratio?',
+        answer:
+          'An LTV to CAC ratio of 3:1 or higher is widely considered the commercial benchmark for sustainable, capital-efficient subscription and software business growth.',
+      },
+      {
+        question:
+          'Are my marketing advertising budgets or customer acquisition numbers saved online?',
+        answer:
+          'No. All CAC calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your commercial statements.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-citation-text-generator': {
+    directAnswer:
+      'Generate formatted academic text citations and bibliographic references directly in your browser across APA, MLA, Chicago, and Harvard writing styles. The tool formats source author names, titles, publication dates, and publishers entirely client-side in memory to ensure academic dissertations, research papers, journal articles, term essays, and student manuscripts remain completely confidential.',
+    leadParagraph:
+      'Writing academic essays, research reports, and technical whitepapers requires citing referenced literature in accordance with established scholarly formatting standards. Misformatted references or missing author publication details can lead to academic penalties and citation non-compliance. This client-side citation text generator formats bibliographic references for books, academic journals, news articles, and web resources across standard academic citation formats: APA (American Psychological Association), MLA (Modern Language Association), Chicago Manual of Style, and Harvard referencing. Users enter source metadata (including author names, publication year, article title, publication house, volume, issue, and URLs) to produce formatted bibliography entries alongside corresponding in-text parenthetical citations ready for copying into research drafts. Generating citations directly in local browser memory assists students and researchers without subscription paywalls or intrusive advertisements. Because academic theses, unpublished scientific discoveries, and student papers involve proprietary intellectual work, all citation formatting executes locally within client browser memory. No citation data is ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What citation formatting styles are supported by the generator?',
+        answer:
+          'The tool supports standard APA, MLA, Chicago, and Harvard academic citation styles for books, journals, news articles, and digital websites.',
+      },
+      {
+        question:
+          'Does the tool format both bibliography entries and in-text citations?',
+        answer:
+          'Yes. The generator produces full formatted reference list entries alongside corresponding parenthetical in-text citation examples for academic essays and dissertations.',
+      },
+      {
+        question: 'Can I copy formatted citations with italics intact?',
+        answer:
+          'Yes. The tool formats rich text with italicized book and journal titles that can be copied directly into word processors without losing formatting.',
+      },
+      {
+        question:
+          'Are my academic research topics or bibliographic references saved online?',
+        answer:
+          'No. All citation formatting occurs client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research writing.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-lifetime-value-calculator': {
+    directAnswer:
+      'Calculate Customer Lifetime Value (LTV or CLV) directly in your browser using average purchase value, purchase frequency, customer lifespan estimates, and profit margins. The tool computes gross margin contributions and LTV-to-CAC ratios entirely client-side in memory to ensure financial forecast models, subscriber cohort analytics, investor reports, and corporate growth projections remain completely confidential.',
+    leadParagraph:
+      'Customer Lifetime Value quantifies the total gross revenue or net contribution margin that a single customer account generates throughout their entire commercial relationship with your organisation. This browser-based lifetime value calculator provides founders, financial analysts, and marketing leaders with immediate calculations of both historical and predictive unit economics without transmitting commercial figures across the internet. By entering average transactional spend, purchase frequency per year, average customer retention duration, and gross margin percentages, you receive precise projections of expected lifetime gross revenue, lifetime contribution margin, and recommended acquisition spending ceilings. Evaluating LTV alongside Customer Acquisition Cost (CAC) establishes whether sales channels operate sustainably, with an industry benchmark of 3:1 or higher indicating durable commercial viability. Because calculations execute entirely client-side in local browser memory, proprietary financial statements, corporate margin targets, and confidential subscriber cohort economics remain protected behind your local browser boundary.',
+    faqs: [
+      {
+        question: 'How is Customer Lifetime Value calculated?',
+        answer:
+          'LTV equals average purchase value multiplied by purchase frequency multiplied by customer lifespan, or average revenue per user divided by churn rate multiplied by gross profit margin.',
+      },
+      {
+        question: 'What is an ideal LTV to CAC ratio?',
+        answer:
+          'A healthy commercial benchmark is an LTV-to-CAC ratio of three to one (3:1) or higher, indicating sustainable unit economics and disciplined customer acquisition investment.',
+      },
+      {
+        question: 'Can I account for gross profit margin in LTV?',
+        answer:
+          'Yes. The calculator factors gross profit margin percentages directly into the formula to produce realistic net contribution lifetime value figures rather than unadjusted top-line sales.',
+      },
+      {
+        question: 'Are my financial forecasts uploaded to external servers?',
+        answer:
+          'No. All financial calculations execute entirely client-side in local browser memory with zero network requests, ensuring proprietary corporate balance sheets and cohort forecasts remain completely confidential.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-roman-numeral-converter': {
+    directAnswer:
+      'Convert standard Roman numerals to Arabic integers and translate modern numbers to Roman numerals directly in your browser. The tool validates subtractive notation (such as IV, IX, XL, XC, CD, and CM) entirely client-side in memory to ensure historical manuscripts, legal document references, and academic coursework exercises remain completely confidential.',
+    leadParagraph:
+      'Roman numerals remain a widely recognised numerical system employed across legal documentation, formal clock faces, film production copyrights, and academic publishing. This browser-based Roman numeral converter delivers instantaneous two-way conversion between modern Arabic integers (from 1 up to 3999) and standardized Roman numeral strings without transmitting any text over external networks. The parser checks input strings for grammatical correctness, handling standard subtractive notations such as IV for four, IX for nine, XL for forty, XC for ninety, CD for four hundred, and CM for nine hundred while rejecting invalid repetitive sequences like IIII or VV. In reverse mode, entering any positive integer automatically yields its optimal canonical Roman numeral representation according to standard typographical conventions. Because all parsing logic and string transformations operate entirely client-side in memory, private document outlines, legal paragraph citations, and educational assignments remain strictly on your personal device.',
+    faqs: [
+      {
+        question: 'What is the supported numerical range for Roman numerals?',
+        answer:
+          'Standard classical Roman numeral syntax supports integer values ranging from one (I) up to three thousand nine hundred ninety-nine (MMMCMXCIX) without requiring vinculum overline bars.',
+      },
+      {
+        question: 'How does the tool handle subtractive notation?',
+        answer:
+          'The parser correctly interprets standard subtractive combinations such as IV (4), IX (9), XL (40), XC (90), CD (400), and CM (900) while preventing invalid repetitions.',
+      },
+      {
+        question: 'Does the converter accept lowercase Roman numerals?',
+        answer:
+          'Yes. The converter accepts both uppercase (XIV) and lowercase (xiv) input strings, automatically standardising the text before performing numerical parsing and validation.',
+      },
+      {
+        question: 'Does text leave my browser during conversion?',
+        answer:
+          'No. All numerical conversions and string validation routines execute client-side in local browser memory with zero network requests, guaranteeing total privacy for your notes.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts and lib/seo/live-tool-routes.ts
+  'science-and-education-function-table-generator': {
+    directAnswer:
+      'Generate mathematical function tables of values f(x) directly in your browser across user-defined domain intervals and custom step sizes. The tool computes algebraic, polynomial, exponential, and trigonometric outputs entirely client-side in memory to ensure academic mathematics assignments, scientific research equations, classroom problem sets, and engineering simulation parameters remain completely confidential.',
+    leadParagraph:
+      'Generating tables of values for mathematical functions is an essential technique in algebra, calculus, physics, and data science for plotting curves, locating roots, and analysing asymptotic behaviour. This browser-based function table generator evaluates arbitrary mathematical expressions f(x) across user-specified starting values, ending values, and incremental step sizes without transmitting formulae across the internet. The parser handles linear polynomials, quadratic equations, exponential functions, logarithmic expressions, and trigonometric ratios, computing exact numerical outputs for each discrete domain value. The resulting tabulated data displays formatted coordinates (x, f(x)) ready for inspection, verification, or direct copying into spreadsheet applications and graphing calculators. Because mathematical expression parsing and floating-point computations execute entirely client-side in local browser memory, proprietary research algorithms, classroom assessment solutions, and technical engineering parameters remain confidential behind your local browser boundary. Graphing these coordinates reveals critical mathematical properties, including local extrema, inflection points, roots, and asymptotic limits across complex equations.',
+    faqs: [
+      {
+        question: 'Which mathematical functions can I evaluate in the table?',
+        answer:
+          'The generator supports polynomials, trigonometric functions (sin, cos, tan), logarithmic functions (log, ln), square roots, exponential powers, and combined algebraic expressions.',
+      },
+      {
+        question: 'Can I specify custom domain intervals and fractional steps?',
+        answer:
+          'Yes. You can configure any arbitrary start value, end value, and fractional step increment (such as 0.1 or 0.25) to generate detailed mathematical tables.',
+      },
+      {
+        question:
+          'How does the tool handle undefined points or division by zero?',
+        answer:
+          'When a function encounters mathematical singularities, such as division by zero or negative square roots, the generator marks the output cell as undefined without halting.',
+      },
+      {
+        question: 'Are my mathematical equations uploaded to any server?',
+        answer:
+          'No. All equation parsing and numerical evaluations execute entirely client-side in local browser memory with zero network communication, keeping your calculations private.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-subtitles-text-cleaner': {
+    directAnswer:
+      'Strip timestamps, sequence counters, formatting tags, and cue identifiers from SRT and VTT subtitle files directly in your browser. The tool cleans captions into continuous plain prose paragraphs entirely client-side in memory to ensure video production scripts, proprietary documentary interviews, broadcast television transcripts, and confidential media recordings remain completely secure.',
+    leadParagraph:
+      'Video production teams, accessibility editors, and content researchers frequently need to convert timestamped subtitle files (SRT, VTT, and SBV) into coherent, readable text transcripts for reading, editing, or repurposing into articles. This browser-based subtitles text cleaner parses caption files, automatically stripping numeric counter blocks, millisecond timecode ranges (00:01:23,456 --> 00:01:25,789), position styling parameters, and HTML formatting tags (such as <i>, <b>, <u>, and <font>) without sending media transcripts over external servers. The cleaner intelligently stitches broken subtitle lines into flowing paragraphs, collapses redundant line breaks, and deduplicates consecutive repeating phrases caused by cumulative roll-up captioning. Because all string regular expressions and text normalisation routines run entirely client-side in local browser memory, unreleased film scripts, legal deposition video transcripts, and corporate webinar recordings remain strictly confidential on your personal device. Stripping caption timestamps transforms rigid subtitle fragments into versatile, readable articles and documentation ready for digital distribution and print publishing.',
+    faqs: [
+      {
+        question: 'Which subtitle file formats does the cleaner support?',
+        answer:
+          'The tool supports SubRip (.srt), WebVTT (.vtt), SubViewer (.sbv), and plain caption transcript files, extracting clean dialogue while removing all timecodes.',
+      },
+      {
+        question: 'Does the tool remove HTML formatting and speaker tags?',
+        answer:
+          'Yes. The cleaner strips styling tags like italic (<i>), bold (<b>), and font colour directives, and provides options to retain or strip speaker identifiers.',
+      },
+      {
+        question: 'Can this tool merge broken sentence lines into paragraphs?',
+        answer:
+          'Yes. The cleaner intelligently concatenates fragmented subtitle segments into grammatically coherent, fluid paragraphs based on standard punctuation and capitalization boundaries.',
+      },
+      {
+        question: 'Are my video transcripts uploaded to any remote server?',
+        answer:
+          'No. All subtitle parsing and text cleaning routines execute client-side in local browser memory with zero network traffic, ensuring complete confidentiality for unreleased media.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-churn-rate-calculator': {
+    directAnswer:
+      'Calculate customer churn rates and recurring revenue churn rates directly in your browser across monthly, quarterly, and annual measurement periods. The tool determines gross customer attrition and net revenue retention entirely client-side in memory to ensure commercial subscription metrics, executive board presentations, investor updates, and private financial statements remain completely confidential.',
+    leadParagraph:
+      'Churn rate represents one of the most critical health metrics for subscription businesses, Software-as-a-Service (SaaS) companies, and membership organisations, measuring the proportion of customers or recurring revenue lost over a defined period. This browser-based churn rate calculator provides instant, client-side computations of customer count churn, gross revenue churn, and net revenue churn without transmitting sensitive commercial records across the internet. By entering starting customer counts, new additions, voluntary cancellations, and contraction amounts, the tool produces precise percentages alongside annualized attrition projections and net retention benchmarks. Tracking both customer churn and revenue churn highlights whether account losses stem from smaller individual clients or enterprise contracts with higher economic value. Because all arithmetic and financial ratios execute entirely client-side in local browser memory, corporate cap tables, proprietary subscriber counts, and board-level financial reports remain strictly confidential behind your browser boundary.',
+    faqs: [
+      {
+        question:
+          'What is the difference between customer churn and revenue churn?',
+        answer:
+          'Customer churn measures the percentage of customer accounts lost during a period, whereas revenue churn measures the percentage of recurring revenue lost to cancellations and downgrades.',
+      },
+      {
+        question: 'How is monthly customer churn calculated?',
+        answer:
+          'Monthly customer churn is calculated by dividing the number of cancelled customers during the month by the total number of active customers at the start of that month.',
+      },
+      {
+        question: 'What is negative net revenue churn?',
+        answer:
+          'Negative net revenue churn occurs when expansion revenue and upgrades from existing customers exceed the revenue lost from churned customers, producing natural baseline growth.',
+      },
+      {
+        question:
+          'Are subscription metrics transmitted to any external server?',
+        answer:
+          'No. All financial calculations occur strictly client-side in local browser memory with zero network requests, ensuring proprietary subscription data remains completely secure.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-number-to-words': {
+    directAnswer:
+      'Convert numeric values and decimal figures into formal written words directly in your browser. The tool generates English word representations for currency cheques, financial invoices, accounting vouchers, and legal contracts entirely client-side in memory to ensure banking amounts, confidential settlement figures, corporate payouts, and proprietary transaction documents remain completely secure.',
+    leadParagraph:
+      'Writing out monetary sums and numerical figures in full English words is a standard compliance requirement for bank cheques, formal legal settlements, promissory notes, and business invoices to prevent fraudulent alteration of digit values. This browser-based number-to-words converter translates arbitrary integers, fractional values, and currency figures into grammatical English words without sending data across external networks. The converter handles large figures ranging into millions, billions, and trillions using standard short-scale naming conventions, correctly placing hyphens for compound numbers (such as twenty-five) and inserting conjunctions according to British English or American English grammatical preferences. In currency mode, it formats outputs into pounds and pence, dollars and cents, or euros and centimes with standard banking phrasing. Because string tokenisation and grammatical formatting execute entirely client-side in local browser memory, private payroll amounts, commercial contracts, and banking figures remain strictly protected on your personal computer.',
+    faqs: [
+      {
+        question: 'Can this tool format numbers as currency words for cheques?',
+        answer:
+          'Yes. The tool features dedicated currency modes that format values as pounds and pence, dollars and cents, or euros and centimes suitable for official cheques.',
+      },
+      {
+        question: 'How high a number can the converter translate into words?',
+        answer:
+          'The converter translates numbers up to trillions and quadrillions using standard short-scale English nomenclature, accommodating large financial balances and scientific values.',
+      },
+      {
+        question: 'Does the tool support decimal places and cents?',
+        answer:
+          'Yes. The converter translates decimal fractions either as written fractional words or as standard banking fractions (such as 50/100) for formal financial instruments.',
+      },
+      {
+        question: 'Is my banking or financial data sent across the network?',
+        answer:
+          'No. All numerical conversions and word assembly routines run client-side in local browser memory with zero network traffic, ensuring complete privacy for confidential payments.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts and lib/seo/live-tool-routes.ts
+  'science-and-education-statistics-distribution-viewer': {
+    directAnswer:
+      'Inspect and visualize statistical probability distributions directly in your browser across Normal, Binomial, Poisson, Uniform, and Exponential models. The tool plots probability density functions and cumulative distribution curves entirely client-side in memory to ensure university coursework, scientific clinical trials, statistical hypothesis tests, physics experiments, and proprietary engineering models remain completely confidential.',
+    leadParagraph:
+      'Understanding probability distributions is foundational to data science, statistical inference, financial quantitative modelling, and quality assurance engineering. This browser-based statistics distribution viewer renders interactive plots and numerical summaries for major theoretical distributions, including Normal (Gaussian), Binomial, Poisson, Uniform, and Exponential distributions without transmitting parameters over the internet. Users can manipulate distribution parameters, such as mean (mu), standard deviation (sigma), trial count (n), success probability (p), or rate parameter (lambda), observing real-time adjustments to both Probability Density Functions (PDF) and Cumulative Distribution Functions (CDF). The viewer displays key summary metrics, including theoretical mean, variance, standard deviation, skewness, and excess kurtosis, enabling intuitive verification of statistical hypotheses. Because all curve coordinates and statistical formulae are computed entirely client-side in local browser memory, proprietary industrial tolerance data, clinical trial parameters, and academic research models remain strictly confidential on your personal machine.',
+    faqs: [
+      {
+        question: 'Which statistical distributions does this viewer support?',
+        answer:
+          'The tool supports Normal (Gaussian), Binomial, Poisson, Continuous Uniform, and Exponential distributions, plotting interactive probability density functions and cumulative distribution curves accurately.',
+      },
+      {
+        question: 'What is the difference between PDF and CDF curves?',
+        answer:
+          'The Probability Density Function (PDF) shows relative likelihood of values, while the Cumulative Distribution Function (CDF) shows probability that a variable takes a value less than or equal to x.',
+      },
+      {
+        question: 'Can I view theoretical mean and variance values?',
+        answer:
+          'Yes. The tool automatically computes and displays theoretical mean, variance, standard deviation, skewness, and kurtosis metrics alongside the interactive distribution visualisations.',
+      },
+      {
+        question: 'Are my statistical parameters uploaded to any server?',
+        answer:
+          'No. All statistical curve generations and summary metric calculations occur client-side in local browser memory with zero network requests, ensuring total research privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts and lib/seo/live-tool-routes.ts
+  'text-and-writing-transcript-formatter': {
+    directAnswer:
+      'Clean, format, and structure raw audio transcripts directly in your browser. The tool removes verbal filler words, standardises speaker tags, fixes capitalization, and organizes dialogue into readable paragraphs entirely client-side in memory to ensure legal depositions, investigative journalism interviews, podcast audio transcripts, broadcast recordings, and executive corporate recordings remain completely secure.',
+    leadParagraph:
+      "Automated speech-to-text algorithms often produce unpunctuated, run-on blocks of text cluttered with speech disfluencies, verbal filler words, and disjointed speaker labels that require significant editorial cleanup before publication. This browser-based transcript formatter refines raw transcription drafts into polished, professional reading text without transmitting documents over external servers. The formatter strips repetitive verbal filler tokens (such as 'um', 'uh', 'you know', and 'like'), normalises inconsistent speaker headers (formatting them as bold names or uppercase identifiers), fixes sentence-ending punctuation, and breaks unbroken monologues into coherent paragraphs based on natural conversational pauses. Whether editing podcast interviews, academic oral histories, legal deposition records, or corporate earnings calls, the tool accelerates manuscript preparation. Because all pattern matching and text transformations execute entirely client-side in local browser memory, unreleased investigative interviews, corporate board meeting transcripts, and sensitive legal testimony remain strictly private on your personal device.",
+    faqs: [
+      {
+        question: 'Which speech filler words does the formatter remove?',
+        answer:
+          "The tool detects and removes common spoken filler words including 'um', 'uh', 'like', 'you know', 'ah', and 'sort of' while preserving intended conversational context.",
+      },
+      {
+        question: 'Can I standardise speaker names and dialogue tags?',
+        answer:
+          'Yes. The formatter detects varying speaker labels, allowing you to standardise speaker attribution consistently with bold typography, uppercase lettering, or custom prefixes.',
+      },
+      {
+        question:
+          'Does the tool insert paragraph breaks into long transcripts?',
+        answer:
+          'Yes. The formatter intelligently splits continuous, unformatted speech into structured paragraphs based on sentence termination boundaries, speaker alternations, and natural pauses.',
+      },
+      {
+        question:
+          'Are confidential audio transcripts sent to third-party servers?',
+        answer:
+          'No. All text parsing, disfluency removal, and formatting routines run client-side in local browser memory with zero network requests, guaranteeing strict document confidentiality.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-mrr-calculator': {
+    directAnswer:
+      'Calculate Monthly Recurring Revenue (MRR) and track subscription growth components directly in your browser. The tool evaluates new MRR, expansion MRR, contraction MRR, and churn MRR entirely client-side in memory to ensure software revenue projections, investor pitch decks, venture capital summaries, commercial cash models, and corporate subscription ledgers remain completely confidential.',
+    leadParagraph:
+      'Monthly Recurring Revenue (MRR) is the definitive operating metric for subscription software businesses, providing a predictable, normalised measure of monthly cash flow generated by active customer contracts. This browser-based MRR calculator empowers SaaS founders, chief financial officers, and revenue operations teams to analyse monthly recurring revenue streams and decompose overall growth into its underlying component drivers without transmitting financial accounts across the internet. By inputting baseline beginning MRR alongside new customer acquisitions (New MRR), customer tier upgrades (Expansion MRR), plan downgrades (Contraction MRR), and cancellations (Churn MRR), the tool computes net new MRR and overall percentage growth. Decomposing revenue into these distinct vectors helps leaders identify whether top-line expansion relies solely on costly new acquisitions or benefits from durable account expansion. Because all arithmetic and growth modelling execute entirely client-side in local browser memory, confidential revenue figures, valuation projections, and commercial customer counts remain protected behind your browser boundary.',
+    faqs: [
+      {
+        question: 'What is the formula for Net New MRR?',
+        answer:
+          'Net New MRR equals New MRR from newly acquired accounts plus Expansion MRR from upgrades, minus Contraction MRR from downgrades, minus Churn MRR from cancellations.',
+      },
+      {
+        question: 'How do annual contracts factor into MRR calculations?',
+        answer:
+          'Annual contract values are divided by twelve (contract value / 12) to determine their monthly recurring contribution for consistent revenue tracking.',
+      },
+      {
+        question:
+          'Why is tracking Expansion MRR important for SaaS businesses?',
+        answer:
+          'Expansion MRR demonstrates account growth from existing customers, indicating strong product-market fit and enabling negative net revenue churn over time.',
+      },
+      {
+        question: 'Is my proprietary revenue data shared over the internet?',
+        answer:
+          'No. All financial calculations occur strictly client-side in local browser memory with zero network communication, keeping your corporate revenue metrics completely confidential.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-words-to-number': {
+    directAnswer:
+      'Convert written English number words into exact numeric integers and decimal values directly in your browser. The tool parses natural language numerical phrases and magnitude scales entirely client-side in memory to ensure transcription audit logs, legal contract terms, historical accounting entries, formal banking receipts, and financial settlement documents remain completely secure.',
+    leadParagraph:
+      "Translating written English number words into machine-readable digits is a frequent requirement when digitizing historical contracts, processing legal settlement text, parsing spoken transcripts, and standardising accounting paperwork. This browser-based words-to-number converter parses natural language numerical phrases, such as 'five thousand four hundred twenty-one' or 'two point seven five million', instantaneously converting them into standard integer or floating-point values without sending data across external networks. The parser handles single digits, compound numbers, scale multipliers (hundred, thousand, million, billion, trillion), and fractional decimals, resolving variations across both British English ('and') and American English conventions. It accurately aggregates hierarchical magnitude orders, rejecting syntactically invalid combinations and highlighting unmatched vocabulary tokens. Because string tokenisation, lexical parsing, and mathematical aggregation execute entirely client-side in local browser memory, confidential contract terms, proprietary settlement figures, and private financial amounts remain strictly on your personal machine.",
+    faqs: [
+      {
+        question:
+          'Can this tool parse large scale numbers like millions and billions?',
+        answer:
+          'Yes. The parser resolves large scale multipliers including thousand, million, billion, and trillion, computing accurate large numerical values from written phrases.',
+      },
+      {
+        question: 'Does the converter handle decimal fractions in words?',
+        answer:
+          "Yes. The converter understands decimal expressions such as 'point five' or 'two point seven five', converting them into accurate floating-point numbers.",
+      },
+      {
+        question: "How does the parser handle the word 'and' in numbers?",
+        answer:
+          "The parser supports both British English conventions using 'and' (such as 'two hundred and five') and American styles omitting it, producing identical numerical totals.",
+      },
+      {
+        question: 'Is my written text sent to external servers for parsing?',
+        answer:
+          'No. All natural language parsing and numerical conversions execute client-side in local browser memory with zero network traffic, ensuring complete privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-arr-calculator': {
+    directAnswer:
+      'Calculate Annual Recurring Revenue (ARR) directly in your browser by annualising monthly subscription figures or aggregating multi-year customer contracts. The tool computes annualised run-rates and year-over-year expansion entirely client-side in memory to ensure SaaS valuation metrics, venture fundraising decks, executive revenue forecasts, commercial sales summaries, and corporate revenue projections remain completely confidential.',
+    leadParagraph:
+      'Annual Recurring Revenue (ARR) represents the annualized value of recurring revenue generated by a subscription business, serving as the benchmark standard for evaluating enterprise software companies, venture valuations, and credit lines. This browser-based ARR calculator provides executives, financial planners, and investors with immediate ARR projections derived either from normalized Monthly Recurring Revenue (MRR multiplied by 12) or from direct contract schedules without transmitting corporate accounts across the internet. By inputting subscription tiers, new enterprise bookings, renewal rates, and expansion figures, users can project annual recurring run rates, net revenue retention trajectories, and enterprise valuation multiples. Dissecting ARR trends reveals whether growth stems from high-velocity low-ticket customers or high-retention multi-year enterprise accounts. Because all financial arithmetic and annualisation formulae execute entirely client-side in local browser memory, proprietary financial statements, capitalization tables, and investor board decks remain strictly confidential behind your browser boundary.',
+    faqs: [
+      {
+        question: 'How is Annual Recurring Revenue calculated from MRR?',
+        answer:
+          'ARR is calculated by multiplying normalized Monthly Recurring Revenue (MRR) by twelve, representing the annual contracted run rate of active customer subscriptions.',
+      },
+      {
+        question: 'Do one-time setup fees count toward ARR?',
+        answer:
+          'No. One-time setup fees, professional implementation services, and non-recurring hardware sales are strictly excluded from ARR because they do not recur annually.',
+      },
+      {
+        question: 'How are multi-year enterprise contracts treated in ARR?',
+        answer:
+          'Multi-year contracts are normalised by dividing the total contracted value by the number of contract years to establish the true annual recurring contribution.',
+      },
+      {
+        question: 'Are my corporate financial figures uploaded anywhere?',
+        answer:
+          'No. All financial calculations occur strictly client-side in local browser memory with zero network calls, guaranteeing total confidentiality for corporate records.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-significant-figures-calculator': {
+    directAnswer:
+      'Identify, count, and round numbers to specified significant figures directly in your browser. The tool displays precise rounding steps, identifying leading, trailing, and captive zeros entirely client-side in memory to ensure laboratory measurement logs, chemistry coursework, analytical chemistry reports, industrial test records, and physics experiment calculations remain completely confidential and secure.',
+    leadParagraph:
+      'Significant figures (or sig figs) communicate the precision of experimental measurements in scientific disciplines, ensuring that calculated results do not imply greater certainty than laboratory instruments warrant. This browser-based significant figures calculator identifies significant digits, determines precision boundaries, and rounds arbitrary numbers to requested significant figure counts without sending data across external networks. The tool applies standard scientific rounding conventions, correctly classifying non-zero digits, captive zeros between digits (such as the zeros in 1005), leading zeros in decimal fractions (such as 0.0025, having only two significant figures), and trailing zeros with decimal points. It also converts results into standard scientific notation to eliminate ambiguity regarding trailing zeroes in large integers. Because all numeric parsing, character scanning, and rounding routines execute entirely client-side in local browser memory, proprietary industrial measurement data, laboratory test protocols, and academic examination coursework remain completely secure on your personal device.',
+    faqs: [
+      {
+        question:
+          'What are the core rules for identifying significant figures?',
+        answer:
+          'All non-zero digits are significant. Captive zeros between non-zero digits are significant. Leading zeros are never significant. Trailing zeros are significant only with a decimal point.',
+      },
+      {
+        question: 'How many significant figures are in 0.00450?',
+        answer:
+          'The number 0.00450 has three significant figures: the leading zeros are place-holders, while the digits 4, 5, and the trailing zero are significant.',
+      },
+      {
+        question:
+          'How does scientific notation resolve trailing zero ambiguity?',
+        answer:
+          'Scientific notation explicitly specifies significant figures in the mantissa, so 1000 can be written unambiguously as 1.00 x 10^3 for three significant figures.',
+      },
+      {
+        question: 'Does the tool transmit my experimental data over the web?',
+        answer:
+          'No. All digit analysis, counting rules, and rounding operations run client-side in local browser memory with zero network traffic, ensuring complete laboratory privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-runway-calculator': {
+    directAnswer:
+      'Calculate startup cash runway and projected zero-cash dates directly in your browser based on liquid bank balances and net monthly burn rates. The tool models growth scenarios and capital timing entirely client-side in memory to ensure venture fundraising roadmaps, bank treasury reserves, investor presentations, and executive financial plans remain completely confidential.',
+    leadParagraph:
+      'Cash runway measures the number of months a business can continue operating before depleting its available treasury reserves, representing a foundational survival metric for early-stage startups and growth ventures. This browser-based runway calculator provides founders, chief financial officers, and board directors with immediate projections of remaining operational runway and expected zero-cash dates without transmitting bank balances across the internet. By inputting current liquid cash reserves, average monthly revenues, and monthly operational expenditures (or entering net monthly burn directly), the tool calculates exact months of runway remaining. It also models milestone scenarios, illustrating how adjustments to headcount, advertising budgets, or venture capital injections extend operational solvency. Evaluating runway enables executive teams to initiate fundraising rounds well before cash reserves fall into critical danger zones. Because all financial forecasting routines execute entirely client-side in local browser memory, sensitive corporate bank balances, treasury accounts, and private financial timetables remain strictly confidential behind your browser boundary.',
+    faqs: [
+      {
+        question: 'How is startup cash runway calculated?',
+        answer:
+          'Runway in months is calculated by dividing total liquid cash reserves by net monthly burn rate (total cash outlays minus incoming cash receipts).',
+      },
+      {
+        question: 'What is considered a safe cash runway for a startup?',
+        answer:
+          'Founders typically aim for twelve to eighteen months of cash runway, allowing adequate operational focus while preparing for subsequent fundraising rounds six months prior.',
+      },
+      {
+        question:
+          'What is the difference between gross burn and net burn for runway?',
+        answer:
+          'Gross burn represents total monthly operating expenses, while net burn subtracts monthly revenue receipts from gross burn to establish true net cash depletion.',
+      },
+      {
+        question: 'Are my startup bank balances transmitted across the web?',
+        answer:
+          'No. All financial calculations execute strictly client-side in local browser memory with zero network requests, ensuring proprietary corporate treasury balances remain completely confidential.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-scientific-notation-converter': {
+    directAnswer:
+      'Convert numbers between standard decimal format, scientific notation, and engineering notation directly in your browser. The tool computes mantissa values and powers of ten entirely client-side in memory to ensure astronomical constants, nanotechnology dimensions, physical constant computations, university physics solutions, technical documentation schematics, and engineering simulation parameters remain completely confidential.',
+    leadParagraph:
+      'Scientific notation provides an unambiguous, standardized representation for exceptionally large and infinitesimally small quantities encountered in astronomy, quantum physics, electrical engineering, and chemistry. This browser-based scientific notation converter translates numbers seamlessly between standard decimal representation, normalized scientific notation (m x 10^n, where 1 <= |m| < 10), and engineering notation (where the exponent n is a multiple of three) without transmitting data across external networks. The converter handles positive and negative signs, decimal fractional numbers, and E-notation strings (such as 3.45e-8), computing exact mantissas, exponents, and order-of-magnitude values. It also displays metric prefix equivalents, translating powers of ten into familiar units like micro, nano, kilo, and mega. Because all mathematical transformations, string tokenisation, and exponent calculations execute entirely client-side in local browser memory, proprietary engineering blueprints, physics problem sets, and confidential laboratory data remain strictly protected on your personal computer.',
+    faqs: [
+      {
+        question:
+          'What is the difference between scientific and engineering notation?',
+        answer:
+          'Scientific notation restricts mantissas between one and ten with any integer exponent, whereas engineering notation uses exponents that are strictly multiples of three.',
+      },
+      {
+        question: "How does the tool represent exponential 'e' notation?",
+        answer:
+          "The tool parses standard 'e' and 'E' shorthand (such as 1.5e6), converting it into standard typographical format (1.5 x 10^6) and expanded decimal digits.",
+      },
+      {
+        question: 'Can the converter translate metric SI prefixes?',
+        answer:
+          'Yes. The converter pairs powers of ten with corresponding international SI metric prefixes, such as nano (10^-9), micro (10^-6), kilo (10^3), and giga (10^9).',
+      },
+      {
+        question: 'Does my scientific data leave my computer?',
+        answer:
+          'No. All numerical conversions and exponent calculations run client-side in local browser memory with zero network communication, guaranteeing strict data privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-burn-rate-calculator': {
+    directAnswer:
+      'Calculate gross burn rate and net monthly cash burn directly in your browser across payroll, facilities, marketing, and cloud computing costs. The tool monitors capital depletion rates entirely client-side in memory to ensure corporate payroll budgets, startup balance sheets, financial sustainability models, investor audit materials, and executive treasury reports remain completely confidential.',
+    leadParagraph:
+      'Burn rate measures the pace at which a company depletes its available cash reserves before achieving cash-flow profitability, serving as an indispensable operational metric for startup founders, venture capitalists, and corporate controllers. This browser-based burn rate calculator evaluates both gross burn (total monthly cash expenditures across payroll, software licences, marketing, and office leases) and net burn (gross expenditures minus incoming cash receipts) without transmitting proprietary financial records across external networks. By inputting monthly revenue inflows and categorized departmental expenditures, users can calculate monthly cash outflows, average burn trends, and net capital depletion rates. Monitoring shifts in burn rate helps leadership teams identify cost inflation early, maintain fiscal discipline, and align hiring plans with capital availability. Because all financial sums and expenditure ratios execute entirely client-side in local browser memory, corporate payroll schedules, vendor contract costs, and executive balance sheets remain confidential behind your browser boundary.',
+    faqs: [
+      {
+        question: 'What is the difference between gross burn and net burn?',
+        answer:
+          'Gross burn represents the total cash spent by a company each month, whereas net burn subtracts monthly cash revenue from gross burn to measure actual cash loss.',
+      },
+      {
+        question:
+          'Why should founders calculate both gross and net burn rates?',
+        answer:
+          'Gross burn reveals total cost exposure if revenue halts unexpectedly, while net burn indicates the real rate of treasury depletion under normal operating conditions.',
+      },
+      {
+        question:
+          'How do one-off capital expenses affect monthly burn calculations?',
+        answer:
+          'One-time capital investments should be separated from recurring operating expenditures to prevent distorted monthly burn averages that mislead runway projections.',
+      },
+      {
+        question: 'Are my company expense figures sent to any server?',
+        answer:
+          'No. All financial calculations occur strictly client-side in local browser memory with zero network calls, keeping your company balance sheet completely private.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-rounding-calculator': {
+    directAnswer:
+      'Round numbers to specified decimal places or significant figures directly in your browser using multiple standard rounding algorithms. The tool supports round half up, round half to even, floor, ceiling, and truncation entirely client-side in memory to ensure financial accounting figures, laboratory measurements, payroll computations, and engineering data remain completely confidential.',
+    leadParagraph:
+      "Rounding numbers correctly is vital across accounting, computer programming, scientific research, and engineering design, where small cumulative rounding biases can alter financial balances or invalidate laboratory conclusions. This browser-based rounding calculator applies multiple standard mathematical and financial rounding modes to arbitrary numbers without transmitting figures over external networks. Users can select from standard Round Half Up (commercial rounding), Round Half to Even (Banker's rounding, which minimizes statistical drift across large datasets), Round Toward Zero (truncation), Ceiling (round up toward positive infinity), and Floor (round down toward negative infinity) to chosen decimal precision or significant figure counts. The interface displays immediate side-by-side comparisons of different rounding methodologies, demonstrating how each method treats borderline midpoint values. Because all floating-point operations and precision rounding routines execute entirely client-side in local browser memory, confidential transaction ledgers, proprietary engineering calculations, and scientific experiment logs remain strictly protected on your personal device.",
+    faqs: [
+      {
+        question: "What is banker's rounding (round half to even)?",
+        answer:
+          "Banker's rounding rounds borderline midpoint values (.5) to the nearest even number, eliminating upward statistical bias across large financial datasets.",
+      },
+      {
+        question: 'What is the difference between floor and truncation?',
+        answer:
+          'Truncation removes trailing decimal digits toward zero, while floor always rounds downward toward negative infinity, causing differences for negative numbers.',
+      },
+      {
+        question:
+          'Can I round numbers to significant figures as well as decimal places?',
+        answer:
+          'Yes. The calculator supports rounding to specific decimal places (such as tenths or hundredths) and rounding to specified significant figure thresholds.',
+      },
+      {
+        question:
+          'Does the tool transmit my numeric figures across the network?',
+        answer:
+          'No. All numerical rounding operations execute client-side in local browser memory with zero network communication, ensuring complete confidentiality for sensitive numeric records.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts and lib/seo/live-tool-routes.ts
+  'finance-and-business-invoice-late-fee-calculator': {
+    directAnswer:
+      'Calculate overdue invoice late fees and interest charges directly in your browser across statutory interest rates, compounding APR schedules, and fixed penalty fees. The tool tallies days past due entirely client-side in memory to ensure supplier accounts receivable records, freelance contracts, debt collection ledgers, and private billing collections remain completely confidential.',
+    leadParagraph:
+      'Managing overdue customer payments and applying accurate late payment fees is essential for maintaining predictable cash flow and enforcing commercial credit terms across freelance practices and commercial enterprises. This browser-based invoice late fee calculator computes interest charges and penalty fees on delinquent invoices based on invoice amounts, due dates, payment dates, and agreed contractual fee structures without transmitting billing records over external networks. The calculator supports standard statutory interest rates (such as UK Late Payment of Commercial Debts statutory interest), annual percentage rates (APR) calculated on a daily pro-rata basis, compounding monthly rates, and fixed late administrative penalties. Users receive a clear itemised summary showing total days overdue, accumulated interest, fixed penalty additions, and total revised balance payable suitable for late payment reminders. Because all financial date calculations and interest formulas execute entirely client-side in local browser memory, proprietary client rosters, invoice amounts, and overdue collection records remain strictly private behind your browser boundary.',
+    faqs: [
+      {
+        question: 'How is daily interest calculated on an overdue invoice?',
+        answer:
+          'Daily interest equals the invoice amount multiplied by the annual interest rate, divided by 365 days, then multiplied by the number of days past due.',
+      },
+      {
+        question:
+          'What is UK statutory late payment interest for commercial debts?',
+        answer:
+          'Under UK commercial debt legislation, businesses can charge statutory interest of eight percent plus the Bank of England base rate, plus fixed compensation fees.',
+      },
+      {
+        question:
+          'Can I combine fixed late administrative fees with daily interest?',
+        answer:
+          'Yes. The calculator allows you to apply a fixed one-time administrative penalty alongside daily accrued interest to cover commercial debt recovery expenses.',
+      },
+      {
+        question:
+          'Are my confidential client invoice details uploaded to any server?',
+        answer:
+          'No. All financial date arithmetic and late fee calculations run client-side in local browser memory with zero network traffic, ensuring complete billing privacy.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-margin-of-error-calculator': {
+    directAnswer:
+      'Calculate statistical margin of error directly in your browser for survey research and public opinion polling. The tool computes sample error boundaries across standard confidence levels (90%, 95%, 99%) entirely client-side in memory to ensure proprietary market research data, polling surveys, sociological datasets, and academic research statistics remain completely confidential.',
+    leadParagraph:
+      'The margin of error (MOE) quantifies the amount of random sampling error present in the results of surveys, market research studies, and scientific opinion polls, indicating how closely sample observations reflect the true population parameter. This browser-based margin of error calculator evaluates survey error margins across user-specified sample sizes, observed sample proportions, and desired confidence intervals without transmitting research data across external networks. The tool provides standard confidence coefficients (such as z = 1.96 for 95% confidence and z = 2.576 for 99% confidence) and incorporates finite population correction factors when sampling from known small populations. By reviewing margin of error outputs, researchers can confirm whether their sample size provides sufficient statistical precision before fielding costly questionnaires. Because all mathematical square roots, z-score multiplications, and finite corrections execute entirely client-side in local browser memory, proprietary consumer research, clinical survey metrics, and confidential political polling data remain strictly on your personal device.',
+    faqs: [
+      {
+        question: 'What is the standard formula for margin of error?',
+        answer:
+          'Margin of error equals the critical z-score multiplied by the square root of p times (1 - p) divided by the sample size n, where p is sample proportion.',
+      },
+      {
+        question:
+          'Why is 95% confidence commonly selected for survey research?',
+        answer:
+          'A 95% confidence level represents the standard scientific balance between statistical reliability and manageable sample size requirements in empirical research.',
+      },
+      {
+        question: 'When should a finite population correction be applied?',
+        answer:
+          'Apply finite population correction when the sample size exceeds five percent (5%) of the total population, reducing the calculated margin of error.',
+      },
+      {
+        question: 'Is my survey sampling data uploaded to any remote server?',
+        answer:
+          'No. All statistical calculations execute strictly client-side in local browser memory with zero network calls, guaranteeing total privacy for survey research.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-confidence-interval-calculator': {
+    directAnswer:
+      'Calculate statistical confidence intervals directly in your browser for population means and proportions across 90%, 95%, and 99% confidence levels. The tool computes upper and lower bound limits entirely client-side in memory to ensure scientific clinical trials, academic research datasets, epidemiology studies, manufacturing quality audits, and industrial quality benchmarks remain completely confidential.',
+    leadParagraph:
+      "Confidence intervals provide an estimated range of plausible values for an unknown population parameter derived from sample statistics, offering deeper insight into statistical reliability than point estimates alone. This browser-based confidence interval calculator computes upper and lower confidence boundaries for both sample means (using normal z-distributions for large samples or Student's t-distributions for smaller datasets) and sample proportions without sending research observations across external networks. By inputting sample sizes, sample averages, standard deviations, and desired confidence thresholds (such as 90%, 95%, or 99%), users receive exact standard error figures, margin of error bounds, and lower and upper confidence limits. Understanding confidence boundaries enables researchers, clinicians, and quality engineers to establish whether observed experimental differences meet scientific standards of significance. Because all matrix operations, t-distributions, and standard error formulas execute entirely client-side in local browser memory, proprietary clinical trial findings, academic research records, and manufacturing quality metrics remain strictly protected behind your browser boundary.",
+    faqs: [
+      {
+        question: 'What is the difference between z-intervals and t-intervals?',
+        answer:
+          'Z-intervals are used when the population standard deviation is known or sample size is large (n >= 30), whereas t-intervals are required when estimating standard deviation from small samples.',
+      },
+      {
+        question: 'How do I interpret a 95% confidence interval?',
+        answer:
+          'A 95% confidence interval means that if the experiment were repeated independently many times, 95% of the calculated intervals would contain the true population parameter.',
+      },
+      {
+        question:
+          'What happens to the confidence interval as sample size increases?',
+        answer:
+          'Increasing the sample size reduces the standard error of the mean, producing narrower, more precise confidence intervals around the estimated sample statistic.',
+      },
+      {
+        question: 'Are my research datasets transmitted over the internet?',
+        answer:
+          'No. All statistical distributions and interval calculations occur client-side in local browser memory with zero network requests, ensuring complete research confidentiality.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts and lib/seo/live-tool-routes.ts
+  'math-and-units-z-score-calculator': {
+    directAnswer:
+      'Calculate standard z-scores directly in your browser to evaluate data points relative to population means and standard deviations. The tool computes normal distribution percentiles and cumulative p-values entirely client-side in memory to ensure academic test records, scientific experiment metrics, demographic surveys, laboratory quality audits, and medical clinical data remain completely confidential.',
+    leadParagraph:
+      'A standard score (or z-score) quantifies the precise distance and direction an individual raw observation lies relative to the mean of a dataset, expressed in units of standard deviation. This browser-based z-score calculator computes standard scores instantaneously from raw values (x), population or sample means (mu), and standard deviations (sigma) without transmitting individual records over external networks. The tool maps calculated z-scores directly to corresponding normal distribution percentiles, cumulative probabilities P(Z < z), two-tailed p-values, and complementary right-tail probabilities. Transforming disparate data points into normalized z-scores allows researchers, healthcare professionals, and academic educators to compare observations across different scales, such as standardising student test marks or assessing patient clinical metrics against demographic population baselines. Because all normal cumulative distribution functions and numerical standardisations execute entirely client-side in local browser memory, proprietary medical assessments, student evaluation grades, and sensitive experimental records remain strictly confidential on your personal computer.',
+    faqs: [
+      {
+        question: 'What is the mathematical formula for calculating a z-score?',
+        answer:
+          'The z-score equals the raw data point (x) minus the dataset mean (mu), divided by the standard deviation (sigma): z = (x - mu) / sigma.',
+      },
+      {
+        question: 'What does a negative z-score indicate?',
+        answer:
+          'A negative z-score indicates that the observed data point lies below the dataset mean, with the magnitude representing the number of standard deviations below average.',
+      },
+      {
+        question: 'How is a z-score converted to a percentile rank?',
+        answer:
+          'The z-score is mapped through the cumulative normal distribution function to determine the percentage of observations falling below that specific score value.',
+      },
+      {
+        question:
+          'Is my personal assessment or research data uploaded anywhere?',
+        answer:
+          'No. All z-score calculations and probability distributions execute strictly client-side in local browser memory with zero network communication, ensuring complete privacy.',
+      },
+    ],
+  },
+
   // lib/tools/id-mask/mask.ts (maskIdentifiers, the rules comment at the top,
   // maskAadhaarValue, maskPanValue, verhoeffValid), lib/tools/id-mask/recheck.ts
   // (findUnmaskedIdentifiers and its exceptions comment),
