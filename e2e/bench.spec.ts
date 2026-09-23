@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
+import { extractEntry, readZip } from '@/lib/tools/archive/zip-reader';
 
 test.describe('The Bench', () => {
   test('is discoverable from the home page and opens from search', async ({
@@ -70,6 +71,79 @@ test.describe('The Bench', () => {
     expect(receiptText.endsWith(
       'Bytes uploaded: 0 - this page cannot make a network request.',
     )).toBe(true);
+    expect(external).toEqual([]);
+  });
+
+  test('runs a two-step pipeline over two files with zero external egress', async ({
+    page,
+  }) => {
+    const external: string[] = [];
+    page.on('request', (request) => {
+      const url = new URL(request.url());
+      if (!['127.0.0.1', 'localhost'].includes(url.hostname))
+        external.push(request.url());
+    });
+
+    await page.goto('/bench');
+    await expect(
+      page.getByRole('heading', { name: 'The Bench' }),
+    ).toBeVisible();
+    await page
+      .getByLabel('Upload file to inspect and detect tools')
+      .setInputFiles([
+        {
+          name: 'alpha.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('one two three'),
+        },
+        {
+          name: 'beta.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('four five'),
+        },
+      ]);
+
+    await page
+      .getByRole('button', { name: 'Add Word counter as step' })
+      .click();
+    await page.getByLabel('Search operations').fill('text reverser');
+    await page
+      .getByLabel('Operation', { exact: true })
+      .selectOption('text:text-reverser');
+    await page
+      .getByRole('button', { name: 'Add Text reverser as step' })
+      .click();
+    await expect(page.getByTestId('pipeline-steps').getByRole('listitem')).toHaveCount(
+      2,
+    );
+
+    await page
+      .getByRole('button', { name: 'Run pipeline over 2 files' })
+      .click();
+    await expect(
+      page.getByTestId('outcomes').getByRole('listitem'),
+    ).toHaveCount(2);
+    await expect(page.getByTestId('receipt')).toContainText('Steps:');
+    await expect(page.getByTestId('receipt')).toContainText(
+      '1. Word counter (word-counter @ text)',
+    );
+    await expect(page.getByTestId('receipt')).toContainText(
+      '2. Text reverser (text-reverser @ text)',
+    );
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download results ZIP' }).click();
+    const resultDownload = await downloadPromise;
+    const resultPath = await resultDownload.path();
+    expect(resultPath).not.toBeNull();
+    const zipBytes = new Uint8Array(await readFile(resultPath!));
+    const archive = readZip(zipBytes);
+    const texts = await Promise.all(
+      archive.entries.map(async (entry) =>
+        new TextDecoder().decode(await extractEntry(zipBytes, entry)),
+      ),
+    );
+    expect(texts.toSorted()).toEqual(['2', '3']);
     expect(external).toEqual([]);
   });
 

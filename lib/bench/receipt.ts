@@ -6,6 +6,12 @@ export interface BenchReceipt {
   generatedAt: string;
   operation: { id: string; source: string; name: string };
   params: Readonly<Record<string, string>>;
+  steps?: readonly {
+    op: string;
+    source: string;
+    name: string;
+    params: Readonly<Record<string, string>>;
+  }[];
   counts: {
     inputs: number;
     succeeded: number;
@@ -25,6 +31,10 @@ export interface BuildReceiptArgs {
   inputs: readonly BenchInput[];
   outcomes: readonly BatchOutcome<BenchInput, BenchOutput[]>[];
   environment: string;
+  steps?: readonly {
+    operation: Pick<KernelOperation, 'id' | 'source' | 'name' | 'params'>;
+    params: Readonly<Record<string, string>>;
+  }[];
 }
 
 type UnsuccessfulOutcome = Extract<
@@ -65,6 +75,16 @@ export function buildReceipt(args: BuildReceiptArgs): BenchReceipt {
       name: args.operation.name,
     },
     params: serialisableParams(args.operation, args.params),
+    ...(args.steps
+      ? {
+          steps: args.steps.map((step) => ({
+            op: step.operation.id,
+            source: step.operation.source,
+            name: step.operation.name,
+            params: serialisableParams(step.operation, step.params),
+          })),
+        }
+      : {}),
     counts: {
       inputs: args.inputs.length,
       succeeded: succeeded.length,
@@ -116,6 +136,15 @@ export function receiptToText(receipt: BenchReceipt): string {
   if (params.length) {
     lines.push('Parameters:');
     for (const [id, value] of params) lines.push(`- ${id}: ${value}`);
+  }
+
+  if (receipt.steps) {
+    lines.push('Steps:');
+    for (const [index, step] of receipt.steps.entries()) {
+      lines.push(`${index + 1}. ${step.name} (${step.op} @ ${step.source})`);
+      for (const [id, value] of Object.entries(step.params))
+        lines.push(`   - ${id}: ${value}`);
+    }
   }
 
   if (receipt.failures.length) {

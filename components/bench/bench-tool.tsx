@@ -7,13 +7,23 @@ import {
   Play,
   Square,
 } from 'lucide-react';
-import { useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { AppShell } from '@/components/app-shell';
+import { PipelineEditor } from '@/components/bench/pipeline-editor';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { KERNEL_OPERATIONS } from '@/lib/kernel/registry';
+import { getOperation, KERNEL_OPERATIONS } from '@/lib/kernel/registry';
 import type { KernelOperation } from '@/lib/kernel/types';
+import { runPipeline } from '@/lib/pipeline/run';
+import type { Pipeline } from '@/lib/pipeline/types';
+import { validate } from '@/lib/pipeline/validate';
 import { searchTools } from '@/lib/tools/catalog';
 import {
   buildReceipt,
@@ -116,6 +126,11 @@ export function BenchTool() {
     defaults(operation),
   );
   const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
+  const [pipeline, setPipeline] = useState<Pipeline>({
+    version: 1,
+    name: 'Untitled pipeline',
+    steps: [],
+  });
   const [outcomes, setOutcomes] = useState<readonly Outcome[]>([]);
   const [receipt, setReceipt] = useState<BenchReceipt | null>(null);
   const [preview, setPreview] = useState<BenchOutput | null>(null);
@@ -127,6 +142,18 @@ export function BenchTool() {
     () => Boolean(window.showDirectoryPicker),
     () => false,
   );
+  const pipelineActive = pipeline.steps.length > 0;
+  const pipelineErrors = useMemo(
+    () => (pipelineActive ? validate(pipeline) : []),
+    [pipeline, pipelineActive],
+  );
+  const updatePipeline = useCallback((nextPipeline: Pipeline) => {
+    setPipeline(nextPipeline);
+    setPreview(null);
+    setOutcomes([]);
+    setReceipt(null);
+    setError('');
+  }, []);
 
   const matches = useMemo(() => {
     const terms = query
@@ -191,9 +218,27 @@ export function BenchTool() {
 
   const dryRun = async () => {
     if (!inputs[0]) return setError('Choose at least one file first.');
+    if (pipelineActive && pipelineErrors.length)
+      return setError(pipelineErrors.join(' '));
     setError('');
     const signal = new AbortController().signal;
     try {
+      if (pipelineActive) {
+        const [outcome] = await runPipeline({
+          inputs: [inputs[0]],
+          pipeline,
+          template,
+          signal,
+        });
+        if (!outcome || outcome.status !== 'done') {
+          setPreview(null);
+          return setError(
+            outcome ? outcome.reason : 'The pipeline preview failed.',
+          );
+        }
+        setPreview(outcome.output[0] ?? null);
+        return;
+      }
       const result = await runBenchInput({
         input: inputs[0],
         index: 0,
@@ -210,6 +255,8 @@ export function BenchTool() {
 
   const execute = async () => {
     if (!inputs.length) return setError('Choose at least one file first.');
+    if (pipelineActive && pipelineErrors.length)
+      return setError(pipelineErrors.join(' '));
     if (inputMode === 'folder-write' && !outputDirectory)
       return setError(
         'Choose a separate output folder before write-back. Originals are never overwritten.',
@@ -221,22 +268,48 @@ export function BenchTool() {
     const abort = new AbortController();
     controller.current = abort;
     try {
-      const result = await runBench({
-        inputs,
-        operation,
-        params,
-        template,
-        signal: abort.signal,
-        onProgress: ({ completed, total }) => setProgress({ completed, total }),
-      });
+      const progressHandler: Parameters<typeof runBench>[0]['onProgress'] = ({
+        completed,
+        total,
+      }) => setProgress({ completed, total });
+      const result = pipelineActive
+        ? await runPipeline({
+            inputs,
+            pipeline,
+            template,
+            signal: abort.signal,
+            onProgress: progressHandler,
+          })
+        : await runBench({
+            inputs,
+            operation,
+            params,
+            template,
+            signal: abort.signal,
+            onProgress: progressHandler,
+          });
       setOutcomes(result);
+      const receiptSteps = pipelineActive
+        ? pipeline.steps.map((step) => ({
+            operation: getOperation(step.op, step.source)!,
+            params: step.params,
+          }))
+        : undefined;
+      const finalReceiptStep = receiptSteps
+        ? receiptSteps[receiptSteps.length - 1]
+        : undefined;
+      const receiptOperation = finalReceiptStep
+        ? finalReceiptStep.operation
+        : operation;
+      const receiptParams = finalReceiptStep ? finalReceiptStep.params : params;
       const completedReceipt = buildReceipt({
         generatedAt: new Date().toISOString(),
-        operation,
-        params,
+        operation: receiptOperation,
+        params: receiptParams,
         inputs,
         outcomes: result,
         environment: navigator.userAgent,
+        ...(receiptSteps ? { steps: receiptSteps } : {}),
       });
       setReceipt(completedReceipt);
       const outputs = flatten(result);
@@ -251,7 +324,9 @@ export function BenchTool() {
         }
       }
       announceCompletion({
-        operation: `Bench: ${operation.name}`,
+        operation: pipelineActive
+          ? `Bench pipeline: ${pipeline.name}`
+          : `Bench: ${operation.name}`,
         durationMs: completedReceipt.durationMs,
         summary: `${outputs.length} outputs from ${inputs.length} inputs; nothing uploaded.`,
         metrics: [
@@ -387,6 +462,14 @@ export function BenchTool() {
           </p>
         </section>
 
+        <PipelineEditor
+          operation={operation}
+          params={params}
+          pipeline={pipeline}
+          disabled={running}
+          onChange={updatePipeline}
+        />
+
         <section
           className="grid gap-5 rounded-xl border bg-card p-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.7fr)]"
           aria-labelledby="operation-heading"
@@ -498,20 +581,39 @@ export function BenchTool() {
           <p className="text-xs text-muted-foreground">
             Tokens: {'{name} {ext} {index} {operation} {date}'}
           </p>
+          {pipelineActive && pipelineErrors.length ? (
+            <p
+              role="alert"
+              className="text-sm text-destructive"
+              data-testid="pipeline-run-error"
+            >
+              {pipelineErrors.join(' ')}
+            </p>
+          ) : null}
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
-              disabled={running || !inputs.length}
+              disabled={
+                running ||
+                !inputs.length ||
+                (pipelineActive && pipelineErrors.length > 0)
+              }
               onClick={() => void dryRun()}
             >
               Dry run first file
             </Button>
             <Button
-              disabled={running || !inputs.length}
+              disabled={
+                running ||
+                !inputs.length ||
+                (pipelineActive && pipelineErrors.length > 0)
+              }
               onClick={() => void execute()}
             >
               <Play />
-              Run {inputs.length || ''} files
+              {pipelineActive
+                ? `Run pipeline over ${inputs.length || ''} files`
+                : `Run ${inputs.length || ''} files`}
             </Button>
             {running ? (
               <Button

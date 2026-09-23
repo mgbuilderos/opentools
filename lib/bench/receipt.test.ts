@@ -234,4 +234,51 @@ describe('Bench run receipts', () => {
     expect(zeroFailure.failures).toEqual([]);
     expect(allFailure.counts).toMatchObject({ succeeded: 0, failed: 1 });
   });
+
+  it('lists safe multi-step settings without changing single-operation receipts', () => {
+    const single = buildReceipt(args([], []));
+    const pipeline = buildReceipt({
+      ...args([], []),
+      steps: [
+        {
+          operation,
+          params: {
+            mode: 'strict',
+            filename: 'private-client.pdf',
+            secret: 'sk_private',
+          },
+        },
+        {
+          operation: {
+            ...operation,
+            id: 'text-reverser',
+            name: 'Text reverser',
+          },
+          params: {},
+        },
+      ],
+    });
+
+    expect(single).not.toHaveProperty('steps');
+    expect(receiptToText(single)).not.toContain('Steps:');
+    expect(pipeline.steps).toEqual([
+      {
+        op: 'word-counter',
+        source: 'text',
+        name: 'Word counter',
+        params: { mode: 'strict' },
+      },
+      {
+        op: 'text-reverser',
+        source: 'text',
+        name: 'Text reverser',
+        params: {},
+      },
+    ]);
+    const text = receiptToText(pipeline);
+    expect(text).toContain('Steps:\n1. Word counter (word-counter @ text)');
+    expect(text).toContain('2. Text reverser (text-reverser @ text)');
+    expect(text).not.toContain('private-client.pdf');
+    expect(text).not.toContain('sk_private');
+  });
 });

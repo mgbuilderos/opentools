@@ -127,7 +127,10 @@ export function createPipelineStore(
 
 const defaultStore = createPipelineStore(createIndexedDbDriver());
 
-export const savePipeline = defaultStore.save;
-export const loadPipeline = defaultStore.load;
-export const listPipelines = defaultStore.list;
-export const deletePipeline = defaultStore.delete;
+export const savePipeline: PipelineStore['save'] = (pipeline) =>
+  defaultStore.save(pipeline);
+export const loadPipeline: PipelineStore['load'] = (name) =>
+  defaultStore.load(name);
+export const listPipelines: PipelineStore['list'] = () => defaultStore.list();
+export const deletePipeline: PipelineStore['delete'] = (name) =>
+  defaultStore.delete(name);
