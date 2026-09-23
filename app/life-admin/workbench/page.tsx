@@ -5,6 +5,7 @@ import { LifeAdminWorkbenchTool } from '@/components/life-admin-workbench-tool';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/life-admin/workbench' },
   title: 'India & Life-Admin Workbench',
   description:
     'Mask sensitive references, check common formats, and run everyday planning calculations locally in your browser.',

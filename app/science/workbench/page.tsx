@@ -5,6 +5,7 @@ import { ScienceEducationWorkbenchTool } from '@/components/science-education-wo
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/science/workbench' },
   title: 'Science & Learning Workbench',
   description:
     'Use transparent science calculators and build study materials locally in your browser.',

@@ -4,6 +4,7 @@ import { BenchTool } from '@/components/bench/bench-tool';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/bench' },
   title: 'The Bench — Run Private Tools Over a Folder',
   description:
     'Drop files or choose a folder, run any OpenTools operation locally, and keep the results as a ZIP or in a folder you choose.',

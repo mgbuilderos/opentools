@@ -19,6 +19,7 @@ export const revalidate = 86400;
 const BRIEF = practiceBrief('filing-bundle-under-portal-ceiling');
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/pdf/compress' },
   title: BRIEF.heading,
   description:
     'Shrink a PDF until it is under the upload ceiling a filing portal enforces, in your own browser. Published ceilings for the Income Tax e-filing and GST portals are offered as presets, each shown with its source and the date it was checked.',

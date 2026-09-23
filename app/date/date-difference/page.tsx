@@ -3,6 +3,7 @@ import { DateDifferenceTool } from '@/components/utility-tools';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/date/date-difference' },
   title: 'Date Difference Calculator',
   description: 'Count exact calendar days between dates.',
 };

@@ -5,6 +5,7 @@ import { DeveloperDataWorkbenchTool } from '@/components/developer-data-workbenc
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/developer/workbench' },
   title: 'Developer & Data Workbench',
   description:
     'Encode, decode, inspect, transform, hash, and test developer data locally.',
