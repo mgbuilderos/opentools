@@ -9,7 +9,9 @@ test.describe('The Bench', () => {
     await page.goto('/');
     // The prerendered input exists before its React change handler is hydrated.
     await page.waitForTimeout(500);
-    await page.getByRole('combobox', { name: 'Search tools' }).fill('The Bench');
+    await page
+      .getByRole('combobox', { name: 'Search tools' })
+      .fill('The Bench');
     const benchResult = page.getByRole('option', { name: /The Bench/u });
     await expect(benchResult).toBeVisible();
     await benchResult.click();
@@ -68,9 +70,11 @@ test.describe('The Bench', () => {
     const receiptPath = await receiptDownload.path();
     expect(receiptPath).not.toBeNull();
     const receiptText = await readFile(receiptPath!, 'utf8');
-    expect(receiptText.endsWith(
-      'Bytes uploaded: 0 - this page cannot make a network request.',
-    )).toBe(true);
+    expect(
+      receiptText.endsWith(
+        'Bytes uploaded: 0 - this page cannot make a network request.',
+      ),
+    ).toBe(true);
     expect(external).toEqual([]);
   });
 
@@ -113,9 +117,9 @@ test.describe('The Bench', () => {
     await page
       .getByRole('button', { name: 'Add Text reverser as step' })
       .click();
-    await expect(page.getByTestId('pipeline-steps').getByRole('listitem')).toHaveCount(
-      2,
-    );
+    await expect(
+      page.getByTestId('pipeline-steps').getByRole('listitem'),
+    ).toHaveCount(2);
 
     await page
       .getByRole('button', { name: 'Run pipeline over 2 files' })
