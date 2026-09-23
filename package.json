@@ -10,7 +10,7 @@
     "indexnow": "node scripts/submit-indexnow.mjs",
     "dev": "vinext dev",
     "prebuild": "npm run design:qc",
-    "build": "vinext build && node scripts/prerender-to-assets.mjs && node scripts/verify-static-coverage.mjs && node scripts/verify-no-orphans.mjs && node scripts/check-share-and-heading-order.mjs && node scripts/build-service-worker-precache.mjs",
+    "build": "vinext build && node scripts/prerender-to-assets.mjs && node scripts/verify-static-coverage.mjs && node scripts/verify-no-orphans.mjs && node scripts/verify-indexnow-key.mjs && node scripts/verify-built-headers.mjs && node scripts/check-share-and-heading-order.mjs && node scripts/build-service-worker-precache.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "node scripts/deploy-lock.mjs assert && wrangler deploy --config dist/server/wrangler.json",
     "lock": "node scripts/deploy-lock.mjs status",
@@ -35,7 +35,8 @@
     "seo:guide-distinctness": "node scripts/guide-distinctness-report.mjs",
     "audit:live": "node scripts/audit-live-seo.mjs",
     "audit:360": "node scripts/audit-360.mjs",
-    "sitemap:lastmod": "node scripts/build-sitemap-lastmod.mjs"
+    "sitemap:lastmod": "node scripts/build-sitemap-lastmod.mjs",
+    "verify:live": "node scripts/verify-live.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

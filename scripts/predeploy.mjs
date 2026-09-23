@@ -36,15 +36,21 @@ const ACCOUNT = '00f21e5724f9ebf7b1ab0cb42ae76b1e';
 const DAILY_ALLOWANCE = 1000;
 /**
  * Ceiling, not a bill: a page costs its two writes only when someone actually
- * requests it, so a quiet day spends a fraction of this. 155 opted-in pages x 2
- * keys, counted on 2026-09-21 by the same rule `lib/seo/cache-budget.test.ts`
- * applies. It had said 326 (163 pages) since 2026-09-19 and was already stale;
- * the guide-consolidation change took the cached guide route from 50 pages to
- * the 15 kept guides, which is most of the difference. KEEP IN SYNC with that
- * test -- opting a route in there without changing this makes every verdict
- * below optimistic. `WRITE_BUDGET = 1` in that test prints the current count.
+ * requests it, so a quiet day spends a fraction of this. 171 opted-in pages x 2
+ * keys, by the same rule `lib/seo/cache-budget.test.ts` applies.
+ *
+ * This number no longer has to be kept in step by hand, and the history is why:
+ * it said 326 from 2026-09-19 and was already stale when that was noticed, was
+ * corrected to 310 on 2026-09-21, and had drifted again to 342 by 2026-09-23
+ * without anyone touching it -- because it moves whenever a route opts into
+ * caching, which is a change nobody thinks of as touching the deploy verdict.
+ * Every one of those gaps made the verdict optimistic, which is the one
+ * direction that costs something.
+ *
+ * `lib/seo/cache-budget.test.ts` now computes the real figure and fails with
+ * the number to put here. Do not edit this by hand; run the test.
  */
-const FULL_REWARM = 310;
+const FULL_REWARM = 342;
 const ROOT = path.resolve(import.meta.dirname, '..');
 const STATE = path.join(ROOT, '.predeploy-state.json');
 
