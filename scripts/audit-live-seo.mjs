@@ -100,7 +100,8 @@ const CHECKS = [
     id: 'soft-404',
     why: 'a not-found page served as 200 is counted by Google as a soft 404',
     run: ({ html, status }) =>
-      status === 200 && /could not be found|404: This page/i.test(
+      status === 200 &&
+      /could not be found|404: This page/i.test(
         html.replace(/<script[\s\S]*?<\/script>/g, ''),
       )
         ? 'says not-found in the body but returns 200'
@@ -109,7 +110,7 @@ const CHECKS = [
 ];
 
 async function mapLimit(items, limit, fn) {
-  const out = new Array(items.length);
+  const out = Array.from({ length: items.length });
   let i = 0;
   await Promise.all(
     Array.from({ length: Math.min(limit, items.length) }, async () => {
@@ -125,7 +126,9 @@ async function mapLimit(items, limit, fn) {
 const sitemap = await (await fetch(`${ORIGIN}/sitemap.xml`)).text();
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
 if (urls.length === 0) {
-  console.error('No URLs in sitemap — refusing to report a clean sweep of nothing.');
+  console.error(
+    'No URLs in sitemap — refusing to report a clean sweep of nothing.',
+  );
   process.exit(2);
 }
 
@@ -164,7 +167,7 @@ for (const [value, list] of titles) {
       why: 'pages sharing a title compete with each other for the same query',
     });
 }
-for (const [value, list] of descriptions) {
+for (const [, list] of descriptions) {
   if (list.length > 1)
     findings.push({
       url: list[0],
@@ -175,23 +178,34 @@ for (const [value, list] of descriptions) {
 }
 
 if (AS_JSON) {
-  console.log(JSON.stringify({ origin: ORIGIN, checked: urls.length, findings }, null, 2));
+  console.log(
+    JSON.stringify({ origin: ORIGIN, checked: urls.length, findings }, null, 2),
+  );
 } else {
   const byCheck = new Map();
-  for (const f of findings) byCheck.set(f.check, [...(byCheck.get(f.check) || []), f]);
+  for (const f of findings)
+    byCheck.set(f.check, [...(byCheck.get(f.check) || []), f]);
   console.log(`\nSwept ${urls.length} live URLs at ${ORIGIN}`);
-  console.log(`Checks run per URL: ${CHECKS.map((c) => c.id).join(', ')}, plus duplicate title/description across the whole set\n`);
+  console.log(
+    `Checks run per URL: ${CHECKS.map((c) => c.id).join(', ')}, plus duplicate title/description across the whole set\n`,
+  );
   if (findings.length === 0) {
     console.log('  0 faults found.\n');
   } else {
-    for (const [check, list] of [...byCheck].sort((a, b) => b[1].length - a[1].length)) {
+    for (const [check, list] of [...byCheck].sort(
+      (a, b) => b[1].length - a[1].length,
+    )) {
       console.log(`  ${String(list.length).padStart(5)}  ${check}`);
       console.log(`         ${list[0].why ?? ''}`);
-      for (const f of list.slice(0, 5)) console.log(`         - ${f.url.replace(ORIGIN, '')} : ${f.detail}`);
-      if (list.length > 5) console.log(`         ... and ${list.length - 5} more`);
+      for (const f of list.slice(0, 5))
+        console.log(`         - ${f.url.replace(ORIGIN, '')} : ${f.detail}`);
+      if (list.length > 5)
+        console.log(`         ... and ${list.length - 5} more`);
       console.log('');
     }
-    console.log(`  TOTAL ${findings.length} faults across ${new Set(findings.map((f) => f.url)).size} URLs\n`);
+    console.log(
+      `  TOTAL ${findings.length} faults across ${new Set(findings.map((f) => f.url)).size} URLs\n`,
+    );
   }
 }
 process.exit(findings.length === 0 ? 0 : 1);

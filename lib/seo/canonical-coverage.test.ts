@@ -66,9 +66,9 @@ const DECLARES = /canonical\s*:/;
  * helper named here is itself asserted below to set a self-canonical -- the
  * indirection is allowed, not the omission.
  */
-const CANONICAL_HELPERS: ReadonlyArray<readonly [name: string, source: string]> = [
-  ['toolPageMetadata', 'lib/seo/tool-page-depth.ts'],
-];
+const CANONICAL_HELPERS: ReadonlyArray<
+  readonly [name: string, source: string]
+> = [['toolPageMetadata', 'lib/seo/tool-page-depth.ts']];
 
 function declaresIn(file: string): boolean {
   const source = readFileSync(file, 'utf8');
@@ -135,7 +135,6 @@ describe('canonical coverage', () => {
     expect(inheriting).toEqual([]);
   });
 
-
   /**
    * The indirection above is only safe while the helper really does set one.
    * If `toolPageMetadata` ever stops emitting a canonical, every page that
@@ -151,8 +150,10 @@ describe('canonical coverage', () => {
         continue;
       }
       const text = readFileSync(full, 'utf8');
-      if (!DECLARES.test(text)) broken.push(`${name}: ${source} sets no canonical`);
-      if (!text.includes('route')) broken.push(`${name}: ${source} ignores the route`);
+      if (!DECLARES.test(text))
+        broken.push(`${name}: ${source} sets no canonical`);
+      if (!text.includes('route'))
+        broken.push(`${name}: ${source} ignores the route`);
     }
     expect(broken).toEqual([]);
   });
