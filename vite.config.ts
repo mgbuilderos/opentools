@@ -2,7 +2,14 @@ import { sites } from '@openai/sites-vite-plugin';
 import { kvDataAdapter } from '@vinext/cloudflare/cache/kv-data-adapter';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+import {
+  pinnedRscBuildIdentity,
+  pinnedRscCompatibilityId,
+  resolvePinnedBuildId,
+  VINEXT_SHARED_RSC_BUILD_IDENTITY_ENV,
+  VINEXT_SHARED_RSC_COMPATIBILITY_ID_ENV,
+} from './lib/build/build-identity';
 import hostingConfig from './.openai/hosting.json' with { type: 'json' };
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
@@ -43,6 +50,72 @@ const localBindingConfig = {
     : [],
 };
 
+/**
+ * Hand vinext the two identities it otherwise mints at random, derived from the
+ * commit, so that two builds of the same tree produce the same bytes.
+ *
+ * The compatibility id is the one that matters to a visitor: it is baked into
+ * the client bundle, so a random one renamed most of `/_next/static/chunks/`
+ * on every build. The build identity never leaves the Worker; pinning it is
+ * what makes `dist/server` reproducible, so a deploy can be checked against the
+ * commit it claims to come from.
+ *
+ * Why here and not in `next.config.ts`: the only knob vinext exposes for this
+ * id is `deploymentId`, and setting that would also switch on
+ * `experimental.renderBuiltUrl`, which appends `?dpl=<id>` to every asset URL
+ * a stylesheet or an HTML document points at. Those URLs would then change on
+ * every commit -- re-breaking, for the entry chunk and the CSS, the very
+ * caching this fix exists to restore. The shared environment variable below is
+ * vinext's own mechanism for giving one id to all the Vite builds in a run;
+ * borrowing it changes the value and nothing else.
+ *
+ * `vinext build` sets this variable to a random UUID before it starts the
+ * builds, so it cannot be pinned from outside the process. It is read again,
+ * per build, by vinext's `vinext:config` plugin -- which is `enforce: 'pre'`,
+ * hence `enforce: 'pre'` and first in the `plugins` array here.
+ *
+ * `writeBundle` then proves vinext actually used it. Without that, a vinext
+ * upgrade that renames the variable would silently restore the random id and
+ * the build would quietly stop being reproducible again.
+ */
+function pinRscIdentities(): Plugin {
+  const buildId = resolvePinnedBuildId();
+  const pinned = pinnedRscCompatibilityId(buildId);
+  const pinnedBuildIdentity = pinnedRscBuildIdentity(buildId);
+  return {
+    name: 'opentools:pin-rsc-identities',
+    enforce: 'pre',
+    apply: 'build',
+    config() {
+      if (pinned) process.env[VINEXT_SHARED_RSC_COMPATIBILITY_ID_ENV] = pinned;
+      if (pinnedBuildIdentity)
+        process.env[VINEXT_SHARED_RSC_BUILD_IDENTITY_ENV] = pinnedBuildIdentity;
+    },
+    writeBundle(options, bundle) {
+      // Only the compatibility id is checked here, because only it reaches a
+      // chunk a browser loads, and only the client build is written to
+      // `dist/client`. The build identity's own rename risk is covered by the
+      // test that reads vinext's source. Matched on the last two segments so an
+      // absolute and a relative `outDir` are both recognised -- a guard that
+      // quietly matches nothing is worse than no guard.
+      const outDir = (options.dir ?? '')
+        .replaceAll('\\', '/')
+        .replace(/\/+$/, '');
+      if (!pinned || !/(^|\/)dist\/client$/.test(outDir)) return;
+      const carried = Object.values(bundle).some(
+        (output) => output.type === 'chunk' && output.code.includes(pinned),
+      );
+      if (!carried)
+        this.error(
+          `The pinned RSC compatibility id is missing from the client bundle. ` +
+            `vinext no longer reads ${VINEXT_SHARED_RSC_COMPATIBILITY_ID_ENV}, ` +
+            `so it has gone back to a random id per build and the build is no ` +
+            `longer reproducible. See lib/build/build-identity.ts.`,
+        );
+    },
+  };
+}
+
 export default defineConfig(async () => {
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
@@ -59,6 +132,7 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
+      pinRscIdentities(),
       vinext({
         // Every route is rendered at build time and served from the Worker
         // bundle, so a page request never renders React. The KV cache alone

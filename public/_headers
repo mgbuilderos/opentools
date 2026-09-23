@@ -101,6 +101,15 @@
 # unchangeable file — still answered `cf-cache-status: MISS`. `immutable` is
 # the honest statement of what these files are: a year, and no revalidation,
 # for both the browser and the edge.
+#
+# The converse matters as much and was not true until 2026-09-23: a rebuild of
+# UNCHANGED code used to rename every file here too. Under the year-long
+# `immutable` rule above that is the expensive direction of the mistake — the
+# browser never re-checks these files, so it never learns a name is still good;
+# a renamed file is simply a new file, fetched in full. Two builds of one commit
+# are now byte-identical — see `lib/build/build-identity.ts` — so a deploy that
+# changes nothing costs a returning visitor nothing, and a deploy that changes
+# one component costs them that component.
 /_next/static/*
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
