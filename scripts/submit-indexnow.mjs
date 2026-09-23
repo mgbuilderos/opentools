@@ -25,6 +25,7 @@
 
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const ORIGIN = 'https://getopentools.com';
 const HOST = new URL(ORIGIN).host;
@@ -39,8 +40,13 @@ const root = path.dirname(import.meta.dirname);
  * the single source of truth. IndexNow verifies ownership by fetching
  * `${ORIGIN}/${key}.txt` and checking it contains exactly the key — if that
  * file stops being served, submissions start failing with 403.
+ *
+ * Exported because `scripts/verify-indexnow-key.mjs` fails the build when that
+ * file goes missing, and it has to ask the same question this script asks. Two
+ * copies of "which file is the key" would be one copy too many: the guard
+ * would keep passing while the submitter it protects had already broken.
  */
-function keyFromPublicDir() {
+export function keyFromPublicDir() {
   const candidates = readdirSync(path.join(root, 'public')).filter((name) =>
     /^[0-9a-f]{8,128}\.txt$/u.test(name),
   );
@@ -116,7 +122,18 @@ async function main() {
   process.exit(1);
 }
 
-main().catch((error) => {
-  console.error(`✘ ${error.message}`);
-  process.exit(1);
-});
+/**
+ * Only submit when run as a command. `verify-indexnow-key.mjs` imports this
+ * file for `keyFromPublicDir`, and an import that also pushed 600 URLs to
+ * IndexNow would turn a build guard into a live side effect.
+ */
+const runAsCommand =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (runAsCommand) {
+  main().catch((error) => {
+    console.error(`✘ ${error.message}`);
+    process.exit(1);
+  });
+}

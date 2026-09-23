@@ -4,11 +4,18 @@
 # declaration is what runs and this file is ignored. On the Cloudflare build it
 # is the exact opposite: `headers()` is never applied, and only this file
 # reaches a visitor. Neither file is redundant and neither is authoritative on
-# its own — **they must be kept in step by hand**, and a header added to one and
-# not the other silently ships to only half the users.
+# its own, and a header added to one and not the other silently ships to only
+# half the users.
 #
 # Verified on 2026-09-19 against production: `X-Frame-Options`, declared in
 # `next.config.ts` but absent here, was reaching nobody.
+#
+# This used to say the two files must be kept in step by hand. They are now
+# kept in step by `lib/security/header-parity.test.ts`, which fails when a
+# header declared in `next.config.ts` is missing here or carries a different
+# value. `X-Robots-Tag` is the one deliberate exception, for the reason below.
+# `scripts/verify-built-headers.mjs` then fails the build if the copy that
+# actually gets uploaded, `dist/client/_headers`, is not this file.
 #
 # `ALLOW_INDEXING=false` has the same shape of problem and cannot be fixed here:
 # this file is static and cannot read an environment variable. **Setting it does
@@ -61,8 +68,17 @@
 # **The cost of this is deploy propagation.** The edge may go on serving the
 # previous build for up to the `s-maxage` below (plus however long until the
 # next request triggers the background refresh). An hour is the deliberate
-# ceiling on that; purge the zone cache after a deploy that has to be visible
-# immediately. Do not raise it without deciding that trade again.
+# ceiling on that. Do not raise it without deciding that trade again;
+# `lib/edge-cache-headers.test.ts` fails if it goes up.
+#
+# The dangerous part of that window is not the delay, it is that a check run
+# during it reads the PREVIOUS build and finds it healthy — because the
+# previous build was healthy, that is why it was deployed. `npm run verify:live`
+# cannot be fooled that way: every page this build produces carries its own
+# build id inline (`"deploymentVersion"`), and that script compares the served
+# id against `dist/server/BUILD_ID` on every page it reads. A stale or
+# half-refreshed edge is reported as "cannot tell" and exits 2. It never
+# reports success on bytes it cannot attribute to the build being verified.
 
 /*
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:

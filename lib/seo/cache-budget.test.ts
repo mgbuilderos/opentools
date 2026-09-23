@@ -71,25 +71,59 @@ function cachesItself(file: string): boolean {
 describe('the page cache stays inside the free Cloudflare allowance', () => {
   const pages = pageFiles(appDir);
 
-  it('finds the app routes at all, so a silent zero cannot pass', () => {
-    expect(pages.length).toBeGreaterThan(30);
-  });
-
-  it('costs fewer writes than a day of the free plan allows', () => {
+  /** What one deploy costs: every opted-in page, re-warmed. */
+  function rewarmCost() {
     let cachedPages = 0;
     const cached: string[] = [];
-
     for (const { route, file } of pages) {
       if (!cachesItself(file)) continue;
       cached.push(route || '/');
       cachedPages += DYNAMIC_PAGE_COUNTS[route]?.() ?? 1;
     }
+    return { cachedPages, cached, writes: cachedPages * WRITES_PER_PAGE };
+  }
 
-    const writes = cachedPages * WRITES_PER_PAGE;
+  it('finds the app routes at all, so a silent zero cannot pass', () => {
+    expect(pages.length).toBeGreaterThan(30);
+  });
+
+  it('costs fewer writes than a day of the free plan allows', () => {
+    const { writes, cachedPages, cached } = rewarmCost();
     expect(
       writes,
       `Caching ${cachedPages} pages costs ${writes} KV writes a day, over the ${WRITE_BUDGET} budget. Opted in: ${cached.join(', ')}. See docs/CACHE_BUDGET.md.`,
     ).toBeLessThanOrEqual(WRITE_BUDGET);
+  });
+
+  it('agrees with the FULL_REWARM constant the deploy verdict is priced on', () => {
+    // `scripts/predeploy.mjs` prices a deploy against FULL_REWARM, and its own
+    // comment says to KEEP IN SYNC with this test by hand. It did not stay in
+    // sync: it read 326 from 2026-09-19 while the real cost had moved, and the
+    // header records that it "was already stale". An optimistic constant makes
+    // every deploy verdict optimistic, which is the one direction that costs
+    // something.
+    //
+    // So the constant is read out of the script and compared, rather than
+    // remembered. Changing what is cached now fails here with the number to
+    // put in its place.
+    const source = readFileSync(
+      path.join(appDir, '..', 'scripts', 'predeploy.mjs'),
+      'utf8',
+    );
+    const match = /^const FULL_REWARM = (\d+);$/mu.exec(source);
+    expect(
+      match,
+      'scripts/predeploy.mjs no longer declares `const FULL_REWARM = <n>;`, ' +
+        'so this test cannot check the number the deploy verdict is priced on',
+    ).not.toBeNull();
+
+    const { writes, cached } = rewarmCost();
+    expect(
+      Number(match![1]),
+      `FULL_REWARM in scripts/predeploy.mjs is ${match![1]}, but re-warming ` +
+        `everything currently opted in costs ${writes} KV writes. Set it to ` +
+        `${writes}. Opted in: ${cached.join(', ')}.`,
+    ).toBe(writes);
   });
 
   it('never sets a blanket revalidate in the root layout', () => {

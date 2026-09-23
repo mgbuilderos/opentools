@@ -87,6 +87,10 @@ const nextConfig: NextConfig = {
    * still blocked the whole time by `frame-ancestors 'none'` in the CSP, which
    * does ship — but the declaration below was reaching nobody.)
    *
+   * `lib/security/header-parity.test.ts` now enforces that rather than asking
+   * for it: adding a header here without adding it to `public/_headers` fails
+   * the test suite, and so does letting the two values drift apart.
+   *
    * `ALLOW_INDEXING` has the same defect and no fix on this path: `_headers` is
    * static and cannot read the environment, so setting it to `false` does not
    * de-index the Cloudflare deploy. See `public/_headers`.
