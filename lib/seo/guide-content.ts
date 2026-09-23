@@ -4596,6 +4596,1197 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-compressor', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-compressor': {
+    directAnswer:
+      'Choose a single file of up to 256 MiB and select Run operation to compress it into standard gzip format directly inside your browser. The tool streams your local file bytes through the native browser Compression Streams interface, calculates the exact resulting size, and provides a new .gz download without uploading any information across the network.',
+    leadParagraph:
+      'This tool packages an individual file into an RFC 1952 compliant gzip container using your browser\'s built-in CompressionStream interface. Because data processing takes place on a dedicated stream in local tab memory, raw file bytes are never transferred across an external network connection. When compression finishes, the interface reports the exact byte change alongside the percentage reduction, for example "Compressed notes.txt: 12,400 \u2192 3,100 bytes (75% smaller)". For files that are already compressed or contain high-entropy binary sequences, the output summary notes that "gzip overhead exceeded savings". The browser security model prevents overwriting source files in place, so the transformed result is delivered as a separate download carrying the .gz extension. The engine requires exactly one file per run, rejecting empty inputs or multi-file selections with the validation prompt "Choose at least 1 file." Files exceeding the 256 MiB in-browser limit are refused immediately to preserve device stability.',
+    faqs: [
+      {
+        question: 'Does this file compressor create a multi-file ZIP archive?',
+        answer:
+          'No. This tool creates an individual .gz archive using native gzip compression streams. It does not combine multiple files, construct directory structures, or generate .zip containers. If you need to bundle several files together, use the dedicated ZIP tool on this platform instead.',
+      },
+      {
+        question:
+          'What happens if my browser does not support Compression Streams?',
+        answer:
+          'If your browser environment lacks the standard CompressionStream interface, execution immediately halts and displays the message "Gzip Compression Streams are unavailable in this browser." Modern versions of Chrome, Firefox, Safari, and Edge support this feature natively.',
+      },
+      {
+        question:
+          'Why does the compressed file sometimes turn out larger than the original?',
+        answer:
+          'Gzip adds header fields, block overhead, and a CRC32 checksum trailer. When processing files that are already compressed\u2014such as JPEG pictures, PNG graphics, MP4 videos, or existing archives\u2014deflate cannot compress the data further, causing the output report to indicate "gzip overhead exceeded savings".',
+      },
+      {
+        question:
+          'What is the maximum file size permitted by the browser compressor?',
+        answer:
+          'The tool sets an explicit safety ceiling of 256 MiB (268,435,456 bytes). Attempting to provide a larger file throws an error stating that the file exceeds the 256 MiB in-browser processing limit, protecting your browser tab from memory exhaustion.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-chunk-splitter', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-chunk-splitter': {
+    directAnswer:
+      'Select one local file and set your desired chunk size in bytes, then click Run operation. The tool calculates the required segment count, slices the binary data into numbered part files, and presents each chunk for download without sending any bytes outside your browser session. Every piece is generated in local memory and ready for immediate saving.',
+    leadParagraph:
+      'This tool divides any file into byte-exact slices based on your configured chunk size, which defaults to 1,048,576 bytes (exactly 1 MiB). Each chunk is produced by slicing the underlying binary buffer and assigning a zero-padded sequential suffix, such as .part01 and .part02, calibrated to match the total chunk count. The output panel renders a complete breakdown displaying each partition filename alongside its exact byte length. To prevent runaway allocations, the engine enforces a strict maximum of 1,000 chunks; if your configured byte size would produce more pieces, the execution halts with "Chunk count would exceed 1,000. Increase chunk size." The tool processes one file per run, requiring a positive integer between 1 and 268,435,456 bytes. Every byte is preserved in order, ensuring that joining the pieces afterwards restores the original file bit-for-bit.',
+    faqs: [
+      {
+        question: 'How are the split chunk files named?',
+        answer:
+          'Each slice keeps the original filename and appends a zero-padded part number. For example, a file named sample.bin split into forty pieces will generate download items from sample.bin.part01 through sample.bin.part40.',
+      },
+      {
+        question: 'What is the limit on how many chunks can be generated?',
+        answer:
+          'The splitter permits up to 1,000 chunks per execution. If dividing your file by the requested chunk size yields more than 1,000 parts, the tool refuses the operation with "Chunk count would exceed 1,000. Increase chunk size."',
+      },
+      {
+        question: 'Can I split a file larger than 256 MiB?',
+        answer:
+          'No. The file workbench maintains a strict 256 MiB ceiling across all in-browser operations. Files exceeding this threshold are blocked immediately to ensure tab stability and prevent memory crashes.',
+      },
+      {
+        question: 'Does the splitting process alter file headers or metadata?',
+        answer:
+          'No headers, checksums, or wrapper formats are added. The tool performs clean binary slicing, meaning the bytes of chunk one followed immediately by chunk two reconstitute the authentic file contents.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-chunk-joiner', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-chunk-joiner': {
+    directAnswer:
+      'Select two or more split chunk files in your desired sequence, enter an output filename, and click Run operation. The tool concatenates the binary buffers byte-for-byte in the exact selection order and offers the unified file for immediate download without uploading anything to a remote server. The operation runs entirely within local device memory.',
+    leadParagraph:
+      'This utility reconstructs a single unified file from previously partitioned binary fragments. It allocates a single contiguous buffer matching the sum of all provided file sizes and sequentially copies every byte in the order received. Because the tool intentionally does not parse, infer, or reorder parts based on filenames or numerical suffixes, maintaining the correct selection order in your file picker is essential. If only one file is provided, validation stops with "Choose at least 2 files." The default destination filename is joined.bin, though you can provide any valid filename; illegal path characters including slashes, backslashes, and null bytes are automatically sanitised. The output view presents a numbered list of each incorporated chunk with its individual byte count and total combined size. You can verify chunk boundaries before downloading the finished document.',
+    faqs: [
+      {
+        question:
+          'Does the tool automatically reorder chunk files by part number?',
+        answer:
+          'No. The tool deliberately concatenates chunks in the exact order supplied by your browser file selection. It does not inspect filenames or sort by numerical extensions, giving you full control over assembly order.',
+      },
+      {
+        question: 'What is the minimum number of chunks required?',
+        answer:
+          'You must select at least two files. If fewer than two files are provided, the engine rejects the request with the explicit validation error "Choose at least 2 files."',
+      },
+      {
+        question:
+          'How does the tool handle invalid characters in the output filename?',
+        answer:
+          'The output filename input is sanitised to prevent directory traversal or filesystem errors. Slashes, backslashes, and null characters are stripped, and surrounding whitespace is trimmed.',
+      },
+      {
+        question: 'Is there a limit on total joined file size?',
+        answer:
+          'Yes. The aggregate size of all input chunks combined cannot exceed the browser environment memory limits, and individual file validation caps single inputs at 256 MiB.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-checksum-verifier', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-checksum-verifier': {
+    directAnswer:
+      'Choose a file, pick SHA-256, SHA-384, or SHA-512, enter your expected hexadecimal hash, and run the verifier. The browser calculates the cryptographic digest directly from your local bytes and tells you whether the checksum matches, keeping your file entirely private throughout the verification process without sending bytes to an external machine.',
+    leadParagraph:
+      'This tool computes an authentic cryptographic hash of any local file and checks it against an expected hexadecimal string. It leverages the Web Cryptography API (crypto.subtle.digest) to calculate standard SHA-256, SHA-384, or SHA-512 hashes with native browser speed. The expected checksum input is thoroughly checked: surrounding whitespace is removed, letters are normalised to lowercase, and any non-hexadecimal characters trigger the error "Expected checksum must be hexadecimal." Once evaluated, the tool provides a definitive match verdict\u2014either "Checksum matches" or "Checksum does not match"\u2014alongside the algorithm, expected value, and actual calculated digest. Because verification runs strictly inside your tab session, proprietary code, sensitive backups, and private documents can be verified against public release hashes without risk of data exposure. You receive an instant verification readout showing both the expected digest and the calculated digest.',
+    faqs: [
+      {
+        question: 'Which cryptographic hash algorithms are supported?',
+        answer:
+          'The verifier supports SHA-256, SHA-384, and SHA-512. MD5 and SHA-1 are deliberately excluded because their cryptographic collision resistance is compromised, making them unsuitable for integrity guarantees.',
+      },
+      {
+        question: 'Does case matter when entering the expected checksum?',
+        answer:
+          'No. The expected checksum is normalised to lowercase before comparison. However, it must contain exclusively valid hexadecimal digits (0\u20139 and a\u2013f); any other character raises "Expected checksum must be hexadecimal."',
+      },
+      {
+        question:
+          'Are file contents or calculated digests sent to an external server?',
+        answer:
+          "No. The calculation runs entirely through your browser's native crypto.subtle implementation under a strict Content Security Policy that forbids external network connections on tool routes.",
+      },
+      {
+        question: 'Can I verify multiple files simultaneously with this tool?',
+        answer:
+          'The checksum verifier operates on exactly one file per run. To inspect multiple files or search for duplicate digests across directories, use the Duplicate-file finder or Folder manifest generator.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'duplicate-file-finder', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-duplicate-file-finder': {
+    directAnswer:
+      'Select a batch of files to compare their exact byte lengths and SHA-256 cryptographic digests in your browser tab. The tool groups files that share identical contents, displays their relative paths, and reports whether duplicate groups were detected without sending data across the network to any third party. Your files remain completely confidential throughout.',
+    leadParagraph:
+      'This tool identifies duplicate files by verifying exact content identity rather than relying on surface metadata. When you select multiple files, the engine indexes each item using a compound key consisting of its exact byte length and its computed SHA-256 digest. Filenames, extensions, and operating system modification dates are deliberately ignored, ensuring that two identical files with different names are recognized as duplicates, while files sharing a name but differing by even a single bit are never falsely grouped. When duplicates are present, the summary states the count of duplicate groups and itemizes each group with its member file paths. If every file is distinct, the output reports "No exact-byte duplicates found." All hash computations execute locally, making it safe to inspect private directories and confidential archives without exposing proprietary data.',
+    faqs: [
+      {
+        question:
+          'How does the finder determine whether two files are duplicates?',
+        answer:
+          'It pairs the exact byte count of each file with a full SHA-256 hash calculated over its contents. Two files are categorized as duplicates only when both their byte size and their cryptographic hash match identically.',
+      },
+      {
+        question: 'Does changing a filename prevent duplicate detection?',
+        answer:
+          'No. Filenames and file extensions are completely ignored during content hashing. A file named draft.docx and a file named final.pdf containing identical bytes will be grouped together as exact duplicates.',
+      },
+      {
+        question:
+          'Does the tool automatically delete duplicate files from my disk?',
+        answer:
+          'No. Due to browser security restrictions, web applications cannot delete or alter files on your local filesystem. The tool provides a transparent report of duplicates so you can remove them manually.',
+      },
+      {
+        question: 'What is the minimum number of files required to run?',
+        answer:
+          'You must select at least one file, though identifying duplicates naturally requires choosing two or more files across your directories.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-signature-inspector', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-signature-inspector': {
+    directAnswer:
+      'Select one or more files to inspect their leading binary headers against known file format signatures right in your browser. The tool extracts initial magic bytes, matches them to recognised format specifications, and lists the detected file type for each item without uploading your files to any external service. All checks execute locally inside your current session.',
+    leadParagraph:
+      'This tool inspects the initial byte sequences of your selected files to identify their underlying formats regardless of what their filename extensions claim. Operating system file extensions can be accidentally altered or deliberately disguised, but file headers retain the authentic format identifier. The engine extracts the leading binary slice and evaluates it against an internal database of common file signatures, identifying formats such as PNG, JPEG, GIF, PDF, ZIP, WebP, BMP, TIFF, and audio containers. The output report lists each file path alongside its matched format description, or marks it as an unknown binary sequence if no signature aligns. As the tool notes in its interface, a signature match is a helpful indicator rather than definitive proof that an entire file is structurally valid or free from corruption. The inspector accepts multiple files simultaneously, processing each in memory and presenting a clear tabular summary.',
+    faqs: [
+      {
+        question: 'What file formats can the signature inspector identify?',
+        answer:
+          'The inspector recognises standard container and image signatures including JPEG, PNG, GIF, WebP, PDF, ZIP archives, GZIP compressed streams, BMP, TIFF, WAV, MP3, and FLAC audio files. Unknown or proprietary binary formats are identified as unknown signatures.',
+      },
+      {
+        question:
+          'Does a positive signature match guarantee the file is uncorrupted?',
+        answer:
+          'No. A signature match inspects only the opening bytes of the file. It proves that the header matches the expected specification, but it does not parse trailing records or verify internal structural integrity across the entire document.',
+      },
+      {
+        question: 'Can I inspect multiple files at once?',
+        answer:
+          'Yes. You can select multiple individual files or drag an entire collection into the tool. The engine processes each file in sequence and emits a unified summary table in the results area.',
+      },
+      {
+        question:
+          'Are my files uploaded to a remote server for signature checking?',
+        answer:
+          'No. All byte inspection runs locally in your browser memory using standard JavaScript typed arrays. No network requests are made, keeping your confidential files private.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'mime-type-detector', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-mime-type-detector': {
+    directAnswer:
+      'Select your files to cross-reference their browser-reported MIME types, filename extensions, and underlying binary magic signatures in one local view. The tool highlights discrepancies where a file extension does not match its true binary format, helping you diagnose file upload rejections without transmitting data across the internet. Everything is calculated in local memory.',
+    leadParagraph:
+      'This diagnostic utility compares three distinct representations of file identity: the MIME type reported by the operating system file picker, the extension present on the filename, and the authentic magic byte signature read directly from the binary header. In web environments, file upload failures frequently stem from MIME type mismatches\u2014such as a file named document.pdf that actually contains HTML text or a PNG image masquerading under a .jpg extension. The detector evaluates each selected file and produces a structured report showing the browser type, the signature type, and the filename extension side by side. Where the three attributes disagree, you can immediately identify why a form or backend service rejected the upload. All byte reading takes place in local browser memory under strict CSP restrictions, ensuring that confidential corporate documents, code archives, and image assets are analysed safely without cloud exposure.',
+    faqs: [
+      {
+        question:
+          'Why does the browser MIME type sometimes say "not supplied"?',
+        answer:
+          'When an operating system does not recognise a file extension or when a file has no extension at all, the browser File API leaves the type property empty. In such cases, the tool marks the browser type as not supplied and relies on binary magic bytes.',
+      },
+      {
+        question:
+          'How does this tool help fix file upload errors on other websites?',
+        answer:
+          'Many web platforms reject files when the declared extension conflicts with the HTTP content type or binary header. By comparing all three indicators in this tool, you can detect disguised formats or incorrect extensions and correct them before uploading.',
+      },
+      {
+        question: 'Does the tool modify my files when detecting MIME types?',
+        answer:
+          'No. The detection process is entirely read-only. It reads the initial bytes into a temporary buffer to determine the signature and leaves the original file untouched.',
+      },
+      {
+        question: 'What is the file size limit for MIME type detection?',
+        answer:
+          'The tool operates within the standard 256 MiB per-file safety limit of the file workbench. Because it only needs the leading header bytes to detect signatures, inspection is near instantaneous regardless of file size.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'magic-byte-inspector', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-magic-byte-inspector': {
+    directAnswer:
+      'Upload one or more files to display their opening 32 bytes in formatted hexadecimal notation alongside any matched signature description. The tool renders the exact leading bytes on screen instantly, enabling low-level format inspection and header verification without sending your files outside your browser. Analysis completes instantly using purely client-side memory buffers.',
+    leadParagraph:
+      'This low-level inspection tool extracts and displays the first 32 bytes of any chosen file as a spaced hexadecimal string alongside its detected format name. Magic bytes represent the unique binary sequences placed at the very start of a file to identify its format to operating systems, compilers, and media decoders. For example, a PNG file begins with the distinct sequence "89 50 4e 47 0d 0a 1a 0a", while a PDF begins with the ASCII representation of "%PDF". By viewing the exact hexadecimal values, developers and system administrators can investigate corrupted files, identify mystery binary blobs, or verify that an export tool produced valid container headers. The tool accepts multiple files simultaneously, formatting each entry with its file path, signature label, and hex dump. Because processing runs entirely through client-side TypedArrays, binary analysis remains completely confidential.',
+    faqs: [
+      {
+        question: 'How many bytes does the magic byte inspector display?',
+        answer:
+          'The inspector displays exactly the first 32 bytes of each file, formatted as two-character hexadecimal pairs separated by spaces. This length covers virtually all standard container and image magic numbers.',
+      },
+      {
+        question: 'Can I view the entire file in hexadecimal with this tool?',
+        answer:
+          'This tool is specialised for header inspection up to 32 bytes. If you need to navigate, scroll, or inspect deeper byte offsets throughout an entire file, use the dedicated Hex viewer tool in this workbench.',
+      },
+      {
+        question: 'Does the inspector alter the file in any way?',
+        answer:
+          'No. The inspection reads a slice of the initial bytes into a typed array for display only. No data is modified, re-encoded, or written back to your disk.',
+      },
+      {
+        question: 'Are sensitive files protected during inspection?',
+        answer:
+          'Yes. The application runs under a strict Content Security Policy with network connections disabled on tool pages. Your binary data is never transmitted to an external server or third party.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-metadata-viewer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-metadata-viewer': {
+    directAnswer:
+      'Select one or multiple files to inspect their browser-level File API properties in structured JSON format. The tool extracts filename, relative path, byte size, browser MIME hint, and ISO modification timestamp without reading embedded document metadata or sending information to a remote server. You can copy the generated JSON directly to your clipboard.',
+    leadParagraph:
+      'This tool reads and formats the system-level metadata exposed by the browser File API when you choose files through the native picker. The generated output is presented as clean, two-space indented JSON containing the file name, relative directory path (when selecting folders), exact byte size, browser-reported MIME type, and last modified date formatted as an ISO 8601 string. The viewer is intentionally scoped to surface-level container properties: it does not parse internal EXIF tags, audio ID3 headers, PDF document properties, or archive structures. This makes it an ideal lightweight utility for developers needing a quick JSON inventory of file sizes and modification timestamps before running batch processing jobs. All data extraction happens locally in your browser, ensuring that internal directory structures and personal timestamps remain private. The resulting data is fully valid JSON ready for automation workflows.',
+    faqs: [
+      {
+        question: 'Does this metadata viewer display camera EXIF or GPS data?',
+        answer:
+          'No. This tool reads only the browser File API properties such as filename, size, and filesystem modification time. To inspect internal camera settings, GPS coordinates, or lens models, use the dedicated EXIF metadata inspector.',
+      },
+      {
+        question: 'Can I copy or export the resulting metadata JSON?',
+        answer:
+          'Yes. The output panel presents the metadata as valid, formatted JSON that you can copy to your clipboard for use in scripts, manifests, or automated pipelines.',
+      },
+      {
+        question: 'Why is the relative path sometimes null in the output?',
+        answer:
+          'When files are selected individually through a standard file picker, browsers do not expose local folder hierarchies for security reasons. Relative paths are populated only when using a folder picker or dropping a directory.',
+      },
+      {
+        question: 'Are timestamps accurate across different time zones?',
+        answer:
+          "The last modified timestamp is converted from the file's epoch millisecond value into a standardised UTC ISO 8601 string, providing unambiguous, timezone-independent timestamps.",
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'filename-cleaner', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-filename-cleaner': {
+    directAnswer:
+      'Choose your files, pick a word separator like a hyphen or underscore, and click Run operation to generate clean, web-safe filenames. The tool strips accents, replaces special characters, collapses duplicate separators, and offers renamed copies for download while keeping original file contents completely unaltered. All processing executes in your browser without network transfers.',
+    leadParagraph:
+      'This utility converts messy, irregular filenames into safe, normalised strings suitable for web servers, command-line tools, and cross-platform archives. It applies Unicode NFKD normalisation to decompose accented letters, strips combining diacritical marks, and replaces spaces and punctuation with your configured separator (which defaults to a hyphen). Consecutive separators are collapsed into a single character, and leading or trailing separators are trimmed. If a filename stem becomes completely empty after cleaning, the tool assigns the fallback name "file" while preserving the original lowercase extension. Browser security prevents web pages from renaming files directly on your disk, so the tool prepares renamed duplicates carrying identical bytes for download. The separator parameter is strictly validated: it must be ten characters or fewer and cannot contain forward slashes, backslashes, or null bytes, preventing invalid filesystem names.',
+    faqs: [
+      {
+        question: 'Does the filename cleaner alter the contents of my files?',
+        answer:
+          'No. The binary contents of your files are copied byte-for-byte into the new download items. Only the filename string assigned to the downloaded copy is modified.',
+      },
+      {
+        question: 'How are accented characters and non-Latin letters handled?',
+        answer:
+          'The cleaner decomposes characters using NFKD normalisation and removes diacritics. For example, "caf\u00e9 r\u00e9sum\u00e9.pdf" becomes "cafe-resume.pdf". Any remaining unsupported characters are replaced with the chosen separator.',
+      },
+      {
+        question: 'What are the restrictions on the replacement separator?',
+        answer:
+          'The separator can be up to 10 characters long. It cannot contain forward slashes, backslashes, or null characters, or the engine raises "Separator must be at most 10 safe characters."',
+      },
+      {
+        question:
+          'Will cleaning my filenames overwrite the original files on my disk?',
+        answer:
+          'No. Browser sandbox permissions prevent direct disk modification. Transformed files are delivered as new downloads that you can save to your chosen directory.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'bulk-file-renamer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-bulk-file-renamer': {
+    directAnswer:
+      'Select a collection of files, enter the text you want to find and its replacement, and click Run operation to rename them in bulk. The tool performs literal text substitutions across all filenames and provides renamed copies for download while keeping your original files and data intact. Transformations occur entirely in local tab memory.',
+    leadParagraph:
+      'This batch renaming tool allows you to replace specific text strings across multiple filenames simultaneously. You specify a search term and a replacement string\u2014for instance, replacing "draft" with "final" or updating project codes across documentation files. The engine performs literal substring matching using replaceAll, ensuring that every occurrence within the filename is updated. To protect against accidental file overwrites, the tool checks the entire output set for name collisions; if your replacement rule causes two different files to produce identical names, execution halts with "Rename rules create duplicate output names." Search text cannot be blank; submitting an empty find field raises "Text to find is required." The tool delivers renamed file copies containing your original bytes, ensuring your local files remain safely untouched on disk. You can review the before-and-after mapping before downloading.',
+    faqs: [
+      {
+        question: 'Can I use regular expressions in the find field?',
+        answer:
+          'No. The bulk renamer uses exact literal string replacement. Special regex symbols like asterisks, dots, and brackets are treated as normal literal characters rather than patterns.',
+      },
+      {
+        question:
+          'What happens if two files end up with the same name after replacement?',
+        answer:
+          'To prevent accidental data loss from file collisions, the engine strictly forbids duplicate output names. It detects collisions and stops with "Rename rules create duplicate output names."',
+      },
+      {
+        question: 'Does the renamer modify files on my computer directly?',
+        answer:
+          'No. Web browsers do not permit web pages to alter local files. The tool generates downloadable copies with the new names, leaving your original files untouched.',
+      },
+      {
+        question: 'Is the search text case-sensitive?',
+        answer:
+          'Yes. The string substitution is strictly case-sensitive, meaning searching for "Draft" will not match or rename files containing lowercase "draft".',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'sequential-file-renamer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-sequential-file-renamer': {
+    directAnswer:
+      'Select a group of files, configure a prefix, starting number, and zero-padding width, then press Run operation. The tool generates numbered filenames in sequential order while preserving original file extensions, providing renamed copies for download without uploading any data to external servers. The entire numbering operation happens privately on your device.',
+    leadParagraph:
+      'This sequential renaming tool creates structured, numbered filenames across a collection of files, making it ideal for organising photo exports, document scans, or project assets. You define a text prefix (defaulting to "file"), an initial sequence number between 0 and 1,000,000,000, and a zero-padding width between 1 and 12 digits. The engine assigns numbers sequentially based on the order files were selected in your picker, formatting output names such as photo-001.jpg, photo-002.jpg, and photo-003.jpg. Original file extensions are preserved automatically. The prefix input is sanitised to remove illegal filesystem characters like slashes and null bytes. Because the operation produces downloadable copies, your original files on disk remain completely unmodified. The output panel lists every transition from original to sequential name for verification before saving. You can verify the full numbering scheme before saving the renamed files.',
+    faqs: [
+      {
+        question: 'What determines the numerical order of the renamed files?',
+        answer:
+          'The sequence follows the exact order files were supplied by your browser file picker. To ensure a specific numbering order, select your files sequentially in the file dialogue.',
+      },
+      {
+        question: 'What is the maximum allowed zero-padding width?',
+        answer:
+          'Padding can be set between 1 and 12 digits. Setting a padding of 3 formats the number 7 as 007, while a padding of 1 produces single-digit numbers without leading zeros.',
+      },
+      {
+        question: 'Does the sequential renamer change file extensions?',
+        answer:
+          "No. Each file's existing extension is extracted and appended to the new sequential name, ensuring that images, PDFs, and text files retain their proper file associations.",
+      },
+      {
+        question: 'Can I start numbering from zero?',
+        answer:
+          'Yes. The starting number accepts any integer from 0 up to 1,000,000,000, allowing you to use zero-indexed or custom numerical offsets.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'filename-case-converter', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-filename-case-converter': {
+    directAnswer:
+      'Select your files, pick a casing convention like kebab-case, snake_case, lowercase, UPPERCASE, or Title Case, and run the converter. The tool transforms filename stems to your chosen style while preserving original extensions, offering renamed copies for download without transferring any files over the network. All naming changes are prepared locally in memory.',
+    leadParagraph:
+      'This tool standardises filename capitalisation and word separation across collections of files. It supports five distinct naming conventions: kebab-case, snake_case, lowercase, UPPERCASE, and Title Case. The transformation applies exclusively to the filename stem; extensions are preserved in clean lowercase so file associations remain intact. For example, "Project Documentation Report.PDF" converted to kebab-case becomes "project-documentation-report.pdf". The engine automatically checks the resulting names for collisions, halting with "Case conversion creates duplicate output names." if converting different files (such as README.md and readme.md) would produce conflicting names. Downloadable copies carrying your original bytes are generated in the browser, ensuring your local files remain safe from in-place modification. The interface reports every renamed stem for review prior to downloading. You can inspect each modified filename before saving, ensuring complete naming consistency and preventing accidental file overwrites on your drive.',
+    faqs: [
+      {
+        question: 'Which casing modes are available?',
+        answer:
+          'The converter provides five modes: kebab-case (hyphen-separated), snake_case (underscore-separated), lowercase, UPPERCASE, and Title Case (capitalising the first letter of each word).',
+      },
+      {
+        question:
+          'Are file extensions converted to uppercase when choosing UPPERCASE?',
+        answer:
+          'No. File extensions are consistently kept in lowercase to ensure broad operating system and web server compatibility, even when the filename stem is converted to UPPERCASE.',
+      },
+      {
+        question: 'What happens if two files would end up with the same name?',
+        answer:
+          'If two files would produce identical names after conversion\u2014for instance, converting both "data_file.txt" and "DATA FILE.txt" to lowercase\u2014the tool halts with "Case conversion creates duplicate output names."',
+      },
+      {
+        question: 'Does this tool change the text inside the files?',
+        answer:
+          'No. Only the filename string is changed for the downloaded copy. The internal bytes of your files are copied without alteration.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-extension-changer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-extension-changer': {
+    directAnswer:
+      'Choose your files, type a new extension such as txt or csv, and click Run operation to update file extensions on downloaded copies. The tool renames extensions safely in your browser without converting internal file formats or uploading your data to external servers. Your local disk files remain completely unaltered.',
+    leadParagraph:
+      'This utility updates the file extension on downloaded copies of your selected files. It replaces the trailing extension of each filename with your specified string, automatically stripping any leading dot you might enter. The extension field is strictly validated against a safe character pattern: it must contain between 1 and 32 alphanumeric characters, dots, underscores, or hyphens, throwing "Extension must be 1\u201332 safe characters." if invalid characters are supplied. As highlighted in the page notice, changing a file extension alters only the filename string; it does not convert the internal binary data or transform one file format into another. For instance, changing an extension from .jpeg to .png does not create a PNG image container. The tool delivers renamed file duplicates, leaving original files on your computer untouched. You receive a complete mapping of all updated extensions.',
+    faqs: [
+      {
+        question: 'Does changing the extension convert the file format?',
+        answer:
+          'No. Renaming an extension changes only the filename label on the downloaded file. It does not re-encode binary contents or convert formats; a JPEG renamed with a .png extension remains a JPEG file internally.',
+      },
+      {
+        question: 'Do I need to type a leading dot in the extension field?',
+        answer:
+          'No. You can enter the extension with or without a dot (for example, "txt" or ".txt"). The tool automatically trims leading dots before applying the extension.',
+      },
+      {
+        question: 'What characters are permitted in the new extension?',
+        answer:
+          'Extensions must be between 1 and 32 characters consisting of letters, numbers, dots, underscores, and hyphens. Invalid symbols trigger the error "Extension must be 1\u201332 safe characters."',
+      },
+      {
+        question:
+          'Can I change extensions across multiple files at the same time?',
+        answer:
+          'Yes. You can select multiple files simultaneously. Every selected file will have its existing extension replaced with your chosen extension on the downloaded copies.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'directory-tree-generator', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-directory-tree-generator': {
+    directAnswer:
+      'Select a folder from your computer to generate a clean visual directory tree in plain text. The tool parses relative folder paths provided by your browser, sorts files and directories alphabetically, and renders a hierarchical tree structure without reading file contents or uploading data anywhere. The formatted hierarchy can be copied directly to your clipboard.',
+    leadParagraph:
+      "This tool creates a visual text representation of a folder hierarchy using standard box-drawing tree characters. When you select a directory using your browser's folder picker, the tool reads the relative path metadata associated with each item without reading the file contents themselves. It sorts directories and files into a structured tree view, clearly showing parent directories, subfolders, and nested files. The generated tree can be copied directly into technical documentation, README files, project plans, or code reviews. Because the tool operates purely on file path strings and ignores file contents, generating trees for directories containing hundreds of files is exceptionally fast and lightweight. Support for directory selection varies across web browsers, but all path parsing executes strictly within local memory. The rendered tree represents your folder structure with complete accuracy.",
+    faqs: [
+      {
+        question:
+          'Does this tool read the contents of the files in the directory?',
+        answer:
+          'No. The directory tree generator inspects only file paths and folder names. It never reads or buffers the actual data bytes inside the files, ensuring maximum speed and complete privacy.',
+      },
+      {
+        question: 'Which browsers support folder selection?',
+        answer:
+          'Chromium-based browsers (Chrome, Edge, Brave) and modern Firefox support folder selection through the directory picker attribute. Some mobile browsers do not support selecting entire directories.',
+      },
+      {
+        question: 'Can I copy the generated tree to my clipboard?',
+        answer:
+          'Yes. The output panel renders standard plain text that you can copy with one click and paste into Markdown documents, GitHub repositories, or technical guides.',
+      },
+      {
+        question: 'Are hidden files and system folders included in the tree?',
+        answer:
+          'The tree includes whichever files your browser file dialogue chooses to pass through. Most operating systems hide dotfiles (like .git or .DS_Store) by default unless configured to show them.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'folder-manifest-generator', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-folder-manifest-generator': {
+    directAnswer:
+      'Select a folder or group of files to create a structured JSON manifest detailing relative paths, file sizes, MIME types, and SHA-256 cryptographic digests. The manifest downloads as folder-manifest.json directly from your browser without transmitting file data across the internet. Every digest is computed in local memory for complete verification.',
+    leadParagraph:
+      "This tool inventories an entire directory or collection of files and exports a verifiable JSON manifest. It scans each selected file, reads its relative path, measures its exact byte length, captures its modification date, and calculates an authentic SHA-256 digest using the browser's native Web Cryptography API. The resulting manifest is structured with a root schema specifying version 1, total file count, and aggregate byte size, followed by an alphabetically sorted array of individual file records. This manifest file, downloaded as folder-manifest.json, serves as an auditable fingerprint for software releases, data backups, or document distributions. Because all cryptographic hashing runs directly in the client tab, sensitive files and private folder structures remain entirely confidential. The resulting JSON document is formatted with two-space indentation for immediate readability and programmatic inspection, making directory audits straightforward.",
+    faqs: [
+      {
+        question: 'What fields are included in the generated folder manifest?',
+        answer:
+          'The manifest records the schema version (1), total fileCount, and totalBytes at the root. Each file entry contains path, size, type, lastModified timestamp, and a calculated sha256 checksum.',
+      },
+      {
+        question: 'How are files ordered within the manifest JSON?',
+        answer:
+          'Files are sorted alphabetically in ascending order by their relative path string (using localeCompare), ensuring deterministic, reproducible manifest generation across multiple runs.',
+      },
+      {
+        question: 'Can I use this manifest to verify file integrity later?',
+        answer:
+          'Yes. Because each entry records an authentic SHA-256 hash, you can compare future files against the manifest to detect corruption, unauthorized alterations, or missing files.',
+      },
+      {
+        question:
+          'Are files uploaded to a remote server during manifest generation?',
+        answer:
+          'No. All file reading, metadata extraction, and SHA-256 hash computations take place inside your browser tab without making any network requests.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-list-to-csv', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-list-to-csv': {
+    directAnswer:
+      'Select a folder or batch of files to export a clean comma-separated inventory of file paths, names, byte sizes, MIME types, and modification timestamps. The resulting spreadsheet downloads immediately as file-list.csv without sending any file metadata or contents across the internet. The conversion executes entirely in browser memory on your machine.',
+    leadParagraph:
+      'This tool generates a structured CSV spreadsheet catalogue of your selected files and directories. For each file chosen through the file or folder picker, the tool records five standard columns: relative path, filename, size_bytes, browser MIME type, and last_modified timestamp formatted in ISO 8601. Rows are sorted alphabetically by path to ensure deterministic output. Fields containing special characters such as commas, quotes, or line breaks are properly quoted according to strict RFC 4180 CSV specifications. The tool offers the generated text on screen and packages it as an immediate download named file-list.csv. Because the engine inspects only filesystem metadata rather than reading deep file contents, cataloguing thousands of files executes rapidly within tab memory without uploading sensitive directory hierarchies to external servers. You can import the resulting spreadsheet into any data processing workflow.',
+    faqs: [
+      {
+        question: 'Which columns are present in the exported CSV?',
+        answer:
+          'The CSV header contains five standard columns: path, name, size_bytes, type, and last_modified. Values are formatted to ensure direct import into Excel, Google Sheets, or database systems.',
+      },
+      {
+        question: 'How does the exporter handle commas or quotes in filenames?',
+        answer:
+          'The tool applies standard CSV quoting rules. Any field containing commas, double quotes, or newlines is wrapped in double quotes, and internal quotes are escaped by doubling them.',
+      },
+      {
+        question: 'Does this tool read the contents of the listed files?',
+        answer:
+          'No. It reads only File API metadata properties provided by your browser picker. The actual data inside the files is not buffered or parsed, making processing fast and private.',
+      },
+      {
+        question: 'Can I open the generated CSV in spreadsheet applications?',
+        answer:
+          'Yes. The downloaded file-list.csv is a standard UTF-8 text file compatible with Microsoft Excel, Apple Numbers, Google Sheets, and standard command-line data processing tools.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-size-analyzer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-file-size-analyzer': {
+    directAnswer:
+      'Select a collection of files to rank them by byte size and calculate their percentage contribution to your total storage footprint. The tool sorts all items in descending order and outputs a clear summary report directly in your browser without uploading any files. Storage analysis completes in local memory on your computer.',
+    leadParagraph:
+      'This storage analysis tool scans a batch of selected files, tallies their total byte volume, and ranks each file from largest to smallest. The formatted text output displays a numbered ranking showing the relative file path, formatted byte size, and exact percentage share of the total dataset calculated to two decimal places. This makes it straightforward to spot oversized video assets, bloated archive bundles, or unexpectedly large documents consuming disk space or deployment budgets. Because the tool reads only the size property from browser File objects, the analysis is practically instantaneous even when assessing hundreds of files. No file contents are loaded into memory or transmitted across the network, ensuring complete confidentiality for proprietary code bases, personal media collections, and confidential archives. You receive an immediate breakdown of your disk space allocation.',
+    faqs: [
+      {
+        question: 'How are files ordered in the size analysis report?',
+        answer:
+          'Files are sorted in descending numerical order by byte size, placing the largest files at the very top of the list so you can identify storage consumers immediately.',
+      },
+      {
+        question: 'How is the percentage share calculated?',
+        answer:
+          "The tool sums the byte lengths of all selected files to establish a total volume, then calculates each individual file's proportion as a percentage formatted to two decimal places.",
+      },
+      {
+        question: 'Does the analyser read file contents into memory?',
+        answer:
+          'No. It queries only the size metadata property reported by the browser file handle. Because file data is never read into memory buffers, performance remains fast regardless of file size.',
+      },
+      {
+        question: 'Is there a limit on how many files I can analyse at once?',
+        answer:
+          'There is no strict quantity limit. You can select hundreds of files or entire directories, and the engine will aggregate totals and format the ranking in local memory.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'empty-file-finder', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-empty-file-finder': {
+    directAnswer:
+      'Select a batch of files or directories to filter and identify every file whose byte size is exactly zero. The tool inspects your selection locally, reports the total count of empty files, and lists their paths on screen without transmitting any data over the network. You can copy the list to your clipboard immediately.',
+    leadParagraph:
+      'This diagnostic tool filters a selection of files to identify zero-byte items created by failed downloads, aborted exports, or touch commands. When reviewing large project directories or file transfers, empty files often represent incomplete processes or corrupted placeholders that waste directory space. The engine inspects the size property of each selected file and filters for items where size equals zero. If empty files are discovered, the summary reports the count and lists each relative file path on a separate line. If every selected file contains data, the output clearly states "No empty files found." Because the inspection examines surface metadata without reading file contents, scanning large directories completes instantaneously within your browser session while preserving full data privacy. You can review and clear empty placeholder files from your archives, keeping your directories organised and tidy.',
+    faqs: [
+      {
+        question: 'What does this tool consider an empty file?',
+        answer:
+          'An empty file is defined as any file whose byte size is exactly 0 bytes. Files containing even a single whitespace character, newline, or byte-order mark have a non-zero size and are not flagged.',
+      },
+      {
+        question: 'Does the tool delete the empty files from my computer?',
+        answer:
+          'No. Web browsers run inside secure sandboxes that prohibit websites from deleting or modifying files on your local drive. The tool lists the empty files so you can remove them yourself.',
+      },
+      {
+        question: 'What message is displayed if no empty files exist?',
+        answer:
+          'When all selected files have a size greater than zero, the output panel displays the confirmation message "No empty files found."',
+      },
+      {
+        question: 'Are file contents read or transmitted to external servers?',
+        answer:
+          'No. The finder reads only the browser-supplied size attribute. No file bytes are read or sent across the network, keeping your folder structure completely private.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'large-file-finder', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-large-file-finder': {
+    directAnswer:
+      'Select a group of files and set a minimum byte threshold to filter and identify all files that meet or exceed that size. The tool ranks matching files in descending order and displays their paths and byte counts without uploading any data to remote servers. All filtering runs locally in memory on your device.',
+    leadParagraph:
+      'This filtering utility isolates files that exceed an explicit byte threshold, helping you locate large assets that consume storage or exceed upload restrictions. You configure a threshold in bytes (defaulting to 1,048,576 bytes, or 1 MiB), and the tool filters your selected files, sorting all qualifying items from largest to smallest. The output view presents a tab-separated list showing the relative path and exact byte count for each qualifying file. If no files meet the specified threshold, the output reports "No files meet the threshold." The threshold field accepts any non-negative integer up to the workbench limit. Because the tool evaluates file sizes directly from browser metadata without loading raw file bytes into tab memory, filtering runs with exceptional speed while maintaining complete privacy for your documents. You can easily isolate large files before archiving or sharing.',
+    faqs: [
+      {
+        question: 'What is the default size threshold for filtering?',
+        answer:
+          'The default threshold is 1,048,576 bytes, which corresponds to exactly 1 MiB. You can adjust this value to any number of bytes to match your specific criteria.',
+      },
+      {
+        question: 'What message appears if no files meet the threshold?',
+        answer:
+          'If all selected files are smaller than your configured threshold, the output panel displays the message "No files meet the threshold."',
+      },
+      {
+        question: 'Are the filtered files displayed in a specific order?',
+        answer:
+          'Yes. Qualifying files are sorted in descending order by byte size, ensuring the largest items appear at the very top of the output list.',
+      },
+      {
+        question: 'Does this tool load file contents into browser memory?',
+        answer:
+          'No. It reads only the size metadata property from the browser file handles. Raw binary contents are never loaded, ensuring swift execution and complete privacy.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'binary-file-viewer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-binary-file-viewer': {
+    directAnswer:
+      'Select a file and specify a starting byte offset and display length to inspect raw binary data represented as eight-bit binary groups. The tool renders offset numbers and individual byte patterns directly in your browser without transmitting any information across the network. Inspection happens instantaneously in local tab memory on your device.',
+    leadParagraph:
+      'This low-level binary inspection tool displays a bounded window of raw file bytes as formatted eight-bit binary sequences. You configure a starting byte offset between zero and the total file size, and a display length between 1 and 4,096 bytes (defaulting to 64 bytes). The engine slices the requested range from local memory and outputs each byte on a separate line, prefixed with an eight-character padded offset and followed by its eight-digit binary representation (such as 01101000). If you specify an offset at or beyond the end of the file, the output panel clearly notes "Offset is at end of file." This granular view helps developers debug embedded protocols, inspect bitflags, and verify binary serialization formats. Because the tool reads only the requested slice into memory, inspecting specific segments of large files remains responsive and entirely private. You can examine bit-level values without external utilities.',
+    faqs: [
+      {
+        question: 'How many bytes can I view at one time?',
+        answer:
+          'The length parameter allows viewing between 1 and 4,096 bytes per execution. This restriction prevents excessive browser DOM rendering while providing ample visibility into binary headers or records.',
+      },
+      {
+        question: 'What format is used to display each byte?',
+        answer:
+          "Each line displays the byte's offset in the file padded to eight characters, followed by two spaces and the byte's full eight-digit binary representation padded with leading zeros.",
+      },
+      {
+        question: 'What happens if the offset is larger than the file size?',
+        answer:
+          'The tool validates that the offset is a non-negative integer within the file bounds. If the offset equals the file size, it reports "Offset is at end of file."',
+      },
+      {
+        question: 'Can I inspect large binary files with this tool?',
+        answer:
+          'Yes. Files up to the 256 MiB workbench limit can be loaded, and the tool slices only the specified offset window into memory for display, ensuring rapid rendering.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'hex-viewer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-hex-viewer': {
+    directAnswer:
+      'Choose any file and configure your starting offset and byte length to display a canonical hexadecimal dump with ASCII decoding. The tool formats offset addresses, hex byte pairs, and printable text representations directly in your browser without sending any bytes to external servers. Low-level analysis runs completely offline within your browser.',
+    leadParagraph:
+      'This hex inspection tool generates a standard hexadecimal and ASCII representation of any chosen file window. You configure a starting byte offset and a display window between 1 and 65,536 bytes (defaulting to 256 bytes). The engine formats output in standard 16-byte rows: an eight-digit hexadecimal address, sixteen two-character hexadecimal byte values separated into two eight-byte columns, and sixteen corresponding ASCII characters on the right. Printable ASCII characters are displayed as text, while non-printable control characters or high-bit bytes are rendered as periods. If the selected offset matches or exceeds the file length, the output displays "Offset is at end of file." This canonical format is essential for analyzing binary protocols, verifying image chunk markers, and investigating file corruption. All slicing and formatting execute locally in tab memory, ensuring complete data privacy.',
+    faqs: [
+      {
+        question: 'What is the maximum number of bytes displayed in one view?',
+        answer:
+          'You can display up to 65,536 bytes (64 KiB) per run. To inspect other sections of a file, adjust the offset value to point to your desired byte position.',
+      },
+      {
+        question:
+          'How are non-printable characters represented in the ASCII column?',
+        answer:
+          'Standard ASCII characters between code points 32 and 126 are displayed normally. Control characters, null bytes, and extended bytes are rendered as dots (.) to maintain column alignment.',
+      },
+      {
+        question: 'Does this tool modify or rewrite the file?',
+        answer:
+          'No. The hex viewer is strictly read-only. It reads a slice of the file into memory for formatting and display without writing any changes to your original file.',
+      },
+      {
+        question: 'Can I copy the generated hex dump?',
+        answer:
+          'Yes. The output is formatted as clean monospace plain text that you can copy to your clipboard for use in bug reports, reverse engineering notes, or documentation.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'hex-patch-generator', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-hex-patch-generator': {
+    directAnswer:
+      'Select exactly two equal-length files in before-and-after sequence to generate a line-by-line binary patch listing every byte replacement. The tool compares raw byte arrays in your browser, reports hexadecimal offsets with original and modified values, and verifies byte identity without uploading files or altering source documents on your local hard drive.',
+    leadParagraph:
+      'This binary comparison tool generates a reviewable hex patch between two files of identical size. You select exactly two files in your file picker representing the original and modified states. The engine verifies that both files have matching byte lengths, throwing the explicit error "Hex patch inputs must have equal byte length." if their sizes diverge. It then performs a sequential byte-by-byte comparison, emitting lines formatted as "00000001: 65 -> 61" detailing the eight-digit hex offset, original byte, and replacement byte. If the two files are completely identical, the summary confirms "Files are byte-identical." To prevent browser rendering lockups, the tool enforces a safety ceiling: if differences exceed 10,000 bytes, execution halts with "Patch exceeds the 10,000-change display limit." The operation is strictly non-destructive and runs entirely within your browser tab, ensuring firmware, binaries, and private data remain secure.',
+    faqs: [
+      {
+        question: 'Why do both files need to have the exact same byte length?',
+        answer:
+          'The hex patch generator is designed for in-place binary replacements and modifications. It requires equal lengths to map byte offsets directly; files with insertions or deletions must use diffing tools instead.',
+      },
+      {
+        question:
+          'What is the limit on how many byte differences can be shown?',
+        answer:
+          'The tool supports displaying up to 10,000 individual byte changes. If the files differ by more than 10,000 bytes, it halts with "Patch exceeds the 10,000-change display limit."',
+      },
+      {
+        question: 'Does generating a patch modify either of the source files?',
+        answer:
+          'No. As stated in the interface notice, the tool produces a reviewable listing of differences only. Neither original file is modified on disk or re-saved.',
+      },
+      {
+        question: 'How is each byte difference formatted in the patch output?',
+        answer:
+          'Each difference is displayed on its own line showing the eight-digit hexadecimal byte offset, followed by a colon, the original byte in hex, an arrow (->), and the replacement byte in hex.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'base64-file-encoder', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-base64-file-encoder': {
+    directAnswer:
+      'Select one local file up to 32 MiB to encode its binary bytes into standard RFC 4648 Base64 text directly within your browser. The tool generates standard padded Base64 in local memory and renders the full text string on screen ready for copying without transmitting any file data across the internet.',
+    leadParagraph:
+      'This encoding tool converts any local file into standard RFC 4648 Base64 text with proper padding characters. Because Base64 expands binary data by approximately 33 percent, generating massive text strings in browser memory can strain tab stability. To prevent memory exhaustion while still supporting real-world files, the engine enforces a dedicated 32 MiB file limit; selecting a file larger than 32 MiB (33,554,432 bytes) raises the explicit error "Base64 text output is limited to 32 MiB." The tool reads raw file bytes into a Uint8Array, converts the binary sequence into standard ASCII Base64 characters, and outputs the result in a selectable text area. The summary panel reports the exact count of encoded bytes. Because the encoding executes entirely within your browser session under strict Content Security Policy controls, confidential keys, sensitive certificates, and private documents can be encoded safely without remote exposure.',
+    faqs: [
+      {
+        question: 'What is the maximum file size for Base64 encoding?',
+        answer:
+          'Files are limited to 32 MiB (33,554,432 bytes). Files larger than this threshold are refused with "Base64 text output is limited to 32 MiB." to avoid browser memory crashes during string expansion.',
+      },
+      {
+        question:
+          'Does the output include MIME type headers or data URI prefixes?',
+        answer:
+          'No. This tool produces clean, raw standard Base64 text. If you need a complete data URI with MIME type prefix (such as data:image/png;base64,...), use the Data-URI file maker tool.',
+      },
+      {
+        question: 'Does the encoder add line breaks or line wrapping?',
+        answer:
+          'No. The output is generated as a continuous, unpadded Base64 string without MIME line wrapping (no 76-character newlines), making it suitable for JSON payloads and API requests.',
+      },
+      {
+        question: 'Are my files sent to any external server during encoding?',
+        answer:
+          'No. All binary conversion runs locally in your browser tab using native JavaScript typed arrays. No network requests are made, ensuring complete confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'base64-file-decoder', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-base64-file-decoder': {
+    directAnswer:
+      'Paste standard Base64 text into the input area, set your desired output filename and MIME type, then click Run operation. The tool validates the Base64 alphabet, decodes the characters into raw binary bytes, and provides the reconstructed file for immediate download without sending any data over the network to remote machines.',
+    leadParagraph:
+      'This decoder transforms standard Base64 encoded text back into an authentic downloadable binary file. You paste the Base64 text string, specify the destination filename (defaulting to decoded.bin), and optionally provide an appropriate MIME type (defaulting to application/octet-stream). The engine validates the incoming string strictly against standard RFC 4648 Base64 syntax; any illegal symbols, malformed padding, or non-Base64 characters trigger the error "Enter valid standard Base64." Once validated, the characters are decoded into a raw byte buffer. The tool enforces the workbench safety ceiling of 256 MiB on the decoded result, throwing "Decoded output exceeds 256 MiB." if the reconstructed file is too large. The output filename is automatically sanitised to remove illegal filesystem characters. The reconstructed file is offered as a direct browser download with your chosen filename and MIME type, keeping all decoding private.',
+    faqs: [
+      {
+        question: 'What Base64 formats does this decoder accept?',
+        answer:
+          'The tool requires strict standard RFC 4648 Base64 (characters A\u2013Z, a\u2013z, 0\u20139, +, / and up to two = padding characters). Non-standard characters cause the error "Enter valid standard Base64."',
+      },
+      {
+        question: 'Can I decode data URIs with this tool?',
+        answer:
+          'This tool expects raw Base64 strings. If your text begins with "data:image/png;base64,", use the dedicated Data-URI file extractor tool instead, which parses data URI headers automatically.',
+      },
+      {
+        question: 'What is the maximum size of the decoded file?',
+        answer:
+          'The decoded output can be up to 256 MiB. If the resulting binary data exceeds 256 MiB, the engine halts with "Decoded output exceeds 256 MiB."',
+      },
+      {
+        question: 'Does decoding require an internet connection?',
+        answer:
+          'No. The entire decoding process executes client-side in your browser tab. Your data is never transmitted to an external server or third-party service.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'data-uri-file-maker', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-data-uri-file-maker': {
+    directAnswer:
+      "Select a local file of up to 16 MiB to convert it into a complete Base64 data URI directly in your browser. The tool reads your file's MIME type, encodes the binary bytes into Base64, and presents the formatted data: URI on screen ready for embedding in web pages or stylesheets without remote transfers.",
+    leadParagraph:
+      'This tool packages any local file into an RFC 2397 compliant data URI string formatted as "data:[mediatype];base64,[data]". The engine detects the file\'s browser MIME type, defaulting to application/octet-stream if none is declared, and converts the binary content into padded Base64 text. Because data URIs inline the entire file payload into a single text string, they can quickly swell in size; the tool therefore enforces an explicit 16 MiB file ceiling, halting with "Data URI output is limited to 16 MiB." if a larger file is provided. As the interface notice cautions, data URIs become very large and should not be used for sensitive credentials or massive media assets in shareable code. The resulting URI string is rendered in an accessible text box with a copy button, making it practical to embed images, fonts, or icons into HTML, CSS, or JSON documents. All processing runs locally within tab memory.',
+    faqs: [
+      {
+        question: 'What is the file size limit for generating a data URI?',
+        answer:
+          'The tool accepts files up to 16 MiB (16,777,216 bytes). Exceeding this limit triggers "Data URI output is limited to 16 MiB." to ensure your browser tab remains stable during string generation.',
+      },
+      {
+        question: 'How is the MIME type in the data URI determined?',
+        answer:
+          'The tool reads the MIME type provided by your browser file picker. If no type is reported (such as for unusual extensions), it defaults to "application/octet-stream".',
+      },
+      {
+        question: 'Where are data URIs commonly used?',
+        answer:
+          'Data URIs are commonly used to inline small images, icons, or fonts directly into CSS files, HTML documents, or email templates to eliminate separate HTTP network requests.',
+      },
+      {
+        question: 'Is any data uploaded during data URI creation?',
+        answer:
+          'No. The entire conversion executes client-side using JavaScript TypedArrays. Your file never leaves your computer and no network requests are dispatched.',
+      },
+    ],
+  },
+  // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'data-uri-file-extractor', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
+  'archive-and-file-data-uri-file-extractor': {
+    directAnswer:
+      'Paste an RFC 2397 Base64 data URI into the input box, configure your desired output filename, and click Run operation. The tool extracts the declared MIME type, decodes the embedded binary payload, and offers the reconstructed file for download directly from your browser without uploading any data to remote servers or cloud systems.',
+    leadParagraph:
+      'This extractor unpacks binary files embedded inside Base64 data URIs. When given a valid data URI matching the standard pattern "data:[mediatype];base64,[payload]", the tool extracts the embedded MIME type, strips the URI header, and decodes the Base64 data into raw binary bytes. If the input text is not a valid Base64 data URI or uses percent-encoded data instead of Base64, the engine halts with the clear error "Enter a strict Base64 data URI." You can specify any output filename (defaulting to extracted.txt); dangerous characters like slashes and null bytes are automatically sanitised. The decoded payload can be up to 256 MiB in size, with larger outputs stopped by "Decoded output exceeds 256 MiB." The extracted file is prepared as a direct browser download with its authentic MIME type assigned, allowing you to recover images, audio clips, and documents embedded in code without third-party tools.',
+    faqs: [
+      {
+        question: 'What format must the input data URI follow?',
+        answer:
+          'The input must follow standard Base64 data URI syntax: "data:[mime];base64,[payload]". If the "base64" specifier is missing or if the URI is malformed, the tool rejects it with "Enter a strict Base64 data URI."',
+      },
+      {
+        question: 'Does the tool automatically set the file extension?',
+        answer:
+          'The tool provides the default filename "extracted.txt", which you can edit to match the expected format (for example, "image.png" or "font.woff2") before clicking Run operation.',
+      },
+      {
+        question: 'What is the maximum size of extracted file data?',
+        answer:
+          'The tool supports decoding up to 256 MiB of binary data. Attempting to extract payloads exceeding 256 MiB raises "Decoded output exceeds 256 MiB."',
+      },
+      {
+        question: 'Is the data URI processed on a remote server?',
+        answer:
+          'No. The regular expression parsing, header extraction, and Base64 binary decoding run completely inside your browser tab without making any network requests.',
+      },
+    ],
+  },
+  // lib/tools/audio/id3.ts (buildId3v2, parseId3v2, retagMp3), lib/tools/audio/id3.test.ts, components/mp3-toolkit-tool.tsx and app/audio/mp3-toolkit/page.tsx
+  'audio-id3-tag-editor': {
+    directAnswer:
+      'Upload an MP3 file of up to 100 MB to inspect, edit, or remove ID3 metadata tags directly in your browser. The tool writes standard ID3v2.3 tags encoded in UTF-16, supports international characters, currency symbols, and emoji, and downloads your retagged audio with zero quality loss and no re-encoding of audio streams.',
+    leadParagraph:
+      'This browser-based audio metadata editor updates ID3 tags on MP3 files losslessly without re-encoding audio frames. When you load an MP3, the parser reads existing ID3v2 tags and populates seven standard fields: Title, Artist, Album, Year, Track, Genre, and Comment. Because the tool writes ID3v2.3 tags using UTF-16 with byte-order marks, non-Latin scripts, Indian languages, currency symbols like the rupee sign (\u20b9), and emoji are fully preserved without mojibake. Saving your changes replaces the tag header while copying the raw MPEG audio frames byte-for-byte, ensuring identical audio fidelity and sub-second processing. Legacy ID3v1 tags and trailing APE tags are automatically stripped from the file. If all fields are cleared, the tool removes every tag header completely. Files exceeding the 100 MB limit are stopped with a clear notification showing the file size. All processing happens in local tab memory.',
+    faqs: [
+      {
+        question: 'Does editing tags re-encode or compress the audio quality?',
+        answer:
+          'No. The tool performs lossless metadata rewriting. It updates only the ID3 header block at the beginning of the file and copies the underlying MPEG audio frames without decoding or re-encoding.',
+      },
+      {
+        question: 'Which metadata fields can I edit with this tool?',
+        answer:
+          'You can edit seven core metadata fields: Title, Artist, Album, Year, Track number, Genre, and Comment. Emptying all fields strips all ID3 tags entirely from the MP3 file.',
+      },
+      {
+        question:
+          'Are special characters, Indian scripts, and emoji supported?',
+        answer:
+          'Yes. Metadata is written as ID3v2.3 using UTF-16 encoding with byte-order marks, ensuring full support for Devanagari, Tamil, Bengali, Arabic, accented European characters, and emoji.',
+      },
+      {
+        question: 'What is the maximum MP3 file size supported?',
+        answer:
+          'The editor accepts MP3 files up to 100 MB. Files exceeding this size are rejected with a clear message stating the file size and the 100 MB limit.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'instagram-bio-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-instagram-bio-formatter': {
+    directAnswer:
+      'Paste your bio text, customize your target character limit, and format your bio lines directly in your browser. The tool trims extraneous line whitespace while preserving intentional paragraph breaks, counts full Unicode characters accurately, and reports your remaining character budget without transmitting your profile text to any external server or analytics dashboard.',
+    leadParagraph:
+      "This formatting tool prepares clean, compact bios for social media profiles where character limits are strictly enforced. By default, it benchmarks against Instagram's 150-character bio ceiling, though you can adjust the numerical limit to match any platform requirements. The engine trims trailing and leading whitespace on each line individually, ensuring line breaks are preserved without invisible spaces consuming your character allowance. Unlike standard string length checks that count surrogate pairs as two characters, the tool measures true Unicode code points using Array.from(value).length, ensuring that emoji, flags, and special Unicode symbols are counted accurately. The output report presents your formatted bio alongside the exact character count, word count, and remaining or over-limit status. All text processing executes instantly within your browser tab, ensuring your draft bios remain strictly private and unexposed on your personal device.",
+    faqs: [
+      {
+        question: 'How does the bio formatter handle line breaks and spaces?',
+        answer:
+          'The formatter splits your bio by line, trims accidental whitespace from the start and end of each line, and rejoins them with clean single line breaks, preserving your visual layout.',
+      },
+      {
+        question: 'Are emoji counted as one character or two?',
+        answer:
+          'The tool counts characters using full Unicode code points (Array.from length). Standard emoji and symbols count as single characters, matching modern social platform counting behaviour.',
+      },
+      {
+        question:
+          'Can I change the character limit from 150 to another number?',
+        answer:
+          'Yes. The limit field defaults to 150 characters, but you can enter any positive integer to format bios for Twitter, TikTok, LinkedIn, or Threads.',
+      },
+      {
+        question: 'Is my bio text uploaded to any server or analytics tool?',
+        answer:
+          'No. All formatting and character counting run client-side in your browser. No data is stored, tracked, or sent across the network.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'instagram-hashtag-workspace', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-instagram-hashtag-workspace': {
+    directAnswer:
+      'Paste a list of tags or text with mixed hashtags to normalise, deduplicate, and count your tags in your browser. The tool strips duplicate tags regardless of casing, ensures every item carries a proper hash symbol, and reports the unique count without recommending algorithmic trends or uploading your copy to external systems.',
+    leadParagraph:
+      "This hashtag workspace cleans and organises hashtag collections for social media publishing. You paste mixed text, comma-separated keywords, or existing hashtags into the input area. The engine splits the text on whitespace and punctuation, extracts words, strips redundant leading hash symbols, and converts entries to lowercase to identify duplicates. It then formats each unique tag with a clean leading hash symbol and joins them into a tidy, space-separated block. The summary report confirms the total number of unique hashtags, helping you stay within platform allowances such as Instagram's 30-hashtag limit. The tool deliberately does not suggest trending topics, AI keywords, or algorithmic tags; it focuses strictly on honest deduplication and formatting. All text manipulation takes place directly in client-side browser memory, keeping your campaign hashtags private, organised, and structured on your device.",
+    faqs: [
+      {
+        question:
+          'How does the workspace handle duplicate hashtags with different capitalisation?',
+        answer:
+          'Deduplication is completely case-insensitive. Entering "#Privacy", "#privacy", and "PRIVACY" results in a single, normalised "#privacy" tag in the final output report.',
+      },
+      {
+        question: 'Does this tool recommend trending or popular hashtags?',
+        answer:
+          'No. The tool intentionally does not connect to social media APIs or recommend algorithmic trends. It is a focused utility designed to clean and count the tags you provide.',
+      },
+      {
+        question:
+          'Do I need to type the hash (#) symbol in front of every word?',
+        answer:
+          'No. The tool automatically adds a hash symbol to bare words, so you can paste plain comma-separated or space-separated keywords and have them formatted as hashtags.',
+      },
+      {
+        question: 'Is there a limit on how many hashtags I can process?',
+        answer:
+          'There is no strict limit. You can paste dozens or hundreds of tags to clean, deduplicate, and count them in a single operation.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'linkedin-post-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-linkedin-post-formatter': {
+    directAnswer:
+      'Paste your draft LinkedIn article or post to normalise paragraph breaks and measure post length against your chosen limit. The tool cleans carriage returns, removes byte-order marks, and reports exact character and word counts directly in your browser without ever uploading your draft to any external service or tracking platform.',
+    leadParagraph:
+      "This post formatter prepares professional copy for LinkedIn by standardising spacing and tracking character limits. It defaults to a target limit of 3,000 characters\u2014matching LinkedIn's standard post allowance\u2014while allowing you to configure custom thresholds for headline or comment text. The engine normalises Windows CRLF line endings to clean newlines, strips non-standard Unicode byte-order marks, and trims trailing whitespace that can cause awkward formatting in mobile feeds. The resulting count report details the exact Unicode character count, total word count, and remaining character balance. If your post exceeds the limit, the tool clearly calculates how many characters you must trim to fit. Because the formatter runs entirely in local tab memory under strict security headers, confidential company announcements, draft executive posts, and proprietary industry insights remain completely secure from premature leaks.",
+    faqs: [
+      {
+        question:
+          'What is the default character limit for LinkedIn posts in this tool?',
+        answer:
+          "The tool defaults to 3,000 characters, which reflects LinkedIn's standard post length limit. You can adjust this value to any custom number in the settings field.",
+      },
+      {
+        question: 'Does the tool count words as well as characters?',
+        answer:
+          'Yes. The output report calculates both the total Unicode character count and the word count using Unicode word-boundary matching, displaying both metrics clearly.',
+      },
+      {
+        question: 'How does the formatter handle line endings and spacing?',
+        answer:
+          'It converts carriage returns to standard line breaks, cleans up irregular whitespace, and ensures clean spacing between paragraphs for readability on mobile and desktop.',
+      },
+      {
+        question: 'Is my draft content saved or transmitted to a server?',
+        answer:
+          'No. All formatting, text cleaning, and character counts are computed in local browser memory. No text is saved, cached, or transmitted across the network.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'x-post-character-counter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-x-post-character-counter': {
+    directAnswer:
+      'Type or paste your post content to count true Unicode characters and words against an adjustable limit, defaulting to 280 characters. The tool calculates exact character counts, reports remaining allowance, and indicates over-limit margins directly in your browser without simulating proprietary weighting algorithms or uploading your text to remote networks.',
+    leadParagraph:
+      "This character counter provides an honest, literal measure of post length for X (formerly Twitter) content. It defaults to the platform's standard 280-character post limit, but allows you to set any custom threshold. The counter measures length using native Unicode code points via Array.from(value).length, accurately tallying characters, emoji, and extended symbols. As noted in the tool's documentation, it deliberately does not simulate proprietary t.co URL shortening rules or weighted CJK character formulas; it delivers a transparent, unweighted count of the exact text you paste. The output view presents your cleaned text alongside a count summary detailing total characters, word count, and how many characters remain or exceed your configured limit. Because the utility operates locally within tab memory, unreleased announcements and private drafts are protected from external scrutiny and tracking.",
+    faqs: [
+      {
+        question: 'Does this counter simulate t.co link shortening weights?',
+        answer:
+          'No. The tool measures honest Unicode character counts without simulating proprietary third-party link shortening rules or variable character weighting algorithms.',
+      },
+      {
+        question: 'Can I adjust the limit for longer premium posts?',
+        answer:
+          'Yes. You can edit the limit field to any positive number, such as 4,000 or 25,000 characters, to measure content intended for long-form premium subscriptions.',
+      },
+      {
+        question: 'How does the tool report over-limit posts?',
+        answer:
+          'If your text exceeds the configured limit, the report clearly indicates the exact margin, displaying for example "14 over limit" alongside total character and word counts.',
+      },
+      {
+        question: 'Are draft posts stored or transmitted to external servers?',
+        answer:
+          'No. The counter runs entirely inside your browser tab without dispatching network requests, guaranteeing full privacy for unpublished thoughts and announcements.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'x-thread-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-x-thread-formatter': {
+    directAnswer:
+      'Paste long-form text to automatically package paragraphs into numbered posts under your chosen character limit, defaulting to 280 characters. The tool preserves paragraph integrity, numbers each post sequentially like 1/5 and 2/5, and outputs a ready-to-post thread directly in your browser without sending copy to external servers or remote machines.',
+    leadParagraph:
+      'This thread formatting tool splits long-form writing into clean, sequentially numbered posts suitable for multi-tweet threads. You supply your source text and a character limit per post, which must be at least 20 characters (defaulting to 280). The engine breaks content on paragraph boundaries (double newlines) and packs paragraphs into posts, ensuring that individual paragraphs are never awkwardly split across post boundaries. If any single paragraph exceeds the post limit minus thread prefix overhead, the tool refuses the operation with the explicit error "A paragraph is too long for one numbered post; split it first." Each generated post is prefixed with its fraction indicator, such as "1/4" and "2/4", calculated from the total post count. The complete thread is displayed in a monospace text area ready for sequential copying, running entirely in local memory without exposing your drafts.',
+    faqs: [
+      {
+        question: 'What happens if a single paragraph is too long for a post?',
+        answer:
+          'The tool refuses to arbitrarily truncate or split paragraphs mid-sentence. It halts with "A paragraph is too long for one numbered post; split it first." so you can edit the paragraph break cleanly.',
+      },
+      {
+        question: 'How are thread numbering indicators formatted?',
+        answer:
+          'Each post begins with a fractional index showing the current position and total post count, such as "1/3", "2/3", and "3/3", separated from your paragraph by a space.',
+      },
+      {
+        question: 'What is the minimum allowed post limit?',
+        answer:
+          'The character limit per post must be at least 20 characters. Providing a smaller number raises "Thread post limit must be at least 20 characters."',
+      },
+      {
+        question: 'Does this tool post the thread to X directly?',
+        answer:
+          'No. The tool operates purely as an offline formatter. It generates formatted text for you to copy and paste manually, requiring no account credentials or API permissions.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'facebook-post-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-facebook-post-formatter': {
+    directAnswer:
+      'Paste your Facebook post or page update to normalise paragraph whitespace, remove byte-order marks, and calculate precise character and word counts. The tool formats text cleanly directly in your browser and outputs an unexcited metrics report without tracking your content or transmitting drafts across the internet to any external service.',
+    leadParagraph:
+      'This post formatter cleans and standardises copy intended for Facebook personal updates, business pages, or group announcements. It normalises irregular line breaks, strips leading and trailing whitespace, and eliminates non-printable byte-order marks that can introduce hidden formatting glitches on mobile devices. Below the cleaned text, the engine appends a transparent metrics summary showing the exact Unicode character count and total word count separated by an em dash. Because Facebook permits long updates without strict character barriers, this tool does not enforce an arbitrary limit, focusing instead on text cleanliness and accurate length reporting. All transformations run client-side in browser memory, ensuring that promotional campaigns, community announcements, and private personal updates remain completely confidential prior to publication. You can copy the cleaned copy with confidence and paste it directly into your post composer.',
+    faqs: [
+      {
+        question: 'Does the Facebook post formatter enforce a character limit?',
+        answer:
+          'No. Facebook allows extensive character allowances for posts, so the tool reports honest total character and word counts without imposing an arbitrary cutoff limit.',
+      },
+      {
+        question: 'How does the tool clean up pasted text?',
+        answer:
+          'It standardises carriage returns into clean line breaks, removes byte-order marks (\\uFEFF), and trims redundant leading or trailing whitespace from each line.',
+      },
+      {
+        question: 'Can I use this tool for formatting Facebook group posts?',
+        answer:
+          'Yes. It works equally well for personal profiles, business pages, group discussions, and event descriptions where clean typography and paragraph spacing are desired.',
+      },
+      {
+        question: 'Is my post content saved or analysed by external services?',
+        answer:
+          'No. All text parsing runs inside your browser tab under a strict Content Security Policy. No text is uploaded, logged, or sent to any server.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'tiktok-caption-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-tiktok-caption-formatter': {
+    directAnswer:
+      'Paste your TikTok video caption to clean up line breaks and verify its length against your chosen character limit, defaulting to 2,200 characters. The tool counts full Unicode code points and words directly in your browser, reporting remaining capacity accurately without sending draft captions to external servers or analytics tools.',
+    leadParagraph:
+      "This caption formatter helps content creators craft clean, properly proportioned descriptions for TikTok videos. It defaults to TikTok's current 2,200-character caption limit, while allowing you to configure a custom character ceiling if needed. The engine normalises paragraph spacing, cleans Windows CRLF line endings, and measures true Unicode code points so that emoji, hashtags, and foreign scripts are tallied with complete accuracy. The output view presents your formatted caption along with a clear count report detailing total characters, word count, and your remaining character allowance. If your caption exceeds the limit, the report highlights the exact number of characters over the threshold, allowing you to edit before publishing. Because all processing executes in local browser memory, upcoming campaign video copy and unreleased sound concepts remain entirely private and confidential on your device.",
+    faqs: [
+      {
+        question:
+          'What is the default character limit for TikTok captions in this tool?',
+        answer:
+          "The tool defaults to 2,200 characters, reflecting TikTok's standard expanded caption allowance. You can adjust this value to test shorter limits for different video formats.",
+      },
+      {
+        question: 'Are hashtags and emoji counted accurately?',
+        answer:
+          'Yes. The engine counts characters using native Unicode code points via Array.from length, ensuring that hashtags, multi-byte symbols, and emoji count accurately.',
+      },
+      {
+        question:
+          'What happens if my caption exceeds the 2,200-character limit?',
+        answer:
+          'The tool displays a clear summary indicating exactly how many characters you are over the limit, helping you trim excess text before posting.',
+      },
+      {
+        question: 'Is my caption text uploaded or stored anywhere?',
+        answer:
+          'No. All caption formatting and character counting run client-side in your browser without network communication, guaranteeing complete privacy for your drafts.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'podcast-show-notes-template', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-podcast-show-notes-template': {
+    directAnswer:
+      'Enter an episode title, summary, takeaway bullet points, and link pairs to compile structured Markdown podcast show notes in your browser. The tool validates URLs, structures clean headings and markdown lists, and outputs a publication-ready show notes document directly without uploading your copy anywhere to external machines or remote dashboards.',
+    leadParagraph:
+      'This template builder standardises episode descriptions and show notes for podcasters, audio producers, and network editors. You provide the episode title, a descriptive summary paragraph, bulleted takeaways (one per line), and reference links in a label-and-URL format separated by a pipe character. The engine validates that title and summary fields are non-empty, checks URL formatting, and renders a structured Markdown document complete with an H1 episode title, summary body, H2 Key Takeaways list with markdown bullets, and an H2 Links section with clickable markdown links. The resulting markdown can be copied into podcast hosting platforms, RSS feed management dashboards, or website show notes pages. Because template generation runs locally in your browser, upcoming episode details, guest bios, and unannounced sponsorship links remain confidential prior to broadcast, keeping production details safe.',
+    faqs: [
+      {
+        question: 'How should links be entered in the links field?',
+        answer:
+          'Enter links with one pair per line using the pipe delimiter: "Label | https://example.com". The tool converts each line into a standard Markdown link: "- [Label](https://example.com)".',
+      },
+      {
+        question: 'Are episode title and summary mandatory?',
+        answer:
+          'Yes. The template engine requires both an Episode title and a Summary. Leaving either field empty raises a validation error specifying the missing field.',
+      },
+      {
+        question:
+          'Can I copy the generated Markdown into my podcast host dashboard?',
+        answer:
+          'Yes. The output is standard GitHub-compatible Markdown, compatible with hosting platforms such as Substack, Transistor, Spotify for Podcasters, Libsyn, and WordPress.',
+      },
+      {
+        question: 'Are show notes uploaded or saved to a remote server?',
+        answer:
+          'No. The entire document generation runs in browser memory under a strict Content Security Policy forbidding network calls on tool pages.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'podcast-chapter-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-podcast-chapter-generator': {
+    directAnswer:
+      'Enter chapter timestamps and titles to validate chronological ordering and format clean podcast chapters in your browser. The tool rigorously enforces ascending order, requires starting at zero, standardises clock notation like 0:00 or 1:05:30, and produces clean chapter markers directly in your browser without transmitting your show notes to external servers.',
+    leadParagraph:
+      'This chapter generator validates and standardises timestamped chapter markers for podcasts, audiobooks, and video essays. You input chapter lines pairing timestamps with titles using a pipe separator, such as "00:00 | Introduction". The engine rigorously checks podcast timing conventions: chapters must begin at exactly zero, throwing "Chapters must start at 0:00." if the first marker is missing or delayed, and each subsequent timestamp must be strictly greater than the previous one, raising "Chapter timestamps must be in ascending order." if out of sequence. It normalises timecodes into clean clock strings without unnecessary leading zeros on single-digit minutes (formatting "00:00" as "0:00" and "01:05" as "1:05"). The output delivers a tidy, standardised chapter list ready for podcast RSS metadata or YouTube descriptions, running completely within your browser session without exposing unreleased show content.',
+    faqs: [
+      {
+        question: 'Why does the chapter generator require starting at 0:00?',
+        answer:
+          'Podcast platforms and media players require chapter tracks to begin at the very start of the audio file (0:00) to ensure accurate player scrubbing and progress tracking.',
+      },
+      {
+        question: 'What timestamp formats are supported?',
+        answer:
+          'The tool accepts standard MM:SS and HH:MM:SS formats (for example, "03:45" or "01:12:30"). Values are parsed into seconds and normalised into uniform clock notation.',
+      },
+      {
+        question: 'What happens if a chapter timestamp is out of order?',
+        answer:
+          'The validator strictly enforces chronological progression. If any chapter timestamp is earlier than or equal to the previous marker, the tool halts immediately with "Chapter timestamps must be in ascending order."',
+      },
+      {
+        question: 'Can I use these chapters for YouTube video descriptions?',
+        answer:
+          'Yes. The normalised output follows standard timestamp notation (such as "0:00 Introduction") and is fully compatible with YouTube automatic video chapter creation.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'newsletter-template-builder', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-newsletter-template-builder': {
+    directAnswer:
+      'Fill in your newsletter title, introduction, section headers with notes, and call to action to compile a structured Markdown newsletter skeleton. The tool formats clean H2 headings, inserts divider rules, and outputs a coherent draft layout directly in your browser without sending copy over the network to any third party.',
+    leadParagraph:
+      'This newsletter builder structures editorial email issues into clean, readable Markdown skeletons. You provide four key elements: a title, an introductory opening paragraph, multiple content sections pairing headings with notes using a pipe character, and a concluding call to action. The engine validates that title, intro, and call to action fields are filled, then compiles the inputs into a balanced Markdown layout featuring an H1 title, opening text, structured H2 sections, a horizontal divider rule, and a clear call to action block. This structured layout helps writers maintain a consistent editorial rhythm and prevents essential structural elements from being omitted. The resulting Markdown is ready to paste into Substack, Mailchimp, ConvertKit, Beehiiv, or Ghost. All generation occurs locally in browser memory, ensuring your newsletter drafts remain private, secure, and confidential on your device.',
+    faqs: [
+      {
+        question: 'How should newsletter sections be formatted in the input?',
+        answer:
+          'Enter one section per line using the pipe separator: "Section Heading | Section notes and summary". The builder converts each line into an H2 heading followed by the corresponding notes.',
+      },
+      {
+        question: 'Are the title, intro, and call to action mandatory?',
+        answer:
+          'Yes. The template engine requires non-empty values for Title, Opening, and Call to action to ensure a complete, well-formed newsletter structure.',
+      },
+      {
+        question:
+          'Can I paste the generated Markdown into email marketing tools?',
+        answer:
+          'Yes. Standard Markdown is accepted directly by modern newsletter platforms such as Substack, Ghost, Beehiiv, and tools that support Markdown import.',
+      },
+      {
+        question: 'Does this tool save or store my newsletter drafts?',
+        answer:
+          'No. The builder operates purely in your local browser tab under strict Content Security Policy restrictions. No drafts are sent across the network or stored on remote servers.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'substack-draft-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-substack-draft-formatter': {
+    directAnswer:
+      'Enter your publication title, subtitle, and article body to format a clean Markdown draft ready for Substack. The tool structures an H1 title, italicised subtitle, and normalised body text directly in your browser without uploading your draft writing to external servers. Formatting runs privately in local tab memory on your machine.',
+    leadParagraph:
+      'This formatting tool prepares articles for publication on Substack by assembling clean Markdown headers and normalised body text. You enter your article title, an engaging subtitle, and your draft content. The engine ensures both title and subtitle are present, normalises line endings to remove carriage returns, and strips invisible byte-order marks. It then outputs a structured Markdown document opening with a top-level H1 title, followed by an italicised subtitle block, and the cleaned article body. This standardised structure ensures consistent typography and clean rendering when importing Markdown into the Substack post editor. Because the tool runs entirely client-side without network requests, sensitive essays, unpublished memoirs, and confidential research drafts remain strictly private on your machine until you choose to publish them. You can review the finished structure prior to copying.',
+    faqs: [
+      {
+        question: 'Why are both title and subtitle required?',
+        answer:
+          'Substack post cards and email headers rely on both a clear title and an explanatory subtitle. The formatter requires both fields to ensure your article header renders properly.',
+      },
+      {
+        question: 'How is the subtitle styled in the output Markdown?',
+        answer:
+          'The subtitle is rendered as italicised text immediately beneath the H1 title using asterisks: "# Title\\n\\n*Subtitle*\\n\\n", matching Substack\'s standard visual hierarchy.',
+      },
+      {
+        question:
+          'Does the tool change the Markdown formatting in my article body?',
+        answer:
+          'No. Your internal body Markdown\u2014including bold text, lists, quotes, and links\u2014is preserved as entered, while line breaks and whitespace are normalised.',
+      },
+      {
+        question: 'Are my draft articles uploaded to any cloud service?',
+        answer:
+          "No. All processing happens in local browser memory under strict CSP connect-src 'none' rules. Your unpublished drafts never leave your device.",
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'medium-draft-formatter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-medium-draft-formatter': {
+    directAnswer:
+      'Enter an article title, subtitle, and draft body to compile a structured Markdown document formatted specifically for Medium importing. The tool builds clean H1 and subtitle headers, normalises paragraph whitespace, and provides publication-ready copy directly in your browser without ever sending your article text to remote servers or cloud databases.',
+    leadParagraph:
+      "This draft formatter structures long-form articles for publication on Medium. Medium stories require a clear primary title and subtitle at the top of the post to generate clean metadata cards and reader previews. You provide your title, subtitle, and body copy; the engine validates that title and subtitle are non-empty, cleans carriage returns, and formats the output with an H1 heading, an italicised subtitle, and the body text. This structure matches Medium's import expectations, ensuring that heading styles, paragraph spacing, and subheads import cleanly without manual reformatting. Operating completely inside your browser tab under local security headers, the formatter ensures that investigative articles, technical write-ups, and proprietary commentary remain strictly confidential throughout the entire drafting process. The output is formatted cleanly and ready for immediate copy-pasting directly into the Medium post editor.",
+    faqs: [
+      {
+        question: 'How does Medium use the title and subtitle structure?',
+        answer:
+          "Medium uses the top H1 and italicised subtitle to generate feed preview cards, social share metadata, and the story's primary header layout.",
+      },
+      {
+        question: 'Does the formatter clean up Windows line endings?',
+        answer:
+          'Yes. It automatically converts Windows CRLF line endings to standard Unix newlines, preventing double-spacing glitches when importing Markdown into the Medium editor.',
+      },
+      {
+        question: 'Can I include Markdown links and headers in the body?',
+        answer:
+          'Yes. All Markdown syntax inside the body, including subheadings, bullet lists, blockquotes, links, and code blocks, is preserved intact during formatting.',
+      },
+      {
+        question: 'Is my article text transmitted or stored on any server?',
+        answer:
+          'No. The tool runs locally in your browser with network access restricted. Your article content remains entirely private on your own device.',
+      },
+    ],
+  },
 };
 
 /**
