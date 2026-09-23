@@ -15777,6 +15777,1302 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // components/metadata-tool.tsx, lib/seo/tool-page-depth.ts and app/image/metadata/page.tsx
+  'image-image-metadata-viewer': {
+    directAnswer:
+      'Inspect hidden EXIF, IPTC, and XMP metadata embedded within digital image files directly in your browser. The tool reveals camera shutter speeds, aperture settings, ISO values, GPS location coordinates, lens models, and embedded timestamps entirely client-side in memory to ensure personal family photographs and proprietary media assets remain completely confidential.',
+    leadParagraph:
+      'Every photograph captured by modern digital cameras and mobile smartphones carries extensive embedded technical and contextual metadata within EXIF, IPTC, and XMP tags. This metadata reveals camera make and model, exact exposure settings (shutter speed, aperture f-number, focal length, ISO rating), software editing history, color spaces, copyright notices, and precise GPS latitude and longitude coordinates showing where the photo was taken. This browser-based image metadata viewer parses raw binary headers from JPEG, PNG, TIFF, and WebP files directly within your browser runtime, categorising camera tags into readable inspection tables with interactive map coordinate lookups. Auditing photographic metadata locally in browser memory enables photographers, journalists, and privacy-conscious users to examine file properties without uploading private graphics to third-party web servers. Because photos often contain sensitive geographic locations or private personal moments, all binary parsing executes locally inside browser memory. No images or metadata tags are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question: 'What image file formats can be inspected with this viewer?',
+        answer:
+          'The viewer inspects standard photographic image formats including JPEG, PNG, WebP, TIFF, and HEIC files, extracting EXIF and IPTC tags accurately.',
+      },
+      {
+        question:
+          'Does the viewer reveal GPS coordinates where the photo was taken?',
+        answer:
+          'Yes. If the camera or smartphone recorded geographic location tags, the tool extracts latitude, longitude, and altitude alongside interactive map coordinates.',
+      },
+      {
+        question: 'Can I inspect technical camera exposure and lens settings?',
+        answer:
+          'Yes. The viewer displays shutter speed, aperture f-stop, focal length, ISO sensitivity, flash firing status, and specific camera lens model identifiers.',
+      },
+      {
+        question:
+          'Are my private photographs or metadata tags uploaded anywhere?',
+        answer:
+          'No. All image binary decoding and EXIF metadata extraction execute client-side in browser memory with zero network traffic, ensuring complete photographic privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'speed-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-speed-converter': {
+    directAnswer:
+      'Convert velocity and speed measurements directly in your browser across kilometres per hour, miles per hour, metres per second, knots, feet per second, and Mach numbers. The tool delivers exact conversion ratios and high-precision decimal solutions entirely client-side in memory to ensure automotive engineering calculations, marine navigation plans, and physics exercises remain completely confidential.',
+    leadParagraph:
+      'Converting velocity measurements between metric, imperial, nautical, and aerodynamic units is an everyday requirement in automotive performance testing, marine vessel navigation, aviation flight planning, meteorology, and academic mechanics. This client-side speed converter provides simultaneous conversions across standard international units: kilometres per hour (km/h), miles per hour (mph), metres per second (m/s), nautical knots (kn), feet per second (ft/s), and Mach numbers (speed relative to sound in standard air). Users can enter any single speed value to view equivalent velocities across all other measurement standards instantly, alongside physical velocity context benchmarks such as highway speed limits and orbital escape velocities. Evaluating speed units directly in your browser runtime provides rapid computational verification for mechanical engineers, navigators, and students without desktop conversion utilities. Because navigation routes and proprietary engineering parameters involve confidential specifications, all conversion calculations execute locally within browser memory. No speed values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What speed measurement units are supported by the converter?',
+        answer:
+          'The tool converts kilometres per hour, miles per hour, metres per second, nautical knots, feet per second, and aerodynamic Mach numbers accurately.',
+      },
+      {
+        question: 'What is the exact physical definition of one nautical knot?',
+        answer:
+          'One knot represents a velocity of one international nautical mile per hour, standardized mathematically as exactly 1.852 kilometres per hour (approx. 1.151 mph).',
+      },
+      {
+        question: 'How does Mach number relate to standard speed measurements?',
+        answer:
+          'Mach 1 represents the local speed of sound in dry ambient air at 20 degrees Celsius, corresponding to approximately 343 metres per second or 1,235 km/h.',
+      },
+      {
+        question:
+          'Are my navigation speeds or vehicle engineering values logged online?',
+        answer:
+          'No. All speed conversions run strictly inside local client browser memory with zero outbound network calls, maintaining total privacy for your calculations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'study-time-planner', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-study-time-planner': {
+    directAnswer:
+      'Plan structured revision timetables and academic study schedules directly in your browser. The tool allocates daily study hours across subjects based on exam dates, topic difficulty ratings, and syllabus volume entirely client-side in memory to keep personal academic targets, revision timetables, and student performance data completely confidential. The scheduling engine runs client-side in browser memory with zero network traffic.',
+    leadParagraph:
+      'Preparing for academic examination sessions across multiple demanding subjects requires disciplined study schedule allocation to avoid last-minute cramming and cognitive fatigue. This browser-based study time planner enables university and high school students to catalog exam subjects, set target completion deadlines, and rate subject difficulty and syllabus volume. The tool calculates recommended daily and weekly study hours for each subject, factoring in rest days and spaced repetition review cycles to optimize memory retention. Students can visualize their complete revision roadmap, adjust daily study hour budgets, and track progress against scheduled study milestones. Organizing academic revision directly in browser memory eliminates scheduling stress during critical exam preparation weeks without requiring third-party productivity apps. Because student study habits, personal schedules, and course commitments represent private educational data, all planning calculations run locally in client browser memory. No study plans or student goals are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'How does the planner allocate daily study hours across subjects?',
+        answer:
+          'The tool weights available study hours proportionally based on topic difficulty ratings, remaining days until exam dates, and total syllabus page counts.',
+      },
+      {
+        question:
+          'Does the planner incorporate spaced repetition and rest breaks?',
+        answer:
+          'Yes. The scheduling algorithm distributes subject reviews over spaced intervals and schedules rest days to prevent cognitive burnout and reinforce retention.',
+      },
+      {
+        question:
+          'Can I adjust the timetable if my available study hours change?',
+        answer:
+          'Yes. You can update daily available study hours dynamically, and the planner recalculates subject allocations across the remaining revision timeline.',
+      },
+      {
+        question:
+          'Are my academic study schedules or subject lists saved online?',
+        answer:
+          'No. All revision calculations exist strictly in local client browser memory with zero network traffic, ensuring complete privacy for your academic planning.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'phone-column-normalizer', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-phone-column-normalizer': {
+    directAnswer:
+      'Normalise inconsistent telephone numbers across spreadsheet columns directly in your browser. The tool formats telephone digits into standard international E.164, national hyphenated, or bracketed styles in Excel and CSV files entirely client-side in memory to ensure confidential customer contact lists, CRM databases, and sales rosters remain completely secure. The tool formats phone numbers locally in browser memory to keep contacts secure.',
+    leadParagraph:
+      'Importing customer contact records from web inquiry forms, marketing campaigns, and legacy spreadsheets often yields inconsistent telephone formatting—such as numbers missing country dialling codes, mixed punctuation delimiters (dots, dashes, parentheses), and unstripped extension characters. These formatting discrepancies cause SMS marketing dispatch failures, CRM duplicate errors, and broken click-to-call links. This client-side telephone column normalizer parses uploaded Excel (.xlsx) and CSV files, detects phone number columns, strips extraneous non-numeric characters, and reformats every entry into your chosen uniform style (including international E.164 +1234567890, national US format (123) 456-7890, or standard international space-separated notation). The tool validates digit length according to country rules and exports clean, standardized spreadsheets ready for automated CRM ingestion. Normalising phone numbers directly in browser memory saves marketing operations teams hours of tedious manual formatting without third-party web tools. Because customer contact lists contain sensitive personal phone numbers, all data normalisation executes locally inside browser memory. No data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question: 'What is the international E.164 phone numbering standard?',
+        answer:
+          'E.164 is the global telecommunication standard formatting phone numbers as a plus sign followed by country code, area code, and subscriber number with no spaces.',
+      },
+      {
+        question: 'Can I apply a default country code to local phone numbers?',
+        answer:
+          'Yes. You can specify a default country prefix (such as +1 for US/Canada or +44 for UK) to automatically prepend to local national numbers lacking country codes.',
+      },
+      {
+        question:
+          'What spreadsheet file formats can be normalised with this tool?',
+        answer:
+          'The tool supports modern OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for phone data cleaning.',
+      },
+      {
+        question:
+          'Are my customer phone lists or CRM databases uploaded online?',
+        answer:
+          'No. All spreadsheet decoding and telephone normalisations execute client-side in browser memory with zero outbound network calls, maintaining total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'aria-label-checklist', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-aria-label-checklist': {
+    directAnswer:
+      'Audit and verify Accessible Rich Internet Applications (ARIA) attributes directly in your browser against W3C WCAG 2.1 accessibility standards. The checklist inspects aria-label, aria-labelledby, aria-describedby, role definitions, and hidden states entirely client-side in memory to ensure unreleased web app architectures and accessibility audits remain completely confidential. The checklist audits accessibility tags locally in client browser memory with zero network calls.',
+    leadParagraph:
+      'Ensuring that interactive web components—such as modal dialogues, custom accordions, icon buttons, and navigation tabs—are accessible to screen reader users requires proper implementation of W3C ARIA accessibility attributes. Overusing or improperly applying ARIA roles can override native semantic HTML and confuse assistive technologies. This client-side ARIA label checklist guides front-end developers, UI engineers, and accessibility auditors through systematic verification of accessible names, component roles, live announcement regions (aria-live), and expanded states (aria-expanded). The tool highlights common ARIA anti-patterns, recommends native HTML semantic replacements where applicable, and verifies accessible descriptions for interactive controls. Auditing accessibility standards directly in browser memory accelerates web compliance audits without third-party tracking scripts. Because pre-launch digital prototypes and proprietary web applications involve sensitive commercial roadmaps, all checklist evaluations run locally within browser memory. No component audits are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question:
+          'What is the first rule of ARIA in web accessibility development?',
+        answer:
+          'The first rule of ARIA states that you should use native semantic HTML elements (such as <button> or <nav>) instead of re-creating them with ARIA roles.',
+      },
+      {
+        question:
+          'What is the distinction between aria-label and aria-labelledby?',
+        answer:
+          'aria-label provides an invisible text string directly on the element, whereas aria-labelledby references the ID of an existing visible element that labels it.',
+      },
+      {
+        question:
+          'Why should icon-only buttons always include an accessible name?',
+        answer:
+          'Icon buttons lacking visible text (such as magnifying glass search icons) require an aria-label so screen readers can announce their function to blind users.',
+      },
+      {
+        question:
+          'Are my website source codes or accessibility audit notes sent online?',
+        answer:
+          'No. All ARIA checklist evaluations occur client-side in local browser memory with zero outbound network calls, maintaining total project confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'freelance-rate-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-freelance-rate-calculator': {
+    directAnswer:
+      'Calculate realistic freelance hourly, daily, and project billing rates directly in your browser based on desired annual income, billable hours, business overhead expenses, and self-employment taxes. The tool determines minimum sustainable rates entirely client-side in memory to keep personal income goals, client billing strategies, and business operating budgets completely private.',
+    leadParagraph:
+      'Transitioning from traditional salaried employment to independent freelancing or consulting requires establishing billing rates that account for non-billable administrative hours, self-employment taxes, health insurance premiums, paid time off, and business operating overhead. Freelancers who merely divide their previous corporate salary by standard work hours inevitably find themselves undercharging and financially strained. This client-side freelance rate calculator allows consultants, independent developers, and creative contractors to enter target annual net income, calculate realistic billable hours (factoring in business development and administrative time), itemise software subscriptions and equipment overhead, and factor in self-employment tax levies. The tool calculates the exact minimum hourly and day rates required to maintain your target standard of living. Calculating freelance rates directly in your browser provides financial confidence during client fee proposals without software downloads. Because personal compensation goals and business expense records represent confidential financial data, all calculations execute locally within browser memory. No billing figures or income targets are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Why should freelancers not calculate hourly rates using 40 billable hours per week?',
+        answer:
+          'Freelancers spend considerable time on non-billable tasks like marketing, invoicing, and administration; realistic billable hours usually average between 20 and 25 hours weekly.',
+      },
+      {
+        question:
+          'How does self-employment tax impact required freelance rates?',
+        answer:
+          'Self-employed contractors must pay both employer and employee portions of social security and healthcare taxes, requiring higher rates to match salaried take-home pay.',
+      },
+      {
+        question:
+          'Can I calculate both hourly and daily project consulting rates?',
+        answer:
+          'Yes. The calculator computes minimum hourly rates, day rates, and monthly client retainer baselines to support diverse freelance billing proposals.',
+      },
+      {
+        question:
+          'Are my personal salary goals or freelance business expenses saved online?',
+        answer:
+          'No. All compensation calculations run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your financial figures.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'time-unit-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-time-unit-converter': {
+    directAnswer:
+      'Convert time duration measurements directly in your browser across seconds, milliseconds, microseconds, nanoseconds, minutes, hours, days, weeks, months, and Julian years. The tool provides exact algebraic ratios and high-precision scientific notation entirely client-side in memory to ensure software benchmark measurements, physics calculations, and project schedules remain completely confidential. All time conversions execute client-side in browser memory to keep project schedules private.',
+    leadParagraph:
+      'Converting time duration metrics across microsecond computing scales, standard clock intervals, and calendar years is an everyday requirement in software algorithm benchmarking, physics kinetics, astronomical orbit calculations, and project management. This client-side time unit converter provides simultaneous conversions across standard international units: nanoseconds (ns), microseconds (μs), milliseconds (ms), seconds (s), minutes (min), hours (h), days (d), weeks (wk), average calendar months, and Julian astronomical years (365.25 days). Users can input any single duration value to view equivalent time intervals across all other measurement standards instantly, alongside exact fractional ratios and scientific notation for extreme sub-millisecond durations. Evaluating time units directly in your browser runtime provides rapid computational verification for software developers, scientists, and project coordinators without desktop conversion utilities. Because software performance metrics and proprietary project timelines involve confidential parameters, all conversion calculations execute locally within browser memory. No duration values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What time duration measurement units are supported by the converter?',
+        answer:
+          'The tool converts nanoseconds, microseconds, milliseconds, seconds, minutes, hours, days, weeks, calendar months, and astronomical Julian years accurately across scientific scales.',
+      },
+      {
+        question: 'How many milliseconds are contained in one standard hour?',
+        answer:
+          'One standard hour contains 60 minutes or 3,600 seconds, which equals exactly 3,600,000 milliseconds (3.6 × 10^6 ms) in metric time measurements.',
+      },
+      {
+        question:
+          'What standard definition is used for an astronomical Julian year?',
+        answer:
+          'An astronomical Julian year is standardized scientifically as exactly 365.25 days, which corresponds to exactly 31,557,600 seconds of elapsed physical time.',
+      },
+      {
+        question:
+          'Are my software performance benchmarks or project times logged online?',
+        answer:
+          'No. All time duration conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'flashcard-maker', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-flashcard-maker': {
+    directAnswer:
+      'Create, organise, and review educational study flashcards directly in your browser with two-sided card flipping, study deck management, and print-ready layout export. The tool processes study questions and answers entirely client-side in memory to ensure academic revision decks, exam preparations, and proprietary training materials remain completely confidential. The tool generates flashcards locally in browser memory to keep study materials private.',
+    leadParagraph:
+      'Active recall and spaced repetition using flashcards represent two of the most proven, scientifically validated study methods for mastering foreign language vocabulary, medical terminology, legal definitions, and scientific formulas. This browser-based flashcard maker allows students, educators, and enterprise trainers to create digital flashcard study decks by entering question-answer pairs or importing tabular text lists. The interface provides an interactive revision mode with keyboard-driven card flipping, correct-answer tracking, and shuffle randomization, alongside printable PDF and grid layout export options for physical revision cards. Building revision decks directly in browser memory accelerates exam preparation without requiring paid subscription accounts or software installations. Because student study materials, proprietary corporate training modules, and academic exam questions represent private educational content, all flashcard generation executes locally within client browser memory. No flashcards or study decks are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Can I import flashcards in bulk from CSV or spreadsheet tables?',
+        answer:
+          'Yes. You can paste tab-separated or comma-separated question-answer pairs to populate dozens of digital flashcards in a single batch creation pass.',
+      },
+      {
+        question:
+          'Does the flashcard tool support interactive study and self-testing?',
+        answer:
+          'Yes. An interactive study mode lets you flip cards, mark answers as correct or incorrect, shuffle deck order, and review missed questions.',
+      },
+      {
+        question:
+          'Can I export my flashcards for two-sided physical card printing?',
+        answer:
+          'Yes. The tool formats ready-to-print grid templates designed for standard index cards or paper sheets for physical tactile revision and memorisation.',
+      },
+      {
+        question:
+          'Are my private study decks or corporate training flashcards uploaded?',
+        answer:
+          'No. All card editing and study sessions run client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your study decks.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'address-column-cleaner', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-address-column-cleaner': {
+    directAnswer:
+      'Clean, standardise, and split postal address columns across spreadsheet files directly in your browser. The tool normalises street abbreviations (St, Ave, Rd, Blvd), parses city and state fields, and validates postal codes in Excel and CSV files entirely client-side in memory to ensure confidential customer lists, logistics rosters, and delivery records remain completely secure.',
+    leadParagraph:
+      "Customer postal address lists exported from ecommerce shopping carts, CRM platforms, and survey tools are notoriously messy—featuring inconsistent casing, haphazard street abbreviations (mixing 'Street', 'St.', and 'St'), misplaced apartment numbers, and scrambled postal codes. These formatting defects cause package delivery failures, duplicate mailing expenses, and inaccurate customer mapping. This client-side address column cleaner parses uploaded Excel (.xlsx) and CSV files, standardising street suffix abbreviations to postal standards, capitalizing proper nouns, and separating concatenated address strings into distinct structured columns (Street Line 1, Unit/Suite, City, State/Province, and Postal Code). The tool resolves formatting anomalies while preserving original row ordering and data types. Cleaning mailing addresses directly in browser memory accelerates logistics preparation without relying on paid third-party postal APIs. Because customer delivery addresses represent highly sensitive personal information, all data sanitization executes locally inside browser memory. No address records are ever transmitted across external networks.",
+    faqs: [
+      {
+        question: 'What address abbreviations are standardized by the cleaner?',
+        answer:
+          'The tool normalises standard postal street suffixes including Street (St), Avenue (Ave), Boulevard (Blvd), Road (Rd), Drive (Dr), Lane (Ln), and Suite (Ste).',
+      },
+      {
+        question:
+          'Can the cleaner split a single combined address line into separate columns?',
+        answer:
+          'Yes. The parsing engine recognizes postal delimiters and keywords to separate single-line addresses into distinct street, unit, city, state, and postal code columns.',
+      },
+      {
+        question:
+          'What spreadsheet file formats are supported for address cleaning?',
+        answer:
+          'The cleaner supports modern OpenXML workbooks (.xlsx, .xlsm), comma-separated values (.csv), and tab-separated (.tsv) data tables for thorough address processing.',
+      },
+      {
+        question:
+          'Are my customer delivery addresses or mailing lists uploaded online?',
+        answer:
+          'No. All spreadsheet decoding and address standardisations occur strictly within client browser memory with zero network calls, guaranteeing total customer privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'heading-structure-checker', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-heading-structure-checker': {
+    directAnswer:
+      'Audit website heading tag hierarchies (H1 through H6) directly in your browser against search engine optimization (SEO) best practices and WCAG accessibility guidelines. The tool flags skipped heading levels, multiple H1 tags, empty headings, and nesting errors entirely client-side in memory to ensure unreleased website copy and structural blueprints remain completely confidential.',
+    leadParagraph:
+      'Maintaining a clear, logical heading hierarchy (H1, followed by H2, followed by H3) is fundamental for web accessibility and search engine indexing. Screen reader users rely on heading outlines to navigate page sections efficiently, while search engine crawlers use heading structures to understand document topic hierarchies. Common errors—such as skipping from H2 directly to H4, having multiple disjointed H1 elements, or styling bold text without semantic heading tags—damage both user accessibility and search rankings. This client-side heading structure checker analyzes raw HTML markup or pasted article content, generating an interactive visual outline tree of all headings on the page. The tool instantly flags architectural violations, such as skipped intermediate levels, missing main H1 headings, or empty heading tags. Auditing document outlines directly in browser memory accelerates content optimization without third-party SEO plugins. Because pre-launch articles and proprietary web copy require secrecy, all heading analysis runs locally within browser memory. No content is ever sent to remote web servers.',
+    faqs: [
+      {
+        question:
+          'Why is skipping heading levels (such as H2 to H4) considered an accessibility error?',
+        answer:
+          'Skipping heading levels disorients screen reader users who navigate by heading level shortcuts, leading them to believe intermediate sections were missed or omitted.',
+      },
+      {
+        question:
+          'Should a webpage ideally contain only a single H1 heading tag?',
+        answer:
+          'Yes. SEO and accessibility standards recommend a single descriptive H1 tag representing the primary topic of the page, followed by logical H2 subsections.',
+      },
+      {
+        question:
+          'Can I audit heading structures from raw HTML or markdown source code?',
+        answer:
+          'Yes. You can paste raw HTML source code, rendered rich text, or markdown copy directly into the checker to extract and validate heading hierarchies.',
+      },
+      {
+        question:
+          'Are my unpublished article drafts or website page structures sent online?',
+        answer:
+          'No. All HTML parsing and heading outline evaluations execute client-side in browser memory with zero outbound network calls, maintaining total document privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'markup-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-markup-calculator': {
+    directAnswer:
+      'Calculate retail selling prices, cost markups, gross profit margins, and dollar profit amounts directly in your browser. Enter any two known parameters among cost price, markup percentage, selling price, and profit to compute remaining figures entirely client-side in memory to ensure commercial pricing strategies, wholesale costs, and retail margins remain completely confidential.',
+    leadParagraph:
+      'Establishing profitable retail selling prices requires understanding the mathematical relationship between cost price, markup percentage, and gross profit margin. Confusing markup (profit divided by cost) with margin (profit divided by revenue) is one of the most common commercial pricing errors, often leading business owners to underprice products and fail to cover operating overhead. This client-side markup calculator enables retail merchants, ecommerce sellers, and wholesale distributors to enter wholesale unit costs and target markup percentages to determine exact retail selling prices and gross margins instantly. Users can also enter desired selling prices to determine the implied markup percentage or work backwards from target margins. Calculating pricing structures directly in your browser runtime provides rapid financial validation during vendor negotiations and inventory catalog preparation. Because product acquisition costs, wholesale contracts, and target margins represent sensitive trade secrets, all financial computations run locally in browser memory. No pricing parameters are ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'What is the fundamental mathematical difference between markup and margin?',
+        answer:
+          'Markup is the percentage added to the cost price (profit / cost), whereas margin is the percentage of selling price that represents profit (profit / revenue).',
+      },
+      {
+        question:
+          'How do I calculate selling price from cost and markup percentage?',
+        answer:
+          'Selling price equals cost price multiplied by one plus markup as a decimal (for example, a $50 cost with 40% markup sells for $50 × 1.40 = $70).',
+      },
+      {
+        question:
+          'Can I calculate the required markup percentage to achieve a specific margin?',
+        answer:
+          'Yes. To achieve a target margin, markup percentage equals margin divided by one minus margin (for example, a 25% margin requires a 33.33% cost markup).',
+      },
+      {
+        question:
+          'Are my wholesale costs or commercial pricing strategies uploaded online?',
+        answer:
+          'No. All markup calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your commercial records.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'pressure-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-pressure-converter': {
+    directAnswer:
+      'Convert physical pressure measurements directly in your browser across pascals, bars, pounds per square inch (PSI), standard atmospheres, torrs, and millimetres of mercury. The tool delivers exact conversion ratios and high-precision scientific notation entirely client-side in memory to ensure mechanical engineering schematics, scuba dive tables, and physics calculations remain completely confidential.',
+    leadParagraph:
+      'Converting pressure metrics between metric SI units, imperial standards, meteorological baselines, and vacuum engineering scales is an everyday requirement in hydraulic system design, automotive tyre maintenance, scuba diving decompression planning, HVAC engineering, and academic physics. This client-side pressure converter provides simultaneous conversions across standard international units: pascals (Pa), kilopascals (kPa), megapascals (MPa), bars (bar), millibars (mbar), pounds per square inch (psi), standard atmospheres (atm), torrs (Torr), and millimetres of mercury (mmHg). Users can input any single pressure value to view equivalent force distributions across all other measurement standards instantly, alongside exact fractional ratios and scientific notation for extreme high-pressure hydraulics or deep-vacuum systems. Evaluating pressure units directly in your browser runtime delivers rapid computational verification for mechanical engineers, technicians, and students without desktop conversion utilities. Because industrial fabrication specifications and laboratory parameters involve proprietary figures, all conversion calculations execute locally within browser memory. No pressure values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What pressure measurement units are supported by the converter?',
+        answer:
+          'The tool converts pascals, kilopascals, megapascals, bars, millibars, PSI, standard atmospheres, torrs, and millimetres of mercury accurately across pressure scales.',
+      },
+      {
+        question:
+          'What exact value defines one standard atmosphere in pascals?',
+        answer:
+          'One standard atmosphere (atm) is defined scientifically as exactly 101,325 pascals (101.325 kPa), representing mean sea-level atmospheric pressure across Earth.',
+      },
+      {
+        question: 'How many pascals are contained in one bar of pressure?',
+        answer:
+          'One bar is defined metric-conventionally as exactly 100,000 pascals (100 kPa), which corresponds to approximately 14.5038 pounds per square inch (psi).',
+      },
+      {
+        question:
+          'Are my hydraulic pressure specifications or vacuum logs saved online?',
+        answer:
+          'No. All pressure conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'quiz-generator-workspace', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-quiz-generator-workspace': {
+    directAnswer:
+      'Build, edit, and format interactive multiple-choice, true/false, and short-answer quizzes directly in your browser. The tool generates randomized question answer keys, interactive test previews, and printable examination papers entirely client-side in memory to ensure classroom test questions, student evaluations, and proprietary certification exams remain completely confidential. The workspace constructs all quizzes client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Designing effective classroom assessments, corporate compliance quizzes, and student practice tests requires drafting diverse question formats, organizing answer keys, and shuffling options to prevent student copying. This browser-based quiz generator workspace provides educators, trainers, and students with an all-in-one testing authoring environment. Users can compose multiple-choice questions with customized distractors, true/false prompts, and open short-answer items, adding point values and explanatory answer notes for each item. The tool includes automated option shuffling to produce multiple test variants (Form A and Form B), interactive preview modes for testing question flow, and clean export formatting for printable paper tests alongside detached answer keys. Composing academic assessments directly in browser memory accelerates exam preparation without requiring paid learning management systems. Because unreleased examination questions and proprietary certification items involve sensitive educational property, all quiz generation executes locally within client browser memory. No test questions or answer keys are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question: 'What question types can be created in the quiz workspace?',
+        answer:
+          'The workspace supports multiple-choice questions with custom distractor choices, true or false statements, and open-ended short answer questions with points.',
+      },
+      {
+        question:
+          'Can the tool shuffle question options to create multiple test versions?',
+        answer:
+          'Yes. You can randomize answer choices and question order to generate distinct test variants (such as Version A and Version B) to prevent student cheating.',
+      },
+      {
+        question:
+          'Can I export printable test sheets and separate answer keys?',
+        answer:
+          'Yes. The tool formats clean, printable paper question sheets alongside a separate detached grading key containing all correct answers and explanations.',
+      },
+      {
+        question:
+          'Are my unpublished examination questions or answer keys uploaded?',
+        answer:
+          'No. All quiz drafting and test generation occur client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your exam materials.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'morse-code-translator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-morse-code-translator': {
+    directAnswer:
+      'Translate text to International Morse Code and decode Morse dots and dashes back into plaintext directly in your browser. The tool supports standard ITU alphanumeric mappings, audio sidetone playback, and light flashing simulations entirely client-side in memory to ensure amateur radio training, puzzle game scripts, and private communications remain completely confidential.',
+    leadParagraph:
+      'International Morse Code remains a vital communications standard in amateur radio (CW operations), emergency maritime signaling, aviation navigation beacons, and assistive accessibility switches. This client-side Morse code translator provides bidirectional translation between standard English text and International Morse Code dots (dits) and dashes (dahs). The tool uses standard ITU specifications, representing dits as dots (.), dahs as hyphens (-), inter-character pauses as spaces, and word boundaries as forward slashes (/). The interface features synthesized audio tone playback using Web Audio API oscillators at adjustable words-per-minute (WPM) speeds and sidetone pitch frequencies, alongside visual flash simulations. Translating Morse code directly in local browser memory assists radio operators and hobbyists without requiring desktop decoder hardware or third-party web services. Because amateur radio call signs, emergency puzzle scripts, and private text involve personal data, all translation algorithms run locally within browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'What standards govern the dot and dash durations in Morse code?',
+        answer:
+          'Under ITU standards, one dash equals three dots in duration, spaces between letters equal three dots, and spaces between words equal seven dots.',
+      },
+      {
+        question:
+          'Can the tool decode Morse code dots and dashes back into English?',
+        answer:
+          'Yes. Bidirectional decoding translates Morse dot-and-dash strings back into readable English text, highlighting unrecognized symbols gracefully during client-side translation operations.',
+      },
+      {
+        question:
+          'Does the translator support audio playback of the Morse code signal?',
+        answer:
+          'Yes. The tool uses client-side Web Audio API oscillators to play audible sidetone beeps at customizable frequencies and words-per-minute (WPM) speeds.',
+      },
+      {
+        question:
+          'Are my translated messages or Morse code transmissions logged online?',
+        answer:
+          'No. All Morse code translation and audio synthesis execute client-side in local browser memory with zero network traffic, ensuring complete message privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'keyword-density-analyzer', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-keyword-density-analyzer': {
+    directAnswer:
+      'Analyze keyword frequencies and density percentages in article text directly in your browser. The tool calculates single-word, two-word (bigram), and three-word (trigram) phrase densities while filtering common stop words entirely client-side in memory to ensure unpublished content marketing drafts, SEO articles, and confidential manuscripts remain completely private. All lexical analysis executes client-side in browser memory with zero outbound network calls.',
+    leadParagraph:
+      "Optimizing web content for search engine rankings requires striking an effective balance in keyword usage: reinforcing primary thematic topics without crossing into keyword stuffing penalties. This client-side keyword density analyzer evaluates entered article copy, calculating total word counts, unique vocabulary counts, and exact percentage density figures across single keywords and multi-word phrases (bigrams and trigrams). The tool includes configurable stop word filtering (excluding common articles like 'the', 'and', 'is') to spotlight substantive topical keywords, highlighting overused phrases and under-represented search terms in real time. Analyzing keyword metrics directly in browser memory accelerates on-page SEO optimization cycles for content marketers and copywriters without third-party analytics plugins. Because pre-launch digital articles and corporate content drafts involve confidential marketing strategies, all lexical analysis executes locally within browser memory. No text is ever transmitted to remote web servers.",
+    faqs: [
+      {
+        question:
+          'What is considered a healthy keyword density percentage for SEO?',
+        answer:
+          'Most SEO practitioners recommend maintaining primary keyword densities between 1 and 2.5 percent, ensuring natural linguistic flow without algorithmic stuffing penalties.',
+      },
+      {
+        question:
+          'Does the analyzer identify multi-word phrases as well as single words?',
+        answer:
+          'Yes. The tool calculates frequency and density percentages for single words, two-word bigrams, and three-word trigrams across the entire document.',
+      },
+      {
+        question:
+          'Can I filter out common English stop words from the density report?',
+        answer:
+          'Yes. An integrated stop word filter removes common grammatical function words like prepositions and conjunctions to highlight meaningful content terms.',
+      },
+      {
+        question:
+          'Are my unpublished marketing drafts or keyword lists sent online?',
+        answer:
+          'No. All text parsing and keyword density calculations execute client-side in browser memory with zero outbound network calls, maintaining total document privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'margin-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-margin-calculator': {
+    directAnswer:
+      'Calculate gross profit margins, revenue requirements, cost of goods sold (COGS), and markup ratios directly in your browser. Enter any two known financial parameters to determine remaining metrics entirely client-side in memory to ensure commercial profitability models, product pricing ledgers, and wholesale budgets remain completely confidential. The financial calculator runs locally in browser memory to keep corporate pricing ledgers private.',
+    leadParagraph:
+      'Maintaining healthy gross profit margins is the fundamental prerequisite for commercial business viability, ensuring that sales revenues cover direct production costs while leaving sufficient gross profit to fund operating overhead, research, and net profitability. This client-side margin calculator allows business owners, ecommerce operators, and financial analysts to enter cost of goods sold and target gross margin percentages to calculate required retail selling prices, gross profit dollars, and equivalent cost markups. Users can also input existing revenues and costs to measure realized gross margins or solve for maximum allowable product costs to meet corporate profitability thresholds. Calculating margin structures directly in your browser runtime provides instant financial validation during contract pricing and inventory budget planning without spreadsheet setup. Because production costs, wholesale margins, and corporate profit targets represent sensitive trade secrets, all financial computations run locally in browser memory. No commercial financial data is ever shared across external networks.',
+    faqs: [
+      {
+        question: 'How is gross profit margin calculated mathematically?',
+        answer:
+          'Gross profit margin equals revenue minus cost of goods sold divided by revenue, expressed as a percentage ((revenue - cost) / revenue × 100).',
+      },
+      {
+        question: 'How does gross margin differ from net profit margin?',
+        answer:
+          'Gross margin measures revenue remaining after direct production costs (COGS), whereas net margin deducts all operating expenses, taxes, and interest.',
+      },
+      {
+        question:
+          'Can I calculate the required selling price to achieve a 40 percent margin?',
+        answer:
+          'Yes. To achieve a 40% margin on a $60 cost, divide cost by one minus margin ($60 / (1 - 0.40) = $60 / 0.60 = $100 selling price).',
+      },
+      {
+        question:
+          'Are my commercial profit margins or cost figures saved online?',
+        answer:
+          'No. All margin calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your business records.',
+      },
+    ],
+  },
+  // components/metadata-tool.tsx, lib/seo/tool-page-depth.ts and app/image/metadata/page.tsx
+  'image-gps-metadata-remover': {
+    directAnswer:
+      'Remove geographic GPS location coordinates from digital photos directly in your browser while preserving camera exposure and image quality. The tool permanently strips latitude, longitude, altitude, and geotag timestamps from JPEG, PNG, and WebP files entirely client-side in memory to ensure personal home locations, travel privacy, and family safety remain protected.',
+    leadParagraph:
+      'Modern smartphones and GPS-equipped digital cameras automatically embed precise geographic coordinates into every captured photo, recording exact latitude, longitude, and altitude within internal EXIF metadata headers. When photos are shared on social media, messaging forums, or classified listings, these geotags can inadvertently reveal residential addresses, children schools, and personal daily routines to strangers. This browser-based GPS metadata remover parses image files directly within your local browser runtime, excising GPS IFD blocks, coordinate tags, and positioning timestamps while preserving photographic visual resolution, color profiles, and general camera exposure settings. Stripping geographic coordinates directly in browser memory allows photographers, parents, and privacy advocates to sanitize visual media before public sharing without uploading private family photos to remote conversion websites. Because personal photos involve sensitive location privacy and family safety, all byte-level stripping executes locally inside browser memory. No photographs or geotags are ever transmitted to external web servers.',
+    faqs: [
+      {
+        question:
+          'Does removing GPS metadata alter the visual quality of the photo?',
+        answer:
+          'No. The tool modifies only binary EXIF metadata blocks in the file header, leaving underlying raster image pixels and compression quality completely untouched.',
+      },
+      {
+        question:
+          'Can I remove GPS coordinates while keeping camera exposure settings?',
+        answer:
+          'Yes. The tool targets and deletes GPS location tags specifically, allowing you to preserve camera shutter speed, aperture, and date tags if desired.',
+      },
+      {
+        question: 'What image formats can have their GPS metadata stripped?',
+        answer:
+          'The tool supports standard digital photographic formats including JPEG, PNG, TIFF, and WebP images carrying standard EXIF metadata containers for location sanitization.',
+      },
+      {
+        question:
+          'Are my private photographs uploaded to any server during sanitization?',
+        answer:
+          'No. All image binary parsing and GPS tag removal execute client-side in browser memory with zero network traffic, ensuring complete geographic privacy.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'notice-period-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-notice-period-calculator': {
+    directAnswer:
+      'Calculate employment resignation notice periods, final working days, and leave buyout adjustments directly in your browser. The tool accounts for contractual notice duration (30, 60, or 90 days), public holidays, and accrued leave offsets entirely client-side in memory to keep employment transitions, salary negotiations, and personal career plans completely confidential.',
+    leadParagraph:
+      'Navigating professional career transitions and resigning from employment requires calculating exact last working day dates based on contractual notice period requirements (typically 30, 60, or 90 days in corporate agreements). Determining official separation dates often involves factoring in earned leave offsets, company holidays, and notice period buyout negotiations to align departure schedules with new employer start dates. This browser-based notice period calculator allows employees and HR coordinators to input resignation dates and required contractual notice periods, computing official last working days, total calendar days served, and remaining working days. The tool allows users to factor in accrued paid leave to calculate adjusted early release dates or estimate salary buyout deductions. Calculating employment transition dates directly in browser memory provides career clarity without software installations. Because resignation plans, employment contracts, and salary details represent highly sensitive career information, all calculations execute locally in client browser memory. No employment records or departure dates are ever stored on external web servers.',
+    faqs: [
+      {
+        question:
+          'How is the official last working day calculated from resignation date?',
+        answer:
+          'The calculator adds contractual notice period days to your resignation date, accounting for calendar day conventions and company weekend policies.',
+      },
+      {
+        question:
+          'Can accumulated paid leave be used to reduce the notice period?',
+        answer:
+          'Yes. Subject to employer approval, accumulated paid leave can be offset against required notice days to calculate an adjusted earlier last working day.',
+      },
+      {
+        question: 'What is a notice period buyout in corporate employment?',
+        answer:
+          'A notice period buyout occurs when either the employee or new employer pays salary in lieu of unserved notice days to secure an immediate release.',
+      },
+      {
+        question:
+          'Are my employment resignation dates or salary figures saved online?',
+        answer:
+          'No. All notice period calculations occur strictly within client browser memory with zero network traffic, ensuring complete confidentiality for your career plans.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'energy-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-energy-converter': {
+    directAnswer:
+      'Convert physical energy, work, and heat measurements directly in your browser across joules, kilojoules, calories, kilocalories (dietary Calories), watt-hours, kilowatt-hours, electronvolts, foot-pounds, and British thermal units (BTU). The tool delivers exact conversion ratios entirely client-side in memory to ensure physics coursework, nutritional calculations, and thermodynamic engineering models remain completely confidential.',
+    leadParagraph:
+      'Converting energy measurements across mechanical physics, electrical power utility billing, nutritional science, and thermodynamic heating engineering requires navigating distinct unit systems. This client-side energy converter provides simultaneous conversions across standard international units: joules (J), kilojoules (kJ), megajoules (MJ), gram calories (cal), dietary kilocalories (kcal or Cal), watt-hours (Wh), kilowatt-hours (kWh), British thermal units (BTU), foot-pounds (ft-lb), and microscopic electronvolts (eV). Users can enter any single measurement value to view equivalent energy across all other measurement standards instantly, alongside exact scientific notation for atomic particle physics or industrial utility energy scales. Evaluating energy units directly in your browser runtime delivers rapid computational verification for electrical engineers, nutritional analysts, and physics students without desktop conversion software. Because industrial power specifications and academic experiment logs involve proprietary parameters, all conversion calculations execute locally within browser memory. No energy values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What energy and heat measurement units are supported by the converter?',
+        answer:
+          'The tool converts joules, kilojoules, dietary calories, kilowatt-hours, watt-hours, British thermal units, electronvolts, and foot-pounds accurately across diverse scientific measurement standards.',
+      },
+      {
+        question:
+          'How does a dietary Calorie differ from a physical gram calorie?',
+        answer:
+          'A dietary Calorie (capital C) is actually a kilocalorie, equal to 1,000 physical gram calories or approximately 4,184 joules of thermal energy.',
+      },
+      {
+        question: 'How many joules are contained in one kilowatt-hour (kWh)?',
+        answer:
+          'One kilowatt-hour represents electrical power consumed over one hour, equaling exactly 3,600,000 joules (3.6 megajoules) in standardized electrical energy metrics.',
+      },
+      {
+        question:
+          'Are my thermodynamic calculations or energy numbers logged online?',
+        answer:
+          'No. All energy conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'citation-generator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-citation-generator': {
+    directAnswer:
+      'Generate academic citations and bibliography references directly in your browser across APA, MLA, Chicago, and Harvard formatting styles. The tool formats book, journal, website, and article citations with proper author inversions, italics, and publication dates entirely client-side in memory to ensure academic dissertations, research papers, and student manuscripts remain completely confidential.',
+    leadParagraph:
+      'Constructing rigorous academic bibliographies and in-text parenthetical citations across diverse publication styles is essential for scholarly integrity and avoiding accidental plagiarism in academic papers. This client-side citation generator formats references for books, scholarly peer-reviewed journal articles, news reports, and online web pages according to standard academic style manuals: APA (American Psychological Association 7th edition), MLA (Modern Language Association 9th edition), Chicago (17th edition notes and bibliography), and Harvard referencing. Users can enter author names, publication years, article titles, journal names, volume and issue numbers, page spans, and DOIs to generate styled bibliography entries ready for copying into research bibliographies. Generating citations directly in browser memory accelerates paper writing for researchers and university students without subscription fees or intrusive advertisements. Because academic theses, unreleased scientific discoveries, and student papers involve proprietary intellectual work, all citation formatting executes locally within client browser memory. No citation data is ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What academic citation styles are supported by the generator?',
+        answer:
+          'The tool supports APA 7th edition, MLA 9th edition, Chicago 17th edition, and Harvard referencing styles for books, journals, and websites.',
+      },
+      {
+        question:
+          'Does the tool generate both full bibliography entries and in-text citations?',
+        answer:
+          'Yes. The generator provides full formatted reference list entries alongside corresponding parenthetical in-text citation examples (such as (Author, Year)) for research papers.',
+      },
+      {
+        question:
+          'How are multiple authors formatted according to APA style guidelines?',
+        answer:
+          'The generator formats up to 20 authors with inverted surnames and initials separated by commas and an ampersand per official APA 7th edition standards.',
+      },
+      {
+        question:
+          'Are my academic research topics or bibliographic references saved online?',
+        answer:
+          'No. All citation formatting occurs client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research writing.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'braille-translator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-braille-translator': {
+    directAnswer:
+      'Translate text into Grade 1 Unified English Braille (UEB) Unicode dot patterns and decode Braille characters back into Latin text directly in your browser. The tool maps alphanumeric characters, punctuation, and capitalisation indicators entirely client-side in memory to ensure tactile transcription drafts, educational materials, and private communications remain completely confidential.',
+    leadParagraph:
+      'Unified English Braille (UEB) enables blind and visually impaired individuals to read and write tactile text through standardized six-dot tactile cell configurations. This client-side Braille translator converts standard alphanumeric English text into Grade 1 uncontracted Braille Unicode glyphs (U+2800 to U+28FF) and translates Braille dot streams back into readable plaintext. The tool handles number indicators, letter case prefix prefixes (capital letter marks), punctuation symbols, and paragraph formatting with character-by-character visual cell inspections. Translating Braille directly in local browser memory assists educators, accessibility advocates, and tactile signage fabricators without requiring specialized desktop translation packages. Because tactile lesson plans, signage drafts, and private messages contain sensitive personal or proprietary information, all transcription algorithms run locally within browser memory. No text is ever uploaded to external servers. Understanding Braille dot conversions fosters greater educational accessibility and ensures tactile signage adheres to universal design standards.',
+    faqs: [
+      {
+        question:
+          'What is the distinction between Grade 1 and Grade 2 Braille?',
+        answer:
+          'Grade 1 translates text letter-for-letter directly, whereas Grade 2 incorporates hundreds of contractions and short-form abbreviations to save physical page space.',
+      },
+      {
+        question:
+          'How are numeric digits represented in Unified English Braille?',
+        answer:
+          'Numbers use the numeric indicator symbol (dots 3-4-5-6) followed by letters A through J representing digits 1 through 9 and zero.',
+      },
+      {
+        question: 'Can I copy the translated Braille output as standard text?',
+        answer:
+          'Yes. The tool outputs standard Unicode Braille Patterns characters that can be copied, pasted, and embedded into digital documents or embossers.',
+      },
+      {
+        question: 'Are my translated Braille texts or messages saved online?',
+        answer:
+          'No. All Braille transcription and decoding operations occur client-side in local browser memory with zero network traffic, ensuring complete text privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'text-to-html-link', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-text-to-html-link': {
+    directAnswer:
+      'Convert raw web URLs and anchor text into semantic HTML hyperlink tags (<a>) directly in your browser. The tool configures href targets, rel attributes (noopener, noreferrer, nofollow, sponsored), title tooltips, and new-tab targets entirely client-side in memory to ensure unreleased website links, affiliate parameters, and campaign URLs remain confidential. The link generator executes client-side in browser memory with zero network calls.',
+    leadParagraph:
+      "Writing HTML hyperlinks manually across dozens of content marketing drafts, affiliate reviews, and newsletter templates often results in missing security attributes or malformed URL structures. This client-side link generator allows web developers and content writers to pair destination web addresses with descriptive anchor text, configuring vital link attributes through intuitive visual toggles. The tool automatically appends essential security directives (such as rel='noopener noreferrer' when targeting _blank windows to prevent reverse tab-nabbing vulnerabilities) and supports search engine rel flags (including nofollow, sponsored, and ugc). Generating HTML link tags directly in browser memory accelerates content publication and prevents link formatting errors without third-party web tools. Because staging links, proprietary campaign tracking parameters, and partner agreements involve confidential commercial information, all HTML snippet generation executes locally within browser memory. No URLs are ever transmitted to remote web servers.",
+    faqs: [
+      {
+        question:
+          'Why is rel=noopener recommended when opening links in new tabs?',
+        answer:
+          'The noopener attribute prevents the newly opened webpage from accessing window.opener, protecting visitors from malicious phishing redirects and tab-nabbing exploits.',
+      },
+      {
+        question:
+          'When should rel=nofollow or rel=sponsored attributes be used?',
+        answer:
+          'Google guidelines require rel=sponsored on paid promotional or affiliate links and rel=nofollow on untrusted user-submitted content to avoid search penalties.',
+      },
+      {
+        question:
+          'Can I convert bulk lists of plain URLs into active HTML links?',
+        answer:
+          'Yes. You can paste lists of raw web addresses to generate batch HTML hyperlinks using automatic domain anchors or custom naming rules.',
+      },
+      {
+        question:
+          'Are my marketing campaign URLs or destination links saved online?',
+        answer:
+          'No. All URL parsing and HTML code generation execute client-side in browser memory with zero outbound network calls, maintaining total campaign privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'break-even-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-break-even-calculator': {
+    directAnswer:
+      'Calculate business break-even points in unit sales and gross monetary revenue directly in your browser. Enter fixed operating expenses, unit selling prices, and variable costs per unit to determine minimum profitability thresholds entirely client-side in memory to ensure startup financial models, pricing forecasts, and commercial operating budgets remain completely confidential.',
+    leadParagraph:
+      'Determining the precise sales volume required to recover fixed operating expenses is the foundational benchmark for evaluating new product launches, business investments, and pricing strategies. Operating below the break-even volume incurs continuous financial losses, while unit sales beyond this threshold generate pure commercial net profit. This client-side break-even calculator processes total fixed overhead costs (rent, salaries, equipment leasing, insurance) alongside variable costs per unit (raw materials, direct packaging, merchant fees) and unit selling prices. The tool calculates the exact break-even unit volume and break-even revenue, computing contribution margins and contribution margin ratios with interactive profitability graphs. Evaluating break-even metrics directly in your browser runtime provides rapid financial validation during business plan formulation without spreadsheet setup. Because cost structures, wholesale pricing, and overhead budgets represent sensitive commercial secrets, all financial computations run locally in browser memory. No business figures are ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'How is the break-even point in units calculated mathematically?',
+        answer:
+          'Break-even units equal total fixed costs divided by unit contribution margin (fixed costs / (selling price - variable cost per unit)).',
+      },
+      {
+        question:
+          'What does the unit contribution margin represent in business finance?',
+        answer:
+          'Contribution margin is the dollar amount remaining from each unit sale after covering variable costs, which directly contributes to paying down fixed overhead.',
+      },
+      {
+        question:
+          'Can I calculate the sales required to achieve a specific target profit?',
+        answer:
+          'Yes. Add your desired target profit to fixed costs and divide by the contribution margin to determine the total units required for target profitability.',
+      },
+      {
+        question:
+          'Are my confidential business overhead costs or profit targets saved online?',
+        answer:
+          'No. All break-even evaluations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your enterprise plans.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'power-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-power-converter': {
+    directAnswer:
+      'Convert physical power and energy transfer rates directly in your browser across watts, kilowatts, megawatts, mechanical horsepower, metric horsepower, foot-pounds per second, and BTU per hour. The tool delivers exact conversion ratios entirely client-side in memory to ensure automotive powertrain specifications, electrical utility engineering, and HVAC calculations remain completely confidential.',
+    leadParagraph:
+      'Converting power ratings across electrical, mechanical, and thermodynamic unit systems is a daily requirement in automotive engine benchmarking, industrial electrical generator sizing, solar array design, and HVAC cooling equipment selection. This client-side power converter provides simultaneous conversions across standard international units: watts (W), kilowatts (kW), megawatts (MW), mechanical imperial horsepower (hp), metric horsepower (PS or cv), foot-pounds per second (ft-lb/s), and British thermal units per hour (BTU/h). Users can enter any single power metric to view equivalent energy transfer rates across all other measurement standards instantly, alongside exact fractional ratios and scientific notation for extreme megawatts or microwatts. Evaluating power ratings directly in your browser runtime provides rapid computational verification for electrical engineers, automotive mechanics, and physics students without desktop conversion software. Because engine performance data and electrical utility schematics involve proprietary figures, all conversion calculations execute locally within browser memory. No power values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What power measurement units are supported by the converter?',
+        answer:
+          'The tool converts watts, kilowatts, megawatts, mechanical horsepower, metric horsepower, foot-pounds per second, and BTU per hour accurately across scales.',
+      },
+      {
+        question:
+          'How does mechanical imperial horsepower differ from metric horsepower?',
+        answer:
+          'Mechanical horsepower equals approximately 745.7 watts (550 ft-lb/s), whereas metric horsepower (PS) is standardized scientifically at exactly 735.49875 watts for global automotive ratings.',
+      },
+      {
+        question: 'How many watts are contained in one electrical kilowatt?',
+        answer:
+          'One kilowatt (kW) equals exactly 1,000 watts, representing one thousand joules of physical energy transferred or consumed per elapsed second.',
+      },
+      {
+        question:
+          'Are my automotive engine numbers or electrical power values logged online?',
+        answer:
+          'No. All power conversions run strictly inside local client browser memory with zero network traffic, ensuring complete privacy for your technical calculations.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'apa-citation-formatter', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-apa-citation-formatter': {
+    directAnswer:
+      'Format academic citations according to official American Psychological Association (APA 7th edition) rules directly in your browser. The tool generates reference list citations and parenthetical in-text citations for books, peer-reviewed journals, websites, and edited collections entirely client-side in memory to ensure academic dissertations, psychological research papers, and student manuscripts remain confidential.',
+    leadParagraph:
+      'Adhering to strict APA 7th edition citation rules is mandatory across psychology, nursing, sociology, education, and behavioural sciences. Formatting references manually often results in errors with author initial inversions, italicized volume numbers, sentence-case article capitalization, and DOI link formats. This browser-based APA citation formatter structures bibliographic entries for scholarly articles, books, book chapters, conference proceedings, and digital web pages in compliance with APA guidelines. Users enter contributor names, publication dates, titles, periodical names, volume and issue numbers, page spans, and DOI links to generate formatted references with hanging indents and parenthetical in-text citations (such as Author, Year). Formatting references directly in browser memory accelerates scholarly writing without subscription paywalls or intrusive advertisements. Because academic theses, unpublished laboratory findings, and university term papers represent sensitive intellectual property, all citation formatting executes locally within client browser memory. No bibliographic entries are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What are the core title capitalization rules in APA 7th edition references?',
+        answer:
+          'APA references use sentence-style capitalization for article and book titles (capitalizing only the first word, proper nouns, and first word after a colon).',
+      },
+      {
+        question:
+          'How should Digital Object Identifiers (DOIs) be formatted in APA 7?',
+        answer:
+          'DOIs must be presented as active, standard HTTPS web links (https://doi.org/10.xxxx/xxxx) without a preceding label like doi: in reference lists.',
+      },
+      {
+        question:
+          'How does the tool format in-text parenthetical citations for three or more authors?',
+        answer:
+          'For three or more authors, APA 7 abbreviates the in-text citation immediately to the first author surname followed by et al. and the publication year.',
+      },
+      {
+        question:
+          'Are my academic manuscripts or reference lists saved on remote servers?',
+        answer:
+          'No. All APA citation formatting occurs client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research writing.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'table-to-markdown', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-table-to-markdown': {
+    directAnswer:
+      'Convert spreadsheet tables, CSV text, and Excel grids into GitHub Flavored Markdown (GFM) pipe tables directly in your browser. The tool aligns column pipes, normalises header hyphens, and formats text alignment indicators entirely client-side in memory to ensure corporate documentation, private repository notes, and technical drafts remain completely confidential. All table conversions execute client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Writing documentation for GitHub README files, technical wikis, and developer documentation often requires converting tabular spreadsheet data into GitHub Flavored Markdown pipe tables. Formatting pipe tables by hand—aligning vertical delimiter bars, inserting delimiter hyphens, and escaping internal pipe characters—is tedious and prone to syntax errors. This client-side table to markdown converter parses pasted CSV text, TSV tables, or raw Excel spreadsheet rows, formatting clean, beautifully aligned Markdown tables with configurable column alignment (left, center, or right using colon flags). The tool handles multi-line cells, escapes inner pipe symbols with backslashes, and preserves tabular column hierarchies. Converting tables directly in browser memory accelerates technical authoring for developers and technical writers without third-party web tools. Because enterprise datasets frequently contain proprietary API specifications, internal project roadmaps, or financial summaries, all markdown conversion executes locally inside browser memory. No data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'How are column alignments configured in GitHub Flavored Markdown tables?',
+        answer:
+          'Colons placed in the header delimiter row specify alignment: :--- for left alignment, :---: for centered text, and ---: for right alignment.',
+      },
+      {
+        question:
+          'How does the converter handle cells that contain literal pipe characters?',
+        answer:
+          'The converter automatically escapes internal pipe characters using backslashes (\\|) to prevent breaking the Markdown table parsing boundaries across rows.',
+      },
+      {
+        question:
+          'Can I convert tab-delimited text copied directly from Excel?',
+        answer:
+          'Yes. Pasting tab-separated table cells copied from Microsoft Excel or Google Sheets converts immediately into compliant Markdown pipe tables with aligned columns.',
+      },
+      {
+        question:
+          'Are my technical documentation tables or data records uploaded online?',
+        answer:
+          'No. All table parsing and markdown generation occur strictly within client browser memory with zero network traffic, ensuring complete data security.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'nato-alphabet-translator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-nato-alphabet-translator': {
+    directAnswer:
+      'Convert text into NATO phonetic spelling words (Alfa, Bravo, Charlie) and decode phonetic words back into standard text directly in your browser. The tool supports ICAO aviation spelling standards, Morse code cross-references, and digit pronunciations entirely client-side in memory to ensure radio communications, call center spellings, and serial numbers remain confidential.',
+    leadParagraph:
+      'Communicating serial numbers, flight registration codes, and difficult spellings over noisy radio channels or telephone calls frequently results in misunderstandings between consonants that sound alike (such as B, P, D, and T). The NATO phonetic alphabet (formally the International Radiotelephony Spelling Alphabet standardized by ICAO, ITU, and NATO) assigns standardized, universally recognizable code words (Alfa, Bravo, Charlie, Delta, Echo, Foxtrot) to each Latin letter and digit. This client-side phonetic translator converts entered text, passwords, and model numbers into clear NATO code words, providing exact phonetic pronunciations alongside standard ITU digit words (such as Tree for three and Niner for nine). Translating phonetic spellings directly in local browser memory assists pilots, maritime radio operators, and customer service specialists without third-party web tools. Because serial numbers, call signs, and phonetic notes involve sensitive identifiers, all translation algorithms run locally within browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'What international bodies standardize the NATO phonetic alphabet?',
+        answer:
+          'The alphabet is standardized jointly by the International Civil Aviation Organization (ICAO), International Telecommunication Union (ITU), and NATO for radiotelephony.',
+      },
+      {
+        question:
+          'Why are certain numbers pronounced differently in aviation phonetics?',
+        answer:
+          'Numbers like three (Tree), five (Fife), and nine (Niner) are pronounced distinctly to prevent confusion with similar words across low-fidelity radio channels.',
+      },
+      {
+        question:
+          'Can the tool decode phonetic words back into standard English letters?',
+        answer:
+          'Yes. Entering a sequence of phonetic words (such as Bravo Oscar Oscar Kilo) decodes back into standard plain English text (BOOK) automatically.',
+      },
+      {
+        question:
+          'Are my serial numbers or phonetic translation texts saved online?',
+        answer:
+          'No. All phonetic alphabet translation runs client-side in local browser memory with zero network traffic, ensuring complete privacy for your identifiers.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'profit-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-profit-calculator': {
+    directAnswer:
+      'Calculate gross profit, operating profit, and net profit margins directly in your browser by entering gross revenues, cost of goods sold (COGS), operating expenses, and tax liabilities. The tool calculates multi-tier profit margins entirely client-side in memory to keep corporate earnings statements, merchant income ledgers, and business profitability models completely confidential.',
+    leadParagraph:
+      'Evaluating the true profitability of a commercial enterprise requires distinguishing between gross profit (revenue minus direct production costs), operating profit (gross profit minus overhead expenses like marketing and salaries), and bottom-line net profit (operating profit minus taxes and interest charges). Failing to track all three tiers can mask operating inefficiencies even when top-line sales figures appear strong. This client-side profit calculator allows business owners, ecommerce merchants, and financial controllers to input revenues, direct costs, fixed operating expenses, and tax rates to calculate exact dollar profits and percentage margins across every operational level. Calculating profit structures directly in your browser runtime provides rapid financial validation during quarterly budgeting and pricing reviews without spreadsheet setup. Because sales revenues, wholesale costs, and net corporate profits represent sensitive trade secrets, all financial computations run locally in browser memory. No profit data is ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'What are the three main tiers of business profit calculation?',
+        answer:
+          'The three tiers are gross profit (revenue minus COGS), operating profit (gross profit minus operating expenses), and net profit (profit after taxes and interest).',
+      },
+      {
+        question: 'How is net profit margin calculated mathematically?',
+        answer:
+          'Net profit margin equals net income divided by total gross revenue multiplied by 100 ((net income / revenue) × 100), reflecting final bottom-line profitability.',
+      },
+      {
+        question:
+          'Why can a business report strong gross profits but negative net profits?',
+        answer:
+          'A company can generate healthy gross margins on individual products while accumulating excessive administrative, marketing, or interest expenses that eliminate net profits.',
+      },
+      {
+        question:
+          'Are my commercial profit figures or corporate tax numbers uploaded online?',
+        answer:
+          'No. All profit evaluations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your commercial statements.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'force-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-force-converter': {
+    directAnswer:
+      'Convert physical force measurements directly in your browser across newtons, kilonewtons, dynes, pound-force (lbf), ounce-force, and kilogram-force (pond). The tool delivers exact conversion ratios and high-precision scientific notation entirely client-side in memory to ensure structural engineering load calculations, physics coursework, and mechanical schematics remain completely confidential. All force conversions execute client-side in browser memory to keep structural models private.',
+    leadParagraph:
+      'Converting force measurements between metric SI units, centimetre-gram-second (CGS) dynes, gravitational units, and imperial pound-force standards is an everyday necessity in structural beam load engineering, aerospace thrust modeling, materials tensile testing, and academic physics education. This client-side force converter provides simultaneous conversions across standard international units: newtons (N), kilonewtons (kN), meganewtons (MN), dynes (dyn), pound-force (lbf), ounce-force (ozf), and kilogram-force (kgf or kp). Users can input any single force value to view equivalent force distributions across all other measurement standards instantly, alongside exact fractional ratios and scientific notation for extreme structural loads or microscopic surface tensions. Evaluating force units directly in your browser runtime delivers rapid computational verification for structural engineers, materials technicians, and physics students without desktop conversion software. Because structural load blueprints and laboratory stress figures involve proprietary parameters, all conversion calculations execute locally within browser memory. No force values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What force measurement units are supported by the converter?',
+        answer:
+          'The tool converts newtons, kilonewtons, dynes, pound-force, ounce-force, and kilogram-force accurately across international metric and imperial engineering measurement systems worldwide.',
+      },
+      {
+        question:
+          'What is the exact physical definition of one newton in SI units?',
+        answer:
+          'One newton (N) is defined as the force required to accelerate a mass of one kilogram at a rate of one metre per second squared (1 N = 1 kg·m/s²).',
+      },
+      {
+        question:
+          'How does pound-force (lbf) relate mathematically to newtons?',
+        answer:
+          'One pound-force represents the gravitational force on one avoirdupois pound at standard gravity, equal to exactly 4.4482216152605 newtons in physical force units.',
+      },
+      {
+        question:
+          'Are my structural load measurements or engineering forces logged online?',
+        answer:
+          'No. All force conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'mla-citation-formatter', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-mla-citation-formatter': {
+    directAnswer:
+      'Format academic citations according to official Modern Language Association (MLA 9th edition) guidelines directly in your browser. The tool generates Works Cited bibliographic entries and parenthetical in-text citations for literature, books, journals, and digital media entirely client-side in memory to ensure academic essays, humanities dissertations, and student manuscripts remain confidential.',
+    leadParagraph:
+      "The Modern Language Association (MLA 9th edition) citation format is the universal standard across humanities disciplines, including English literature, cultural studies, art history, modern languages, and media criticism. MLA style emphasizes the 'container' concept—identifying whether a work appears inside a larger collection, anthology, journal volume, or streaming database. This client-side MLA citation formatter structures bibliographic entries for books, anthologies, peer-reviewed journal articles, news editorials, and online media in compliance with MLA core element guidelines. Users enter author names, source titles, container names, contributors, version numbers, volume and issue numbers, publishers, publication dates, and location URLs to produce formatted Works Cited entries alongside parenthetical in-text citations (such as Author Page). Formatting citations directly in browser memory accelerates essay writing for students and researchers without subscription paywalls. Because literary essays and student papers represent sensitive intellectual work, all citation formatting executes locally within client browser memory. No bibliographic entries are ever transmitted to remote web servers.",
+    faqs: [
+      {
+        question: 'What is the container concept in MLA 9th edition citations?',
+        answer:
+          'MLA 9 structures citations using containers, identifying the larger work (such as a book anthology, journal, or website) that holds the specific cited source.',
+      },
+      {
+        question:
+          'How are MLA parenthetical in-text citations formatted in essays?',
+        answer:
+          'MLA in-text citations provide the author surname and page number without a comma separating them (for example, (Smith 42)), placing punctuation outside.',
+      },
+      {
+        question: 'How are two authors formatted in an MLA Works Cited entry?',
+        answer:
+          'The first author is formatted with inverted surname and first name, joined by and with the second author in normal order (Smith, John, and Mary Doe).',
+      },
+      {
+        question:
+          'Are my humanities essays or Works Cited entries stored online?',
+        answer:
+          'No. All MLA citation formatting occurs client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research writing.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'markdown-table-to-csv', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-markdown-table-to-csv': {
+    directAnswer:
+      'Convert GitHub Flavored Markdown (GFM) pipe tables into standard comma-separated values (CSV) or tab-separated (TSV) spreadsheets directly in your browser. The tool extracts table headers, strips delimiter hyphens, and applies RFC 4180 quotation rules entirely client-side in memory to ensure corporate documentation, private repository tables, and customer datasets remain completely secure.',
+    leadParagraph:
+      'Extracting tabular data from software documentation, GitHub README files, technical wikis, and markdown blogs often requires converting pipe-delimited text into standard CSV tables for ingestion into Excel, database engines, or statistical analysis software. Copying markdown tables manually results in messy pipe delimiters, hyphen separator rows, and broken column alignment. This client-side markdown table to CSV converter parses markdown tables, identifying header rows, discarding alignment hyphens, and separating column values into RFC 4180 compliant CSV format. The tool preserves Unicode characters, handles cells containing commas or quotation marks with proper quote escaping, and supports one-click export as downloadable CSV files or tab-separated text. Converting markdown tables directly in browser memory saves data analysts and developers time without uploading files to third-party web services. Because documentation tables frequently contain proprietary database schemas, customer rosters, or internal metrics, all data conversion executes locally inside browser memory. No data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'How does the converter handle commas contained inside table cells?',
+        answer:
+          'Cells containing commas are automatically enclosed in double quotation marks per RFC 4180 rules, preventing extra column splits when opened in Excel.',
+      },
+      {
+        question:
+          'Does the tool automatically remove markdown delimiter hyphen rows?',
+        answer:
+          'Yes. The parser recognizes and discards the markdown separator row containing dashes and alignment colons (|:---|:---:|), extracting only substantive data.',
+      },
+      {
+        question:
+          'Can I export tab-separated (TSV) format instead of comma-separated?',
+        answer:
+          'Yes. You can choose to export as comma-separated values (CSV) or tab-separated values (TSV) for direct pasting into spreadsheet software grids.',
+      },
+      {
+        question:
+          'Are my private markdown documents or converted tables sent online?',
+        answer:
+          'No. All text parsing and CSV generation occur strictly within client browser memory with zero network traffic, ensuring complete data security.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'pig-latin-translator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-pig-latin-translator': {
+    directAnswer:
+      'Translate text to Pig Latin and decode Pig Latin phrases back into standard English directly in your browser. The tool applies standard linguistic phonetic transposition rules, consonant cluster relocations, and vowel endings entirely client-side in memory to ensure creative writing puzzles, language games, and private text drafts remain completely confidential.',
+    leadParagraph:
+      "Pig Latin is a classic constructed language game formed by transposing initial consonant sounds to the end of words and appending suffix syllables, widely enjoyed in recreational linguistics, word puzzles, and secret language games among children and writers. Under standard rules, words starting with consonant sounds move all initial consonants up to the first vowel to the end and append 'ay' (converting 'smile' to 'ilesmay' or 'string' to 'ingstray'), while words beginning with vowels append 'way' or 'yay' (converting 'apple' to 'appleway'). This browser-based Pig Latin translator handles word-initial consonant clusters, preserves capitalisation patterns, and retains surrounding punctuation marks. The interface supports bidirectional translation, decoding Pig Latin passages back into readable English text with high linguistic accuracy. Translating text directly in local browser memory assists puzzle enthusiasts and game designers without third-party web tools. Because creative game scripts and puzzle manuscripts involve private intellectual work, all translation algorithms run locally within browser memory. No text is ever uploaded to external servers.",
+    faqs: [
+      {
+        question:
+          'What phonetic rules govern translation of words starting with consonants?',
+        answer:
+          'Initial consonant clusters up to the first vowel are moved to the end of the word followed by the suffix ay (for example, glove becomes oveglay).',
+      },
+      {
+        question: 'How does Pig Latin translate words that begin with vowels?',
+        answer:
+          'Words beginning with vowels (A, E, I, O, U) remain in their original letter order with the suffix way or yay appended to the end (egg becomes eggway).',
+      },
+      {
+        question:
+          'Does the translator preserve word capitalization and punctuation?',
+        answer:
+          'Yes. Capitalization patterns are maintained on the newly formed word roots, and attached punctuation marks (commas, periods) stay in their correct positions.',
+      },
+      {
+        question:
+          'Are my creative writing words or puzzle texts saved on remote servers?',
+        answer:
+          'No. All Pig Latin linguistic translations execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'discount-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-discount-calculator': {
+    directAnswer:
+      'Calculate discounted sale prices, percentage price reductions, and total money savings directly in your browser. Enter original retail prices alongside discount percentages or fixed dollar price cuts to compute final checkout costs entirely client-side in memory to ensure consumer shopping budgets, retail sales plans, and wholesale price negotiations remain completely confidential.',
+    leadParagraph:
+      'Evaluating promotional sales discounts, clearance markdowns, and stacked coupon offers is essential for retail shoppers managing household budgets and merchants structuring profitable promotional campaigns. Calculating price reductions manually often leads to confusion, particularly when stacking percentage discounts with fixed dollar coupons or accounting for post-discount sales taxes. This client-side discount calculator determines final discounted prices, total dollar savings, and effective percentage price cuts from original retail prices. The tool supports multiple sequential discounts (such as 20% off plus an extra 10% coupon) and incorporates local sales tax percentages to compute exact out-of-pocket checkout totals. Calculating discounts directly in your browser runtime provides rapid arithmetic verification during retail shopping and commercial promotional planning without spreadsheet setup. Because shopping budgets, retail markup strategies, and wholesale discount agreements represent private financial data, all financial computations run locally in browser memory. No pricing figures are ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'How is discounted sale price calculated from a percentage reduction?',
+        answer:
+          'Discounted price equals original price multiplied by one minus the discount percentage as a decimal (for example, $80 with 25% off equals $80 × 0.75 = $60).',
+      },
+      {
+        question:
+          'How do stacked sequential discounts function mathematically?',
+        answer:
+          'Stacked discounts apply successively to the declining balance; 20% off followed by 10% off yields a total 28% discount, not a simple 30% reduction.',
+      },
+      {
+        question:
+          'Can the calculator include sales tax in the final checkout total?',
+        answer:
+          'Yes. You can enter your local sales tax percentage to calculate the total final amount payable after discounts and taxes have been applied.',
+      },
+      {
+        question:
+          'Are my personal shopping expenses or retail discount numbers saved online?',
+        answer:
+          'No. All discount calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your budget.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'torque-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-torque-converter': {
+    directAnswer:
+      'Convert mechanical rotational torque measurements directly in your browser across newton-metres, pound-feet (lb-ft), pound-inches (lb-in), kilogram-metres, and dyne-centimetres. The tool delivers exact conversion ratios and high-precision scientific notation entirely client-side in memory to ensure automotive powertrain specifications, mechanical bolt tightening tables, and structural engineering calculations remain completely confidential. All calculations execute client-side in browser memory to keep mechanical specs private.',
+    leadParagraph:
+      'Converting rotational torque measurements between metric SI units and imperial automotive standards is an essential requirement in automotive mechanics, fastener bolt tightening specifications, robotics joint engineering, and mechanical physics. Over-tightening or under-tightening structural bolts due to unit confusion between pound-feet (lb-ft) and pound-inches (lb-in) can cause catastrophic mechanical fastener shear or joint failure. This client-side torque converter provides simultaneous conversions across standard international units: newton-metres (N·m), kilonewton-metres (kN·m), pound-feet (lb-ft), pound-inches (lb-in), ounce-inches (oz-in), kilogram-force metres (kgf·m), and dyne-centimetres (dyn·cm). Users can enter any single rotational torque value to view equivalent moment metrics across all other measurement standards instantly, alongside exact fractional ratios and scientific notation. Evaluating torque units directly in your browser runtime provides rapid computational verification for automotive mechanics, structural engineers, and students without desktop conversion utilities. Because engine torque curves and mechanical fastener specifications involve proprietary parameters, all conversion calculations execute locally within browser memory. No torque values are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What torque measurement units are supported by the converter?',
+        answer:
+          'The tool converts newton-metres, pound-feet, pound-inches, ounce-inches, kilogram-force metres, and dyne-centimetres accurately across diverse mechanical, industrial, and automotive engineering scales.',
+      },
+      {
+        question:
+          'How does pound-feet (lb-ft) differ from pound-inches (lb-in)?',
+        answer:
+          'One pound-foot equals exactly 12 pound-inches, as there are 12 inches in a foot; confusing the two units results in severe bolt tightening errors.',
+      },
+      {
+        question:
+          'What is the exact mathematical conversion between newton-metres and pound-feet?',
+        answer:
+          'One newton-metre equals approximately 0.737562 pound-feet, while one pound-foot corresponds to approximately 1.355818 newton-metres in rotational torque measurements across mechanical assemblies.',
+      },
+      {
+        question:
+          'Are my automotive torque specifications or bolt ratings logged online?',
+        answer:
+          'No. All torque conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'chicago-citation-formatter', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-chicago-citation-formatter': {
+    directAnswer:
+      'Format academic citations according to official Chicago Manual of Style (17th edition Notes and Bibliography style) rules directly in your browser. The tool generates footnote citations, shortened notes, and full bibliography references for books, journals, and archival sources entirely client-side in memory to ensure historical monographs, academic dissertations, and student manuscripts remain confidential.',
+    leadParagraph:
+      'The Chicago Manual of Style (CMOS 17th edition) Notes and Bibliography system is the established citation standard across history, art history, theology, philosophy, and classical humanities. Chicago style features a sophisticated dual-reference structure: numbered superscript footnotes or endnotes providing detailed source information at the bottom of pages, paired with an alphabetical comprehensive bibliography at the conclusion of the work. This client-side Chicago citation formatter structures bibliographic references, full footnotes, and shortened notes (author-title-page format for repeated citations) for books, translated volumes, edited anthologies, scholarly journal articles, and archival manuscripts. Users enter contributor names, titles, editors, publishing houses, cities of publication, dates, and page ranges to produce formatted citations ready for academic manuscripts. Formatting citations directly in browser memory accelerates historical research writing without subscription paywalls or third-party web tools. Because scholarly dissertations and unpublished historical archives involve sensitive research, all citation formatting executes locally within client browser memory. No bibliographic entries are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What is the difference between Chicago notes and bibliography citations?',
+        answer:
+          'Footnotes use normal author order (First Last) and parentheses around publication details, while bibliography entries invert the author surname and use periods.',
+      },
+      {
+        question:
+          'How does the tool format shortened footnote citations for repeated sources?',
+        answer:
+          'Shortened notes provide the author surname, a shortened main title, and the specific cited page number (for example, Smith, Ancient Trade, 45).',
+      },
+      {
+        question:
+          'Are publication city locations still required in Chicago book citations?',
+        answer:
+          'Yes. CMOS 17th edition includes the city of publication before the publisher name (for example, Chicago: University of Chicago Press, 2020).',
+      },
+      {
+        question:
+          'Are my historical manuscripts or footnote references stored online?',
+        answer:
+          'No. All Chicago citation formatting occurs client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research writing.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'rot-cipher', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-rot-cipher': {
+    directAnswer:
+      'Encode and decode text using rotation ciphers (ROT1 through ROT25) directly in your browser with interactive alphabet shift sliders and brute-force decryption tables. The tool shifts letter positions while preserving case and punctuation entirely client-side in memory to ensure puzzle game scripts, spoiler obfuscations, and cryptographic exercises remain completely confidential.',
+    leadParagraph:
+      'Rotation ciphers—the most famous variant being ROT13, which rotates letters by thirteen positions in the 26-letter Latin alphabet—are widely utilized for obscuring movie spoilers on discussion forums, encoding puzzle clues in geocaching competitions, and introducing computer science students to classical symmetric cryptography. Because thirteen is exactly half of twenty-six, ROT13 is its own reciprocal inverse: applying the rotation a second time reverses the cipher and restores original plaintext. This client-side ROT cipher workbench allows users to shift text by any custom key interval from ROT1 to ROT25, or view a complete 25-shift brute-force decryption table that deciphers unknown rotation offsets simultaneously. The tool preserves uppercase and lowercase letter casing while leaving numbers, spaces, and punctuation untouched. Processing ciphers directly in local browser memory assists puzzle enthusiasts and students without third-party web tools. Because puzzle clues, game scripts, and private text drafts involve sensitive intellectual work, all cipher operations run locally within browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question: 'Why is ROT13 considered a symmetric self-reciprocal cipher?',
+        answer:
+          'Because the English alphabet has 26 letters, rotating by 13 twice rotates by 26 positions, returning characters to their original plaintext starting point.',
+      },
+      {
+        question:
+          'Does the cipher alter numbers and punctuation marks during rotation?',
+        answer:
+          'Standard ROT ciphers rotate only alphabetic letters (A-Z, a-z), leaving numeric digits, spaces, and punctuation marks completely unaltered in the output.',
+      },
+      {
+        question:
+          'How does the all-rotations brute-force view assist in solving ciphers?',
+        answer:
+          'The brute-force view displays all 25 possible rotation shifts simultaneously, allowing you to instantly spot the readable English plaintext without knowing the key.',
+      },
+      {
+        question:
+          'Are my encrypted text messages or puzzle clues saved on remote servers?',
+        answer:
+          'No. All rotational cipher encoding and decoding algorithms execute client-side in local browser memory with zero network traffic, ensuring complete document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'file-to-html', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-file-to-html': {
+    directAnswer:
+      'Convert plaintext documents, markdown files, and CSV spreadsheets into semantic HTML5 web pages directly in your browser. The tool wraps text in valid HTML headers, paragraphs, and table elements with responsive CSS styling entirely client-side in memory to ensure unreleased manuscripts, private documentation, and proprietary datasets remain completely confidential. The document compiler executes client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Transforming raw plaintext notes, formatted markdown documentation, or structured CSV spreadsheets into standalone, publishable HTML web pages often requires cumbersome manual markup wrapping in code editors. This client-side file to HTML converter parses uploaded text, markdown, or tabular files, wrapping content into valid HTML5 document structures with doctype declarations, charset headers, viewport meta tags, and semantic body elements (including headings, paragraphs, blockquotes, code blocks, and tables). Users can configure inline CSS styling themes (such as clean light and dark typography), inspect live HTML previews, and download the compiled .html document ready for immediate web hosting. Converting files directly in browser memory accelerates content publication for technical writers and developers without third-party web services. Because documentation drafts and private text files involve confidential intellectual property, all HTML generation executes locally within browser memory. No files are ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What source file formats can be converted into standalone HTML?',
+        answer:
+          'The converter transforms plaintext (.txt), Markdown (.md), and comma-separated (.csv) files into semantic, standalone HTML5 document pages ready for web hosting.',
+      },
+      {
+        question:
+          'Does the generated HTML include viewport meta tags for mobile devices?',
+        answer:
+          'Yes. The tool generates complete HTML5 boilerplate markup including responsive viewport tags, UTF-8 charset declarations, and title attributes for mobile compliance.',
+      },
+      {
+        question:
+          'Can I include responsive CSS typography styling in the exported file?',
+        answer:
+          'Yes. You can embed clean, responsive CSS styling rules directly into the HTML <head> to ensure instant readability across mobile and desktop displays.',
+      },
+      {
+        question:
+          'Are my private text files or converted HTML pages uploaded online?',
+        answer:
+          'No. All file reading, text parsing, and HTML document assembly occur client-side in browser memory with zero outbound network calls, ensuring total file privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'commission-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-commission-calculator': {
+    directAnswer:
+      'Calculate sales commissions and total compensation earnings directly in your browser across flat percentage rates, tiered sliding scales, and base salary plus commission plans. The tool determines gross commission payouts entirely client-side in memory to ensure sales performance figures, commission agreements, and payroll reconciliations remain completely confidential. All calculations execute client-side in browser memory to keep compensation records private.',
+    leadParagraph:
+      'Sales compensation plans in real estate, corporate enterprise software, automotive dealerships, and wholesale distribution frequently feature complex incentive structures—such as progressive tiered commission brackets where higher sales volumes earn escalating commission percentages. Calculating sales compensation manually often results in errors or disputed commission reconciliations between sales representatives and payroll accounting teams. This client-side commission calculator allows sales professionals and payroll managers to input total sales revenues, base salary figures, and commission rate tiers (including flat percentages, quota-based accelerators, and graduated tier brackets) to calculate exact commission earnings and total gross pay. Calculating compensation structures directly in your browser runtime provides rapid arithmetic verification during sales contract negotiations and monthly payroll reviews without spreadsheet setup. Because sales figures, commission tiers, and employee compensation represent sensitive commercial secrets, all financial computations run locally in browser memory. No commission figures are ever shared across external networks.',
+    faqs: [
+      {
+        question:
+          'How does a tiered commission structure calculate total earnings?',
+        answer:
+          'Tiered structures apply different percentage rates to incremental revenue brackets (for example, 5% on the first $50,000 and 10% on revenues above that).',
+      },
+      {
+        question:
+          'Can I calculate compensation combining base salary with commissions?',
+        answer:
+          'Yes. You can enter a fixed base salary amount alongside sales commission earnings to determine total gross compensation for the pay period.',
+      },
+      {
+        question:
+          'What is a sales commission accelerator in compensation plans?',
+        answer:
+          'An accelerator increases the commission percentage once a sales representative exceeds 100 percent of their assigned periodic sales quota targets.',
+      },
+      {
+        question:
+          'Are my personal sales figures or commission earnings stored online?',
+        answer:
+          'No. All commission calculations execute client-side in browser memory with zero outbound network calls, ensuring complete financial privacy for your earnings records.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'angle-converter', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-angle-converter': {
+    directAnswer:
+      'Convert angular measurements directly in your browser across degrees, radians, gradians, arcminutes, arcseconds, and revolutions. The tool delivers exact multiples of pi, fractional ratios, and high-precision decimal solutions entirely client-side in memory to ensure architectural drafting plans, surveying calculations, and trigonometry coursework remain completely confidential. All angle conversions execute client-side in browser memory to keep blueprints private.',
+    leadParagraph:
+      'Converting angular units between geometric degrees, calculus radians, land surveying gradians, and astronomical arcseconds is a fundamental requirement in robotic kinematics, navigational astronomy, civil land surveying, and high school trigonometry. Mathematical functions in software programming languages and calculus integrals require radians, while mechanical machine tools and compass navigation rely on degrees and minutes. This client-side angle converter provides simultaneous conversions across standard international units: decimal degrees (°), radians (rad, expressed as floating-point and symbolic multiples of π), gradians (gon or grad, where 100 gradians equal a right angle), arcminutes (′), arcseconds (″), and complete circle revolutions (rev). Users can enter any single angular metric to view equivalent angular measures across all other measurement standards instantly. Evaluating angles directly in your browser runtime provides rapid computational verification for mechanical engineers, surveyors, and students without desktop conversion utilities. Because navigation bearings and proprietary drafting schematics involve confidential specifications, all conversion calculations execute locally within browser memory. No angle measurements are ever sent across external networks.',
+    faqs: [
+      {
+        question:
+          'What angular measurement units are supported by the converter?',
+        answer:
+          'The tool converts degrees, radians, gradians, arcminutes, arcseconds, and circle revolutions accurately across international mathematical, surveying, and engineering standards worldwide.',
+      },
+      {
+        question:
+          'What is the exact mathematical relationship between degrees and radians?',
+        answer:
+          'A complete circle contains 360 degrees, which corresponds exactly to 2π radians; therefore, 180 degrees equals π radians (approx. 3.14159 rad).',
+      },
+      {
+        question:
+          'What is a gradian unit used for in surveying and engineering?',
+        answer:
+          'A gradian (gon) divides a right angle into 100 equal parts (400 gradians in a full circle), commonly used in European civil surveying.',
+      },
+      {
+        question:
+          'Are my land surveying angles or mathematical calculations logged online?',
+        answer:
+          'No. All angle conversions run strictly inside local client browser memory with zero network traffic, ensuring complete computational privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'bibtex-generator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-bibtex-generator': {
+    directAnswer:
+      'Generate clean BibTeX bibliographic entries (@article, @book, @inproceedings, @misc) directly in your browser for LaTeX documents. The tool formats citation keys, author lists, publication venues, and DOI identifiers entirely client-side in memory to ensure academic dissertations, scientific research papers, and technical manuscripts remain completely confidential. All bibliography entries are formatted client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Authors preparing scientific manuscripts, computer science conference submissions, and mathematics dissertations in LaTeX rely on BibTeX (.bib) files to manage bibliographic citations and generate automated reference sections. Hand-crafting BibTeX entries often leads to syntax errors, unescaped special characters, or missing required fields that cause compilation failures in pdfLaTeX or XeLaTeX engines. This client-side BibTeX generator structures compliant entries for standard entry types, including @article for peer-reviewed journal papers, @book for monographs, @inproceedings for conference papers, @phdthesis for dissertations, and @misc for online datasets. Users enter author names, titles, booktitles, publication years, volumes, issue numbers, page spans, and DOIs to generate syntactically checked BibTeX blocks ready for immediate pasting into your bibliography file. Generating BibTeX entries directly in browser memory accelerates paper preparation for researchers and students without third-party web tools. Because scientific research papers, unreleased algorithmic findings, and thesis chapters involve confidential intellectual property, all BibTeX generation executes locally within client browser memory. No bibliographic data is ever transmitted to remote web servers.',
+    faqs: [
+      {
+        question:
+          'What standard BibTeX entry types are supported by the generator?',
+        answer:
+          'The generator formats @article, @book, @inproceedings, @incollection, @techreport, @phdthesis, @mastersthesis, and @misc bibliographic entries for direct automated LaTeX document compilation.',
+      },
+      {
+        question: 'How does the tool format multiple authors in BibTeX syntax?',
+        answer:
+          'Authors are separated by the keyword and (for example, author = {Knuth, Donald E. and Lamport, Leslie}), ensuring proper parser handling by BibTeX engines.',
+      },
+      {
+        question: 'Does the tool escape special LaTeX characters in titles?',
+        answer:
+          'Yes. Characters like &, %, _, and $ are automatically escaped with backslashes to prevent fatal compilation errors when rendering LaTeX documents.',
+      },
+      {
+        question:
+          'Are my academic research topics or BibTeX references saved online?',
+        answer:
+          'No. All BibTeX generation occurs client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your research writing.',
+      },
+    ],
+  },
 };
 
 /**
