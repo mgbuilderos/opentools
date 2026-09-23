@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { FormatConverterTool } from '@/components/format-converter-tool';
 import { MathWorkbenchTool } from '@/components/math-workbench-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
 import {
@@ -6,10 +7,15 @@ import {
   conversionFacts,
   conversionPairById,
 } from '@/lib/seo/conversion-pairs';
+import {
+  FORMAT_PAIRS,
+  formatFacts,
+  formatPairById,
+} from '@/lib/seo/format-pairs';
 
 /*
-  One page per unit pair, which is the next order of magnitude after one page
-  per tool.
+  One page per conversion pair, which is the next order of magnitude after one
+  page per tool.
 
   Giving every calculator its own URL fixed the first half of the problem: 533
   tools that had shared one address now have 626 of their own. It did not fix
@@ -19,24 +25,35 @@ import {
   whatever units the operation happens to default to. A converter is not one
   search intent; it is every pair it supports.
 
+  TWO KINDS OF PAIR ANSWER HERE, and the second is why this route was reopened.
+  Unit pairs (`centimetres-to-inches`) are answered inside Google's own results
+  by a widget, so 512 of them produced 15 page-opens on 2026-09-23. File-format
+  pairs (`csv-to-yaml`) cannot be: converting a file needs a converter, so the
+  person has to open one. `lib/seo/format-pairs.ts` derives those pairs from
+  the one parser and one emitter each format already has in
+  `lib/tools/notation/table`, so the same registration, the same sitemap and
+  the same tests cover both families with nothing new to remember.
+
   WHAT KEEPS THIS OFF THE THIN-PAGE PILE. Constraint C4 forbids a new family of
   near-template pages while decision 11 de-indexes ~430 of the last one, and it
   is right to. The difference is not the wording, it is the work: the converter
-  arrives already set to the pair in the URL, and the factor and worked
-  examples above it are produced by calling `runMathOperation` -- the function
-  the tool itself runs -- at build time. Every page therefore carries a number
-  no other page carries, and no sentence on it can drift from the tool, because
-  no sentence on it was written about the tool. A pair the converter cannot
-  actually perform produces no page.
+  arrives already set to the pair in the URL, and the factor, the sample and
+  the worked result above it are produced by calling the functions the tool
+  itself runs, at build time. Every page therefore carries output no other page
+  carries, and no sentence on it can drift from the tool, because no sentence
+  on it was written about the tool. A pair the converter cannot actually
+  perform produces no page.
 
   `dynamicParams = false` means a slug that is not a real pair 404s at the edge
   rather than rendering a fallback, so no URL can claim a conversion the page
-  is not doing.
+  is not doing. Abbreviated spellings people type -- `cm-to-in`, `kg-to-lbs` --
+  are permanent redirects to the canonical page rather than pages of their own,
+  so no signal is split; see `lib/seo/conversion-aliases.ts`.
 
-  No `revalidate`: 512 pages in the Cloudflare KV page cache would cost 1,024
-  writes a day against a free-plan allowance of about 1,000, and every deploy
-  invalidates the lot. These are prerendered to static assets instead, which is
-  free. See docs/CACHE_BUDGET.md.
+  No `revalidate`: these pages in the Cloudflare KV page cache would cost more
+  than twice the free-plan allowance of about 1,000 writes a day, and every
+  deploy invalidates the lot. They are prerendered to static assets instead,
+  which is free. See docs/CACHE_BUDGET.md.
 */
 
 const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
@@ -44,7 +61,9 @@ const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return CONVERSION_PAIRS.map((pair) => ({ pair: pair.id }));
+  return [...CONVERSION_PAIRS, ...FORMAT_PAIRS].map((pair) => ({
+    pair: pair.id,
+  }));
 }
 
 export async function generateMetadata({
@@ -53,13 +72,26 @@ export async function generateMetadata({
   params: Promise<{ pair: string }>;
 }): Promise<Metadata> {
   const { pair: slug } = await params;
-  const pair = conversionPairById(slug);
-  if (!pair) return {};
-  return {
-    title: pair.title,
-    description: conversionFacts(pair).description,
-    alternates: { canonical: `${CANONICAL_ORIGIN}/convert/${pair.id}` },
-  };
+  const alternates = { canonical: `${CANONICAL_ORIGIN}/convert/${slug}` };
+
+  const unit = conversionPairById(slug);
+  if (unit) {
+    return {
+      title: unit.title,
+      description: conversionFacts(unit).description,
+      alternates,
+    };
+  }
+
+  const format = formatPairById(slug);
+  if (format) {
+    return {
+      title: format.title,
+      description: formatFacts(format).description,
+      alternates,
+    };
+  }
+  return {};
 }
 
 export default async function Page({
@@ -68,22 +100,45 @@ export default async function Page({
   params: Promise<{ pair: string }>;
 }) {
   const { pair: slug } = await params;
-  const pair = conversionPairById(slug);
-  if (!pair) return null;
-  const facts = conversionFacts(pair);
+
+  const unit = conversionPairById(slug);
+  if (unit) {
+    const facts = conversionFacts(unit);
+    return (
+      <MathWorkbenchTool
+        initialOperationId={unit.operationId}
+        relatedTools={relatedToolsFor(`/convert/${slug}`)}
+        pair={{
+          title: unit.title,
+          summary: facts.description,
+          relationship: facts.relationship,
+          examples: facts.examples,
+          from: unit.from,
+          to: unit.to,
+          units: facts.units,
+          routes: facts.routes,
+        }}
+      />
+    );
+  }
+
+  const format = formatPairById(slug);
+  if (!format) return null;
+  const facts = formatFacts(format);
   return (
-    <MathWorkbenchTool
-      initialOperationId={pair.operationId}
+    <FormatConverterTool
       relatedTools={relatedToolsFor(`/convert/${slug}`)}
       pair={{
-        title: pair.title,
+        title: format.title,
         summary: facts.description,
-        relationship: facts.relationship,
-        examples: facts.examples,
-        from: pair.from,
-        to: pair.to,
-        units: facts.units,
+        measured: facts.measured,
+        sample: facts.sample,
+        output: facts.output,
+        from: format.from,
+        to: format.to,
+        formats: facts.formats,
         routes: facts.routes,
+        extension: facts.extension,
       }}
     />
   );

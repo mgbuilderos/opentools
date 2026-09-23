@@ -11,6 +11,14 @@ export const SECTIONS: readonly BrowseSection[] = [
     description: 'JSON, CSV, Excel, and tabular data cleanup.',
     destinations: [
       {
+        id: 'format-converter',
+        name: 'File format converter',
+        description:
+          'Convert CSV, TSV, JSON, YAML, XML, Markdown, HTML, LaTeX, SQL, AsciiDoc and reStructuredText tables into one another.',
+        href: '/convert/formats',
+        workspaceId: 'format-converter',
+      },
+      {
         id: 'json-format',
         name: 'JSON formatter',
         description:

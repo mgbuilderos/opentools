@@ -9,7 +9,9 @@ export type TableFormat =
   | 'json'
   | 'sql'
   | 'asciidoc'
-  | 'rst';
+  | 'rst'
+  | 'yaml'
+  | 'xml';
 
 export interface Table {
   headers: string[];

@@ -100,7 +100,7 @@ export const CONVERSION_SYSTEMS: readonly ConversionSystem[] =
       : [];
   });
 
-function slugify(source: string) {
+export function slugify(source: string) {
   return source
     .normalize('NFKD')
     .replace(/[̀-ͯ]/gu, '')
@@ -115,7 +115,7 @@ function slugify(source: string) {
  * words, or one carrying a qualifier in brackets, would make an unreadable
  * slug, so the unit's own key stands in: `cup-us`, `psi`, `kB`.
  */
-function slugToken(unit: ConversionUnit) {
+export function slugToken(unit: ConversionUnit) {
   return slugify(/^[^\s(]+$/u.test(unit.label) ? unit.label : unit.value);
 }
 

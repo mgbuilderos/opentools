@@ -17,6 +17,7 @@ import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
 import { CONVERSION_PAIRS } from './conversion-pairs';
+import { FORMAT_PAIRS } from './format-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
@@ -54,6 +55,9 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/redact',
   '/web/file-to-html',
   '/data/csv-to-json',
+  // The hub the 103 file-format pair pages hang off; a literal folder beats
+  // the `[pair]` segment beside it. See app/convert/formats/page.tsx.
+  '/convert/formats',
   '/data/json',
   '/file/hash-calculator',
   '/file/archive',
@@ -193,11 +197,23 @@ const ROUTED_PREFIX_ENTRIES: readonly (readonly [
   // to build each link's label and blurb.
   [
     '/convert',
-    CONVERSION_PAIRS.map((pair) => ({
-      id: pair.id,
-      name: pair.title,
-      description: `Convert ${pair.fromLabel} to ${pair.toLabel} in your browser.`,
-    })),
+    [
+      ...CONVERSION_PAIRS.map((pair) => ({
+        id: pair.id,
+        name: pair.title,
+        description: `Convert ${pair.fromLabel} to ${pair.toLabel} in your browser.`,
+      })),
+      // File-format pairs, derived the same way from the one parser and one
+      // emitter each format has in `lib/tools/notation/table`. They answer on
+      // the same route because they are the same kind of page -- and because
+      // they are the half of `/convert` that Google cannot answer in its own
+      // results, which is where the clicks are. See `format-pairs.ts`.
+      ...FORMAT_PAIRS.map((pair) => ({
+        id: pair.id,
+        name: pair.title,
+        description: `Convert ${pair.fromName} to ${pair.toName} in your browser.`,
+      })),
+    ],
   ],
   ['/creator', CREATOR_OPERATIONS],
   ['/data', SPREADSHEET_OPERATIONS],

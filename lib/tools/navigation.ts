@@ -126,11 +126,12 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'spreadsheets',
     name: 'Spreadsheets & data',
     shortDescription: 'JSON, CSV, Excel, and tabular data cleanup.',
-    destinationCount: 44,
+    destinationCount: 45,
     toolIds: [
       'spreadsheet-workbench',
       'excel-converter',
       'csv-to-json',
+      'format-converter',
       'json-format',
       'list-hygiene',
       'data-workbook-audit',
