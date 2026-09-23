@@ -1,8 +1,14 @@
 import { execFile } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -28,6 +34,34 @@ const board = (file: string, ...args: string[]) =>
 afterEach(() => {
   for (const dir of dirs.splice(0))
     rmSync(dir, { recursive: true, force: true });
+});
+
+describe('importing this module', () => {
+  /**
+   * `AGENT_BOARD.md` lives in the blueprint package above this app, and the
+   * public repository does not have it. Resolving the board path at module
+   * scope therefore threw the moment anything imported this file, and CI
+   * reported the whole UNIT gate as blocked while 1,969 tests were passing.
+   *
+   * The import above would catch that on CI and nowhere else, because a
+   * developer's checkout sits under a tree that does have the file. So this
+   * copies the script somewhere with no `AGENT_BOARD.md` above it -- it imports
+   * nothing but node builtins, so a copy loads on its own -- and imports that.
+   * On the eager version this fails here as well as on CI.
+   */
+  it('does not need AGENT_BOARD.md to exist', async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), 'board-import-'));
+    dirs.push(dir);
+    const copy = path.join(dir, 'board.mjs');
+    copyFileSync(script, copy);
+    const { stdout } = await run('node', [
+      '--input-type=module',
+      '--eval',
+      `const m = await import(${JSON.stringify(pathToFileURL(copy).href)});\n` +
+        `console.log(typeof m.classify, typeof m.sync);`,
+    ]);
+    expect(stdout.trim()).toBe('function function');
+  });
 });
 
 describe('telling stash bookkeeping from work', () => {

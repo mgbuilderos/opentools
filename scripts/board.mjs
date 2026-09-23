@@ -74,9 +74,33 @@ function sharedRoot() {
   throw new Error('Could not find AGENT_BOARD.md above this script.');
 }
 
-const ROOT = sharedRoot();
-/** Overridable so tests can exercise `sync` and `append` on a throwaway file. */
-const BOARD = process.env.BOARD_FILE ?? path.join(ROOT, 'AGENT_BOARD.md');
+let resolvedBoard;
+
+/**
+ * The board file, resolved on first use rather than at import.
+ *
+ * Overridable with `BOARD_FILE` so tests can exercise `sync` and `append` on a
+ * throwaway file. That override existed already; what defeated it was calling
+ * `sharedRoot()` at module scope, which searched the filesystem the moment
+ * anything imported this file -- including `board.test.ts`, which sets
+ * `BOARD_FILE` only for the child processes it spawns and imports the pure
+ * helpers directly.
+ *
+ * `AGENT_BOARD.md` lives in the blueprint package above this app, which the
+ * public repository does not contain, so on CI that search always failed and
+ * the throw happened before a single test ran. It failed every push to `main`
+ * and every pull request from 2026-09-21 until this was fixed, with the whole
+ * UNIT gate reported as blocked while 1,969 tests were in fact passing.
+ *
+ * Resolving lazily is also what the note at the bottom of this file already
+ * claims is true: imported rather than run, this file must define things and
+ * do nothing.
+ */
+function boardPath() {
+  resolvedBoard ??=
+    process.env.BOARD_FILE ?? path.join(sharedRoot(), 'AGENT_BOARD.md');
+  return resolvedBoard;
+}
 
 const gitAsync = promisify(execFile);
 
@@ -356,7 +380,7 @@ async function status() {
 /** Replaces only the generated block, atomically. */
 async function sync() {
   const { text } = await report();
-  const board = readFileSync(BOARD, 'utf8');
+  const board = readFileSync(boardPath(), 'utf8');
   const block = `${BEGIN}\n\n${text}\n\n${END}`;
 
   let next;
@@ -376,10 +400,11 @@ async function sync() {
   }
 
   // Temp file plus rename, so a concurrent reader never sees half a board.
-  const temp = `${BOARD}.${process.pid}.tmp`;
+  const file = boardPath();
+  const temp = `${file}.${process.pid}.tmp`;
   writeFileSync(temp, next);
-  renameSync(temp, BOARD);
-  console.log(`  board: generated block written to ${path.basename(BOARD)}`);
+  renameSync(temp, file);
+  console.log(`  board: generated block written to ${path.basename(file)}`);
 }
 
 /**
@@ -400,7 +425,7 @@ function append() {
   const who = valueOf('by') ?? 'unknown agent';
   const stamp = new Date().toISOString().slice(0, 10);
   const line = `\n- ${stamp} · ${who} · ${text}\n`;
-  const fd = openSync(BOARD, 'a');
+  const fd = openSync(boardPath(), 'a');
   writeSync(fd, line);
   closeSync(fd);
   console.log('  board: appended to the done log');
