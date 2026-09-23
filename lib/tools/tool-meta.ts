@@ -296,6 +296,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Mask identifiers, check formats, estimate household costs, and plan dates.',
   },
+  'image-studio': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Resize, convert, crop, censor, watermark, and read colours from images.',
+  },
   'qr-barcode-workbench': {
     version: '0.1.0-canary',
     shortDescription:

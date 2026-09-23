@@ -1,4 +1,5 @@
 import { IMAGE_EDITOR_OPERATIONS, PDF_PAGE_OPERATIONS } from '../tools/catalog';
+import { IMAGE_STUDIO_ROUTED_OPERATIONS } from '../tools/image-studio-operations';
 import { CREATOR_OPERATIONS } from '../tools/creator-workbench';
 import { DATE_OPERATIONS } from '../tools/date-workbench';
 import { ADVANCED_DEVELOPER_OPERATIONS } from '../tools/developer-advanced-workbench';
@@ -41,6 +42,14 @@ export const DEDICATED_TOOL_ROUTES = [
   '/image/exact-size',
   '/data/excel',
   '/image/metadata',
+  /*
+    One studio tool with a hand-written folder, because `publicTools` needs a
+    manifest whose `href` is a real page and `catalog.test.ts` checks that the
+    file exists. The other thirty-three answer from `/image/[tool]`;
+    `excludedToolIdsForPrefix` keeps this id out of that route so the address
+    is written once.
+  */
+  '/image/resize-image',
   // '/image/svg', '/image/colour', '/data/lists' -- Antigravity phases 4 and 5.
   // Deliberately unregistered: the owner asked on 2026-09-20 that no new tool is
   // published before a tech review, and registering one puts it in the sitemap,
@@ -209,7 +218,14 @@ const ROUTED_PREFIX_ENTRIES: readonly (readonly [
   ['/documents', DOCUMENT_OPERATIONS],
   ['/file', FILE_WORKBENCH_OPERATIONS],
   ['/finance', FINANCE_OPERATIONS],
-  ['/image', IMAGE_EDITOR_OPERATIONS],
+  /*
+    Two engines, one prefix. The editor's seven and the studio's thirty-four
+    are concatenated here in the same order `app/image/[tool]/page.tsx` uses,
+    so the registry, the sitemap and the built files list the same addresses.
+    Anything already answered by a hand-written folder under `/image` is taken
+    back out below, by `excludedToolIdsForPrefix`.
+  */
+  ['/image', [...IMAGE_EDITOR_OPERATIONS, ...IMAGE_STUDIO_ROUTED_OPERATIONS]],
   ['/life-admin', LIFE_ADMIN_OPERATIONS],
   ['/math', MATH_OPERATIONS],
   ['/pdf', PDF_PAGE_OPERATIONS],

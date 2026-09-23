@@ -17,6 +17,7 @@ import { SUBTITLE_OPERATIONS } from './subtitle-workbench';
 import { TEXT_OPERATIONS } from './text-workbench';
 import { WEB_OPERATIONS } from './web-workbench';
 import { WRITING_OPERATIONS } from './writing-workbench';
+import { IMAGE_STUDIO_OPERATIONS } from './image-studio-operations';
 import { KERNEL_MANIFEST } from '../kernel/manifest';
 
 function searchEntries(
@@ -1124,6 +1125,50 @@ export const publicTools: ToolManifest[] = [
     },
     owner: 'platform-foundation',
   },
+  /*
+    The thirty-four image jobs that each have their own page.
+
+    Unlike every other multi-operation manifest here, its `searchEntries`
+    point at `/image/<id>` rather than `<href>?tool=<id>`: these are not
+    query-string faces of one workbench, they are separate addresses with
+    separate titles, which is the whole reason they were built. `href` names
+    the one a person searching "image tools" is most likely to want, because a
+    manifest must point somewhere that exists and there is no landing page
+    here to point at.
+
+    Listing them here is what puts them on the home page's Image card and in
+    the site search; `LIVE_TOOL_ROUTES` is what puts them in the sitemap. Both
+    are needed -- the owner asked on 2026-09-20 that a tool listed as live is
+    also one a visitor can find by browsing.
+  */
+  {
+    id: 'image-studio',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Image studio',
+    shortDescription:
+      'Resize, convert, crop, censor, watermark, and read colours from images.',
+    category: 'Image',
+    aliases: IMAGE_STUDIO_OPERATIONS.map((operation) => operation.name),
+    jobs: IMAGE_STUDIO_OPERATIONS.map((operation) => operation.description),
+    searchEntries: IMAGE_STUDIO_OPERATIONS.map((operation) => ({
+      id: operation.id,
+      name: operation.name,
+      description: operation.description,
+      href: `/image/${operation.id}`,
+    })),
+    href: '/image/resize-image',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'image.raster.decode',
+        'image.raster.encode',
+        'image.raster.transform',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
   {
     id: 'base64-encode',
     version: '0.1.0-canary',
@@ -1733,6 +1778,7 @@ export const toolGroups: ToolGroup[] = [
       'image-to-text',
       'image-exact-size',
       'image-editor',
+      'image-studio',
       'photo-metadata',
       'svg-optimizer',
       'color-converter',
@@ -1957,11 +2003,76 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
       'image-editor:image-grayscale',
     ]);
 
+    /*
+      The thirty-four studio tools are grouped by the `section` each operation
+      declares, rather than by a second list of ids kept in step by hand. That
+      is what stopped these cards from being one undifferentiated block of
+      thirty-four links: someone browsing knows whether they came to convert a
+      format or to censor a screenshot, and these are the six answers.
+    */
+    const studioSections: { id: string; title: string; description: string }[] =
+      [
+        {
+          id: 'image-convert',
+          title: 'Format Conversion',
+          description:
+            'One page per pair — PNG to JPG, WebP to PNG, SVG to PNG and the rest.',
+        },
+        {
+          id: 'image-resize',
+          title: 'Size & Crop',
+          description:
+            'Resize to exact pixels, enlarge, crop to a platform size, or cut into a grid.',
+        },
+        {
+          id: 'image-effects',
+          title: 'Retouch & Effects',
+          description:
+            'Sharpen, blur, pixelate, denoise, border, round, watermark and caption.',
+        },
+        {
+          id: 'image-colour',
+          title: 'Colour',
+          description:
+            'Read a palette out of a picture, or pick the hex value of any pixel.',
+        },
+        {
+          id: 'image-compose',
+          title: 'Combine & Package',
+          description:
+            'Collages, CSS sprite sheets and a complete favicon set.',
+        },
+        {
+          id: 'image-encode',
+          title: 'Encode & Metadata',
+          description:
+            'Base64 in both directions, and stripping EXIF out of a photo.',
+        },
+      ];
+    /*
+      The section id is the operation's own `section` with one prefix, and
+      nothing else. It was briefly a hand-written mapping with `convert`
+      spelled `conversion` on one side, and the ten format converters matched
+      no section and no `remaining` filter: they were registered, in the
+      sitemap, linked from each other -- and absent from the Image card
+      entirely. `browse.test.ts` compared generated data against the same
+      wrong function, so it passed. `catalog.test.ts` now checks that every
+      studio tool lands in exactly one section.
+    */
+    const sectionForStudioId = new Map(
+      IMAGE_STUDIO_OPERATIONS.map((operation) => [
+        `image-studio:${operation.id}`,
+        `image-${operation.section}`,
+      ]),
+    );
+
     const background = destinations.filter((d) => backgroundIds.has(d.id));
     const opt = destinations.filter((d) => optIds.has(d.id));
     const studio = destinations.filter((d) => studioIds.has(d.id));
     const assigned = new Set([...backgroundIds, ...optIds, ...studioIds]);
-    const remaining = destinations.filter((d) => !assigned.has(d.id));
+    const remaining = destinations.filter(
+      (d) => !assigned.has(d.id) && !sectionForStudioId.has(d.id),
+    );
 
     return [
       {
@@ -1982,6 +2093,12 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
         description: 'Crop, flip, rotate, and fine-tune image color channels.',
         destinations: studio,
       },
+      ...studioSections.map((section) => ({
+        ...section,
+        destinations: destinations.filter(
+          (d) => sectionForStudioId.get(d.id) === section.id,
+        ),
+      })),
     ].filter((section) => section.destinations.length > 0);
   }
 

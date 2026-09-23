@@ -8,9 +8,11 @@ import {
   searchTools,
   toolDestinationsForGroup,
   toolGroups,
+  toolSubsectionsForGroup,
   toolsForGroup,
 } from './catalog';
 import { groupIcons } from '@/components/category-icons';
+import { isLiveToolUrl } from '../seo/live-tools';
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
@@ -165,7 +167,10 @@ describe('public canary catalog', () => {
     // 680 after PDF redaction, 682 after the two dedicated OCR destinations,
     // 683 when the PDF metadata viewer joined the PDF workspace, and 684 with
     // the whole-text Aadhaar and PAN masker in the India & life admin group,
-    // beside the two single-number maskers it shares its engine with.
+    // beside the two single-number maskers it shares its engine with. 721 on
+    // 2026-09-23, when the image studio's 34 tools were added: `/image` held
+    // thirteen pages against `/pdf`'s nineteen, and image editing is the part
+    // of this site a search engine cannot answer inside its own results.
     const everyDestination = publicTools.reduce(
       (total, tool) => total + (tool.searchEntries?.length || 1),
       0,
@@ -180,7 +185,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(687);
+    expect(everyDestination).toBe(721);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -258,17 +263,64 @@ describe('public canary catalog', () => {
     expect(new Set(pdf.map((destination) => destination.href)).size).toBe(18);
   });
 
+  it('puts every destination of a category into exactly one browse section', () => {
+    /*
+      A section is what a visitor actually clicks. A destination in none of
+      them is registered, in the sitemap, linked from its siblings -- and
+      absent from the page people browse from.
+
+      Coverage, not a partition: `qr-barcode` puts all 28 of its destinations
+      in both of its two sections, which is a separate question from this one
+      and not changed here.
+
+      That happened on 2026-09-23: the image studio's section ids were built
+      from `operation.section` on one side and typed out on the other, and
+      `convert` against `conversion` silently dropped all ten format
+      converters. `browse.test.ts` compares the generated files against this
+      same function, so it agreed with the mistake. This compares the sections
+      against the destinations the group actually has.
+    */
+    for (const group of toolGroups) {
+      const destinations = toolDestinationsForGroup(group).map((d) => d.id);
+      const sectioned = new Set(
+        toolSubsectionsForGroup(group).flatMap((section) =>
+          section.destinations.map((d) => d.id),
+        ),
+      );
+      const unreachable = destinations.filter((id) => !sectioned.has(id));
+      expect(
+        unreachable,
+        `${group.id}: browsable nowhere on the category page`,
+      ).toEqual([]);
+    }
+  });
+
   it('keeps operation-level search destinations explicit and unique', () => {
     const entries = publicTools.flatMap((tool) => tool.searchEntries ?? []);
     const destinations = entries.map((entry) => entry.href);
 
-    expect(entries).toHaveLength(648);
+    expect(entries).toHaveLength(682);
     expect(new Set(destinations).size).toBe(entries.length);
     for (const entry of entries) {
       expect(entry.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
       expect(entry.name.length).toBeGreaterThan(2);
       expect(entry.description.length).toBeGreaterThan(8);
-      expect(entry.href).toMatch(/^\/[a-z0-9/-]+\?tool=[a-z0-9-]+$/);
+      /*
+        Two shapes are legitimate, and the second one is the better of them.
+
+        `<route>?tool=<id>` is a workbench face: one page, one title, the tool
+        chosen by a query parameter. `<path>` on its own is a tool with an
+        address of its own, which is what the image studio's 34 destinations
+        are and what every one of these should eventually become — a query
+        parameter cannot rank for the job it names.
+
+        Both are then put through `isLiveToolUrl`, which is the gate every CTA
+        and the smart dropzone check before offering a destination. That is
+        strictly more than the shape check alone did: a well-formed href to a
+        route that does not exist used to pass here.
+      */
+      expect(entry.href).toMatch(/^\/[a-z0-9/-]+(?:\?tool=[a-z0-9-]+)?$/);
+      expect(isLiveToolUrl(entry.href), entry.href).toBe(true);
     }
   });
 });

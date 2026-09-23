@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { ImageEditorTool } from '@/components/image-editor-tool';
+import { ImageStudioTool } from '@/components/image-studio-tool';
 import { IMAGE_EDITOR_OPERATIONS } from '@/lib/tools/catalog';
+import { IMAGE_STUDIO_BY_ID } from '@/lib/tools/image-studio-operations';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
 
@@ -46,9 +48,34 @@ const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
 
-const OPERATIONS = IMAGE_EDITOR_OPERATIONS.filter(
+/*
+  TWO ENGINES ANSWER HERE, AND THIS IS THE LIST THAT SAYS WHICH.
+
+  The seven original ids open `ImageEditorTool` — one pass over one picture,
+  with every control on screen. The thirty-four added on 2026-09-23 open
+  `ImageStudioTool`, which is driven entirely by the record in
+  `lib/tools/image-studio-operations.ts`.
+
+  Both lists are filtered through the SAME `excludedToolIdsForPrefix`, so
+  neither can claim an id a hand-written folder under `/image` already
+  answers, and `lib/seo/live-tools.ts` concatenates the same two lists to
+  build the registry. The route and the registry therefore cannot disagree
+  about which addresses exist — the failure mode that shipped six invisible
+  tools on 2026-09-20.
+
+  The mechanism below is unchanged: `generateStaticParams` still returns one
+  entry per id and `dynamicParams` is still false. Only the list is longer.
+*/
+const EDITOR_OPERATIONS = IMAGE_EDITOR_OPERATIONS.filter(
   (operation) => !DEDICATED.has(operation.id),
 );
+
+const STUDIO_OPERATIONS = [...IMAGE_STUDIO_BY_ID.values()].filter(
+  (operation) => !DEDICATED.has(operation.id),
+);
+
+const OPERATIONS: readonly { id: string; name: string; description: string }[] =
+  [...EDITOR_OPERATIONS, ...STUDIO_OPERATIONS];
 
 /** The one place that says which face of the shared editor an id opens. */
 function propsFor(tool: string) {
@@ -67,6 +94,17 @@ export async function generateMetadata({
   params: Promise<{ tool: string }>;
 }): Promise<Metadata> {
   const { tool } = await params;
+  const studio = IMAGE_STUDIO_BY_ID.get(tool);
+  // A studio operation writes its own title and meta description, for the
+  // query it answers. The editor's seven take their heading, because that is
+  // all those records carry.
+  if (studio && !DEDICATED.has(studio.id)) {
+    return {
+      title: studio.title,
+      description: studio.metaDescription,
+      alternates: { canonical: `${CANONICAL_ORIGIN}${BASE}/${studio.id}` },
+    };
+  }
   const operation = OPERATIONS.find((item) => item.id === tool);
   if (!operation) return {};
   return {
@@ -83,6 +121,15 @@ export default async function Page({
 }) {
   const { tool } = await params;
   if (!OPERATIONS.some((operation) => operation.id === tool)) return null;
+  const studio = IMAGE_STUDIO_BY_ID.get(tool);
+  if (studio && !DEDICATED.has(studio.id)) {
+    return (
+      <ImageStudioTool
+        operation={studio}
+        relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
+      />
+    );
+  }
   return (
     <ImageEditorTool
       initialOperationId={tool}

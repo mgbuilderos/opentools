@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { IMAGE_STUDIO_OPERATIONS } from './image-studio-operations';
 import {
   IMAGE_EDITOR_OPERATIONS,
   MP3_TOOLKIT_OPERATIONS,
@@ -446,7 +447,7 @@ describe('exhaustive workbench input/output QC', () => {
     }
   });
 
-  it('accounts for all 648 operation-level tool destinations', () => {
+  it('accounts for all 682 operation-level tool destinations', () => {
     const expectedDestinations = [
       ...suites.flatMap((suite) =>
         suite.operations.map(
@@ -467,12 +468,22 @@ describe('exhaustive workbench input/output QC', () => {
           ? '/image/background-remover?tool=solid-background-remover'
           : `/image/editor?tool=${operation.id}`,
       ),
+      /*
+        The one family whose catalogue entries are pages rather than query
+        parameters. Every other destination above is `<route>?tool=<id>`, the
+        pattern this sweep exists to account for; the image studio was built
+        the other way round on 2026-09-23 — one address and one title per job —
+        so its destinations are listed as the addresses they are. Counting them
+        here is what stops one being added to the catalogue without a page, or
+        given a page and left out of the catalogue.
+      */
+      ...IMAGE_STUDIO_OPERATIONS.map((operation) => `/image/${operation.id}`),
     ].toSorted();
     const catalogDestinations = publicTools
       .flatMap((tool) => tool.searchEntries?.map((entry) => entry.href) ?? [])
       .toSorted();
 
-    expect(expectedDestinations).toHaveLength(648);
+    expect(expectedDestinations).toHaveLength(682);
     expect(catalogDestinations).toEqual(expectedDestinations);
   });
 });
