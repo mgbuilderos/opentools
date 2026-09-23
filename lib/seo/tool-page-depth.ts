@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { PAGE_DEPTH_CORE } from './tool-page-depth-core';
 import { PAGE_DEPTH_IMAGE } from './tool-page-depth-image';
 import { PAGE_DEPTH_PDF } from './tool-page-depth-pdf';
 import type { ToolPageDepth } from './tool-page-depth-types';
@@ -50,6 +51,7 @@ export type {
 const TOOL_PAGE_DEPTH: Readonly<Record<string, ToolPageDepth>> = {
   ...PAGE_DEPTH_PDF,
   ...PAGE_DEPTH_IMAGE,
+  ...PAGE_DEPTH_CORE,
 };
 
 /** Routes that carry depth content, for tests and for the registry. */

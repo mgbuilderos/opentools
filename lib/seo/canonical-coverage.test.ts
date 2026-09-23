@@ -250,10 +250,11 @@ describe('canonical coverage', () => {
       if (!declaresCanon && !usesHelper) {
         wrong.push(`${route}: missing canonical declaration`);
       } else if (!usesHelper && !bindsPrefix) {
-        wrong.push(`${route}: canonical does not bind route prefix "${prefix}"`);
+        wrong.push(
+          `${route}: canonical does not bind route prefix "${prefix}"`,
+        );
       }
     }
     expect(wrong).toEqual([]);
   });
 });
-

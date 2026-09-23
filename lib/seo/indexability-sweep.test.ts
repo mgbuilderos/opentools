@@ -46,7 +46,11 @@ function auditRoutes(): {
   missingDistFile: string[];
   nonSelfCanonical: { route: string; found?: string; expected: string }[];
   duplicateTitles: { title: string; routes: string[] }[];
-  invalidDescriptions: { route: string; reason: string; description?: string }[];
+  invalidDescriptions: {
+    route: string;
+    reason: string;
+    description?: string;
+  }[];
 } {
   const sitemapUrls = new Set(buildSitemap().map((entry) => String(entry.url)));
   const titleToRoutes = new Map<string, string[]>();
@@ -54,8 +58,16 @@ function auditRoutes(): {
   const audits: RouteAudit[] = [];
   const missingSitemap: string[] = [];
   const missingDistFile: string[] = [];
-  const nonSelfCanonical: { route: string; found?: string; expected: string }[] = [];
-  const invalidDescriptions: { route: string; reason: string; description?: string }[] = [];
+  const nonSelfCanonical: {
+    route: string;
+    found?: string;
+    expected: string;
+  }[] = [];
+  const invalidDescriptions: {
+    route: string;
+    reason: string;
+    description?: string;
+  }[] = [];
 
   for (const route of LIVE_TOOL_ROUTES) {
     const expectedCanonical = `${CANONICAL_ORIGIN}${route === '/' ? '' : route}`;
@@ -65,7 +77,9 @@ function auditRoutes(): {
     }
 
     const candidates = candidateFiles(route);
-    const matchedFile = candidates.find((rel) => existsSync(path.join(CLIENT_DIR, rel)));
+    const matchedFile = candidates.find((rel) =>
+      existsSync(path.join(CLIENT_DIR, rel)),
+    );
 
     let canonical: string | undefined;
     let title: string | undefined;
@@ -77,22 +91,36 @@ function auditRoutes(): {
       const html = readFileSync(path.join(CLIENT_DIR, matchedFile), 'utf8');
 
       const canonMatch =
-        html.match(/<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i) ??
-        html.match(/<link[^>]*href=["']([^"']+)["'][^>]*rel=["']canonical["']/i);
+        html.match(
+          /<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i,
+        ) ??
+        html.match(
+          /<link[^>]*href=["']([^"']+)["'][^>]*rel=["']canonical["']/i,
+        );
       canonical = canonMatch?.[1];
 
       const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
       title = titleMatch?.[1]?.trim();
 
       const descMatch =
-        html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i) ??
-        html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["']/i);
+        html.match(
+          /<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i,
+        ) ??
+        html.match(
+          /<meta[^>]*content=["']([^"']*)["'][^>]*name=["']description["']/i,
+        );
       description = descMatch?.[1]?.trim();
     }
 
-    const isSelfCanonical = Boolean(canonical && canonical === expectedCanonical);
+    const isSelfCanonical = Boolean(
+      canonical && canonical === expectedCanonical,
+    );
     if (!isSelfCanonical) {
-      nonSelfCanonical.push({ route, found: canonical, expected: expectedCanonical });
+      nonSelfCanonical.push({
+        route,
+        found: canonical,
+        expected: expectedCanonical,
+      });
     }
 
     if (title) {
@@ -104,10 +132,18 @@ function auditRoutes(): {
     let hasValidDescription = true;
     if (!description) {
       hasValidDescription = false;
-      invalidDescriptions.push({ route, reason: 'empty description', description });
+      invalidDescriptions.push({
+        route,
+        reason: 'empty description',
+        description,
+      });
     } else if (description === SITE_DEFAULT_DESCRIPTION) {
       hasValidDescription = false;
-      invalidDescriptions.push({ route, reason: 'site default description', description });
+      invalidDescriptions.push({
+        route,
+        reason: 'site default description',
+        description,
+      });
     }
 
     audits.push({
@@ -178,7 +214,10 @@ describe('indexability sweep across all LIVE_TOOL_ROUTES', () => {
     expect(
       nonSelfCanonical,
       `Routes not self-canonical (${nonSelfCanonical.length}):\n${nonSelfCanonical
-        .map((f) => `  ${f.route} -> found: "${f.found}" (expected: "${f.expected}")`)
+        .map(
+          (f) =>
+            `  ${f.route} -> found: "${f.found}" (expected: "${f.expected}")`,
+        )
         .join('\n')}`,
     ).toEqual([]);
   });
