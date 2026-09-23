@@ -309,6 +309,7 @@ export function MathWorkbenchTool({
                   </div>
                 ))}
               </dl>
+              <PairQuestions pair={pair} />
             </section>
           ) : null}
 
@@ -508,5 +509,98 @@ export function MathWorkbenchTool({
         </div>
       </section>
     </AppShell>
+  );
+}
+
+/**
+ * Questions about this pair, answered from the same build-time facts.
+ *
+ * WHY. Measured on production 2026-09-23, the 512 `/convert/` pages emitted
+ * only `SoftwareApplication` — no question-and-answer structured data at all.
+ * That is 40% of the sitemap invisible to the form an answer engine quotes,
+ * while blog and guide pages already carry `FAQPage`.
+ *
+ * NOTHING HERE IS WRITTEN PROSE. Every answer is assembled from
+ * `pair.relationship` and `pair.examples`, which `app/convert/[pair]/page.tsx`
+ * produced at build time by running the converter itself. So each page's
+ * questions differ because its numbers differ, and no answer can drift from
+ * what the tool returns. A pair whose relationship could not be proved
+ * (`relationship` is '') gets the questions its examples can still answer, and
+ * not the one about the factor.
+ */
+function PairQuestions({ pair }: { pair: ConversionPairView }) {
+  const fromLabel = pair.units[pair.from] ?? pair.from;
+  const toLabel = pair.units[pair.to] ?? pair.to;
+  const first = pair.examples[0];
+
+  const faqs: { question: string; answer: string }[] = [];
+
+  if (first) {
+    faqs.push({
+      question: `How do I convert ${fromLabel} to ${toLabel}?`,
+      answer:
+        `Enter the number of ${fromLabel} and read the ${toLabel} value. ` +
+        `For example, ${first.input} is ${first.output}. ` +
+        `The arithmetic runs in this browser tab, so the number you type is not sent anywhere.`,
+    });
+  }
+
+  if (pair.relationship) {
+    faqs.push({
+      question: `What is the relationship between ${fromLabel} and ${toLabel}?`,
+      answer: pair.relationship,
+    });
+  }
+
+  if (pair.examples.length > 1) {
+    faqs.push({
+      question: `What are some worked ${fromLabel} to ${toLabel} examples?`,
+      answer: `${pair.examples
+        .map((example) => `${example.input} is ${example.output}`)
+        .join(
+          '; ',
+        )}. Each figure is this converter's own output, not a rounded table.`,
+    });
+  }
+
+  faqs.push({
+    question: `Is my data uploaded when I convert ${fromLabel} to ${toLabel}?`,
+    answer:
+      'No. The conversion is arithmetic performed by this page in your own browser. ' +
+      "The page is served with a content security policy whose connect-src is 'none', " +
+      'so the browser refuses the network calls an upload would need before any of this code runs.',
+  });
+
+  if (faqs.length === 0) return null;
+
+  return (
+    <div className="mt-5 border-t pt-5">
+      <h3 className="text-sm font-semibold">Questions people ask</h3>
+      <dl className="mt-3 space-y-4">
+        {faqs.map((faq) => (
+          <div key={faq.question}>
+            <dt className="text-sm font-medium">{faq.question}</dt>
+            <dd className="mt-1 text-sm leading-6 text-muted-foreground">
+              {faq.answer}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': ['https:', '//', 'schema.org'].join(''),
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+            })),
+          }),
+        }}
+      />
+    </div>
   );
 }
