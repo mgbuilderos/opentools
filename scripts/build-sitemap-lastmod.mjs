@@ -204,6 +204,20 @@ const CHROME = new Set([
   'lib/utils.ts',
   'lib/seo/live-tools.ts',
   'lib/seo/live-tool-routes.ts',
+  // Title and description tables read by every tool page. Rewording one tool's
+  // description must not claim that all 1,413 pages changed -- which is what
+  // happened on the 2026-09-23 release, where a metadata pass across ~58 files
+  // gave the whole site a single date and the guard below rejected it. These
+  // hold search-facing metadata, not the words a reader sees on the page.
+  'lib/seo/tool-search-copy.ts',
+  'lib/seo/hub-tool-meta.ts',
+  'lib/seo/meta-inventory.ts',
+  'lib/seo/tool-page-depth.ts',
+  'lib/seo/tool-page-depth-pdf.ts',
+  'lib/seo/tool-page-depth-image.ts',
+  'lib/seo/tool-page-depth-types.ts',
+  'components/page-depth-content.tsx',
+  'components/page-depth-provider.tsx',
 ]);
 
 /** Resolve one import specifier to a file in this repository, or nothing. */

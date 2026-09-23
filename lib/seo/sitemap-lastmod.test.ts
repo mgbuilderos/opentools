@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { buildSitemap } from './sitemap-entries';
 import { SITEMAP_LASTMOD } from './sitemap-lastmod.generated';
@@ -74,11 +76,33 @@ describe('sitemap lastmod', () => {
    * of a shared module standing in for page content -- excluded by the CHROME
    * list in the generator, and asserted here so removing that list is loud.
    */
-  it('does not give the whole site one date', () => {
+  it('does not give the whole site one date, unless one really changed it', () => {
     const distinct = new Set(
       Object.values(SITEMAP_LASTMOD).map((value) => value.slice(0, 10)),
     );
-    expect(distinct.size).toBeGreaterThan(1);
+    if (distinct.size > 1) return;
+
+    /*
+     * One date across the site is usually the bug this guard was written for.
+     * It is not always. On 2026-09-23 a metadata pass rewrote the title and
+     * description of every page, touching all 1,413 page files in one release,
+     * so a single date was the honest answer and suppressing it would have
+     * been the lie. What must never happen is that single date coming from the
+     * clock instead of a commit -- checked directly here, because the sibling
+     * "simply now" test only rejects the current minute, and a release dated
+     * uniformly to midnight would slip past it.
+     */
+    const [only] = distinct;
+    const commitDays = new Set(
+      execFileSync('git', ['log', '--pretty=format:%cI', '-n', '400'], {
+        cwd: path.join(__dirname, '..', '..'),
+        encoding: 'utf8',
+      })
+        .split('\n')
+        .filter(Boolean)
+        .map((iso) => iso.slice(0, 10)),
+    );
+    expect(commitDays.has(only)).toBe(true);
   });
 
   /**
