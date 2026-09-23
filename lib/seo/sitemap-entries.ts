@@ -8,8 +8,25 @@ import {
 } from './guide-consolidation';
 import { getAllCategoryPillars } from './internal-linking-graph';
 import { LIVE_TOOL_ROUTES } from './live-tools';
+import { SITEMAP_LASTMOD } from './sitemap-lastmod.generated';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
+
+/**
+ * The `lastmod` for a route, or nothing when we cannot honestly name one.
+ *
+ * Google uses this to decide what to recrawl first, and on 2026-09-23 only 31
+ * of 1,392 entries carried one. The dates come from
+ * `scripts/build-sitemap-lastmod.mjs`, which reads the commit date of the
+ * source that renders each page; read that file for why it is emphatically not
+ * `Date.now()` and what it deliberately leaves out. `undefined` here omits the
+ * element entirely, which is the right answer for a page whose date we do not
+ * know -- a guessed lastmod is worse than none, because once Google catches
+ * this domain being wrong it stops reading the field at all.
+ */
+function lastModifiedFor(route: string): string | undefined {
+  return SITEMAP_LASTMOD[route];
+}
 
 /**
  * The body of `app/sitemap.ts`, as a function of the consolidation state so a
@@ -38,6 +55,7 @@ export function buildSitemap(
     '/templates',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
+    lastModified: lastModifiedFor(route === '' ? '/' : route),
     changeFrequency: route === '' ? ('daily' as const) : ('weekly' as const),
     priority: route === '' ? 1.0 : 0.9,
   }));
@@ -46,6 +64,7 @@ export function buildSitemap(
   const pillarRoutes: MetadataRoute.Sitemap = getAllCategoryPillars().map(
     (pillar) => ({
       url: `${baseUrl}${pillar.href}`,
+      lastModified: lastModifiedFor(pillar.href),
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     }),
@@ -55,12 +74,16 @@ export function buildSitemap(
     consolidation,
   ).map((tool) => ({
     url: `${baseUrl}/guides/${tool.slug}`,
+    lastModified: lastModifiedFor(`/guides/${tool.slug}`),
     changeFrequency: 'weekly' as const,
     priority: tool.releaseWave === 'P0' ? 0.85 : 0.75,
   }));
 
   const blogRoutes: MetadataRoute.Sitemap = getAllBlogPosts().map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
+    // The post's own editorial date, which beats any inference from the code:
+    // `blog-data.ts` holds every post, so a git date on it would redate all of
+    // them whenever one was edited.
     lastModified: post.publishedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.85,
@@ -69,6 +92,7 @@ export function buildSitemap(
   const templateRoutes: MetadataRoute.Sitemap = getAllTemplates().map(
     (template) => ({
       url: `${baseUrl}/templates/${template.slug}`,
+      lastModified: lastModifiedFor(`/templates/${template.slug}`),
       changeFrequency: 'weekly' as const,
       priority: 0.85,
     }),

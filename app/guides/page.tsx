@@ -9,7 +9,10 @@ import {
 import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
+import {
+  getAllCategoryPillars,
+  getSiteHubLinks,
+} from '@/lib/seo/internal-linking-graph';
 import {
   GUIDE_CONSOLIDATION,
   getFeaturedGuideTools,
@@ -185,6 +188,47 @@ export default function GuidesDirectoryPage() {
                   </p>
                   <div className="mt-4 flex items-center gap-1 text-xs font-medium text-foreground group-hover:underline">
                     <span>View Category Hub</span>
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/*
+            Hubs that belong to no single category.
+
+            `/bench` runs operations from every category over a whole folder,
+            so no category pillar owns it -- and until 2026-09-23 that meant no
+            page on the site linked to it at all and it sat in the sitemap with
+            no inbound link. This page is the one whose subject is everything
+            here, which makes it the honest place for it. See `SITE_HUB_LINKS`
+            in `lib/seo/internal-linking-graph.ts`.
+          */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Run tools over a whole folder
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                One workspace, every operation, batched.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {getSiteHubLinks().map((hub) => (
+                <a
+                  key={hub.href}
+                  href={hub.href}
+                  className="group rounded-xl border bg-card p-5 transition-colors hover:border-foreground/40 hover:bg-muted/30 block"
+                >
+                  <h3 className="font-semibold group-hover:text-foreground">
+                    {hub.name}
+                  </h3>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {hub.description}
+                  </p>
+                  <div className="mt-4 flex items-center gap-1 text-xs font-medium text-foreground group-hover:underline">
+                    <span>Open the Bench</span>
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </a>

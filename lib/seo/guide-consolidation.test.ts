@@ -192,8 +192,23 @@ describe('guide consolidation off is the previous behaviour', () => {
     ];
   }
 
+  /**
+   * `lastModified` is compared by neither of the two tests below, and the
+   * frozen copy above is left alone rather than updated to carry it.
+   *
+   * That copy exists to be a control: "sitemap.ts exactly as it read at
+   * d032150". Editing it to track a later change would destroy the only thing
+   * it is for. The question here is whether consolidation moved, dropped or
+   * reordered any entry, so both sides are compared on everything except the
+   * date, which has its own guard in `sitemap-lastmod.test.ts`.
+   */
+  const withoutLastmod = (entries: MetadataRoute.Sitemap) =>
+    entries.map(({ lastModified: _lastModified, ...rest }) => rest);
+
   it('produces the same sitemap, entry for entry and in the same order', () => {
-    expect(buildSitemap(OFF)).toEqual(previousSitemap());
+    expect(withoutLastmod(buildSitemap(OFF))).toEqual(
+      withoutLastmod(previousSitemap()),
+    );
   });
 
   it('is the only thing the shipped sitemap drops', () => {
@@ -208,8 +223,10 @@ describe('guide consolidation off is the previous behaviour', () => {
         (path) => `${origin}${path}`,
       ),
     );
-    expect(buildSitemap()).toEqual(
-      previousSitemap().filter((entry) => !consolidated.has(entry.url)),
+    expect(withoutLastmod(buildSitemap())).toEqual(
+      withoutLastmod(
+        previousSitemap().filter((entry) => !consolidated.has(entry.url)),
+      ),
     );
     expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
       kept.size,
