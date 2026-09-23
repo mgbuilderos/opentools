@@ -553,7 +553,7 @@ Date: __________________________________________`,
   },
   {
     slug: 'independent-contractor-agreement-freelancer-contract',
-    title: 'Independent Contractor Agreement & Work-for-Hire Contract',
+    title: 'Contractor & Work-for-Hire Agreement',
     category: 'Legal & Business',
     format: 'Legal PDF & Markdown',
     badge: 'Legal',
@@ -703,7 +703,7 @@ Because we do not store personal data or user accounts on our servers, there is 
   },
   {
     slug: 'production-incident-response-post-mortem-runbook',
-    title: 'Production Incident Response & Blameless Post-Mortem Runbook',
+    title: 'Incident Response & Blameless Post-Mortem Runbook',
     category: 'Developer Runbooks',
     format: 'Obsidian & Markdown',
     badge: 'DevOps',
@@ -764,7 +764,7 @@ Standard operating procedures for managing, mitigating, and documenting producti
   },
   {
     slug: 'engineering-standard-operating-procedures-sop-starter-kit',
-    title: 'Engineering Standard Operating Procedures (SOPs) Starter Kit',
+    title: 'Engineering SOP & Runbook Starter Kit',
     category: 'Developer Runbooks',
     format: 'Obsidian & Markdown',
     badge: 'Operations',
@@ -992,7 +992,7 @@ Use this pre-flight verification checklist before publishing video captions or u
     description:
       'Pre-flight release checklist and structured show-notes template for podcast creators: lossless MP3 cut verification, frame-boundary timing checks, bit reservoir window tolerances, and chapter markers.',
     metaDescription:
-      'Free podcast episode release checklist and show notes template. Pre-flight QA for lossless MP3 cutting, ~26.12 ms frame boundaries, bit reservoir tolerances, and chapter markers.',
+      'Free podcast episode release checklist and show notes template: pre-flight QA for lossless MP3 cutting, frame boundaries, bit reservoir and chapter markers.',
     keywords: [
       'podcast release checklist',
       'podcast show notes template',
@@ -1117,7 +1117,7 @@ Copy the markdown structure below into your episode draft or publishing dashboar
   },
   {
     slug: 'court-exhibit-binder-assembly-checklist',
-    title: 'Court Exhibit Binder & Legal Document Assembly Checklist',
+    title: 'Court Exhibit Binder Assembly Checklist',
     category: 'Legal & Business',
     format: 'Legal PDF & Markdown',
     badge: 'Legal Pack',
@@ -1219,7 +1219,7 @@ A standard operating protocol for paralegals and attorneys preparing electronic 
   },
   {
     slug: 'client-asset-export-preflight-checklist',
-    title: 'Digital Asset Export & Creative Client Handoff Checklist',
+    title: 'Client Asset Export & Handoff Checklist',
     category: 'Developer Runbooks',
     format: 'Obsidian & Markdown',
     badge: 'Design Pack',

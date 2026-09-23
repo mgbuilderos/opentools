@@ -35,7 +35,7 @@ const CANONICAL = ['https:', '//', 'getopentools.com', '/security'].join('');
 export const metadata: Metadata = {
   title: 'Security — threat model, enforced controls and reporting',
   description:
-    'How OpenTools keeps files on the device: the content-security policy the browser enforces, the vulnerability classes we treat as critical, what is out of scope, and how to report a finding.',
+    'How OpenTools keeps files on the device: the content-security policy the browser enforces, the vulnerability classes we treat as critical, and how to report one.',
   alternates: { canonical: CANONICAL },
 };
 

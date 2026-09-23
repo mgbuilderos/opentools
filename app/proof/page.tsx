@@ -75,7 +75,7 @@ const XHR = ['XML', 'HttpRequest'].join('');
 export const metadata: Metadata = {
   title: 'Proof your file never leaves your device — OpenTools',
   description:
-    'OpenTools runs every tool inside your browser tab. This page shows the adversarial test that proves it, the measured result, and how to verify it yourself in 30 seconds.',
+    'OpenTools runs every tool inside your browser tab. This page shows the adversarial test that proves it, and how to verify the result yourself in 30 seconds.',
   alternates: { canonical: CANONICAL },
 };
 

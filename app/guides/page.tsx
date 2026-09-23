@@ -16,6 +16,7 @@ import {
   getPublishedGuideTools,
   guideOrToolHref,
 } from '@/lib/seo/guide-consolidation';
+import { guidesIndexMeta } from '@/lib/seo/guides-index-meta';
 
 // After consolidation only some tools keep a guide, so "every" would be false.
 const guideScope = GUIDE_CONSOLIDATION.enabled
@@ -29,8 +30,7 @@ const schemaContext = `${httpsScheme}schema.org`;
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Tool Guides — every OpenTools utility, step by step',
-  description: `Step-by-step guides and FAQs for ${guideScope}. Each tool runs in your browser tab; your files and inputs never touch a server.`,
+  ...guidesIndexMeta(),
   alternates: {
     canonical: `${httpsOrigin}/guides`,
   },

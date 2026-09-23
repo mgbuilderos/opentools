@@ -35,7 +35,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/merge': {
     title: 'Merge PDF Online — Free, No Upload, No Sign-Up',
     description:
-      'Combine up to 20 PDFs into one in your own browser tab. Set the order, merge, and the result is reopened and its page count checked before you download. No upload, no account, no watermark.',
+      'Combine up to 20 PDFs into one in your own browser tab. Set the order, merge, and the page count is checked before you download. No upload, no account.',
     heading: 'About this PDF merger',
     offlineReady: true,
     directAnswer:
@@ -136,7 +136,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/compress': {
     title: 'Compress PDF Online — Free, No Upload, Real Sizes',
     description:
-      'Make a PDF smaller in your own browser, or fit it under a filing portal ceiling with measured rewrites. Real before and after sizes, and if it cannot be made smaller you get your original back byte for byte.',
+      'Make a PDF smaller in your own browser, or fit it under a filing portal ceiling. Real before and after sizes, and your original back if it cannot be shrunk.',
     heading: 'About this PDF compressor',
     offlineReady: true,
     directAnswer:
@@ -240,7 +240,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/to-word': {
     title: 'PDF to Word Online — Free, No Upload, No Email',
     description:
-      'Pull the text out of a PDF into an editable .docx in your own browser. Reading order, paragraphs, page breaks and headings come across; layout, tables and images do not. Nothing is uploaded.',
+      'Pull the text out of a PDF into an editable .docx in your own browser. Reading order, paragraphs, page breaks and headings survive; layout and tables do not.',
     heading: 'About this PDF to Word converter',
     directAnswer:
       'Choose a PDF of up to 150 MB and convert it. The text layer is read in the page, regrouped into lines and paragraphs by the coordinates of the characters, and written to a .docx named after your PDF. This recovers the words, not the page: it is a text extraction, and the page says so above the button.',
@@ -335,7 +335,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/to-excel': {
     title: 'PDF to Excel Online — Free Bank Statement Converter',
     description:
-      'Turn a statement or table PDF into .xlsx or CSV in your browser. The column dividers it found are drawn over the page so you can drag any that landed wrong, and suspect cells are named rather than scored.',
+      'Turn a statement or table PDF into .xlsx or CSV in your browser. The column dividers it found are drawn over the page, so you can drag any that landed wrong.',
     heading: 'About this PDF to Excel converter',
     directAnswer:
       'Choose a statement or table PDF of up to 100 MB. The page finds the columns, rebuilds the rows, and shows you the table over an image of the page with the column dividers drawn on it so you can drag any that landed in the wrong place; then you label each column and export .xlsx or .csv. It extracts the one table it finds, not the whole document.',
@@ -434,7 +434,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/extract-pages': {
     title: 'Extract PDF Pages Online — Free, No Upload',
     description:
-      'Pull chosen pages out of a PDF into a new file, in your own browser. Type numbers and ranges, get them in your order, and the page count is checked before you download. Your original is not modified.',
+      'Pull chosen pages out of a PDF into a new file, in your own browser. Type numbers and ranges, get them in your order, and keep your original untouched.',
     heading: 'About this PDF page extractor',
     directAnswer:
       'To pull selected pages out of a PDF into a file of their own: choose the PDF, type the pages as numbers and ranges — 1-3, 5, 8-10 — and extract. The pages are copied whole into a new document in the order you listed them, and the file on your disk is not modified.',
@@ -527,7 +527,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/images-to-pdf': {
     title: 'JPG to PDF Online — Free Image to PDF, No Upload',
     description:
-      'Turn JPEG and PNG images into one PDF in your browser. Up to 40 images, A4, Letter or fit-to-image pages, four margin sizes, and every file checked against its real signature bytes.',
+      'Turn JPEG and PNG images into one PDF in your browser. Up to 40 images, A4, Letter or fit-to-image pages, and four margin sizes to choose between.',
     heading: 'About this image to PDF converter',
     directAnswer:
       'To turn JPEG or PNG images into a single PDF: choose the images, set their order with the arrows, pick a page size and a margin, and generate. Each image becomes one page, centred and scaled to fit inside the margins with its proportions kept.',
@@ -620,7 +620,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/bates': {
     title: 'Bates Numbering PDF Online — Free, No Upload',
     description:
-      'Stamp one unbroken Bates sequence across a whole bundle of PDFs in your browser. Prefix, start number, padding, six positions, page labels that match, and originals never written to.',
+      'Stamp one unbroken Bates sequence across a whole bundle of PDFs in your browser. Prefix, start number, padding, six positions and matching page labels.',
     heading: 'About this Bates numbering tool',
     directAnswer:
       'Add the PDFs of a bundle, put them in the order you want with the up and down arrows, set a prefix, a starting number and a padding width, and stamp. Every page of every file is numbered, and the count carries on from one file into the next, so a two-page exhibit followed by a three-page exhibit runs 000001 to 000005 across both. Your originals are never touched: each file is stamped in the page and offered as a new download.',
@@ -714,7 +714,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/ocr': {
     title: 'OCR PDF Online — Free Searchable PDF, No Upload',
     description:
-      'Add an invisible English text layer to a scanned PDF in your own browser, keeping the visible pages exactly as they are. The exact download size is stated before anything loads.',
+      'Add an invisible English text layer to a scanned PDF in your own browser, keeping the visible pages exactly as they are. The download size is stated first.',
     heading: 'About this PDF OCR tool',
     directAnswer:
       'Choose an image-only PDF of up to 50 pages. The page first checks whether the document already has selectable text, and only if it does not does it load the English recogniser — at most 9,832,213 bytes, stated on the button before you press it. Each page is rendered, recognised, and given an invisible text layer over the original page, so the document looks identical and is now searchable. The plain text is offered as a separate download.',
@@ -808,7 +808,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/sign': {
     title: 'Sign PDF Online Free — Fill and Sign, No Upload',
     description:
-      'Fill a PDF form and draw or type a signature onto it in your own browser. Place it by clicking the page, flatten it so nobody can edit your entries, and keep the file on your device throughout.',
+      'Fill a PDF form and draw or type a signature onto it in your own browser. Place it by clicking the page, then flatten it so nobody can edit your entries.',
     heading: 'About this fill and sign tool',
     directAnswer:
       'Choose a PDF of up to 150 MB. Every fillable field is listed with a control matching its kind — text, tick box, dropdown, multi-select — and you complete them, then draw a signature on the pad or type your name, place it by clicking the page outline, and finish. "Make it final" is on by default: it prints your values into the page and removes the form so the next person cannot edit them.',
@@ -908,7 +908,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/redact': {
     title: 'Redact PDF Online — Free, Text Truly Removed',
     description:
-      'Black out text in a PDF so the words are gone, not hidden. Redacted pages are rasterised, metadata, bookmarks, attachments and annotations are purged, and everything runs in your browser.',
+      'Black out text in a PDF so the words are gone, not hidden. Redacted pages are rasterised, and metadata, bookmarks, attachments and annotations are purged.',
     heading: 'About this PDF redaction tool',
     directAnswer:
       'Load a PDF, then mark what has to go: search for a name or phrase, scan for secrets such as email addresses, card numbers, IP addresses and API keys, or draw a box on the page. Applying the redaction rasterises every page that carries a mark, burns the black boxes into the image, and purges the document’s metadata, bookmarks, attachments and annotations. Pages with nothing to redact are copied through untouched and stay selectable.',
@@ -1006,7 +1006,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/metadata': {
     title: 'PDF Metadata Remover — See It, Then Strip It Free',
     description:
-      'See every piece of identity a PDF carries — document properties, the XMP packet most tools miss, dates and the file identifier — then remove all of it in your browser without touching the pages.',
+      'See every piece of identity a PDF carries — properties, the XMP packet most tools miss, dates and the file identifier — then remove all of it in your browser.',
     heading: 'About this PDF metadata viewer and remover',
     directAnswer:
       'Choose a PDF of up to 100 MB. The page reads everything the file says about itself and groups it in four panels — document properties, the XMP packet, dates, and the file identifier — and then removes all of it in one action, saving a copy with -no-metadata added to the name. The pages themselves are untouched; this changes only what describes the file.',
@@ -1100,7 +1100,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/compare': {
     title: 'Compare Two PDFs Online — Free Redline, No Upload',
     description:
-      'Find what changed between two PDF drafts in your browser. Survives reflow, reports moved clauses as moves, and exports an annotated PDF, a tracked-changes Word redline and a CSV change list.',
+      'Find what changed between two PDF drafts in your browser. Survives reflow, reports moved clauses as moves, and exports a redline, an annotated PDF and a CSV.',
     heading: 'About this PDF comparison tool',
     directAnswer:
       'Load the original and the revised PDF and compare. The text of both is read out with each word’s position, the two streams are aligned, and the result is a list of insertions, deletions, moved clauses and formatting-only changes, each shown on the page it occurs on. Export an annotated PDF, a Word redline with real tracked changes, or a CSV change list.',
@@ -1213,7 +1213,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/page-tools': {
     title: 'Organise PDF Pages Online — Free, No Upload',
     description:
-      'Reorder, delete, rotate, number, watermark and label a PDF in one local pass. Type the pages in the order you want them, and the result is reopened and checked before you download.',
+      'Reorder, delete, rotate, number, watermark and label a PDF in one local pass. Type the pages in the order you want, and the result is checked before download.',
     heading: 'About this PDF page organiser',
     offlineReady: true,
     directAnswer:
@@ -1305,7 +1305,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/rotate-pdf': {
     title: 'Rotate PDF Online — Free, Saves the Rotation',
     description:
-      'Turn every page of a PDF by a quarter turn and save it that way, in your own browser. Nothing is rasterised, and every page is checked to sit on a whole quarter turn before you download.',
+      'Turn every page of a PDF by a quarter turn and save it that way, in your own browser. Nothing is rasterised, and every page is checked before you download.',
     heading: 'About this PDF rotation tool',
     directAnswer:
       'To turn the pages of a PDF: choose the file, leave the page list as it is, pick 90°, 180° or 270° clockwise, and apply. The angle you choose is added to each page’s existing rotation, and after saving the file is opened again and every page checked to be sitting on a whole quarter turn.',
@@ -1396,7 +1396,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/reorder-pdf-pages': {
     title: 'Reorder PDF Pages Online — Free, No Upload',
     description:
-      'Put the pages of a PDF into any order by typing the numbers. Pages are copied whole so nothing is rasterised, and the page count is verified against what you asked for before you download.',
+      'Put the pages of a PDF into any order by typing the numbers. Pages are copied whole, and the page count is verified against what you asked for.',
     heading: 'About this PDF page reorderer',
     directAnswer:
       'To put a PDF’s pages into a different order: choose the file and type the page numbers in the order you want them, such as 3, 1-2. The pages are copied into a new document in exactly that order, and any page you leave out of the list is left out of the file.',
@@ -1490,7 +1490,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/delete-pdf-pages': {
     title: 'Delete Pages from PDF Online — Free, No Upload',
     description:
-      'Remove pages from a PDF by listing the ones you want to keep. Pages are copied whole so nothing is rasterised, and the result is verified against your selection before you download.',
+      'Remove pages from a PDF by listing the ones you want to keep. Pages are copied whole, and the result is verified against your selection before download.',
     heading: 'About this PDF page remover',
     directAnswer:
       'To remove pages from a PDF: choose the file and type the pages you want to keep, such as 2-9 on a ten-page document. Anything you leave out of the list is left out of the new file, which is copied page by page and then checked against your selection before a download is offered. Your original is not modified.',
@@ -1580,7 +1580,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/pdf-page-numbers': {
     title: 'Add Page Numbers to PDF Online — Free, No Upload',
     description:
-      'Number every page of a PDF before you send it, in your own browser. Centred at the foot of the page in 10 pt Helvetica, numbered by position in the output, with no upload and no account.',
+      'Number every page of a PDF before you send it, in your own browser. Centred at the foot of the page in 10 pt Helvetica, numbered by position in the output.',
     heading: 'About this PDF page numbering tool',
     directAnswer:
       'To number the pages of a PDF: choose the file, tick "Add page numbers", and apply. Every page in the output gets its number set in 10 pt Helvetica, centred and 18 points up from the bottom edge. The numbering follows the output, so if you also reorder or remove pages in the same run the numbers come out consecutive in the new order.',
@@ -1673,7 +1673,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/pdf-watermark': {
     title: 'Add Watermark to PDF Online — Free, No Upload',
     description:
-      'Stamp text diagonally across every page of a PDF in your own browser. Up to 80 characters, drawn into the page content at 20 per cent opacity so no reader setting can hide it.',
+      'Stamp text diagonally across every page of a PDF in your own browser. Up to 80 characters, drawn into the page content so no reader setting can hide it.',
     heading: 'About this PDF watermarking tool',
     directAnswer:
       'To watermark a PDF: choose the file, type up to 80 characters into the watermark box, and apply. The text is drawn across the middle of every page in the output, rotated 35 degrees anticlockwise, in grey at 20 per cent opacity, sized to fit the page width. It becomes part of the page content rather than an annotation, so no reader setting can hide it.',
@@ -1767,7 +1767,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/pdf-metadata-editor': {
     title: 'Edit PDF Metadata Online — Title and Author, Free',
     description:
-      'Set the title, author, subject and keywords stored inside a PDF, in your own browser. Written while the pages are copied, with no upload, no account and no watermark on the result.',
+      'Set the title, author, subject and keywords stored inside a PDF, in your own browser. Written while the pages are copied, with no upload and no account.',
     heading: 'About this PDF metadata editor',
     directAnswer:
       'To change what a PDF says about itself: choose the file, open the document metadata section, and type a title, author, subject or comma-separated keywords. Applying writes those values into a new copy of the document. Fields you leave empty are simply not written — this sets metadata, it does not clear it.',

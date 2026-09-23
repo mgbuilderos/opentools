@@ -21,6 +21,7 @@ import {
   getCategoryPillar,
 } from '@/lib/seo/internal-linking-graph';
 import { getLiveToolsByCategory } from '@/lib/seo/live-tools';
+import { guideCategoryMetaTitle } from '@/lib/seo/guide-category-meta';
 
 export const revalidate = 86400;
 
@@ -49,7 +50,7 @@ export async function generateMetadata({
   const pillar = getCategoryPillar(categoryName);
   if (!pillar) return { title: 'Category Not Found' };
 
-  const title = `${categoryName} Tools — Free In-Browser ${categoryName} Utilities`;
+  const title = guideCategoryMetaTitle(categoryName);
   const description = pillar.description;
 
   return {
