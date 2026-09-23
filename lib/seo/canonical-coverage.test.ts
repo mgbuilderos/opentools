@@ -60,8 +60,20 @@ function layouts(dir: string, found: string[] = []): string[] {
  */
 const DECLARES = /canonical\s*:/;
 
+/**
+ * A page may set its canonical through a helper instead of a literal, so that
+ * the title, description and canonical of a tool page stay one decision. Each
+ * helper named here is itself asserted below to set a self-canonical -- the
+ * indirection is allowed, not the omission.
+ */
+const CANONICAL_HELPERS: ReadonlyArray<readonly [name: string, source: string]> = [
+  ['toolPageMetadata', 'lib/seo/tool-page-depth.ts'],
+];
+
 function declaresIn(file: string): boolean {
-  return DECLARES.test(readFileSync(file, 'utf8'));
+  const source = readFileSync(file, 'utf8');
+  if (DECLARES.test(source)) return true;
+  return CANONICAL_HELPERS.some(([name]) => source.includes(`${name}(`));
 }
 
 /** `/app/pdf/merge/page.tsx` -> `/pdf/merge`; the root page -> `/`. */
@@ -121,6 +133,28 @@ describe('canonical coverage', () => {
       }
     }
     expect(inheriting).toEqual([]);
+  });
+
+
+  /**
+   * The indirection above is only safe while the helper really does set one.
+   * If `toolPageMetadata` ever stops emitting a canonical, every page that
+   * delegates to it goes silent at once -- which is the 2026-09-23 failure at
+   * scale, so it is asserted directly rather than trusted.
+   */
+  it('has every canonical helper actually set a self-canonical', () => {
+    const broken: string[] = [];
+    for (const [name, source] of CANONICAL_HELPERS) {
+      const full = path.join(APP_DIR, '..', source);
+      if (!existsSync(full)) {
+        broken.push(`${name}: ${source} is missing`);
+        continue;
+      }
+      const text = readFileSync(full, 'utf8');
+      if (!DECLARES.test(text)) broken.push(`${name}: ${source} sets no canonical`);
+      if (!text.includes('route')) broken.push(`${name}: ${source} ignores the route`);
+    }
+    expect(broken).toEqual([]);
   });
 
   it('never re-declares a site-wide canonical on the root layout', () => {
