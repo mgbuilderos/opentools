@@ -9352,6 +9352,1275 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'ohm-s-law-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-ohm-s-law-calculator': {
+    directAnswer:
+      'Supply any two electrical values among voltage in volts, current in amperes, and resistance in ohms to calculate the remaining variable and total dissipated power in watts. The calculator uses fundamental Ohm relationship formulas client-side, delivering instant circuit analysis without transmitting your electrical engineering specifications to remote servers. The calculator executes locally in your browser memory to keep circuit schematics private and secure.',
+    leadParagraph:
+      "This Ohm's law calculator computes voltage, electrical current, resistance, and dissipated power for direct current (DC) circuits and linear electronics projects. In circuit design, selecting proper component ratings requires calculating how current flows through resistive loads and estimating power dissipation to avoid thermal overloads; however, performing these calculations manually during schematic review is prone to decimal errors and unit confusion. You enter any two known parameters: voltage (V), current (I), or resistance (R). The engine applies Ohm's law (V = I * R) and Joule's heating law (P = V * I = I^2 * R = V^2 / R) to derive the unknown circuit quantities alongside power dissipation. All mathematical evaluations run directly within your browser tab memory under strict CSP restrictions, ensuring your hardware designs and schematic numbers remain completely confidential.",
+    faqs: [
+      {
+        question:
+          'Which two parameters are needed to calculate circuit values?',
+        answer:
+          'You can provide any two values out of voltage, current, and resistance; the calculator derives the missing third property and total power.',
+      },
+      {
+        question: 'How does the calculator compute power dissipation in watts?',
+        answer:
+          "The engine uses Joule's law variations, multiplying voltage by current or squaring current across resistance to calculate dissipated electrical wattage accurately.",
+      },
+      {
+        question:
+          'Does this calculator apply to alternating current (AC) circuits?',
+        answer:
+          'It calculates ideal DC circuits and purely resistive AC loads; complex AC circuits with reactive inductors or capacitors require impedance considerations.',
+      },
+      {
+        question:
+          'Are my electrical component values or circuit notes stored online?',
+        answer:
+          'No. All calculations run strictly in client-side browser memory with zero network requests, ensuring total privacy for your engineering designs.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'standard-deviation-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-standard-deviation-calculator': {
+    directAnswer:
+      'Enter comma or space separated numbers to compute population and sample standard deviation, arithmetic mean, variance, and sum of squared deviations directly in your browser. The tool evaluates dataset dispersion with full double-precision accuracy without transmitting your experimental measurements or statistical datasets across the network. The tool executes statistical calculations client-side to ensure experimental metrics and private survey numbers remain confidential.',
+    leadParagraph:
+      "This standard deviation calculator measures the dispersion and variability of numerical datasets for researchers, quality control engineers, students, and data analysts. Understanding how individual data points deviate from the arithmetic mean is crucial for evaluating scientific consistency, manufacturing tolerances, and experimental error; however, uploading proprietary test records to cloud statistics portals risks exposing confidential experimental results. You input numbers separated by commas, spaces, or newlines. The engine parses the values, computes sample count, dataset sum, mean, sum of squared deviations, and calculates both sample standard deviation (using Bessel's correction with n - 1 degrees of freedom) and population standard deviation (dividing by N). Operating purely within your browser memory under CSP connect-src none directives, your statistical research and proprietary quality data remain strictly secure. Evaluating standard deviation allows researchers to compare dispersion across multiple experimental trials and confirm measurement reliability before publishing findings.",
+    faqs: [
+      {
+        question:
+          'What is the difference between sample and population standard deviation?',
+        answer:
+          'Sample standard deviation divides squared differences by n - 1 to correct for small-sample estimation bias, whereas population standard deviation divides directly by N.',
+      },
+      {
+        question: 'How should raw numbers be formatted in the input field?',
+        answer:
+          'Enter numbers separated by commas, spaces, or line breaks (for example: "12, 15, 18, 22, 29"); the parser extracts valid values automatically.',
+      },
+      {
+        question:
+          'Does the calculator display intermediate statistical sums and mean?',
+        answer:
+          'Yes. The output reports dataset size, arithmetic mean, sum of squares, variance, and standard deviation for comprehensive statistical verification and audit trails.',
+      },
+      {
+        question:
+          'Are my research figures or experimental measurements sent over the internet?',
+        answer:
+          'No. All mathematical operations execute locally in browser tab memory with zero outbound network calls, ensuring complete dataset confidentiality and data security.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'location-qr-code', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-location-qr-code': {
+    directAnswer:
+      'Input latitude and longitude coordinates to generate a standardized geographic location QR code in downloadable SVG format directly in your browser. The tool creates universal geo: URI and mapping links compatible with iOS and Android navigation apps without sending your venue locations or private coordinates to external mapping services. The tool generates QR codes entirely client-side to keep private event coordinates and building locations secure.',
+    leadParagraph:
+      'This location QR code generator creates scannable geographic coordinate barcodes for event signage, tourism guides, emergency wayfinding, and real estate directions. When visitors scan a location QR code with a smartphone camera, their native mapping application opens directly to the exact pin coordinates without typing complex street addresses or latitude strings. You input latitude and longitude coordinates along with optional location labels. The engine validates numerical coordinate ranges and constructs standard geo: URI schemes and navigation URLs. It renders an SVG vector QR symbol with selectable error correction levels (L, M, Q, H). Because barcode rendering executes locally in browser tab memory under strict CSP restrictions, sensitive corporate facilities, private event locations, and proprietary coordinates remain strictly confidential. Embedding precise geographic coordinates into signage simplifies physical navigation for visitors while ensuring destination coordinates remain completely accurate.',
+    faqs: [
+      {
+        question: 'What payload format does the location QR code encode?',
+        answer:
+          'The generator encodes standard geo: URI schemes (such as geo:latitude,longitude) and web map links recognized natively by iOS and Android mobile cameras.',
+      },
+      {
+        question: 'Can I download the generated QR code as an SVG vector file?',
+        answer:
+          'Yes. The tool outputs a clean, resolution-independent SVG vector file that can be scaled for large architectural signage and printed posters.',
+      },
+      {
+        question:
+          'How can I adjust barcode error correction for harsh outdoor environments?',
+        answer:
+          'You can select high error correction (Q or H) to allow smartphone cameras to scan the code even if the physical sign is partially smudged.',
+      },
+      {
+        question:
+          'Are my geographic coordinates or site addresses tracked online?',
+        answer:
+          'No. The QR symbol is drawn entirely client-side in browser memory with zero network traffic, ensuring complete privacy for your location data.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'electric-power-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-electric-power-calculator': {
+    directAnswer:
+      'Enter any two values among voltage, current, resistance, and electrical power to calculate the remaining two electrical quantities in your browser. The calculator solves Joule and Ohm formulas directly in client memory, computing accurate wattage, voltage drop, and amperage without uploading your circuit designs to remote servers. The tool executes electrical calculations client-side to maintain complete privacy for your hardware prototypes.',
+    leadParagraph:
+      'This electric power calculator computes electrical power in watts, potential difference in volts, current in amperes, and resistance in ohms for direct current systems and linear loads. Proper power calculation prevents component burnouts, guides fuse sizing, and determines wire gauge requirements in power supplies, automotive electronics, and home solar setups. You provide any two known values from the power equation wheel (P, V, I, R). The engine solves the relevant algebraic relationships (such as P = V * I, P = I^2 * R, and P = V^2 / R) and displays all four complementary circuit values with clear engineering units. Conducting power calculations locally in your browser ensures fast iteration during hardware prototyping. Operating under CSP connect-src none directives, proprietary device specifications and electrical power designs remain strictly confidential on your machine.',
+    faqs: [
+      {
+        question: 'Which equations does the electric power calculator solve?',
+        answer:
+          'The calculator evaluates fundamental power relationships including P = V * I, P = I^2 * R, and P = V^2 / R to derive unknown circuit variables.',
+      },
+      {
+        question:
+          'Can I calculate required wire resistance from power and current?',
+        answer:
+          'Yes. Providing power and current allows the engine to determine equivalent circuit resistance (R = P / I^2) and corresponding voltage drop.',
+      },
+      {
+        question:
+          'Does this tool support thermal power dissipation calculations?',
+        answer:
+          'Yes. It accurately calculates the thermal wattage dissipated by resistive loads, helping engineers select appropriate resistor power ratings for safe hardware operation.',
+      },
+      {
+        question:
+          'Are my power calculations or hardware parameters transmitted online?',
+        answer:
+          'No. All mathematical operations execute purely in local browser memory without network connectivity, ensuring complete hardware confidentiality across all design tasks.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-splitter', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-splitter': {
+    directAnswer:
+      'Split large CSV files into smaller chunks by row count or file size directly in your browser. The tool preserves column headers across every partitioned file, handles quoted commas correctly, and generates individual downloadable parts without uploading your sensitive customer databases or financial spreadsheets to remote cloud servers. The tool splits files directly in browser memory to keep corporate sales ledgers and client data secure.',
+    leadParagraph:
+      'This CSV splitter divides oversized spreadsheet files into manageable, bite-sized CSV documents for database imports, spreadsheet limits, and email distribution. Desktop spreadsheet applications and legacy relational databases often choke or crash when importing massive CSV files containing hundreds of thousands of records; however, uploading proprietary business spreadsheets to online file splitters risks serious regulatory and data leakage penalties. You paste or load your CSV text and specify the maximum row limit per chunk. The engine parses RFC 4180 compliant CSV lines, respects quoted multi-line fields, duplicates the original header row across every split partition, and provides numbered file outputs. Running entirely inside browser tab memory under strict CSP restrictions, your financial records, customer registries, and sales ledgers never leave your local device. Splitting massive CSV files into smaller parts makes database batch ingestion more reliable and prevents memory exhaustion errors during complex data imports.',
+    faqs: [
+      {
+        question: 'Does the CSV splitter keep header rows in each chunk?',
+        answer:
+          'Yes. The tool automatically duplicates the top header row across every generated file slice, ensuring that all partitions remain immediately usable.',
+      },
+      {
+        question:
+          'How does the splitter handle commas and newlines inside quoted fields?',
+        answer:
+          'The engine complies with standard RFC 4180 CSV grammar, properly preserving quoted fields containing internal commas and embedded newline characters.',
+      },
+      {
+        question: 'Can I specify custom row count limits for each split file?',
+        answer:
+          'Yes. You can define exact row thresholds (such as 1,000 or 10,000 rows) to match the import requirements of your target database software.',
+      },
+      {
+        question:
+          'Are my spreadsheet data or confidential customer records uploaded?',
+        answer:
+          'No. All CSV parsing and slicing execute locally in browser tab memory with zero network traffic, ensuring complete data sovereignty.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'hreflang-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-hreflang-generator': {
+    directAnswer:
+      'Generate valid HTML link rel="alternate" hreflang tags and XML sitemap markup for multilingual websites directly in your browser. The tool formats language and country codes (ISO 639-1 and ISO 3166-1), includes x-default fallback tags, and generates ready-to-deploy markup without sending your site architecture to third-party SEO platforms. The tool runs locally in your browser memory to safeguard internal URL structures and international release schedules.',
+    leadParagraph:
+      'This hreflang tag generator creates standardized multilingual HTML link tags and XML sitemap entries to guide search engine indexing across international web properties. Configuring international SEO incorrectly leads to duplicate content penalties or causes localized searchers to land on the wrong regional language pages; however, manually formatting cross-referencing hreflang clusters for dozens of locales is tedious and error-prone. You input your regional URLs and assign corresponding language and country codes (such as en-US, en-GB, fr-FR, and x-default). The engine constructs complete bidirectional hreflang link blocks adhering to official Google and Bing webmaster standards. Running entirely within your browser tab memory with CSP connect-src none controls, your unreleased site architectures and international expansion URLs remain completely private. Preparing precise hreflang annotations eliminates search engine confusion across localized editions and ensures target audiences see culturally tailored webpage content.',
+    faqs: [
+      {
+        question:
+          'What language and regional code standards does the generator use?',
+        answer:
+          'The tool uses ISO 639-1 two-letter language codes and optional ISO 3166-1 alpha-2 country codes (for example: en, de-CH, es-MX).',
+      },
+      {
+        question: 'Why is an x-default hreflang attribute recommended?',
+        answer:
+          'The x-default tag indicates the default fallback URL for international searchers whose preferred language is not explicitly targeted by regional versions.',
+      },
+      {
+        question: 'Can I export both HTML head tags and XML sitemap formats?',
+        answer:
+          'Yes. You can generate HTML link tags for template headers or structured xhtml:link elements for XML sitemap deployment across international domains.',
+      },
+      {
+        question:
+          'Are my website URLs or internationalization plans tracked online?',
+        answer:
+          'No. All tag generation runs locally inside browser memory with zero network requests, maintaining complete confidentiality for web strategies and domain roadmaps.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'variance-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-variance-calculator': {
+    directAnswer:
+      'Calculate sample variance, population variance, mean, and sum of squared deviations from numeric values directly in your browser. The calculator computes statistical variance using exact double-precision floating-point arithmetic with zero network transmissions or external data logging, ensuring full privacy for scientific research. The calculator executes variance formulas client-side to protect sensitive scientific measurements and financial models.',
+    leadParagraph:
+      'This variance calculator measures the statistical spread and squared deviations of numerical datasets for researchers, statisticians, quality engineers, and finance students. Variance quantifies how far numbers in a distribution lie from their arithmetic average, serving as the foundational building block for standard deviation, ANOVA tests, and risk assessment models. You enter numbers separated by commas, spaces, or line breaks. The engine parses the data points, calculates the sample mean, computes individual deviations from the mean, and squares them to determine both sample variance (using n - 1 degrees of freedom) and population variance (using N). Operating completely client-side in browser memory under strict CSP restrictions, sensitive clinical trial numbers, financial asset returns, and proprietary quality metrics remain completely confidential. Quantifying numerical variance helps analysts assess sample dispersion accurately and establish baseline confidence bounds across laboratory test procedures.',
+    faqs: [
+      {
+        question: 'What is the formula used to calculate sample variance?',
+        answer:
+          "Sample variance sums the squared deviations from the mean and divides by n - 1 (Bessel's correction) to provide an unbiased population estimate.",
+      },
+      {
+        question: 'How does population variance differ from sample variance?',
+        answer:
+          'Population variance divides the sum of squared deviations by total count N, used when the dataset represents the entire population rather than a subset.',
+      },
+      {
+        question:
+          'Can I calculate variance for datasets with negative numbers or decimals?',
+        answer:
+          'Yes. The calculator parses negative values, floating-point decimals, and integers with full IEEE 754 floating-point mathematical precision across your datasets.',
+      },
+      {
+        question:
+          'Are my statistical datasets or numerical entries stored externally?',
+        answer:
+          'No. All statistical calculations execute locally in your browser memory with zero network communication, guaranteeing complete data privacy and research secrecy.',
+      },
+    ],
+  },
+  // components/pdf-ocr-tool.tsx, lib/tools/pdf/ocr-pdf.ts, lib/tools/pdf/ocr-pdf.test.ts and app/pdf/ocr/page.tsx
+  'pdf-ocr-pdf': {
+    directAnswer:
+      'Perform Optical Character Recognition (OCR) on scanned PDF documents to extract text or add a searchable invisible text layer directly in your browser. The tool uses client-side WebAssembly OCR workers to recognize characters without uploading your confidential legal contracts, medical records, or tax documents to cloud OCR services. The tool processes documents locally in browser tab memory to ensure total privacy for sensitive legal paperwork.',
+    leadParagraph:
+      'This PDF OCR tool extracts text and generates searchable PDF documents from scanned pages, photocopied agreements, and image-only PDF files. Scanned documents lack machine-readable text, making it impossible to search for keywords, copy quotations, or index document contents in document management systems; however, uploading sensitive files to cloud OCR APIs exposes private personal and business records. You load a scanned PDF file into the workbench. The engine renders page images in browser memory, processes text regions using local OCR WebAssembly models, and embeds an invisible text layer (PDF rendering mode 3) aligned over the original scan. You can download either the searchable PDF or extracted plain text. Operating completely client-side under strict CSP connect-src none directives, your confidential documents never leave your machine. Adding an invisible text layer to image-only PDF documents makes archival files searchable while preserving original typography and signature placements.',
+    faqs: [
+      {
+        question: 'How does the tool make scanned PDF documents searchable?',
+        answer:
+          'It runs client-side OCR on page bitmaps and injects an invisible text layer using PDF rendering mode 3 directly into the original document.',
+      },
+      {
+        question:
+          'Can I extract plain text without modifying the original PDF?',
+        answer:
+          'Yes. You can extract recognized text as a separate .txt file, allowing you to copy and edit scanned content in text editors.',
+      },
+      {
+        question: 'Is my scanned document uploaded to any external server?',
+        answer:
+          'No. OCR processing and PDF assembly execute entirely in your browser using local WebAssembly workers without any network data transfer.',
+      },
+      {
+        question: 'What languages and font styles are recognized during OCR?',
+        answer:
+          'The engine recognizes standard Latin typography, printed documents, scanned agreements, and book typography with high character recognition fidelity across pages.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'calendar-event-qr-code', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-calendar-event-qr-code': {
+    directAnswer:
+      'Enter event title, start and end dates, location, and description to generate an iCalendar VEVENT QR code in downloadable SVG format directly in your browser. Scanning the barcode prompts smartphones to save the appointment directly into Google Calendar, Apple Calendar, or Outlook without uploading event details to external servers. The generator runs entirely within client memory to ensure private corporate schedules and appointments remain confidential.',
+    leadParagraph:
+      'This calendar event QR code generator compiles structured vCalendar (VEVENT) barcodes for conference badges, wedding invitations, concert tickets, and appointment reminders. When attendees scan the printed QR code with their mobile device, their calendar app automatically opens a pre-filled event prompt with the correct start time, end time, location, and notes, eliminating manual calendar entry mistakes. You input the event name, starting and ending timestamps, venue address, and description notes. The engine formats a standard RFC 5545 iCalendar payload and generates a high-resolution SVG QR code with customizable error correction levels. Generating event barcodes locally keeps private scheduling notes and unreleased corporate event schedules secure. Operating completely client-side under strict CSP restrictions, your calendar data never leaves your browser tab. Providing scannable event barcodes on tickets and announcements boosts attendance by allowing guests to add reminders with a single tap.',
+    faqs: [
+      {
+        question: 'What calendar applications support scanning this QR code?',
+        answer:
+          'Native camera apps on iOS and Android recognize the vCalendar payload and open Apple Calendar, Google Calendar, or Microsoft Outlook automatically.',
+      },
+      {
+        question: 'How should event dates and times be entered?',
+        answer:
+          'Enter dates and times in standard ISO format or choose them via the calendar pickers to ensure accurate time zone encoding.',
+      },
+      {
+        question:
+          'Can I scale the downloaded SVG QR code for large event banners?',
+        answer:
+          'Yes. The output is a resolution-independent SVG vector file that prints crisply on everything from small ticket stubs to giant event banners.',
+      },
+      {
+        question:
+          'Are my private appointments or attendee schedules recorded online?',
+        answer:
+          'No. The QR symbol is generated entirely in browser memory with zero network communication, keeping all event details and scheduling records private.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'resistor-color-code', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-resistor-color-code': {
+    directAnswer:
+      'Decode 4-band, 5-band, and 6-band resistor color codes or calculate corresponding color bands from desired resistance values in your browser. The tool displays resistance in ohms, tolerance percentages, and temperature coefficients without sending your electronic circuit schematics to external web servers. The tool evaluates resistor codes directly in browser memory to keep your electronics workbench projects secure and private.',
+    leadParagraph:
+      'This resistor color code calculator decodes color-coded resistor bands into precise resistance values, tolerance limits, and temperature coefficients for electronics engineers, hobbyists, and students. Deciphering tiny color bands on through-hole axial resistors is difficult under shop lighting and frequently leads to reading errors between significant figures and multipliers; however, relying on ad-supported mobile apps often requires annoying permissions or network tracking. You select the band count (4, 5, or 6 bands) and choose the band colors (black, brown, red, orange, yellow, green, blue, violet, grey, white, gold, silver). The engine calculates nominal resistance, multiplier magnitude, tolerance range, and temperature drift (PPM/K). Operating completely client-side in browser memory under CSP connect-src none directives, your proprietary hardware schematics and bill of materials remain completely private. Verifying resistor band color sequences before soldering prevents component damage and ensures analog circuit stages operate within intended voltage specifications.',
+    faqs: [
+      {
+        question:
+          'How do 4-band, 5-band, and 6-band resistor calculations differ?',
+        answer:
+          'Four-band resistors use two significant digits and a multiplier; five-band resistors add a third digit for precision; six-band resistors include a temperature coefficient band.',
+      },
+      {
+        question: 'What do the gold and silver bands represent on resistors?',
+        answer:
+          'Gold indicates a 5% tolerance (or 0.1 multiplier), while silver indicates a 10% tolerance (or 0.01 multiplier) on axial resistor bodies.',
+      },
+      {
+        question:
+          'Can I calculate the required color bands from a target ohm value?',
+        answer:
+          'Yes. You can input a desired resistance value (such as 4.7kΩ) and the tool will display the standard color band sequence.',
+      },
+      {
+        question:
+          'Are my hardware component values or circuit schematics uploaded online?',
+        answer:
+          'No. All band decoding and resistance calculations take place locally in browser memory with zero network traffic, ensuring privacy for your electronics designs.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-transposer', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-transposer': {
+    directAnswer:
+      'Transpose CSV rows into columns and columns into rows directly in your browser. The tool swaps table dimensions, preserves quoted text fields, and formats clean output CSV documents without sending your corporate financial models, employee rosters, or customer metrics to external cloud conversion services. The tool rotates spreadsheet data locally in client memory to keep proprietary corporate figures completely private.',
+    leadParagraph:
+      'This CSV transposer rotates two-dimensional spreadsheet tables by swapping rows into columns and columns into rows. Preparing data for statistical packages, time-series plotting, matrix transformations, or reporting dashboards frequently requires pivoting orientation so that records become headers and attributes become rows; however, uploading proprietary company tables to web converters risks exposing private sales data and confidential employee directories. You paste your CSV data into the editor. The engine parses RFC 4180 compliant CSV lines, validates matrix dimensions, transposes row and column indexes, and outputs the rotated CSV table. By processing data locally in browser tab memory with strict CSP connect-src none controls, sensitive business metrics and internal data structures remain completely secure on your computer. Transposing tabular data directly in your browser allows analysts to restructure datasets for charting engines without needing desktop spreadsheet suites.',
+    faqs: [
+      {
+        question: 'What does transposing a CSV table actually do?',
+        answer:
+          'Transposing swaps the axes of your table so that each horizontal row becomes a vertical column and each column becomes a row.',
+      },
+      {
+        question:
+          'How does the transposer handle quoted fields containing commas?',
+        answer:
+          'The engine complies with standard RFC 4180 CSV specifications, preserving quoted text cells containing internal commas, escaped quotes, and whitespace characters.',
+      },
+      {
+        question: 'Can I transpose uneven tables with jagged row lengths?',
+        answer:
+          'Yes. The engine normalises row lengths by filling short rows with empty cells to produce a consistent rectangular transposed table.',
+      },
+      {
+        question:
+          'Are my confidential financial records or spreadsheet files uploaded?',
+        answer:
+          'No. All table transposition and CSV formatting execute locally in browser tab memory with zero outbound network requests or external server logging.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-case-converter', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-case-converter': {
+    directAnswer:
+      'Convert text between uppercase, lowercase, title case, sentence case, camelCase, snake_case, kebab-case, and CONSTANT_CASE directly in your browser. The converter handles punctuation and word boundaries with full Unicode support without uploading your manuscripts, code strings, or sensitive correspondence to remote servers. The converter processes text directly in browser memory to ensure your private manuscripts and software code strings remain secure.',
+    leadParagraph:
+      'This text case converter changes letter capitalization styles for authors, programmers, copywriters, and content editors. Transforming text between programming identifiers (like camelCase, snake_case, and kebab-case) or editorial headline styles (such as AP Title Case, sentence case, and uppercase) is repetitive when formatting source code, database columns, or article headings; however, pasting unreleased copy or proprietary variable names into cloud text tools creates data leakage risks. You paste text into the converter and select your target case format. The engine processes word boundaries, handles accented Unicode characters, applies capitalization rules, and outputs clean transformed text. Operating entirely inside local browser tab memory under strict CSP restrictions, your private notes, draft articles, and software identifiers remain strictly confidential. Standardising capitalization styles across documents eliminates tedious manual editing and ensures consistent variable naming conventions in software repositories.',
+    faqs: [
+      {
+        question:
+          'What developer naming conventions are supported by the converter?',
+        answer:
+          'The tool supports camelCase, PascalCase, snake_case, kebab-case, and CONSTANT_CASE, commonly used in software programming, source code variable names, and database schemas.',
+      },
+      {
+        question:
+          'How does sentence case handle abbreviations and punctuation?',
+        answer:
+          'Sentence case capitalizes the initial letter of each sentence following periods, exclamation marks, or question marks while lowercasing other words.',
+      },
+      {
+        question:
+          'Does the case converter support non-English Unicode characters?',
+        answer:
+          'Yes. The engine provides full Unicode casing support, accurately transforming accented characters, non-Latin scripts, and international alphabets across diverse world languages.',
+      },
+      {
+        question:
+          'Is my pasted text or manuscript draft stored on remote servers?',
+        answer:
+          'No. All case transformations execute client-side in browser memory with zero network traffic, ensuring complete privacy for your writing and code.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'schema-markup-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-schema-markup-generator': {
+    directAnswer:
+      'Generate valid JSON-LD structured data markup for Article, Organization, LocalBusiness, FAQ, Product, and BreadcrumbList schemas directly in your browser. The generator formats Schema.org compliant scripts ready to embed into website headers without transmitting your business details or unreleased product launches to external SEO platforms. The generator formats structured data locally in your browser to maintain confidentiality for upcoming products and website architectures.',
+    leadParagraph:
+      'This schema markup generator creates Schema.org compliant JSON-LD structured data for web developers, digital marketers, and SEO specialists. Adding rich structured data to website pages helps search engines understand content semantics and qualifies pages for Google rich snippets (such as star ratings, FAQ accordions, and breadcrumb trails); however, hand-coding nested JSON-LD objects frequently causes missing quotation marks or malformed arrays. You select a schema type (such as Article, FAQPage, Organization, or Product) and fill in the required fields. The engine validates inputs, compiles valid JSON-LD syntax, and generates a formatted script tag ready to paste into your website HTML. Operating entirely client-side under CSP connect-src none directives, your confidential marketing strategies and internal product data remain strictly private. Adding structured markup directly to page headers clarifies site content for search engine indexers and unlocks rich snippet presentations in search results.',
+    faqs: [
+      {
+        question: 'What schema types can I generate with this tool?',
+        answer:
+          'You can generate Article, Organization, LocalBusiness, FAQPage, Product, BreadcrumbList, and Event JSON-LD structured data blocks for your web pages and online stores.',
+      },
+      {
+        question:
+          'Where should the generated JSON-LD script be placed on a webpage?',
+        answer:
+          'Paste the formatted script tag into the head or body section of your webpage HTML where search engine crawlers can index it.',
+      },
+      {
+        question: 'Does this generator follow official Schema.org standards?',
+        answer:
+          'Yes. All generated structures strictly follow Schema.org vocabulary specifications and Google Search Central rich snippet recommendations for web search engine results.',
+      },
+      {
+        question:
+          'Are my website structures or business details shared with third parties?',
+        answer:
+          'No. Structured data generation occurs locally in browser memory with zero network requests, maintaining total confidentiality for website plans and schemas.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'indian-currency-number-to-words', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-indian-currency-number-to-words': {
+    directAnswer:
+      'Convert numeric amounts into formal Indian currency words featuring Crores, Lakhs, Thousands, and Paise directly in your browser. The converter formats standardized words for bank cheques, invoices, and legal contracts without transmitting your financial transaction values or personal account figures to external servers. The converter calculates currency words locally in browser memory to protect confidential personal and commercial banking amounts.',
+    leadParagraph:
+      'This Indian currency number to words converter translates numerical figures into formal written words following the Indian numbering system (Crores, Lakhs, Thousands, Hundreds, and Paise). In Indian banking, financial accounting, and legal documentation, writing the exact currency wording on cheques, promissory notes, and property deeds is mandatory to prevent fraudulent amount alterations; however, converting large numbers into the Indian numbering format manually is prone to phrasing errors. You input a numerical amount (such as 1,45,250.75). The engine parses the integer and fractional components, applies the Vedic grouping rules, and outputs standardized text like "Rupees One Lakh Forty-Five Thousand Two Hundred Fifty and Paise Seventy-Five Only". Operating completely client-side in browser memory under strict CSP restrictions, sensitive banking sums and personal wealth figures remain strictly confidential. Writing formal currency words accurately prevents legal disputes and ensures financial documents meet banking guidelines across Indian commercial institutions.',
+    faqs: [
+      {
+        question: 'How does the Indian numbering system group large numbers?',
+        answer:
+          'The Indian system groups the initial three digits from the right as hundreds, followed by repeated two-digit clusters representing thousands, lakhs, and crores.',
+      },
+      {
+        question: 'Does the converter handle decimal paise amounts correctly?',
+        answer:
+          'Yes. Decimal portions are accurately converted into written paise values (for example, .50 becomes "and Paise Fifty Only" for cheques).',
+      },
+      {
+        question:
+          'Is the output suitable for Indian banking cheques and demand drafts?',
+        answer:
+          'Yes. The wording complies with Reserve Bank of India cheque writing standards and conventional commercial banking practices across national institutions.',
+      },
+      {
+        question: 'Are my financial amounts or cheque figures uploaded online?',
+        answer:
+          'No. All currency conversion arithmetic runs locally in browser tab memory with zero outbound network calls, ensuring total financial privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'probability-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-probability-calculator': {
+    directAnswer:
+      'Calculate single event probabilities, complementary odds, unions (A or B), and intersections (A and B) for independent and mutually exclusive events in your browser. The calculator computes exact decimal odds, fractions, and percentage likelihoods without transmitting your experimental risk assessments or research models to remote servers. The calculator evaluates event odds locally in browser memory to ensure proprietary research models and business metrics remain confidential.',
+    leadParagraph:
+      'This probability calculator computes mathematical likelihoods for independent, dependent, and mutually exclusive events for students, data scientists, risk analysts, and researchers. Calculating combined probabilities across multiple events is essential for decision trees, statistical hypothesis testing, and risk management; however, confusing union formulas with conditional intersections frequently results in flawed risk estimates. You input event probabilities P(A) and P(B) as decimals, percentages, or ratios, and specify event independence. The engine calculates the complement P(not A), intersection P(A and B), union P(A or B), and conditional probability P(A given B). Running entirely inside local browser tab memory under strict CSP directives, your statistical research models and proprietary business risk evaluations remain strictly secure on your machine. Understanding mathematical odds helps risk analysts and engineers evaluate event uncertainties systematically and establish rigorous experimental controls.',
+    faqs: [
+      {
+        question:
+          'What event relationships can this probability calculator model?',
+        answer:
+          'The tool models single event likelihoods, independent event intersections, mutually exclusive outcomes, and conditional probabilities for statistical research and data science projects.',
+      },
+      {
+        question: 'What input formats are accepted for probabilities?',
+        answer:
+          'You can enter probabilities as decimal values between 0 and 1, percentage figures between 0% and 100%, or ratios like 1/6.',
+      },
+      {
+        question: 'How does the calculator determine the union of two events?',
+        answer:
+          'For independent events, it applies the addition rule P(A or B) = P(A) + P(B) - P(A and B) to avoid double-counting.',
+      },
+      {
+        question:
+          'Are my probability calculations or statistical data sent online?',
+        answer:
+          'No. All mathematical probability evaluations run client-side in browser memory with zero network traffic, ensuring total privacy for research data.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'capacitor-code-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-capacitor-code-calculator': {
+    directAnswer:
+      'Decode 3-digit ceramic and film capacitor codes (such as 104K or 472J) into capacitance in picofarads (pF), nanofarads (nF), and microfarads (µF) directly in your browser. The calculator extracts nominal capacitance and tolerance letter ratings without transmitting your electronics schematics to third-party servers. The calculator runs entirely within client memory to ensure internal hardware bill of materials and component specifications remain confidential.',
+    leadParagraph:
+      'This capacitor code calculator decodes standard three-digit alphanumeric markings stamped on ceramic disc, film, and SMD capacitors for electronics engineers, repair technicians, and hobbyists. Small capacitors rely on compact marking conventions (where the first two digits represent significant figures, the third denotes the base-10 multiplier in picofarads, and trailing letters indicate tolerance); however, converting between pF, nF, and µF on a workbench workbench often causes decimal placement errors. You type the capacitor code (such as 104 or 223J). The engine calculates the nominal capacitance, expresses it across pF, nF, and µF units, and decodes tolerance codes (such as J for ±5% and K for ±10%). Operating entirely in browser memory with CSP connect-src none controls, your proprietary circuit schematics remain confidential. Deciphering capacitor markings accurately ensures that prototype circuits receive appropriate filter capacitances and prevents circuit instability.',
+    faqs: [
+      {
+        question: 'How does the three-digit capacitor marking code work?',
+        answer:
+          'The first two digits are significant numbers, while the third digit is a power-of-ten multiplier indicating value in picofarads (pF).',
+      },
+      {
+        question: 'What does a 104 capacitor code represent in microfarads?',
+        answer:
+          'A 104 code represents 10 followed by four zeros, equalling 100,000 pF, which corresponds to 100 nF or 0.1 µF.',
+      },
+      {
+        question:
+          'What do tolerance letters like J, K, and M mean on capacitors?',
+        answer:
+          'Tolerance letters indicate manufacturing variance: J denotes ±5%, K denotes ±10%, M denotes ±20%, and Z denotes +80%/-20% capacitance tolerance.',
+      },
+      {
+        question:
+          'Are my component values or electronic circuit notes recorded online?',
+        answer:
+          'No. All decoding and unit conversions run locally inside browser tab memory with zero outbound network calls, ensuring privacy for hardware designs.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-pivot-table', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-pivot-table': {
+    directAnswer:
+      'Create interactive summary pivot tables from raw CSV data directly in your browser. Select row dimensions, column categories, and aggregation functions (sum, count, average, min, max) to summarize multi-dimensional datasets without uploading your confidential corporate sales figures or customer analytics to third-party cloud tools. The tool processes data entirely in browser memory to keep sensitive financial numbers and customer records completely private.',
+    leadParagraph:
+      'This CSV pivot table generator summarizes, aggregates, and reorganizes tabular datasets without requiring heavy desktop spreadsheet software or cloud analytics platforms. Analyzing sales trends, operational expenses, or customer cohorts requires aggregating raw transactional rows across categories; however, uploading proprietary company records to online analytics websites creates severe data exposure hazards. You paste your CSV data, choose row grouping fields, column dimensions, and specify aggregation operations (such as sum, average, count, or maximum). The engine parses the records, builds an in-memory cross-tabulation matrix, computes aggregate values, and renders a clean summary table. Running completely client-side in browser memory under strict CSP restrictions, your financial books, customer databases, and operational data remain strictly confidential. Generating in-browser pivot summaries allows finance teams to analyze transactional trends quickly without uploading corporate spreadsheets to cloud servers.',
+    faqs: [
+      {
+        question:
+          'What aggregation functions are supported in this pivot table tool?',
+        answer:
+          'The tool supports count, sum, average, minimum, and maximum aggregation functions across numerical fields in your uploaded tabular dataset and spreadsheet records.',
+      },
+      {
+        question: 'Can I export the summarized pivot table back to CSV?',
+        answer:
+          'Yes. You can copy the generated cross-tabulation summary or export it as a clean CSV file for spreadsheet reports and presentations.',
+      },
+      {
+        question:
+          'How does the tool handle missing or null values in data rows?',
+        answer:
+          'Missing values are treated cleanly according to the selected aggregation method without crashing the calculation matrix or distorting aggregate results.',
+      },
+      {
+        question:
+          'Are my corporate sales records or transactional data uploaded online?',
+        answer:
+          'No. All parsing and pivot aggregations execute locally in browser tab memory with zero network traffic, ensuring complete data confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'schema-markup-validator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-schema-markup-validator': {
+    directAnswer:
+      'Validate JSON-LD, Microdata, and Schema.org structured data markup for syntax errors, missing mandatory properties, and broken schemas directly in your browser. The validator audits your structured data client-side without sending your unreleased web pages, product catalogs, or internal schemas to third-party validation servers. The validator inspects structured data locally in client memory to keep confidential product features and staging websites private.',
+    leadParagraph:
+      'This schema markup validator audits JSON-LD and Schema.org structured data scripts to identify syntax errors, missing required properties, and malformed entity types before publication. Search engines ignore invalid structured data or disqualify pages from rich snippets when required schema attributes (such as author in Article or offers in Product) are omitted; however, checking internal or unreleased schemas using cloud testing tools risks leaking upcoming products to competitors. You paste your JSON-LD block or HTML markup into the editor. The engine parses the JSON structure, verifies Schema.org context and type definitions, validates nested objects, and flags missing mandatory properties with clear line indicators. Operating completely in browser tab memory under CSP connect-src none controls, your confidential webpage schemas and product architectures remain secure. Validating structured data before publishing prevents rich snippet disqualifications and ensures search engine bots parse website entities accurately.',
+    faqs: [
+      {
+        question: 'What structured data formats does the validator support?',
+        answer:
+          'The validator audits standard JSON-LD script blocks as well as embedded Schema.org entity definitions commonly used in modern web pages.',
+      },
+      {
+        question: 'What specific schema errors does the validator detect?',
+        answer:
+          'It detects JSON syntax errors, missing mandatory Schema.org properties, invalid URL structures, and malformed nested object hierarchies across your schema.',
+      },
+      {
+        question:
+          'Can I test unreleased product schemas or internal landing pages?',
+        answer:
+          'Yes. Because all validation runs locally in browser memory, unreleased product launches and staging schemas are never exposed online or leaked.',
+      },
+      {
+        question: 'Does this tool ping search engine validation endpoints?',
+        answer:
+          'No. The validation engine operates purely client-side without making external API calls to Google, Bing, or third-party web services for audits.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'cheque-amount-writer', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-cheque-amount-writer': {
+    directAnswer:
+      'Input a numeric amount in Rupees to generate formatted bank cheque text in words and standardized Indian numeric notation directly in your browser. The tool adds formal prefix and suffix markers (Rupees... Only and /- symbols) to prevent fraudulent additions without transmitting your financial transactions to remote servers. The tool formats banking amounts locally in client memory to safeguard your personal transaction sums and account numbers.',
+    leadParagraph:
+      'This cheque amount writer formats numerical figures into standardized Indian banking text and currency notation for writing physical cheques, demand drafts, and payment vouchers. Bank fraud often occurs when careless cheque writing leaves blank spaces before numbers or fails to suffix words with "Only", allowing unauthorized parties to alter payment amounts; however, generating cheque copy on cloud banking portals exposes personal transaction amounts. You enter the payment sum in rupees and paise. The engine translates the amount into formal words following Indian numbering conventions, wraps the text with "Rupees" and "Only", and formats the numeric figure with standard Indian comma grouping and "/-" delimiter. Operating entirely in browser memory under CSP connect-src none controls, your financial transactions and personal banking details remain strictly confidential. Preparing standardized cheque text prevents unauthorized amount modifications and guarantees smooth processing through automated banking clearing houses.',
+    faqs: [
+      {
+        question:
+          'Why does the tool add "Rupees" and "Only" to the text output?',
+        answer:
+          'Prefixing with "Rupees" and suffixing with "Only" are standard banking safeguards that prevent fraudsters from writing additional words on cheque lines.',
+      },
+      {
+        question: 'How does the tool format the numeric cheque amount?',
+        answer:
+          'It groups numbers using the Indian comma system (such as 1,25,000) and appends a "/-" symbol to prevent adding extra trailing digits.',
+      },
+      {
+        question: 'Can I use this tool for high-value corporate bank cheques?',
+        answer:
+          'Yes. The engine accurately formats values into Crores, Lakhs, Thousands, and Paise, suitable for commercial business payments and formal cheques.',
+      },
+      {
+        question:
+          'Are my cheque amounts or financial transactions recorded online?',
+        answer:
+          'No. All text formatting arithmetic runs locally in browser memory with zero network traffic, ensuring complete privacy for your financial records.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'permutation-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-permutation-calculator': {
+    directAnswer:
+      'Calculate the number of permutations nPr (ordered arrangements of r items chosen from n elements) directly in your browser. The calculator supports both permutations without repetition and with repetition, displaying exact factorial steps without transmitting your experimental parameters or research data across the network. The calculator executes permutation formulas client-side in browser memory to keep proprietary algorithmic parameters and mathematical data confidential.',
+    leadParagraph:
+      'This permutation calculator computes ordered arrangements and permutations (nPr) for combinatorics, computer science algorithms, cryptography, and probability studies. Permutations determine the total number of unique sequences that can be formed where selection order matters (such as passcode possibilities, schedule sequencing, or tournament rankings); however, calculating factorials manually for large values often leads to arithmetic overflow and calculation mistakes. You input total item count n and subset sample size r. The engine computes exact permutations using the formula nPr = n! / (n - r)! for non-repeating selections and n^r for selections with repetition, showing step-by-step factorial reductions. Operating completely client-side in browser memory under strict CSP restrictions, your mathematical research calculations and algorithm parameters remain strictly confidential. Evaluating permutations accurately helps algorithm designers and researchers determine sequence possibilities without risking combinatorial calculation errors.',
+    faqs: [
+      {
+        question:
+          'What is the mathematical formula for permutations without repetition?',
+        answer:
+          'The formula is nPr = n! / (n - r)!, where n represents total elements available and r represents the number of items chosen.',
+      },
+      {
+        question:
+          'How does a permutation differ from a combination in mathematics?',
+        answer:
+          'In permutations, the sequence order of chosen items matters (like a lock code), whereas in combinations, selection order is irrelevant.',
+      },
+      {
+        question:
+          'Does the calculator show intermediate factorial calculations?',
+        answer:
+          'Yes. The tool displays factorial representations and intermediate reduction steps to help verify academic homework, proofs, and algorithm complexity in combinatorics.',
+      },
+      {
+        question:
+          'Are my calculations or mathematical datasets transmitted online?',
+        answer:
+          'No. All factorial and permutation computations execute locally in browser tab memory with zero outbound network calls, maintaining total privacy.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'bitcoin-qr-code', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-bitcoin-qr-code': {
+    directAnswer:
+      'Enter a Bitcoin wallet address, requested BTC payment amount, and recipient label to generate a standardized BIP-21 Bitcoin payment QR code in downloadable SVG format. The tool compiles universal crypto URI strings in client memory without transmitting your wallet addresses or financial payment requests to third-party blockchain explorers. The tool operates locally in your browser memory to keep private wallet keys and transaction destinations secure.',
+    leadParagraph:
+      'This Bitcoin QR code generator creates standardized BIP-21 cryptocurrency payment barcodes for merchants, freelancers, charities, and peer-to-peer Bitcoin transactions. Hand-typing 26 to 62 character alphanumeric crypto addresses frequently leads to irreversible transfer errors, and copying raw addresses without requested amounts slows down checkout points. You input your destination Bitcoin address (legacy Base58, SegWit, or Taproot), optional amount in BTC, and recipient transaction message. The engine validates the address format, constructs a standard BIP-21 URI (such as bitcoin:1Address?amount=0.005&label=Invoice), and renders a scalable SVG vector QR barcode with configurable error correction. Generating payment barcodes client-side ensures transaction confidentiality and prevents address substitution attacks. Operating entirely within local browser tab memory under strict CSP restrictions, your private wallet destinations and financial invoices remain completely secure. Using standardized BIP-21 cryptocurrency barcodes helps physical retail shops and online creators accept Bitcoin donations without transaction confusion.',
+    faqs: [
+      {
+        question:
+          'What Bitcoin address formats are supported by the generator?',
+        answer:
+          'The generator supports all Bitcoin addresses including legacy P2PKH (starting with 1), SegWit P2SH (3), Native SegWit bech32 (bc1q), and Taproot (bc1p).',
+      },
+      {
+        question:
+          'What standard does this cryptocurrency payment QR code follow?',
+        answer:
+          'The tool strictly follows the BIP-21 URI specification, ensuring broad compatibility across standard mobile Bitcoin wallets, hardware devices, and payment terminals.',
+      },
+      {
+        question:
+          'Can I download the generated Bitcoin QR code as an SVG vector?',
+        answer:
+          'Yes. You can export a crisp SVG vector file suitable for merchant point-of-sale displays, print invoices, and website checkout pages.',
+      },
+      {
+        question:
+          'Are my wallet addresses or payment amounts logged on any server?',
+        answer:
+          'No. The QR symbol is generated locally in browser memory with zero network calls, guaranteeing complete financial privacy for crypto payments.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'led-resistor-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-led-resistor-calculator': {
+    directAnswer:
+      'Enter power supply voltage, LED forward voltage drop, and forward current in milliamperes to calculate the ideal current-limiting resistor value in ohms and dissipated wattage in your browser. The calculator suggests nearest standard E12 and E24 resistor values without transmitting your electronic circuit designs to external cloud servers. The calculator executes locally in browser memory to ensure your electronic circuit designs and hardware specifications remain private.',
+    leadParagraph:
+      'This LED resistor calculator determines the required current-limiting series resistor for light emitting diodes (LEDs) in electronic prototypes, indicator lights, and custom illumination arrays. LEDs possess exponential current-voltage curves and will quickly burn out or destroy upstream microcontroller pins if connected to voltage rails without adequate series resistance; however, hand-calculating Ohm drops and estimating thermal wattage dissipation can lead to under-rated resistors that overheat. You input supply rail voltage, diode forward voltage drop (typically 1.8V to 3.3V depending on color), and forward current in milliamps (typically 10mA to 20mA). The engine computes ideal resistance (R = (Vs - Vf) / I), derives power dissipation in milliwatts, and identifies the nearest standard commercial E12 and E24 resistance values. Running completely client-side in browser memory with CSP connect-src none directives, your hardware schematics remain completely confidential.',
+    faqs: [
+      {
+        question: 'Why is a current-limiting resistor necessary for an LED?',
+        answer:
+          'LEDs have very low internal resistance once turned on; without a series resistor, excessive current flows and burns out the diode junction immediately.',
+      },
+      {
+        question:
+          'What are typical forward voltage drops for different LED colors?',
+        answer:
+          'Red and yellow LEDs typically drop 1.8V to 2.1V, while green, blue, and white LEDs typically require 2.8V to 3.4V forward voltage.',
+      },
+      {
+        question:
+          'How does the calculator recommend nearest standard resistor values?',
+        answer:
+          'The engine rounds the exact calculated resistance up to the nearest standard commercial E12 and E24 decade series values for practical prototyping.',
+      },
+      {
+        question:
+          'Are my circuit parameters or component values sent over the network?',
+        answer:
+          'No. All mathematical evaluations run locally in your browser memory with zero network requests, ensuring total hardware design privacy and circuit confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-group-by', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-group-by': {
+    directAnswer:
+      'Aggregate CSV data rows by specific category columns with sum, count, average, min, or max calculations directly in your browser. The tool groups tabular datasets client-side, computing category summaries and formatted tables without uploading your proprietary sales figures, inventory records, or user metrics to third-party servers. The tool executes grouping operations directly in browser memory to keep sensitive financial metrics and user records private.',
+    leadParagraph:
+      'This CSV group-by tool aggregates and segments spreadsheet data across categorical dimensions to produce structured summary reports for data analysts, operations managers, and accountants. Grouping transactions by customer cohort, sales region, product department, or status code is standard practice in relational database querying (SQL GROUP BY); however, uploading sensitive company spreadsheets to online SQL sandboxes creates significant security and compliance liabilities. You paste your CSV data, choose the target grouping column, and select aggregation functions for numerical fields (such as row count, column sum, arithmetic average, minimum, or maximum). The engine parses the records, groups matching keys, computes aggregate statistics, and outputs a clean consolidated CSV table. Running entirely inside browser tab memory under strict CSP restrictions, your corporate records and confidential sales ledgers never leave your machine. Segmenting records directly in your browser tab accelerates operational reporting and enables rapid exploratory analysis on large datasets.',
+    faqs: [
+      {
+        question:
+          'How does this tool perform SQL-like group by operations on CSV files?',
+        answer:
+          'The engine partitions rows by unique values in your chosen key column and applies selected aggregation functions across numerical fields in memory.',
+      },
+      {
+        question: 'Can I aggregate multiple numerical columns simultaneously?',
+        answer:
+          'Yes. You can compute row counts along with sums and averages for numerical metrics across every distinct category in your dataset.',
+      },
+      {
+        question:
+          'What happens if categorical values contain whitespace or mixed casing?',
+        answer:
+          'The parser trims whitespace and groups matching values accurately, maintaining consistent category keys across the aggregated summary table and CSV outputs.',
+      },
+      {
+        question:
+          'Are my corporate datasets or customer records uploaded online?',
+        answer:
+          'No. All CSV parsing and grouping calculations execute locally in browser memory with zero network traffic, ensuring complete data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'slug-generator', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-slug-generator': {
+    directAnswer:
+      'Convert article headlines, product titles, and text strings into clean, URL-safe slugs with customizable delimiters (hyphens or underscores) directly in your browser. The generator strips punctuation, transliterates accented characters, and lowercases text without transmitting your unreleased article drafts or product titles across the network. The generator runs entirely within client browser memory to keep unreleased product features and article titles confidential.',
+    leadParagraph:
+      'This slug generator transforms raw article titles, product names, and document headings into standardized, search-engine-friendly URL slugs for web developers, content managers, and bloggers. Clean URL slugs improve search rankings and prevent broken links caused by spaces, punctuation marks, or special characters; however, entering unreleased product names or confidential article titles into cloud SEO tools risks premature public leaks. You paste your text into the editor and choose your slug settings: delimiter (hyphen or underscore), lowercase conversion, and accent transliteration. The engine strips punctuation, replaces spaces with uniform separators, removes duplicate hyphens, and produces clean web slugs. Running completely client-side in browser memory under CSP connect-src none directives, your internal project names, staging URLs, and editorial drafts remain strictly confidential on your computer. Creating clean URL slugs simplifies website migrations, enhances search engine crawlability, and improves link readability for site visitors.',
+    faqs: [
+      {
+        question: 'How does the slug generator handle accented characters?',
+        answer:
+          'The tool transliterates accented letters (such as é, ü, and ñ) into their plain ASCII equivalents (e, u, n) for universal web compatibility.',
+      },
+      {
+        question: 'Can I choose between hyphen and underscore delimiters?',
+        answer:
+          'Yes. You can select standard hyphens (recommended by Google for URL readability) or underscores based on your CMS routing requirements.',
+      },
+      {
+        question:
+          'Does the tool automatically remove trailing and duplicate separators?',
+        answer:
+          'Yes. The engine collapses consecutive delimiters into a single separator and trims leading or trailing hyphens for clean URL slugs.',
+      },
+      {
+        question:
+          'Are my article titles or product names transmitted over the internet?',
+        answer:
+          'No. All slug generation runs locally in browser tab memory with zero outbound network calls, ensuring complete content privacy and title confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'html-head-inspector', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-html-head-inspector': {
+    directAnswer:
+      'Paste HTML source code to inspect and audit meta tags, Open Graph tags, Twitter Card tags, canonical links, robots directives, and favicon declarations in your browser. The tool parses document headers client-side without sending your staging HTML code or internal web architectures to third-party audit servers. The tool audits web documents locally in client memory to keep staging website architectures and unreleased features private.',
+    leadParagraph:
+      'This HTML head inspector audits and visualises document metadata tags embedded in the <head> section of HTML web pages for web developers, SEO specialists, and technical auditors. Missing canonical tags, duplicated title tags, incorrect Open Graph image URLs, or accidental noindex directives can devastate search engine rankings and social sharing cards; however, testing staging environments with external crawler services often requires bypassing firewalls or exposing pre-release websites to the internet. You paste raw HTML source code into the inspector. The engine parses the DOM, extracts title, meta description, viewport, robots directives, canonical URLs, hreflang links, and social metadata, displaying them in a categorized inspection checklist. Operating completely in browser tab memory under strict CSP restrictions, your proprietary staging markup and unreleased site features remain strictly private. Auditing document metadata ensures that link previews on social platforms render correctly and search engine crawlers index proper page titles.',
+    faqs: [
+      {
+        question:
+          'What metadata elements does the HTML head inspector examine?',
+        answer:
+          'It inspects page titles, meta descriptions, viewport settings, robots directives, canonical tags, Open Graph tags, Twitter Cards, and favicon links.',
+      },
+      {
+        question: 'Can I audit staging HTML before deploying pages publicly?',
+        answer:
+          'Yes. You can paste local development or staging HTML source code directly into the tool to verify meta tags before publishing live.',
+      },
+      {
+        question: 'Does the tool highlight missing or duplicate meta tags?',
+        answer:
+          'Yes. The inspector flags missing recommended tags like canonical links and warns against duplicate title or description declarations across the document head.',
+      },
+      {
+        question:
+          'Is my HTML source code or website markup sent to remote servers?',
+        answer:
+          'No. All HTML parsing and metadata inspection execute client-side in browser memory with zero network traffic, ensuring complete secrecy for staging sites.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'inflation-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-inflation-calculator': {
+    directAnswer:
+      'Enter a starting monetary amount, assumed annual inflation rate percentage, and number of years to calculate future purchasing power and price increases directly in your browser. The calculator computes compound inflation values without transmitting your personal financial budgets or retirement planning assumptions across the network. The calculator runs entirely within client memory to ensure personal wealth targets and strategic corporate budgets remain confidential.',
+    leadParagraph:
+      'This inflation calculator projects the eroding effect of inflation on currency purchasing power over multi-year horizons for financial planners, retirees, business owners, and investors. Sustained inflation steadily devalues cash savings and inflates operating expenses, making it necessary to adjust future retirement targets and procurement budgets; however, sharing personal savings targets or corporate budget estimates on cloud planning tools risks exposing confidential financial goals. You input the initial monetary sum, expected annual inflation rate (such as 3.5%), and planning timeframe in years. The engine applies compound interest formulas to compute projected future equivalent costs (amount * (1 + rate)^years) and total price increases over the term. Conducting scenario planning client-side allows safe exploration of financial models. Operating under strict CSP connect-src none directives, your personal wealth figures and corporate budget plans remain strictly private on your device.',
+    faqs: [
+      {
+        question: 'What formula does the inflation calculator use?',
+        answer:
+          'The calculator uses compound growth: Future Cost = Starting Amount * (1 + annual inflation rate)^years, computing the price difference over time.',
+      },
+      {
+        question: 'How does inflation affect future purchasing power?',
+        answer:
+          'Inflation increases the nominal cost of goods and services, meaning a fixed sum of money purchases fewer goods in future years.',
+      },
+      {
+        question:
+          'Does this calculator consider variable inflation rates across years?',
+        answer:
+          'This tool models constant annualized inflation scenarios; actual historical inflation fluctuates based on economic conditions, monetary policy, and price indices.',
+      },
+      {
+        question:
+          'Are my retirement savings figures or financial budgets stored online?',
+        answer:
+          'No. All calculations run strictly client-side in browser memory with zero outbound network calls, ensuring total financial privacy for planning records.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'combination-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-combination-calculator': {
+    directAnswer:
+      'Calculate combinations nCr (unordered selections of r items from n elements) directly in your browser. The calculator computes binomial coefficients for selections without repetition and with repetition, displaying step-by-step factorial formulas without transmitting your experimental parameters or research figures across the network. The calculator executes formulas directly in client memory to ensure proprietary research figures and mathematical parameters remain secure.',
+    leadParagraph:
+      'This combination calculator computes unordered selections (nCr) and binomial coefficients for probability theory, experimental design, lottery odds, and statistical genetics. Combinations determine the total number of ways to choose a subset of items when the sequence of selection does not matter (such as choosing committee members, sampling batches, or dealing card hands); however, calculating large factorials manually frequently results in arithmetic overflow or calculation mistakes. You enter total item count n and subset sample size r. The engine computes exact combinations using the formula nCr = n! / (r! * (n - r)!) for non-repeating selections and (n + r - 1)! / (r! * (n - 1)!) for selections with repetition. Running completely client-side in browser tab memory under strict CSP restrictions, your experimental sample parameters and proprietary research calculations remain strictly confidential.',
+    faqs: [
+      {
+        question:
+          'What is the mathematical formula for combinations without repetition?',
+        answer:
+          'The formula is nCr = n! / (r! * (n - r)!), where n is total population size and r is the number of items selected.',
+      },
+      {
+        question: 'How does a combination differ from a permutation in math?',
+        answer:
+          'Combinations count groupings where order does not matter (e.g. hand of cards), whereas permutations count ordered sequences (e.g. PIN code).',
+      },
+      {
+        question:
+          'Can this tool calculate combinations with repetition allowed?',
+        answer:
+          'Yes. The calculator supports multiset combinations using the standard formula (n + r - 1)! / (r! * (n - 1)!).',
+      },
+      {
+        question:
+          'Are my research figures or combination datasets sent over the internet?',
+        answer:
+          'No. All factorial and combination calculations execute locally in browser memory with zero network traffic, ensuring complete data privacy for your experiments.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'app-store-qr-code', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-app-store-qr-code': {
+    directAnswer:
+      'Input Apple App Store or Google Play Store application URLs to generate a standardized mobile application download QR code in downloadable SVG format directly in your browser. The tool generates scannable vector barcodes for marketing materials and packaging without uploading your unreleased app links or campaign analytics to third-party services. The generator operates locally in browser memory to keep unreleased mobile applications and marketing URLs secure.',
+    leadParagraph:
+      'This app store QR code generator creates scannable download barcodes for mobile application marketing, product packaging, print advertisements, and conference flyers. Directing prospective users to install mobile apps via printed links is difficult when URLs are long and contain app IDs or attribution parameters; however, using third-party dynamic QR platforms often involves monthly subscriptions or redirect links that stop working if the vendor changes pricing. You input your iOS App Store URL, Google Play Store URL, or universal app link. The engine validates the URL structure, creates an optimized QR barcode payload, and renders a resolution-independent SVG graphic with selectable error correction levels. Generating app store barcodes client-side ensures permanent link reliability without vendor dependency. Operating completely in browser memory under strict CSP directives, your product launch URLs and marketing plans remain secure.',
+    faqs: [
+      {
+        question:
+          'Can I encode direct links to both iOS App Store and Google Play?',
+        answer:
+          'You can encode a universal smart link that routes users based on device operating system, or generate distinct QR codes for each store.',
+      },
+      {
+        question: 'Can I download the app QR code as a scalable vector SVG?',
+        answer:
+          'Yes. The generator exports clean SVG vector graphics that can be scaled infinitely for retail packaging, billboards, promotional posters, and flyers.',
+      },
+      {
+        question: 'Will this QR code expire or stop working in the future?',
+        answer:
+          'No. The generated QR code contains a direct static URL, so it will continue working permanently without depending on third-party redirection servers.',
+      },
+      {
+        question:
+          'Are my application URLs or marketing campaign plans tracked online?',
+        answer:
+          'No. All barcode generation takes place locally inside browser tab memory with zero network calls, ensuring total campaign privacy and launch secrecy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'battery-runtime-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-battery-runtime-calculator': {
+    directAnswer:
+      'Input battery capacity in milliamp-hours (mAh) or watt-hours (Wh) and average device load consumption to calculate expected battery operating runtime in hours directly in your browser. The calculator factors in discharge safety margins and Peukert efficiency factors without sending your hardware specifications to external servers. The tool calculates battery life directly in browser memory to keep your hardware power specifications confidential.',
+    leadParagraph:
+      'This battery runtime calculator computes expected operating life for battery-powered electronics, IoT sensors, robotics, and off-grid power installations. Accurately sizing battery capacity ensures electronic devices satisfy field operational lifetimes without adding unnecessary weight or excessive enclosure volume; however, relying on ideal arithmetic (capacity divided by load) without considering discharge curves and efficiency losses results in dead devices in the field. You input battery capacity (in mAh or Ah), battery nominal voltage, average device current draw (in mA or Amps) or power consumption in watts, and a discharge safety factor (typically 80% for lithium or 50% for lead-acid). The engine computes estimated runtime in hours and days, highlighting effective usable capacity. Operating strictly in browser memory under CSP connect-src none controls, your hardware power designs and battery specifications remain confidential. Factoring in discharge margins ensures that electronic sensors and robotic assemblies continue operating reliably throughout their expected operational deployment.',
+    faqs: [
+      {
+        question:
+          'Why should a discharge safety factor be included in runtime estimates?',
+        answer:
+          'Discharging batteries to 100% capacity damages battery chemistry and shortens cycle life; practical designs reserve 15% to 20% safety margin.',
+      },
+      {
+        question:
+          'Can I calculate battery runtime using watts instead of milliamperes?',
+        answer:
+          'Yes. If you provide battery voltage alongside capacity in watt-hours or device consumption in watts, the tool converts units automatically.',
+      },
+      {
+        question:
+          'How does ambient temperature affect estimated battery life in the field?',
+        answer:
+          'Cold temperatures reduce chemical reaction rates and decrease effective capacity, so outdoor devices may experience shorter runtimes than room-temperature estimates.',
+      },
+      {
+        question:
+          'Are my hardware power specifications or battery designs logged online?',
+        answer:
+          'No. All calculations execute locally in client browser memory with zero network traffic, ensuring complete privacy for your hardware projects.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-join', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-join': {
+    directAnswer:
+      'Merge two CSV files using Inner Join, Left Outer Join, or Full Outer Join based on common key columns directly in your browser. The tool combines relational datasets client-side, matching shared keys and aligning columns without uploading your confidential corporate spreadsheets or customer databases to cloud servers. The tool merges spreadsheets directly in client memory to protect internal customer registries and commercial sales records.',
+    leadParagraph:
+      'This CSV join tool merges two independent tabular datasets on a common key identifier using standard relational database join logic (Inner Join, Left Join, and Full Outer Join). Combining customer demographic spreadsheets with order histories, or joining inventory lists with pricing catalogs, is a core data preparation step; however, uploading proprietary company tables to online SQL or CSV merging portals creates grave regulatory and confidentiality hazards. You paste the primary CSV table, the secondary CSV table, select the join key column in each, and pick the join type. The engine parses RFC 4180 compliant CSV lines, matches relational keys in memory, merges matching attributes, and outputs the consolidated dataset. Operating completely client-side in browser memory with strict CSP connect-src none directives, your sensitive enterprise data remains strictly private on your computer.',
+    faqs: [
+      {
+        question: 'What join types are supported by this CSV join tool?',
+        answer:
+          'The tool supports Inner Join (only matching keys), Left Outer Join (all left rows plus matching right data), and Full Outer Join.',
+      },
+      {
+        question:
+          'Can the join columns have different header names in each file?',
+        answer:
+          'Yes. You can select different key column names in the two tables (for example, "customer_id" in table A and "ID" in table B).',
+      },
+      {
+        question:
+          'How does the tool handle missing values for unmatched join rows?',
+        answer:
+          'In outer joins, unmatched rows from either side are padded with empty cells across columns from the non-matching table to maintain tabular rectangular alignment.',
+      },
+      {
+        question:
+          'Are my corporate spreadsheets or customer records uploaded externally?',
+        answer:
+          'No. All CSV parsing and relational join operations execute locally in browser tab memory with zero network traffic, ensuring complete data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'whitespace-remover', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-whitespace-remover': {
+    directAnswer:
+      'Remove leading, trailing, and duplicate whitespace characters, convert tabs to spaces, or strip all whitespace from text directly in your browser. The tool cleans non-breaking spaces and invisible spacing tokens with full Unicode support without uploading your manuscripts, code strings, or sensitive correspondence to remote servers. The cleaner processes text locally in browser memory to ensure private manuscripts and sensitive code strings remain secure.',
+    leadParagraph:
+      'This whitespace remover cleans redundant spaces, trailing spaces, tabs, and non-breaking whitespace tokens from text and code for writers, developers, and editors. Copying text from web pages, PDF documents, or word processors frequently introduces invisible non-breaking spaces (U+00A0), messy tab indents, and erratic multiple spaces between words that corrupt source code strings and break formatting; however, pasting sensitive documents or proprietary source code into online text cleaners creates serious confidentiality risks. You paste text into the cleaner and select your desired cleanup modes: trim leading/trailing whitespace, collapse multiple spaces into single spaces, convert tabs to spaces, or strip all spaces entirely. The engine parses the characters using Unicode-aware algorithms and outputs clean text. Operating entirely inside browser tab memory under strict CSP restrictions, your private notes and draft documents remain completely confidential.',
+    faqs: [
+      {
+        question: 'Does this tool remove invisible non-breaking spaces (NBSP)?',
+        answer:
+          'Yes. The tool detects and normalises non-breaking spaces (U+00A0) and zero-width spaces that cause syntax errors in programming languages and compilers.',
+      },
+      {
+        question:
+          'Can I collapse multiple consecutive spaces into a single space?',
+        answer:
+          'Yes. The cleaner collapses erratic runs of multiple spaces or tabs into a clean single space between words throughout your text.',
+      },
+      {
+        question:
+          'Can I remove all whitespace to create continuous character strings?',
+        answer:
+          'Yes. Selecting the remove-all mode strips all spaces, tabs, and newlines, suitable for cryptographic keys, DNA sequences, or hash comparisons.',
+      },
+      {
+        question:
+          'Is my pasted text or manuscript draft transmitted over the internet?',
+        answer:
+          'No. All character parsing and whitespace removal run locally in browser memory with zero network calls, guaranteeing total content privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'link-extractor', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-link-extractor': {
+    directAnswer:
+      'Paste HTML source code to extract, deduplicate, and classify internal links, external hyperlinks, anchor texts, and nofollow attributes in your browser. The tool parses anchor tags client-side without sending your website source code or staging URLs to external crawlers or third-party SEO audit platforms. The tool extracts hyperlinks locally in browser memory to keep confidential staging site structures and internal links private.',
+    leadParagraph:
+      'This link extractor parses HTML web pages to extract, audit, and categorize all hyperlinks for web developers, digital marketers, and SEO specialists. Auditing on-page link architectures is essential for ensuring healthy internal link equity, verifying affiliate disclosure tags (rel="sponsored" or rel="nofollow"), and detecting broken outbound destinations; however, running cloud crawler tools against staging servers or unpublished landing pages exposes proprietary web designs to third parties. You paste raw HTML source code into the tool. The engine parses DOM anchor elements (<a>), extracts href destinations and anchor text, distinguishes between internal and external URLs, and lists rel attributes in an exportable table. Running completely client-side in browser memory under CSP connect-src none directives, your website source code and staging links remain strictly confidential on your computer. Reviewing on-page link architectures helps webmasters audit broken internal links, monitor crawl depth, and ensure search engines discover critical pillar pages.',
+    faqs: [
+      {
+        question:
+          'How does the extractor distinguish between internal and external links?',
+        answer:
+          'It compares link domains against your site root, classifying relative paths and same-domain URLs as internal while marking differing hosts as external.',
+      },
+      {
+        question:
+          'Does the tool extract link rel attributes like nofollow and sponsored?',
+        answer:
+          'Yes. The extractor audits rel attributes for every link, displaying nofollow, sponsored, ugc, and target="_blank" security flags clearly in the table.',
+      },
+      {
+        question: 'Can I export the extracted link list to CSV format?',
+        answer:
+          'Yes. You can copy the extracted URLs or export a structured CSV spreadsheet containing anchor text, destination URL, and link type.',
+      },
+      {
+        question:
+          'Is my HTML source code or website architecture uploaded online?',
+        answer:
+          'No. All DOM parsing and link extraction take place locally in browser memory with zero network requests, ensuring total privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'future-value-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-future-value-calculator': {
+    directAnswer:
+      'Enter present investment amount, annual interest rate percentage, compounding frequency, and investment tenure in years to calculate the future compound value directly in your browser. The calculator computes total compound interest and final balances without transmitting your personal investment capital or private wealth goals across the network. The calculator executes compound growth formulas client-side to ensure personal investment capital and wealth targets remain private.',
+    leadParagraph:
+      'This future value calculator projects the growth of lump-sum investments and interest-bearing deposits over time for personal investors, financial planners, and corporate treasurers. Understanding how compound interest accelerates capital accumulation over years helps individuals set realistic retirement targets and evaluate fixed-income securities; however, entering personal investment sums and savings balances into cloud financial tools exposes private wealth data to online tracking and advertising profiles. You input the principal investment sum, anticipated annual interest rate, compounding frequency (annual, quarterly, monthly, or daily), and duration in years. The engine computes compound interest using the formula FV = PV * (1 + r/n)^(n*t), deriving total accrued interest and final ending balance. Operating completely client-side in browser memory under strict CSP restrictions, your personal investment balances and wealth growth goals remain strictly private. Compound interest projections provide clear financial transparency for long-term investments, enabling savers to balance current spending against future goals.',
+    faqs: [
+      {
+        question:
+          'What mathematical formula calculates the future value of a lump sum?',
+        answer:
+          'The calculator uses FV = PV * (1 + r/n)^(n*t), where PV is principal, r is annual rate, n is compounding frequency, and t is years.',
+      },
+      {
+        question:
+          'How does compounding frequency affect the final future balance?',
+        answer:
+          'More frequent compounding (such as monthly or daily versus annual) yields higher returns because interest is earned on previously accrued interest sooner.',
+      },
+      {
+        question:
+          'Can I model fixed-deposit or certificate of deposit (CD) returns?',
+        answer:
+          'Yes. Enter the CD deposit amount, stated annual percentage yield (APY) or rate, and term to see your exact maturity payout.',
+      },
+      {
+        question:
+          'Are my private investment figures or deposit amounts stored online?',
+        answer:
+          'No. All compound growth arithmetic executes locally in your browser tab memory with zero outbound network calls, ensuring total financial confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'house-rent-split-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-house-rent-split-calculator': {
+    directAnswer:
+      'Input total apartment rent, utility expenses, room square footages, and roommate names to calculate fair, proportional rent splits directly in your browser. The calculator adjusts for room sizes, attached bathrooms, and shared utilities without transmitting your personal rental agreements or roommate details to external servers. The calculator runs entirely within browser memory to ensure personal rental expenses and household budgets remain confidential.',
+    leadParagraph:
+      'This house rent split calculator computes equitable rent shares and shared living expenses for roommates, flatmates, and co-living tenants. Dividing apartment rent equally when one bedroom is double the size of another or features a private attached bathroom frequently leads to roommate disputes and resentment; however, using shared billing apps often forces users to create online accounts or upload contact directories. You input total monthly rent, utility costs, and roommate entries pairing room size (in square feet) and private amenity bonuses (such as attached balcony or private bathroom). The engine balances proportional square footage calculations with equal shared common-space splits to determine fair individual monthly contributions. Running completely client-side in browser memory under strict Content Security Policy directives, your living arrangements, rental costs, and flatmate names remain completely confidential. Calculating fair rent shares proportionally based on room square footage and private amenities eliminates household tension and ensures equitable living contributions.',
+    faqs: [
+      {
+        question:
+          'How does the calculator determine fair rent shares for unequal rooms?',
+        answer:
+          'The engine allocates a portion of rent equally for shared common living areas, and divides the remainder proportionally based on private room square footage.',
+      },
+      {
+        question:
+          'Can utility bills and internet costs be included in the split?',
+        answer:
+          'Yes. You can add monthly utility expenses (electricity, water, Wi-Fi) to be divided equally alongside room-adjusted rent totals for each roommate.',
+      },
+      {
+        question:
+          'How are private amenities like an attached bathroom factored in?',
+        answer:
+          'You can apply an amenity premium percentage or flat surcharge to rooms with private bathrooms or balconies before distributing the base rent.',
+      },
+      {
+        question:
+          'Are my rental amounts or roommate personal details uploaded online?',
+        answer:
+          'No. All rent allocation calculations execute client-side in browser memory with zero network traffic, ensuring complete privacy for household finances.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'prime-number-checker', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-prime-number-checker': {
+    directAnswer:
+      'Check whether any integer is a prime or composite number, identify prime factors, and discover nearest prime neighbors directly in your browser. The tool runs optimized trial division algorithms in client memory without transmitting your cryptographic keys or mathematical research numbers across the network. The tool runs primality testing algorithms locally in browser memory to protect cryptographic research keys and seed values.',
+    leadParagraph:
+      'This prime number checker tests integer primality and computes prime factorizations for students, computer scientists, mathematicians, and cryptography researchers. Prime numbers (integers greater than 1 divisible only by 1 and themselves) form the backbone of modern asymmetric encryption algorithms (such as RSA and Diffie-Hellman); however, testing candidate integers on online calculators often limits digit sizes or logs user queries. You enter an integer into the checker. The engine handles parity checks, applies fast 6k ± 1 trial division up to the square root of the number, determines primality status, and outputs complete prime factor decompositions if the integer is composite. Because all factoring algorithms execute locally in browser tab memory under strict CSP restrictions, sensitive cryptographic seed values and proprietary algorithm parameters remain completely secure. Testing candidate integers locally allows mathematicians and students to explore number theory and factor structures without uploading queries to remote servers.',
+    faqs: [
+      {
+        question: 'What algorithm does the tool use to verify prime numbers?',
+        answer:
+          'The tool uses an optimized trial division algorithm testing candidate divisors up to the square root of n using the 6k ± 1 pattern.',
+      },
+      {
+        question:
+          'Does the tool provide prime factorization for composite numbers?',
+        answer:
+          'Yes. If the tested number is composite, the engine computes and displays its complete prime factor breakdown (for example, 60 = 2^2 * 3 * 5).',
+      },
+      {
+        question:
+          'Can the tool identify the nearest prime numbers to an input?',
+        answer:
+          'Yes. The calculator identifies both the closest preceding prime and the next successive prime number surrounding the input integer across number ranges.',
+      },
+      {
+        question:
+          'Are my numbers or mathematical research queries sent over the network?',
+        answer:
+          'No. All primality tests and factorization routines execute client-side in browser memory with zero network traffic, ensuring total privacy for research queries.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'multi-link-qr-code', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-multi-link-qr-code': {
+    directAnswer:
+      'Encode multiple website links or social media profiles into a consolidated landing payload and generate a downloadable SVG QR code directly in your browser. The tool structures multi-destination link lists without relying on third-party redirection services or uploading your personal marketing profiles to external servers. The tool formats multi-destination barcodes locally in client memory to keep private personal marketing links and portfolios secure.',
+    leadParagraph:
+      'This multi-link QR code generator creates consolidated link hub barcodes for business cards, restaurant menus, product packaging, and personal portfolios. Sharing multiple digital destinations (such as a company homepage, support portal, social media profile, and review page) on physical print media usually requires cluttering layouts with multiple barcodes; however, using commercial link-in-bio QR platforms locks your branding behind third-party redirects that stop working when subscription plans expire. You enter multiple labeled URLs (such as Website, LinkedIn, GitHub, and Portfolio). The engine validates each web address, structures a standardized multi-link document payload, and generates a crisp SVG vector QR symbol with selectable error correction. Generating multi-link barcodes locally ensures permanent operation without subscription fees. Operating strictly in browser memory under CSP connect-src none directives, your marketing URLs remain completely secure. Consolidating multiple destination URLs into a single barcode makes printed business cards and marketing brochures clean, engaging, and easy to scan.',
+    faqs: [
+      {
+        question:
+          'How does a multi-link QR code present multiple destinations to scanners?',
+        answer:
+          'It encodes structured multi-destination text or links to a self-contained local hub, allowing smartphone users to choose their desired destination.',
+      },
+      {
+        question:
+          'Can I customize the error correction level of the multi-link QR code?',
+        answer:
+          'Yes. You can select error correction levels from L to H to ensure reliable scanning even if printed cards suffer minor scuffs or wear.',
+      },
+      {
+        question:
+          'Can I download the multi-link QR code as a scalable vector SVG file?',
+        answer:
+          'Yes. The output is a high-resolution SVG vector file ready for inclusion in professional print design software and packaging graphics.',
+      },
+      {
+        question:
+          'Are my profile links or business websites logged on third-party servers?',
+        answer:
+          'No. The QR symbol is drawn entirely in your local browser memory with zero network calls, guaranteeing complete marketing privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'coulomb-s-law-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-coulomb-s-law-calculator': {
+    directAnswer:
+      'Enter electrical charges in coulombs and separation distance in meters to calculate the electrostatic force in newtons between two charges directly in your browser. The calculator applies Coulomb constant physics formulas client-side without transmitting your experimental physics parameters or scientific research figures to remote servers. The calculator executes physics formulas client-side in browser memory to ensure your experimental parameters and research remain confidential.',
+    leadParagraph:
+      "This Coulomb's law calculator computes the electrostatic force of attraction or repulsion between two point charges for physics students, educators, and electrostatics researchers. In electromagnetism and physical chemistry, calculating electrostatic forces dictates atomic bonding models, particle accelerator paths, and electrostatic precipitator designs; however, performing scientific notation arithmetic with Coulomb's constant (8.98755 * 10^9 N*m^2/C^2) by hand is tedious and prone to exponent calculation mistakes. You enter charge q1, charge q2 (supporting microcoulombs, nanocoulombs, or coulombs), and the distance between them. The engine computes the electrostatic force (F = k * |q1 * q2| / r^2) and identifies whether the resulting interaction is attractive (opposite signs) or repulsive (like signs). Running completely client-side in browser memory with strict CSP connect-src none directives, your scientific physics computations remain strictly confidential on your computer.",
+    faqs: [
+      {
+        question: "What mathematical formula does Coulomb's law use?",
+        answer:
+          "The formula is F = k * |q1 * q2| / r^2, where k is Coulomb's constant (8.988 x 10^9 N*m^2/C^2) and r is separation distance in meters.",
+      },
+      {
+        question:
+          'How does the calculator determine attraction versus repulsion?',
+        answer:
+          'If both charges share the same sign (+/+ or -/-), the force is repulsive; if charges carry opposite signs (+/-), the force is attractive.',
+      },
+      {
+        question:
+          'Does the calculator accept metric sub-units like microcoulombs and millimeters?',
+        answer:
+          'Yes. You can supply charges in standard scientific units or sub-units, and the engine automatically converts them to SI base units for calculation.',
+      },
+      {
+        question:
+          'Are my scientific research figures or physics calculations stored online?',
+        answer:
+          'No. All physics computations execute locally in browser tab memory with zero outbound network requests, ensuring complete research privacy for your work.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-diff', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-diff': {
+    directAnswer:
+      'Compare two CSV files side by side to detect added rows, deleted rows, and modified cells based on key columns directly in your browser. The tool highlights tabular differences client-side without sending your confidential corporate financial records, customer registries, or inventory spreadsheets to remote diff servers. The comparison tool runs entirely within client memory to protect sensitive corporate financial numbers and customer records.',
+    leadParagraph:
+      'This CSV diff tool compares two spreadsheet files to identify structural and cell-level discrepancies for data auditors, database administrators, and financial analysts. Reconciling month-end accounting reports, verifying database migration exports, or reviewing updated inventory catalogs requires spotting exact modified values across thousands of rows; however, uploading proprietary company ledgers to online text diff websites creates significant data breach liabilities. You paste the original CSV table into the before panel and the updated CSV into the after panel, selecting an optional primary key column. The engine aligns rows, compares cell values column by column, and highlights added rows, removed rows, and changed cell values with visual status indicators. Running entirely within your browser memory under CSP connect-src none restrictions, sensitive enterprise financial numbers and customer records remain completely secure. Detecting exact cell-level changes between spreadsheet revisions ensures thorough financial auditing and eliminates unnoticed discrepancies across accounting cycles.',
+    faqs: [
+      {
+        question: 'How does the CSV diff tool compare rows across files?',
+        answer:
+          'The engine uses a designated key column (or full row hashing) to align matching rows between datasets and identify altered column values.',
+      },
+      {
+        question:
+          'Can the tool highlight specific modified cells within a row?',
+        answer:
+          'Yes. When an existing row has been updated, the tool highlights the exact cells that changed along with their before and after values.',
+      },
+      {
+        question: 'How are added and removed rows visually identified?',
+        answer:
+          'Added records are marked with green plus indicators (+), while deleted records are highlighted with red minus markers (-) in the diff table.',
+      },
+      {
+        question:
+          'Are my corporate spreadsheets or financial ledgers uploaded to cloud servers?',
+        answer:
+          'No. All CSV parsing and difference comparisons execute locally in browser memory with zero network traffic, ensuring complete confidentiality for corporate files.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'blank-line-remover', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-blank-line-remover': {
+    directAnswer:
+      'Strip empty lines, collapse consecutive blank lines into single line breaks, and trim trailing whitespace from text documents directly in your browser. The tool normalises line breaks with full Unicode support without uploading your manuscripts, code files, or confidential text drafts to external servers. The tool cleans text documents locally in browser memory to ensure sensitive manuscripts and draft notes remain strictly private.',
+    leadParagraph:
+      'This blank line remover strips redundant empty lines and cleans irregular paragraph spacing from text documents, source code files, and exported data logs. Copying text from PDF documents, OCR scans, or legacy terminal outputs often introduces erratic multiple blank lines between sentences or leaves lines containing only invisible space characters; however, pasting sensitive written drafts or proprietary source code into online text cleaners creates significant privacy hazards. You paste your text into the editor and choose your cleanup options: strip all empty lines completely or collapse consecutive blank lines into a single clean line break. The engine scans line breaks (handling both LF and CRLF), trims whitespace-only lines, and produces clean compact text. Operating entirely client-side in browser memory with CSP connect-src none controls, your private manuscripts and confidential notes remain completely secure.',
+    faqs: [
+      {
+        question:
+          'Does this tool treat lines with spaces or tabs as blank lines?',
+        answer:
+          'Yes. The engine trims whitespace-only lines containing spaces or tabs, recognizing them as empty lines and stripping them cleanly from your text.',
+      },
+      {
+        question:
+          'Can I keep a single blank line between paragraphs while removing extras?',
+        answer:
+          'Yes. You can select the collapse mode to reduce multiple consecutive blank lines down to a single clean line break between paragraphs.',
+      },
+      {
+        question:
+          'Does the tool preserve Windows CRLF and Unix LF line endings?',
+        answer:
+          'Yes. The tool normalises line terminators while preserving clean paragraph structure across both Windows CRLF and Unix LF text file conventions.',
+      },
+      {
+        question:
+          'Is my pasted text or manuscript draft transmitted over the internet?',
+        answer:
+          'No. All line scanning and text cleaning execute locally in your browser memory with zero network requests, ensuring total document privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'present-value-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-present-value-calculator': {
+    directAnswer:
+      'Enter future cash amount, annual discount rate percentage, compounding frequency, and number of years to calculate the discounted present value directly in your browser. The calculator discounts future earnings back to period zero without transmitting your corporate financial models or personal investment figures across the network. The calculator discounts future earnings locally in browser memory to protect strategic corporate valuations and personal wealth figures.',
+    leadParagraph:
+      'This present value calculator determines the current lump-sum value of a future cash payment or investment payout for corporate treasurers, financial analysts, and personal investors. Because a sum of money received today can earn interest, future cash is worth less than its nominal face value (the fundamental time value of money); however, entering confidential business valuations or personal inheritance sums into cloud financial tools exposes private wealth data to online tracking. You input the anticipated future amount, annual discount rate, compounding frequency (annual, quarterly, monthly, or daily), and duration in years. The engine computes present value using the compound discounting formula PV = FV / (1 + r/n)^(n*t), deriving the exact amount required today to reach the future goal. Operating completely client-side in browser memory under strict CSP restrictions, your financial projections and investment models remain strictly confidential on your machine.',
+    faqs: [
+      {
+        question:
+          'What mathematical formula calculates the present value of a future sum?',
+        answer:
+          'The calculator evaluates PV = FV / (1 + r/n)^(n*t), where FV is future amount, r is discount rate, n is compounding frequency, and t is years.',
+      },
+      {
+        question:
+          'Why is present value important in financial decision making?',
+        answer:
+          'Present value accounts for the time value of money, helping investors evaluate whether a future payout is worth an upfront investment cost today.',
+      },
+      {
+        question:
+          'How does compounding frequency impact present value calculations?',
+        answer:
+          'More frequent compounding increases the discounting effect slightly, resulting in a lower present value required to reach the target sum.',
+      },
+      {
+        question:
+          'Are my financial figures or valuation models stored on remote servers?',
+        answer:
+          'No. All discounting calculations run strictly client-side in browser tab memory with zero outbound network calls, maintaining total financial privacy.',
+      },
+    ],
+  },
 };
 
 /**
