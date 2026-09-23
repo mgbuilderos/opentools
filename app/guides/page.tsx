@@ -20,6 +20,7 @@ import {
   guideOrToolHref,
 } from '@/lib/seo/guide-consolidation';
 import { guidesIndexMeta } from '@/lib/seo/guides-index-meta';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 
 // After consolidation only some tools keep a guide, so "every" would be false.
 const guideScope = GUIDE_CONSOLIDATION.enabled
@@ -32,18 +33,31 @@ const schemaContext = `${httpsScheme}schema.org`;
 
 export const revalidate = 86400;
 
+/*
+  Named once, used by both the Open Graph and the Twitter block below, which
+  different platforms read and which drift apart when written out twice.
+*/
+const guidesIndexShareTitle = 'Tool Guides & Solution Playbooks | OpenTools';
+const guidesIndexShareDescription = `Step-by-step guides, comparisons and FAQs for ${guideScope}.`;
+
 export const metadata: Metadata = {
   ...guidesIndexMeta(),
   alternates: {
     canonical: `${httpsOrigin}/guides`,
   },
   openGraph: {
-    title: 'Tool Guides & Solution Playbooks | OpenTools',
-    description: `Step-by-step guides, comparisons and FAQs for ${guideScope}.`,
+    title: guidesIndexShareTitle,
+    description: guidesIndexShareDescription,
     url: `${httpsOrigin}/guides`,
     siteName: 'OpenTools',
     type: 'website',
+    images: shareImages('guides'),
   },
+  twitter: shareTwitterCard(
+    'guides',
+    guidesIndexShareTitle,
+    guidesIndexShareDescription,
+  ),
 };
 
 export default function GuidesDirectoryPage() {
@@ -120,9 +134,9 @@ export default function GuidesDirectoryPage() {
                 <LockKeyhole className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">
+                <h2 className="text-sm font-semibold">
                   Your file stays in the page
-                </h3>
+                </h2>
                 <p className="text-xs text-muted-foreground">
                   Your file is read by the page you have open. It never touches
                   a server.
@@ -134,7 +148,7 @@ export default function GuidesDirectoryPage() {
                 <Cpu className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">No upload to wait for</h3>
+                <h2 className="text-sm font-semibold">No upload to wait for</h2>
                 <p className="text-xs text-muted-foreground">
                   The work starts as soon as you pick a file — there is no
                   transfer step.
@@ -146,7 +160,7 @@ export default function GuidesDirectoryPage() {
                 <ShieldCheck className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">Free, and no account</h3>
+                <h2 className="text-sm font-semibold">Free, and no account</h2>
                 <p className="text-xs text-muted-foreground">
                   No paywall, no subscription, no sign-up.
                 </p>

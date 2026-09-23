@@ -4,12 +4,22 @@ import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getAllBlogCategories, getAllBlogPosts } from '@/lib/seo/blog-data';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 
 const httpsScheme = ['https:', '//'].join('');
 const httpsOrigin = `${httpsScheme}getopentools.com`;
 const schemaContext = `${httpsScheme}schema.org`;
 
 export const revalidate = 86400;
+
+/*
+  Named once, used by both the Open Graph and the Twitter block below. The two
+  are read by different platforms and a copy-paste pair drifts silently: X
+  would advertise one thing and Slack another for the same URL.
+*/
+const blogIndexShareTitle = 'OpenTools Blog & Engineering Playbooks';
+const blogIndexShareDescription =
+  'Technical tutorials, privacy analyses, and step-by-step guides for in-browser tools.';
 
 export const metadata: Metadata = {
   title: 'Blog & Engineering Playbooks on In-Browser Tools',
@@ -19,13 +29,18 @@ export const metadata: Metadata = {
     canonical: `${httpsOrigin}/blog`,
   },
   openGraph: {
-    title: 'OpenTools Blog & Engineering Playbooks',
-    description:
-      'Technical tutorials, privacy analyses, and step-by-step guides for in-browser tools.',
+    title: blogIndexShareTitle,
+    description: blogIndexShareDescription,
     url: `${httpsOrigin}/blog`,
     siteName: 'OpenTools',
     type: 'website',
+    images: shareImages('blog'),
   },
+  twitter: shareTwitterCard(
+    'blog',
+    blogIndexShareTitle,
+    blogIndexShareDescription,
+  ),
 };
 
 export default function BlogDirectoryPage() {

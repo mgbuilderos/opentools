@@ -199,9 +199,9 @@ export function SupportDualView() {
                 <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
                 Straight to the bank · 0% fee
               </div>
-              <h3 className="mt-1 text-lg font-bold sm:text-xl">
+              <h2 className="mt-1 text-lg font-bold sm:text-xl">
                 Pick an amount ☕
-              </h3>
+              </h2>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 Direct to developer · 0% platform fee. ₹59 or ₹99 helps cover
                 our domain registration ($12/year) and edge hosting.
@@ -333,9 +333,9 @@ export function SupportDualView() {
                 <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
                 Open now · worldwide
               </div>
-              <h3 className="mt-1 text-lg font-bold sm:text-xl">
+              <h2 className="mt-1 text-lg font-bold sm:text-xl">
                 Buy me a coffee ☕
-              </h3>
+              </h2>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 Cards, Apple Pay, Google Pay, and PayPal. A single $5 coffee
                 funds a full month of domain and edge hosting operations to keep
@@ -357,9 +357,9 @@ export function SupportDualView() {
               >
                 <div>
                   <div className="flex items-baseline justify-between gap-2">
-                    <h4 className="text-sm font-semibold sm:text-base">
+                    <h3 className="text-sm font-semibold sm:text-base">
                       {tier.name}
-                    </h4>
+                    </h3>
                     <span className="font-mono text-xl font-bold sm:hidden">
                       {tier.amountUsd}
                     </span>
@@ -476,9 +476,9 @@ export function SupportDualView() {
                 <GitBranch aria-hidden="true" className="size-4 shrink-0" />
                 {GITHUB_SPONSORS_PENDING.name}
               </div>
-              <h3 className="mt-1 text-lg font-bold sm:text-xl">
+              <h2 className="mt-1 text-lg font-bold sm:text-xl">
                 Not open yet ⏳
-              </h3>
+              </h2>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 {GITHUB_SPONSORS_PENDING.description}
               </p>
