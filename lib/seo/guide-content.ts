@@ -164,6 +164,2305 @@ export interface GuideDetail {
 }
 
 const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
+  // lib/tools/id-mask/mask.ts (maskIdentifiers, the rules comment at the top,
+  // maskAadhaarValue, maskPanValue, verhoeffValid), lib/tools/id-mask/recheck.ts
+  // (findUnmaskedIdentifiers and its exceptions comment),
+  // components/aadhaar-pan-masker-tool.tsx (TEXT_EXTENSIONS, MAX_BYTES,
+  // LISTED_FINDINGS, the acknowledgement that gates copy and download) and
+  // lib/tools/id-mask/mask.test.ts. Every masked and refused example below was
+  // run through the built engine.
+  'india-and-life-admin-mask-aadhaar-and-pan-numbers': {
+    directAnswer:
+      'Paste the text, or open a .txt, .csv, .tsv, .json, .md or .log file of up to 20 MB, and press Mask numbers. Every Aadhaar number found has its first eight digits replaced by X and every PAN its first six characters, with your spacing and punctuation left exactly as they were. A second, looser detector then reads the masked result, and if anything in it still looks like one of these numbers, copy and download stay locked until you tick a box saying you have checked each place it names.',
+    leadParagraph:
+      'This hides Indian identity numbers inside running text, so a document can be passed on without the full numbers in it. It is text only: it reads .txt, .csv, .tsv, .json, .md and .log files and refuses images, scans and PDFs by name, so a photograph of a card cannot be masked here. A number is hidden whether or not it passes the Aadhaar checksum, because a number with a typo in it is still somebody\x27s number, and the report counts the two cases separately. Some shapes are deliberately left alone — any run of 13 or more digits, and the 16-digit card-or-Virtual-ID shape, which cannot be told apart from a card number reliably — and those are counted for you to look at yourself. Nothing here proves that a number is real or that it belongs to anyone; it recognises shapes and one checksum.',
+    faqs: [
+      {
+        question: 'How much is hidden, and is my layout kept?',
+        answer:
+          'For Aadhaar, the first eight digits become X and the last four stay, which is the masked form commonly printed on documents. Your separators and spacing are kept character for character, so 2345-6789-0123 becomes XXXX-XXXX-0123, hyphens and all, and an unspaced 234567890123 becomes XXXXXXXX0123. The output is exactly as long as the input, because each character is replaced where it stands rather than the number being rewritten. PAN numbers show their last four characters by default, so ABCPE1234F becomes XXXXXX234F; a second option hides all ten.',
+      },
+      {
+        question: 'What does it deliberately leave alone?',
+        answer:
+          'Four things, each for a stated reason. A single run of 13 or more digits, and any run of four or five four-digit groups, are counted as long number runs and left unchanged, because a 16-digit card number and a 16-digit Aadhaar Virtual ID have the same shape as each other. A run of four-digit groups is read as Aadhaar only when the number of groups divides by three, so three groups are one number and six groups are two. A number whose first digit is 0 or 1 is not masked, because no Aadhaar number begins with those. And a PAN with a letter or digit pressed against it, such as refABCPE1234F, is left alone, because five letters and four digits is an ordinary shape in addresses and part numbers.',
+      },
+      {
+        question: 'What is the second check that blocks copying?',
+        answer:
+          'A separate detector, written apart from the masker and sharing no code with it, reads the masked result and flags anything that still looks like one of these numbers. It is deliberately looser: it counts decimal digits from every script, allows up to three separator characters between groups, accepts any grouping and any first digit, and flags five letters, four digits and a letter in any case with any fourth letter. So 2345 followed by three spaces then 6789 0123, and a PAN written ABCPE 1234 F or ABCPE-1234-F, all of which the masker leaves alone, are reported here. Findings are listed by line and column, up to fifty of them, and the copy and download buttons stay locked until you tick the acknowledgement. Three narrow exceptions keep ordinary text quiet: a dotted IPv4 address, an Indian phone number written as +91 and ten digits, and a PAN shape whose letters are already XXXXX.',
+      },
+      {
+        question: 'Which files can it open, and what comes back?',
+        answer:
+          'It reads .txt, .csv, .tsv, .json, .md and .log files up to 20 MB; anything else is refused with a message saying it reads text files only and that a scanned card cannot be masked here. A file whose first 65,536 characters contain a null byte is refused as binary rather than read as text. Pasted text has no separate limit of its own. The masking runs in a background worker inside the page, and the result saves under your original file name with -masked added before the extension, or as masked-text.txt when you pasted rather than opened a file.',
+      },
+      {
+        question: 'Is a masked number recoverable, and is this a guarantee?',
+        answer:
+          'No to both. Masking replaces characters with the letter X; there is nothing hidden underneath and nothing to reverse, and equally nothing about the output is a legal assurance. The report separates Aadhaar numbers whose checksum passes from those it calls shape only, which fail the checksum — perhaps because of a typo — and are masked anyway. Digits written in Devanagari, Tamil, Bengali and several other Indic scripts are read by value and masked, and invisible formatting characters cannot be used to hide a number from the scan. Read the masked document yourself before you send it, starting with anywhere the second check raised a flag.',
+      },
+    ],
+  },
+
+  // components/image-editor-tool.tsx (EDITOR_TASKS, MAX_BYTES, chooseImage, the
+  // run() canvas pipeline and its transform order, the format and quality
+  // controls, the download name), lib/tools/image.ts (transformedDimensions,
+  // validateCrop, supportedRasterTypes, extensionForRasterType, canvasFilter)
+  // and lib/tools/image.test.ts.
+  'image-image-rotator': {
+    directAnswer:
+      'Open a JPEG, PNG or WebP image of up to 25 MB and press Rotate: each press turns the picture another 90 degrees, cycling through 90, 180, 270 and back to none. Width and height swap on a quarter turn, so a 640 by 480 photograph becomes 480 by 640. Nothing is written until you press the button below the controls, and the saved file is re-encoded as WebP unless you pick JPEG or PNG in the format box.',
+    leadParagraph:
+      'This turns a picture in quarter turns on a canvas inside the page. There is no free angle and no straighten slider — the control advances in 90 degree steps only, and there is no anticlockwise button, so a left turn is three presses. The whole editor is one pass over one picture, so the crop boxes, the two flip buttons and the brightness, contrast, greyscale and sepia sliders sit on the same page and all apply in the same run; rotation is simply the job this page is named for. The picture is decoded by your browser, drawn to a canvas and encoded again, so what you save is new pixels rather than the original file with a tag changed, and nothing from the original file\x27s metadata is carried across — there is no code here that reads or writes it. The source is capped at 25 MB and the finished image at 64 megapixels.',
+    faqs: [
+      {
+        question: 'Can I rotate by a free angle or straighten a crooked photo?',
+        answer:
+          'No. The rotation this editor holds is one of exactly four values — 0, 90, 180 or 270 degrees — and the button steps through them in order. There is no degree field, no slider and no grid overlay for levelling a horizon, so a photograph that is three degrees off cannot be fixed here. If a quarter turn is all you need, this does it exactly, with no interpolation and no softening, because the pixels land on whole pixel positions.',
+      },
+      {
+        question: 'What format and quality does the result come back in?',
+        answer:
+          'The format box offers WebP, JPEG and PNG, and it starts on WebP, so a JPEG you rotate is saved as a WebP file unless you change it. The quality slider runs from 10 to 100 and starts at 90; it is switched off and reads lossless when PNG is chosen. JPEG has no transparency, so the canvas is painted white before the picture is drawn, which means a transparent PNG rotated and saved as JPEG comes back on a white background. The saved file is always called edited-image with the extension of the format the browser actually produced — some browsers answer a WebP request with a PNG, and the tool reports the format it really got rather than naming the file for one it is not.',
+      },
+      {
+        question: 'Why was my image refused?',
+        answer:
+          'Four named refusals. A file that is not a JPEG, PNG or WebP gives "Choose a static JPEG, PNG, or WebP image.", which rules out GIF, HEIC, AVIF, TIFF and SVG. A file over 25 MB gives "This candidate limits source images to 25 MB." A file the browser cannot decode gives "The browser could not decode this image." And a turned or cropped result over 64 megapixels gives "The edited image exceeds the 64 megapixel canvas limit." After encoding, the result is read back and its width and height are compared with what was asked for; a mismatch stops with "The edited image failed its dimension check." rather than handing you a wrong-sized file.',
+      },
+      {
+        question: 'Does rotating lose quality, and is my EXIF data kept?',
+        answer:
+          'The turn itself loses nothing, because a quarter turn simply moves whole pixels. The saving does: the file is encoded fresh, so a lossy format loses a little each round trip, and repeated edits compound that. Choose PNG, or raise the quality slider, when that matters. No metadata is carried over — there is no path in this tool that copies EXIF, so camera settings, capture time, colour profile and any location recorded in the original are not written into the file you save.',
+      },
+      {
+        question: 'Does the order of rotate and flip matter?',
+        answer:
+          'Yes, and it can surprise you. The mirror is applied in the picture\x27s own axes and the turn is applied after it, so once a quarter turn is in place the Flip H button mirrors the visible result top to bottom rather than left to right, and Flip V mirrors it left to right. If you want to mirror what you can see on screen, either flip before you rotate or simply press the other flip button. Choosing a new image resets the rotation, both flips and every slider to their starting values.',
+      },
+    ],
+  },
+
+  // lib/tools/spreadsheet-workbench.ts (csv-sorter case with its stable
+  // fallback, the table / header / toCsv / csvCell helpers and their limits),
+  // lib/tools/spreadsheet-workbench.test.ts, lib/tools/structured.ts
+  // (csvToRecords and parseCsvRows, which supply every parse refusal quoted
+  // here) and components/schema-workbench-tool.tsx for the download extension.
+  'spreadsheet-and-data-csv-sorter': {
+    directAnswer:
+      'Paste the CSV, type the exact name of the column to sort by, pick one of the four comparisons — number descending, number ascending, text A to Z, text Z to A — and run it. Rows that compare equal keep the order they arrived in, so sorting by one column and then by another preserves both. The header row is written back unchanged and the rows below it are re-quoted as valid CSV.',
+    leadParagraph:
+      'This sorts the data rows of one comma-separated table by one named column. The sort is stable by construction: when two values compare equal the tie is broken by the row\x27s original position, which is what makes a second pass on another column useful rather than destructive. Numeric mode reads both cells as numbers and stops the run the moment a pair cannot both be read that way; text mode uses the browser\x27s own language-aware comparison with numbers recognised inside the text, so item2 sorts before item10 rather than after it. There is one sort key and no more — no second column, no custom order, and no option to treat a column as dates. The table itself must be strict CSV with a non-empty, unique header on every column, and is capped at 2,000,000 characters, 100,000 rows and 1,000 columns.',
+    faqs: [
+      {
+        question: 'What counts as non-numeric, and what does a blank cell do?',
+        answer:
+          'A blank cell is read as the number zero and sorts with the zeros, silently — it does not stop the run. Only a cell that cannot be read as a number at all triggers "Column score contains a non-numeric value.", naming the column you chose. There is a second gap worth knowing: the check runs inside the comparison, so a table with a single data row is never compared with anything and a non-numeric value in it passes straight through untouched. Look at the column before you trust a numeric sort of a short table.',
+      },
+      {
+        question: 'Why does it say my column is unknown?',
+        answer:
+          'The name you type is trimmed of spaces and then has to match a header exactly, capital letters included: typing Team against a header written team gives "Unknown column: Team." Leaving the box empty gives "Unknown column: (blank)." Headers in the file are themselves trimmed when it is parsed, so stray spaces around a header name are not the problem — spelling and case are.',
+      },
+      {
+        question: 'How is text sorted?',
+        answer:
+          'By the browser\x27s own comparison for the visitor\x27s language, with runs of digits inside the text compared as numbers. That has two consequences. Accented letters and capitals are ordered by language rules rather than by character code, so the result is not a plain byte order and two people in different regions can get slightly different orders for the same file. And file2 comes before file10, which is usually what you want but is not what a strict alphabetical sort would do. Text Z to A is the exact reverse of Text A to Z.',
+      },
+      {
+        question: 'Why was my file refused before the sort even started?',
+        answer:
+          'The parser is strict and names the problem. An empty cell in the first row gives "Every CSV column needs a header in the first row.", which usually means a title line above the real header. Two identical headers give "CSV headers must be unique before conversion." A row with the wrong number of fields gives its row number and both counts, for example "Row 2 has 1 columns; expected 2." A quotation mark that is opened and never closed gives "CSV contains an unclosed quoted field." Fields are separated by commas only, so a semicolon-separated export arrives as a single column and there is no setting to change that.',
+      },
+      {
+        question: 'What does the output look like, and what is downloaded?',
+        answer:
+          'The result is written out fresh rather than copied, so quoting can differ from your input even where no value changed: a field is wrapped in double quotes only when it contains a comma, a double quote, a carriage return or a line feed, and an inner double quote is doubled. The download button saves the result as csv-sorter.txt with a plain-text type, because the CSV tools in this workbench do not declare a file extension of their own — rename it to .csv before opening it in a spreadsheet, or use the copy button and paste instead.',
+      },
+    ],
+  },
+
+  // lib/tools/notation/markup.ts (htmlToMarkdown and decodeEntities),
+  // lib/tools/writing-workbench.ts (the html-to-markdown operation, its notice
+  // and outputExtension), lib/tools/writing-workbench.test.ts and
+  // components/schema-workbench-tool.tsx. Each conversion quoted below was run
+  // through the built function.
+  'text-and-writing-html-to-markdown': {
+    directAnswer:
+      'Paste the HTML and run it; the Markdown appears beside it, ready to copy or to download as html-to-markdown.md. Headings, bold, italic, inline code, links, list items, line breaks and horizontal rules are converted, script and style elements are removed with everything inside them, and every other tag is simply deleted with its text kept. The page carries its own caution above the button: it converts a documented common subset, not an arbitrary HTML document.',
+    leadParagraph:
+      'This turns a fragment of HTML into readable Markdown using a sequence of pattern replacements rather than an HTML parser. That single fact explains most of what it does and does not do, because it never builds a tree and so cannot tell that one element sits inside another. Headings one to six, strong and b, em and i, code, anchors carrying an href, list items, br and hr each have a rule; paragraph, div, section, article, header, footer and blockquote become a blank line; everything left has its tags stripped and its text kept. Tables, images and nested structure do not survive that, and the tool says so in its own words: review the generated output before publishing. There is no character limit on the box, so the practical ceiling is whatever the browser tab will hold.',
+    faqs: [
+      {
+        question: 'What is lost in the conversion?',
+        answer:
+          'More than you might expect. A numbered list becomes a bulleted one, because every list item becomes a dash and the numbering is not read. A table loses all of its structure and its cells run together with no separator at all, so a row holding a and b comes out as the two letters joined. An image disappears completely, alt text included — no image syntax is ever produced. A blockquote loses its marker and reads as an ordinary paragraph. And because the replacements are not nesting-aware, bold inside bold closes at the first closing tag, so strong wrapped around strong comes out as one run of bold text followed by plain text.',
+      },
+      {
+        question: 'What happens to escaped characters in my HTML?',
+        answer:
+          'They are decoded at the very end, without exception. Named entities for ampersand, less-than, greater-than, quotation mark and apostrophe, and numeric references in decimal or hexadecimal, are all turned back into the characters they stand for. So a page that carefully escaped a script tag in order to display it as text hands you Markdown containing a real script tag. That is harmless while the text stays Markdown, and it is undone if you send the result through the Markdown to HTML tool on this site, which escapes every angle bracket before writing anything. But paste it into a renderer that passes raw HTML through and the tag will run. Check the output whenever the page you converted showed markup as words.',
+      },
+      {
+        question: 'Are script and style contents really removed?',
+        answer:
+          'Yes — the tags and everything between them go before any other rule runs, and a test in this repository converts a fragment beginning with a script element and requires its contents to be absent from the result. Comments go too, because the final rule deletes everything from a less-than sign to the next greater-than sign. That last rule cuts both ways: a bare less-than sign in ordinary prose swallows the text up to the next greater-than sign, so a line reading a, less-than, b, greater-than, c comes back as a and c with the middle gone. Watch for that in text about mathematics or code.',
+      },
+      {
+        question: 'Which links survive, and is the address checked?',
+        answer:
+          'An anchor is converted when it carries an href, whether that href is in double quotes, single quotes or none at all, and the address is copied through exactly as written with no checking whatsoever. A relative path stays a relative path, and a javascript address is written into the Markdown unchanged, so read any link in converted output before you publish it. An anchor with no href — a named anchor, say — loses its tags and keeps only its visible text.',
+      },
+      {
+        question: 'What are the limits, and what does the download contain?',
+        answer:
+          'An empty box, or one holding only spaces, stops with "HTML is required." There is no character limit and no file picker: this tool takes pasted markup, not an .html file. The conversion is deterministic, so the same input always produces the same output. The download button writes what you see to html-to-markdown.md as UTF-8 text, and the copy button puts the same text on your clipboard.',
+      },
+    ],
+  },
+
+  // lib/tools/developer-advanced-workbench.ts (the json-editor case, the json()
+  // and required() helpers and MAX_TEXT), lib/tools/structured.ts
+  // (assertJsonNumbersAreSafe, which the sibling CSV-to-JSON path uses and this
+  // one does not), lib/tools/structured.test.ts and
+  // app/developer/[tool]/page.tsx. Every output below was produced by running
+  // the built operation.
+  'developer-and-data-json-editor': {
+    directAnswer:
+      'Paste the JSON and run it: the text is parsed and written straight back out with two-space indentation, ready to copy or to download as json-editor.json. If it comes back, it parsed — a failure stops the run and repeats the browser\x27s own message, including the position of the character that broke it. There is one output style and no settings here: no minifying, no key sorting and no schema checking.',
+    leadParagraph:
+      'This validates and reformats JSON in a single step, using the browser\x27s own reader and writer. That is fast and strict, but it is not lossless, and three of the ways it changes a document are worth knowing before you paste anything that matters. Numbers are rewritten rather than copied through, a repeated key collapses to the last one with nothing said, and any key that reads as a whole number is moved ahead of the others in ascending order. Input is trimmed and capped at 1,000,000 characters. It is a formatter and a validator rather than an editor in the usual sense: there is no tree view, no folding and no way to change one value in place.',
+    faqs: [
+      {
+        question: 'Does it change my numbers?',
+        answer:
+          'Yes, and it does not warn you. A long integer is rounded to what a double-precision number can hold, so 12345678901234567890 comes back as 12345678901234567000 with its last digits changed. A number too large to represent at all, written as 1 followed by E400, is written back as null. Spellings are normalised too: 1.0 becomes 1, 1e3 becomes 1000, and minus zero becomes 0. The CSV-to-JSON path in this same project refuses an integer outside the exact range by name rather than rounding it, so where every digit of an identifier matters, quote it as text before you paste it here.',
+      },
+      {
+        question: 'What happens to duplicate keys and to key order?',
+        answer:
+          'A repeated key resolves to the last one silently: an object written with a set to 1 and then a set to 2 comes back holding only 2, with no mention of the value that was dropped. Ordinary keys keep the order they were written in, but any key that reads as a whole number jumps ahead of them and is sorted upwards, so an object written b then 2 then 1 comes back as 1, 2, b. That is how JavaScript orders object properties, and there is no setting here to prevent it.',
+      },
+      {
+        question: 'Why was my JSON refused?',
+        answer:
+          'An empty box, or one holding only spaces, gives "JSON is required." More than 1,000,000 characters after trimming gives "JSON is limited to 1,000,000 characters." Everything else is a parse failure, reported as "JSON is invalid:" followed by the browser\x27s own wording and the character position — a trailing comma before a closing brace, for instance, is reported as an expected property name at the position where the brace sits. The reader is strict JSON, so comments, trailing commas, single-quoted strings and unquoted keys are all refused; this does not read JSON5 or the commented JSON some editors use for configuration.',
+      },
+      {
+        question: 'Can I minify, sort keys, or check against a schema?',
+        answer:
+          'Not on this page. There is exactly one output: two-space indentation. Minifying and key sorting exist as separate paths in this project rather than as switches here, and there is no schema validation, no JSON Path box and no diff. It does accept any valid JSON value rather than only an object, so a bare string, number, boolean or array is parsed and returned just the same.',
+      },
+      {
+        question: 'What happens to escapes and non-ASCII text?',
+        answer:
+          'Escape sequences are resolved and written back as real characters, so a backslash-u escape for an accented letter comes back as that letter. The output is UTF-8 and is not escaped back to ASCII, which is right almost everywhere but will surprise you if something downstream expects an ASCII-only file. Control characters that must stay escaped in JSON remain escaped. The download button writes exactly what you see to json-editor.json.',
+      },
+    ],
+  },
+
+  // lib/tools/web-workbench.ts (the serp-snippet-preview case and the
+  // required() and absoluteUrl() helpers it calls),
+  // lib/tools/web-workbench.test.ts and components/schema-workbench-tool.tsx.
+  // The counts and normalised addresses below were produced by running it.
+  'web-and-seo-serp-snippet-preview': {
+    directAnswer:
+      'Type the title, the description and the page address, then run it. The three lines come back as plain text with a count of the characters in the title and in the description, followed by the tool\x27s own reminder that search engines may rewrite or truncate what you wrote. The address is put through the browser\x27s URL parser first, so what is printed is the tidied-up form of what you typed.',
+    leadParagraph:
+      'This is a character counter with the three fields laid out in the order a result page shows them, not a picture of a search result. Nothing is drawn: no site icon, no breadcrumb trail, no date, no star rating, and no grey ellipsis showing where a long title would be cut. There is no target either — it reports the counts and leaves the judgement to you, which is honest, because search engines cut a title by how wide it renders rather than by how many characters it holds, and a line of capital letters is far wider than the same number of lower-case ones. Counts are in Unicode code points, so an emoji from outside the basic range counts as one. Use it to see all three fields together and count them truthfully, not to predict what will be displayed.',
+    faqs: [
+      {
+        question: 'Does it show me where my title will be cut off?',
+        answer:
+          'No. There is no truncation preview, no pixel-width measurement, no recommended length and no warning when a field is long — the tool prints the count and stops. It also ends every run with the line "Preview only — search engines may rewrite or truncate this content.", which is the honest position: a search engine may show your description, may write its own from the page, or may show nothing you supplied at all.',
+      },
+      {
+        question: 'How exactly does it count?',
+        answer:
+          'Leading and trailing spaces are removed first, then the characters are counted as Unicode code points rather than as the storage units a text box uses. A single emoji counts as one. An emoji built from several joined parts, such as a flag or a family, counts once for each part it is made of, so it can add more than one to the total. One rough edge to expect in the output: the line always reads "characters", so a one-character description is reported as 1 characters.',
+      },
+      {
+        question:
+          'Why was my address refused, and why did it come back changed?',
+        answer:
+          'The address has to be a complete web address. A bare domain with no scheme gives "URL must be an absolute HTTP(S) URL." and a scheme that is not HTTP or HTTPS gives "URL must use HTTP or HTTPS." — note that both messages say URL, though the field itself is labelled Display URL. What is printed back is the parsed and re-serialised form: the host is lower-cased, an empty path gains a trailing slash, and a space in the path becomes a percent escape. Query parameters stay in the order you typed them and the fragment is kept.',
+      },
+      {
+        question: 'What are the field limits?',
+        answer:
+          'Title and description are both required — leaving either blank stops with "Title is required." or "Description is required." — and each accepts up to 200,000 characters, which is far beyond anything a snippet would use. So the tool never stops you from writing a title that is much too long; it just tells you how long it is.',
+      },
+      {
+        question: 'Does it look at my live page at all?',
+        answer:
+          'No. It does not fetch your URL, does not read the title or meta description already on the page, and does not compare anything against what is indexed — every value shown is one you typed. The result is text, so there is nothing to paste into a document as a picture; the download button saves it as serp-snippet-preview.txt. To write the tags themselves, the Open Graph and Twitter card tools in the same workbench emit the markup.',
+      },
+    ],
+  },
+
+  // lib/tools/qr-barcode-workbench.ts (the text-qr-code operation, buildQrPayload,
+  // required(), qrStyle() and renderQr()), lib/tools/qr-barcode-workbench.test.ts
+  // and the capacity table in node_modules/qrcode/README.md. The fitting and
+  // refusal examples below were produced by running the built operation.
+  'qr-and-barcode-text-qr-code': {
+    directAnswer:
+      'Type or paste the text, choose an error-correction level and a width in pixels, then generate. The words themselves go into the symbol, with no link and no redirect in between, and the result downloads as an SVG file named text-qr-code.svg. Spaces at the start and end are removed before encoding; line breaks inside the text are kept.',
+    leadParagraph:
+      'This puts your text inside the symbol, so scanning it shows the words rather than opening anything. Two things follow from that: the content is fixed once the code is printed and can never be repointed, and anyone who can see the printed code can read the text, because a QR code carries no secrecy of any kind. The box accepts up to 8,000 characters, but that is the field limit and not the symbol limit — a QR code in byte mode holds at most 2,953 characters at the weakest recovery level and 1,273 at the strongest, and anything longer is refused by the encoder. The symbol is drawn as an SVG with a four-module quiet zone, black on white, at a width you choose between 160 and 1,200 pixels.',
+    faqs: [
+      {
+        question: 'How much text actually fits?',
+        answer:
+          'Less than the field allows, and it depends on what the text is. The field stops at 8,000 characters with the message "content must be at most 8000 characters." — the wording begins with a lower-case word and prints the number without a separator, which is the tool\x27s own phrasing. The symbol is the real limit: in byte mode the encoder documents 2,953 characters at level L, 2,331 at M, 1,663 at Q and 1,273 at H, and plain letters at the default M level do fit at 2,331 and fail at 3,000. Digits fit far more, because a denser mode is chosen automatically for them — 4,000 digits encode without complaint at M. Accented and non-Latin characters and emoji each cost several of those bytes, so a few hundred emoji will not fit at any level.',
+      },
+      {
+        question: 'What do the four error-correction levels do?',
+        answer:
+          'They set how much of the symbol can be damaged or obscured and still be read. L recovers the least and leaves the most room for content, M is the default, and Q and H recover progressively more while holding progressively less — the capacity drops from 2,953 bytes at L to 1,273 at H. Choose a higher level for a code that will be printed small, on a curved or textured surface, or anywhere it may be scuffed; choose L when the content is long. Any other value gives "Choose a valid correction level."',
+      },
+      {
+        question: 'Can I change the size or the colours?',
+        answer:
+          'The width is yours between 160 and 1,200 pixels, and anything outside that gives "SVG width must be between 160 and 1200." Because the file is an SVG with the module grid in its view box, it scales to any print size without going blocky, whatever pixel width you picked. The colours on this page are fixed at black on white, the quiet zone is fixed at four modules, and there is no PNG or JPEG export here — save the SVG and convert it if your printer needs a raster file.',
+      },
+      {
+        question: 'Is the text hidden or protected in any way?',
+        answer:
+          'Not at all. The text sits in the symbol in the clear, and any scanner app displays it. Treat a printed text QR code exactly as you would treat the same words printed underneath it, and do not put a password, a one-time code or anything private into one. Nothing is logged and nothing counts scans either, which is the other side of the same coin: there is no way to tell how often the code was read.',
+      },
+      {
+        question: 'Will it scan reliably?',
+        answer:
+          'Test it, which is what the page itself asks you to do: try the downloaded symbol with the exact devices, print size, surface and lighting you intend to use. Longer text makes a denser symbol with smaller modules, so if a long code reads poorly, shorten the text, drop the recovery level, or print it larger. Whether a scanner shows your line breaks, or runs the text together, is decided by that scanner app and not by the code.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts (the compound-interest-calculator
+  // case, compoundFields(), the future(), finite(), percent() and format()
+  // helpers and scenarioNotice) and
+  // lib/tools/finance-business-workbench.test.ts. The figures and refusals below
+  // came from running the built operation.
+  'finance-and-business-compound-interest-calculator': {
+    directAnswer:
+      'Enter the starting amount, the annual rate as a percentage, the number of years and how many times a year interest compounds, then run it. You get the future value from the standard formula — the starting amount times one plus the rate divided by the frequency, raised to the power of years times frequency — and the growth, which is that value minus what you put in. It is an estimate built only from the numbers you type, not financial advice.',
+    leadParagraph:
+      'This is one formula with four inputs and nothing hidden inside it. Nothing is added along the way: no contributions, no fees, no tax, no inflation adjustment and no currency, so the answer is a bare number in whatever unit you had in mind. The compounding frequency is a whole number from 1 to 365, which covers yearly, half-yearly, quarterly, monthly and daily, but not continuous compounding, which is not offered here. A negative rate is accepted down to minus 99.999999 per cent, so a shrinking balance can be modelled. The page carries its own notice: scenario math only, and rates, fees, compounding, timing, taxes, insurance, rounding and provider rules can all change the real result.',
+    faqs: [
+      {
+        question: 'What exactly does it calculate?',
+        answer:
+          'The future value of a single amount left to compound at a constant rate. With 100,000 at 8 per cent for 10 years compounding 12 times a year it returns a future value of 221964.023454 and a growth of 121964.023454. Results are printed to 12 significant digits with trailing zeros dropped, and there is no currency symbol and no thousands separator, because the tool has no idea which currency you mean. Growth is simply the future value minus the starting amount, so it is not a return figure and takes no account of anything you paid in along the way.',
+      },
+      {
+        question: 'What happens if I leave a box empty?',
+        answer:
+          'It is read as zero, and you get a confident-looking answer rather than a warning. An empty rate box returns a future value equal to the starting amount and a growth of exactly 0; an empty starting amount returns 0 and 0; an empty years box does the same. None of those stop the run, because zero is inside the allowed range for each field. Check that every box actually holds a number before you rely on a result, particularly the rate.',
+      },
+      {
+        question: 'Why was one of my numbers refused?',
+        answer:
+          'The compounding frequency must be a whole number from 1 to 365: 2.5 gives "Frequency must be a whole number from 1 to 365." and 366 gives a differently worded message naming the internal field instead of the label you filled in. Years multiplied by frequency must itself land on a whole number no greater than 1,000,000, so 10.5 years compounding once a year is refused with "Years × frequency must be a whole number no greater than 1,000,000." while 10.5 years compounding monthly is fine, because that is 126 periods. A negative starting amount is refused too, with a message that ends in the largest number a browser can hold — an awkward line, but it means the field must not be negative.',
+      },
+      {
+        question: 'Does it handle contributions, tax or inflation?',
+        answer:
+          'No, none of the three. Nothing is added to the balance after the start, nothing is deducted for tax, charges or an account fee, and no adjustment is made for inflation, so the answer is in the money of the day you started. Regular paying-in is a separate tool in the same workbench, which projects end-of-month contributions at a constant monthly-equivalent rate. To see a result in today\x27s money, work the inflation out yourself afterwards.',
+      },
+      {
+        question: 'How exact is the arithmetic?',
+        answer:
+          'The calculation uses double-precision floating point and the answer is rounded to 12 significant digits, with anything smaller than a ten-billionth printed as 0. That is far more precision than the inputs deserve. The bigger caveat is the model, not the arithmetic: it assumes the rate is exactly constant for the whole term and that compounding falls at perfectly even intervals, and a real account changes its rate, counts days its own way and rounds at every step.',
+      },
+    ],
+  },
+
+  // lib/tools/date-workbench.ts (the business-days-calculator case, the
+  // businessDays() and weekdaysInClosedRange() helpers and parseDateOnly) and
+  // lib/tools/date-workbench.test.ts. Every count below was produced by running
+  // the built operation.
+  'date-time-and-productivity-business-days-calculator': {
+    directAnswer:
+      'Enter a start date and an end date, each written as a four-digit year, month and day joined by hyphens, then run it. The tool counts the Monday to Friday dates between them, leaving the start date out and counting the end date in — so Monday 5 January to Friday 9 January 2026 comes to 4 business days, not 5. Reversing the two dates returns the same number with a minus sign in front.',
+    leadParagraph:
+      'This counts weekdays and nothing else. Saturday and Sunday are the only days it skips: there is no public holiday list for any country, no field for pasting your own, and no way to say your working week runs Sunday to Thursday. Counting from Thursday 24 December 2026 to Monday 28 December 2026 returns 2 business days, because Christmas Day falls on the Friday and is treated as an ordinary working day. The arithmetic is done on whole dates in UTC, so no clock, no time zone and no daylight-saving change can shift a result by a day. Dates from the year 0100 to 9999 are accepted.',
+    faqs: [
+      {
+        question: 'Is the start day counted?',
+        answer:
+          'No — the end day is, and the start day is not. That is the single thing to check before you use a number from here, because many people expect both ends to be included. Monday to Friday of the same week gives 4, not 5. The same date twice gives 0 business days. Monday to Tuesday gives 1 business day. A Saturday to the Sunday after it gives 0. If your deadline rule counts the first day too, add one whenever the start date is itself a weekday.',
+      },
+      {
+        question: 'Does it know about public holidays?',
+        answer:
+          'No, for any country. There is no holiday list built in, no regional setting and no box for entering your own dates, so a national holiday, a bank holiday, a festival day and an office closure are all counted as working days. The sibling workday calculator in the same workbench says the same thing in its own description. Count the holidays that fall inside your range yourself and subtract them.',
+      },
+      {
+        question: 'Can I change which days are the weekend?',
+        answer:
+          'No. Saturday and Sunday are fixed in the code as the non-working days, so a six-day week, a Friday and Saturday weekend, a four-day week and a shift pattern cannot be represented. For those, count the calendar days with the date difference tool in the same workbench and do the weekend arithmetic yourself.',
+      },
+      {
+        question: 'What date format does it accept?',
+        answer:
+          'Only a four-digit year, a two-digit month and a two-digit day joined by hyphens. Anything else, including 05/01/2026, stops with "Use a valid date in YYYY-MM-DD form." A value that has the right shape but is not a real date, such as 2026-02-30, stops with "Use a valid calendar date." Years outside 0100 to 9999 are refused. Leap days are handled as real calendar dates rather than as arithmetic on day counts.',
+      },
+      {
+        question: 'What do I get back?',
+        answer:
+          'One line of text: the number followed by "business days", or "business day" when the count is exactly one either way. When the end date is earlier than the start, the count comes back negative and is the exact mirror of the forward count, so swapping the dates never changes the size of the answer. The download button saves that line as business-days-calculator.txt, and the copy button puts it on your clipboard.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts (the
+  // solution-dilution-calculator case, the positive(), finite() and format()
+  // helpers and physicsNotice) and lib/tools/science-education-workbench.test.ts.
+  // The worked figures and refusals below came from running the built operation.
+  'science-and-education-solution-dilution-calculator': {
+    directAnswer:
+      'Enter the starting concentration, the starting volume and the concentration you want, then run it: the tool rearranges C1 V1 = C2 V2 and returns V2, the total final volume, in whatever unit you used for V1. It does not tell you how much solvent to add — that is V2 minus V1, which you work out yourself, and the two concentrations have to be in the same unit already, because nothing here converts between molarity, percentage and parts per million. It is a calculation aid, not medical advice and not a substitute for a checked protocol.',
+    leadParagraph:
+      'This is the ideal dilution relation and nothing more: one multiplication and one division, with no units attached to any of the three boxes. That is deliberate, and it is easy to misread — C1 and C2 have to match each other, and the answer carries the unit you used for V1, which the output line states in so many words. Serial dilutions, dilution factors, making up a solution from a solid, and working out molarity from mass and molar mass are all either separate tools or not offered at all. The calculation assumes volumes simply add, which is close enough for dilute aqueous work and is not true for concentrated acids or for alcohol and water. The page carries its own notice about checking significant figures, uncertainty, conditions and domain assumptions before laboratory or engineering use.',
+    faqs: [
+      {
+        question: 'How much solvent do I actually add?',
+        answer:
+          'The final volume minus the starting volume, which you do yourself. Diluting 100 mL of a 1 molar stock to 0.25 molar returns a required final volume of 400, so you take the 100 mL and make it up to 400 mL, adding 300 mL of solvent. The tool prints 400 and stops there. Making up to a mark in a volumetric flask is the accurate way to reach that final volume; measuring out the solvent separately and adding it is only as good as the assumption that the volumes add.',
+      },
+      {
+        question: 'Which units should I use?',
+        answer:
+          'Any, as long as you are consistent. The two concentrations must be in the same unit as each other — both molar, or both per cent, or both parts per million — and the answer comes back in whatever unit the starting volume was in, which the output line spells out as "same volume unit as V1". Nothing is converted and nothing is labelled, so mixing a molarity with a percentage produces an answer that is arithmetically correct and physically meaningless.',
+      },
+      {
+        question: 'What if the target concentration is higher than the start?',
+        answer:
+          'It answers anyway, with no warning at all. Asking to go from 0.25 to 1 in 100 units of volume returns 25, a final volume smaller than the one you started with. Adding solvent cannot raise a concentration, so a result below your starting volume means you have asked for a concentration step rather than a dilution — check which way round C1 and C2 are before using the number.',
+      },
+      {
+        question: 'Why was one of my numbers refused?',
+        answer:
+          'All three boxes must hold a number greater than zero. A zero, a negative or an empty box gives a message that names the internal field and prints the smallest and largest numbers a browser can represent — for example a message about c2 that ends in a very long exponent. It is an awkward line, and what it means is simply that the field needs a positive number in it. There is no upper limit in practice, and no check on whether your numbers are physically sensible.',
+      },
+      {
+        question:
+          'How is the answer rounded, and what does it not account for?',
+        answer:
+          'To 12 significant digits, which is far beyond what any pipette, balance or volumetric flask justifies — round it to your own significant figures before writing it down. The calculation takes no account of temperature, of the purity or true strength of your stock, of activity coefficients, or of the tolerance of the glassware you are using. It answers the arithmetic question only; the laboratory judgement stays with you.',
+      },
+    ],
+  },
+
+  // lib/tools/life-admin-workbench.ts (the pin-code-format-checker case, the
+  // formatCheck() and required() helpers and syntaxNotice) and
+  // lib/tools/life-admin-workbench.test.ts. Every verdict quoted below was
+  // produced by running the built operation.
+  'india-and-life-admin-pin-code-format-checker': {
+    directAnswer:
+      'Type the code and run it: every space is stripped, and the tool reports either MATCHES FORMAT or DOES NOT MATCH FORMAT, prints the cleaned value it actually tested, and names the rule it applied. That rule is six digits whose first digit is not zero. It checks shape only and never looks anything up, so it cannot tell you whether a code exists or which post office it belongs to.',
+    leadParagraph:
+      'An Indian postal index number is six digits, and the first digit identifies the postal region, which is why no PIN code begins with a zero. That is the whole of what is checked here: one digit from 1 to 9 followed by five more digits. The output says as much itself, printing "Rule: six digits; first digit is not zero" and then "Not an existence or ownership check." There is no data behind it — no list of live codes, no mapping to a state, district or post office, and nothing about whether post is actually delivered there. It is also looser than the real numbering plan in one place worth knowing: the 9 series belongs to the Army Postal Service rather than to ordinary civilian addresses, and a code such as 900001 is still reported here as matching the format. Use it to catch a typo, not to confirm an address.',
+    faqs: [
+      {
+        question: 'What exactly does it accept?',
+        answer:
+          'Six digits with a first digit from 1 to 9. Every space is removed before the test, so 560 038 and even 5 6 0 0 3 8 both match. Nothing else is removed: 560-038 keeps its hyphen, is reported as not matching, and the Normalized line shows you the hyphen it kept, which is the quickest way to see why. A leading zero such as 060038 does not match, and seven digits does not match. There is no check of the last five digits at all — any combination of them is accepted.',
+      },
+      {
+        question: 'Does a matching result mean the code is real?',
+        answer:
+          'No, and the tool says so on its own last line. Every six-digit number from 100000 to 999999 matches this rule, which is nine hundred thousand possibilities, and only a fraction of those are codes India Post actually uses. Nothing is looked up, nothing is fetched and no list is consulted. To confirm a real code, check it against India Post or the delivery address you were given.',
+      },
+      {
+        question: 'Will it tell me the state, district or post office?',
+        answer:
+          'No. It does not decode the first digit into a region, the first two into a postal circle, the third into a sorting district or the last three into a delivery office. The result is four lines and no more: the verdict, the normalised value it tested, the rule, and the reminder that this is not an existence or ownership check.',
+      },
+      {
+        question: 'Why does it say "Enter a pin code first."?',
+        answer:
+          'That is the message when the box is empty or holds only spaces. The wording lower-cases PIN, which is a slip in the message rather than a different check — the rule applied is the same either way. There is also a length guard at 100,000 characters, which nobody entering a postal code will ever reach.',
+      },
+      {
+        question: 'Can I check several codes at once?',
+        answer:
+          'No. The field is a single line and one value is tested per run, so a list has to be checked one code at a time. Pasting a whole address does not work either, because the letters in it are not removed and the value fails the digits-only rule. The address formatter in the same workbench lays an address out on separate lines, and it carries the same caution: it does not verify a locality, a PIN code, deliverability or any government address record.',
+      },
+    ],
+  },
+
+  // lib/tools/creator-workbench.ts (the youtube-tag-workspace case and the
+  // tags() helper that splits, strips and deduplicates) and
+  // lib/tools/creator-workbench.test.ts. The splitting shown below was produced
+  // by running the built operation on the default value the tool ships with.
+  'creator-and-social-youtube-tag-workspace': {
+    directAnswer:
+      'Paste your tags and run it: leading hash signs are stripped, duplicates are removed ignoring case, and the survivors come back joined by commas with a count of the tags and of the characters. Check the result before you use it, because the splitting is done on spaces as well as on commas, so a multi-word tag is broken into separate one-word tags. Where a tag repeats, the first spelling is the one kept.',
+    leadParagraph:
+      'The operation describes itself as working on comma or newline separated tags, but the code splits on any run of spaces, tabs, line breaks or commas. A phrase therefore does not survive: "how to bake bread, sourdough starter" comes back as six tags — how, to, bake, bread, sourdough, starter — and even the example the tool ships with, "privacy tools, browser tools, productivity, privacy tools", comes back as the four single words privacy, tools, browser, productivity. Since a video tag is usually a phrase, treat this as a deduplicating word list rather than a tag editor, and read the output against what you meant to type. Deduplication compares without regard to case and keeps the first spelling, so Baking, baking and BAKING collapse to Baking. Between one and 1,000 pieces are accepted after the splitting.',
+    faqs: [
+      {
+        question: 'Why did my multi-word tags split up?',
+        answer:
+          'Because the splitter treats a space exactly as it treats a comma, even though the tool\x27s own description mentions only commas and new lines. Every run of spaces, tabs, line breaks and commas is a boundary, so "browser tools" is two tags and not one, and there is no setting anywhere on the page to change the separator. If you need phrase tags, keep the list somewhere else and use this only for single words, or paste the result back into your own editor and rejoin the pieces by hand.',
+      },
+      {
+        question: 'What does the character count include?',
+        answer:
+          'The whole joined string, counting the comma and space written between each pair of tags, measured in Unicode code points. It is reported and nothing more: the count is not compared against any platform limit, there is no warning when it gets large, and no colour or threshold appears. Expect one rough edge in the wording — a result holding a single tag still reads "1 unique tags", because the label is not made singular.',
+      },
+      {
+        question: 'How does the deduplication work?',
+        answer:
+          'Each piece is lower-cased for comparison only, so two spellings that differ just by case are treated as the same tag and the first one you wrote is the one that survives; the others are dropped without a note. A leading hash sign is removed before that comparison, so a hashtag and a plain word are the same tag. Nothing else is trimmed, so a trailing exclamation mark or a stray full stop makes a separate tag, and the order of everything that survives is the order you typed it in.',
+      },
+      {
+        question: 'What are the limits?',
+        answer:
+          'After splitting there must be between one and 1,000 pieces; outside that range the run stops with "Enter from one to 1,000 tags.", and an empty box gives the same message. There is no maximum length for an individual tag and no cap on the combined length, so nothing stops you producing a list longer than a platform will accept — the count is there for you to judge that yourself.',
+      },
+      {
+        question: 'Does it suggest tags or tell me what is popular?',
+        answer:
+          'No. Nothing is fetched, no video is read, no search data exists here and no ranking of any kind is implied or possible. It is a list cleaner that runs on the text you paste. The hashtag tools in the same workbench do the identical job and put a hash in front of each surviving word, which is the only difference between them.',
+      },
+    ],
+  },
+
+  // components/image-editor-tool.tsx (EDITOR_TASKS, MAX_BYTES, chooseImage, the
+  // run() canvas pipeline including the scale() call and the JPEG background
+  // fill, the format and quality controls and the download name),
+  // lib/tools/image.ts (supportedRasterTypes, transformedDimensions,
+  // extensionForRasterType) and lib/tools/image.test.ts.
+  'image-image-flipper': {
+    directAnswer:
+      'Open a JPEG, PNG or WebP image of up to 25 MB, then press Flip H to mirror it left to right, Flip V to mirror it top to bottom, or both to end up with a 180 degree turn. Each button is a toggle and nothing is written until you press the button below the controls. The saved file is re-encoded as WebP unless you choose JPEG or PNG in the format box.',
+    leadParagraph:
+      'Mirroring is done by drawing the picture to a canvas with a negative scale, so the pixels are genuinely rearranged in the file rather than a flag being set that a viewer may or may not respect. The dimensions do not change: a mirrored 640 by 480 photograph is still 640 by 480. Because the whole editor is one pass over one picture, the crop boxes, the rotate button and the brightness, contrast, greyscale and sepia sliders sit on the same page and all apply in the same run. The output is encoded fresh from the canvas and nothing in this tool reads or copies the original file\x27s metadata, so none of it is carried across. And any text or logo in the picture will come out backwards, which is what mirroring means and the usual reason a mirrored photograph looks wrong.',
+    faqs: [
+      {
+        question: 'What is the difference between flipping and rotating?',
+        answer:
+          'A flip is a mirror and a rotation is a turn. Flipping left to right and then top to bottom gives the same picture as a 180 degree rotation, which is why both buttons together look like a turn. A single flip can never be produced by rotating, though: text reads backwards after a mirror and stays readable after a turn. The rotate button on this same page works in 90 degree steps and swaps the width and height on a quarter turn, which a flip never does.',
+      },
+      {
+        question:
+          'Why does Flip H mirror my picture up and down after I rotate it?',
+        answer:
+          'Because the mirror is applied in the picture\x27s own axes and the turn is applied after it. Once a quarter turn is in place, what was the picture\x27s left-to-right axis is the output\x27s vertical one, so Flip H mirrors the visible result top to bottom and Flip V mirrors it left to right. If you want to mirror what you can see on screen, either do the flip before setting the rotation, or simply press the other flip button.',
+      },
+      {
+        question: 'Why was my image refused?',
+        answer:
+          'A file that is not a JPEG, PNG or WebP gives "Choose a static JPEG, PNG, or WebP image.", which rules out GIF, HEIC, AVIF, TIFF and SVG. A file over 25 MB gives "This candidate limits source images to 25 MB." A file the browser cannot decode gives "The browser could not decode this image." A result over 64 megapixels gives "The edited image exceeds the 64 megapixel canvas limit." After encoding, the finished image is read back and its dimensions checked against what was asked for, and a mismatch stops with "The edited image failed its dimension check." rather than handing you the wrong file.',
+      },
+      {
+        question: 'What file do I get back?',
+        answer:
+          'The format box starts on WebP, so a JPEG you mirror is saved as a WebP file unless you change it, and the quality slider runs from 10 to 100 starting at 90. Choosing PNG switches the slider off and reads lossless. JPEG has no transparency, so the canvas is painted white first and a transparent PNG saved as JPEG comes back on white. The saved file is always called edited-image with the extension of the format the browser really produced: some browsers answer a WebP request with a PNG, and the tool reports the format it got rather than naming the file for one it is not.',
+      },
+      {
+        question: 'Does mirroring lose any quality?',
+        answer:
+          'The mirror itself loses nothing, because it moves whole pixels onto whole pixel positions with no interpolation. The saving does, if you choose a lossy format: the file is encoded again from scratch, so repeated edit-and-save rounds compound the loss. Choose PNG for a lossless save, or push the quality slider up for WebP and JPEG. Selecting a different image resets both flips, the rotation and every slider to their starting values.',
+      },
+    ],
+  },
+
+  // lib/tools/spreadsheet-workbench.ts (the csv-filter case with its five
+  // operators and their differing case handling, plus the table / header /
+  // toCsv helpers), lib/tools/spreadsheet-workbench.test.ts,
+  // lib/tools/structured.ts (csvToRecords, which supplies the parse refusals)
+  // and components/schema-workbench-tool.tsx for the download extension. Each
+  // behaviour below was run through the built operation.
+  'spreadsheet-and-data-csv-filter': {
+    directAnswer:
+      'Paste the CSV, type the exact name of the column to test, choose one of five conditions — equals, contains, starts with, number greater than, number less than — and type the value to compare against. Rows whose cell passes are kept in their original order, and the header row always comes back even when nothing matches. One condition is applied per run: there is no way to combine two tests.',
+    leadParagraph:
+      'This keeps the rows you want from one comma-separated table and discards the rest. The case rules are the first thing to check, because they are not the same for all five conditions: Equals compares the cell to your value exactly, capital letters and spaces included, while Contains and Starts with lower-case both sides before comparing. So a Team column holding Blue is kept by Contains with the value blue and dropped by Equals with that same value. The two numeric conditions read both sides as numbers and stop the run with "Numeric filters require finite numbers." when either side cannot be read as one. There is no ends-with, no not-equals, no greater-or-equal, no pattern matching and no comparison of dates as dates.',
+    faqs: [
+      {
+        question: 'Why did Equals miss a row that Contains found?',
+        answer:
+          'Because Equals is the only condition that respects capital letters. Contains and Starts with lower-case the cell and your value before comparing, so they ignore case; Equals compares the two strings exactly as they stand. Equals is also sensitive to spaces the eye does not see — a cell exported as Blue with a trailing space will not equal Blue. Run the CSV cleaner in the same workbench first if your export leaves padding around its values.',
+      },
+      {
+        question: 'What happens to blank cells and to a blank value?',
+        answer:
+          'Both cases pass silently rather than raising anything. An empty cell is read as the number zero by the two numeric conditions, so filtering a score column for numbers less than 5 keeps the row whose score is simply missing. And leaving the value box empty with Contains keeps every single row, because every piece of text contains nothing. Neither is reported, so check the row count of the result against what you expected.',
+      },
+      {
+        question:
+          'Can I use two conditions, or drop rows instead of keeping them?',
+        answer:
+          'No to both. One column, one condition, one value, and the rows that pass are the rows you keep. There is no invert switch, so removing rows means writing a condition that only the rows you want to keep can pass. Running the tool twice, feeding one result into the next, gives you an and of two conditions but can only ever narrow the result — an or of two conditions cannot be expressed here at all.',
+      },
+      {
+        question: 'Why does it say my column is unknown?',
+        answer:
+          'The name you type is trimmed and then has to match a header exactly, capital letters included: typing Team against a header written team gives "Unknown column: Team." An empty box gives "Unknown column: (blank)." Headers in the file are trimmed when it is parsed, so spaces around a header name in the source are not the cause — only spelling and case are.',
+      },
+      {
+        question: 'What comes back, and what does the download contain?',
+        answer:
+          'A fresh CSV with the same headers and only the rows that passed, still in their original order; a filter that matches nothing returns the header line on its own. Quoting is rewritten rather than copied, so a field is wrapped in double quotes only when it contains a comma, a double quote or a line break. The download button saves the result as csv-filter.txt with a plain-text type, because the CSV tools in this workbench declare no file extension of their own — rename it to .csv for a spreadsheet, or copy and paste instead. Tables are limited to 2,000,000 characters, 100,000 rows and 1,000 columns, and the strict parser refuses a blank or duplicate header and any row with the wrong number of fields, naming the row.',
+      },
+    ],
+  },
+
+  // lib/tools/notation/markup.ts (markdownToHtml, inlineMarkdown and
+  // escapeHtml), lib/tools/writing-workbench.ts (the markdown-to-html
+  // operation, its notice and outputExtension),
+  // lib/tools/writing-workbench.test.ts and components/schema-workbench-tool.tsx.
+  // Every conversion described below was run through the built function.
+  'text-and-writing-markdown-to-html': {
+    directAnswer:
+      'Paste the Markdown and run it; the HTML appears beside it, ready to copy or to download as markdown-to-html.html. Every character is escaped before a single Markdown rule is applied, so raw markup in your source comes out as visible text rather than as live tags — a script tag in the input becomes words on the page. The tool states its own scope above the button: a documented common subset, not every Markdown extension.',
+    leadParagraph:
+      'This converts a small and deliberately safe slice of Markdown: headings written with one to six hashes and a space, fenced code blocks between triple backticks, bulleted lists marked with a hyphen or an asterisk, numbered lists marked with a digit and a full stop or bracket, and inline backticks, double-asterisk bold, single-asterisk italic and square-bracket links. Anything that matches none of those becomes a paragraph. Because the escaping happens first, the output can never contain markup you did not ask for, and the price of that is that you cannot mix HTML into your Markdown at all. Links are checked before they are written: only web and mail addresses become links, and anything else, a relative path included, is written out as the label followed by the address in brackets. Each line is its own block, so a paragraph you soft-wrapped across three lines becomes three separate paragraphs.',
+    faqs: [
+      {
+        question: 'What Markdown is not supported?',
+        answer:
+          'Tables, blockquotes, nested lists, images, horizontal rules, task lists, strikethrough, footnotes, reference-style links, and underscores for emphasis. Each of those falls through to a paragraph holding its literal text: a line of three hyphens becomes a paragraph containing three hyphens, a table row becomes a paragraph full of pipe characters, and an indented sub-item becomes a paragraph because the list rules require the marker at the very start of the line. Bold and italic must use asterisks, because the underscore forms are not recognised. A numbered list always renders from one — the number you wrote is discarded.',
+      },
+      {
+        question: 'Does it protect me from HTML inside my Markdown?',
+        answer:
+          'Yes, completely. Every ampersand, angle bracket, double quote and apostrophe is replaced with an escape before any rule runs, and a test in this repository requires a script tag in the input to come back escaped. One visible side effect is that apostrophes and quotation marks in ordinary prose are written as numeric character references in the source, which renders identically but makes the HTML look noisier than you wrote it. The other side of the guarantee is that a fragment of HTML you wanted to keep, an embedded player for instance, is shown as text rather than kept.',
+      },
+      {
+        question: 'Are there quirks I should check in the output?',
+        answer:
+          'Two, both worth seeing before you publish. Inside a fenced code block every line is followed by a blank one, so a three-line snippet comes out double-spaced on the rendered page and needs tidying by hand. And backticks do not make their contents inert: the inline code rule runs first, so bold, italic and link syntax written inside backticks is still converted, and a link written inside backticks becomes a real link sitting inside the code element. Keep syntax examples out of backticks, or fix the result afterwards.',
+      },
+      {
+        question: 'How are links and code fences handled?',
+        answer:
+          'A link is parsed as a full address first. Web and mail addresses become links; anything the parser rejects, and any relative path such as a leading slash and a page name, is written as the label followed by the address in brackets as plain text. The address is re-serialised by the parser, so the host is lower-cased and an empty path gains a trailing slash. A space anywhere in the address stops it being read as a link at all. For code, the language written after the opening backticks is discarded and no class is added, so a syntax highlighter has nothing to key on, and a fence you forget to close is closed for you at the end of the document.',
+      },
+      {
+        question: 'What are the limits, and what exactly is downloaded?',
+        answer:
+          'An empty box, or one holding only spaces, stops with "Markdown is required." There is no character limit, so the practical ceiling is what the browser tab holds, and Windows line endings are normalised before parsing. What you get is an HTML fragment and not a complete document: there is no doctype, no page or head element and no stylesheet, so wrap it in your own template before serving it. The download button saves that fragment as markdown-to-html.html.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'proportion-calculator',
+  // runMathOperation, numeric, format), lib/tools/math-workbench.test.ts,
+  // components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-proportion-calculator': {
+    directAnswer:
+      'Type the three terms you know into a, b and c, and the fourth is worked out for you as x = (b × c) ÷ a. There is no button: the answer is recalculated a quarter of a second after you stop typing, and shown on one line as x = followed by the value. The unknown is always the fourth term, so a proportion with its gap somewhere else has to be reordered before you type it in.',
+    leadParagraph:
+      'This solves a:b = c:x by cross-multiplication and nothing more. The three boxes start at 2, 3 and 8, which gives x = 12, and that exact case is pinned by a test in this repository. Each box is read with JavaScript\x27s own number conversion, so decimals, negatives and forms such as 1e3 are all accepted, an empty box reads as zero, and anything that is not a number stops the run by name. The answer is printed to twelve significant figures — enough that a recurring result such as one third is visibly rounded rather than exact. Nothing about units, currency or percentages is understood here; the tool sees four numbers in a ratio and returns the one you left out.',
+    faqs: [
+      {
+        question:
+          'Which of the four values does the proportion calculator solve for?',
+        answer:
+          'Always the fourth one, called x. The page reads a, b and c and returns x = (b × c) ÷ a, so it answers a:b = c:x and only that arrangement. If your unknown sits in the first position — x:3 = 8:12, say — rewrite the proportion so the gap is last, which here means entering 8, 12 and 3 to get x = 4.5. There is no setting that moves the unknown, and no second output line showing the other terms.',
+      },
+      {
+        question:
+          'What happens if I leave a box empty or type something that is not a number?',
+        answer:
+          'An empty box is read as zero, because each value goes through JavaScript\x27s own number conversion before anything else happens. That matters most for the first box: a zero in a stops the run with "a cannot be zero.", since dividing by it has no answer. A box holding letters or a currency symbol gives "Enter a finite number for a." with the name of the offending box, and the previous answer stays on screen until a valid set of three numbers is typed.',
+      },
+      {
+        question: 'How precise is the answer from the proportion calculator?',
+        answer:
+          'Twelve significant figures. The result is computed in ordinary binary floating point and then reduced to twelve digits of precision before it is printed, so a value such as two thirds comes out as 0.666666666667 rather than running on. A result that overflows — very large terms multiplied together — is refused with "The result is outside the finite number range." rather than shown as infinity. Treat the twelve digits as a display limit, not as a promise of exactness in the last place.',
+      },
+      {
+        question: 'Does it understand units, percentages or currency?',
+        answer:
+          'No. It is pure cross-multiplication on four bare numbers, so the units are yours to keep track of. Scaling a recipe from 2 cups to 8 cups works because both sides are in cups; mixing grams on one side with ounces on the other produces a number that is arithmetically right and practically wrong. The same applies to percentages: enter 15 if you mean fifteen, not 0.15, and keep the same convention on both sides of the proportion.',
+      },
+      {
+        question:
+          'Can I save the result, and where does the calculation happen?',
+        answer:
+          'There is a copy button beside the result, labelled Copy result, and that is the only way out — this calculator produces one line of text, so it offers no file to download. The arithmetic runs in the page itself, in the same tab you have open, and the three numbers you type are never sent anywhere to be worked out. Switching to another calculator from the dropdown navigates to that calculator\x27s own page and resets the boxes to its defaults.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'average-calculator',
+  // runMathOperation, parseList, format), lib/tools/math-workbench.test.ts
+  // and components/math-workbench-tool.tsx
+  'math-and-units-average-calculator': {
+    directAnswer:
+      'Paste your numbers into the one box — separated by spaces, commas, semicolons or new lines, in any mixture — and the arithmetic mean appears a quarter of a second later. The list is added left to right and divided by how many values were found, then printed to twelve significant figures. One trap is worth knowing before you paste: a comma is a separator here, so 1,000 is read as two numbers rather than one thousand.',
+    leadParagraph:
+      'This is the arithmetic mean and only the arithmetic mean — the sum divided by the count. The box splits on any run of whitespace, commas or semicolons, drops the empty pieces, and converts each remaining piece with JavaScript\x27s own number conversion, so 1,2,3,4 gives 2.5 and that case is pinned by a test in this repository. Negatives, decimals and exponent forms such as 2.5e3 all survive; a currency symbol, a percent sign or a stray letter does not, and the whole run stops rather than skipping the bad value. Lists are capped at 100,000 values, which is a limit on the paste, not on the arithmetic. Median, mode, variance and standard deviation are separate calculators in the same dropdown, because each answers a different question about the same list.',
+    faqs: [
+      {
+        question: 'How do I separate the numbers in the average calculator?',
+        answer:
+          'Any run of spaces, tabs, commas, semicolons or line breaks counts as one separator, and you can mix them freely in the same paste. That means a column copied out of a spreadsheet works as it stands, and so does a comma-separated line, and so does a mixture of the two. Empty pieces between separators are dropped, so trailing commas and blank lines do no harm. There is no setting to change the separator, and no way to tell it to treat a character as part of a number instead.',
+      },
+      {
+        question:
+          'Why did my numbers with thousands separators give a strange average?',
+        answer:
+          'Because the comma is a separator here, not part of the number. Pasting 1,000 produces two values — 1 and 000, which converts to 0 — so a single figure of one thousand becomes two figures averaging 0.5. The same happens with a space used as a grouping mark: 1 000 is read as 1 and 0. Strip the grouping marks before pasting, or export the column without them, and check the count the result panel implies against how many figures you meant to supply.',
+      },
+      {
+        question: 'Which average does this calculate?',
+        answer:
+          'The mean: every value added together and divided by the number of values. It is not the median, which is the middle value once the list is sorted, and not the mode, which is the most frequent value; those are separate tools in the same dropdown on this site. There is no weighting either — every value counts once, so a list where one figure represents a hundred observations will not reflect that unless you repeat it a hundred times.',
+      },
+      {
+        question: 'What will the average calculator refuse?',
+        answer:
+          'Three things, each by name. An empty box, or a box holding only separators, gives "Enter a list of finite numbers separated by spaces or commas." So does any single piece that will not convert to a finite number — a percent sign, a rupee or pound symbol, the word Infinity, or a stray letter — and the whole run stops rather than quietly ignoring that one value. More than 100,000 values gives "Number lists are limited to 100,000 values." Nothing is skipped or guessed at to make a messy paste work.',
+      },
+      {
+        question: 'How exact is the sum on a long list?',
+        answer:
+          'The values are added one at a time from left to right in ordinary binary floating point, and the result is then printed to twelve significant figures. On a long list of values with very different magnitudes, that accumulation order can lose precision in the last places — a known property of floating-point addition rather than anything particular to this page. For a few hundred ordinary measurements it makes no visible difference; for accounting work where the last penny is contractual, total in a tool built for exact decimal arithmetic.',
+      },
+    ],
+  },
+
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS
+  // 'ifsc-format-checker', runLifeAdminOperation, formatCheck, required),
+  // lib/tools/life-admin-workbench.test.ts,
+  // components/life-admin-workbench-tool.tsx and
+  // components/schema-workbench-tool.tsx
+  'india-and-life-admin-ifsc-format-checker': {
+    directAnswer:
+      'Paste an IFSC into the box and the page reports MATCHES FORMAT or DOES NOT MATCH FORMAT against the shape the Reserve Bank documents: four letters, then the digit zero, then six letters or digits. It is a shape check and it says so on screen — the last line of every result reads "Not an existence or ownership check." No directory is consulted, so a code that matches may still belong to no branch at all.',
+    leadParagraph:
+      'The test applied is one regular expression, ^[A-Z]{4}0[A-Z0-9]{6}$, which is the eleven-character structure and nothing looser. Your typing is tidied first: leading and trailing spaces are removed, every remaining space is stripped, and the whole thing is upper-cased, so sbin 0001 234 and SBIN0001234 are treated as the same code. A test in this repository checks both directions — lower-case sbin0001234 matches, and SBIN1001234 does not, because the fifth character has to be the digit zero. The result is four lines: the verdict, the normalised code, the rule in words, and the disclaimer. IFSC carries no check digit, so shape is the most that can be established without a directory; whether the branch exists, is still open, or is the one you want is a question only the bank or the RBI can answer.',
+    faqs: [
+      {
+        question: 'What exactly does the IFSC format checker test?',
+        answer:
+          'Eleven characters in a fixed order: positions one to four must be letters A to Z, position five must be the digit zero, and positions six to eleven may each be a letter or a digit. That is the whole test. It does not look up the four-letter bank code against any list, so a made-up code such as ZZZZ0000001 matches the format perfectly. It does not check length against a shorter or longer variant either — ten or twelve characters simply fail.',
+      },
+      {
+        question: 'Does a match mean the bank branch actually exists?',
+        answer:
+          'No, and the tool prints that limit as part of every result. A matching IFSC has the right shape and nothing more: the branch may have merged, closed, been renumbered, or never have existed. Nothing is looked up, because no directory is consulted and no request leaves the page to check. Before sending money to a branch you have not used, confirm the code against the bank\x27s own published list or the Reserve Bank of India, and confirm the account name separately.',
+      },
+      {
+        question: 'How is my typing cleaned up before the check?',
+        answer:
+          'Surrounding whitespace is trimmed, then every space anywhere in the value is removed, then the result is turned to upper case. So sbin 0001 234 passes and prints as SBIN0001234 on the Normalized line. Other punctuation is not removed: a hyphen, a slash or a full stop stays in the string, is not a letter or a digit, and therefore fails the check. If your code came from a PDF or a bank statement, strip the separators before pasting.',
+      },
+      {
+        question: 'Why is my IFSC being refused when it looks correct?',
+        answer:
+          'Three causes account for almost all of it. The fifth character must be the digit zero and not the capital letter O, and the two are hard to tell apart in many fonts. The code must be exactly eleven characters, so a truncated copy or an extra character fails. And any punctuation you pasted — a hyphen between the bank code and the branch code, for instance — is not stripped and will fail. Leaving the box empty gives "Enter an ifsc first." instead.',
+      },
+      {
+        question: 'What is on screen after a check, and can I keep it?',
+        answer:
+          'Four lines: MATCHES FORMAT or DOES NOT MATCH FORMAT, then Normalized with the cleaned code, then Rule reading "four letters + 0 + six alphanumerics", then "Not an existence or ownership check." You can copy that block or save it, though the save button writes it as ifsc-format-checker.txt as plain text rather than as any banking format. The MICR checker on this site answers a different question about the same cheque: the nine-digit code printed along the bottom.',
+      },
+    ],
+  },
+
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS
+  // 'micr-format-checker', runLifeAdminOperation, formatCheck, required,
+  // syntaxNotice), lib/tools/life-admin-workbench.test.ts and
+  // components/schema-workbench-tool.tsx
+  'india-and-life-admin-micr-format-checker': {
+    directAnswer:
+      'Paste the nine-digit code printed along the bottom of an Indian cheque and the page reports MATCHES FORMAT or DOES NOT MATCH FORMAT. The rule it applies is exactly nine digits and nothing else, after spaces and hyphens have been removed, so 400-002-001 and 400 002 001 both pass. The three parts of a MICR line — city, bank and branch — are not separated out or checked against any list.',
+    leadParagraph:
+      'The test is one regular expression, ^\\d{9}$, applied to your value once every space and hyphen has been stripped out. A MICR line on an Indian cheque is conventionally read as three groups of three — the first three digits the city, the next three the bank, the last three the branch — but this tool does not split them, does not look any of them up, and does not know which combinations have been issued. A test in this repository checks the obvious failure: ABC400002001 does not match, because letters are not digits. The result is four lines — the verdict, the normalised digits, the rule in words, and a reminder that a matching shape proves nothing about existence — and the page carries its own notice saying a match does not prove that the identifier, account, branch, address or beneficiary exists or is active. There is no check digit in a nine-digit Indian MICR, so no arithmetic test is possible; 000000000 matches the format as readily as a real code does.',
+    faqs: [
+      {
+        question: 'What does the MICR format checker actually verify?',
+        answer:
+          'That the value, once spaces and hyphens are removed, is exactly nine characters and that every one of them is a digit from 0 to 9. Nothing else. It does not confirm that the first three digits are a real city code, that the middle three belong to a bank, or that the last three name a branch that exists. A string of nine zeros passes, and so does any other nine digits you invent.',
+      },
+      {
+        question: 'Which characters are removed before the check?',
+        answer:
+          'Spaces and hyphens, anywhere in the value, along with any whitespace at either end. That covers the two ways a MICR code is usually written down, so 400 002 001 and 400-002-001 both reduce to 400002001 and pass. Anything else stays: a full stop, a slash, a colon or a stray letter survives the tidy-up, fails the digits-only test, and the result tells you the value does not match. The cleaned value is shown back to you on the Normalized line so you can see what was actually tested.',
+      },
+      {
+        question: 'Does a matching MICR mean the cheque or branch is valid?',
+        answer:
+          'No. The page states this twice — once in the last line of the result, "Not an existence or ownership check.", and once in the notice above the tool, which says a match does not prove that the identifier, account, branch, address or beneficiary exists or is active. Bank branches are renumbered and closed, and a nine-digit MICR has no check digit, so there is no arithmetic that could catch a transposed pair of digits. Verify the code against the cheque itself and with your bank.',
+      },
+      {
+        question:
+          'How does this differ from the IFSC checker on the same site?',
+        answer:
+          'They check two different codes that appear on the same cheque. MICR is the nine-digit number printed in magnetic ink along the bottom edge, used for physical cheque clearing. IFSC is the eleven-character code — four letters, the digit zero, then six letters or digits — used for electronic transfers. The IFSC checker on this site applies that eleven-character rule. Neither tool converts one code to the other, because the mapping between them is a directory lookup and no directory is consulted here.',
+      },
+      {
+        question: 'What happens with an empty box or a very long paste?',
+        answer:
+          'An empty or whitespace-only box stops the run with "Enter a micr code first." rather than reporting a failed match, so a blank field and a wrong code are never confused. A value longer than 100,000 characters is refused as too long before any checking happens. Anything in between is checked normally, which means a long paste that happens to contain nine digits and other characters is reported as not matching, not partially matched — there is no search for a nine-digit run inside a larger string.',
+      },
+    ],
+  },
+
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS
+  // 'youtube-title-length-checker', runCreatorOperation, required,
+  // positiveLimit), components/creator-workbench-tool.tsx,
+  // components/schema-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-youtube-title-length-checker': {
+    directAnswer:
+      'Type or paste your video title, set the character limit you are working to, and the count appears below it as a count against that limit with either "within selected limit" or the number of characters you are over. The limit box starts at 100 but it is yours to change — this page counts against the number you type and does not know or enforce any platform\x27s current rule. Leading and trailing spaces are trimmed before counting.',
+    leadParagraph:
+      'Counting characters sounds simple until an emoji is involved, so it is worth being exact about what this tool counts: Unicode code points, obtained by spreading the title into its code points and taking the length. An ordinary Latin or Devanagari letter is one code point and counts as one, a flag emoji is built from two regional-indicator code points and counts as two, and a skin-toned or joined emoji such as a woman technologist is four code points and counts as four even though it draws as a single picture. The character counter elsewhere on this site counts whole grapheme clusters instead and would call that same emoji one character, so the two tools will disagree on a title containing emoji — deliberately, because they answer different questions. Nothing here judges the words: it will not tell you where a title gets cut off in a search result, whether a keyword helps, or whether a character will render on someone else\x27s device.',
+    faqs: [
+      {
+        question:
+          'How does the title-length checker count emoji and accented letters?',
+        answer:
+          'By Unicode code points. A precomposed accented letter such as é is one code point and counts as one; the same letter typed as e followed by a combining accent is two code points and counts as two, even though both look identical on screen. Emoji are where this shows most: a flag counts as two, and a joined emoji with a skin tone counts as four. If you want whole visible characters counted instead, the character counter on this site segments by grapheme cluster and will give a lower number for the same title.',
+      },
+      {
+        question: 'Is 100 the real limit for a YouTube title?',
+        answer:
+          'One hundred is simply the value the box opens with, and this tool treats it as nothing more than that. The count is always measured against whatever number you type, and the result wording says "within selected limit" or "over selected limit" rather than naming any platform, because the page has no way to check what a site currently allows. Confirm the limit in the platform\x27s own help pages before you rely on it, and change the box to match.',
+      },
+      {
+        question: 'Does it change my title before counting it?',
+        answer:
+          'Only at the ends. Whitespace before the first character and after the last is trimmed away before the count, so a title pasted with a trailing space is not penalised for it. Everything inside is counted exactly as typed, including double spaces, tabs and any line break you managed to paste in. The title is printed back above the count, so you can see precisely what was measured rather than having to trust it.',
+      },
+      {
+        question: 'What will the title-length checker refuse?',
+        answer:
+          'An empty title, or one that is only whitespace, stops with "Title is required." A title longer than 500,000 characters is refused as too long, which no real title will reach but a mis-paste can. The limit box must hold a whole number from 1 to 100,000; a decimal, a negative number or text gives a message naming that range. Nothing is truncated to make a run succeed — an over-length title is reported as over, not cut.',
+      },
+      {
+        question: 'What does this tool not tell me?',
+        answer:
+          'Where the title is shortened with an ellipsis on a phone, in a sidebar or in a search result — that depends on pixel width and the reader\x27s device, not on a character count. It does not check for words a platform disallows, does not score the title for search, and does not check whether an emoji or a rare script will actually display for your viewers. Use the count to stay inside a limit, then look at the real thing on a real phone before publishing.',
+      },
+    ],
+  },
+
+  // components/audio-convert-tool.tsx, lib/tools/audio/decode.ts,
+  // lib/tools/audio/probe.ts (probeMp4, MP4_CODECS), lib/tools/audio/wav.ts
+  // (encodeWav, wavByteLength, writeInteger), lib/tools/audio/pcm.ts and
+  // app/audio/convert/page.tsx
+  'audio-m4a-to-wav': {
+    directAnswer:
+      'Choose an .m4a of up to 100 MB, pick a bit depth, and convert. The MP4 container is read first so the sample rate written in the file is known before decoding starts, and the audio is then decoded at that rate and written straight out as a WAV — a 44,100 Hz voice memo stays at 44,100 Hz instead of being quietly lifted to 48,000. Output is WAV only; there is no encoder on this page that would write the audio back into a compressed format.',
+    leadParagraph:
+      'An M4A is an MP4 container, usually holding AAC, sometimes Apple Lossless, and the useful facts are buried in its box structure. This page walks that structure itself: the brand in the ftyp box decides whether the file is labelled M4A or MP4, then it descends moov to trak to mdia, skips any track whose handler is not sound — which is how a video file\x27s picture track is passed over — reads the timescale in mdhd as the sample rate and the duration beside it, and reads the codec and channel count out of stsd. That rate is then used to build the audio context the browser decodes into, which is the whole point of reading it: the browser\x27s decoder resamples its output to whatever rate the context was created at and reports nothing about having done so. Where the rate cannot be honoured — it could not be read, or it falls outside the 8,000 to 96,000 Hz range a context can be built at — 48,000 Hz is used and the page tells you what the file declared and what it actually got. AAC is lossy, so what you save is what the decoder produced, not the original recording; Apple Lossless inside an M4A is exact, and the page says so.',
+    faqs: [
+      {
+        question: 'Will my M4A be resampled without telling me?',
+        answer:
+          'No — avoiding exactly that is why the container is parsed before decoding. The sample rate is read from the mdhd box, the decoding context is built at that rate, and the sample-rate control defaults to "Keep each source rate", so a file arrives and leaves at the same rate unless you choose otherwise. When the rate genuinely cannot be honoured, because it was unreadable or lies outside 8,000 to 96,000 Hz, the file is decoded at 48,000 Hz and the page prints both numbers: what the file declares, and what your browser decoded it at.',
+      },
+      {
+        question: 'What bit depth and sample rate does the WAV come out at?',
+        answer:
+          'Bit depth is yours to choose from 16-bit, 24-bit and 32-bit float, and it opens on 16-bit, so a high-resolution source will be written at 16-bit unless you change it. The 32-bit option writes IEEE floating-point samples along with the extra format field and the fact chunk that make such a file open widely, not 32-bit integers. Sample rate defaults to keeping the source rate; 48,000, 44,100, 22,050 and 8,000 Hz are the alternatives and are reached through the browser\x27s own resampler. Channels are kept unless you ask for a mono mixdown or for one side only.',
+      },
+      {
+        question: 'Does converting an M4A to WAV recover the original quality?',
+        answer:
+          'Not if the M4A holds AAC, which most do. AAC discards detail when it encodes, and no conversion can put that back — the WAV faithfully holds what the decoder produced, which is the compressed version at full uncompressed size. The one exception is Apple Lossless, which the page recognises in the stsd box and flags with its own note, because a lossless track really does come out as an exact copy of the samples. Converting to WAV is worth doing to edit or to feed a tool that needs uncompressed input, not to improve what is already there.',
+      },
+      {
+        question: 'Could a 32-bit file come out silent here?',
+        answer:
+          'Not on this page. An M4A never passes through a raw sample reader at all: the browser hands back floating-point samples, and the only place this project reads stored integers is its own WAV and AIFF reader, which has a branch for every width it admits — 8-bit unsigned, 16-bit, 24-bit and 32-bit signed integers, and 32-bit and 64-bit floats — and refuses any other width by name. Worth knowing about a different tool: the separate audio trimmer on this site reads only 8-, 16- and 24-bit WAV, and a 32-bit integer WAV given to it decodes to silence rather than to an error. Play the result here before you save it either way.',
+      },
+      {
+        question: 'What are the size limits, and what is left out of the WAV?',
+        answer:
+          'One file is limited to 100 MB, and the message names the size of the file you chose; in a multi-file run an oversized file is skipped with "The 100 MB limit was exceeded." rather than stopping the batch. A projected output over 500 MB is refused before it is built, with the projected size and a suggestion to trim it or lower the bit depth or sample rate. The WAV writer emits a RIFF header, a format chunk, a fact chunk for float output and the audio data — nothing else — so cover art, titles and other tags do not survive the conversion. The download takes your file\x27s name with .wav in place of its old extension.',
+      },
+    ],
+  },
+
+  // components/audio-convert-tool.tsx, lib/tools/audio/decode.ts,
+  // lib/tools/audio/probe.ts (probeFlac, readFlacStreamInfo),
+  // lib/tools/audio/wav.ts (encodeWav, writeInteger, readSamples),
+  // lib/tools/audio/pcm.ts and app/audio/convert/page.tsx
+  'audio-flac-to-wav': {
+    directAnswer:
+      'Choose a .flac of up to 100 MB, set the bit depth, and convert. The STREAMINFO block is read before anything is decoded, so the file\x27s own sample rate, channel count and bit depth are known and the audio is decoded at that rate rather than being resampled to whatever the browser would otherwise have picked. FLAC is lossless, so the WAV holds the samples FLAC was compressing — but the bit-depth control opens on 16-bit, so a 24-bit source needs that changed to stay 24-bit.',
+    leadParagraph:
+      'FLAC stores its essentials in a STREAMINFO block that is a bit field rather than a byte layout, and this page assembles it by shifting: the sample rate is twenty bits beginning partway through one byte and ending partway through another, the channel count is three bits plus one, the bit depth is five bits plus one, and the total sample count is thirty-six bits — too wide for JavaScript\x27s 32-bit shifts, so it is built with multiplication instead. That gives the page a rate to build its decoding context at, which is the point: the browser\x27s decoder resamples whatever it decodes to the rate of the context it was called on, silently, and reading the header first is what stops that happening. The page then shows the codec as FLAC with its stated bit depth, and carries its own note that lossless in means lossless out. Decoding is still done by your browser, so a FLAC variant your browser will not play is refused with "This browser could not decode that audio file." rather than producing a broken WAV.',
+    faqs: [
+      {
+        question: 'Does the WAV keep the 24-bit depth of my FLAC?',
+        answer:
+          'Only if you ask it to. The page reads and displays the bit depth from STREAMINFO, but the output control opens on 16-bit, so a 24-bit FLAC converted without touching it is written as a 16-bit WAV. Change the control to 24-bit to keep it. A 24-bit sample scaled into a 32-bit float is exactly representable, so the round trip preserves the integers, with one documented exception: full positive scale has no step that far out in integer PCM and comes back a single step short. That is a property of the format rather than of this page.',
+      },
+      {
+        question: 'Is a WAV made from a FLAC identical to the original audio?',
+        answer:
+          'In sample values, yes, subject to the bit depth you choose and to the one topmost step noted above — FLAC is lossless compression, so decoding it returns the samples that went in. What does not survive is everything around the audio: the WAV writer emits a RIFF header, a format chunk, a fact chunk for float output and the audio data and nothing else, so FLAC tags, cover art, cue sheets and ReplayGain values are all left behind. The file will also be several times larger, because WAV stores every sample uncompressed.',
+      },
+      {
+        question: 'Will the sample rate change during conversion?',
+        answer:
+          'Not unless you choose to change it. The rate read from STREAMINFO is used to build the decoding context, and the sample-rate control defaults to keeping the source rate, so a 96 kHz FLAC stays at 96 kHz. If the declared rate falls outside the 8,000 to 96,000 Hz range a browser will build a context at, the file is decoded at 48,000 Hz instead and the page prints both figures so the change is never implicit. Choosing 48,000, 44,100, 22,050 or 8,000 Hz renders the audio through the browser\x27s own resampler at that rate.',
+      },
+      {
+        question: 'Could a converted file come out silent?',
+        answer:
+          'Not through this page. A FLAC is decoded by the browser into floating-point samples and written out by this project\x27s own WAV writer, so no raw integer sample reader is involved on the way in. Where this project does read stored integers — its own WAV and AIFF reader — every admitted width has a branch, and an unadmitted width is refused by name rather than read as something it is not. The separate audio trimmer on this site is the exception worth knowing about: its reader covers only 8-, 16- and 24-bit WAV, so a 32-bit integer WAV fed to that tool decodes to silence with no error. Play the result in the page before saving, either way.',
+      },
+      {
+        question:
+          'What are the limits, and what else can the page do on the way through?',
+        answer:
+          'One file is limited to 100 MB; in a batch an oversized file is skipped and reported rather than stopping the run. A projected WAV over 500 MB is refused before it is built, naming the projected size — easy to reach from a long high-resolution FLAC at 24-bit or 32-bit. On the way through you can trim by start and end in seconds, apply linear fades, mix down to mono by averaging the channels or keep just the left or right, and normalise the loudest peak to a ceiling you set in decibels below full scale. Peak normalisation is not loudness matching, and the page does not claim it is.',
+      },
+    ],
+  },
+
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS
+  // 'csv-column-renamer', runSpreadsheetOperation, table, header, toCsv,
+  // csvCell), lib/tools/structured.ts (parseCsvRows, csvToRecords),
+  // lib/tools/spreadsheet-workbench.test.ts and
+  // components/schema-workbench-tool.tsx
+  'spreadsheet-and-data-csv-column-renamer': {
+    directAnswer:
+      'Paste your CSV into the first box, then write one rename per line in the second as old=new, and the whole file comes back with those headers changed and every row rebuilt under the new names. Renaming a column that is not in the file is an error rather than a silent no-op, and so is ending up with two columns of the same name. Column order and row order are untouched — only the names in the first row change.',
+    leadParagraph:
+      'Both boxes take text, so the CSV is pasted rather than picked from disk. It is parsed by the same strict reader the other CSV tools here use: a byte-order mark is stripped, headers are trimmed, every column must have a non-empty header, headers must already be unique, and every row must carry exactly as many fields as there are headers or the run stops naming the row and both counts. Each rename line is split at its first equals sign, the old name is looked up and must exist, and the new name is trimmed and must not be blank. Once the new header list is assembled it is checked for duplicates, so renaming score to name in a file that already has a name column is refused rather than quietly collapsing two columns into one. The output is the file re-emitted: commas between fields, a line feed between rows, and quotes added only around cells that contain a comma, a double quote or a line break — so unnecessary quoting in your original is dropped.',
+    faqs: [
+      {
+        question: 'How do I write the rename lines?',
+        answer:
+          'One per line, in the form old=new, with the existing header on the left and the name you want on the right. The line is split at its first equals sign, so a new name may itself contain an equals sign but an old name may not. Spaces around either side are trimmed away, so score = points works as well as score=points. Blank lines are ignored. Columns you do not mention keep their names, so you only need a line for each column you are actually changing.',
+      },
+      {
+        question: 'What happens if I name a column that is not in my file?',
+        answer:
+          'The run stops with "Unknown column:" and the name you typed, rather than quietly doing nothing. That is deliberate: a rename that silently fails is how a pipeline ends up reading the old header name downstream and nobody notices. Headers are trimmed before comparison but are otherwise matched exactly, so case and internal spacing have to be right — Score and score are two different columns as far as this tool is concerned.',
+      },
+      {
+        question: 'Can two columns end up with the same name?',
+        answer:
+          'No. After the renames are applied the full header list is checked, and any duplicate stops the run with "Renamed columns must be unique." That catches both the obvious case — two rename lines pointing at the same new name — and the easier mistake of renaming one column to a name another column already has. There is one behaviour worth knowing: if two rename lines name the same old column, the last one wins without a warning, because they are collected into a lookup keyed by the old name.',
+      },
+      {
+        question: 'Why was my CSV refused before any renaming happened?',
+        answer:
+          'The parser is strict, and it names its reason. An empty cell in the first row gives "Every CSV column needs a header in the first row.", which usually means the export began with a title line or a blank column. Two identical headers give "CSV headers must be unique before conversion." A row with the wrong number of fields is reported with its row number and both counts. An opening double quote that is never closed gives "CSV contains an unclosed quoted field." Nothing is padded or discarded to make a ragged file fit.',
+      },
+      {
+        question:
+          'What are the limits, and what does the saved file look like?',
+        answer:
+          'The pasted table is limited to 2,000,000 characters, 100,000 rows and 1,000 columns, each refused by name. The output is re-emitted CSV using commas and line feeds, with a cell quoted only when it contains a comma, a double quote or a line break — so cells are normalised, not passed through byte for byte. One awkward detail: the save button writes the result as csv-column-renamer.txt with a plain-text type, so rename it to .csv before opening it in a spreadsheet. Copying the output straight out of the box avoids that entirely.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'character-counter',
+  // runTextOperation, graphemes), lib/tools/text-workbench.test.ts and
+  // components/text-workbench-tool.tsx
+  'text-and-writing-character-counter': {
+    directAnswer:
+      'Paste or type into the box and two numbers appear: Characters, counting everything including spaces and line breaks, and Without spaces, counting the same text with all whitespace removed first. Both are counts of whole visible characters rather than of the units a computer stores them in, so an emoji made from several joined parts counts as one, not four. The text box takes up to 2,000,000 characters.',
+    leadParagraph:
+      'The counting method is the thing worth being precise about, because three reasonable answers exist for the same text: UTF-16 code units, which a plain length property gives and which make one emoji four or more; code points, which make the same emoji several; and grapheme clusters, the segments a reader would point at and call one character. This page counts grapheme clusters, using the browser\x27s own Unicode segmenter, and a test in this repository pins it — the letter A, a space, and a joined woman-technologist emoji with a skin tone come to three characters, not six and not nine. A Devanagari syllable written as a consonant plus a vowel sign likewise counts as one. The second figure strips whitespace first — not only spaces but tabs, line breaks and the Unicode space separators — and then counts the remainder the same way. Nothing else is measured here: words, sentences, paragraphs and reading time are separate tools in the same list.',
+    faqs: [
+      {
+        question: 'Does the character counter count an emoji as one character?',
+        answer:
+          'Yes, when your browser can segment it. Counting is done with the browser\x27s Unicode segmenter at grapheme granularity, which groups a base character with its modifiers, joiners and skin tones into one segment. A joined emoji such as a woman technologist with a skin tone is one character here, though the same emoji is four code points and nine UTF-16 units. On a browser with no segmenter available the count falls back to code points, which would give four for that emoji — a fallback worth knowing about if your number ever looks unexpectedly high.',
+      },
+      {
+        question: 'Are spaces and line breaks included in the count?',
+        answer:
+          'In the first figure, yes — Characters counts everything in the box exactly as it stands, including spaces, tabs and every line break. The second figure, Without spaces, removes all whitespace first and then counts what is left, and it removes more than the space bar produces: tabs, carriage returns, line feeds, no-break spaces and the other Unicode space separators all go. Neither figure trims the ends of your text or collapses runs of spaces, so a paste with trailing blank lines is counted with them.',
+      },
+      {
+        question:
+          'Why does a different tool on this site give a different number for the same title?',
+        answer:
+          'Because they count different things on purpose. This character counter counts grapheme clusters — whole visible characters. The YouTube title-length checker on this site counts Unicode code points, so a flag emoji counts as two there and one here, and a joined emoji with a skin tone counts as four there and one here. For plain Latin text with no emoji or combining marks the two agree exactly. When a platform enforces a limit, its own counting method is the one that decides, and it may match either of these or neither.',
+      },
+      {
+        question: 'How much text can I paste in?',
+        answer:
+          'Up to 2,000,000 characters, after which the run stops with "Text is limited to 2,000,000 characters in this candidate." That cap is measured in the units the browser stores text in rather than in the visible characters the tool reports, so a document heavy with emoji reaches it a little sooner than its displayed count suggests. Counting is done in the page as you type, a quarter of a second after you stop, and an empty box simply clears the result rather than showing an error.',
+      },
+      {
+        question: 'What does it not count?',
+        answer:
+          'Words, sentences, paragraphs and reading time are all separate tools in the same dropdown here, each with its own definition — the word counter, for instance, matches runs of letters and digits with apostrophes allowed inside, and the reading-time estimate assumes 225 words a minute. This tool reports only the two character figures. It does not count bytes either: the number of bytes a piece of text occupies depends on the encoding, and one visible character can be anywhere from one to a dozen bytes in UTF-8.',
+      },
+    ],
+  },
+
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'sitemap-generator',
+  // runWebOperation, lines, absoluteUrl, html), lib/tools/web-workbench.test.ts,
+  // components/web-workbench-tool.tsx and components/schema-workbench-tool.tsx
+  'web-and-seo-sitemap-generator': {
+    directAnswer:
+      'Paste one absolute URL per line and a complete sitemap XML document comes back, with each address wrapped in a url and loc pair under the sitemaps.org 0.9 namespace. Every line must be a full http or https address — a bare path such as /about is refused by name rather than guessed at against some assumed domain. The file carries locations only: there are no lastmod, changefreq or priority elements anywhere in the output.',
+    leadParagraph:
+      'Each line is trimmed, blank lines are dropped, and what remains is parsed with the browser\x27s own URL parser, which both validates and normalises: a bare origin gains its trailing slash, the host is lower-cased, and characters that need percent-encoding get it. Anything the parser rejects gives "URL must be an absolute HTTP(S) URL.", and anything it accepts under another scheme — ftp, mailto, a file path — gives "URL must use HTTP or HTTPS." The addresses are then XML-escaped before being written, which is what makes a query string survive: a URL containing an ampersand comes out with it written as an entity, and a test in this repository checks that the result reads back correctly through the sitemap viewer on this site. The list is capped at 5,000 lines, well below the 50,000 the sitemap protocol allows in one file, and duplicate lines are not removed — paste the same address twice and it appears twice.',
+    faqs: [
+      {
+        question: 'Does the sitemap generator crawl my site to find pages?',
+        answer:
+          'No. It fetches nothing and visits nothing; the URLs it writes are exactly the ones you paste. That means you need a list from somewhere else first — your content management system\x27s export, a build manifest, a crawl you ran yourself, or the addresses your framework already knows about. The upside is that you control precisely what is listed, including keeping pages out that a crawler would have found. If you already have a sitemap and want to read it, the sitemap viewer on this site extracts and decodes its loc values without making any requests either.',
+      },
+      {
+        question: 'Can I add lastmod, changefreq or priority?',
+        answer:
+          'Not here. The generator writes one element per entry, the loc, inside a url wrapper, and offers no field for a modification date, a change frequency or a priority value. If you need those, add them to the output by hand or generate the file from your build system. The absence is deliberate rather than an oversight: a lastmod invented at the moment you paste a list is worse than none, since it tells a crawler a page changed when nothing about it did.',
+      },
+      {
+        question: 'Why is one of my lines being refused?',
+        answer:
+          'Two messages cover it. "URL must be an absolute HTTP(S) URL." means the browser\x27s URL parser could not read that line at all, which is what happens to a bare path such as /pricing, to a domain with no scheme such as example.com/pricing, and to a line with a space in the middle of it. "URL must use HTTP or HTTPS." means the line parsed but under another scheme, such as ftp or mailto. One bad line stops the whole run, so the sitemap you get is always complete or not produced at all.',
+      },
+      {
+        question: 'How many URLs can I put in one sitemap here?',
+        answer:
+          'Up to 5,000 lines, after which the run stops with "This tool is limited to 5,000 lines." The sitemap protocol itself allows 50,000 locations and 50 MB in a single file, so this cap is the tool\x27s, not the standard\x27s. For a larger site, split the list and generate several files, then write a sitemap index referring to them — this tool does not write an index, and it does not split a long list for you. Duplicates are not removed either, so de-duplicate your list before pasting if that matters.',
+      },
+      {
+        question: 'What does the output look like, and how do I save it?',
+        answer:
+          'An XML declaration, a urlset element carrying the sitemaps.org 0.9 namespace, then one indented url element per address, then the closing tag. Ampersands, angle brackets, quotes and apostrophes inside your addresses are written as XML entities so the document stays well-formed. The save button writes it as sitemap-generator.txt with a plain-text type, so rename it to sitemap.xml before uploading it — or copy the text straight out of the box and paste it into the file your server actually serves.',
+      },
+    ],
+  },
+
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'email-qr-code',
+  // buildQrPayload, renderQr, qrStyle, required),
+  // lib/tools/qr-barcode-workbench.test.ts and
+  // components/schema-workbench-tool.tsx
+  'qr-and-barcode-email-qr-code': {
+    directAnswer:
+      'Enter a recipient address, optionally a subject and a message, and the page draws an SVG QR code holding a mailto link that opens a pre-filled draft when it is scanned. The address is checked for shape only — something, an at sign, something, a dot, something — so a well-formed address that belongs to nobody will encode quite happily. The symbol is drawn at your chosen size in black on white and saved as email-qr-code.svg.',
+    leadParagraph:
+      'The payload is a mailto URI: the recipient after the colon, then a query string carrying whatever you put in the subject and message boxes, with either one left out entirely when its box is empty. Error correction is selectable from L, M, Q and H with M as the default, the width runs from 160 to 1,200 pixels with 360 as the default, and the standard four-module quiet zone is drawn around the symbol. Content is limited to 8,000 characters overall and the recipient to 254; when a long subject and message push the symbol past what the chosen error-correction level can hold, the run stops saying the content does not fit the selected settings rather than producing a truncated code. One encoding detail is worth knowing before you print anything: the query is assembled with the browser\x27s form-encoding, which writes a space as a plus sign, and the mailto specification does not define a plus as a space — so some mail applications will show your subject with literal plus signs in place of spaces. Test a scan on a real phone with the mail app your readers use before committing to a print run.',
+    faqs: [
+      {
+        question:
+          'Will the subject and message show up correctly when someone scans it?',
+        answer:
+          'The recipient always will. Subject and message usually do, but there is a real caveat: the query string is built with the browser\x27s form-encoding, which turns every space into a plus sign, and RFC 6068 — the specification for mailto links — treats a plus as a literal plus rather than as a space. Mail applications differ in how forgiving they are, so a subject such as Q3 report may arrive as Q3+report in some of them. Scan your own code with the app your audience actually uses before printing it, and consider a short subject with no spaces if it matters.',
+      },
+      {
+        question: 'Does it check that the email address is real?',
+        answer:
+          'No. The address is tested for shape only: one or more characters that are not spaces or at signs, an at sign, more such characters, a dot, and more again. That accepts a@b.c and rejects an address with a space in it or no dot in the domain, and nothing else is verified — the mailbox may not exist, the domain may not resolve, and nothing is sent anywhere to find out. The page\x27s own notice puts it plainly: this creates a standards-shaped payload, not a live destination or ownership check. Send yourself a test message before the code goes out.',
+      },
+      {
+        question: 'What size and error-correction level should I choose?',
+        answer:
+          'Error correction runs L, M, Q, H from most capacity to strongest recovery, and the box opens on M. Higher levels survive scuffing, glare and a partly covered symbol at the cost of holding less data, so a long subject and message may only fit at L or M. The width runs from 160 to 1,200 pixels and opens at 360; because the output is an SVG the drawing scales cleanly to any print size regardless of that number, which mostly governs how the preview appears. A four-module quiet zone is always drawn, and it needs to stay clear of other artwork.',
+      },
+      {
+        question: 'What will this tool refuse?',
+        answer:
+          'An empty recipient box stops the run before anything is drawn. A recipient over 254 characters is refused as too long, as is a total payload over 8,000 characters. A width outside 160 to 1,200 is refused naming that range. And when the assembled mailto link is simply too long for a QR symbol at the error-correction level you picked, the run stops with a message saying the content does not fit the selected settings, followed by the encoder\x27s own reason — shorten the message or drop to a lower correction level.',
+      },
+      {
+        question: 'Can I change the colours, and what is in the saved file?',
+        answer:
+          'Not on this tool — the email QR code is drawn in black on white, because this page offers only the recipient, subject, message, error-correction and width controls. The save button writes a real SVG named email-qr-code.svg, so the symbol is vector artwork you can scale to a poster without it going soft, and it can be recoloured in any vector editor afterwards. If you do recolour it, keep the dark modules genuinely dark against a light background: low contrast is the most common reason a printed code will not scan.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS
+  // 'lumpsum-investment-calculator', runFinanceOperation, future, percent,
+  // finite, format, scenarioNotice),
+  // lib/tools/finance-business-workbench.test.ts and
+  // components/schema-workbench-tool.tsx
+  'finance-and-business-lumpsum-investment-calculator': {
+    directAnswer:
+      'Enter a starting amount, an assumed annual rate as a percentage, and a number of years, and the page returns a projected value and the growth above what you put in. The compounding is monthly and fixed: the annual rate you type is divided by twelve and applied twelve times a year, so a nominal 10 per cent grows slightly faster than 10 per cent a year. This is scenario arithmetic on your own assumptions, not financial advice and not a forecast.',
+    leadParagraph:
+      'The formula is the plain compound-interest one: the starting amount multiplied by one plus the monthly rate, raised to the number of months. The monthly rate is the annual percentage divided by twelve rather than the twelfth root of annual growth, which is the usual banking convention for a nominal rate but does mean the effective annual figure is a little above the number you typed. Years times twelve must come out as a whole number of months, so 1.5 years works and 0.1 years is refused; the message names the whole-months requirement. Results are printed to twelve significant figures with no currency symbol and no thousands separators, so the units are whatever you put in. Nothing about inflation, tax, exit loads, fund expenses or fees enters the calculation, and the page carries its own notice saying as much: rates, fees, compounding, timing, taxes, insurance, rounding and provider rules can all change the real outcome.',
+    faqs: [
+      {
+        question: 'How is the compounding done in the lump-sum calculator?',
+        answer:
+          'Monthly, and that is not adjustable on this tool. The annual percentage you enter is divided by one hundred and then by twelve to give a monthly rate, and the starting amount is multiplied by one plus that rate once for every month in the term. Because the rate is divided rather than compounded down, a nominal 10 per cent applied monthly produces a little over 10 per cent of actual growth in a year. If you need a different frequency, the fixed-deposit and future-value calculators on this site take a compounds-per-year figure from 1 to 365.',
+      },
+      {
+        question: 'Can I enter a fraction of a year?',
+        answer:
+          'Yes, as long as it resolves to a whole number of months. The term is converted by multiplying by twelve, and that product has to be a whole number no greater than 1,000,000, so 0.5, 1.5 and 7.25 years are all fine while 0.1 years is refused with a message naming the whole-number requirement. Zero years is accepted and simply returns your starting amount with no growth. A negative starting amount is refused, with a message naming the permitted range in JavaScript\x27s own notation, which reads awkwardly but means nothing below zero.',
+      },
+      {
+        question: 'Does the projection account for inflation, tax or fees?',
+        answer:
+          'No, none of them. The result is what a constant rate applied monthly to a fixed amount produces, and nothing else: no expense ratio, no exit load, no capital-gains tax, no indexation, no inflation adjustment and no allowance for a rate that changes. Real returns are rarely constant, and a figure that ignores costs will always look better than the outcome. Treat the number as one scenario among several — run it again at a lower rate to see how sensitive the answer is — and take advice from someone regulated before acting on it.',
+      },
+      {
+        question: 'What currency does it use, and how is the result rounded?',
+        answer:
+          'No currency at all. The output carries no symbol and no thousands separators, so whatever unit you type in is the unit that comes out — rupees, pounds or anything else. Values are printed to twelve significant figures, and a result whose absolute value falls below a ten-billionth is printed as 0 rather than in exponent notation. There is no rounding to two decimal places, so a projected value will usually carry more digits than a bank statement would; round it yourself when you quote it.',
+      },
+      {
+        question: 'What does the lump-sum calculator not do?',
+        answer:
+          'It does not model contributions added along the way — that is the recurring-deposit and monthly-contribution calculators on this site, which project a fixed sum paid in at the end of every month. It does not solve backwards for the rate or the term you would need to reach a target. It does not handle a rate that changes partway, a withdrawal, or a partial redemption. And it makes no claim about any real product: the page\x27s own notice says this is scenario arithmetic, not financial, investment, tax, accounting or lending advice.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS
+  // 'recurring-deposit-calculator', runFinanceOperation, monthlyContribution,
+  // percent, positive, format, scenarioNotice),
+  // lib/tools/finance-business-workbench.test.ts and
+  // components/schema-workbench-tool.tsx
+  'finance-and-business-recurring-deposit-calculator': {
+    directAnswer:
+      'Enter a monthly deposit, an assumed annual rate and a term in years, and the page returns three lines: the projected value at the end, the total you will have paid in, and the difference between them. Deposits are treated as arriving at the end of each month and each one earns the monthly rate for every remaining month. The monthly rate is the annual rate divided by twelve, compounded monthly — which is not how an Indian bank computes a recurring deposit, so read this as a scenario rather than as a quote.',
+    leadParagraph:
+      'The arithmetic is the standard future value of an ordinary annuity: the deposit multiplied by the quantity one plus the monthly rate raised to the number of months, less one, all divided by the monthly rate. When the rate is zero the formula would divide by zero, so that case is handled separately and returns the deposit times the number of months. The monthly rate is simply the annual percentage divided by twelve, which makes the effective yearly growth slightly higher than the figure you typed; Indian banks conventionally compound recurring deposits quarterly, so a real bank\x27s maturity figure will differ from this one even at the same headline rate. The term must resolve to between 1 and 12,000 whole months, and output is three plain numbers with no currency symbol and no thousands separators, printed to twelve significant figures. Tax deducted at source, penalties for a missed or late instalment, and premature-closure rules are not modelled at all, and the page carries a notice saying this is scenario arithmetic rather than financial, investment, tax, accounting or lending advice.',
+    faqs: [
+      {
+        question:
+          'Will this match what my bank quotes for a recurring deposit?',
+        answer:
+          'Probably not exactly, and the reason is the compounding convention. This calculator applies one twelfth of the annual rate every month, while Indian banks conventionally compound a recurring deposit quarterly, so the two grow at slightly different speeds from the same headline rate. Banks also round each instalment\x27s interest in their own way and may treat the deposit date differently. Use this figure to compare scenarios and to sanity-check an offer; use the bank\x27s own maturity quote for the number that will actually be paid.',
+      },
+      {
+        question:
+          'Are the deposits treated as paid at the start or the end of the month?',
+        answer:
+          'At the end. The formula used is the ordinary-annuity one, so the first deposit earns interest for one month less than a start-of-month schedule would give it, and the last deposit earns nothing at all before maturity. Over a five-year term that difference is small but real. If your bank debits your account on the first of the month and credits interest accordingly, expect its figure to sit slightly above this one for the same rate and deposit.',
+      },
+      {
+        question:
+          'What term lengths does the recurring-deposit calculator accept?',
+        answer:
+          'Anything that resolves to a whole number of months between 1 and 12,000, so 0.5 years, 5 years and 10.25 years all work while 0.1 years does not — the message reads "Term must resolve to 1–12,000 whole months." Zero or a negative term is refused too, though the message names the smallest and largest numbers JavaScript can hold rather than saying plainly that the term must be above zero. A rate of exactly zero is allowed and simply returns the total of the deposits.',
+      },
+      {
+        question: 'What do the three output lines mean?',
+        answer:
+          'Projected value is the balance at the end of the term. Contributed is the arithmetic total you paid in, the monthly deposit times the number of months, with no interest in it at all. Scenario growth is the first minus the second, which is the interest the assumption produced. All three are printed to twelve significant figures with no currency symbol and no thousands separators, so the unit is whatever you entered, and none of the three is rounded to two decimal places for you.',
+      },
+      {
+        question: 'Does it account for tax or a missed instalment?',
+        answer:
+          'No. Tax deducted at source on the interest, the income-tax treatment of that interest in your hands, penalties for a late or missed instalment, and any charge or interest adjustment for closing the deposit early are all outside this calculation. So is a rate that changes partway through the term. The page\x27s own notice states the limit directly: this is scenario arithmetic using only your inputs, not financial, investment, tax, accounting or lending advice, and contracts, penalties and provider rules can change the real result.',
+      },
+    ],
+  },
+
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'birthday-countdown',
+  // runDateOperation, parseDateOnly, epochDay, fromEpochDay),
+  // lib/tools/date-workbench.test.ts, components/date-workbench-tool.tsx and
+  // components/schema-workbench-tool.tsx
+  'date-time-and-productivity-birthday-countdown': {
+    directAnswer:
+      'Put the birthday in the first box and the date you are counting from in the second, both as YYYY-MM-DD, and the page returns the number of whole calendar days to the next occurrence together with the date it lands on. The second box does not fill itself with today\x27s date — it opens on a fixed example, so change it to today before reading the answer. A birthday on 29 February falls back to 28 February in years that do not have one.',
+    leadParagraph:
+      'Both dates are parsed strictly: four digits, a hyphen, two digits, a hyphen, two digits, with the year between 0100 and 9999, and the day has to be a real calendar day or the run stops with "Use a valid calendar date." Everything after that is arithmetic on whole days counted in UTC, which is what keeps the answer stable regardless of where you are or whether a clock changes. The occurrence is built from the birthday\x27s month and day in the counting year, with the day clamped to the last day of that month — the 29 February case — and if that date has already passed, the following year is used instead. Counting from a birthday to itself gives zero days rather than a year. One wording quirk: the output always says "days" with an s, so a birthday tomorrow reads as "1 days". There is no clock here at all: no hours, no minutes, no live ticking countdown, and no time zone selection.',
+    faqs: [
+      {
+        question: 'Does the birthday countdown know what today is?',
+        answer:
+          'No, and this is the thing most likely to catch you out. The "Count from" box opens on a fixed example date baked into the tool rather than on today, so a result read without changing it is counting from the wrong day. Type today\x27s date in the YYYY-MM-DD form before you trust the number. The upside of an explicit date is that you can count from any day you like — from the start of a month, from a trip, or from a date in the past to see how far a birthday was.',
+      },
+      {
+        question: 'What happens to a birthday on 29 February?',
+        answer:
+          'It is observed on 28 February in years that have no 29th. The occurrence is built by taking the birthday\x27s month and day and clamping the day to the last day of that month in the counting year, so 29 February becomes 28 February in a common year and stays 29 February in a leap year. The same clamping quietly handles any other impossible combination, though 29 February is the only one that arises from a real date of birth.',
+      },
+      {
+        question: 'Does it count hours, or tick down live?',
+        answer:
+          'Neither. This is whole-day calendar arithmetic and nothing else: two dates go in, a number of days and a date come out, and the figure only changes when you change a box. There is no hours-minutes-seconds display, no live counter, and no time-zone setting — the arithmetic is done in UTC precisely so that the answer does not shift depending on where the page is opened or when the clocks change. If you need a timestamped countdown, this is not the tool for it.',
+      },
+      {
+        question: 'What does it say when the birthday is today?',
+        answer:
+          'Zero days, followed by today\x27s date. The next occurrence is only pushed into the following year when it falls strictly before the counting date, so the day itself counts as the occurrence rather than as a year away. A birthday that has already passed this year gives the days to next year\x27s. One small wording flaw to expect: the unit is always printed as "days", so the day before a birthday reads as "1 days" rather than "1 day".',
+      },
+      {
+        question: 'Why was my date refused?',
+        answer:
+          'The format has to be exactly YYYY-MM-DD with two-digit month and day — 2026-9-6 fails where 2026-09-06 passes, and so does any slash-separated or day-first form. The message for that is "Use a valid date in YYYY-MM-DD form." A well-formed date that does not exist, such as 2026-02-30, gives "Use a valid calendar date." instead, because the parsed parts are rebuilt into a real date and compared back. Years outside 0100 to 9999 are refused by name.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS
+  // 'half-life-calculator', runScienceOperation, finite, positive, format,
+  // physicsNotice), lib/tools/science-education-workbench.test.ts and
+  // components/schema-workbench-tool.tsx
+  'science-and-education-half-life-calculator': {
+    directAnswer:
+      'Enter an initial quantity, the time that has elapsed and the half-life, and the page returns how much is left along with how many half-lives that elapsed time represents. The calculation is the initial quantity multiplied by a half raised to the power of elapsed time divided by half-life — so ten years of a five-year half-life leaves a quarter. Elapsed time and half-life must be in the same unit, because the tool has no unit field and prints none.',
+    leadParagraph:
+      'This is the exponential-decay law expressed through the half-life rather than through a decay constant, and it goes one way only: quantity remaining after a known elapsed time. It will not solve backwards for the half-life from two measurements, and it will not tell you how long it takes to reach a given level. A test in this repository pins the base case — 100 units, 10 elapsed, a half-life of 5, leaving 25. The elapsed-half-lives figure is simply the ratio of the two times, shown because it is the number that makes the result easy to check by eye — three half-lives should leave an eighth — and both outputs are printed to twelve significant figures. The decay-constant form of the same law, N equals N-nought times e to the minus lambda t, is a separate calculator in this same list for when you have lambda rather than a half-life, and the page\x27s notice reminds you to check significant figures, uncertainty and domain assumptions before any laboratory or engineering use.',
+    faqs: [
+      {
+        question: 'What units should I use in the half-life calculator?',
+        answer:
+          'Whatever you like, as long as the elapsed time and the half-life are in the same one. There is no unit selector and the answer carries no unit, so seconds with seconds, years with years, or minutes with minutes all work, and mixing them silently gives a wrong answer that looks perfectly reasonable. Convert before you type. The initial quantity is likewise unitless as far as the tool is concerned — grams, becquerels, counts or a percentage all pass straight through, and the remaining figure comes back in whatever you supplied.',
+      },
+      {
+        question:
+          'Can it work out the half-life itself, or how long until a level is reached?',
+        answer:
+          'No, neither. The calculation runs in one direction only: from an initial quantity, an elapsed time and a known half-life to the quantity remaining. Solving for the half-life from two measurements, or for the time needed to fall to a given fraction, would mean taking a logarithm and this tool does not offer it. If you already have a decay constant rather than a half-life, the radioactive-decay calculator in the same list applies the exponential form directly.',
+      },
+      {
+        question: 'How is the answer calculated and rounded?',
+        answer:
+          'The remaining quantity is the initial quantity multiplied by one half raised to the power of the elapsed time divided by the half-life, computed in ordinary binary floating point. The second line divides the same two times to give the number of elapsed half-lives, which may be a fraction. Both numbers are printed to twelve significant figures, so very small remainders appear in exponent notation rather than as a long string of zeros. A result that is not finite stops the run rather than being displayed.',
+      },
+      {
+        question: 'What values will it refuse?',
+        answer:
+          'A negative initial quantity or a negative elapsed time is refused, and so is a half-life of zero or below, since dividing by it has no answer. The messages are blunt in a way worth warning about: rather than saying the half-life must be greater than zero, the page names the smallest and largest numbers JavaScript can hold, which reads as an enormous range in exponent notation. Text that is not a number is refused the same way. An initial quantity of zero and an elapsed time of zero are both accepted and behave as you would expect.',
+      },
+      {
+        question: 'Is this accurate enough for laboratory or medical use?',
+        answer:
+          'It is the idealised textbook law and should be treated as such. It assumes a single decay path with a constant half-life, a quantity large enough that the statistical nature of decay does not matter, and no branching, ingrowth of daughter products, chemical loss or biological clearance. The page\x27s own notice says to check significant figures, uncertainty, conditions and domain assumptions before any laboratory or engineering use. For dosimetry, waste-handling or clinical decisions, use the procedure and the reference data your institution requires.',
+      },
+    ],
+  },
+
+  // lib/tools/spreadsheet-workbench.ts (csv-deduplicator branch of
+  // runSpreadsheetOperation, the csv() field, table / selectedHeaders / header
+  // / toCsv / csvCell helpers), lib/tools/structured.ts (csvToRecords,
+  // parseCsvRows), lib/tools/spreadsheet-workbench.test.ts and
+  // components/schema-workbench-tool.tsx (the shared download helper).
+  'spreadsheet-and-data-csv-deduplicator': {
+    directAnswer:
+      'Paste the CSV, name the key columns to compare, and the deduplicated table appears below as you type. The first row carrying each key is kept and every later row with the same key is dropped. Clear the key box to compare whole rows instead — and clear it before you run your own data, because it arrives holding the word score from the sample.',
+    leadParagraph:
+      'A duplicate here means whatever the key columns say it means: the tool builds a key from just those columns and compares the keys as exact text. Nothing is normalised first, so Ada and ada are two different rows, and Blue and a space followed by Blue are two different rows as well. Column headers are trimmed when the file is parsed, but cell values never are. With the key box empty every column joins the key, which is the closest this gets to whole-row deduplication. The surviving rows keep their original order, and the result is re-emitted as comma-separated text with quotes added only around values that contain a comma, a double quote or a line break.',
+    faqs: [
+      {
+        question: 'What counts as a duplicate — the whole row or one column?',
+        answer:
+          'Either, and you decide. Name one or more columns, separated by commas, and only those columns form the key; two rows that agree on the key are duplicates even if every other column differs. Leave the box empty and every column joins the key, so only a fully identical row is dropped. With the sample data loaded and the key set to score, Mina is removed because her score of 91 repeats Ada\x27s, although her name, team and date are all different.',
+      },
+      {
+        question: 'Is the comparison case-sensitive, and does spacing matter?',
+        answer:
+          'Yes to both. Comparison is exact text with nothing trimmed or folded, so Ada and ada both survive, and Blue and a space followed by Blue both survive. If your export has stray leading spaces or mixed capitalisation, run the CSV cleaner in the same workbench first — it trims headers and cells — and deduplicate the cleaned result.',
+      },
+      {
+        question: 'Why does it say "Unknown column: score."?',
+        answer:
+          'Because the key-columns box ships holding the word score, which is a column in the sample data and almost certainly not a column in yours. Any name you list must match a header in the first row exactly, after that header has been trimmed, or the run stops and names it. Replace score with your own column names, or clear the box to compare whole rows. Listing the same column twice stops with "Column selection contains a duplicate."',
+      },
+      {
+        question: 'Which copy of a duplicate is kept?',
+        answer:
+          'The first one in the file. Rows are walked from top to bottom, the first appearance of each key is kept, and every later row with that key is discarded. There is no option to keep the last one instead, and no report of what was removed — the output is the surviving table only. To see the duplicates before deleting anything, the same workbench has a spreadsheet duplicate finder that reports repeated values and the row numbers they appear on.',
+      },
+      {
+        question: 'What are the limits, and what does the download save as?',
+        answer:
+          'The pasted CSV is capped at 2,000,000 characters, and the parsed table at 100,000 rows and 1,000 columns; going past either stops the run with a named message. The parser is strict before any of that: every column needs a non-empty header, headers must be unique, and each row must carry exactly as many fields as there are headers. One thing to expect: the download button saves the result as csv-deduplicator.txt, because this workbench declares no file extension of its own, so rename it to .csv yourself or copy the text straight out.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts (the sentence-counter branch of
+  // runTextOperation and its regular expression), lib/tools/text-workbench.test.ts
+  // and components/text-workbench-tool.tsx (the 250 ms auto-run and the
+  // 2,000,000-character guard).
+  'text-and-writing-sentence-counter': {
+    directAnswer:
+      'Paste or type the text and the count appears roughly a quarter of a second after you stop typing; there is no button to press. A sentence is any run of characters that ends at a full stop, an exclamation mark or a question mark, so "Dr. Smith arrived." counts as two.',
+    leadParagraph:
+      'The rule is deliberately simple and the tool calls the result an estimate in its own description. It scans for stretches of text containing none of those three marks, each closed either by a run of them or by the end of the text, and counts the stretches. A run of marks closes one sentence, not several, so "Wow!!! Really?" is two and "Wait... what?" is two. Nothing else is consulted: no dictionary of abbreviations, no rule about capital letters, no allowance for decimal points. That makes it fast and predictable, and it also means prose full of abbreviations or figures will read high.',
+    faqs: [
+      {
+        question: 'Does an abbreviation or a decimal point split a sentence?',
+        answer:
+          'Yes, both do, and this is the single most useful thing to know about the tool. "Dr. Smith arrived." counts as two sentences, "It cost 3.5 million." counts as two, and "e.g. this" counts as three. There is no abbreviation list and no check of what follows the full stop. If your text is heavy with titles, initials, decimals or version numbers, expect the count to run above the number of sentences a reader would see.',
+      },
+      {
+        question: 'What about a final sentence with no full stop?',
+        answer:
+          'It still counts. A closing stretch of text with no terminal mark is closed by the end of the text instead, so "Hello there" on its own counts as one sentence. A heading, a caption or a bullet with no punctuation is therefore counted as a sentence, which is worth remembering before you count a document made mostly of short lines.',
+      },
+      {
+        question: 'Do three dots or an interrobang count more than once?',
+        answer:
+          'No. Consecutive full stops, exclamation marks and question marks are swallowed as one ending, whatever the mix. "Wow!!! Really?" is two sentences, and an ellipsis in the middle of a line closes the sentence before it rather than adding three.',
+      },
+      {
+        question: 'Does a line break end a sentence?',
+        answer:
+          'No. Only the three terminal marks end a sentence, so a line of verse or a bulleted list with no punctuation is counted as one sentence no matter how many lines it runs to. Blank lines are what the paragraph counter looks for; this tool ignores them entirely.',
+      },
+      {
+        question: 'What are the limits, and can I count a file?',
+        answer:
+          'Text is capped at 2,000,000 characters, with the message "Text is limited to 2,000,000 characters in this candidate." An empty box stops with "Enter some text first."; a box holding only spaces is accepted and reports zero. There is no file picker on this page — it takes pasted text only — and the result is a single number, with a line underneath reading, for example, 2 sentences estimated.',
+      },
+    ],
+  },
+
+  // lib/tools/web-workbench.ts (the sitemap-viewer branch of runWebOperation,
+  // the required and decodeXml helpers) and lib/tools/web-workbench.test.ts,
+  // which round-trips a generated sitemap back through the viewer.
+  'web-and-seo-sitemap-viewer': {
+    directAnswer:
+      'Paste the sitemap XML itself into the box and it lists every URL it finds, one per line, with the count on the first line. It never makes a request of its own, so download or view-source the sitemap first and bring the text here.',
+    leadParagraph:
+      'This is a text tool, not a crawler. It searches the pasted text for loc elements with a pattern match rather than parsing the XML properly, takes what is between the opening and closing tags, trims it and turns the XML escapes for less-than, greater-than, double quote, apostrophe and ampersand back into ordinary characters. Everything else in the file is ignored — lastmod, changefreq, priority, namespaces and comments all pass by unread. Because a sitemap index uses the same loc tag for its child sitemaps, pasting an index lists the child sitemap addresses instead of page addresses. Nothing is checked, fetched or deduplicated: the list is what the file claims, in the order the file claims it.',
+    faqs: [
+      {
+        question: 'Can I give it a sitemap address instead of the XML?',
+        answer:
+          'No. There is no address box and no request is made — the tool reads only the text in the box. Open the sitemap in a browser tab, copy the source, and paste it here. A compressed sitemap ending in .xml.gz has to be expanded first, because the compressed bytes contain no readable loc tags and the run would stop with "No <loc> values were found."',
+      },
+      {
+        question: 'What does it read, and what does it ignore?',
+        answer:
+          'It reads loc elements and nothing else. A lastmod date, a changefreq hint and a priority value are all discarded, so the output cannot tell you when a page was last changed. Namespaced variants are not matched either: an image:loc or video:loc inside a page entry is skipped, and only the page loc is listed.',
+      },
+      {
+        question: 'Does it work on a sitemap index file?',
+        answer:
+          'Yes, because an index lists its child sitemaps in the same loc tag. Pasting an index returns the addresses of the child sitemap files, which you then open and paste in turn. The tool does not follow them for you and has no way of knowing whether it is looking at an index or a page sitemap.',
+      },
+      {
+        question: 'Does it validate the URLs or check they are reachable?',
+        answer:
+          'No. It does not test status codes, redirects, robots rules, canonical tags or indexability, and it does not check that an entry is even a well-formed address. It also does not remove repeats, so a URL listed twice in the file is listed twice here and counted twice — the number on the first line counts matches, not unique addresses. That line always reads URLs, including when there is only one.',
+      },
+      {
+        question: 'What are the limits, and what is refused?',
+        answer:
+          'The pasted XML is capped at 200,000 characters, refused with "Sitemap XML is limited to 200,000 characters."; an empty box gives "Sitemap XML is required."; and text containing no loc tag at all gives "No <loc> values were found." There is no cap on how many URLs it will list, so the character limit is the only thing that bites on a large file — and because the count includes every surrounding tag, a sitemap is refused long before its URLs alone would fill 200,000 characters. Paste a big one in parts.',
+      },
+    ],
+  },
+
+  // lib/tools/qr-barcode-workbench.ts (sms-qr-code branch of buildQrPayload,
+  // the local required / raw helpers, qrStyle and renderQr, which calls the
+  // qrcode package) and components/schema-workbench-tool.tsx for the download.
+  'qr-and-barcode-sms-qr-code': {
+    directAnswer:
+      'Enter the phone number and the message you want waiting in the compose box, choose an error-correction level and a width, then download the symbol as an SVG. The payload is exactly sms: followed by the number, then a question mark, body equals, and your message percent-encoded.',
+    leadParagraph:
+      'Spaces, round brackets and hyphens are stripped from the number before encoding, while a leading plus is kept, so +91 (987) 654-3210 is encoded as the digits with the plus in front. The message is carried through exactly as typed and then percent-encoded, with no trimming and no length check of its own. The body part is always appended, even when you leave the message empty, which produces a payload ending in body equals nothing. The symbol is drawn in the page by a QR encoder bundled with the site, at the level and width you pick, and it is vector output — there is no PNG option here.',
+    faqs: [
+      {
+        question: 'What exactly ends up inside the code?',
+        answer:
+          'A single SMS address. With the default values it is sms:+919876543210?body=Hello — the number with separators removed, then the message percent-encoded. Nothing else is added: no sender name, no subject, no timestamp, and no redirect service between the scan and the messaging app.',
+      },
+      {
+        question: 'Which phone numbers are accepted?',
+        answer:
+          'An optional leading plus followed by 7 to 25 characters drawn from digits, spaces, round brackets and hyphens. A number written with full stops, such as 555.123.4567, is refused with "Enter a valid-looking phone number.", and so is anything shorter than seven characters or carrying an extension after a comma. An empty box gives "Enter a phone number first." and more than 50 characters is refused outright. No check is made that the number exists or that it can receive messages.',
+      },
+      {
+        question: 'Does scanning the code send the message?',
+        answer:
+          'No, and it should not. The payload only states a number and some text; what a scanning device does with it is up to that device, and the usual behaviour is to open the messaging app with the fields filled in so the person can read and send it themselves. The tool itself sends nothing and contacts nothing — it draws a picture of the text you supplied.',
+      },
+      {
+        question: 'Why was my message refused as too long?',
+        answer:
+          'The encoded payload is capped at 1 to 8,000 characters, and percent-encoding is what usually pushes a short message over. A character outside the Latin range becomes nine characters once encoded, so roughly 900 characters of Devanagari or Chinese text already exceeds the cap and stops with "Encoded content must contain 1–8,000 characters." Even below the cap, a long message needs a denser symbol, and a higher recovery level leaves less room, so shorten the draft rather than pushing the encoder.',
+      },
+      {
+        question: 'What settings does it have, and what do I get?',
+        answer:
+          'Error correction L, M, Q or H with M as the default, and a width from 160 to 1,200 pixels with 360 as the default — a width outside that range is refused with "SVG width must be between 160 and 1200." and an unrecognised level with "Choose a valid correction level." The result is an SVG with a four-module quiet zone, saved as sms-qr-code.svg, and because it is vector it prints at any size. The page carries its own notice that this builds a standards-shaped payload rather than a checked destination, so test the printed symbol with the devices that will actually scan it.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts (median-calculator branch of runMathOperation,
+  // the parseList and format helpers) and lib/tools/math-workbench.test.ts,
+  // plus components/math-workbench-tool.tsx for the 250 ms auto-run.
+  'math-and-units-median-calculator': {
+    directAnswer:
+      'Type the numbers into the one box, separated by commas, spaces or semicolons, and the median appears below as you type. The list is sorted by value and the middle number is returned; with an even count the two middle numbers are averaged, so 4, 1, 3, 2 gives 2.5.',
+    leadParagraph:
+      'The median is the value with as many numbers above it as below, which is why it survives an outlier that would drag a mean sideways. Sorting is numeric rather than alphabetical, so 9 correctly sits below 10. Any run of spaces, commas or semicolons separates one number from the next, which means a value written with a thousands separator falls apart: 1,234 is read as the two numbers 1 and 234. Every token must be a finite number or the whole run stops, and the answer is printed to twelve significant digits.',
+    faqs: [
+      {
+        question: 'How is an even-length list handled?',
+        answer:
+          'The two middle values are averaged. A list of 1, 2, 3, 4, 5, 6 gives 3.5, and 4, 1, 3, 2 gives 2.5 once sorted. That average is a real arithmetic mean of the two, so it can land on a value that never appeared in your data, which is normal and expected for an even count. An odd-length list simply returns its middle value untouched.',
+      },
+      {
+        question: 'How do I separate the numbers, and what will break it?',
+        answer:
+          'Commas, spaces, semicolons or any mixture — line breaks work too, so a column pasted from a spreadsheet is fine. What breaks it is a thousands separator: 1,234 becomes 1 and 234, and the median of that pair is 117.5 rather than 1234. Currency symbols, per cent signs and units break it as well, because every token must parse as a number. Scientific notation such as 1e3 is accepted and read as 1000.',
+      },
+      {
+        question: 'What is refused?',
+        answer:
+          'An empty box, or any token that is not a finite number, stops with "Enter a list of finite numbers separated by spaces or commas." — the word Infinity and a stray unit both trigger it. More than 100,000 values stops with "Number lists are limited to 100,000 values." There is no file picker: the numbers have to be in the box.',
+      },
+      {
+        question: 'How is the answer rounded?',
+        answer:
+          'To twelve significant digits, then printed with any trailing zeros removed, so 2.50 shows as 2.5. Negative zero is printed as 0. The sorting and averaging themselves run in double-precision arithmetic before that formatting, so a halfway value between two very large numbers can be reported slightly off in the last digits.',
+      },
+      {
+        question: 'Can it also give me the mean, the mode or quartiles?',
+        answer:
+          'Not from this page, which returns one number and nothing else. The same workbench has separate average, mode, variance and standard-deviation calculators that take the same kind of list. For several figures at once from a column of a table rather than a bare list, the CSV workbench has a column-statistics operation that reports the count, minimum, maximum, mean, median and population standard deviation together.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts (the shared
+  // compound-interest-calculator / fixed-deposit-calculator /
+  // future-value-calculator branch of runFinanceOperation, compoundFields, the
+  // future / finite / percent / currency / format helpers and scenarioNotice)
+  // and lib/tools/finance-business-workbench.test.ts.
+  'finance-and-business-fixed-deposit-calculator': {
+    directAnswer:
+      'Enter the starting amount, the annual rate as a percentage, the number of years and how many times a year interest compounds, then run it. It returns the future value and the growth, using future value = principal multiplied by (1 + rate divided by frequency) raised to the power of years times frequency. The default figures — 100,000 at 8% for 10 years compounding monthly — give 221964.023454.',
+    leadParagraph:
+      'Compounding frequency is a field, not an assumption, so the same form models a monthly, quarterly, half-yearly or annual deposit: 100,000 at 7% for 5 years compounded quarterly gives 141477.819576. This is exactly the same code as the compound-interest calculator and the future-value calculator in the same workbench — one branch, three names — so do not expect a deposit-specific answer from it. Nothing here knows what a fixed deposit is: there is no tax deducted at source, no senior-citizen rate, no premature-withdrawal penalty and no non-cumulative payout option. Treat the number as an estimate for comparison, not financial advice and not a quotation.',
+    faqs: [
+      {
+        question: 'Which formula and which compounding does it use?',
+        answer:
+          'Future value equals the principal multiplied by (1 plus the annual rate divided by the compounding frequency), raised to the power of the number of years times that frequency. The frequency is whatever whole number you type from 1 to 365, so 1 is yearly, 4 quarterly and 12 monthly. A test in this repository pins the simplest case: 1,000 at 10% for 2 years compounding once a year gives a future value of 1210.',
+      },
+      {
+        question:
+          'Is this different from the compound-interest calculator on the same site?',
+        answer:
+          'No, and it is worth saying plainly: fixed deposit, compound interest and future value all run one identical branch with the same four fields. Only the page name and the wording around it differ. Whichever you open, you get the same arithmetic on the same inputs.',
+      },
+      {
+        question: 'What does the projection leave out?',
+        answer:
+          'Everything a bank would add. Tax deducted at source and tax on the interest, a senior-citizen rate uplift, a penalty for breaking the deposit early, a non-cumulative deposit that pays interest out instead of reinvesting it, sweep-in and auto-renewal rules, and the day-count convention a bank applies when a term does not land neatly on a compounding date. It also assumes one unchanging rate for the whole term.',
+      },
+      {
+        question: 'Why was my term or frequency refused?',
+        answer:
+          'Two separate guards. The frequency must be a whole number from 1 to 365, so 2.5 stops with "Frequency must be a whole number from 1 to 365." and 366 is out of range. Then the years multiplied by the frequency must itself be a whole number no greater than 1,000,000, so typing 0.583333 years with monthly compounding is refused with "Years × frequency must be a whole number no greater than 1,000,000." — for a seven-month term at monthly compounding you need a years figure that multiplies out exactly.',
+      },
+      {
+        question: 'How exact are the figures, and is this financial advice?',
+        answer:
+          'It is not financial advice. The page carries its own notice that this is scenario arithmetic, and that rates, fees, compounding, timing, taxes and provider rules can all change the real result. Each of the two output lines is printed to twelve significant digits and rounded on its own, which is why the future value and the growth can show a different number of decimal places. No currency symbol is added, and nothing is rounded to the smallest currency unit the way a bank statement would be.',
+      },
+    ],
+  },
+
+  // lib/tools/date-workbench.ts (anniversary-calculator branch of
+  // runDateOperation, the dateField / parseDateOnly / epochDay helpers) and
+  // lib/tools/date-workbench.test.ts.
+  'date-time-and-productivity-anniversary-calculator': {
+    directAnswer:
+      'Type the starting date and the comparison date, both in YYYY-MM-DD form, and it reports how many complete years have passed and how many days have gone by since the most recent anniversary. From 2015-09-06 to 2026-09-06 it reports 11 complete years and 0 days.',
+    leadParagraph:
+      'Both boxes are plain text with a YYYY-MM-DD hint rather than a calendar picker, and the format is checked strictly: four digits, a hyphen, two digits, a hyphen, two digits. All the arithmetic is done on whole calendar days in UTC, so no time of day and no time zone enters into it and a daylight-saving change cannot shift the answer by a day. The anniversary itself is the same month and day in a later year, with the day clamped down when that month is short — which is what makes 29 February work. The comparison date must not fall before the starting date.',
+    faqs: [
+      {
+        question: 'How does it handle a 29 February anniversary?',
+        answer:
+          'By clamping the day down to the last day the month actually has in that year, so a 29 February start has its anniversary on 28 February in a common year. Counting from 2024-02-29 to 2025-02-28 gives 1 complete year and 0 days, and 2025-03-01 gives 1 complete year and 1 day. The rule is stated in the tool description itself.',
+      },
+      {
+        question: 'What date format does it accept?',
+        answer:
+          'Only YYYY-MM-DD, with a four-digit year and two-digit month and day. A date written as 06/09/2015 is refused with "Use a valid date in YYYY-MM-DD form.", and a date that looks right but does not exist, such as 2026-02-30, is refused with "Use a valid calendar date." Years must fall between 0100 and 9999.',
+      },
+      {
+        question: 'Can I count towards a future anniversary?',
+        answer:
+          'Not with this tool — the comparison date must be on or after the starting date, or it stops with "Comparison date must not be before the starting date." For a countdown to the next occurrence of a month and day, the same workbench has a birthday countdown that takes the date and a starting point and reports the days remaining and the date it lands on, using the same 29 February rule.',
+      },
+      {
+        question: 'Does it give months or weeks as well?',
+        answer:
+          'No. The output is one line: complete years, then days since the most recent anniversary, separated by an interpunct. There is no month or week breakdown and no age-style years, months and days. For a plain count of days between two dates, use the date difference calculator in the same workbench.',
+      },
+      {
+        question: 'Why does it say "1 complete years" and "1 days"?',
+        answer:
+          'Because the output line has no singular form — both words are written in the plural whatever the number, so a single year reads as 1 complete years and a single day as 1 days. It is a wording fault in the result line, not a counting fault: the numbers themselves are correct, and 2025-01-01 to 2026-01-02 really is one complete year and one day.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts (radioactive-decay-calculator
+  // branch of runScienceOperation, the finite and format helpers and
+  // physicsNotice) and lib/tools/science-education-workbench.test.ts.
+  'science-and-education-radioactive-decay-calculator': {
+    directAnswer:
+      'Enter the initial quantity, the decay constant in reciprocal time units and the elapsed time, and it returns the quantity remaining from N equals N nought times e to the power of minus lambda t. With 100 at a decay constant of 0.1386294361 over 5 time units it reports 50.000000003.',
+    leadParagraph:
+      'This takes a decay constant, not a half-life, which is the main thing to check before typing. The two are related by lambda equals the natural logarithm of 2 divided by the half-life, and the default 0.1386294361 is that value rounded for a half-life of 5 — which is exactly why five time units leave 50.000000003 rather than a clean 50. Units are yours to keep consistent: the constant and the elapsed time must use the same time unit, and the quantity is unlabelled, so grams, atom counts and activity readings all behave the same. The output is a single line, and all three inputs must be zero or more.',
+    faqs: [
+      {
+        question: 'Can I enter a half-life instead of a decay constant?',
+        answer:
+          'Not in this form — it reads a decay constant only. The same workbench has a separate half-life calculator that takes the initial quantity, the elapsed time and the half-life, and reports both the remaining quantity and how many half-lives have passed; a test pins 100 with a half-life of 5 over 10 elapsed units at 25 remaining. If you would rather stay here, convert first: lambda equals the natural logarithm of 2 divided by the half-life.',
+      },
+      {
+        question: 'Which units does it expect?',
+        answer:
+          'Whichever you choose, provided the decay constant and the elapsed time agree. A constant per year needs a time in years; a constant per second needs a time in seconds. The quantity has no unit at all — whatever goes in comes out in the same terms, so a mass gives a mass and a count gives a count. The tool never labels the answer, so the units live in your head or your notes.',
+      },
+      {
+        question: 'Does it identify isotopes or report activity?',
+        answer:
+          'No. There is no isotope table, so it cannot look up a half-life for you, and there is no conversion to becquerels or curies. It does not model decay chains, daughter products, branching ratios, or the build-up of a decay product. One exponential, one number out.',
+      },
+      {
+        question: 'What is refused?',
+        answer:
+          'Any of the three inputs below zero, or any value that is not a number. A negative elapsed time is rejected with a message that begins "time must be a finite number from 0" and then prints the largest number the browser can hold — the message names the internal field and the raw bound rather than the friendly label, so it reads more starkly than the mistake deserves. A result that overflows the finite range stops with "The calculation did not produce a finite result."',
+      },
+      {
+        question: 'How precise is the answer?',
+        answer:
+          'It is printed to twelve significant digits with no rounding to a sensible number of figures, which is why the default run shows 50.000000003 — the imprecision is in the rounded default constant, not the exponential. The page carries its own notice that it uses the stated idealised formula on the values you supply, and that significant figures, uncertainty and domain assumptions are yours to check before laboratory or engineering use.',
+      },
+    ],
+  },
+
+  // lib/tools/creator-workbench.ts (the shared instagram-caption-formatter /
+  // linkedin-post-formatter / tiktok-caption-formatter branch of
+  // runCreatorOperation, the content field, cleanContent, countReport,
+  // positiveLimit and required helpers).
+  'creator-and-social-instagram-caption-formatter': {
+    directAnswer:
+      'Paste the caption, set the character limit you are writing to, and it returns the tidied caption followed by a character count, a word count and how many characters you have left. Three rules are applied and no others: trailing spaces and tabs are stripped from every line, any run of three or more line breaks collapses to a single blank line, and the whole caption is trimmed top and bottom.',
+    leadParagraph:
+      'This is a measuring tool with a light tidy-up, not a rewriter. Your wording, capitalisation, emoji and hashtags come back exactly as you typed them. The character limit box starts at 2200 but it is just a number you can change, and the same code also drives the LinkedIn post formatter and the TikTok caption formatter in this workbench — the three pages differ only in the default limit. Characters are counted as Unicode code points, which is how a caption full of emoji can read longer here than you expect. The finished block is the caption, a blank line, an em dash on its own line, and then the counts.',
+    faqs: [
+      {
+        question: 'What does it actually change in my caption?',
+        answer:
+          'Three things. Spaces and tabs left hanging at the end of a line are removed, three or more line breaks in a row become one blank line, and blank space at the very start and end is trimmed. Nothing else is touched — no rewriting, no capitalisation changes, no emoji substitution, and no invisible padding characters inserted to force line breaks. A deliberate four-line gap will come back as a single blank line.',
+      },
+      {
+        question: 'Does it count hashtags?',
+        answer:
+          'No, although the tool description promises it does — the description says the tool reports characters, words and hashtags, and the output line reports characters and words only. That mismatch is a fault in the description, not something you can switch on. A hashtag is counted as one ordinary word, because the hash sign is not part of a word for counting purposes. For hashtag work, the same workbench has a hashtag workspace that normalises a list, removes repeats and reports how many unique tags remain.',
+      },
+      {
+        question: 'How are characters counted?',
+        answer:
+          'As Unicode code points. A plain letter counts once, but an emoji built from several code points counts once per part: the woman-technologist emoji with a skin tone counts as four, so "Hi" plus a space plus that emoji reports 7 characters. An accented letter typed as a base letter plus a combining mark counts as two. A platform that counts differently will not agree with this number, so treat it as a close guide rather than the platform\x27s own figure.',
+      },
+      {
+        question: 'What is refused?',
+        answer:
+          'An empty caption stops with "Content is required." and a caption over 500,000 characters with "Content is limited to 500,000 characters." The limit box must hold a whole number from 1 to 100,000; a decimal or a zero stops with "limit must be a whole number from 1 to 100,000." Going over the limit is not an error — the count line simply switches from remaining to over limit and tells you by how much.',
+      },
+      {
+        question: 'Is there anything Instagram-specific about it?',
+        answer:
+          'Only the default of 2200 in the limit box. The transformation and the counting are shared with the LinkedIn and TikTok formatters here, and the tool has no knowledge of the platform at all: it will not post or schedule anything, it does not research or check hashtags, and it makes no claim about what any platform currently allows. Set the limit to whatever the surface you are writing for uses.',
+      },
+    ],
+  },
+
+  // lib/tools/spreadsheet-workbench.ts (csv-merger branch of
+  // runSpreadsheetOperation, the csv() field, table / toCsv helpers),
+  // lib/tools/structured.ts (csvToRecords, which trims headers) and
+  // lib/tools/spreadsheet-workbench.test.ts, which pins the header rejection.
+  'spreadsheet-and-data-csv-merger': {
+    directAnswer:
+      'Paste the first CSV in the top box and the second in the box below, and it returns one table with the second set of rows appended under the first. Both files must carry exactly the same headers in exactly the same order, or the run stops with "Both CSV inputs must have identical headers and order."',
+    leadParagraph:
+      'This is a stack, not a join: rows are copied through in order, first file then second, with no matching on any key and no attempt to reconcile columns. The header check compares the full list including its order, so the same columns written in a different sequence are refused and so is one extra column on either side. It is not fussy about spacing, though, because headers are trimmed when each file is parsed — a header written with a stray leading space matches the same header without one. Duplicate rows survive: an identical row present in both files appears twice in the result.',
+    faqs: [
+      {
+        question: 'What happens if the two files have different headers?',
+        answer:
+          'The run stops with "Both CSV inputs must have identical headers and order." and nothing is produced. That covers a differently named column, an extra or missing column, and the same columns in a different order — a file headed name,score and a file headed score,name are both refused. Spacing is the one difference forgiven, because headers are trimmed before comparison. Fix the second file with the CSV column selector or the column renamer in the same workbench, then merge.',
+      },
+      {
+        question: 'Can it match rows on a key column instead of stacking them?',
+        answer:
+          'No, and if that is what you need this is the wrong tool. The same workbench has a CSV join that takes a key column from each file and performs an inner or left join, adding the second file\x27s columns alongside the first file\x27s rows. Use the merger when both files are the same shape and you want more rows; use the join when you want more columns.',
+      },
+      {
+        question: 'Does it remove duplicate rows?',
+        answer:
+          'No. A row that appears in both files appears twice in the merged output, exactly as it was. Run the CSV deduplicator on the result afterwards if you want them collapsed — it drops later rows that repeat a key you name, or the whole row when you leave its key box empty.',
+      },
+      {
+        question: 'Can I merge more than two files at once?',
+        answer:
+          'Not in one pass — there are two boxes. Merge the first two, copy the result back into the top box, paste the third file into the second box, and repeat. Each round applies the same header check, so a file that drifts from the shared header will be caught at the point it is added rather than silently mangled.',
+      },
+      {
+        question: 'What are the limits, and what does the output look like?',
+        answer:
+          'Each box is capped at 2,000,000 characters and each parsed table at 100,000 rows and 1,000 columns, checked separately — so the merged table can be larger than either limit on its own. The output is comma-separated with line-feed line endings, headers written in their trimmed form, and quotes added only around values containing a comma, a double quote or a line break. The download button saves it as csv-merger.txt, because this workbench declares no file extension, so rename it to .csv or copy the text directly.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts (the paragraph-counter branch of
+  // runTextOperation and its splitting expression),
+  // lib/tools/text-workbench.test.ts and components/text-workbench-tool.tsx.
+  'text-and-writing-paragraph-counter': {
+    directAnswer:
+      'Paste the text and the paragraph count appears as you type, with no button to press. A paragraph ends only at a blank line — a single line break does not start a new one, so a three-line bulleted list counts as one paragraph.',
+    leadParagraph:
+      'The text is trimmed, then split wherever a line break is followed by a second line break with nothing but whitespace between them, and the resulting blocks that still contain something are counted. That makes a blank line the only separator this tool recognises. Several blank lines in a row do not create empty paragraphs — the run of them is treated as one break — and a line holding only spaces or tabs counts as blank. This is exactly where the tool parts company with a word processor, which starts a new paragraph at every hard return.',
+    faqs: [
+      {
+        question: 'Does a single line break start a new paragraph?',
+        answer:
+          'No. Three lines separated by single line breaks count as one paragraph, which is the right answer for a bulleted list or an address block but the wrong one if your text came out of an editor that uses a plain return between paragraphs. Add a blank line between the blocks you want counted separately, or accept that a single-return document will report as one.',
+      },
+      {
+        question: 'What counts as a blank line?',
+        answer:
+          'A line with nothing on it, or a line holding only spaces or tabs. Two blocks separated by a line containing a single space still count as two paragraphs, because whitespace between the two line breaks is allowed. Leading and trailing blank lines are trimmed away before counting and never produce an empty paragraph at either end.',
+      },
+      {
+        question: 'Do several blank lines in a row inflate the count?',
+        answer:
+          'No. A run of two, three or five blank lines separates one paragraph from the next exactly once. The text One, blank, Two, two blanks, Three counts as three paragraphs, which a test in this repository pins.',
+      },
+      {
+        question: 'Does it handle Windows line endings?',
+        answer:
+          'Yes. A carriage return followed by a line feed, twice over, still reads as a blank-line break, because the carriage return sits in the whitespace the split allows between the two line feeds. Text pasted from any of the usual editors behaves the same way.',
+      },
+      {
+        question: 'What are the limits, and what is refused?',
+        answer:
+          'Text is capped at 2,000,000 characters with the message "Text is limited to 2,000,000 characters in this candidate." An empty box stops with "Enter some text first."; a box holding only whitespace is accepted and reports zero. There is no file picker on this page, so the text has to be pasted, and the result is a single number with a line underneath reading, for example, 3 paragraphs counted.',
+      },
+    ],
+  },
+
+  // lib/tools/web-workbench.ts (canonical-url-builder branch of
+  // runWebOperation, the normalizedUrl / absoluteUrl / required / html
+  // helpers) and lib/tools/web-workbench.test.ts.
+  'web-and-seo-canonical-url-builder': {
+    directAnswer:
+      'Paste the absolute address and it returns a ready-to-paste link tag with rel set to canonical. Four things are normalised: the fragment is dropped, the host is lower-cased, a default port is removed, and the query parameters are sorted by name and then by value. So https://EXAMPLE.com:443/tools?b=2&a=1#section becomes https://example.com/tools?a=1&b=2.',
+    leadParagraph:
+      'What it does not change matters more than what it does. The path keeps its capitalisation exactly as typed, no trailing slash is added or removed, a www prefix is left alone, and tracking parameters are kept — they are merely re-ordered alongside everything else. The address is re-serialised by the browser address parser on the way through, so a space in the path comes back percent-encoded and an empty path gains the root slash. In the finished tag the ampersand between two parameters is written in its escaped HTML form, which is what makes the tag valid markup rather than a mistake.',
+    faqs: [
+      {
+        question: 'Exactly what does it normalise?',
+        answer:
+          'Four things. Anything after a hash is discarded. The host name is lower-cased, so EXAMPLE.com becomes example.com. Port 443 on https and port 80 on http are removed as redundant. And the query parameters are re-ordered, sorted by name and then by value, so that two addresses listing the same parameters in a different order come out identical. The default example in the box shows all four at once.',
+      },
+      {
+        question: 'Does it strip tracking parameters?',
+        answer:
+          'No. A campaign parameter such as utm_source is kept and only moved into sorted position, so an address with a tracking tag on it will produce a canonical tag pointing at the tracked address — which is usually not what you want. Remove those parameters yourself before pasting the address in.',
+      },
+      {
+        question: 'Will it change my path or add a trailing slash?',
+        answer:
+          'No. Path capitalisation is preserved, so a path written with a capital letter stays that way; a trailing slash is neither added nor taken away; and a www prefix is untouched. The only path change comes from the address parser itself, which percent-encodes characters that are not allowed raw — a space becomes %20. An address with no path at all gains a single slash, because that is what the parser writes.',
+      },
+      {
+        question: 'What kinds of address are refused?',
+        answer:
+          'Anything that is not a complete http or https address. A relative path such as /tools, a bare domain with no scheme, and an empty box all stop with "URL must be an absolute HTTP(S) URL."; another scheme such as ftp stops with "URL must use HTTP or HTTPS." Worth knowing: the length guard behind this tool can never report its own message, because a too-long address is caught by the parser first and reported as the absolute-address error instead.',
+      },
+      {
+        question: 'Does it check the page or the rest of my markup?',
+        answer:
+          'No, and it makes no request of any kind. It is a text transform on the address you supply: it cannot tell you whether the page exists, whether it redirects, whether a noindex directive contradicts the tag, whether another canonical tag is already on the page, or whether a search engine will honour it. The tag is a suggestion to a crawler in any case, not an instruction.',
+      },
+    ],
+  },
+
+  // lib/tools/qr-barcode-workbench.ts (phone-qr-code branch of buildQrPayload,
+  // sharing its number check with sms-qr-code, plus qrStyle and renderQr) and
+  // components/schema-workbench-tool.tsx for the download.
+  'qr-and-barcode-phone-qr-code': {
+    directAnswer:
+      'Enter the phone number, choose an error-correction level and a width, then download the symbol as an SVG. The payload is a tel address and nothing more — tel: followed by the number with spaces, round brackets and hyphens removed, so +91 (987) 654-3210 is encoded as tel:+919876543210.',
+    leadParagraph:
+      'A leading plus is kept, because that is what carries the international prefix, while separators are stripped so the encoded number is a single unbroken string. It shares its number check with the SMS code in the same workbench: an optional plus followed by 7 to 25 characters drawn from digits, spaces, round brackets and hyphens, and nothing else. This is the shortest payload of the whole QR set, which means a sparse symbol with large modules that survives printing small and scanning at a distance better than a long address would. Nothing about the number is checked beyond its shape.',
+    faqs: [
+      {
+        question: 'What is inside the code?',
+        answer:
+          'One tel address and nothing else — no name, no label, no organisation, no extension. If you need the number to arrive with a name attached, the same workbench has a vCard QR code that carries a full name, phone, email and organisation in one symbol.',
+      },
+      {
+        question: 'Which numbers are accepted?',
+        answer:
+          'An optional leading plus, then 7 to 25 characters made up of digits, spaces, round brackets and hyphens. A five-digit short code is refused for being too short, a number written with full stops is refused, and an extension written after a comma is refused — all with "Enter a valid-looking phone number." An empty box gives "Enter a phone number first." and anything over 50 characters is refused before the shape is even checked. Nothing verifies that the number is in service.',
+      },
+      {
+        question: 'Should I include the country code?',
+        answer:
+          'Yes, if the code might be scanned outside its own country, because the tool adds nothing. It encodes what you type after removing separators, so a number written in national format is encoded in national format and will not connect for a visitor whose device has no local context. Type the plus and the country code yourself.',
+      },
+      {
+        question: 'Does scanning it dial the number?',
+        answer:
+          'The payload only states a number; what happens next belongs to the scanning device, and the usual behaviour is to offer the number so the person can choose to call. The tool itself places no call and contacts nothing. Its own notice says this creates a standards-shaped payload rather than a checked destination, so review the number before printing it.',
+      },
+      {
+        question: 'What settings are there, and what file do I get?',
+        answer:
+          'Error correction L, M, Q or H with M as the default, and a width from 160 to 1,200 pixels with 360 as the default — outside that range it stops with "SVG width must be between 160 and 1200." The output is an SVG with a four-module quiet zone, saved as phone-qr-code.svg; there is no PNG option, but vector output scales to any print size without going soft. The 8,000-character payload cap sits far above any phone number, so it will never be what stops you here.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts (mode-calculator branch of runMathOperation,
+  // the parseList and format helpers) and lib/tools/math-workbench.test.ts,
+  // plus components/math-workbench-tool.tsx for the 250 ms auto-run.
+  'math-and-units-mode-calculator': {
+    directAnswer:
+      'Type the numbers into the one box, separated by commas, spaces or semicolons, and it returns every value that ties for the highest count, separated by commas. A list of 1, 2, 2, 3 gives 2; a list of 8, 2, 2, 8 gives 8, 2 — both of them, in the order they first appeared.',
+    leadParagraph:
+      'Counting is done on the numeric value, not on how you wrote it, so 2.50 and 2.5 are the same value and count together. Every value that reaches the highest count is returned, which means this tool never picks a winner for you and never reports a single mode when two are tied. The order is first appearance in your list, not ascending order, so the output of a tie tells you which value turned up first as well as which values tied. Values are printed to twelve significant digits, and the same list parsing applies as everywhere else in this workbench.',
+    faqs: [
+      {
+        question: 'What happens when two values tie?',
+        answer:
+          'Both are returned, comma-separated, in the order they first appear in your list rather than in numeric order. A list of 8, 2, 2, 8 gives 8, 2 because 8 appeared first, and 5 5 1 1 9 gives 5, 1. Three or more values tied on the same count all come back the same way. The tool will not choose one for you and has no setting to make it.',
+      },
+      {
+        question: 'What if no value repeats?',
+        answer:
+          'Every value is returned, because when nothing repeats the highest count is one and every value matches it. A list of 1, 2, 3 comes back as 1, 2, 3. That is the honest answer to a list with no mode, but it is worth recognising: if the output looks like your whole list handed back, it means nothing in it repeated.',
+      },
+      {
+        question: 'How do I separate the numbers, and what will break it?',
+        answer:
+          'Commas, spaces, semicolons, line breaks, or any mixture. What breaks it is a thousands separator, because the comma splits: 1,234 is read as the two separate values 1 and 234. Currency symbols, per cent signs and units break it too, since every token must parse as a number. Scientific notation such as 1e3 is accepted and read as 1000.',
+      },
+      {
+        question: 'What is refused?',
+        answer:
+          'An empty box, or any token that does not parse as a finite number, stops the run with "Enter a list of finite numbers separated by spaces or commas." More than 100,000 values stops with "Number lists are limited to 100,000 values." There is no file picker — the numbers have to be in the box — and there is no text mode, so a list of words or categories cannot be counted here.',
+      },
+      {
+        question: 'How are the values printed?',
+        answer:
+          'Each one to twelve significant digits with trailing zeros removed, so 2.50 prints as 2.5 and negative zero prints as 0. One consequence to know about: counting happens on the full-precision value but printing happens afterwards, so two values that differ only beyond the twelfth significant digit are counted as two separate values and then printed identically — a tie between them would show the same number twice.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts (cagr-calculator branch of
+  // runFinanceOperation, the positive / finite / format helpers and
+  // scenarioNotice) and lib/tools/finance-business-workbench.test.ts.
+  'finance-and-business-cagr-calculator': {
+    directAnswer:
+      'Enter the beginning value, the ending value and the number of years, then run it. It returns one line: the compound annual growth rate as a percentage, from ((ending divided by beginning) raised to the power of one over years, minus one) multiplied by 100. A value of 100 growing to 180 over 5 years gives 12.4746113142%.',
+    leadParagraph:
+      'CAGR is the single constant yearly rate that would carry the first number to the second over that span, which is why it smooths away everything that happened in between. All three inputs must be greater than zero, so a position that fell to zero or below cannot be modelled here, but a fall is otherwise fine and simply reports a negative rate: 200 down to 100 over 3 years gives -20.6299474016%. The years figure may be fractional, so a span of eighteen months can be entered as 1.5. This is scenario arithmetic on three numbers, not financial advice.',
+    faqs: [
+      {
+        question: 'Which formula does it use?',
+        answer:
+          'The ending value divided by the beginning value, raised to the power of one divided by the number of years, minus one, and multiplied by 100 to give a percentage. A test in this repository pins the clean case: 100 growing to 121 over 2 years gives exactly 10%. The default figures in the form, 100 to 180 over 5 years, give 12.4746113142%.',
+      },
+      {
+        question: 'Can I use it for a loss?',
+        answer:
+          'Yes. An ending value below the beginning value gives a negative rate — 200 falling to 100 over 3 years reports -20.6299474016% — and that is a meaningful answer. What it cannot do is handle a value of zero or a negative value at either end, because a rate that carries a positive number to a negative one does not exist as a real annual rate. Both ends must be above zero.',
+      },
+      {
+        question: 'Does it account for money added or taken out along the way?',
+        answer:
+          'No. It sees two values and a span, so contributions, withdrawals, dividends taken in cash and any dated cash flow are all invisible to it — the rate describes only the journey between the two numbers you typed. For a series of dated or irregular flows, the same workbench has IRR and XIRR operations that take a list of amounts, or dated amounts, instead.',
+      },
+      {
+        question: 'Why was my input refused?',
+        answer:
+          'Because one of the three values was zero, negative or not a number. The message is blunt and unhelpful: it names the internal field, such as beginning or ending, and then states a range running from the smallest positive number a browser can hold up to the largest, rather than saying plainly that the value must be greater than zero. Read it as: all three boxes need a positive number.',
+      },
+      {
+        question: 'Is this financial advice, and how is it rounded?',
+        answer:
+          'It is not financial advice. The page carries its own notice that this is scenario arithmetic and that rates, fees, compounding, timing, taxes and provider rules can change the real result. The percentage is printed to twelve significant digits, with no rounding to two decimal places and no adjustment for inflation, charges, tax or the currency the values are in. A growth rate quoted by a fund or a statement may use a different convention and will not necessarily match.',
+      },
+    ],
+  },
+
+  // lib/tools/developer-advanced-workbench.ts (the 'json-diff' operation, the
+  // jsonDiff walker and the json/required helpers),
+  // lib/tools/developer-advanced-workbench.test.ts,
+  // components/schema-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-json-diff': {
+    directAnswer:
+      'Paste the earlier JSON into the Before box and the later JSON into the After box; the comparison re-runs on its own a quarter of a second after you stop typing. Both documents are parsed before anything is compared, so key order, indentation and line endings never show up as changes — only a value that really moved does. Each change prints as one line: the path, the old value, an arrow, then the new value.',
+    leadParagraph:
+      'This walks two parsed JSON values together and reports the leaves where they disagree. Objects are compared on the union of their keys, sorted, so reordering a file changes nothing; arrays are compared position by position, which is the behaviour that surprises people most, because inserting one element at the front makes every later position look changed. Where one side has no value at all the line prints the word missing, so an added or deleted key reads the same way as an edited one. The result is plain text, not a patch: there is no merge, no apply, no three-way compare and no schema check anywhere on this page. Each box accepts up to 1,000,000 characters and the walk stops at 10,000 changes rather than truncating the list.',
+    faqs: [
+      {
+        question: 'What counts as a difference, and what is ignored?',
+        answer:
+          'The JSON Diff tool parses both sides first, so formatting is invisible to it: whitespace, indentation, line endings and the order of object keys never produce a line. What it reports is a leaf whose value differs — a string, a number, a boolean, a null, or a whole object or array where the other side has a scalar. A change to the nested value active reads as the single line "$.user.active: true → false", which is what a test in this repository requires of it.',
+      },
+      {
+        question: 'How does it compare arrays?',
+        answer:
+          'By position, index against index, for as many positions as the longer array has. That is exact but blunt: insert one item at the start of a ten-item list and the JSON Diff tool reports ten changes, not one insertion, because every later item has moved to a new index. It has no idea of a matching key or an identity field, so it cannot tell a moved row from a rewritten one. When you are comparing lists of records, sort both sides by the same key first and you will get a readable result.',
+      },
+      {
+        question: 'What does the word missing mean in a line?',
+        answer:
+          'That the value is absent on that side. When a key exists only in the After document the line reads missing on the left; when it exists only in the Before document it reads missing on the right. The JSON Diff tool does not label these as additions or deletions with separate wording, so a key that was added and a key whose value changed are two lines in the same shape. Read the side that says missing to tell which happened.',
+      },
+      {
+        question: 'What are the limits, and what is saved when I download?',
+        answer:
+          'Each of the two boxes is limited to 1,000,000 characters, and going over gives "Before JSON is limited to 1,000,000 characters." naming the box. A document that will not parse is refused with the browser parser\x27s own message attached, as in "After JSON is invalid: ...". The walk itself stops at 10,000 changes with "JSON diff is limited to 10,000 changes." rather than showing a shortened list — two files that differ everywhere are refused, not summarised. The download button saves exactly the lines you can see, as json-diff.txt.',
+      },
+      {
+        question: 'Are there cases where it reports a change I cannot see?',
+        answer:
+          'Two, both real. Comparing negative zero with zero is treated as a change, because the tool compares leaves with the identity test rather than the equals sign, yet both sides print as 0 — so a line reading "$.x: 0 → 0" is that case and nothing else. And a document that carries the same key twice keeps only the last of them, because that is what the browser\x27s JSON parser hands back, so a duplicate-key difference cannot be seen here at all. Identical documents give "No JSON differences."',
+      },
+    ],
+  },
+
+  // lib/tools/web-workbench.ts (the 'robots-txt-generator' operation and its
+  // run case, plus the lines, required and absoluteUrl helpers),
+  // components/schema-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-robots-txt-generator': {
+    directAnswer:
+      'Type one user agent, list the paths to disallow one per line, list any paths to allow one per line, and the robots.txt text is rebuilt as you type. It emits four directive names and no others — User-agent, Disallow, Allow and Sitemap — for a single group. Copy the result and save it yourself as robots.txt at the root of your site; this page cannot publish it for you.',
+    leadParagraph:
+      'The output is assembled in a fixed order: the User-agent line, then every Disallow line, then every Allow line, then a Sitemap line if you filled that box in. Only one group is produced, so a file that treats one crawler differently from the rest has to be written by hand or assembled from two runs. The paths themselves are passed through untouched — they are trimmed and blank lines are dropped, and nothing else is checked, so a path missing its leading slash, a full URL, or a wildcard goes into the file exactly as you typed it. The Sitemap box is the one field that is validated: it must be an absolute HTTP or HTTPS address, and it is normalised by the browser\x27s own URL parser before it is written. Leave it blank and the Sitemap line is left out.',
+    faqs: [
+      {
+        question: 'Which directives can it write?',
+        answer:
+          'Four. The Robots.txt Generator emits User-agent, Disallow, Allow and Sitemap, and there is no field for anything else — no Crawl-delay, no Host, no Noindex, no comment lines. If your file needs one of those, add it by hand after you copy the text out. Every Disallow is written before every Allow regardless of the order you typed them in, because the tool groups them by kind rather than preserving your sequence.',
+      },
+      {
+        question: 'Can I write rules for more than one crawler?',
+        answer:
+          'Not in one run. The Robots.txt Generator has a single User agent field and produces a single group, so a file with a rule for everyone and a different rule for one named crawler needs two runs pasted together, with a blank line between the groups. The companion Robots.txt Tester on this site reads multi-group files, but it merges the groups it matches rather than picking the most specific one, so check its answer against the crawler\x27s own tooling before you rely on it.',
+      },
+      {
+        question: 'Does it check that my paths are valid?',
+        answer:
+          'No, and that is worth knowing before you publish. The Robots.txt Generator trims each line and drops blank ones, then writes whatever is left after "Disallow: " or "Allow: " verbatim. It does not require a leading slash, does not reject a full URL pasted in by mistake, and does not interpret a star or a dollar sign — those characters are copied through for the crawler to interpret, not for this page to. Read the finished file before you upload it.',
+      },
+      {
+        question: 'Why was my sitemap address refused?',
+        answer:
+          'Because the Sitemap box takes an absolute address only. A relative path such as /sitemap.xml gives "Sitemap URL must be an absolute HTTP(S) URL.", and an address on a scheme other than HTTP or HTTPS gives "Sitemap URL must use HTTP or HTTPS." A valid address is rewritten in normalised form, so a bare origin gains its trailing slash. Leaving the box empty is allowed and simply omits the line.',
+      },
+      {
+        question: 'Does it fetch or publish my live robots.txt?',
+        answer:
+          'No. The Robots.txt Generator never requests anything from your domain and cannot write to it. It builds text in this tab from what you typed, and putting that text at the root of your site, at the exact address your host serves, is a step you do yourself. Each path list is capped at 5,000 lines, with "This tool is limited to 5,000 lines." past that, and the result downloads as robots-txt-generator.txt, which you rename to robots.txt.',
+      },
+    ],
+  },
+
+  // lib/tools/math-workbench.ts (the 'ratio-calculator' operation, its run
+  // case and the integer, gcd and format helpers),
+  // lib/tools/math-workbench.test.ts and app/math/[tool]/page.tsx
+  'math-and-units-ratio-calculator': {
+    directAnswer:
+      'Enter two whole numbers and the page reduces them to lowest terms as you type, printing a result such as 2:3. It divides both values by their greatest common divisor and nothing else: no rounding, no decimals, no third term. Twelve and eighteen give 2:3, which is the case a test in this repository pins.',
+    leadParagraph:
+      'Both fields take whole numbers only, checked against the exact integer range the browser can hold, so a decimal such as 1.5 is refused rather than rounded into something it is not. The greatest common divisor is taken from the absolute values, and each side is divided by it, so the sign of each number survives the reduction unchanged — which means minus twelve to minus eighteen comes out as -2:-3 rather than the 2:3 most people would write. Zero is allowed on one side but not on both. This tool reduces; it does not scale a ratio up to a target, split a quantity in a given ratio, or solve for a missing term, and there is no way to enter a three-part ratio such as 2:3:5. The separate Proportion Calculator on this site is the one that solves a to b equals c to x.',
+    faqs: [
+      {
+        question: 'What exactly does it calculate?',
+        answer:
+          'The Ratio Calculator divides both of your numbers by their greatest common divisor and prints the two results separated by a colon. For 12 and 18 the divisor is 6, so the answer is 2:3. Nothing else is reported — no decimal equivalent, no percentage, no fraction and no scale factor — and the divisor itself is not shown.',
+      },
+      {
+        question: 'Can I enter decimals, or a third value?',
+        answer:
+          'No to both. Each field is checked as a whole number within the exact integer range, so 1.5 or 0.25 is refused with a message naming the field, such as "a must be a safe whole number." There are only two fields, so a three-part ratio such as 2:3:5 cannot be entered. Multiply decimals up to whole numbers first — 1.5 to 2 becomes 3 to 4 — and reduce a three-part ratio a pair at a time.',
+      },
+      {
+        question: 'How does it handle negative numbers and zero?',
+        answer:
+          'Signs are carried straight through, because the common divisor is taken from the absolute values and then divided into each side as it stands. So minus 12 to 18 gives -2:3, and minus 12 to minus 18 gives -2:-3 rather than the 2:3 that most conventions would write for two negatives. Zero on one side is allowed and reduces to 0:1 or 0:-1; zero on both sides is refused with "At least one ratio value must be non-zero." Read a negative result with that quirk in mind.',
+      },
+      {
+        question: 'Will it scale a ratio to a new total?',
+        answer:
+          'No. The Ratio Calculator only reduces. It will not tell you what 2:3 becomes when the total is 250, will not split an amount between two shares, and will not solve for a missing term. For the last of those, the Proportion Calculator alongside it takes a, b and c and solves a to b equals c to x, and the Percentage Calculator handles share-of-total questions.',
+      },
+    ],
+  },
+
+  // lib/tools/finance-business-workbench.ts (the 'sip-calculator' operation,
+  // its run case, the monthlyContribution, finite, positive, percent and
+  // format helpers and the scenario notice),
+  // lib/tools/finance-business-workbench.test.ts and
+  // app/finance/[tool]/page.tsx
+  'finance-and-business-sip-calculator': {
+    directAnswer:
+      'Enter the monthly contribution, the annual rate you want to assume and the number of years, and the projection updates as you type. It applies the ordinary annuity future-value formula — the contribution multiplied by one plus the monthly rate raised to the number of months, less one, all divided by the monthly rate — and prints the projected value, the total contributed and the difference between them. This is scenario arithmetic on a rate you chose, not financial advice.',
+    leadParagraph:
+      'Two choices inside the formula decide the number, and both differ from calculators you may have used. Contributions are treated as arriving at the end of each month, which is what the tool\x27s own description says, whereas many published SIP formulas multiply by one more factor of one plus the rate for a start-of-month deposit and so return a slightly larger figure. The monthly rate is the annual rate divided by twelve, a plain nominal division rather than the twelfth root of annual growth, so a stated 12 per cent behaves as 1 per cent a month and compounds to a little more than 12 per cent over the year. Years times twelve must land on a whole number of months between 1 and 12,000, so 10.5 years is accepted and 10.3 is refused. All three figures print to twelve significant digits with no currency symbol and no rounding to paise or cents.',
+    faqs: [
+      {
+        question: 'Which formula does it use?',
+        answer:
+          'The ordinary annuity future value. The SIP Calculator takes your contribution, multiplies by one plus the monthly rate raised to the number of months, subtracts one, and divides by the monthly rate. The monthly rate is simply the annual rate divided by twelve. A rate of exactly zero is handled separately as contribution times months, which is why 100 a month for one year at 0 per cent returns 1200 — a test in this repository requires that.',
+      },
+      {
+        question:
+          'Does it assume I invest at the start or the end of the month?',
+        answer:
+          'The end. The SIP Calculator applies the ordinary annuity form, so the first contribution earns nothing in its own month and the last one earns nothing at all. If your provider takes the money on the first of the month, the real outcome sits slightly above this figure, because each contribution has one extra month of growth. The gap is small over a year and grows with the term, so compare like with like before you read anything into a difference between this number and another calculator\x27s.',
+      },
+      {
+        question: 'What do the three lines mean?',
+        answer:
+          'Projected value is the future value the formula produces. Contributed is simply your monthly amount times years times twelve, so it is the money you put in. Scenario growth is the first minus the second — the part that the assumed rate produced rather than you. None of the three is adjusted for inflation, fees, exit loads, taxes, a missed instalment or a change in the amount, because the SIP Calculator has no field for any of those.',
+      },
+      {
+        question: 'Why was my term refused?',
+        answer:
+          'Because years times twelve has to resolve to a whole number of months from 1 to 12,000, and anything else stops with "Term must resolve to 1–12,000 whole months." A term of 10.5 years is 126 months and runs; 10.3 years is 123.6 months and does not. The rate field accepts a negative assumption down to just under minus 100 per cent, so a loss scenario is possible. The error messages for the amount and the term quote the raw floating-point bounds rather than something readable, which is a rough edge in the tool, not a problem with your input.',
+      },
+      {
+        question: 'Is this a promise about what my investment will do?',
+        answer:
+          'No. The tool carries its own notice: scenario math only, not financial, investment, tax, accounting or lending advice, and rates, fees, compounding, timing, taxes, insurance, rounding and provider rules can all change the real result. It projects one constant rate that you typed in, and no market delivers a constant rate. Treat the figure as an estimate for comparing options, and take a decision to a licensed adviser.',
+      },
+    ],
+  },
+
+  // lib/tools/date-workbench.ts (the 'workday-calculator' operation, the
+  // addWorkdays, parseDateOnly, epochDay, fromEpochDay, integer and
+  // boundedShift helpers), lib/tools/date-workbench.test.ts and
+  // app/date/[tool]/page.tsx
+  'date-time-and-productivity-workday-calculator': {
+    directAnswer:
+      'Enter a starting date in YYYY-MM-DD form and the number of workdays to move, negative to count backwards, and the answer updates as you type. It counts Monday to Friday and nothing else: Saturday and Sunday are skipped, and public holidays are not deducted anywhere. From 9 January 2026, one workday forward is 2026-01-12, which a test in this repository pins.',
+    leadParagraph:
+      'Every date is handled as a whole number of days since the epoch in UTC, so no time zone, no clock and no daylight-saving change can shift an answer by a day. A start date that falls on a Saturday or a Sunday is first moved to the nearest weekday in the direction you are travelling, and that move uses up one of the days you asked for — so a Saturday plus one workday lands on the following Monday, and a Saturday minus one lands on the Friday before. Counting then runs in whole weeks where it can and one day at a time for the remainder. Dates are accepted from year 0100 through 9999 and the shift is capped at 100,000 workdays in either direction. The tool has no holiday calendar and no way to load one, so any answer near a public holiday or a company shutdown needs adjusting by hand.',
+    faqs: [
+      {
+        question: 'Does it skip public holidays?',
+        answer:
+          'No. The Workday Calculator skips Saturdays and Sundays and nothing else — the tool\x27s own description says public holidays are not included. There is no country setting, no holiday list and no field to add your own dates. For a deadline that crosses Diwali, Christmas, a bank holiday or an office shutdown, count the closed weekdays yourself and add them to the number you type in.',
+      },
+      {
+        question: 'What happens if my starting date is a weekend?',
+        answer:
+          'It is pulled onto a weekday first, in the direction you are counting, and that move consumes one of the workdays. So a Saturday plus one workday gives the following Monday, and a Saturday minus one gives the Friday before. A Friday plus one workday also gives the following Monday, so the two starts agree — which is convenient but worth knowing if you are checking the arithmetic by hand.',
+      },
+      {
+        question: 'Can I count backwards, and how far can I go?',
+        answer:
+          'Yes: type a negative number of workdays and the Workday Calculator counts back through weekdays. The shift is limited to 100,000 workdays either way, with "Workday adjustments are limited to 100,000." past that, and the answer has to land between the years 0100 and 9999 or you get "The resulting date must be between 0100 and 9999." A shift of zero returns the starting date unchanged, weekend or not.',
+      },
+      {
+        question: 'Why was my date refused?',
+        answer:
+          'The date field takes the YYYY-MM-DD form only — no slashes, no day-first order, no month names — and anything else gives "Use a valid date in YYYY-MM-DD form." A date in that shape that does not exist, such as 2026-02-30, gives "Use a valid calendar date." rather than rolling over into March. Years outside 0100 to 9999 give "Dates must use years from 0100 through 9999.", and the workday count has to be a whole number.',
+      },
+      {
+        question: 'How is this different from adding calendar days?',
+        answer:
+          'Adding calendar days counts every day; the Workday Calculator counts only Monday to Friday, so ten workdays from a Monday is two weeks later rather than ten days later. If you want plain calendar arithmetic, the Add Days to Date and Subtract Days from Date tools on this site do that, and the Business Days Calculator counts the weekdays between two dates you already have rather than projecting a new one.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts (the 'ideal-weight-calculator'
+  // operation, its run case and notice, and the positive helper),
+  // lib/tools/science-education-workbench.test.ts and
+  // app/science/[tool]/page.tsx
+  'health-and-fitness-ideal-weight-calculator': {
+    directAnswer:
+      'Choose male or female, enter a height in centimetres, and four published estimates appear together, each named and dated: Devine 1974, Robinson 1983, Miller 1983 and Hamwi 1964. All four work from inches over five feet, so the height is converted and the excess measured from there, and every figure is given in kilograms to one decimal place. These are historical formulas, not medical advice.',
+    leadParagraph:
+      'The height you type is divided by 2.54 to get inches, and the number of inches above sixty — five feet — drives all four lines. Each formula is a base weight plus a fixed amount per inch: Devine adds 2.3 kg per inch to 50 kg for male or 45.5 kg for female, Robinson adds 1.9 kg to 52 kg or 1.7 kg to 49 kg, Miller adds 1.41 kg to 56.2 kg or 1.36 kg to 53.1 kg, and Hamwi adds 2.7 kg to 48 kg or 2.2 kg to 45.5 kg. For a male at 175 cm this gives 70.5, 68.9, 68.7 and 72.0 kg, the four figures a test in this repository fixes. Below five feet the excess is held at zero, so every height under 152.4 cm returns the same four base numbers — 150 cm and 120 cm produce identical output, which is a limit of formulas defined only above five feet rather than a statement about short people. There is no weight field, no age, no frame size and no body-composition input, and the form offers only male and female because those are the only two constant sets these equations define.',
+    faqs: [
+      {
+        question: 'Which formulas does it use, and why four?',
+        answer:
+          'Devine from 1974, Robinson from 1983, Miller from 1983 and Hamwi from 1964, all four shown side by side with their years, in kilograms to one decimal place. The Ideal Weight Calculator shows all four rather than picking one because they disagree, and the spread between them is the honest answer. For a male at 175 cm they give 70.5, 68.9, 68.7 and 72.0 kg — a range of more than three kilograms from the same single height.',
+      },
+      {
+        question: 'Why does my answer not change below about 152 cm?',
+        answer:
+          'Because all four formulas count inches above five feet, and the Ideal Weight Calculator holds that count at zero rather than letting it go negative. Five feet is 152.4 cm, so every height below it returns each formula\x27s base constant: 45.5, 49.0, 53.1 and 45.5 kg for female, and 50, 52, 56.2 and 48 kg for male. A height of 150 cm and a height of 120 cm give exactly the same output. These equations were never defined below five feet, so the figures there carry no meaning at all.',
+      },
+      {
+        question: 'Does it take my current weight, age or build into account?',
+        answer:
+          'No. The Ideal Weight Calculator asks for two things only — biological sex and height in centimetres — so it has nothing else to work from. There is no weight field, no age, no frame-size option and no body-fat input, which means two people of the same height and sex always receive identical numbers whatever their build, muscle or history. Height in centimetres is the only accepted unit; convert feet and inches before typing.',
+      },
+      {
+        question: 'Should I try to reach one of these numbers?',
+        answer:
+          'That is not a question this tool can answer. Its own notice says these are formula results only, not medical advice, and that they are historical formulas which do not describe what any individual should weigh. Several were written to help with drug dosing rather than to set a personal target. Take any figure from here to a clinician who can see the rest of the picture.',
+      },
+      {
+        question: 'Why was my height refused?',
+        answer:
+          'The height field takes a finite number greater than zero, so a blank box, a zero, a negative value or text is rejected. The message quotes the raw floating-point bounds rather than something readable, which is a rough edge in the tool rather than a problem with what you typed — enter a plain positive number of centimetres, such as 175, and it runs.',
+      },
+    ],
+  },
+
+  // lib/tools/science-education-workbench.ts (the 'ph-calculator' operation,
+  // its run case, its notice and the positive and format helpers),
+  // lib/tools/science-education-workbench.test.ts and
+  // app/science/[tool]/page.tsx
+  'science-and-education-ph-calculator': {
+    directAnswer:
+      'Enter a hydrogen-ion concentration in moles per litre and the page returns the pH as the negative base-ten logarithm of that number, together with the pOH as fourteen minus the pH. It takes the ion concentration itself, not the concentration of an acid, so no dissociation is assumed or calculated anywhere. A concentration of 0.001 gives a pH of 3 and a pOH of 11.',
+    leadParagraph:
+      'There is one input field and it is labelled for what it wants — hydrogen-ion concentration in mol/L — and that single decision defines what the tool is and is not. It never asks whether your solution is an acid or a base, never asks for a dissociation constant, and never asks how many protons a molecule can donate, so it cannot assume full dissociation, because it is not given anything to dissociate. Working from a strong monoprotic acid, you are the one assuming that its molarity equals the hydrogen-ion concentration, and you make that assumption before you type; for a base you must convert to the hydrogen-ion figure yourself first. The pOH line assumes the ion product of water at 25 degrees Celsius and ideal activity, both stated in the tool\x27s own notice, so a warm solution or a concentrated one drifts away from it. The result is not clamped to the nought-to-fourteen range: a concentration above 1 mol/L returns a negative pH, and 2 mol/L gives roughly minus 0.301 with a pOH above 14.',
+    faqs: [
+      {
+        question: 'Does it assume a strong acid fully dissociates?',
+        answer:
+          'It makes no dissociation assumption at all, because it never sees an acid. The pH Calculator has one field, the hydrogen-ion concentration in moles per litre, and it applies the negative base-ten logarithm to whatever you put there. Treating a strong monoprotic acid\x27s molarity as its hydrogen-ion concentration is a step you take in your head before typing, and it is the step where dissociation is assumed. For a weak acid that step is wrong, and this page will not warn you.',
+      },
+      {
+        question:
+          'Can I enter a base, or a pKa, or the pH to get back a concentration?',
+        answer:
+          'No to all three. There is no base option, no dissociation-constant field and no reverse direction on this page — the pH Calculator runs one way, from hydrogen-ion concentration to pH and pOH. To work from a hydroxide concentration, convert to the hydrogen-ion figure yourself first. To go the other way, raise ten to the power of minus your pH using the Scientific Calculator on this site.',
+      },
+      {
+        question: 'How is the pOH figure produced?',
+        answer:
+          'By subtracting the pH from fourteen, nothing more. The pH Calculator\x27s own notice states the two assumptions behind that line: ideal activity, and pH plus pOH equal to fourteen at 25 degrees Celsius. The ion product of water changes with temperature, so at other temperatures the constant is not fourteen and the pOH shown here will be out. There is no temperature field to correct it with.',
+      },
+      {
+        question: 'Why does it show a negative pH?',
+        answer:
+          'Because it does not clamp the answer to the familiar nought-to-fourteen range. Any concentration above 1 mol/L has a negative base-ten logarithm, so 2 mol/L returns a pH of about minus 0.301 and a pOH above fourteen. That is the arithmetic being honest rather than a fault, but it is also the region where the ideal-activity assumption breaks down badly, so a figure out there should not be taken as a measurement.',
+      },
+      {
+        question: 'What does it refuse, and what must it not be used for?',
+        answer:
+          'Zero and negative concentrations are refused, because the logarithm of either is not a finite number — the field accepts a finite value greater than zero only, and the refusal quotes raw numeric bounds rather than a readable sentence, which is a rough edge in the tool. Beyond that, the notice is explicit: this is not suitable for clinical, safety, or process-control decisions. Use a calibrated meter for anything that matters.',
+      },
+    ],
+  },
+
+  // lib/tools/life-admin-workbench.ts (the 'indian-phone-number-formatter'
+  // operation, its run case and notice, and the required and digits helpers),
+  // components/schema-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'india-and-life-admin-indian-phone-number-formatter': {
+    directAnswer:
+      'Paste a mobile number in whatever shape you have it and the page rewrites it as +91 followed by two groups of five digits. It strips every separator, drops a leading 91 from a twelve-digit number or a leading zero from an eleven-digit one, then requires exactly ten digits starting with 6, 7, 8 or 9. This checks the shape of a number and nothing else — not whether it is assigned, reachable or yours to contact.',
+    leadParagraph:
+      'The input is screened before anything else: only digits, spaces, round brackets, plus signs and hyphens are allowed through, so a number pasted with a letter or a dot in it is refused rather than silently cleaned. What survives is reduced to digits, and exactly two prefixes are recognised — a twelve-digit string beginning 91 loses those two digits and an eleven-digit string beginning 0 loses that zero — with nothing else stripped, so an international form written as 0091 is not understood. The remainder must be ten digits opening with 6 to 9, the range Indian mobile numbers use, and the output is always the same shape: +91, a space, five digits, a space, five digits. Because the leading-zero rule and the 6-to-9 rule run independently, a landline written with an STD code that starts with 8 or 9 — a Bengaluru 080 number, for example — passes the check and is reformatted as though it were a mobile. Read the result, not just the fact that it appeared.',
+    faqs: [
+      {
+        question: 'Which input formats does it understand?',
+        answer:
+          'A bare ten-digit number, the same number with 91 or +91 in front, and the same number with a single leading zero. Separators do not matter: spaces, hyphens and round brackets are all removed, so +91 98765-43210 and (98765) 43210 both reduce to the same digits. What it does not understand is the 0091 form — those digits are not recognised as a country prefix, so the string ends up too long and is refused. Strip it to +91 or to the ten digits first.',
+      },
+      {
+        question: 'Why was my number refused?',
+        answer:
+          'Two named checks stop it. Anything containing a character other than a digit, a space, a bracket, a plus or a hyphen gives "Mobile number accepts digits and common phone separators only." — a dot or a letter in a pasted number is the usual cause. Once the digits are extracted and any 91 or leading zero removed, what remains must be ten digits beginning 6, 7, 8 or 9, and anything else gives "Enter a 10-digit Indian mobile number beginning with 6–9." A blank box gives "Enter a mobile number first."',
+      },
+      {
+        question: 'Will it catch a landline typed in by mistake?',
+        answer:
+          'Not always, and this is worth checking by eye. An eleven-digit landline written with its leading zero has that zero removed, and if the STD code then begins with 6, 7, 8 or 9 the number passes the mobile test. A Bengaluru landline written as 080 followed by eight digits is exactly that case: the Indian Phone Number Formatter accepts it and prints it as +91 80260 01234 or similar. The rule it applies is a digit-count and first-digit rule, not a directory lookup, so a plausible-looking landline can pass.',
+      },
+      {
+        question: 'Does it check that the number exists or is reachable?',
+        answer:
+          'No. The tool\x27s own notice says this is a formatting check only, and that it does not verify assignment, ownership, reachability, consent, or DND status. Nothing leaves the page and no operator database is consulted. A number can be correctly shaped, correctly formatted by this tool, and still be unassigned, disconnected, or one you have no permission to message.',
+      },
+      {
+        question: 'What does the output look like, and can I change it?',
+        answer:
+          'Always the same: +91, a space, the first five digits, a space, the last five. There is no setting for hyphens instead of spaces, no option to drop the country code, and no bulk mode for a list of numbers — one number in, one formatted number out. If you need a different grouping, edit the result after you copy it.',
+      },
+    ],
+  },
+
+  // lib/tools/creator-workbench.ts (the 'youtube-description-template'
+  // operation, its run case and the pairs, lines, absoluteUrl, chapters,
+  // timestamp and clock helpers), lib/tools/creator-workbench.test.ts and
+  // app/creator/[tool]/page.tsx
+  'creator-and-social-youtube-description-template': {
+    directAnswer:
+      'Write a summary, list your links one per line as a label, a vertical bar and a URL, and list your chapters one per line as a timestamp followed by a title. The page assembles a description with a LINKS heading and a CHAPTERS heading, validating every URL and every timestamp as it goes. All three boxes are required: it will not produce a description with no links or no chapters.',
+    leadParagraph:
+      'The value here is in the checking, not the layout. Every link is split on a vertical bar into exactly two non-empty parts, and the second is parsed as a web address — a relative path or a typo that will not parse is refused by line number rather than published as a dead link, and a valid address is rewritten in normalised form. Every chapter timestamp is parsed as seconds, minutes and seconds, or hours, minutes and seconds, with the minute and second parts capped at 59; the first chapter must start at zero, each must be later than the one before, and the output is rewritten in the compact form, so 00:00 becomes 0:00 and 3661 seconds becomes 1:01:01. What it does not check is anything about how many chapters you have or how long each one runs, so a list it accepts may still not turn into chapter markers on the platform. It also reports no character count, so measure the finished description against the platform limit yourself before you paste it in.',
+    faqs: [
+      {
+        question: 'How do I write the chapters box?',
+        answer:
+          'One chapter per line as a timestamp, a space, then the title — 00:00 Introduction, then 01:25 Privacy, and so on. Do not type the vertical bar here even though the sibling YouTube Chapter Generator wants one: this tool inserts the bar itself after the first run of non-space characters, so a line already containing one ends up with two and is refused with "Line 1 must contain 2 non-empty pipe-separated fields." The same message appears for a chapter title that contains a vertical bar of its own, which this tool cannot carry.',
+      },
+      {
+        question: 'What are the rules for the timestamps?',
+        answer:
+          'The first chapter must start at zero, or you get "The first chapter must start at 0:00." Each later one must be strictly later than the one before it, or you get "Chapter 2 must be later than the previous chapter." naming the line. Timestamps may be written as seconds, as minutes and seconds, or as hours, minutes and seconds, and the parts after the first cannot exceed 59 — anything else gives "Invalid timestamp:" followed by what you typed. The output is normalised, so 00:00 comes back as 0:00 and an hour-long mark comes back as 1:01:01.',
+      },
+      {
+        question: 'Why was one of my links refused?',
+        answer:
+          'Each line in the links box must be a label, a vertical bar, and a URL, both parts non-empty, or the line number is named in the error. The URL part must be an absolute web address: a relative path such as /shop, or a typo the browser cannot parse, gives "URLs must be absolute HTTP(S) URLs.", and an address on another scheme gives "URLs must use HTTP or HTTPS." Valid addresses are normalised, so a bare domain comes back with its trailing slash.',
+      },
+      {
+        question: 'Can I leave out the links or the chapters?',
+        answer:
+          'No. All three boxes are required, and an empty links or chapters box stops with "Enter at least one non-empty line." while an empty summary gives "Summary is required." The YouTube Description Template always writes both headings, in the order summary, then LINKS, then CHAPTERS, and there is no way to reorder them, rename them or drop one. If you want a description without chapters, delete the section after you copy the text out.',
+      },
+      {
+        question: 'Does it count characters against the platform limit?',
+        answer:
+          'No, and this is the one thing to check by hand. The YouTube Description Template reports no character count at all, unlike the title and caption tools on this site which count against a limit you pick. It also does not check how many chapters you have listed or how long each one lasts, so a chapter list it happily accepts may still not become chapter markers. The summary box takes up to 500,000 characters and each list up to 10,000 lines, which are the tool\x27s limits rather than any platform\x27s.',
+      },
+    ],
+  },
+
+  // components/pdf-page-tools.tsx (the page-order field, the 150 MB gate and
+  // the worker call), lib/tools/pdf/page-selection.ts and its test,
+  // lib/tools/pdf/engine.ts (transformPdfPages, loadPdf) and
+  // app/pdf/[tool]/page.tsx
+  'pdf-delete-pdf-pages': {
+    directAnswer:
+      'Choose a PDF of up to 150 MB, then edit the page box to list the pages you want to keep — it opens prefilled with the whole document, and you delete a page by removing it from that list. The pages you keep are copied into a new PDF in the order you typed, inside a background worker in this tab, and the result is reopened and its page count checked before you are offered the file. The box takes single pages and ranges, as in 3, 1-2.',
+    leadParagraph:
+      'This is the one thing to know before you start: there is no box for the pages to remove. The field is labelled Pages in output order and its help text says to omit a page to remove it, so deleting pages 4 and 7 from a ten-page file means typing 1-3, 5-6, 8-10. That design makes the same box do three jobs at once, because the order you type is the order you get and a page listed twice is kept only once — so you can delete and reorder in a single pass, but you cannot duplicate a page. The output is a newly created document holding only the pages you kept, with its producer set by this tool, which means the original\x27s stored title, author, subject and keywords do not come across unless you type them into the metadata fields on the same page. Rotation, page numbers, a watermark and metadata are all applied in that same pass, so leave them alone if all you want is a deletion.',
+    faqs: [
+      {
+        question: 'How do I actually delete a page?',
+        answer:
+          'By leaving it out of the list. When you choose a file the box is filled in with the full range, such as 1-12, and the Delete PDF Pages tool keeps exactly what that box names. To drop pages 4 and 7 from a twelve-page file, change it to 1-3, 5-6, 8-12. There is no separate field for pages to remove and no checkbox beside a page thumbnail; the list of survivors is the whole interface.',
+      },
+      {
+        question: 'What can I type in the page box?',
+        answer:
+          'Single page numbers and ranges, separated by commas — 3, 1-2 is valid and produces pages 3, 1 and 2 in that order. A repeated page is kept once, at its first position, so 3, 1-2, 2, 5 gives 3, 1, 2, 5 as a test in this repository requires. A range that runs backwards is refused with a message telling you the right way round, as in "Range 5-3 runs backwards. Use 3-5 instead.", a page outside the file gives "Choose pages between 1 and 12.", and anything that is not a number or a range is quoted back as not a valid page or range. One range may cover at most 2,000 pages.',
+      },
+      {
+        question: 'What does the finished PDF keep, and what does it lose?',
+        answer:
+          'It keeps the pages you listed, with their content and their size, copied into a brand-new document. What it does not keep is what lived outside those pages: the document\x27s own title, author, subject and keywords are not carried across, and the file is written with this tool named as its producer. The metadata fields on the same page let you set those four values yourself in the same run. If your file has bookmarks, a form or anything else document-wide, open the saved result and check it before you send it on.',
+      },
+      {
+        question: 'Is the result checked before I download it?',
+        answer:
+          'Yes, and the check is not cosmetic. After the new PDF is written it is loaded again from the bytes that were produced, its page count is compared with the number of pages you asked for, and every page\x27s rotation is confirmed to be a multiple of ninety degrees. A mismatch stops the run with "The edited PDF failed its page-count check." or the matching rotation message rather than handing you a file. The page reports how long that reopening took alongside the result.',
+      },
+      {
+        question: 'What will it refuse?',
+        answer:
+          'A file over 150 MB, with "This candidate limits a source PDF to 150 MB." A file that is not a PDF at all, with "This file could not be read as a supported PDF." A password-protected PDF, with "This PDF is encrypted. Remove its password locally, then try again." — the encryption is never guessed at or worked around. And an empty selection, with "Keep at least one page in the output.", because a PDF with no pages is not a document. Your original file is never modified; the result is a separate download.',
+      },
+    ],
+  },
+
+  // lib/tools/spreadsheet-workbench.ts (the 'csv-column-selector' operation
+  // and the table, selectedHeaders, header, toCsv and csvCell helpers),
+  // lib/tools/structured.ts (parseCsvRows, csvToRecords),
+  // lib/tools/spreadsheet-workbench.test.ts and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-column-selector': {
+    directAnswer:
+      'Paste a CSV into the data box, type the column names you want to keep as a comma-separated list, and the trimmed table rebuilds as you type. The order you type the names is the order the columns come out in, so this reorders as well as filters. Every row is kept — this tool changes which columns you have, never which rows.',
+    leadParagraph:
+      'Columns are chosen by header name, not by position, so the selection survives a file whose columns move. The names you type are trimmed and matched exactly against the headers in the first row, and an unrecognised name stops the run by name rather than being quietly skipped. The parser underneath is the strict one this site uses everywhere: each column needs a non-empty header, headers must be unique, and every row must carry exactly as many fields as there are headers. Values are carried through as text, and the output is re-quoted where it needs to be, so a field holding a comma, a double quote or a line break comes back correctly wrapped. Two things it cannot do: a column whose own name contains a comma cannot be named in the selection box, because that box is split on commas, and there is no way to select by position, by pattern or by everything-except.',
+    faqs: [
+      {
+        question: 'Does it change the order of the columns?',
+        answer:
+          'Yes, and deliberately. The CSV Column Selector emits the columns in the order you typed them, not the order they appear in the file, so typing score,name gives you score first. That makes it a reordering tool as well as a filter. Rows are never reordered and never removed — every data row in the file comes out, with only the chosen columns on it.',
+      },
+      {
+        question: 'Why was my column not found?',
+        answer:
+          'Because the name must match the header exactly once both sides are trimmed, and case matters. A missing or misspelt name gives "Unknown column: Score." quoting what you typed, an empty selection gives "Choose at least one column.", and naming the same column twice gives "Column selection contains a duplicate." A column whose header genuinely contains a comma cannot be selected at all, because the selection box splits on commas — rename that header in the source first.',
+      },
+      {
+        question: 'How strict is the CSV parsing?',
+        answer:
+          'Strict, and it will tell you why it stopped. A blank cell anywhere in the header row gives "Every CSV column needs a header in the first row.", two identical headers give "CSV headers must be unique before conversion.", and a row with the wrong number of fields is named with both counts, as in "Row 4 has 3 columns; expected 4." An opening double quote that is never closed gives "CSV contains an unclosed quoted field." Nothing is padded or dropped to make a ragged file fit. A byte-order mark at the very start is removed, and blank lines at the end are ignored.',
+      },
+      {
+        question:
+          'Are quotes, commas and line breaks inside a field preserved?',
+        answer:
+          'Yes. A quoted field may hold commas and line breaks, and two double quotes inside it mean one literal double quote; on the way out, any value containing a comma, a double quote, a carriage return or a newline is wrapped in double quotes with its own quotes doubled. Values are never trimmed, converted or re-typed, so a postcode with a leading zero and a long account number come through with every character intact.',
+      },
+      {
+        question: 'What are the limits, and what does the download contain?',
+        answer:
+          'The data box accepts up to 2,000,000 characters, with "Tabular input is limited to 2,000,000 characters." past that, and the parsed table is capped at 100,000 rows and 1,000 columns with "Tables are limited to 100,000 rows and 1,000 columns." The download holds exactly the CSV text you can see, but it is saved with a .txt extension rather than .csv, because this workbench has no file type declared for table results — rename it after saving if your spreadsheet program cares.',
+      },
+    ],
+  },
+
+  // lib/tools/text-workbench.ts (the 'word-counter' operation, its run case
+  // and the words helper), lib/tools/text-workbench.test.ts and
+  // components/text-workbench-tool.tsx, app/text/[tool]/page.tsx
+  'text-and-writing-word-counter': {
+    directAnswer:
+      'Paste or type your text and the count updates on its own a quarter of a second after you stop. A word here is a run of Unicode letters or digits, optionally joined by apostrophes to further runs — so don\x27t is one word, well-known is two, and 3.14 is two. The result is the number and nothing else: characters, sentences, paragraphs and reading time are four separate tools on this site.',
+    leadParagraph:
+      'The rule is a single pattern rather than a split on spaces, and knowing it explains every answer this tool gives: one or more letters or digits from any script, then any number of groups of an apostrophe — straight or curly — followed by more letters or digits. Everything else is a boundary, so hyphens make well-known two words and state-of-the-art four, underscores make snake_case two, and a full stop or a comma inside a number makes 3.14 and 1,000 two words each. Emoji and punctuation match nothing and are not counted, and a trailing apostrophe is dropped, so dogs\x27 counts once as dogs. The pattern reads the text by Unicode code point rather than by storage unit, so letters outside the basic range are handled as single characters. What it has no answer for is a script written without spaces: a run of Chinese or Japanese characters counts as one word however long it is.',
+    faqs: [
+      {
+        question: 'What counts as one word?',
+        answer:
+          'A run of Unicode letters or digits, plus any apostrophe-joined continuations. So don\x27t, o\x27clock and rock\x27n\x27roll are each one word, and the curly apostrophe works the same as the straight one. One café, two. counts as three, which a test in this repository pins. A trailing apostrophe is not part of the word: dogs\x27 counts once, as dogs.',
+      },
+      {
+        question: 'How are hyphens, numbers and underscores handled?',
+        answer:
+          'All three are word boundaries, which is where this differs from a word processor. Well-known counts as two words, state-of-the-art as four, and snake_case as two. Numbers written with a decimal point or a thousands separator split as well, so 3.14 is two words and 1,000 is two. If your text is full of hyphenated compounds the figure here will run higher than the one your editor shows.',
+      },
+      {
+        question: 'Does it work for Chinese, Japanese or Thai text?',
+        answer:
+          'Not meaningfully. The Word Counter matches unbroken runs of letters, and those scripts are written without spaces, so an entire sentence of Chinese or Japanese characters is counted as one word. Latin, Cyrillic, Greek, Devanagari and other space-separated scripts count correctly, and accented and non-Latin letters are treated as ordinary letters rather than boundaries.',
+      },
+      {
+        question: 'Why does it only show a word count?',
+        answer:
+          'Because each measurement is its own tool here. The Word Counter prints the number of words; the Character Counter alongside it counts characters with and without spaces and does so by grapheme, so a family emoji counts as one; the Sentence Counter estimates sentences from terminal punctuation; the Paragraph Counter counts blocks separated by blank lines; and the Reading Time tool divides the word count by 225 words a minute. The Input figure in the panel below the result is a raw storage count and will disagree with the Character Counter on emoji.',
+      },
+      {
+        question: 'What are the limits?',
+        answer:
+          'Text is capped at 2,000,000 characters, and going over gives "Text is limited to 2,000,000 characters in this candidate." An empty box gives "Enter some text first." — though the page holds that back until you have typed something, so it does not greet you with an error. The count re-runs by itself a quarter of a second after each change, and the copy and download buttons save the number as it stands.',
+      },
+    ],
+  },
+
+  // lib/tools/developer-advanced-workbench.ts (the 'json-path-tester'
+  // operation, its notice and the resolveJsonPath and json helpers),
+  // lib/tools/developer-advanced-workbench.test.ts and
+  // app/developer/[tool]/page.tsx
+  'developer-and-data-json-path-tester': {
+    directAnswer:
+      'Paste a JSON document, type a path starting with a dollar sign, and the value it points at is printed as formatted JSON. Three notations are understood and no others: a dot followed by a plain property name, square brackets round a number, and square brackets round a quoted property name. This is a bounded path resolver, not a query language — there are no wildcards, no filters and no recursive search.',
+    leadParagraph:
+      'The path is read left to right and each step must match one of the three accepted forms, so $.users[0].name and $.users[0]["display name"] both work, the second being the form a test in this repository fixes. A dot-property name has to look like an identifier — letters, digits, underscores and dollar signs, not starting with a digit — which is exactly why the quoted bracket form exists: any name with a space, a hyphen or a full stop in it goes inside quotes, single or double, with backslash escapes honoured. Anything the reader does not recognise stops immediately and quotes the offending text back at you. Resolution is then a simple walk: at each step the current value must be an object or an array that carries the key, and if it does not, the run stops naming the step rather than returning nothing. That means a missing key is an error here, not an empty result, which is the opposite of how a query language behaves.',
+    faqs: [
+      {
+        question: 'Which path syntax does it accept?',
+        answer:
+          'Three forms. A dollar sign for the root; a dot followed by an identifier-shaped property name, as in $.user.name; square brackets round a whole number for an array position, as in $.users[0]; and square brackets round a quoted property name for anything the dot form cannot carry, as in $.users[0]["display name"] or $["first-name"]. Single and double quotes both work inside the brackets, with backslash escapes. A path that does not start with a dollar sign is refused with "Path must start with $."',
+      },
+      {
+        question: 'Can I use wildcards, filters or a recursive search?',
+        answer:
+          'No. The JSON Path Tester\x27s own notice says it supports the dollar sign, dot properties, numeric indexes and quoted bracket properties, and that it is not a full JSONPath query language. A star, a double dot, a slice such as [1:3] and a filter expression are all unrecognised and stop the run with "Unsupported path syntax near:" followed by the first part of the text it could not read. One path resolves to one value, never to a list of matches.',
+      },
+      {
+        question: 'What happens when the path does not exist?',
+        answer:
+          'The run stops and names the step it could not take, as in "Path does not exist at name." You do not get an empty array or a null. The same message appears when a step tries to go inside a value that is not an object or an array — indexing into a string, for example. A path longer than 1,000 steps is refused with "Path is limited to 1,000 segments.", and the path text itself is capped at 10,000 characters.',
+      },
+      {
+        question: 'Why does a path I never put in my data still resolve?',
+        answer:
+          'Because the existence check reaches into the built-in properties that every JavaScript object and array carries, not just the keys in your document. So $.users.length returns the array\x27s length even though there is no length key in your JSON, and paths such as $.constructor or $.toString resolve too and print the word undefined, because the thing they found cannot be written as JSON. That is a real defect in the JSON Path Tester rather than something in your data: if you see undefined, or a number appearing from a key you never wrote, you have hit a built-in rather than your own value.',
+      },
+      {
+        question:
+          'What does the output look like, and what are the size limits?',
+        answer:
+          'The resolved value is printed as JSON with two-space indentation, so a string comes back in quotes, an object comes back formatted, and a number comes back bare. The JSON document box takes up to 1,000,000 characters and a document that will not parse is refused with the browser parser\x27s own message attached. The download button saves the resolved value as json-path-tester.json.',
+      },
+    ],
+  },
+
+  // lib/tools/web-workbench.ts (the 'robots-txt-tester' operation and its run
+  // case: group building, agent matching, the longest-prefix sort and the
+  // three result strings), lib/tools/web-workbench.test.ts and
+  // app/web/[tool]/page.tsx
+  'web-and-seo-robots-txt-tester': {
+    directAnswer:
+      'Paste the text of a robots.txt file, name the crawler you are asking about, type a URL path beginning with a slash, and the page tells you which single rule wins. Rules are matched as plain prefixes and the longest matching one decides, with an Allow beating a Disallow of the same length. It never fetches your live file — you paste the text, so what you test is what you pasted.',
+    leadParagraph:
+      'The file is read line by line: anything after a hash is dropped as a comment, blank lines are skipped, and each remaining line is split at its first colon. A User-agent line opens a group, consecutive User-agent lines join the same group, and Allow and Disallow lines attach to whichever group is open — so rules written before any User-agent line are ignored entirely, and directives the tool does not handle, such as Sitemap and Crawl-delay, are read and discarded. A group applies when one of its agents is a star or when the name you typed contains that agent as a substring, which is how a request for Googlebot-Image picks up a group written for googlebot. Matching a path is a plain prefix test, then the candidates are sorted by rule length with Allow winning ties. One important deviation follows from all this and is covered below: every matching group is pooled rather than the most specific one being chosen alone.',
+    faqs: [
+      {
+        question: 'How does it decide which rule wins?',
+        answer:
+          'Every rule whose path is a prefix of your path is a candidate, and the longest one wins; where two are the same length the Allow wins. So against Disallow: /private and Allow: /private/public, the path /private/public/page comes back as "Allowed by Allow: /private/public", which a test in this repository requires. When nothing matches you get "Allowed — no matching Disallow rule." A Disallow line with nothing after the colon is ignored rather than treated as a rule, which is the conventional reading of an empty value.',
+      },
+      {
+        question: 'Does it handle a star or a dollar sign in a rule?',
+        answer:
+          'No, and the tool\x27s own description says so: wildcards are not interpreted. A rule such as Disallow: /*.pdf$ is treated as the literal text /*.pdf$ and therefore matches nothing, so a path that a real crawler would block comes back here as allowed. Any file that leans on pattern rules will be read wrongly by this page, and you should check it with the crawler\x27s own tooling instead.',
+      },
+      {
+        question: 'Does a rule for one named crawler override the star group?',
+        answer:
+          'It should, and here it does not. The Robots.txt Tester pools the rules of every group that matches the agent you typed, including the star group, instead of using only the most specific matching group. So a file with Disallow: /admin under User-agent: star and Allow: / under User-agent: Googlebot reports /admin/page as "Blocked by Disallow: /admin" for Googlebot, because the longer star-group rule wins the pooled comparison. This is a real defect. Where a file gives one crawler different treatment from the rest, delete the groups that do not apply before you paste it in, and confirm the answer with the crawler\x27s own tester.',
+      },
+      {
+        question: 'How is the crawler name matched?',
+        answer:
+          'Case is ignored, and a group applies when the name you typed contains the group\x27s agent as a substring — so a group for googlebot also answers for Googlebot-News, which is roughly what real crawlers do with their own family names. The looseness cuts both ways: a group written for the agent bot would match any name ending in bot. A User-agent line with nothing after the colon produces an empty agent that matches every name you could type, which is another rough edge worth knowing about.',
+      },
+      {
+        question: 'Does it check my live site?',
+        answer:
+          'No. There is no address field on this page and nothing is requested from your domain — you paste the robots.txt text and the Robots.txt Tester works only on that. This means you can test a file before you publish it, and it also means a stale paste gives a stale answer. The path must begin with a slash, or you get "Path must start with /.", so strip the scheme and host yourself; comparison is case-sensitive and nothing is percent-decoded, so /Private and /private are different paths here.',
+      },
+    ],
+  },
+
+  // lib/tools/qr-barcode-workbench.ts (the 'vcard-qr-code' operation, its run
+  // case and notice, and the required, escapePayload, qrStyle and renderQr
+  // helpers), components/schema-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-vcard-qr-code': {
+    directAnswer:
+      'Fill in a full name, a phone number, an email address and optionally an organisation, and the page builds a vCard 3.0 payload and draws it as an SVG QR symbol in this tab. Four vCard properties are written and no others: FN for the name, TEL, EMAIL and ORG. Scan the saved symbol with the phone you actually intend people to use before you print it.',
+    leadParagraph:
+      'The payload is a plain vCard 3.0 card, opened with BEGIN:VCARD and VERSION:3.0 and closed with END:VCARD, with carriage-return line endings between the properties. Only the email address is checked for shape — it must contain an at sign and a dot in the usual arrangement — while the phone field is accepted as typed, which is a difference from the separate Phone QR Code tool on this site, where a number pattern is enforced. Values are escaped before they go in: a backslash, semicolon, comma, colon or double quote is preceded by a backslash and a line break becomes the two characters backslash and n. That escaping is broader than the format calls for, so an organisation such as Example: Studio is written as Example\\: Studio and may arrive in a contacts app with the backslash showing. The symbol is drawn at your chosen error-correction level with a four-module quiet zone, between 160 and 1,200 pixels wide, and saves as an SVG named after the tool.',
+    faqs: [
+      {
+        question: 'Which vCard version and which fields does it write?',
+        answer:
+          'Version 3.0, with four properties: FN for the full name, TEL for the phone, EMAIL for the address and ORG for the organisation. That is the whole card. There is no structured N property, no postal address, no website, no job title, no note and no photo, and there is no way to add a second number or a second address. Some contacts apps prefer the structured name property, so check how the scanned card files itself before you commit to a print run.',
+      },
+      {
+        question: 'How much can the symbol hold?',
+        answer:
+          'The name is capped at 200 characters, the phone at 50 and the email at 254, with each limit named if you pass it, as in "Full name must be at most 200 characters." The finished payload as a whole is capped at 8,000 characters with "Encoded content must contain 1–8,000 characters." — but the QR format itself runs out long before that, and when it does the run stops with "The content does not fit the selected QR settings." followed by the encoder\x27s own reason. A longer organisation name or a higher error-correction level both bring that point closer.',
+      },
+      {
+        question: 'Does it check the phone number?',
+        answer:
+          'No. The vCard QR Code tool takes the phone exactly as you type it, up to 50 characters, and escapes it — it applies no pattern, no country rule and no length rule, unlike the Phone QR Code and SMS QR Code tools alongside it, which require a recognisable number. The email is the only field with a shape check, refused with "Enter a valid-looking email address." if it does not have an at sign and a dot in the usual places. Nothing here is verified against a directory: the tool\x27s own notice says it creates a standards-shaped payload, not a live destination or ownership check.',
+      },
+      {
+        question: 'What do the error-correction and size settings change?',
+        answer:
+          'Error correction chooses how much of a damaged or partly obscured symbol can still be read: L gives the most capacity, M is the default, and Q and H recover more at the cost of a denser symbol for the same content. SVG width sets the drawing size between 160 and 1,200 pixels, defaulting to 360, with "SVG width must be between 160 and 1200." outside that. The quiet zone is fixed at four modules. Because the output is SVG, printing it larger costs no sharpness.',
+      },
+      {
+        question: 'Is a contact card in a QR code private?',
+        answer:
+          'Not in the sense people sometimes assume. Everything in the card is written into the symbol as readable text, so anyone who scans it, photographs it or reads the SVG file in a text editor sees the name, number, email and organisation. The encoding happens in this tab and the details are not sent anywhere by this page, but a printed symbol is a published business card. Leave out anything you would not put on paper.',
+      },
+    ],
+  },
+
   // lib/tools/structured.ts (parseCsvRows, csvToRecords, csvToJson),
   // lib/tools/structured.test.ts, components/structured-tools.tsx
   // (CsvToJsonTool, EditorPair) and app/data/csv-to-json/page.tsx
