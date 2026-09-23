@@ -15,6 +15,54 @@
 # not de-index the Cloudflare deploy.** To pull the site out of search, change
 # `public/robots.txt` and add an `X-Robots-Tag` line below — do not rely on the
 # environment variable alone.
+#
+# ## A rule never replaces an earlier one — it adds to it
+#
+# Every pattern that matches the request contributes its lines, so two rules
+# that both name `Cache-Control` do not fight: the values are combined, and the
+# result is a policy neither rule wrote. That is why the narrower rules below
+# say `! Cache-Control` before setting their own, exactly as they already do
+# for `Content-Security-Policy`. **A `Cache-Control` added to a narrower rule
+# without the unset line first is a bug**, and the test in
+# `lib/edge-cache-headers.test.ts` fails on it.
+#
+# Measured, not assumed. Dropping the `! Cache-Control` from the `/og.png` rule
+# and serving the build (2026-09-23, `wrangler dev` against `dist/server`) made
+# that file answer
+# `public, max-age=0, must-revalidate, s-maxage=3600, stale-while-revalidate=86400, public, max-age=86400`
+# — both policies, with the catch-all's `max-age=0` first and therefore winning.
+#
+# ## Why the catch-all carries both a browser policy and an edge policy
+#
+# Measured on the live site, 2026-09-23: every HTML page answered
+# `public, max-age=0, must-revalidate` — the asset layer's default, because no
+# rule here set anything else — and Cloudflare returned
+# `cf-cache-status: REVALIDATED` on every single request. The edge held the
+# page but was forbidden to serve it without asking the Worker first, so the
+# zone cache hit rate sat at 42.55% on a site where **every** page is a static
+# file produced at build time and nothing is personalised. Each of those
+# revalidations is a Worker invocation the free plan has to pay for, and a
+# crawl burst of exactly that shape is what produced 1,316 `exceededResources`
+# 503s in one hour on 2026-09-16.
+#
+# The two audiences want different things and `Cache-Control` can address them
+# separately:
+#
+#   * `max-age=0, must-revalidate` is for the **browser**, and is the same
+#     instruction it already receives today. A visitor still revalidates on
+#     every view, so a deploy reaches them as soon as the edge has it.
+#   * `s-maxage` is for the **shared cache**, which is Cloudflare. It overrides
+#     `max-age` for that cache alone, so the edge answers from its own copy for
+#     an hour without waking the Worker at all.
+#   * `stale-while-revalidate` lets the edge keep answering from the expired
+#     copy while it refreshes in the background, so the hourly refresh costs a
+#     background fetch rather than a waiting visitor.
+#
+# **The cost of this is deploy propagation.** The edge may go on serving the
+# previous build for up to the `s-maxage` below (plus however long until the
+# next request triggers the background refresh). An hour is the deliberate
+# ceiling on that; purge the zone cache after a deploy that has to be visible
+# immediately. Do not raise it without deciding that trade again.
 
 /*
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
@@ -25,12 +73,15 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cache-Control: public, max-age=0, must-revalidate, s-maxage=3600, stale-while-revalidate=86400
 
 # The share card is fetched by every social scraper that sees a link, and it
 # only changes when someone regenerates it. It was being served
 # `max-age=0, must-revalidate` like the rest of `public/`. A day is short
-# enough that a regenerated card propagates on its own.
+# enough that a regenerated card propagates on its own. No `s-maxage` is needed:
+# with none set, `max-age` governs the edge too.
 /og.png
+  ! Cache-Control
   Cache-Control: public, max-age=86400
 
 # Build output is content-addressed: every filename under here carries a content
@@ -43,8 +94,16 @@
 # Verified before applying: all 69 files under this prefix are hashed or
 # build-scoped; the only two unhashed files, `_buildManifest.js` and
 # `_ssgManifest.js`, live inside the build-id directory.
+#
+# `max-age=86400, must-revalidate` was the first correction and it stopped
+# short. A name that can never be reused does not need a daily re-check at all,
+# and on 2026-09-23 `/_next/static/chunks/index-CoyL43pJ.js` — a hashed,
+# unchangeable file — still answered `cf-cache-status: MISS`. `immutable` is
+# the honest statement of what these files are: a year, and no revalidation,
+# for both the browser and the edge.
 /_next/static/*
-  Cache-Control: public, max-age=86400, must-revalidate
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
 
 /image/background-remover
   ! Content-Security-Policy
@@ -60,7 +119,11 @@
 
 # OCR pages keep the default `connect-src 'none'`. The directly-created worker
 # alone may read its same-origin core, WASM and English data from this prefix.
+# Nothing here is an HTML page — `public/ocr/` holds the Tesseract worker, its
+# WASM cores and the English language data, all versioned by the release that
+# vendored them — so a year and `immutable` are accurate.
 /ocr/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
