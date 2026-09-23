@@ -8145,6 +8145,1213 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'graphql-variable-builder', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-graphql-variable-builder': {
+    directAnswer:
+      'Paste a JSON object representing GraphQL variables to validate structure, sort keys, and format clean two-space indentation directly in your browser. The tool ensures the input is a valid JSON dictionary, validates property types, and outputs standardized variable payloads ready for API requests without transmitting your payloads to remote servers.',
+    leadParagraph:
+      'This GraphQL variable builder validates and formats JSON variable payloads for GraphQL queries, mutations, and integration tests. In GraphQL workflows, separating operation documents from dynamic runtime arguments prevents query injection vulnerabilities and allows clean caching; however, hand-writing nested JSON variable blocks often results in trailing comma errors, missing quotation marks, or malformed braces. You paste raw JSON variables into the editor. The engine parses the content, verifies that the root structure is a valid JSON object rather than a primitive or array, and formats the properties with consistent two-space indentation. If the input contains invalid syntax, the tool highlights the exact JSON parsing error. Operating entirely in local browser tab memory under strict CSP restrictions, sensitive API variables, customer identifiers, and backend authentication parameters remain completely secure on your machine.',
+    faqs: [
+      {
+        question: 'What input format does the variable builder require?',
+        answer:
+          'The tool requires a valid JSON object block enclosed in curly braces representing the variables mapped to your GraphQL operation.',
+      },
+      {
+        question: 'How does the builder format nested variable structures?',
+        answer:
+          'Nested objects, input types, and scalar arrays are formatted with uniform two-space indentation for readability across code reviews and test fixtures.',
+      },
+      {
+        question:
+          'Does this tool validate variable types against a remote schema?',
+        answer:
+          'No. It validates JSON syntax, parses nested keys, and verifies object structure locally in the browser without fetching remote GraphQL schema endpoints.',
+      },
+      {
+        question: 'Can I safely format production API variable values here?',
+        answer:
+          'Yes. All parsing and formatting execute entirely client-side in memory under CSP connect-src none, so variable payloads never leave your browser.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'gitignore-generator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-gitignore-generator': {
+    directAnswer:
+      'Select your project languages, operating systems, and developer frameworks to generate a consolidated, cleanly sorted .gitignore file in your browser. The generator combines community-standard rulesets, removes duplicate exclusion patterns, and outputs ready-to-commit configuration files without sending your selected development stack options to external tracking servers or third-party web repositories. This guarantees that your Git repository remains clean and free of unnecessary temporary build files.',
+    leadParagraph:
+      'This gitignore generator produces structured Git exclusion files tailored to specific programming languages, build tools, operating systems, and code editors. Untracked temporary files such as node_modules, build artifacts, operating system metadata (.DS_Store, Thumbs.db), and IDE project directories (.idea, .vscode) can easily pollute shared version control repositories if omitted from ignore rules. You select target environments such as Node.js, Python, macOS, Windows, and Visual Studio Code from the options list. The engine merges official ignore templates, strips redundant paths, normalises path separators, and produces a structured .gitignore file with clear section headers. By preparing clean ignore lists before committing your code, you ensure repositories stay lean and avoid accidentally pushing temporary files. Operating entirely within local browser tab memory under strict CSP restrictions, your internal repository toolchain selections remain private without transmitting developer metadata across the network. Maintaining clean ignore files prevents bloated repository histories and simplifies code reviews for distributed teams.',
+    faqs: [
+      {
+        question:
+          'How does the generator combine multiple environment templates?',
+        answer:
+          'The engine concatenates standard ignore patterns for each selected ecosystem, removes duplicate entries, and groups rules under readable comment headers.',
+      },
+      {
+        question: 'Can I add custom directory paths to the ignore file?',
+        answer:
+          'Yes. You can copy the generated text into your project .gitignore and append custom internal directories or proprietary build paths manually.',
+      },
+      {
+        question: 'Where should the generated output file be saved?',
+        answer:
+          'Save the text output with the filename .gitignore in the root directory of your Git repository before committing new source files.',
+      },
+      {
+        question: 'Are my selected project frameworks recorded or shared?',
+        answer:
+          'No. Template selection and file generation take place entirely client-side in browser memory without sending requests to external web services.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'dockerignore-generator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-dockerignore-generator': {
+    directAnswer:
+      'Select your container runtime stack and frameworks to produce an optimized .dockerignore file directly in your browser. The tool generates exclusion rules for temporary directories, version control files, and local secrets, shrinking Docker build contexts and accelerating container image builds without transferring your development configurations to external cloud services or third-party registries.',
+    leadParagraph:
+      'This dockerignore generator creates structured build-context exclusion files for Docker, Podman, and container build pipelines. When container engines execute a build step, sending unnecessary files such as local dependency folders, git history, documentation files, and environment variable secrets inflates context transfer times and risks baking sensitive credentials into final container layers. You choose your application runtime, including Node, Go, Rust, Python, or Java, alongside common editor configurations. The engine constructs tailored exclusion rules that block vendor directories, build caches, test coverage reports, and credential files from being sent to the container daemon. Excluding these unnecessary files keeps container layers small, speeds up cloud deployments, and reduces the attack surface of container images. All rule generation runs locally in your browser tab under strict Content Security Policy controls, keeping proprietary container infrastructure designs secure.',
+    faqs: [
+      {
+        question: 'Why is a .dockerignore file necessary for container builds?',
+        answer:
+          'It prevents huge directories like node_modules and sensitive files like private keys from entering the Docker build context and resulting image layers.',
+      },
+      {
+        question: 'How does .dockerignore differ from a .gitignore file?',
+        answer:
+          'While .gitignore prevents committing files to source control, .dockerignore prevents sending local workspace files into the container daemon during build execution.',
+      },
+      {
+        question: 'Where should I place the generated .dockerignore file?',
+        answer:
+          'Place the file named .dockerignore in the exact root directory alongside your Dockerfile where docker build or container commands execute.',
+      },
+      {
+        question:
+          'Does the generator communicate with Docker Hub or container registries?',
+        answer:
+          'No. All exclusion rules are compiled locally in your browser memory without contacting external container registries or cloud build services.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'editorconfig-generator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-editorconfig-generator': {
+    directAnswer:
+      'Configure indentation styles, charset encodings, line endings, and whitespace trimming rules to generate a standard .editorconfig file in your browser. The generator formats uniform code style definitions across multiple file extensions, ensuring consistent editor formatting for team members without transmitting project configuration options across the network or sharing file rules with remote servers. This guarantees consistent formatting behaviour across various text editors and integrated development environments.',
+    leadParagraph:
+      'This editorconfig generator produces cross-IDE configuration files that enforce consistent code styles across diverse developer environments and operating systems. In collaborative engineering teams, differing editor configurations lead to unnecessary git diff noise caused by mixed space or tab indentation, trailing spaces, and mismatched LF versus CRLF line endings. You define global baseline preferences and extension-specific settings, including indent_style (space or tab), indent_size (2, 4, or custom), end_of_line (lf, crlf), charset (utf-8), and trim_trailing_whitespace. The engine formats these specifications into standard INI-compliant EditorConfig syntax with proper section glob patterns. Standardising whitespace across your codebase eliminates trivial linting issues and ensures readable pull requests. Operating completely client-side in your browser tab with CSP connect-src none, your engineering standards and proprietary file extension rules remain entirely private. Adopting standardized editor configurations saves developer time and prevents recurring style discussions during pull request evaluations.',
+    faqs: [
+      {
+        question: 'What editors natively support or work with .editorconfig?',
+        answer:
+          'Modern editors including VS Code, IntelliJ IDEA, WebStorm, Sublime Text, and Vim support .editorconfig either natively or through popular community extensions.',
+      },
+      {
+        question:
+          'Can I define distinct indentation rules for specific file types?',
+        answer:
+          'Yes. You can specify standard two-space indents for JSON and YAML while retaining four-space indents or tabs for languages like Python or Go.',
+      },
+      {
+        question: 'Where should I commit the .editorconfig file in my project?',
+        answer:
+          'Place .editorconfig at the top-level root directory of your repository with root = true set at the top of the file.',
+      },
+      {
+        question:
+          'Are my team formatting rules uploaded to cloud formatting services?',
+        answer:
+          'No. The EditorConfig rules are generated directly in browser tab memory with zero outbound network calls, maintaining complete operational confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'package-json-inspector', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-package-json-inspector': {
+    directAnswer:
+      'Paste package.json contents into your browser to audit script definitions, dependencies, peer dependencies, and module metadata. The inspector identifies malformed syntax, counts package tiers, verifies license declarations, and parses exports maps without uploading your proprietary dependency manifests or internal package names to third-party registries or cloud analytics services. The tool inspects your configuration directly in client memory to safeguard your proprietary project architecture.',
+    leadParagraph:
+      'This package.json inspector parses, validates, and visualises Node.js module manifests and project configuration metadata. Maintaining clean package.json files is critical for reliable dependency resolution, clean package publishing, and reproducible continuous integration pipelines; however, duplicate keys, invalid version ranges, missing license tags, and invalid exports maps frequently introduce subtle runtime errors. You paste the package.json text into the editor. The engine parses the JSON structure, verifies mandatory fields, extracts dependencies and devDependencies into sorted inspection lists, and highlights configuration errors. It provides clear visibility into package scripts and dependency counts so you can spot bloat quickly. All processing executes locally in your browser memory under CSP connect-src none restrictions, guaranteeing that private corporate package names, internal registry URLs, and proprietary dependencies remain strictly within your local machine. Regularly inspecting module metadata ensures high code quality, simplifies upgrades, and maintains reproducible project builds over time.',
+    faqs: [
+      {
+        question: 'What errors does the package.json inspector detect?',
+        answer:
+          'The inspector detects malformed JSON syntax, missing metadata fields like license and version, and invalid dependency version specifier ranges throughout your manifest.',
+      },
+      {
+        question: 'Does this tool ping npm or yarn registries for updates?',
+        answer:
+          'No. The inspector audits package structure locally without contacting npm, Yarn, or third-party registries, ensuring zero outbound network traffic across your sessions.',
+      },
+      {
+        question: 'Can I inspect monorepo workspace package files?',
+        answer:
+          'Yes. You can paste root or child workspace package.json files to examine workspace definitions, peer dependencies, and script commands safely.',
+      },
+      {
+        question: 'Are private internal package names safe to inspect here?',
+        answer:
+          'Yes. Because the tool operates purely client-side under strict CSP connect-src none directives, private package configurations are never transmitted externally.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'semantic-version-calculator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-semantic-version-calculator': {
+    directAnswer:
+      'Input a base semantic version and select major, minor, patch, or prerelease increments to calculate valid SemVer 2.0.0 release tags in your browser. The tool validates syntax, compares version precedence, and formats build metadata without sending your release versioning strategy or product tags to external cloud endpoints or repository management systems. The calculator runs entirely within browser memory to protect internal software release schedules and planning.',
+    leadParagraph:
+      'This semantic version calculator calculates, bumps, and verifies software version strings following the official SemVer 2.0.0 specification. In release automation and software package management, improper version increments risk breaking downstream consumers, causing registry rejection, or causing dependency resolution failures. You input a base version string (such as 1.4.2) and select the desired change level: major (breaking API changes), minor (backwards-compatible functionality), patch (backwards-compatible bug fixes), or prerelease identifier (alpha, beta, rc). The engine computes the next version, validates compatibility with SemVer grammar, and demonstrates version precedence comparisons. Clear versioning guarantees that automated package managers and consumers understand backwards compatibility guarantees across updates. Running entirely inside your browser tab under strict Content Security Policy directives, all versioning calculations remain local and private. Following precise version increments builds user trust and prevents unexpected breaking changes across automated software distribution channels.',
+    faqs: [
+      {
+        question: 'What specification does this version calculator follow?',
+        answer:
+          'The calculator strictly follows the Semantic Versioning 2.0.0 specification covering MAJOR.MINOR.PATCH increments alongside optional prerelease tags and build metadata parameters.',
+      },
+      {
+        question: 'How does the calculator handle prerelease and build tags?',
+        answer:
+          'It correctly formats hyphen-separated prerelease labels such as beta.1 and plus-separated build metadata identifiers according to standard SemVer grammar rules.',
+      },
+      {
+        question: 'Does bumping a major version reset minor and patch numbers?',
+        answer:
+          'Yes. In standard SemVer 2.0.0, incrementing a major version resets minor and patch numbers to zero (for example, 1.4.2 becomes 2.0.0).',
+      },
+      {
+        question:
+          'Is my internal project version sequence sent to external servers?',
+        answer:
+          'No. All version parsing and bumping computations execute locally in browser memory without making any network requests or tracking telemetry.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'chmod-calculator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-chmod-calculator': {
+    directAnswer:
+      'Calculate Unix file permissions by toggling read, write, and execute permissions across owner, group, and other scopes directly in your browser. The calculator translates between octal notation, symbolic rwx strings, and chmod terminal commands with zero network transmissions or server logging, providing instant commands for secure server deployments. The tool operates entirely client-side to ensure system administration tasks remain private and secure.',
+    leadParagraph:
+      'This chmod calculator converts Unix file system permissions between octal numbers (such as 755 or 644) and symbolic notation (such as rwxr-xr-x) for Linux and macOS terminal administration. Configuring file access rights correctly is vital for server security, web server hosting, and executable deployment; however, calculating bitwise combinations for user, group, and public scopes can lead to dangerous over-permissive settings like 777. You can either check the interactive read, write, and execute boxes or type an octal value. The engine instantly computes the corresponding symbolic string, numeric bitmask, and ready-to-run chmod command. By verifying the exact permission string prior to execution, system administrators maintain secure file permissions across production environments. Running entirely in your browser memory under CSP connect-src none, your server deployment configurations remain completely confidential. Verifying octal masks before applying permission changes prevents accidental permission lockouts and secures critical operating system directories.',
+    faqs: [
+      {
+        question: 'What does octal notation represent in chmod permissions?',
+        answer:
+          'Octal notation uses numbers 0 to 7 per scope, where 4 represents read (r), 2 represents write (w), and 1 represents execute (x).',
+      },
+      {
+        question:
+          'What is the standard permission for common web server files?',
+        answer:
+          'Common standards are 644 (owner read/write, others read-only) for web files and 755 (owner all, others read/execute) for folders and scripts.',
+      },
+      {
+        question: 'Why should 777 permissions be avoided in production?',
+        answer:
+          'Setting 777 allows any user or process on the system to read, modify, and execute the file, creating severe security vulnerabilities.',
+      },
+      {
+        question: 'Are my permission calculations or commands recorded online?',
+        answer:
+          'No. All bitwise calculations and command generation happen locally inside your browser without any network requests or cloud telemetry logging.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'escape-sequence-viewer', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-escape-sequence-viewer': {
+    directAnswer:
+      'Inspect, decode, and visualise invisible escape sequences, ANSI terminal colour codes, and whitespace characters in your browser. The tool highlights control codes, newline variants, tabs, and null bytes without sending your debugging logs or sensitive terminal output to remote web servers or external diagnostic services. The tool executes within your browser memory to safeguard internal system logs and debugging traces.',
+    leadParagraph:
+      'This escape sequence viewer reveals non-printable characters, ANSI escape codes, Unicode control sequences, and invisible line terminators embedded in text and log strings. When debugging terminal utilities, CLI output, regex parsers, or API communication payloads, hidden characters such as ANSI colour escapes, carriage returns (CR), null bytes, and non-breaking spaces frequently cause subtle visual discrepancies or parsing failures. You paste text into the viewer. The engine parses the raw string byte-by-byte, visualising control characters as explicit symbols (such as \\n, \\r, \\t, and ANSI [31m codes) alongside clean decoded output. Identifying these invisible bytes resolves subtle parser bugs and prevents terminal display issues when piping logs between systems. All inspection executes entirely client-side in browser memory under strict CSP restrictions, keeping sensitive system logs and debugging traces private. Inspecting non-printable escape characters helps diagnose command-line interface bugs and clarifies terminal output behaviour across operating systems.',
+    faqs: [
+      {
+        question: 'What types of escape sequences does this viewer detect?',
+        answer:
+          'The viewer detects ANSI terminal escape sequences, carriage returns (\\r), line feeds (\\n), tab characters (\\t), null bytes, and Unicode control marks.',
+      },
+      {
+        question: 'How does this tool help debug shell script output?',
+        answer:
+          'It reveals invisible carriage returns from Windows CRLF files and color codes that cause string comparison and regex matching failures.',
+      },
+      {
+        question: 'Can I strip ANSI escape sequences from terminal logs?',
+        answer:
+          'Yes. The viewer displays both the raw escaped representation and clean plain text with ANSI styling sequences completely removed for copy-pasting.',
+      },
+      {
+        question:
+          'Are my pasted terminal outputs or logs sent over the internet?',
+        answer:
+          'No. Character decoding and visual highlighting run locally in your browser memory with zero network traffic, ensuring complete log privacy.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'webhook-payload-tester', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-webhook-payload-tester': {
+    directAnswer:
+      'Format, validate, and simulate webhook JSON payloads against standard event schemas directly in your browser. The tool verifies syntax, highlights missing mandatory webhook properties, and tests sample payload structures without transmitting customer event data or authentication signatures to external servers or monitoring aggregators. The tool runs entirely in browser memory to keep event payloads and customer transaction details private.',
+    leadParagraph:
+      'This webhook payload tester verifies and formats JSON event payloads used across webhook architectures, payment gateways, and third-party integrations. Developing webhook consumers requires realistic payload samples with valid JSON formatting, correct timestamp structures, and accurate event metadata; however, testing with actual production payloads often risks exposing customer identifiers or financial tokens to untrusted tools. You paste sample webhook bodies into the editor. The engine parses the payload, validates JSON syntax, checks schema keys, and formats fields with consistent indentation. Formatting and testing payload payloads locally lets you debug event handling logic before deploying server handlers. Because all processing runs entirely within local browser tab memory under strict CSP connect-src none controls, sensitive webhook payloads and customer transaction details remain completely private on your machine. Validating webhook data structures locally ensures API consumers handle incoming events reliably without needing live webhook endpoints.',
+    faqs: [
+      {
+        question: 'What does the webhook payload tester validate?',
+        answer:
+          'The tool validates JSON grammar, identifies malformed data types, flags missing top-level event identifiers, and verifies consistent ISO date-time strings.',
+      },
+      {
+        question: 'Can I generate sample webhook payloads for testing?',
+        answer:
+          'Yes. You can use standard starter templates for common webhook patterns and customise properties to match your application integration needs.',
+      },
+      {
+        question:
+          'Does this tool send real HTTP requests to webhook endpoints?',
+        answer:
+          'No. It is a client-side payload formatter and validator that runs entirely in memory without dispatching outbound HTTP or HTTPS requests.',
+      },
+      {
+        question: 'Are private customer data or API keys in payloads safe?',
+        answer:
+          'Yes. Strict CSP connect-src none rules ensure that no webhook text, secrets, or identifiers can ever leave your local browser tab.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'openapi-viewer', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-openapi-viewer': {
+    directAnswer:
+      'Paste OpenAPI and Swagger specification files in JSON or YAML format to view formatted endpoints, HTTP methods, parameters, and schema definitions in your browser. The viewer renders clean interactive API documentation without uploading your private API schemas or internal service architectures to third-party cloud platforms or hosting providers. The viewer renders schema components entirely client-side to safeguard proprietary interface definitions and contracts.',
+    leadParagraph:
+      'This OpenAPI viewer renders structured, readable API documentation from OpenAPI 3.0, 3.1, or Swagger 2.0 specifications. Sharing API documentation internally or inspecting third-party contract definitions often relies on hosted documentation portals that require user logins or upload sensitive endpoint structures to cloud servers. You paste your YAML or JSON API specification into the viewer. The engine parses the specification, validates schema definitions, groups endpoints by path and HTTP method (GET, POST, PUT, DELETE), and formats request headers, query parameters, request bodies, and response codes into clear tables. Reviewing API specifications in an isolated browser viewer makes endpoint audits and contract testing straightforward without risking proprietary data leaks. Operating completely in local browser tab memory under strict Content Security Policy directives, proprietary API architecture designs remain strictly confidential. Inspecting API specifications locally provides clear documentation previews while maintaining strict privacy for proprietary backend architectures.',
+    faqs: [
+      {
+        question: 'What OpenAPI and Swagger versions are supported?',
+        answer:
+          'The viewer parses OpenAPI 3.0.x and 3.1.x specifications as well as legacy Swagger 2.0 schemas in either JSON or YAML formatting.',
+      },
+      {
+        question:
+          'Does this viewer require an external backend or cloud account?',
+        answer:
+          'No. The documentation parser and interactive view components execute completely within your browser memory without cloud accounts, subscriptions, or external servers.',
+      },
+      {
+        question:
+          'Can I inspect internal or unreleased API specifications safely?',
+        answer:
+          'Yes. Because all parsing runs locally under CSP connect-src none, proprietary API routes and internal endpoints are never exposed online.',
+      },
+      {
+        question: 'Can the viewer highlight syntax errors in OpenAPI files?',
+        answer:
+          'Yes. If your JSON or YAML specification contains formatting errors or invalid schema properties, the tool displays exact line-level error messages.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'openapi-example-generator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-openapi-example-generator': {
+    directAnswer:
+      'Paste an OpenAPI schema or JSON Schema definition into your browser to generate realistic mock JSON data payloads automatically. The generator inspects field types, formats, enum constraints, and required fields to create valid mock requests and responses without sending your API schemas to remote mock services or cloud testing platforms. The generator processes schemas entirely in browser memory to keep data models and internal schemas confidential.',
+    leadParagraph:
+      'This OpenAPI example generator creates realistic mock JSON response payloads and request fixtures from OpenAPI and JSON Schema definitions. Building API documentation, front-end mock services, and automated integration tests requires realistic sample data matching defined types, date formats, string enums, and nested object hierarchies. You paste your schema definition into the tool. The engine traverses schema components, resolves property types (string, number, boolean, array, object), respects enum limits and default values, and produces formatted sample JSON payloads ready for unit tests and documentation examples. Producing consistent mock objects from schemas prevents manual data mocking errors and speeds up client application prototyping. Because all schema traversal and mock generation execute locally in browser tab memory with CSP connect-src none, confidential internal schema contracts remain protected. Creating realistic sample mock payloads helps front-end engineers develop user interfaces before backend API endpoints are deployed.',
+    faqs: [
+      {
+        question:
+          'How does the generator determine mock values for schema properties?',
+        answer:
+          'The engine uses declared property types, format hints (like date-time, email, uri), enum lists, and default attributes to generate appropriate mock data.',
+      },
+      {
+        question: 'Does the tool handle nested objects and array schemas?',
+        answer:
+          'Yes. The generator recursively traverses nested object definitions and array item schemas to construct comprehensive, realistic JSON mock payloads for testing.',
+      },
+      {
+        question: 'Can I use the generated examples in my API test fixtures?',
+        answer:
+          'Yes. The output is standard formatted JSON that can be copied directly into Jest fixtures, Postman collections, or documentation samples.',
+      },
+      {
+        question:
+          'Are my schema structures or data models transmitted over the internet?',
+        answer:
+          'No. Schema analysis and mock data generation run entirely within client-side browser memory with zero external network connectivity or tracking.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'sql-to-er-diagram', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-sql-to-er-diagram': {
+    directAnswer:
+      'Paste SQL CREATE TABLE statements into your browser to generate structured Mermaid.js entity-relationship diagrams automatically. The tool extracts table names, columns, data types, primary keys, and foreign key relationships with zero network transmissions or database credential requirements, ensuring total security for enterprise schema documentation. The tool processes SQL DDL scripts locally in browser memory to protect proprietary database schemas.',
+    leadParagraph:
+      'This SQL to ER diagram converter transforms database schema DDL scripts into clear visual entity-relationship diagrams and Mermaid ER markup. Documenting relational database architectures often requires tedious manual diagramming in vector graphic software or uploading confidential schema definitions to cloud diagram services. You paste your standard SQL DDL statements (including CREATE TABLE, column declarations, PRIMARY KEY, and FOREIGN KEY constraints) into the editor. The engine parses the SQL syntax, extracts table entities and attributes, infers one-to-one and one-to-many relationships from foreign keys, and outputs standard Mermaid.js erDiagram code with an interactive preview. Visualising entity connections accelerates code reviews and clarifies data model dependencies for engineering teams. Operating strictly in browser memory under CSP connect-src none, proprietary enterprise database architectures remain completely secure. Clear visual models make database schemas easier to explain to stakeholders and help identify redundant foreign key relationships early.',
+    faqs: [
+      {
+        question:
+          'What SQL dialects are compatible with this diagram generator?',
+        answer:
+          'The parser supports standard ANSI SQL DDL as well as PostgreSQL, MySQL, SQLite, and SQL Server CREATE TABLE syntax with foreign keys.',
+      },
+      {
+        question:
+          'How are relationships determined between different database tables?',
+        answer:
+          'The engine identifies FOREIGN KEY constraints and REFERENCES clauses to map relationship cardinality lines between child and parent tables across the schema.',
+      },
+      {
+        question: 'Can I export the resulting Mermaid diagram markup?',
+        answer:
+          'Yes. You can copy the generated Mermaid.js erDiagram text block to embed directly into GitHub Markdown, GitLab wikis, or Notion pages.',
+      },
+      {
+        question:
+          'Are my database schema definitions or table names uploaded online?',
+        answer:
+          'No. All DDL parsing and diagram generation execute client-side in browser memory with zero network traffic, ensuring complete schema privacy.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'er-diagram-to-sql', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-er-diagram-to-sql': {
+    directAnswer:
+      'Convert Mermaid entity-relationship diagram definitions into clean SQL DDL CREATE TABLE statements directly in your browser. The tool parses entities, attributes, primary keys, and foreign relationships to produce valid relational database schemas without sending your database designs to external cloud services or third-party modelling platforms. The generator converts diagram structures in client memory to keep data architectures confidential.',
+    leadParagraph:
+      'This ER diagram to SQL converter translates Mermaid.js erDiagram specifications into executable SQL CREATE TABLE statements and foreign key constraint scripts. Moving from visual database architecture planning to actual database implementation often involves tedious manual writing of DDL commands, column types, and relational constraints. You paste your Mermaid ER markup into the editor. The engine extracts entity definitions, column data types, primary key flags (PK), foreign key flags (FK), and relationship lines, compiling them into formatted ANSI SQL scripts complete with proper constraint definitions. Converting visual models directly into clean migration scripts reduces syntax errors and speeds up new database setups. Operating completely client-side in your browser tab under strict Content Security Policy directives, confidential application data models remain entirely private on your machine. Automating DDL script creation from diagrams reduces typographical mistakes and standardises database constraint definitions across tables.',
+    faqs: [
+      {
+        question: 'What syntax does the tool expect for input ER diagrams?',
+        answer:
+          'The tool parses standard Mermaid.js erDiagram syntax, including entity blocks, column attributes with types and keys, and relational connector lines.',
+      },
+      {
+        question:
+          'Does the generated SQL include primary and foreign key constraints?',
+        answer:
+          'Yes. The converter outputs PRIMARY KEY declarations for PK attributes and FOREIGN KEY REFERENCES clauses based on defined diagram relationships.',
+      },
+      {
+        question: 'Can I run the generated SQL directly against my database?',
+        answer:
+          'Yes. The output is standard SQL DDL that can be executed directly in database clients like psql, MySQL Workbench, DBeaver, or migration files.',
+      },
+      {
+        question:
+          'Are my entity designs or data models transmitted across the internet?',
+        answer:
+          'No. Parsing of Mermaid markup and generation of SQL code execute purely in browser memory with zero outbound network calls.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'plain-text-file-maker', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-plain-text-file-maker': {
+    directAnswer:
+      'Create, edit, and download clean plain text (.txt) files with customizable line endings (LF or CRLF) and UTF-8 encoding in your browser. The tool strips unwanted rich text formatting, normalises whitespace, and allows instant file downloads without transmitting your written notes or documents to remote servers or cloud storage providers. The tool generates files client-side to protect personal notes and sensitive configuration files.',
+    leadParagraph:
+      'This plain text file maker creates unformatted, clean UTF-8 text documents for notes, documentation, configuration files, and system records. Copying text from web browsers, word processors, or PDF documents often transfers hidden styling, non-standard typographic quotes, and non-breaking whitespace that break terminal scripts and source code compilers. You enter or paste content into the editor, select line ending preferences (Unix LF or Windows CRLF), and download a pure .txt file. The engine cleans non-standard characters, ensures uniform line breaks, and produces clean text output. Generating clean text files directly in your browser avoids accidental character encoding corruptions when moving files between operating systems. Operating entirely within local browser tab memory under strict CSP restrictions, sensitive private notes, credentials, and documentation drafts remain completely confidential on your device. Producing clean plain text documents ensures compatibility across legacy software applications, terminal editors, and modern operating systems.',
+    faqs: [
+      {
+        question: 'What line break formats can I select for the output file?',
+        answer:
+          'You can choose between Unix or macOS standard line feeds (LF) and Windows carriage return line feeds (CRLF) for cross-platform file compatibility.',
+      },
+      {
+        question: 'Does this tool remove hidden rich text formatting?',
+        answer:
+          'Yes. The editor strips all font styling, colours, HTML tags, and proprietary document formatting, leaving pure, clean UTF-8 text for downloads.',
+      },
+      {
+        question: 'Can I download the created file directly to my machine?',
+        answer:
+          'Yes. The tool generates an immediate browser download for the text file without passing through any external storage servers or remote endpoints.',
+      },
+      {
+        question: 'Is my document text saved or monitored on remote servers?',
+        answer:
+          'No. All editing, character cleaning, and file generation take place locally in browser memory with zero network requests or analytics tracking.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'markdown-file-maker', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-markdown-file-maker': {
+    directAnswer:
+      'Write, preview, and export GitHub Flavoured Markdown (.md) documents with real-time HTML preview directly in your browser. The tool formats headings, lists, code blocks, and tables, enabling clean document downloads without transmitting your documentation drafts or private notes to external cloud services or online markdown editors. The editor operates locally to ensure your written notes and technical documentation remain private.',
+    leadParagraph:
+      'This Markdown file maker formats, previews, and exports GitHub Flavoured Markdown (.md) files for technical documentation, repository notes, and blog posts. Writing Markdown in generic editors without immediate structural preview often leads to malformed table syntax, broken reference links, or unclosed code blocks. You type or paste Markdown text into the editor. The engine provides instant side-by-side rendering, parses formatting tags (headers, bold, italics, tables, and code fences), and allows one-click file export with clean UTF-8 encoding. Previewing rendered elements side by side ensures clean document formatting before committing changes to Git repositories. Because all parsing and file compilation execute locally inside browser tab memory with strict CSP connect-src none rules, confidential company documentation, design proposals, and private notes never leave your personal computer. Writing with an immediate live preview helps authors catch broken formatting and unclosed markup tags before saving final documents.',
+    faqs: [
+      {
+        question: 'What Markdown specifications and extensions are supported?',
+        answer:
+          'The editor supports standard CommonMark and GitHub Flavoured Markdown (GFM), including task lists, tables, and fenced code blocks for documentation.',
+      },
+      {
+        question: 'Can I preview formatted HTML while typing Markdown text?',
+        answer:
+          'Yes. The tool provides live side-by-side preview rendering so you can verify typography, tables, and formatting in real time as you type.',
+      },
+      {
+        question: 'What file format does the exporter produce?',
+        answer:
+          'The tool downloads a standard .md file with UTF-8 encoding, ready for committing to Git repositories or opening in Markdown readers.',
+      },
+      {
+        question: 'Are my Markdown drafts stored on external cloud databases?',
+        answer:
+          'No. Everything runs purely within your local browser memory without network connectivity, ensuring total privacy for your written materials and drafts.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'readme-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-readme-generator': {
+    directAnswer:
+      'Enter project details, installation steps, usage commands, licence type, and contribution guidelines to generate a structured README.md file in your browser. The generator formats clean Markdown headers, badges, and code blocks ready for repository publishing without sending your project configuration to external tracking servers or third-party web repositories. The generator formats project documentation locally to maintain privacy for internal software repositories.',
+    leadParagraph:
+      'This README generator produces structured, professional README.md documentation files for open-source repositories and private software projects. A well-organized README is essential for project adoption, developer onboarding, and clear repository maintenance; however, writing boilerplate sections from scratch is repetitive and prone to omitted installation or licensing details. You input your project title, short description, installation instructions, usage examples, contribution steps, and open-source licence. The engine compiles these inputs into a standardized Markdown template with clean typography, code snippets, and badge placeholders. Having standard sections ensures that contributors and users can set up and run your project without confusion. Running entirely within your browser tab under strict Content Security Policy directives, proprietary project details and internal architecture notes remain completely confidential on your machine. Providing comprehensive documentation encourages community contributions and helps new team members set up projects without frustration.',
+    faqs: [
+      {
+        question: 'What key sections are included in the generated README?',
+        answer:
+          'The generated file includes project title, description, features list, prerequisites, installation steps, usage commands, contributing guide, and licence information blocks.',
+      },
+      {
+        question: 'Can I customize the generated Markdown after creation?',
+        answer:
+          'Yes. You can edit the text directly in the output preview before downloading or copy the Markdown straight into your project repository.',
+      },
+      {
+        question: 'Does this generator support open-source licence badges?',
+        answer:
+          'Yes. The template formats standardized licence tags and badge placeholders compatible with GitHub, GitLab, and Bitbucket repository displays and wikis.',
+      },
+      {
+        question: 'Are my internal project names or setup steps sent online?',
+        answer:
+          'No. Template assembly and file generation execute client-side in browser memory with zero network traffic, ensuring complete project confidentiality at all times.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'changelog-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-changelog-generator': {
+    directAnswer:
+      'Enter release versions, release dates, and categorized change items to compile a standardized CHANGELOG.md file directly in your browser. The generator formats Keep a Changelog compliant sections (Added, Changed, Deprecated, Removed, Fixed, Security) without transmitting your release notes or feature schedules to third-party servers or cloud management portals. The generator compiles release notes locally to maintain confidentiality for internal software roadmaps.',
+    leadParagraph:
+      'This changelog generator compiles structured, human-readable release notes following the widely adopted Keep a Changelog standard. Documenting version changes clearly across software releases ensures users and developers understand new capabilities, bug resolutions, and breaking updates; however, manually formatting consistent Markdown lists for every release version is time-consuming and inconsistent. You input the version number, release date, and itemized bullet points under standard categories: Added, Changed, Fixed, and Removed. The engine organizes these entries into chronological Markdown headings and bullet points. Clear changelogs foster user trust and simplify version upgrades across engineering teams. Operating completely client-side in your browser tab under CSP connect-src none restrictions, confidential release planning and internal patch notes remain strictly secure on your device. Maintaining clear version release documentation keeps users informed of new features, bug fixes, and deprecation notices across every update.',
+    faqs: [
+      {
+        question: 'What standard does the changelog generator follow?',
+        answer:
+          'The generator adheres to the Keep a Changelog standard and Semantic Versioning principles for clear and organized release documentation across software projects.',
+      },
+      {
+        question: 'What change categories are available for release notes?',
+        answer:
+          'Standard categories include Added for new features, Changed for modifications, Deprecated for soon-to-be removed items, Removed, Fixed for bug fixes, and Security.',
+      },
+      {
+        question: 'Can I append new releases to an existing CHANGELOG.md?',
+        answer:
+          'Yes. You can generate new version blocks and paste them directly at the top of your existing project changelog document.',
+      },
+      {
+        question:
+          'Are my unreleased feature descriptions or bug notes uploaded?',
+        answer:
+          'No. All changelog formatting runs locally in browser memory without sending any requests to external servers, protecting unreleased product plans.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'quotation-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-quotation-generator': {
+    directAnswer:
+      'Enter client details, quotation identifiers, expiry dates, and itemized line costs to generate professional commercial quotations directly in your browser. The tool computes sub-totals, applies tax percentages, and formats clean Markdown quotes without uploading your pricing structures or customer details to external accounting servers or third-party billing providers. The generator formats quotations locally to ensure client pricing and quotation details remain confidential.',
+    leadParagraph:
+      'This quotation generator creates structured commercial price estimates and sales quotes for freelancers, consultants, and commercial businesses. Sending clear, itemized price proposals builds client trust and avoids scope misunderstandings; however, using complex cloud billing software for simple quotations frequently requires recurring subscriptions or exposes client details to third-party databases. You enter quotation reference numbers, client name, item descriptions, quantities, unit prices, and optional tax rates. The engine validates numerical inputs, computes individual line totals, calculates the grand total, and outputs a clean Markdown quotation document. Producing clear quotations rapidly allows businesses to respond to procurement requests with confidence. Because all calculations and document formatting execute locally under CSP connect-src none rules, commercial pricing and customer data remain completely private. Sending professional commercial quotations quickly improves client communication and provides transparent cost breakdowns for procurement approvals.',
+    faqs: [
+      {
+        question: 'What information is included in the generated quotation?',
+        answer:
+          'The quote includes quote reference number, issue date, validity period, client details, itemized line items with pricing, sub-total, and grand total.',
+      },
+      {
+        question: 'Can I calculate taxes and discounts on line items?',
+        answer:
+          'Yes. The generator supports applicable tax rate percentages and calculates calculated totals automatically alongside itemized line costs for each item.',
+      },
+      {
+        question: 'How can I share the finished quotation with clients?',
+        answer:
+          'You can copy the clean Markdown, convert the preview to PDF using your browser print function, or save it as a text record.',
+      },
+      {
+        question: 'Are my client names or pricing models stored online?',
+        answer:
+          'No. All calculations and quotation formatting execute client-side in browser memory with zero network traffic, ensuring total client privacy at all times.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'purchase-order-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-purchase-order-generator': {
+    directAnswer:
+      'Input purchase order numbers, vendor details, delivery schedules, and line item costs to compile formatted commercial purchase orders in your browser. The tool computes line totals, calculates overall expenditures, and exports structured procurement documents without transmitting your purchasing data to third-party cloud services or enterprise ERP providers. The generator runs entirely in client memory to protect internal procurement budgets and supplier agreements.',
+    leadParagraph:
+      'This purchase order generator creates structured procurement documents for purchasing departments, small businesses, and project managers. Formal purchase orders establish legally binding commercial agreements specifying agreed quantities, descriptions, and pricing before supplier fulfillment begins. You input the purchase order identifier, issue date, vendor information, expected delivery schedule, and line items pairing item description, quantity, and unit cost separated by pipes (such as "Office Chairs | 5 | 120"). The engine validates that required fields are filled, calculates line totals, computes the aggregate total cost, and formats a clean Markdown purchase order document featuring an itemized table and vendor instructions. Clear purchase orders prevent delivery disputes and keep accounting records organized. Operating completely inside your browser tab under strict CSP directives, confidential corporate procurement costs and vendor relationships remain secure. Structured purchase order documentation ensures clear commercial agreements between buyers and vendors while preventing misunderstandings regarding order terms.',
+    faqs: [
+      {
+        question:
+          'What key details are included in the generated purchase order?',
+        answer:
+          'The purchase order includes PO number, issue date, vendor contact details, itemized goods table with quantities and prices, grand total, and delivery terms.',
+      },
+      {
+        question: 'How should order items be formatted in the input?',
+        answer:
+          'Enter items one per line with three pipe-separated values: "Item Description | Quantity | Unit Price" (for example, "Server Rack | 2 | 800").',
+      },
+      {
+        question: 'Can I share the generated purchase order with suppliers?',
+        answer:
+          'Yes. The clean Markdown document can be exported to PDF via browser print, emailed as text, or imported into procurement management software.',
+      },
+      {
+        question:
+          'Are my purchasing budgets or vendor details uploaded online?',
+        answer:
+          'No. All calculations and purchase order formatting run locally in your browser memory without network activity, ensuring total procurement confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'resume-builder', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-resume-builder': {
+    directAnswer:
+      'Enter your contact details, professional summary, work experience history, education, and technical skills to compile a structured, ATS-friendly Markdown resume in your browser. The tool organizes clean heading hierarchies, formats date-stamped career entries, and outputs publication-ready copy without transmitting your personal employment history to recruitment databases or external career websites.',
+    leadParagraph:
+      'This resume builder compiles clean, applicant tracking system (ATS) compliant Markdown resumes for software engineers, designers, and business professionals. Many online resume tools lock user data behind monthly subscriptions, sell contact details to recruiters, or use complex graphic layouts that fail automated ATS parsing. You input your full name, contact information, career summary, work experience entries (role, organization, dates, and accomplishments separated by pipes), education credentials, and core competencies. The engine formats your background into a structured Markdown document using clean H1, H2, and H3 hierarchies that parse reliably across both human reviewers and automated hiring software. Using plain Markdown ensures your credentials pass screening algorithms cleanly without graphical distortions. Because all formatting executes locally in browser tab memory under strict CSP restrictions, sensitive personal career histories and salary histories remain completely confidential on your machine.',
+    faqs: [
+      {
+        question: 'Is the generated resume format ATS-friendly?',
+        answer:
+          'Yes. The output uses clean semantic Markdown without multi-column tables, text frames, or non-standard graphics that confuse automated ATS parsers.',
+      },
+      {
+        question: 'How should work experience entries be structured?',
+        answer:
+          'Enter positions one per line using pipe delimiters: "Job Title | Company Name | Dates | Accomplishments and key responsibilities".',
+      },
+      {
+        question: 'Can I convert the Markdown resume into a PDF?',
+        answer:
+          'Yes. You can preview the formatted Markdown in your browser and use the print function to export a clean, high-resolution PDF document.',
+      },
+      {
+        question: 'Are my personal employment details saved or shared online?',
+        answer:
+          'No. All resume compilation runs client-side in browser memory without network communication, guaranteeing complete privacy for your career records and personal details.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'cover-letter-builder', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-cover-letter-builder': {
+    directAnswer:
+      'Enter your contact details, hiring manager title, prospective role, relevant work achievements, and motivation to generate a structured Markdown cover letter in your browser. The tool organizes your facts into standard professional paragraphs without inventing unverified credentials or transmitting your personal career history to third-party recruitment platforms or cloud storage services. The builder runs locally in your browser to maintain confidentiality for your employment search.',
+    leadParagraph:
+      'This cover letter builder formats verified employment qualifications and personal motivations into a structured professional cover letter. Job applications often suffer from generic artificial intelligence text or over-elaborate graphic templates that distract hiring managers and fail basic keyword scans. You provide specific facts: applicant name, hiring contact, target position, prospective company, supporting career achievements, and reasons for applying. The engine organizes these inputs into formal letter paragraphs with traditional salutations and professional closings. Producing a clean Markdown document allows you to review your qualifications directly and export clean text for application portals or email submissions. Operating entirely within local browser tab memory under strict CSP restrictions, sensitive personal career details, current employer names, and contact information remain completely secure on your machine. Presenting your qualifications in a clean, readable structure helps recruiters review key accomplishments quickly without formatting distractions.',
+    faqs: [
+      {
+        question: 'Does this cover letter builder invent work experience?',
+        answer:
+          'No. The builder only formats the factual achievements and role motivations you explicitly supply, preventing fabricated or misleading statements throughout your application.',
+      },
+      {
+        question: 'What file format does the builder generate?',
+        answer:
+          'The tool produces clean Markdown (.md) text that you can copy directly into email applications or export to PDF using your browser.',
+      },
+      {
+        question: 'Can I edit the generated letter before sending it?',
+        answer:
+          'Yes. You can edit the text directly in the output preview to adjust wording, add specific project details, or refine letter paragraphs.',
+      },
+      {
+        question:
+          'Are my contact details and employment history uploaded online?',
+        answer:
+          'No. All document compilation runs locally inside browser tab memory with zero network traffic, ensuring total privacy for your job applications.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'business-letter-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-business-letter-generator': {
+    directAnswer:
+      'Input sender address, recipient details, date, formal subject line, letter body, and sign-off to produce a standardized business letter directly in your browser. The tool aligns header elements, establishes standard business spacing, and formats clean text output without sending your corporate correspondence or sensitive client information across the network. The tool formats professional letters locally to safeguard internal business communication.',
+    leadParagraph:
+      'This business letter generator creates structured formal correspondence for commercial agreements, client notices, legal communications, and corporate memorandums. Drafting business letters in word processors often introduces inconsistent margins, mismatched address formatting, or accidental metadata leaks from document revisions. You enter the date, sender address, recipient details, formal subject line, message text, and closing sign-off. The engine formats these fields into standard business layout conventions with clean line breaks and proper block formatting. Standardising layout structure ensures that formal communications appear polished across printouts, email attachments, and archived corporate records. Running completely client-side in browser memory under strict CSP connect-src none controls, sensitive legal notices, executive agreements, and client correspondence remain strictly confidential on your local device. Formal business letters establish clear audit trails for commercial partnerships and ensure official messages meet professional workplace standards.',
+    faqs: [
+      {
+        question: 'What letter layout standards does the generator follow?',
+        answer:
+          'The generator formats text using the traditional block style business layout, featuring left-aligned headers, clean line breaks, and clear subject lines.',
+      },
+      {
+        question: 'Can I export the business letter as a plain text file?',
+        answer:
+          'Yes. The generator exports a clean plain text (.txt) file that opens reliably in any text editor or office software application.',
+      },
+      {
+        question: 'How should multi-line addresses be formatted in the input?',
+        answer:
+          'Enter addresses with standard line breaks between street, city, postal code, and country for clean alignment in the final letter header.',
+      },
+      {
+        question: 'Are my confidential business letters sent to cloud servers?',
+        answer:
+          'No. All text formatting executes purely within local browser tab memory with zero outbound network calls, maintaining complete operational confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'meeting-minutes-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-meeting-minutes-generator': {
+    directAnswer:
+      'Enter meeting title, date, attendee names, agenda topics, agreed decisions, and itemized action items with owners and due dates to generate structured Markdown meeting minutes in your browser. The tool formats clear lists, attendee records, and action tables without uploading your internal discussions or corporate strategy notes to third-party services. The generator operates locally in browser memory to ensure total privacy for corporate minutes.',
+    leadParagraph:
+      'This meeting minutes generator creates organized, accountable documentation for project check-ins, executive boards, and engineering scrums. Informal meeting notes often leave action items ambiguous or fail to record agreed decisions clearly, leading to repeated discussions and missed milestones. You enter meeting title, timestamp, attendees (one per line), discussed agenda points, recorded decisions, and action items formatted with owner, task, and due date. The engine compiles these inputs into structured Markdown containing clean heading levels, attendee lists, decision records, and task checklists. Keeping meeting minutes organized ensures team alignment and provides clear historical accountability across project lifecycles. Operating entirely in local browser tab memory under strict Content Security Policy directives, proprietary product discussions, board minutes, and personnel assignments remain completely private. Clear minutes clarify accountability across departments and reduce duplicate discussions in follow-up team meetings.',
+    faqs: [
+      {
+        question: 'How should action items be entered in the tool?',
+        answer:
+          'Enter action items one per line using pipe delimiters: "Owner | Action description | Due date" (for example, "Ada | Review QA | 2026-09-08").',
+      },
+      {
+        question: 'Can the generated minutes be imported into team wikis?',
+        answer:
+          'Yes. The output is standard Markdown that can be pasted directly into GitHub discussions, Notion workspaces, or internal team wikis.',
+      },
+      {
+        question: 'Does the tool record attendee attendance lists clearly?',
+        answer:
+          'Yes. The generator formats attendee names into a clean bulleted list at the top of the minutes for clear attendance tracking.',
+      },
+      {
+        question: 'Are my internal company discussions transmitted online?',
+        answer:
+          'No. All minutes formatting runs client-side in browser memory with zero network traffic, ensuring internal meeting records stay completely private and confidential.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'agenda-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-agenda-generator': {
+    directAnswer:
+      'Input meeting title, scheduled date, and itemized topics with estimated minutes and speaker names to generate a timed Markdown meeting agenda in your browser. The tool computes cumulative schedule durations, formats clean agenda tables, and outputs meeting structures without transmitting your team schedules or internal project topics to remote servers. The tool compiles meeting agendas client-side to keep discussion topics and schedules confidential.',
+    leadParagraph:
+      'This agenda generator creates structured, time-bounded meeting schedules for corporate reviews, technical workshops, and client presentations. Unstructured meetings frequently overrun scheduled time limits or neglect critical agenda items due to poor pacing and unclear speaker ownership. You enter the meeting title, date and time, and agenda items pairing duration in minutes, discussion topic, and responsible presenter separated by pipes (such as "15 | Product Demo | Lin"). The engine calculates total planned duration, formats a structured Markdown document with chronological schedule items, and highlights allocated time blocks. Preparing clear timed agendas keeps participants focused and respects attendee schedules during complex team reviews. Operating completely client-side in your browser tab under CSP connect-src none rules, confidential project roadmaps and executive review agendas remain entirely secure. Having structured time allocations for each discussion topic prevents meetings from stalling on minor issues and ensures priority decisions are reached.',
+    faqs: [
+      {
+        question: 'How does the generator calculate total meeting duration?',
+        answer:
+          'The engine parses the minute allocations from each line item and sums them automatically to display total planned meeting length.',
+      },
+      {
+        question: 'What input format is required for agenda items?',
+        answer:
+          'Enter items one per line using pipe separators: "minutes | agenda item | owner" (for example, "10 | Architecture Review | Ada").',
+      },
+      {
+        question: 'Can I share the generated agenda in meeting invitations?',
+        answer:
+          'Yes. You can copy the generated Markdown directly into calendar invites, email summaries, or project management documentation for team distribution.',
+      },
+      {
+        question: 'Are my scheduled topics or speaker names recorded online?',
+        answer:
+          'No. All calculations and text formatting take place strictly within browser memory without sending data to external web services or remote servers.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'certificate-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-certificate-generator': {
+    directAnswer:
+      'Enter certificate title, recipient name, specific achievement, completion date, issuing institution, and signatory title to generate a printable Markdown certificate in your browser. The tool compiles structured text layouts suitable for framing or digital delivery without transmitting recipient names or institutional records to third-party certificate servers. The tool formats certificates locally in browser memory to keep student and recipient data secure.',
+    leadParagraph:
+      'This certificate generator creates structured completion and achievement certificates for workshops, corporate training programmes, educational courses, and hackathons. Online certificate platforms often require recurring subscriptions, place watermarks on documents, or collect student personal data for marketing purposes. You provide recipient name, certificate heading (such as Certificate of Completion), stated accomplishment, date of issue, issuing organization, and authorized signatory title. The engine compiles these details into an elegant, centered Markdown layout ready for immediate printing or text distribution. Having clean text certificates allows educational organizers to issue verified credentials quickly while maintaining student privacy. Running completely client-side in browser memory under CSP connect-src none directives, student records, recipient identities, and institutional verification notes remain strictly confidential. Generating custom certificates locally ensures that educational workshops and organizations can recognize achievements promptly without third-party design tools.',
+    faqs: [
+      {
+        question: 'Can I print the generated certificate to a PDF document?',
+        answer:
+          'Yes. You can preview the formatted layout in your browser and use browser print options to export a high-resolution PDF certificate.',
+      },
+      {
+        question: 'What types of certificates can I create with this tool?',
+        answer:
+          'You can generate certificates of completion, awards of excellence, training attendance records, workshop participation diplomas, and competition prizes for participants.',
+      },
+      {
+        question: 'Can I edit the certificate wording before printing?',
+        answer:
+          'Yes. You can modify any field before generation or edit the output Markdown directly to customize titles, descriptions, and signatories.',
+      },
+      {
+        question:
+          'Are recipient names or award details stored on remote servers?',
+        answer:
+          'No. Certificate compilation runs locally in browser memory without network activity, guaranteeing complete privacy for all recipient data and institutional records.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'label-sheet-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-label-sheet-generator': {
+    directAnswer:
+      'Enter item labels or address records and specify column counts to arrange text into a structured, tab-separated grid layout directly in your browser. The tool formats uniform multi-column label sheets ready for printing or importing into office label templates without uploading your mailing lists or inventory codes to external servers. The generator organizes labels locally to safeguard personal mailing lists and internal inventory codes.',
+    leadParagraph:
+      'This label sheet generator organizes address lists, product SKUs, asset tags, and visitor badges into multi-column tab-separated grid layouts. Preparing printable label sheets manually in word processors frequently causes misaligned rows, overlapping margins, and wasted sticker sheets due to awkward table adjustments. You enter labels (one per line or block) and set the desired number of columns (such as 2 or 3). The engine calculates row breaks, aligns entries into uniform cells, and outputs a clean tab-delimited text grid suitable for pasting into label printing templates or spreadsheet software. Generating clean label grids locally simplifies physical mailings and inventory tracking without exposing recipient contacts. Operating completely in browser tab memory under strict CSP restrictions, sensitive customer address databases and proprietary inventory numbers remain completely secure. Standardising multi-column label sheets simplifies printing onto adhesive label stationery and eliminates time spent aligning spreadsheet columns manually.',
+    faqs: [
+      {
+        question: 'How does the generator organize entries into columns?',
+        answer:
+          'The engine groups sequential label entries into rows matching your chosen column count, separating cells with standard tab characters for uniform alignment.',
+      },
+      {
+        question:
+          'Can I paste the generated label sheet into spreadsheet tools?',
+        answer:
+          'Yes. The tab-separated output pastes cleanly into Excel, Google Sheets, LibreOffice Calc, or office label software for printing adhesive sticker sheets.',
+      },
+      {
+        question: 'What types of labels can I format using this generator?',
+        answer:
+          'You can format mailing address labels, file folder tags, asset tracking stickers, product barcode labels, and conference name tags across multiple industries.',
+      },
+      {
+        question:
+          'Are customer postal addresses or mailing lists uploaded online?',
+        answer:
+          'No. All grid calculations and text formatting execute client-side in browser memory with zero network calls, protecting mailing lists and private contacts.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'envelope-layout-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-envelope-layout-generator': {
+    directAnswer:
+      'Enter return address, recipient mailing details, and target character width to generate a monospaced envelope placement layout in your browser. The tool formats sender positioning and indented delivery addresses for printing tests without sending your physical mailing records or private correspondence addresses to remote web services. The tool formats envelopes locally to protect private recipient names and personal postal addresses.',
+    leadParagraph:
+      'This envelope layout generator creates monospaced text placement drafts for printing envelopes, mailings, and formal correspondence. Printing physical envelopes often results in misaligned recipient blocks or clipped return addresses because printers handle envelope paper feeds inconsistently. You input the return address, recipient postal details, and line width in characters (default 70). The engine formats the return address in the top-left quadrant and positions the recipient address block with appropriate vertical indentation and horizontal offsets. Testing envelope layouts with monospaced text helps verify paper margins before loading expensive stationery into office printers. Operating entirely within local browser tab memory under strict CSP connect-src none rules, confidential personal addresses, executive mailings, and legal delivery records remain completely private on your computer. Verifying envelope text alignment before printing avoids wasted envelopes and ensures that delivery addresses adhere to postal service scanning guidelines.',
+    faqs: [
+      {
+        question: 'What is the purpose of the line width setting?',
+        answer:
+          'Line width controls character spacing across each printed line, allowing you to tailor alignment to standard envelope sizes like DL or Number 10.',
+      },
+      {
+        question:
+          'How are sender and recipient addresses positioned on the page?',
+        answer:
+          'The sender address is placed at the top-left margin, while the recipient address is centered and indented both vertically and horizontally.',
+      },
+      {
+        question: 'Can I print the monospaced envelope layout directly?',
+        answer:
+          'Yes. You can copy the formatted text or use your browser print dialog with monospaced font settings to test envelope feed alignment.',
+      },
+      {
+        question:
+          'Are physical mailing addresses recorded or transmitted externally?',
+        answer:
+          'No. All layout generation runs strictly within browser memory without network communication, guaranteeing complete postal privacy and recipient confidentiality across every test run.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'mail-merge-preview', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-mail-merge-preview': {
+    directAnswer:
+      'Combine a text template containing double curly brace placeholders with CSV records to preview merged documents directly in your browser. The tool validates CSV column headers, substitutes row values across each template instance, and previews completed outputs without transmitting your customer records or confidential mailing data to cloud servers. The tool executes merges client-side to ensure customer records and personal details remain confidential.',
+    leadParagraph:
+      'This mail merge preview tool combines structured CSV datasets with document templates to generate personalized letters, renewal notices, and email communications. Running mail merges through cloud services or email marketing platforms often requires uploading entire customer databases and risking accidental data leakage. You supply a template containing {{placeholder}} tokens (such as {{name}} and {{plan}}) and comma-separated CSV rows containing matching column headers. The engine parses the CSV rows, validates that all template placeholders match valid column names, and generates merged text blocks for each dataset record. Previewing mail merges locally prevents formatting errors before dispatching high-volume correspondence to customers. Because all merge logic executes client-side under strict CSP restrictions, sensitive customer names, financial renewal dates, and subscription records remain completely secure. Generating mail merge previews within your browser allows marketing and administrative teams to test variable substitutions without exposing private records.',
+    faqs: [
+      {
+        question: 'How should template placeholders be written?',
+        answer:
+          'Placeholders must be enclosed in double curly braces matching your CSV header names exactly, such as {{name}}, {{amount}}, or {{renewal_date}}.',
+      },
+      {
+        question:
+          'What happens if a CSV row is missing a required placeholder?',
+        answer:
+          'The engine validates headers and flags missing column fields, ensuring that unpopulated variables are caught before finalizing documents and sending emails.',
+      },
+      {
+        question: 'Can I merge hundreds of customer records locally?',
+        answer:
+          'Yes. Because processing runs in local browser memory, the engine can quickly iterate through hundreds of CSV rows without network lag.',
+      },
+      {
+        question: 'Is my customer contact data uploaded to external databases?',
+        answer:
+          'No. All CSV parsing and template substitution occur locally in your browser memory with zero network traffic, ensuring data privacy.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'document-word-counter', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-document-word-counter': {
+    directAnswer:
+      'Paste document text to calculate Unicode-aware word counts, character totals, paragraph counts, sentence lengths, and estimated reading times in your browser. The counter analyzes text structure in real time with customizable reading speeds without uploading your manuscripts, academic papers, or confidential briefs to online word counting services. The counter calculates text statistics locally to keep unpublished manuscripts and confidential drafts secure.',
+    leadParagraph:
+      'This document word counter delivers comprehensive text statistics, character analysis, and reading time estimates for writers, editors, students, and legal professionals. Monitoring length requirements is critical when submitting journal articles, grant applications, essay assignments, or executive summaries; however, pasting unreleased manuscripts into online counting tools can expose proprietary intellectual property. You paste text into the counter and specify your desired reading speed in words per minute (default 225). The engine performs Unicode-aware tokenization, counting words, total characters, characters excluding whitespace, sentence counts, and paragraphs, alongside estimated reading and speaking durations. Inspecting detailed text metrics helps refine readability and adhere to strict editorial submission constraints. Running entirely client-side under CSP connect-src none directives, private manuscripts and unpublished research remain strictly confidential. Reviewing detailed text statistics allows authors and editors to tailor content pacing, improve sentence balance, and satisfy publisher length constraints.',
+    faqs: [
+      {
+        question:
+          'How does the counter handle Unicode characters and hyphenated words?',
+        answer:
+          'The tool uses Unicode-aware word boundary detection, accurately counting accented characters, multi-lingual scripts, and hyphenated compound terms across diverse languages.',
+      },
+      {
+        question: 'Can I adjust the assumed words-per-minute reading speed?',
+        answer:
+          'Yes. You can customize the reading speed setting (default 225 words per minute) to tailor estimates for technical or casual audiences.',
+      },
+      {
+        question:
+          'Does the counter separate character counts with and without spaces?',
+        answer:
+          'Yes. The tool reports total character count as well as character count excluding whitespace to meet diverse publisher guidelines and academic requirements.',
+      },
+      {
+        question: 'Are my written documents or manuscripts uploaded online?',
+        answer:
+          'No. All text parsing and statistical calculations execute locally in browser tab memory with zero network requests, ensuring total privacy.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'document-compare', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-document-compare': {
+    directAnswer:
+      'Paste two versions of a document to calculate a line-level longest common subsequence diff directly in your browser. The tool highlights additions, deletions, and unchanged text with line indicators without transmitting your legal contracts, financial agreements, or proprietary drafts to remote comparison servers. The comparison tool executes entirely in browser memory to ensure legal drafts and contracts remain private.',
+    leadParagraph:
+      'This document compare tool calculates line-by-line differences between two versions of text using a bounded longest common subsequence (LCS) algorithm. Comparing revised versions of contracts, software specifications, policy documents, and terms of service is essential to detect modified clauses or unauthorized changes; however, uploading proprietary agreements to third-party diff websites creates severe confidentiality hazards. You paste the original text into the before panel and the modified draft into the after panel. The engine compares the two texts line by line, calculating differences and rendering clean visual indicators for additions (+), deletions (-), and unchanged lines. Reviewing document revisions side by side ensures complete visibility into clause changes before signing agreements. Operating entirely in your browser memory under CSP connect-src none controls, sensitive legal agreements and corporate policies remain secure. Conducting line-by-line document diffs locally gives legal teams and contract administrators full certainty regarding draft revisions before executing agreements.',
+    faqs: [
+      {
+        question: 'What algorithm does the document comparison tool use?',
+        answer:
+          'The tool uses a bounded longest common subsequence (LCS) line-level diff algorithm to identify exact insertions, deletions, and shared lines.',
+      },
+      {
+        question: 'How are modifications displayed in the diff output?',
+        answer:
+          'Added lines are marked with plus signs (+), removed lines with minus signs (-), and unmodified lines are displayed as clean reference text.',
+      },
+      {
+        question: 'Can I compare large contract drafts or code files?',
+        answer:
+          'Yes. The comparison engine runs efficiently in browser memory, comparing multiple pages of legal agreements or text documentation without performance bottlenecks.',
+      },
+      {
+        question:
+          'Are my compared documents or contract revisions transmitted online?',
+        answer:
+          'No. All comparison calculations take place locally inside browser tab memory with zero outbound network calls, maintaining complete document secrecy and integrity.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'document-template-filler', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-document-template-filler': {
+    directAnswer:
+      'Input a text template with double curly brace placeholders alongside a JSON data dictionary to populate documents in your browser. The tool replaces variable tokens, verifies matching keys, and reports missing attributes without sending your templates or structured JSON data payloads to external cloud services. The filler substitutes variables in browser memory to protect internal records and private datasets.',
+    leadParagraph:
+      'This document template filler merges JSON data objects into text templates containing {{placeholder}} tokens for automated reports, notices, and project specifications. Preparing customized documents from structured database records often involves manual copy-pasting or complex server-side templating engines that risk leaking sensitive database values. You supply a template containing {{variable}} keys and a JSON object containing corresponding property values. The engine parses the JSON structure, substitutes each placeholder with its corresponding string value, and flags any missing keys that were not provided in the dataset. Verifying data substitution locally ensures high accuracy when generating repetitive project briefs or customer communications. Operating entirely within local browser tab memory under strict CSP restrictions, sensitive customer records, financial figures, and internal data payloads remain completely secure. Using structured JSON substitution simplifies report generation, standardises repetitive client memos, and reduces errors caused by manual typing.',
+    faqs: [
+      {
+        question: 'What format should template placeholders use?',
+        answer:
+          'Placeholders must be wrapped in double curly braces corresponding to keys in your JSON object, such as {{project}}, {{owner}}, or {{status}}.',
+      },
+      {
+        question: 'How does the tool notify me of missing template variables?',
+        answer:
+          'The engine scans the template for placeholders and outputs explicit warning notices if any token lacks a matching key in your JSON input.',
+      },
+      {
+        question: 'Can I use nested JSON objects in the data input?',
+        answer:
+          'The tool expects a top-level key-value JSON dictionary for straightforward, predictable placeholder substitution across your document template and text layouts.',
+      },
+      {
+        question:
+          'Are my JSON records or document templates stored on remote servers?',
+        answer:
+          'No. Template parsing and variable substitution occur strictly within local browser memory with zero network requests or cloud logging at any stage.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'bibtex-viewer', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-bibtex-viewer': {
+    directAnswer:
+      'Paste BibTeX bibliography text to inspect citation keys, publication types, author lists, and bibliographic metadata fields directly in your browser. The tool parses braces and quotes safely without running TeX interpreters or uploading your academic bibliographies and research drafts to third-party citation platforms. The viewer inspects bibliography entries locally to keep unreleased citations and literature reviews confidential.',
+    leadParagraph:
+      'This BibTeX viewer parses and inspects BibTeX bibliographic records for academic researchers, graduate students, and scientific publishers. BibTeX files exported from citation managers frequently contain syntax errors, missing author fields, malformed citation keys, or improperly balanced braces that break LaTeX compilation. You paste raw BibTeX entries (such as @article, @book, or @inproceedings) into the editor. The engine parses the entries without executing TeX macros, extracting entry types, citation keys, titles, authors, journals, publication years, and volume numbers into a readable structured preview. Checking citation metadata prior to compiling research papers saves debugging time and ensures clean bibliographies. Operating entirely in browser memory under CSP connect-src none directives, unpublished manuscripts, grant citations, and proprietary research bibliographies remain strictly private on your machine. Parsing BibTeX files client-side ensures that researchers can verify citation fields and resolve bibliography errors before submitting papers to academic journals.',
+    faqs: [
+      {
+        question: 'What BibTeX entry types does the viewer parse?',
+        answer:
+          'The viewer parses standard BibTeX publication types including @article, @book, @inproceedings, @techreport, @misc, and @phdthesis reference entries for academic papers and theses.',
+      },
+      {
+        question: 'Does this tool execute TeX or LaTeX code on the server?',
+        answer:
+          'No. The tool uses a safe, client-side text parser that extracts fields without running TeX engines or executing remote binaries.',
+      },
+      {
+        question: 'Can the viewer highlight missing bibliographic fields?',
+        answer:
+          'Yes. The structured preview clearly displays extracted fields so you can spot missing author names, publication dates, or citation keys.',
+      },
+      {
+        question:
+          'Are my academic references or research citations sent online?',
+        answer:
+          'No. All BibTeX parsing executes purely within your local browser memory with zero network connectivity, keeping research references and literature confidential.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'ris-citation-viewer', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-ris-citation-viewer': {
+    directAnswer:
+      'Paste Research Information Systems (RIS) citation text to inspect standard two-letter tags, author lists, publication titles, and publication dates in your browser. The tool groups bibliographic tags into clean previews without uploading your academic references or literature reviews to external citation databases. The viewer decodes citation tags locally in browser memory to maintain confidentiality for academic research.',
+    leadParagraph:
+      'This RIS citation viewer decodes and formats Research Information Systems (.ris) bibliographic records for academic writers, librarians, and research scientists. RIS files exported from academic databases (such as PubMed, IEEE Xplore, or ScienceDirect) rely on cryptic two-letter tag prefixes (TY, AU, TI, PY, JO, ER) that are difficult to review by eye. You paste raw RIS text into the editor. The engine parses each tag line, resolves document types, aggregates multiple author entries (AU), extracts titles (TI), publication years (PY), and journals (JO), and formats them into a clean, human-readable bibliographic summary. Inspecting RIS tags locally ensures citation data is accurate before importing references into reference management software. Running completely client-side in browser memory under CSP connect-src none controls, sensitive research topics and unreleased literature reviews remain totally confidential. Grouping cryptic RIS tags into clear bibliographic summaries simplifies reference auditing and ensures complete citation records for systematic reviews.',
+    faqs: [
+      {
+        question: 'What are common two-letter RIS tags parsed by the tool?',
+        answer:
+          'Common tags include TY (reference type), AU (author), TI (title), PY (publication year), JO (journal name), and ER (end of record).',
+      },
+      {
+        question: 'Can the viewer parse multi-author citation records?',
+        answer:
+          'Yes. The parser aggregates multiple AU tag lines into a consolidated, readable author list for each referenced publication across the dataset.',
+      },
+      {
+        question: 'What academic databases export citations in RIS format?',
+        answer:
+          'Most academic repositories, including PubMed, Web of Science, Scopus, IEEE Xplore, and JSTOR, provide citations in standard RIS formatting for research export.',
+      },
+      {
+        question:
+          'Are my research literature reviews or citations uploaded externally?',
+        answer:
+          'No. RIS parsing runs entirely in your local browser memory with zero network traffic, ensuring complete confidentiality for academic research.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'citation-formatter', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-citation-formatter': {
+    directAnswer:
+      'Enter author names, publication year, work title, publisher or source, and URL to format standardized academic citations in APA, MLA, or Chicago patterns in your browser. The tool structures bibliographic references according to style conventions without sending your research topics or source materials to third-party citation generators. The tool formats academic citations locally to ensure your research subjects and bibliography remain private.',
+    leadParagraph:
+      'This citation formatter structures bibliographic citations according to APA, MLA, and Chicago reference styles for students, academics, and researchers. Commercial citation websites are frequently cluttered with intrusive advertisements, force users through paid paywalls, or fail to format punctuation and author inversions consistently. You select your target citation style (APA-like, MLA-like, or Chicago-like) and input the core bibliographic facts: author name, year of publication, document title, publisher or journal source, and optional reference URL. The engine formats the reference string using standard stylistic rules for author ordering, quotation marks, punctuation, and date placement. Formatting citations cleanly in your browser eliminates formatting guesswork while maintaining research confidentiality. Operating strictly within local browser tab memory under CSP connect-src none restrictions, your research topics and bibliography data remain private. Formatted citations ensure that research papers adhere to accepted scholarly conventions, making bibliographies clear, professional, and easy to verify.',
+    faqs: [
+      {
+        question: 'What citation styles can I format using this tool?',
+        answer:
+          'The formatter supports standard APA-like, MLA-like, and Chicago-like citation structures for books, journal articles, and online publications across academic subjects.',
+      },
+      {
+        question: 'How should author names be entered into the tool?',
+        answer:
+          'Enter authors in standard bibliographic format, such as "Example, Ada", so the engine can place surname and given names correctly.',
+      },
+      {
+        question:
+          'Does this tool replace official institutional style manuals?',
+        answer:
+          'This is a formatting aid for core bibliographic facts; you should verify specific capitalization and source-type requirements with official style guides.',
+      },
+      {
+        question: 'Are my cited research papers or book titles sent online?',
+        answer:
+          'No. All citation formatting occurs locally in browser memory with zero network communication, ensuring complete privacy for your bibliography and research materials.',
+      },
+    ],
+  },
+  // lib/tools/document-workbench.ts (DOCUMENT_OPERATIONS 'latex-table-generator', runDocumentOperation), lib/tools/document-workbench.test.ts, components/document-workbench-tool.tsx and app/documents/[tool]/page.tsx
+  'documents-and-office-latex-table-generator': {
+    directAnswer:
+      'Paste CSV, TSV, or Markdown tables to generate publication-grade LaTeX tabular code directly in your browser. The generator supports booktabs rules, classic tabular borders, column alignments, siunitx decimal alignment, table floats, and multi-page longtable environments without uploading your experimental datasets to remote conversion servers. The generator produces LaTeX markup locally to protect experimental data and confidential research metrics.',
+    leadParagraph:
+      'This LaTeX table generator converts tabular data from CSV, TSV, or Markdown into clean, publication-ready LaTeX markup for scientific manuscripts, academic theses, and technical reports. Writing complex LaTeX tables by hand is error-prone, requiring tedious alignment tokens (&), newline markers (\\\\), and tricky column specifications. You paste your data table into the editor and choose your formatting preferences: booktabs styling (\\toprule, \\midrule, \\bottomrule), classic tabular borders, column alignment (left, center, right, or siunitx decimal alignment), environment (plain tabular, table float, table* two-column float, or multi-page longtable), and optional captions and labels. The engine parses the rows, escapes special TeX characters, and generates clean LaTeX source code. Operating completely client-side in browser memory under CSP connect-src none directives, proprietary research figures and corporate datasets remain strictly secure. Clean table markup makes scientific papers easier to compile, eliminates alignment debugging in LaTeX, and ensures clear presentation of experimental results.',
+    faqs: [
+      {
+        question: 'What LaTeX environments does the generator support?',
+        answer:
+          'The generator supports plain tabular, table floats with captions and labels, two-column table* floats, and multi-page longtable environments for extensive datasets.',
+      },
+      {
+        question:
+          'Does the tool support professional booktabs table formatting?',
+        answer:
+          'Yes. You can select booktabs styling to generate elegant tables with \\toprule, \\midrule, and \\bottomrule lines without vertical bars for academic publications.',
+      },
+      {
+        question:
+          'How does the generator handle special LaTeX characters in table cells?',
+        answer:
+          'The engine automatically escapes reserved TeX characters such as %, $, _, and & to prevent syntax errors during LaTeX document compilation.',
+      },
+      {
+        question:
+          'Are my research datasets or experimental results transmitted externally?',
+        answer:
+          'No. Table parsing and LaTeX code generation execute entirely within browser memory with zero network traffic, ensuring complete dataset privacy.',
+      },
+    ],
+  },
+  // components/docx-metadata-tool.tsx, lib/tools/docx/metadata.ts, lib/tools/docx/metadata.test.ts and app/documents/[tool]/page.tsx
+  'documents-and-office-docx-metadata': {
+    directAnswer:
+      'Upload Word (.docx) documents up to 50 MB to inspect and strip embedded author metadata, revision history, total editing time, comments, and tracked changes directly in your browser. The tool reads ZIP archive XML streams client-side, allowing you to sanitize documents without uploading confidential corporate files to external servers. The tool analyzes documents entirely within browser memory to ensure sensitive corporate files remain confidential.',
+    leadParagraph:
+      'This DOCX metadata inspector and scrubber analyzes and cleans hidden document metadata embedded in Microsoft Word (.docx) files. Word processing documents frequently contain sensitive metadata that authors are unaware of, including creator names, company affiliations, last modified timestamps, total editing durations, internal comments, and full tracked revision histories. You load a .docx file into the tool. The engine reads the document ZIP container in browser memory, parsing XML streams including docProps/core.xml and docProps/app.xml to display all metadata attributes, comment counts, and tracked revisions. You can then export a sanitized .docx file with metadata removed and choose whether to accept or reject tracked changes. Operating entirely client-side under strict CSP connect-src none controls, sensitive legal agreements, executive drafts, and corporate records never leave your machine. Stripping document metadata prior to distributing Word documents prevents accidental disclosure of internal author identities, editing durations, and private revision comments.',
+    faqs: [
+      {
+        question:
+          'What metadata fields does the tool detect in Word documents?',
+        answer:
+          'The tool inspects author names, company, manager, title, subject, creation date, modification date, total editing time, comments, and tracked revisions.',
+      },
+      {
+        question: 'Can the tool sanitize and strip metadata from my DOCX file?',
+        answer:
+          'Yes. You can generate a cleaned DOCX file with core metadata removed, and configure tracked change policies to accept or reject revisions.',
+      },
+      {
+        question: 'Why is there a 50 MB file size limit on uploaded documents?',
+        answer:
+          'Because the entire DOCX ZIP package is unpacked and processed in local browser tab memory, this safeguard keeps your browser responsive.',
+      },
+      {
+        question:
+          'Is my Word document uploaded to any external server during inspection?',
+        answer:
+          'No. All ZIP reading, XML parsing, and sanitized file export run strictly client-side in browser memory with zero outbound network requests.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'roi-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-roi-calculator': {
+    directAnswer:
+      'Input initial investment cost and final proceeds to calculate net financial return and Return on Investment (ROI) percentage directly in your browser. The calculator computes gain-to-cost ratios instantly without sending your private financial investments, business valuations, or personal investment returns to external tracking servers. The calculator executes locally to ensure your business earnings and capital investments remain completely confidential.',
+    leadParagraph:
+      'This return on investment (ROI) calculator computes net returns and percentage profitability for business projects, marketing campaigns, real estate purchases, and capital investments. Evaluating return on capital is essential when comparing competing investment opportunities or measuring campaign performance; however, using online financial calculators often exposes proprietary business revenue figures or confidential investment values to cloud tracking. You enter your total cost basis and final proceeds or value. The engine verifies positive numerical values, calculates the net return by subtracting cost from final proceeds, and computes the exact percentage return relative to initial expenditure ((gain - cost) / cost * 100). Operating entirely within your browser tab under strict Content Security Policy directives, sensitive business expenditure figures and investment proceeds remain completely confidential on your machine. Evaluating return on investment provides clear financial benchmarks for comparing marketing budgets, business initiatives, and capital asset acquisitions over time.',
+    faqs: [
+      {
+        question: 'What formula does the ROI calculator use?',
+        answer:
+          'The calculator computes net return as final proceeds minus cost, and ROI percentage as net return divided by initial cost multiplied by 100.',
+      },
+      {
+        question:
+          'Can the calculator handle negative returns or investment losses?',
+        answer:
+          'Yes. If final proceeds are less than initial cost, the tool displays the negative net return and corresponding percentage investment loss.',
+      },
+      {
+        question: 'Does this calculator provide investment or tax advice?',
+        answer:
+          'No. This tool provides arithmetic scenario calculations only and does not consider taxes, inflation, fees, or professional financial advice for your business.',
+      },
+      {
+        question:
+          'Are my investment amounts or returns recorded on remote servers?',
+        answer:
+          'No. All calculations run strictly client-side in browser memory with zero network traffic, ensuring total financial privacy for your records.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'irr-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-irr-calculator': {
+    directAnswer:
+      'Enter comma or newline separated periodic cash flows starting with an initial negative investment to calculate the Internal Rate of Return (IRR) in your browser. The calculator finds the discount rate where Net Present Value equals zero without transmitting your investment cash flows or financial projections across the network. The calculator computes investment returns client-side to protect strategic corporate valuations and cash projections.',
+    leadParagraph:
+      'This internal rate of return (IRR) calculator computes the periodic discount rate that equates the net present value of all cash flows to zero. Financial analysts, venture capital investors, and corporate planners rely on IRR to evaluate capital projects, private equity returns, and equipment investments across equally spaced time periods. You enter cash flows separated by commas or newlines, starting with an initial capital outlay as a negative number followed by expected positive returns. The engine checks for valid sign changes and applies a numerical root-finding algorithm to determine the periodic IRR rate alongside the residual NPV at root. Running completely client-side in your browser tab under CSP connect-src none rules, confidential capital budgets and strategic acquisition projections remain strictly private on your device. Calculating internal rate of return helps finance professionals prioritize profitable capital projects and establish baseline return hurdles across investment opportunities.',
+    faqs: [
+      {
+        question: 'What inputs are required to calculate periodic IRR?',
+        answer:
+          'You must supply cash flows from period zero onward, requiring at least one negative outlay and at least one positive subsequent cash inflow.',
+      },
+      {
+        question: 'What does the tool do if multiple mathematical roots exist?',
+        answer:
+          'Because non-standard cash flow sequences can yield multiple mathematical solutions, the tool identifies and reports the first sign-change root found.',
+      },
+      {
+        question: 'Are the cash flow intervals assumed to be equal?',
+        answer:
+          'Yes. The periodic IRR calculator assumes uniform, equally spaced periods such as monthly, quarterly, or annual time intervals throughout the investment lifecycle.',
+      },
+      {
+        question:
+          'Are my financial cash flow projections transmitted externally?',
+        answer:
+          'No. All root-finding numerical calculations execute locally within browser memory with zero outbound network calls, ensuring complete confidentiality for investment projects.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'xirr-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-xirr-calculator': {
+    directAnswer:
+      'Enter dated cash flows formatted as YYYY-MM-DD paired with positive or negative values to calculate the annualized Extended Internal Rate of Return (XIRR) in your browser. The tool calculates exact day-count interest roots without transmitting your personal investment dates or portfolio transaction values to cloud servers. The tool calculates annualized returns locally in browser memory to keep portfolio transactions confidential.',
+    leadParagraph:
+      'This dated XIRR calculator computes the annualized internal rate of return for irregular, non-periodic cash flows based on exact calendar dates. In real-world investment portfolios, venture capital disbursements, and mutual fund systematic investment plans, deposits and withdrawals occur on uneven calendar dates rather than synchronized annual intervals. You enter dated cash flows formatted with pipe delimiters (such as "2026-01-01 | -1000"), containing at least one negative outflow and one positive inflow. The engine validates ISO dates, sorts entries chronologically, computes exact day differences divided by 365, and runs numerical root finding to calculate the annualized XIRR percentage and root NPV. Operating entirely client-side in browser memory under strict CSP restrictions, your personal investment portfolio dates and cash transaction values remain completely secure. Dated XIRR calculations reflect real-world portfolio performance more accurately than simple periodic averages by factoring in exact transaction timing and compounding days.',
+    faqs: [
+      {
+        question: 'How should dated cash flows be entered into the XIRR tool?',
+        answer:
+          'Enter each transaction on a new line using the format: "YYYY-MM-DD | amount" (for example, "2026-01-01 | -1000" and "2026-07-01 | 300").',
+      },
+      {
+        question: 'How does XIRR differ from standard periodic IRR?',
+        answer:
+          'While IRR assumes identical period lengths, XIRR accounts for exact day counts between transactions, providing an accurate annualized return for irregular dates.',
+      },
+      {
+        question: 'What validation rules apply to the cash flow entries?',
+        answer:
+          'The cash flow schedule must include valid ISO dates, sorted or unsorted, with at least one negative initial outlay and one positive inflow.',
+      },
+      {
+        question:
+          'Are my investment dates or account transaction amounts uploaded online?',
+        answer:
+          'No. All date parsing and iterative root-finding calculations run locally in browser memory with zero network traffic, ensuring total privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'npv-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-npv-calculator': {
+    directAnswer:
+      'Input a discount rate percentage and comma or newline separated periodic cash flows to calculate the Net Present Value (NPV) directly in your browser. The calculator discounts future cash flows back to period zero, helping you evaluate project profitability without uploading your corporate capital budgeting figures to remote servers. The calculator runs entirely within client memory to ensure strategic budget valuations remain strictly private.',
+    leadParagraph:
+      'This net present value (NPV) calculator discounts a sequence of periodic cash flows back to period zero to assess the economic viability of capital projects and business investments. Evaluating present value allows decision-makers to account for the time value of money, cost of capital, and opportunity costs before committing financial resources; however, sharing investment models on web tools risks disclosing sensitive strategic projections. You input the periodic discount rate (such as 8%) and cash flows starting from period zero (initial capital expenditure followed by subsequent revenue flows). The engine parses the values, applies standard compound discounting across each period, and sums discounted flows to yield the final net present value. Operating strictly in browser memory under CSP connect-src none directives, confidential investment valuations and corporate cash flows remain completely secure on your machine. Net present value calculations allow organizations to compare long-term capital investments objectively by discounting anticipated future cash flows back to current values.',
+    faqs: [
+      {
+        question: 'What does Net Present Value indicate about an investment?',
+        answer:
+          'A positive NPV indicates that projected earnings exceed the anticipated cost of capital, whereas a negative NPV suggests the project will lose money.',
+      },
+      {
+        question: 'How should cash flows be structured in the input field?',
+        answer:
+          'Enter cash flows separated by commas or newlines starting with period zero, typically a negative initial cost followed by positive returns.',
+      },
+      {
+        question:
+          'Does the discount rate represent an annual or periodic percentage?',
+        answer:
+          'The discount rate must match the time interval of your cash flows, representing the periodic rate corresponding to each payment period.',
+      },
+      {
+        question:
+          'Are my capital budget figures or discount rates sent over the internet?',
+        answer:
+          'No. All discounting calculations execute client-side in browser memory with zero outbound network calls, maintaining complete financial privacy for corporate valuations.',
+      },
+    ],
+  },
 };
 
 /**
