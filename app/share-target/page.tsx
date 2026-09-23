@@ -17,6 +17,7 @@ import { ShareTargetLanding } from '@/components/share-target-landing';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/share-target' },
   title: 'Open a shared file',
   description:
     'Receives a file sent to OpenTools from another app and opens it in the tool that handles it.',

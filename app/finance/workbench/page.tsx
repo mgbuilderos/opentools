@@ -5,6 +5,7 @@ import { FinanceBusinessWorkbenchTool } from '@/components/finance-business-work
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/finance/workbench' },
   title: 'Finance & Business Scenario Workbench',
   description:
     'Run transparent loan, savings, pricing, budget, and business metric scenarios locally.',

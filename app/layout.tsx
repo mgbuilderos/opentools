@@ -35,9 +35,15 @@ export const metadata: Metadata = {
     'image background remover local',
     'developer tools in browser',
   ],
-  alternates: {
-    canonical: '/',
-  },
+  /*
+   * No `alternates.canonical` here. Next.js inherits a layout's canonical
+   * into every page that does not declare its own, so this line made all
+   * 59 dedicated routes -- every PDF and image tool, and all fourteen
+   * workbenches -- ship a `<link rel="canonical">` pointing at `siteOrigin`
+   * and ask Google not to index them. Measured live 2026-09-23. The home
+   * page states its own canonical in `app/page.tsx`; every other page
+   * states its own too, held to it by `lib/seo/canonical-coverage.test.ts`.
+   */
   openGraph: {
     title: 'OpenTools — Fast, Private Browser Utilities',
     description:

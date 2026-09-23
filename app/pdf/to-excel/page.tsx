@@ -18,6 +18,7 @@ export const revalidate = 86400;
 const BRIEF = practiceBrief('bank-statement-to-books');
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/pdf/to-excel' },
   title: BRIEF.heading,
   description:
     'Turn a client bank statement PDF into Excel (.xlsx) or CSV in your browser. Reads separate debit and credit columns, DR and CR markers and lakh grouping, rejoins wrapped narration, and recomputes the running balance so a dropped row is found before you post it.',

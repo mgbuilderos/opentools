@@ -5,6 +5,7 @@ import { PdfPageTools } from '@/components/pdf-page-tools';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/pdf/page-tools' },
   title: 'Organize and Edit PDF Pages',
   description:
     'Reorder, delete, rotate, number, watermark, and update PDF metadata locally.',

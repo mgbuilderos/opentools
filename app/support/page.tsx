@@ -6,6 +6,7 @@ import { SupportDualView } from '@/components/support-dual-view';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/support' },
   title: 'Support OpenTools — 100% Free & Local Utilities',
   description:
     'Support independent development of privacy-first, zero-egress browser utilities.',
