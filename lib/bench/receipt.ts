@@ -27,6 +27,11 @@ export interface BuildReceiptArgs {
   environment: string;
 }
 
+type UnsuccessfulOutcome = Extract<
+  BuildReceiptArgs['outcomes'][number],
+  { status: 'failed' | 'skipped' }
+>;
+
 function serialisableParams(
   operation: BuildReceiptArgs['operation'],
   params: BuildReceiptArgs['params'],
@@ -47,6 +52,9 @@ export function buildReceipt(args: BuildReceiptArgs): BenchReceipt {
   const failed = args.outcomes.filter((outcome) => outcome.status === 'failed');
   const skipped = args.outcomes.filter(
     (outcome) => outcome.status === 'skipped',
+  );
+  const unsuccessful = args.outcomes.filter(
+    (outcome): outcome is UnsuccessfulOutcome => outcome.status !== 'done',
   );
 
   return {
@@ -79,7 +87,7 @@ export function buildReceipt(args: BuildReceiptArgs): BenchReceipt {
       (total, outcome) => total + outcome.durationMs,
       0,
     ),
-    failures: [...failed, ...skipped]
+    failures: unsuccessful
       .sort((left, right) => left.index - right.index)
       .map((outcome) => ({
         name: outcome.input.name,

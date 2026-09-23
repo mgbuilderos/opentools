@@ -16,6 +16,12 @@ import { KERNEL_OPERATIONS } from '@/lib/kernel/registry';
 import type { KernelOperation } from '@/lib/kernel/types';
 import { searchTools } from '@/lib/tools/catalog';
 import {
+  buildReceipt,
+  receiptToJson,
+  receiptToText,
+  type BenchReceipt,
+} from '@/lib/bench/receipt';
+import {
   runBench,
   runBenchInput,
   zipBenchOutputs,
@@ -111,6 +117,7 @@ export function BenchTool() {
   );
   const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
   const [outcomes, setOutcomes] = useState<readonly Outcome[]>([]);
+  const [receipt, setReceipt] = useState<BenchReceipt | null>(null);
   const [preview, setPreview] = useState<BenchOutput | null>(null);
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [running, setRunning] = useState(false);
@@ -152,6 +159,7 @@ export function BenchTool() {
     );
     setInputMode(mode);
     setOutcomes([]);
+    setReceipt(null);
     setPreview(null);
   };
 
@@ -161,6 +169,7 @@ export function BenchTool() {
     setInputs(await readDirectory(source));
     setInputMode('folder-write');
     setOutputDirectory(null);
+    setReceipt(null);
   };
 
   const chooseOutputFolder = async () => {
@@ -177,6 +186,7 @@ export function BenchTool() {
     setParams(defaults(next));
     setPreview(null);
     setOutcomes([]);
+    setReceipt(null);
   };
 
   const dryRun = async () => {
@@ -207,9 +217,9 @@ export function BenchTool() {
     setRunning(true);
     setError('');
     setOutcomes([]);
+    setReceipt(null);
     const abort = new AbortController();
     controller.current = abort;
-    const started = performance.now();
     try {
       const result = await runBench({
         inputs,
@@ -220,6 +230,15 @@ export function BenchTool() {
         onProgress: ({ completed, total }) => setProgress({ completed, total }),
       });
       setOutcomes(result);
+      const completedReceipt = buildReceipt({
+        generatedAt: new Date().toISOString(),
+        operation,
+        params,
+        inputs,
+        outcomes: result,
+        environment: navigator.userAgent,
+      });
+      setReceipt(completedReceipt);
       const outputs = flatten(result);
       if (outputDirectory) {
         for (const output of outputs) {
@@ -233,7 +252,7 @@ export function BenchTool() {
       }
       announceCompletion({
         operation: `Bench: ${operation.name}`,
-        durationMs: performance.now() - started,
+        durationMs: completedReceipt.durationMs,
         summary: `${outputs.length} outputs from ${inputs.length} inputs; nothing uploaded.`,
         metrics: [
           { label: 'Files', value: String(inputs.length) },
@@ -348,6 +367,7 @@ export function BenchTool() {
                 );
                 setInputMode('files');
                 setOutcomes([]);
+                setReceipt(null);
                 setPreview(null);
               }}
             />
@@ -415,9 +435,10 @@ export function BenchTool() {
                 {param.type === 'select' ? (
                   <select
                     value={params[param.id] ?? param.defaultValue}
-                    onChange={(event) =>
-                      setParams({ ...params, [param.id]: event.target.value })
-                    }
+                    onChange={(event) => {
+                      setParams({ ...params, [param.id]: event.target.value });
+                      setReceipt(null);
+                    }}
                     className="h-10 rounded-lg border bg-background px-3"
                   >
                     {param.options?.map((option) => (
@@ -432,20 +453,22 @@ export function BenchTool() {
                     checked={
                       (params[param.id] ?? param.defaultValue) === 'true'
                     }
-                    onChange={(event) =>
+                    onChange={(event) => {
                       setParams({
                         ...params,
                         [param.id]: String(event.target.checked),
-                      })
-                    }
+                      });
+                      setReceipt(null);
+                    }}
                   />
                 ) : (
                   <input
                     type={param.type === 'number' ? 'number' : 'text'}
                     value={params[param.id] ?? param.defaultValue}
-                    onChange={(event) =>
-                      setParams({ ...params, [param.id]: event.target.value })
-                    }
+                    onChange={(event) => {
+                      setParams({ ...params, [param.id]: event.target.value });
+                      setReceipt(null);
+                    }}
                     className="h-10 rounded-lg border bg-background px-3"
                   />
                 )}
@@ -465,7 +488,10 @@ export function BenchTool() {
             Output name template
             <input
               value={template}
-              onChange={(event) => setTemplate(event.target.value)}
+              onChange={(event) => {
+                setTemplate(event.target.value);
+                setReceipt(null);
+              }}
               className="h-10 rounded-lg border bg-background px-3 font-mono"
             />
           </label>
@@ -538,6 +564,58 @@ export function BenchTool() {
                 </li>
               ))}
             </ul>
+          ) : null}
+          {receipt ? (
+            <section
+              className="space-y-3 rounded-lg border bg-background p-4"
+              aria-labelledby="receipt-heading"
+            >
+              <div>
+                <h3 id="receipt-heading" className="font-semibold">
+                  Run receipt
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Generated locally from this completed run. Keep either format
+                  with your records.
+                </p>
+              </div>
+              <pre
+                className="overflow-x-auto whitespace-pre-wrap rounded-lg bg-muted p-3 text-xs"
+                data-testid="receipt"
+              >
+                {receiptToText(receipt)}
+              </pre>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    download(
+                      new Blob([receiptToText(receipt)], {
+                        type: 'text/plain;charset=utf-8',
+                      }),
+                      'receipt.txt',
+                    )
+                  }
+                >
+                  <Download />
+                  Download receipt.txt
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    download(
+                      new Blob([receiptToJson(receipt)], {
+                        type: 'application/json;charset=utf-8',
+                      }),
+                      'receipt.json',
+                    )
+                  }
+                >
+                  <Download />
+                  Download receipt.json
+                </Button>
+              </div>
+            </section>
           ) : null}
         </section>
       </main>
