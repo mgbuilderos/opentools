@@ -1,5 +1,10 @@
 import type { Metadata } from 'next';
 import { PdfPageTools } from '@/components/pdf-page-tools';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
 import { PDF_PAGE_OPERATIONS } from '@/lib/tools/catalog';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
@@ -38,7 +43,6 @@ export const revalidate = 86400;
 */
 
 const BASE = '/pdf';
-const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 const DEDICATED = excludedToolIdsForPrefix(BASE);
 
 export const dynamicParams = false;
@@ -59,11 +63,14 @@ export async function generateMetadata({
   const { tool } = await params;
   const operation = OPERATIONS.find((item) => item.id === tool);
   if (!operation) return {};
-  return {
-    title: operation.name,
-    description: operation.description,
-    alternates: { canonical: `${CANONICAL_ORIGIN}${BASE}/${operation.id}` },
-  };
+  /*
+    Title, description and the self-canonical come from
+    `lib/seo/tool-page-depth.ts`, not from the operation's one-line catalogue
+    entry. The entry says "Rotate every PDF page by a quarter turn"; a person
+    searching types "rotate pdf online free". Both were measured as the
+    thinnest pages on the site on 2026-09-23.
+  */
+  return toolPageMetadata(`${BASE}/${operation.id}`);
 }
 
 export default async function Page({
@@ -74,9 +81,11 @@ export default async function Page({
   const { tool } = await params;
   if (!OPERATIONS.some((operation) => operation.id === tool)) return null;
   return (
-    <PdfPageTools
-      initialOperationId={tool}
-      relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
-    />
+    <PageDepthProvider content={requireToolPageDepth(`${BASE}/${tool}`)}>
+      <PdfPageTools
+        initialOperationId={tool}
+        relatedTools={relatedToolsFor(`${BASE}/${tool}`)}
+      />
+    </PageDepthProvider>
   );
 }

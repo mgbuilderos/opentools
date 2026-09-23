@@ -5,15 +5,25 @@ tool page gradually, based on data. Keep full guides for roughly 30 to 50 tools
 that earn search traffic or have something distinct to say. Every other live
 guide redirects (301) to its tool page and leaves the sitemap.
 
-**Status: ON since 2026-09-21, by owner decision.** 15 guides keep a page; the
-other 552 return 301 to their tool page and have left the sitemap. Search
-Console still has no rows — the property was new when the owner checked on
-2026-09-17 — so all 15 were picked on the distinctness evidence below rather
-than on traffic, and every entry carries `reason: 'distinct'`. The traffic path
-is untouched and waits for the first export.
+**Status: ON since 2026-09-21, by owner decision.** Search Console still has no
+rows — the property was new when the owner checked on 2026-09-17 — so every
+kept guide was picked on the distinctness evidence below rather than on
+traffic, and every entry carries `reason: 'distinct'`. The traffic path is
+untouched and waits for the first export.
+
+**8 guides keep a page since 2026-09-23**, down from 15. The seven that left
+are the PDF and image guides whose substance moved onto their tool page in the
+same commit (`lib/seo/tool-page-depth.ts`; `docs/DECISION_LOG.md` §8): with the
+text on both, two URLs competed for one query and the guide is the page that
+cannot do the job. They 301 through the ordinary consolidation path, so no
+redirect table was touched. This applies the decision's own test — a guide is
+kept while it says something its tool page does not — rather than changing it.
+The eight that remain all belong to tools whose page is a workbench hosting
+several operations, where the guide is about one operation rather than about
+the page.
 
 - Switch: `GUIDE_CONSOLIDATION_ENABLED` in `lib/seo/guide-consolidation-config.ts`
-- Keep list: `GUIDE_KEEP_LIST` in `lib/seo/guide-keep-list.ts` (15 entries)
+- Keep list: `GUIDE_KEEP_LIST` in `lib/seo/guide-keep-list.ts` (8 entries)
 - Logic: `lib/seo/guide-consolidation.ts`; redirects resolved in
   `lib/seo/site-redirects.ts`, served by `proxy.ts`
 - Sitemap body: `lib/seo/sitemap-entries.ts`; `llms.txt` bodies:

@@ -202,16 +202,23 @@ describe('sitemap', () => {
     for (const url of guides) {
       expect(live.has(url.slice('/guides/'.length)), url).toBe(true);
     }
-    // Compress PDF is live now that /pdf/compress runs it, and it is kept.
-    expect(guides).toContain('/guides/pdf-compress-pdf');
+    // Retired from the keep list on 2026-09-23: the compressor's guide text
+    // now renders on /pdf/compress itself, so keeping both would put two URLs
+    // in front of one query and the guide cannot compress anything.
+    expect(guides).not.toContain('/guides/pdf-compress-pdf');
+    expect(guides).not.toContain('/guides/pdf-merge-pdf');
     expect(guides).not.toContain('/guides/video-video-to-gif');
     // The OCR guides are live tools, but their guide pages are template text,
     // so consolidation sends them to /pdf/ocr and /image/to-text like the
     // other 550-odd. The tool pages are what the sitemap carries.
     expect(guides).not.toContain('/guides/pdf-ocr-pdf');
     expect(guides).not.toContain('/guides/image-image-to-text');
-    // /image/exact-size really writes the file, so its guide is listed.
-    expect(guides).toContain('/guides/image-resize-image-to-exact-kb');
+    // /image/exact-size really writes the file, and now says so on its own
+    // page, so its guide joined the redirects on 2026-09-23.
+    expect(guides).not.toContain('/guides/image-resize-image-to-exact-kb');
+    // A kept guide is still kept: this one's tool page is a workbench that
+    // hosts four operations, so the guide is not a duplicate of it.
+    expect(guides).toContain('/guides/audio-mp3-cutter');
     // Consolidated: live, but its tool page is the only page for it now.
     expect(guides).not.toContain('/guides/developer-and-data-jwt-decoder');
   });
