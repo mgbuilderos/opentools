@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
+import { COMPARE_ROUTES } from './compare-pages';
 import {
   GUIDE_CONSOLIDATION,
   type GuideConsolidationState,
@@ -53,6 +54,12 @@ export function buildSitemap(
     '/guides',
     '/blog',
     '/templates',
+    // The three hand-written comparison pages (Pillar 5 of
+    // docs/ORGANIC_GROWTH_PLAYBOOK_CORRECTED.md). Listed here beside /proof
+    // and /security rather than in LIVE_TOOL_ROUTES: they are content pages,
+    // and putting them in that list would make every tool CTA and the smart
+    // dropzone offer them as a place to send a file.
+    ...COMPARE_ROUTES,
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: lastModifiedFor(route === '' ? '/' : route),

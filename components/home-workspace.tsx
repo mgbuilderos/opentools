@@ -282,6 +282,17 @@ export function HomeWorkspace() {
               >
                 About
               </a>
+              {/*
+                The comparison pages are reachable from here because an orphan
+                page earns nothing: this footer is on the most-linked page on
+                the site, so it is where their crawl path starts.
+              */}
+              <a
+                href="/compare/browser-based-vs-cloud-file-tools"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                In your browser vs in the cloud
+              </a>
             </nav>
           </footer>
         </div>
