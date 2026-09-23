@@ -26,7 +26,7 @@ build time.
 
 ## The job
 
-**508 live tool pages have no hand-written explainer.** They currently render
+**448 live tool pages have no hand-written explainer.** They currently render
 30–120 words of generic boilerplate, which is why they do not rank: an audit on
 2026-09-21 measured two guides from unrelated categories and found **671 of 721
 words, 93.1%, verbatim identical and in the same order**. Google had crawled all
@@ -47,11 +47,14 @@ export interface GuideDetail {
 export interface GuideFaq { question: string; answer: string }
 ```
 
-The key is the tool's **slug**. 60 entries already exist — leave every one of
+The key is the tool's **slug**. 120 entries already exist — leave every one of
 them exactly as it is.
 
-That content is rendered by `components/tool-explainer.tsx`, which also emits
-`FAQPage` JSON-LD. The FAQs are therefore what answer engines (Google's AI
+That content is rendered by `ToolExplainerSection` in
+`components/tool-explainer.tsx`, which also emits `FAQPage` JSON-LD. Every
+routed tool page reaches it, and `lib/seo/explainer-wiring.test.ts` fails if a
+route ever stops doing so — until 2026-09-23 five workbenches did not, and
+entries written for their tools were stored and displayed nowhere. The FAQs are therefore what answer engines (Google's AI
 Overviews, ChatGPT, Perplexity) read and quote. Write them to be quotable
 standing alone, with no "as mentioned above".
 
@@ -72,7 +75,7 @@ get written side by side, where the differences are visible to you.
 
 The list is derived from the catalogue and from `DIFFERENTIATED_GUIDE_SLUGS`, so
 it shrinks by itself as you commit and cannot disagree with the code. Work
-batch 1, 2, 3 … in order. 13 batches of 40.
+batch 1, 2, 3 … in order. 12 batches of 40.
 
 ## The one rule that matters
 
@@ -216,8 +219,12 @@ on a run that printed "1605 passed" and exited 1.
 
 ## Ground rules for the repository
 
-- Work on your own branch in your own worktree:
-  `git worktree add ../antigravity-explainers -b antigravity/explainers origin/main`
+- Work on your own branch in your own worktree, created from the repository
+  root (`all-in-one-browser-tools-blueprint`), not from inside another
+  worktree:
+  `git worktree add apps/antigravity-explainers -b antigravity/tool-explainers origin/main`
+  Do not check a new branch out inside an existing worktree — several other
+  agents are working in them and you will take a branch out from under one.
 - **`lib/seo/guide-content.ts` is yours alone** for the duration. It is 209 KB
   and every other lane has been told to stay off it. Do not edit anything else
   except to add the comment lines above your entries.
