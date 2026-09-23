@@ -6962,6 +6962,1189 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'personal-year-number-calculator', numerologyTotal, runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/workbench/page.tsx
+  'date-time-and-productivity-personal-year-number-calculator': {
+    directAnswer:
+      'Enter your birth date and a target calendar year to calculate your numerological personal year number directly in your browser. The tool reduces birth month, birth day, and target year separately before summing them into a final single digit from 1 to 9, without uploading your personal date of birth to remote servers.',
+    leadParagraph:
+      'This personal year calculator computes the cyclical personal year number (1 through 9) governing an individual during a specific calendar year. In traditional numerological systems, your personal year cycle is determined by combining your birth month and day with the specific calendar year under examination, rather than your birth year. The engine parses the birth date into its calendar month and day, validates the target year (accepting years from 1 through 9999), and reduces each element separately by summing its digits. It then totals the three reduced values and performs a final reduction until a single digit remains between 1 and 9. Master numbers are deliberately not preserved for personal year cycles. The output presents the resulting personal year number alongside full arithmetic reduction steps. All calculations execute locally in your browser memory, keeping your birth date and personal queries completely private.',
+    faqs: [
+      {
+        question: 'How is the personal year number calculated?',
+        answer:
+          'The tool reduces the birth month, birth day, and target calendar year separately by summing digits, then adds the three values and reduces to a single digit.',
+      },
+      {
+        question: 'Does the personal year use my birth year?',
+        answer:
+          'No. The calculation uses only your birth month and birth day, combining them with the specific target year you wish to evaluate.',
+      },
+      {
+        question:
+          'Are master numbers (11, 22, 33) preserved in personal years?',
+        answer:
+          'No. In traditional numerology conventions, personal year numbers always reduce down to a single digit from 1 through 9 without retaining master numbers.',
+      },
+      {
+        question: 'Is my date of birth transmitted across the internet?',
+        answer:
+          'No. All date parsing and mathematical reductions execute client-side in your browser tab without making network requests, guaranteeing complete privacy for your records.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'weighted-scoring-matrix', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-weighted-scoring-matrix': {
+    directAnswer:
+      'Enter criteria weights and candidate options with numerical scores to calculate weighted multi-attribute decision rankings directly in your browser. The tool validates non-negative weights, multiplies each criterion score by its relative weight, and outputs ranked candidates in descending order of total score without transmitting your evaluation data to external servers.',
+    leadParagraph:
+      'This weighted scoring matrix evaluates competing proposals, technical designs, job candidates, or vendor quotes against prioritised evaluation criteria. When making strategic decisions, different criteria rarely carry equal significance; weighting factors allow decision-makers to reflect relative organizational priorities accurately. You supply a comma-separated list of numerical weights alongside candidate rows pairing an option label with criterion scores separated by pipes. The engine validates that weights are non-negative and sum to a positive value. It multiplies each candidate score by its corresponding column weight, calculates the aggregate weighted total for every option, and sorts candidates into descending rank order. The output displays a clear, objective ranking complete with computed total scores. Operating entirely within local browser tab memory under strict CSP restrictions, proprietary vendor evaluations and confidential product comparisons remain completely private and secure on your device.',
+    faqs: [
+      {
+        question: 'How should weights and option scores be entered?',
+        answer:
+          'Enter weights as comma-separated numbers (such as "3, 2, 5"). Enter candidate options one per line with scores separated by pipes: "Option A | 8 | 9 | 7".',
+      },
+      {
+        question: 'Can criteria weights be negative numbers?',
+        answer:
+          'No. All criteria weights must be non-negative numbers, and their total sum across all columns must be greater than zero.',
+      },
+      {
+        question:
+          'How does the tool calculate the total score for each candidate?',
+        answer:
+          'The tool multiplies each criterion score by its column weight and sums the products together: Total = (Score1 * Weight1) + (Score2 * Weight2) + ...',
+      },
+      {
+        question: 'Are my evaluation criteria or scores stored on any server?',
+        answer:
+          'No. All calculations and sorting run client-side in your browser tab without network communication, ensuring absolute confidentiality for your evaluations.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'random-picker', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-random-picker': {
+    directAnswer:
+      'Paste a list of items and choose how many selections to draw to pick random winners or choices directly in your browser. The tool performs an unbiased Fisher-Yates array shuffle using cryptographic randomness, selects unique items without replacement, and displays results without sending your entry lists to external servers or giveaway trackers.',
+    leadParagraph:
+      'This random picker selects unbiased random items from any user-provided list for giveaways, classroom participation, task delegation, and lottery drawings. Online random picking tools often transmit entry lists to advertising networks or use flawed pseudo-random algorithms. This utility takes your list of items (one per line) and a target selection count. The engine strips empty lines, applies an unbiased Fisher-Yates array shuffling algorithm powered by browser-level randomness, and slices the specified number of unique winning entries. Because items are selected without replacement, each candidate can win at most once per draw. The output presents the chosen entries cleanly formatted on individual lines. Executing completely within local browser tab memory under strict Content Security Policy directives, sensitive raffle rosters, employee names, and student lists remain strictly confidential on your personal computer.',
+    faqs: [
+      {
+        question: 'How does the random picker ensure fair selections?',
+        answer:
+          'The tool applies a Fisher-Yates shuffle algorithm across the entire list, ensuring every item has an equal mathematical probability of selection.',
+      },
+      {
+        question: 'Can the same item be picked multiple times in one draw?',
+        answer:
+          'No. The picker draws items without replacement, meaning each individual entry from your list can appear at most once in the selection output.',
+      },
+      {
+        question: 'What is the maximum number of items I can pick?',
+        answer:
+          'You can select up to the total number of items provided in your list. Requesting more items than exist in the list raises a clear validation notice.',
+      },
+      {
+        question: 'Are my entry lists uploaded or stored on any server?',
+        answer:
+          'No. All list parsing, shuffling, and selection execute locally in your browser memory without network activity. No names or lists are transmitted.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'name-picker', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-name-picker': {
+    directAnswer:
+      'Paste a list of participant names to pick a single random winner or speaker directly in your browser tab. The tool shuffles the list fairly using an unbiased array permutation, isolates the top candidate without replacement, and returns the selected name cleanly without uploading your attendee rosters to remote cloud platforms.',
+    leadParagraph:
+      'This name picker selects a single random person from a list of candidates for team standups, prize drawings, classroom call-outs, or project assignments. When choosing a volunteer or winner, manual selection risks perceived favoritism or cognitive bias. You enter candidate names one per line into the input area. The engine cleans whitespace, eliminates empty lines, and executes a full Fisher-Yates shuffle across the array. It selects the first item resulting from the randomized permutation and displays the chosen name in a clear output block. Because the algorithm operates deterministically on the client device without third-party tracking, teachers, managers, and community hosts can make impartial selections quickly. All operations run inside your browser session under strict CSP headers, ensuring private student rosters and confidential team rosters remain completely protected from external exposure.',
+    faqs: [
+      {
+        question: 'How does the tool choose a random name fairly?',
+        answer:
+          'The engine applies an unbiased Fisher-Yates shuffling algorithm across the list of names and selects the first element of the shuffled array.',
+      },
+      {
+        question: 'How should names be entered into the picker?',
+        answer:
+          'Enter candidate names one per line in the input box. Trailing spaces and blank lines are automatically trimmed and ignored by the parser.',
+      },
+      {
+        question: 'Can I run multiple drawings with the same list?',
+        answer:
+          'Yes. Clicking the Run operation button again performs a fresh shuffle across your candidate list, picking a new random name each time.',
+      },
+      {
+        question: 'Are attendee names transmitted or saved online?',
+        answer:
+          'No. All shuffling occurs in local browser tab memory without dispatching network calls, ensuring attendee rosters and participant names remain completely confidential.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'team-generator', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-team-generator': {
+    directAnswer:
+      'Enter a list of participants and choose your desired number of teams to generate balanced, randomised groups directly in your browser tab. The tool shuffles all members fairly, distributes people sequentially across teams, and outputs clear team rosters reliably and cleanly without ever transmitting your participant data to external servers or cloud services.',
+    leadParagraph:
+      'This team generator divides groups of participants into balanced, randomized teams for hackathons, sports leagues, classroom projects, and workshop breakout sessions. Manual team assignment often leads to accidental clustering of friends or imbalanced group sizes. You paste participant names (one per line) and specify the total number of teams to form. The engine validates that the team count is a positive integer not exceeding total roster size, applies an unbiased Fisher-Yates shuffle across all entries, and distributes participants evenly across the designated teams using round-robin assignment. The output displays each numbered team alongside its assigned members. Operating entirely in local browser tab memory under strict CSP restrictions, corporate employee rosters, student lists, and community club rosters remain completely private and secure on your machine. You can generate team rosters repeatedly for workshops and hackathons.',
+    faqs: [
+      {
+        question: 'How does the generator distribute participants into teams?',
+        answer:
+          'The tool shuffles the entire roster of names randomly, then distributes participants across teams one by one in round-robin fashion for equal sizing.',
+      },
+      {
+        question: 'What happens if the roster cannot be divided evenly?',
+        answer:
+          'The round-robin distribution places extra members into earlier teams, ensuring team sizes differ by at most one participant across all generated teams.',
+      },
+      {
+        question: 'What is the maximum number of teams I can generate?',
+        answer:
+          'You can generate up to as many teams as there are participants in your list. Requesting more teams than participants raises a clear validation notice.',
+      },
+      {
+        question: 'Are participant names uploaded to any cloud service?',
+        answer:
+          'No. All random shuffling and team allocation take place locally in your browser memory without network communication, guaranteeing complete data privacy.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'tournament-bracket-maker', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-tournament-bracket-maker': {
+    directAnswer:
+      'Enter player or team names to generate structured single-elimination tournament matchups directly in your browser. The tool calculates the nearest power-of-two bracket size, inserts standard BYE seeds where necessary, pairs round-one contestants, and outputs an organized tournament schedule clearly without transmitting competitor rosters to external gaming servers or cloud services.',
+    leadParagraph:
+      "This tournament bracket maker structures single-elimination brackets for esports tournaments, sports competitions, chess clubs, and office game events. Setting up single-elimination competitions requires pairing contestants into balanced match schedules and managing non-power-of-two entry pools cleanly. You input contestant names (one per line, supporting up to 256 entrants). The engine calculates the smallest power of two that accommodates the competitor count (such as 4, 8, 16, 32, or 64), automatically allocating BYE slots to top-seeded positions when the field is not a perfect power of two. It pairs opponents into Round 1 match blocks and formats the resulting tournament schedule into a readable text outline. All bracket logic runs client-side in browser memory under strict CSP connect-src 'none' rules, keeping competitor rosters, tournament match schedules, and seed rankings completely private on your personal device.",
+    faqs: [
+      {
+        question: 'How does the bracket maker handle odd numbers of players?',
+        answer:
+          'The tool expands the bracket to the next power of two and allocates BYE positions to balance the matches, advancing seeded players to round two.',
+      },
+      {
+        question: 'What is the maximum entrant capacity supported?',
+        answer:
+          'The tool supports tournament fields up to 256 entrants in a single bracket. You must enter at least two competitors to generate a bracket.',
+      },
+      {
+        question: 'Can I seed players manually in the tournament bracket?',
+        answer:
+          'Yes. Contestants are seeded in the exact order entered in the input area, allowing you to establish specific tournament seeding positions.',
+      },
+      {
+        question: 'Are competitor names or tournament schedules stored online?',
+        answer:
+          'No. All bracket mathematics and matchup pairings execute locally in your browser tab without dispatching any network requests to remote servers.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'seating-chart-maker', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-seating-chart-maker': {
+    directAnswer:
+      'Enter attendee names and choose your preferred column count to generate a randomised row-and-column seating plan directly in your browser. The tool shuffles guests fairly, formats organized seating rows, and outputs a ready-to-print room layout cleanly and reliably without uploading your guest lists to external wedding or event planning databases.',
+    leadParagraph:
+      'This seating chart maker arranges guests, students, or conference attendees into randomized row-and-column room layouts. Organizing seating arrangements manually for classrooms, exam halls, wedding banquets, or corporate workshops can be time-consuming and prone to complaints. You paste attendee names (one per line, supporting up to 1,000 entries) and specify the number of seats per row (columns, up to 50). The engine performs an unbiased Fisher-Yates array shuffle across the guest list and groups names into numbered rows, neatly separating participants by middle-dot dividers ("Row 1: Alice \u00b7 Bob \u00b7 Charlie"). This produces an impartial seating assignment ready to paste into event agendas or print for display. Because generation executes locally in browser tab memory, confidential guest lists, high-profile event attendees, and student names remain completely secure and confidential on your device.',
+    faqs: [
+      {
+        question: 'How does the tool arrange attendees into rows and columns?',
+        answer:
+          'The tool shuffles the attendee list randomly, then packs attendees into numbered rows matching your specified column count for clear room organization.',
+      },
+      {
+        question: 'What is the maximum number of attendees supported?',
+        answer:
+          'The seating chart maker supports up to 1,000 attendees and up to 50 columns per row in a single layout generation.',
+      },
+      {
+        question:
+          'Can I regenerate a different seating layout with the same list?',
+        answer:
+          'Yes. Clicking the Run operation button executes a fresh random shuffle, creating a new randomized seating configuration each time you run it.',
+      },
+      {
+        question: 'Are guest lists or seating arrangements uploaded anywhere?',
+        answer:
+          'No. All shuffling and seating layout calculations occur entirely in local browser memory without network activity. No data is stored.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'checklist-maker', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-checklist-maker': {
+    directAnswer:
+      'Paste unformatted to-do items to convert them into standard Markdown task checkboxes directly in your browser tab. The tool cleans existing bullets and bracket markers, standardises lines into uniform "- [ ]" checkbox items, and outputs an organized checklist cleanly and reliably without transmitting your personal notes to remote cloud apps.',
+    leadParagraph:
+      'This checklist maker formats unstructured task notes into clean, interactive Markdown checkboxes for project tracking. When drafting task lists across text editors, brainstorm notes often mix hyphens, asterisks, numbers, and existing bracket notation inconsistently. You paste your items (one per line) into the input area. The engine cleans extraneous leading characters, strips old bullet indicators or malformed brackets, and prefixes each non-empty entry with the standard GitHub-compatible Markdown task syntax: "- [ ] Task item". The resulting checklist is immediately compatible with Markdown editors such as Obsidian, Notion, GitHub issues, and personal README files. Because all string transformations execute locally inside your browser tab under strict Content Security Policy directives, personal to-do lists, client deliverables, and private goals remain completely confidential and secure on your machine. You can format large task lists in a single run.',
+    faqs: [
+      {
+        question: 'What output format does the checklist maker produce?',
+        answer:
+          'The tool formats each task into standard Markdown task list syntax: "- [ ] Item", compatible with GitHub, Obsidian, and Notion.',
+      },
+      {
+        question: 'How does the tool clean up existing bullets or dashes?',
+        answer:
+          'The engine uses a regular expression to strip leading dashes, asterisks, and existing bracket notations like "[ ]" or "[x]" before formatting.',
+      },
+      {
+        question: 'Can I check off items directly in my Markdown editor?',
+        answer:
+          'Yes. In compatible Markdown previewers, replacing the space with an "x" ("- [x]") marks the checkbox as completed in your notes.',
+      },
+      {
+        question: 'Are my checklist items uploaded or stored online?',
+        answer:
+          'No. All text parsing runs client-side in local browser memory without network requests, guaranteeing total privacy for your personal notes and task lists.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'packing-list-generator', groupedChecklist, runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-packing-list-generator': {
+    directAnswer:
+      'Enter travel items paired with category labels to compile a categorised Markdown packing checklist directly in your browser. The tool groups items under clean section headings, normalises lines into standard "- [ ]" task checkboxes, and outputs a printable travel checklist without uploading your itinerary to external travel tracking apps.',
+    leadParagraph:
+      'This packing list generator organizes travel essentials into categorized, interactive Markdown checklists for business trips, vacations, and outdoor expeditions. Unorganized packing lists often lead to forgotten chargers, passports, or medications. You enter items paired with category labels using pipe delimiters (such as "Electronics | Laptop charger" or "Documents | Passport"). The engine parses each entry, groups items by their category names, and renders a structured Markdown document complete with bold H2 category headers and standardized "- [ ]" task checkboxes for every item. If items are entered without categories, they are neatly gathered under a general checklist heading. The output is ready to print or copy into mobile note apps. Operating entirely within local browser tab memory under strict CSP directives, your personal travel destinations and packing schedules remain private.',
+    faqs: [
+      {
+        question: 'How should items and categories be entered?',
+        answer:
+          'Enter entries one per line with category and item separated by a pipe: "Category | Item name" (for example, "Clothing | Rain jacket").',
+      },
+      {
+        question: 'What happens if I enter an item without a category?',
+        answer:
+          'Items entered without a category delimiter are collected together under a default top-level general checklist section in the final output document.',
+      },
+      {
+        question: 'Can I print the generated packing list?',
+        answer:
+          'Yes. The clean Markdown output can be printed directly from your browser or copied into any text editor for offline travel preparation.',
+      },
+      {
+        question: 'Is my travel packing list uploaded to any server?',
+        answer:
+          'No. All grouping and checklist generation execute client-side in your browser tab without network communication, ensuring complete privacy for your travel plans.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'grocery-list-generator', groupedChecklist, runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-grocery-list-generator': {
+    directAnswer:
+      'Enter grocery items paired with aisle or category names to build a categorized Markdown shopping checklist directly in your browser. The tool groups items under aisle headers, formats standard "- [ ]" interactive checkboxes, and produces an organized shopping list cleanly without transmitting your household dietary data to external servers.',
+    leadParagraph:
+      'This grocery list generator organizes household shopping lists into categorized supermarket aisle groups to streamline shopping trips. Wandering aimlessly between supermarket sections due to disorganized shopping notes wastes time. You enter items paired with store sections or food categories separated by pipe delimiters (such as "Produce | Apples" or "Dairy | Oat milk"). The engine parses your entries, clusters items by their designated aisle or department heading, and formats them into a clean Markdown checklist using standard "- [ ]" checkboxes. Items without an explicit category are grouped cleanly under a general list heading. The resulting checklist can be copied into mobile note applications for easy checking at the store. Operating completely in local browser tab memory under strict CSP restrictions, personal grocery habits and dietary notes remain completely private on your device.',
+    faqs: [
+      {
+        question: 'How should grocery items and categories be entered?',
+        answer:
+          'Enter items one per line using pipe delimiters: "Aisle or Department | Item" (for example, "Bakery | Sourdough bread") for automatic grouping.',
+      },
+      {
+        question: 'Can I use this list on my phone while shopping?',
+        answer:
+          'Yes. The generated Markdown checklist can be pasted into Apple Notes, Google Keep, or Obsidian for interactive checkbox ticking on mobile.',
+      },
+      {
+        question: 'How does the tool handle items without an aisle specified?',
+        answer:
+          'Any line without a pipe delimiter is automatically placed into an uncategorized general checklist block at the top of the output.',
+      },
+      {
+        question:
+          'Are my dietary preferences or grocery lists uploaded online?',
+        answer:
+          'No. All item parsing and section grouping take place locally in your browser session without dispatching network requests to external servers.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'study-schedule-maker', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-study-schedule-maker': {
+    directAnswer:
+      'Enter a start date, daily study hour limit, and subject topics with estimated study hours to generate an organized calendar study schedule in your browser. The tool distributes revision workloads across consecutive calendar days, manages multi-day topic carryover cleanly, and outputs an actionable study plan without uploading your academic plans to external platforms.',
+    leadParagraph:
+      'This study schedule maker allocates revision topics across a multi-day calendar based on daily study hour limits. Preparing for professional qualifications, university exams, or technical certifications often falters when students underestimate the calendar days required to cover complex curricula. You input an ISO start date, a daily study hour budget (between 0.1 and 24 hours), and topics paired with required hours using pipe delimiters (such as "Calculus | 5"). The engine advances calendar days sequentially, allocating study hours up to your daily capacity. When a topic exceeds remaining capacity for a day, the tool splits the topic cleanly and carries the remaining hours into the next calendar day. The output delivers an orderly, date-by-date study timetable. Operating entirely client-side, sensitive exam timelines and student study logs remain completely confidential on your machine.',
+    faqs: [
+      {
+        question:
+          'How does the schedule maker handle topics that take several days?',
+        answer:
+          'If a topic requires more hours than remain in the current day, the tool logs the current portion and carries remaining hours into the next day.',
+      },
+      {
+        question: 'What format is required for topics and study hours?',
+        answer:
+          'Enter one topic per line with hours separated by a pipe: "Subject Topic | 3.5", where the number represents estimated study hours.',
+      },
+      {
+        question: 'What are the bounds for daily study hours?',
+        answer:
+          'Daily study hours must be a positive number greater than 0 and at most 24 hours per day. Invalid hours trigger a validation notice.',
+      },
+      {
+        question: 'Is my exam revision schedule stored or shared online?',
+        answer:
+          'No. All schedule calculations and day-by-day workload allocations run locally in your browser memory without network activity or data tracking.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'ini-viewer', parseIni, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-ini-viewer': {
+    directAnswer:
+      'Paste INI or configuration file text to parse sections, key-value pairs, and comments into formatted JSON directly in your browser tab. The tool handles bracketed section headers, ignores comment markers, standardises nested property objects, and displays structured configuration data reliably without transmitting your configuration files or credentials to remote servers.',
+    leadParagraph:
+      'This INI viewer inspects and transforms traditional INI, systemd, and desktop entry configuration files into structured, formatted JSON. INI files are standard across legacy server tools, PHP configurations, and desktop environments, but parsing them manually into modern JSON APIs can be cumbersome. You paste raw INI content into the editor. The engine iterates line by line, detecting bracketed section headers (such as "[database]"), ignoring comment lines prefixed with semicolons or hashes, and assigning key-value pairs into nested JSON properties. Keys defined outside an explicit section are gathered cleanly under a top-level global block. The resulting JSON is pretty-printed with two-space indentation ready for copying or programmatic consumption. Operating completely in local browser tab memory under strict CSP restrictions, sensitive database credentials, API configuration parameters, and server settings remain strictly private on your computer.',
+    faqs: [
+      {
+        question: 'How does the viewer handle section headers in INI files?',
+        answer:
+          'Lines formatted like "[section_name]" create corresponding nested objects in the resulting JSON, grouping all subsequent key-value pairs beneath that section.',
+      },
+      {
+        question: 'Are comment lines supported in the INI parser?',
+        answer:
+          'Yes. Lines starting with semicolons (;) or hash symbols (#) are recognized as comments and excluded from the resulting JSON output.',
+      },
+      {
+        question: 'What happens to keys defined before any section header?',
+        answer:
+          'Any key-value pairs appearing prior to the first section header are assigned directly to the root of the parsed JSON object.',
+      },
+      {
+        question: 'Are my configuration files uploaded to any server?',
+        answer:
+          'No. The entire INI parsing and JSON transformation execute client-side in your browser memory without dispatching network requests to any remote server.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'jwt-decoder', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-jwt-decoder': {
+    directAnswer:
+      'Paste an RFC 7519 JSON Web Token to decode and inspect its header, payload claims, and signature status directly in your browser tab. The tool verifies three dot-separated segments, decodes Base64Url payloads with UTF-8 character support, and reports decoded claims clearly without ever transmitting secret tokens to remote authentication servers.',
+    leadParagraph:
+      'This JWT decoder unpacks and inspects the internal claims of JSON Web Tokens without exposing authentication secrets across the network. Sending production JWTs to online debugging tools is a severe security hazard that can leak customer session identifiers, permission scopes, and backend claims. You paste a compact, three-part token into the input area. The engine verifies token structure, requiring exactly three dot-separated segments (header, payload, and signature). It decodes the Base64Url-encoded header and payload segments into native JSON objects, supporting international UTF-8 characters properly. The output clearly marks that the token is parsed locally with verified set to false (confirming that local decoding does not validate cryptographic signatures). Running completely client-side in browser memory under strict CSP directives, production access tokens, session cookies, and authorization claims remain entirely private and secure on your device.',
+    faqs: [
+      {
+        question:
+          'Does this decoder verify the cryptographic signature of the token?',
+        answer:
+          'No. The tool decodes and displays the token\'s header and payload claims locally. It explicitly marks "verified: false" because signature verification requires the secret key.',
+      },
+      {
+        question: 'What token format is required by the decoder?',
+        answer:
+          'The input must be a compact JWT containing exactly three dot-separated Base64Url segments: header, payload, and cryptographic signature as defined by RFC 7519.',
+      },
+      {
+        question: 'Can I inspect expired JWT tokens?',
+        answer:
+          'Yes. The decoder parses expired tokens without error, allowing you to examine historical timestamps, expiration claims ("exp"), and issued-at values ("iat").',
+      },
+      {
+        question: 'Is my JSON Web Token uploaded to any server or logged?',
+        answer:
+          'No. The entire Base64Url decoding and JSON parsing run client-side in your browser tab without network communication, guaranteeing token security.',
+      },
+    ],
+  },
+  // lib/tools/developer-data-workbench.ts (DEVELOPER_DATA_OPERATIONS 'jwt-inspector', runDeveloperDataOperation), lib/tools/developer-data-workbench.test.ts, components/developer-data-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-jwt-inspector': {
+    directAnswer:
+      'Paste any compact RFC JSON Web Token to inspect decoded header and payload objects alongside human-readable expiration dates directly in your browser tab. The tool unpacks Base64Url segments, flags token expiration status, and displays formatted JSON claims clearly and reliably without ever sending your sensitive authentication tokens across the internet.',
+    leadParagraph:
+      'This JWT inspector decodes and analyzes JSON Web Tokens, providing human-readable interpretations of standard claims like expiration, audience, and subject. Testing authentication flows often requires verifying that an access token contains expected role permissions and valid expiration timestamps. You paste the compact JWT into the workbench. The engine validates that the token has three dot-separated parts, decodes the Base64Url strings using UTF-8 byte decoding, and extracts the header and payload. If the payload contains standard numeric timestamp claims (such as "exp", "nbf", or "iat"), the tool interprets these Unix epochs and displays their human-readable date equivalents. It also reports whether the token is currently active or expired. Operating entirely within local browser tab memory under strict CSP restrictions, sensitive session tokens and administrative credentials remain strictly private and protected on your personal computer.',
+    faqs: [
+      {
+        question: 'How does the inspector handle expiration timestamps?',
+        answer:
+          'The inspector reads the "exp" claim and converts the numeric Unix epoch timestamp into an ISO date string, indicating whether the token has expired.',
+      },
+      {
+        question: 'What happens if a token is malformed or invalid?',
+        answer:
+          'If the token does not contain three dot-separated parts or if the Base64Url payload cannot be parsed as JSON, the tool displays a descriptive syntax error.',
+      },
+      {
+        question: 'Does this tool validate JWT signatures with a secret key?',
+        answer:
+          'No. This tool operates as an inspection utility to read token claims safely. It does not perform cryptographic signature validation against external keys.',
+      },
+      {
+        question: 'Can developers safely inspect production tokens here?',
+        answer:
+          "Yes. Because all decoding executes purely client-side under strict CSP connect-src 'none' rules, no token data or credentials can leave your browser.",
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'ulid-generator', encodeTime, randomFromAlphabet, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-ulid-generator': {
+    directAnswer:
+      "Choose how many Universally Unique Lexicographically Sortable Identifiers to generate directly in your browser tab for database primary keys. The tool combines millisecond Unix timestamps with cryptographically secure random bytes using Crockford's Base32 alphabet, producing 26-character sortable IDs reliably without transmitting your generated identifiers to remote servers or cloud accounts.",
+    leadParagraph:
+      "This ULID generator produces Universally Unique Lexicographically Sortable Identifiers for modern database keys, distributed messaging systems, and event streams. Traditional UUIDv4 identifiers are randomly distributed, causing B-tree index fragmentation in relational databases; ULIDs solve this by encoding a 48-bit millisecond timestamp in the first 10 characters followed by 80 bits of cryptographic randomness in the remaining 16 characters. The engine formats the entire 128-bit value using Crockford's Base32 alphabet (omitting ambiguous letters I, L, O, and U to prevent human transcription errors). You specify how many identifiers to create (from 1 to 100). The generator produces sortable, monotonic 26-character strings ready for immediate use in primary key migrations and event schemas. Operating completely inside your browser tab without network communication, your generated production keys remain private and confidential on your machine.",
+    faqs: [
+      {
+        question: 'What are the main advantages of ULID over UUIDv4?',
+        answer:
+          'ULIDs are lexicographically sortable by creation time, case-insensitive, shorter (26 characters), and effectively prevent database B-tree index fragmentation in production tables and storage engines.',
+      },
+      {
+        question: 'What alphabet is used to encode ULIDs?',
+        answer:
+          "ULIDs use Crockford's Base32 alphabet (0-9, A-Z excluding I, L, O, and U) to avoid visual confusion and ambiguity in printed strings.",
+      },
+      {
+        question: 'How many ULIDs can I generate in one batch?',
+        answer:
+          'You can generate between 1 and 100 ULIDs per run, with each identifier output on a separate line for easy copying.',
+      },
+      {
+        question: 'Are the generated identifiers transmitted to any server?',
+        answer:
+          'No. All timestamp encoding and cryptographic random generation execute client-side in browser memory without dispatching network calls across the internet.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'nano-id-generator', randomFromAlphabet, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-nano-id-generator': {
+    directAnswer:
+      'Configure custom identifier length and batch count to generate compact, URL-safe Nano IDs directly in your browser tab. The tool samples cryptographically random characters from a 64-character URL-friendly alphabet, outputting compact unique IDs reliably, consistently, and quickly without ever transmitting your generated tokens or identifiers to external services or cloud databases.',
+    leadParagraph:
+      'This Nano ID generator produces compact, URL-friendly unique string identifiers for database records, short URLs, and session keys. While standard UUIDs require 36 characters with hyphens, Nano ID achieves comparable collision resistance in a compact 21-character format using a 64-character alphabet consisting of letters, numbers, hyphens, and underscores. You specify your desired character length (from 1 to 128 characters, defaulting to 21) and the number of IDs to generate (from 1 to 100). The engine draws cryptographically secure random values via the Web Crypto API, mapping them evenly across the alphabet without bias. The resulting IDs are safe for use in web URLs, query strings, and file paths without percent-encoding. Operating entirely within local browser tab memory under strict CSP restrictions, your generated keys and identifiers remain completely confidential and secure on your device.',
+    faqs: [
+      {
+        question: 'What character set does the Nano ID generator use?',
+        answer:
+          'The generator uses the standard 64-character URL-safe alphabet: lowercase and uppercase letters (a-z, A-Z), digits (0-9), hyphens (-), and underscores (_).',
+      },
+      {
+        question: 'What is the default length of a Nano ID?',
+        answer:
+          'The default length is 21 characters, which provides collision resistance comparable to a standard UUIDv4 while being significantly more compact.',
+      },
+      {
+        question: 'Can I customize the length and count of generated IDs?',
+        answer:
+          'Yes. You can specify any length between 1 and 128 characters, and generate batches of 1 to 100 IDs in a single run.',
+      },
+      {
+        question: 'Are generated Nano IDs logged or sent across the network?',
+        answer:
+          "No. The random character selection executes client-side using the browser's native Web Crypto API. No generated IDs are transmitted or saved.",
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'random-token-generator', randomBytes, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-random-token-generator': {
+    directAnswer:
+      'Specify your desired byte length and output encoding format to generate cryptographically secure random tokens directly in your browser tab. The tool gathers high-entropy randomness via the Web Crypto API, formats tokens as hex, base64, or base64url strings, and outputs secure secrets reliably without ever sending credentials across the internet.',
+    leadParagraph:
+      'This random token generator creates high-entropy cryptographic tokens for session identifiers, CSRF protection tokens, API keys, and webhook secrets. Generating security tokens requires true cryptographic randomness; using pseudo-random generators like Math.random creates predictable tokens vulnerable to brute-force attacks. You configure the token size in bytes (from 1 to 4,096 bytes, defaulting to 32 bytes for 256-bit security) and choose your preferred output format: hexadecimal, standard Base64, or URL-safe Base64Url. The engine collects raw entropy using crypto.getRandomValues and formats the resulting byte array into the requested encoding. The output is a high-entropy string suitable for sensitive security parameters. Running entirely inside your browser tab under strict Content Security Policy directives, secret tokens and generated keys remain strictly confidential and protected on your computer. You can generate hundreds of high-entropy keys for local development environments.',
+    faqs: [
+      {
+        question:
+          'Does this generator use cryptographically secure randomness?',
+        answer:
+          "Yes. The tool utilizes the browser's native Web Crypto API (crypto.getRandomValues), providing cryptographically secure pseudo-random entropy for strong, unpredictable tokens.",
+      },
+      {
+        question:
+          'What encoding formats are available for the generated token?',
+        answer:
+          'You can format tokens as lowercase hexadecimal (hex), standard Base64, or URL-safe Base64Url strings without padding for direct use in web applications.',
+      },
+      {
+        question: 'What is the maximum token size supported?',
+        answer:
+          'The generator supports token lengths from 1 up to 4,096 bytes (32,768 bits) in a single generation operation to meet diverse security standards.',
+      },
+      {
+        question: 'Are generated tokens uploaded or logged anywhere?',
+        answer:
+          'No. All byte generation and string encoding take place locally in your browser session without network communication, guaranteeing token privacy.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'password-generator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-password-generator': {
+    directAnswer:
+      'Configure your exact target password length, batch quantity, and character preset rules to generate high-entropy passwords directly in your browser tab. The tool selects characters using the native Web Crypto API, supports readable sets excluding ambiguous symbols, and outputs strong passwords reliably without ever transmitting credentials to remote password vaults.',
+    leadParagraph:
+      'This password generator creates strong, unpredictable passwords tailored to specific security policies and readability requirements. Using weak or recycled passwords remains the primary vulnerability for credential compromise. You specify the desired password length (from 8 to 256 characters) and batch count (from 1 to 100 passwords). You can choose between a balanced strong preset (including uppercase, lowercase, numbers, and symbols), an alphanumeric preset, or a readable preset that deliberately excludes ambiguous characters like 0, O, 1, l, and I to facilitate human typing. The engine draws cryptographic entropy from the Web Crypto API, ensuring uniform distribution across character sets. The resulting passwords can be copied for account setup or server administration. Because generation runs entirely client-side, your new credentials are never transmitted across the network. This provides dependable offline password creation for systems administrators, developers, and security professionals.',
+    faqs: [
+      {
+        question: 'How does the readable password preset work?',
+        answer:
+          'The readable preset omits visually ambiguous characters (like uppercase O, digit 0, lowercase l, and uppercase I) to prevent transcription mistakes.',
+      },
+      {
+        question: 'What is the allowed password length range?',
+        answer:
+          'You can generate passwords from 8 characters up to 256 characters in length to comply with complex corporate password requirements.',
+      },
+      {
+        question: 'Does the generator guarantee random character distribution?',
+        answer:
+          'Yes. It samples entropy using crypto.getRandomValues, ensuring cryptographically secure, unpredictable randomness across all selected character groups in every password generated.',
+      },
+      {
+        question:
+          'Are generated passwords transmitted or stored on any server?',
+        answer:
+          'No. All password generation executes locally in browser tab memory. No passwords are ever stored, cached, or transmitted across the internet.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'hmac-generator', digest, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-hmac-generator': {
+    directAnswer:
+      'Enter message text, a shared secret key, hashing algorithm, and encoding format to compute keyed-hash message authentication codes directly in your browser. The tool computes HMAC signatures using Web Crypto primitives for SHA-256, SHA-384, or SHA-512, and outputs hex or base64url digests without sending your secret keys across the network.',
+    leadParagraph:
+      "This HMAC generator computes Hash-based Message Authentication Codes for verifying message integrity and authenticity in API webhooks, financial gateways, and signed tokens. Calculating HMAC signatures requires combining a shared secret key with payload text through a cryptographic hashing function. You supply the message string, shared secret key, hashing algorithm (SHA-256, SHA-384, or SHA-512), and preferred output encoding (hexadecimal or base64url). The engine imports the secret key into the browser's native SubtleCrypto API, executes the HMAC signing operation according to RFC 2104, and formats the resulting binary digest. This allows developers to verify webhook signatures from Stripe, GitHub, or AWS without exposing secret keys to third-party debugging sites. Operating entirely in local browser tab memory under strict CSP restrictions, your API secret keys remain completely secure. You can test webhook payloads and signature verification routines without writing custom debugging scripts.",
+    faqs: [
+      {
+        question: 'Which hashing algorithms are supported for HMAC generation?',
+        answer:
+          'The tool supports SHA-256, SHA-384, and SHA-512, which represent current industry standards for modern API authentication and secure webhook signatures.',
+      },
+      {
+        question: 'What output encoding formats are available?',
+        answer:
+          'You can format HMAC digests as lowercase hexadecimal strings or as compact, URL-safe Base64Url strings without padding for web tokens.',
+      },
+      {
+        question: "Does this tool use the browser's native Web Crypto API?",
+        answer:
+          "Yes. The calculation runs through the browser's native SubtleCrypto interface using standard cryptographic hardware acceleration where available on your system.",
+      },
+      {
+        question:
+          'Are my secret keys or messages transmitted to external servers?',
+        answer:
+          'No. Key import and HMAC computation execute locally in your browser session under strict CSP directives forbidding all external network requests.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'checksum-calculator', digest, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-checksum-calculator': {
+    directAnswer:
+      'Paste your input text and select your preferred cryptographic hash algorithm to calculate an exact hexadecimal checksum directly in your browser. The tool computes cryptographic digests using the native Web Crypto API across SHA-256, SHA-384, and SHA-512, outputting formatted checksums reliably and accurately without transmitting your data to remote servers.',
+    leadParagraph:
+      "This checksum calculator computes standard cryptographic hash digests for verifying text integrity, data deduplication, and message fingerprinting. Verifying checksums is a fundamental practice in software engineering to detect data corruption or unauthorized modifications. You paste your input text and select the target cryptographic hash function: SHA-256, SHA-384, or SHA-512. The engine encodes the string to UTF-8 bytes and calculates the message digest using the browser's native SubtleCrypto.digest implementation. It converts the resulting hash buffer into a uniform, lowercase hexadecimal string. Because hash generation utilizes browser-native cryptographic primitives, calculations execute at sub-second speeds with complete mathematical fidelity. Operating entirely within local browser tab memory under strict CSP headers, confidential documents, proprietary source code, and private keys remain completely secure. You can hash multiple text snippets in sequence without delay or data exposure.",
+    faqs: [
+      {
+        question: 'Which cryptographic hash functions are supported?',
+        answer:
+          'The calculator supports SHA-256 (32 bytes / 64 hex characters), SHA-384 (48 bytes / 96 hex characters), and SHA-512 (64 bytes / 128 hex characters).',
+      },
+      {
+        question: 'What character encoding is used before hashing?',
+        answer:
+          'The input text is converted into bytes using standard UTF-8 encoding before being processed by the underlying cryptographic hashing algorithm.',
+      },
+      {
+        question: 'Can I calculate checksums for empty text?',
+        answer:
+          'Yes. Hashing empty text produces the standard well-known empty digest for the selected algorithm (such as e3b0c442... for standard SHA-256).',
+      },
+      {
+        question: 'Is my input text uploaded or stored on any server?',
+        answer:
+          'No. All hashing operations execute locally in your browser memory without dispatching network calls, ensuring complete data confidentiality for your text.',
+      },
+    ],
+  },
+  // lib/tools/developer-data-workbench.ts (DEVELOPER_DATA_OPERATIONS 'regex-tester', assertSafeRegex, collectMatches, makeRegex, runDeveloperDataOperation), lib/tools/developer-data-workbench.test.ts, components/developer-data-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-regex-tester': {
+    directAnswer:
+      'Enter a regular expression pattern, optional flags, and target test string to test matches and capture groups directly in your browser tab. The tool validates regex safety against catastrophic backtracking, collects all match spans, and formats matched indices into structured JSON cleanly without transmitting your test strings to external servers or cloud services.',
+    leadParagraph:
+      'This regular expression tester executes and audits JavaScript regex patterns against user-supplied test text in real time. Debugging regular expressions on untrusted web tools often creates security hazards when testing confidential log files or proprietary customer payloads. You enter your pattern, active flags (such as global "g", case-insensitive "i", multiline "m", or unicode "u"), and target text. Before evaluation, the engine runs an automated safety check to guard against catastrophic backtracking (ReDoS patterns) that could freeze browser threads. It then executes the expression, recording every matched string, character index, and captured group. The results are formatted as structured JSON showing exact start and end offsets alongside total match count. Because processing takes place entirely in local browser tab memory under strict CSP restrictions, sensitive API tokens, server logs, and personal test data remain completely private.',
+    faqs: [
+      {
+        question: 'How does the tester protect against ReDoS vulnerabilities?',
+        answer:
+          'The engine audits the expression before running it to detect nested quantifiers and overlapping repetition that cause catastrophic backtracking in JavaScript regular expressions.',
+      },
+      {
+        question: 'Which regular expression flags are supported?',
+        answer:
+          'The tool supports standard JavaScript regex flags including global search (g), case-insensitive matching (i), multiline matching (m), dot-all matching (s), and Unicode mode (u).',
+      },
+      {
+        question: 'Does the tool return captured groups as well as matches?',
+        answer:
+          'Yes. The JSON output includes full match spans, capture group indices, and named group matches when named capture syntax is used.',
+      },
+      {
+        question: 'Are my test data strings uploaded or logged anywhere?',
+        answer:
+          'No. All pattern compilation and text matching execute locally in browser memory without network activity. No test strings or patterns leave your machine.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'regex-explainer', explainRegex, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-regex-explainer': {
+    directAnswer:
+      'Paste any regular expression pattern and optional flags to receive an itemized, component-by-component plain English explanation directly in your browser tab. The tool decomposes character classes, quantifiers, boundary anchors, and capture groups into structured notes reliably without transmitting your proprietary patterns or expressions to remote AI services or third-party platforms.',
+    leadParagraph:
+      "This regular expression explainer breaks down dense, cryptic regex patterns into readable, educational explanations. Understanding legacy or complex expressions is difficult when symbols, lookarounds, and nested groups are combined without comments. You enter the pattern and flags. The parser tokenises the syntax, distinguishing literal characters, predefined character classes (like \\d or \\s), custom bracketed ranges, quantifiers (lazy and greedy), word boundary anchors (\\b, ^, $), and capture groups. It generates an orderly line-by-line breakdown explaining the exact purpose and matching behavior of each individual token. This helps software engineers audit code for subtle edge cases before deploying patterns into production applications. Running completely client-side in browser memory under strict CSP connect-src 'none' rules, proprietary matching patterns and security validation rules remain confidential, unexposed, and completely secure on your personal computer.",
+    faqs: [
+      {
+        question: 'How does the explainer break down regular expressions?',
+        answer:
+          'The tool tokenises the expression sequentially, identifying characters, quantifiers, groups, and anchors, and generating clear descriptive explanations for each component.',
+      },
+      {
+        question: 'Does the tool explain lookahead and lookbehind assertions?',
+        answer:
+          'Yes. Positive and negative lookahead and lookbehind assertions are recognized and explained in clear, non-technical English detailing their zero-width behavior.',
+      },
+      {
+        question:
+          'Does this tool connect to external AI models to generate text?',
+        answer:
+          'No. The explainer uses a deterministic parser and structured token definitions rather than external generative models, ensuring instant and private local analysis.',
+      },
+      {
+        question: 'Are my regular expressions transmitted across the network?',
+        answer:
+          'No. The entire tokenisation and explanation generation run locally in your browser tab without making any network requests or tracking queries.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'cron-expression-parser', cron, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-cron-expression-parser': {
+    directAnswer:
+      'Paste a standard five-field cron expression to translate schedule syntax into clear plain English directly in your browser. The tool validates minute, hour, day-of-month, month, and day-of-week fields, explains recurring schedule intervals, and outputs readable schedule descriptions reliably without transmitting your system job schedules to external servers or monitoring services.',
+    leadParagraph:
+      'This cron expression parser translates standard Unix cron syntax into clear, human-readable schedule descriptions. Cron syntax is notoriously error-prone, where small mistakes between day-of-month and day-of-week fields can trigger unexpected production batch jobs or silent job failures. You supply a standard five-field cron expression (separated by spaces). The engine verifies that exactly five fields are present, checking numerical ranges for minute (0-59), hour (0-23), day of month (1-31), month (1-12), and day of week (0-7). It parses asterisk wildcards, step intervals (such as */15), comma-separated lists, and hyphenated ranges, assembling an unambiguous plain English explanation of when the job executes. Operating entirely within local browser tab memory under strict CSP restrictions, internal server scheduling configurations and sensitive batch schedules remain strictly private on your computer. You can inspect scheduled intervals before adding them to production crontabs.',
+    faqs: [
+      {
+        question: 'What cron format does this parser support?',
+        answer:
+          'The parser supports standard standard five-field Unix cron expressions: minute (0-59), hour (0-23), day of month (1-31), month (1-12), and day of week (0-7).',
+      },
+      {
+        question: 'How does the parser interpret step values like */15?',
+        answer:
+          'Step values indicate recurring intervals; for example, "*/15" in the minute field is translated as "every 15 minutes" throughout the designated hours.',
+      },
+      {
+        question: 'What happens if a cron expression contains invalid ranges?',
+        answer:
+          'The tool validates each field against standard calendar limits and raises a clear descriptive error if fields contain out-of-bounds numbers.',
+      },
+      {
+        question: 'Are my server cron schedules uploaded to any server?',
+        answer:
+          'No. All cron parsing and text translation run client-side in browser memory without dispatching network calls, ensuring total confidentiality for your infrastructure.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'cron-expression-builder', cron, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-cron-expression-builder': {
+    directAnswer:
+      'Configure minute, hour, day, month, and weekday schedule fields to build standard five-field cron expressions directly in your browser tab. The tool validates interval bounds, formats canonical space-separated cron strings, and displays human-readable schedule summaries clearly and reliably without ever sending your job automation settings to remote cloud platforms or monitoring services.',
+    leadParagraph:
+      'This cron expression builder generates valid, standards-compliant five-field Unix cron expressions for scheduling automated tasks, backup routines, and server maintenance jobs. Constructing cron expressions by hand frequently introduces subtle syntax errors that cause jobs to run at the wrong time. You configure the five standard cron parameters: minute (0\u201359), hour (0\u201323), day of month (1\u201331), month (1\u201312), and day of week (0\u20137, where both 0 and 7 represent Sunday). The engine validates each input value, supports comma lists, ranges, and step values (such as "*/5"), and outputs the canonical five-field string ready to paste into crontab files, GitHub Actions workflow schedules, or Kubernetes cronjob manifests. The builder also provides a matching plain English description. Running entirely in local browser tab memory, internal infrastructure schedules remain completely secure. This allows developers and system administrators to design automation schedules quickly without syntax guesswork.',
+    faqs: [
+      {
+        question: 'Which five fields make up the generated cron expression?',
+        answer:
+          'The five fields are: minute (0-59), hour (0-23), day of month (1-31), month (1-12), and day of the week (0-7).',
+      },
+      {
+        question: 'Can I use ranges and step values in the builder?',
+        answer:
+          'Yes. You can use standard cron syntax including asterisks (*), step values (*/10), ranges (1-5), and comma-separated lists (1,15,30) across all fields.',
+      },
+      {
+        question: 'Where can I use the generated cron expression?',
+        answer:
+          'The output is standard POSIX cron syntax, compatible with Linux crontab, AWS EventBridge, GitHub Actions, Kubernetes CronJobs, and Google Cloud Scheduler.',
+      },
+      {
+        question: 'Is any schedule configuration sent across the network?',
+        answer:
+          'No. All string formatting and validation execute client-side in your browser tab without network communication, guaranteeing complete data privacy for your schedules.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'epoch-calculator', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-epoch-calculator': {
+    directAnswer:
+      'Convert Unix epoch timestamps to ISO 8601 UTC dates, or convert calendar dates into epoch seconds and milliseconds directly in your browser. The tool handles both second and millisecond timestamps, validates date boundaries cleanly, and outputs exact conversions reliably without transmitting your timestamps to external time services or cloud databases.',
+    leadParagraph:
+      'This epoch calculator converts between Unix epoch timestamps and human-readable ISO 8601 date strings in both directions. Unix epoch time (the number of seconds elapsed since 1 January 1970 UTC) is ubiquitous across databases, logging pipelines, and authentication systems, but inspecting numeric timestamps requires frequent translation. In "epoch-to-iso" mode, the tool parses integer timestamps, automatically distinguishing between 10-digit second timestamps and 13-digit millisecond timestamps, and outputs the canonical ISO 8601 date-time string. In "iso-to-epoch" mode, it converts any valid calendar date string into both second and millisecond integer values. The tool validates date boundaries, rejecting invalid date strings with "Enter a valid ISO date-time." Operating entirely inside your browser tab without network requests, private log entries and system event timestamps remain strictly confidential on your personal device. This makes epoch translation straightforward during production debugging sessions.',
+    faqs: [
+      {
+        question:
+          'How does the calculator handle second versus millisecond epochs?',
+        answer:
+          'The engine detects timestamp magnitude: 10-digit numbers are treated as seconds, while 13-digit numbers are treated as milliseconds, converting both accurately.',
+      },
+      {
+        question: 'What date format is returned when converting from epoch?',
+        answer:
+          'The tool outputs standardized ISO 8601 UTC format: "YYYY-MM-DDTHH:mm:ss.sssZ", providing exact millisecond precision for universal compatibility across databases and logging systems.',
+      },
+      {
+        question: 'Can I convert regional or non-UTC dates to epoch?',
+        answer:
+          'Yes. When converting ISO dates to epoch, timezone offsets (such as "+05:30" or "-04:00") are parsed and normalized to UTC epoch seconds automatically.',
+      },
+      {
+        question: 'Are my timestamps uploaded or logged on remote servers?',
+        answer:
+          'No. All date parsing and numerical conversions execute locally in browser memory without dispatching network calls, ensuring complete privacy for your log timestamps.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'number-base-converter', parseBigInt, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-number-base-converter': {
+    directAnswer:
+      'Convert large arbitrary-precision integers between any numerical bases from base 2 through base 36 cleanly and directly in your browser tab. The tool utilizes native BigInt arithmetic to eliminate floating-point rounding errors, formats uppercase digits, and outputs exact representations reliably without transmitting your numbers to remote servers or cloud accounts.',
+    leadParagraph:
+      'This number base converter translates integers between arbitrary radices ranging from binary (base 2) to base 36 with full mathematical precision. Standard online base converters use 64-bit IEEE 754 floating-point numbers, which silently truncate and corrupt integers larger than 2^53 - 1 (9,007,199,254,740,991). This utility uses native JavaScript BigInt arithmetic, allowing you to convert 128-bit, 256-bit, or arbitrarily large cryptographic integers without loss of precision. You enter your input value, source base (from 2 to 36), and destination base (from 2 to 36). The engine validates characters against the source radix, parses the value into a native BigInt, and serialises it into the destination radix using uppercase alphanumeric digits (0-9, A-Z). All calculations take place locally within your browser tab, ensuring cryptographic keys and system values remain confidential. You can convert large hash numbers and binary data without installing specialized mathematics software.',
+    faqs: [
+      {
+        question: 'What range of numerical bases is supported?',
+        answer:
+          'The converter supports all integer bases from base 2 (binary) up to base 36 (using digits 0-9 and letters A-Z) for both input and output.',
+      },
+      {
+        question:
+          'Does the tool suffer from precision loss on very large integers?',
+        answer:
+          'No. The tool uses native BigInt representation rather than standard floating-point numbers, allowing exact conversion of arbitrarily large integers without rounding errors.',
+      },
+      {
+        question: 'How are digits beyond 9 represented in higher bases?',
+        answer:
+          'Digits from 10 to 35 are represented using standard Latin letters A through Z, formatted consistently in uppercase for clear base representations.',
+      },
+      {
+        question: 'Are my converted numbers transmitted across the network?',
+        answer:
+          'No. All base conversions and BigInt operations execute client-side in browser memory without network activity, guaranteeing total data privacy for your integers.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'binary-calculator', parseBigInt, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-binary-calculator': {
+    directAnswer:
+      'Perform exact addition, subtraction, multiplication, and division on binary numbers using arbitrary-precision BigInt arithmetic calculations directly in your browser tab. The tool validates base-2 digit strings, evaluates BigInt operations without truncation, and outputs results in binary, decimal, and hexadecimal formats without sending your calculations to remote servers or cloud services.',
+    leadParagraph:
+      'This binary calculator performs fundamental arithmetic operations directly on binary strings using arbitrary-precision BigInt logic. Computer science students, firmware engineers, and hardware architects often need to add, subtract, multiply, or divide large binary values without the 32-bit or 64-bit integer overflow limits imposed by standard calculators. You input two binary strings consisting purely of 0s and 1s, and select the mathematical operator (add, subtract, multiply, or divide). The engine parses both operands using BigInt(radix 2), performs the exact arithmetic operation, and guards against division by zero. It formats the resulting output in binary, while also providing equivalent decimal and uppercase hexadecimal representations for easy cross-referencing. Running entirely within your browser tab under strict CSP headers, proprietary register values and firmware calculations remain strictly private. This tool helps engineers verify binary arithmetic without writing one-off scripts.',
+    faqs: [
+      {
+        question:
+          'Which arithmetic operations does the binary calculator support?',
+        answer:
+          'The calculator supports four core mathematical operations: addition (+), subtraction (-), multiplication (*), and integer division (/) across arbitrary binary bitstrings.',
+      },
+      {
+        question: 'Does the calculator have a bit length limit?',
+        answer:
+          'No. Because calculations use native JavaScript BigInt, you can calculate with arbitrarily long binary strings without 32-bit or 64-bit overflow.',
+      },
+      {
+        question: 'What output representations are provided for the result?',
+        answer:
+          'The tool provides the exact result in binary (base 2), along with decimal (base 10) and uppercase hexadecimal (base 16) representations.',
+      },
+      {
+        question: 'Are my binary calculations stored or transmitted online?',
+        answer:
+          'No. All arithmetic operations execute locally in your browser memory without network communication, guaranteeing complete privacy for your work and engineering calculations.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'bitwise-calculator', parseBigInt, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-bitwise-calculator': {
+    directAnswer:
+      'Perform bitwise AND, OR, XOR, NOT, left-shift, and right-shift operations on integers using arbitrary-precision BigInt logic directly in your local browser tab. The tool evaluates bitwise logic without 32-bit truncation, formats results across binary, decimal, and hexadecimal bases, and operates reliably without sending data across the network to external servers.',
+    leadParagraph:
+      'This bitwise calculator evaluates bit-level operations across arbitrary-precision integers without the standard 32-bit integer limitations found in JavaScript. In standard JavaScript, bitwise operators cast operands to signed 32-bit integers, which silently wraps and corrupts numbers exceeding 32 bits. This tool bypasses that restriction by utilizing native BigInt bitwise operations. You enter two integer operands (or a single operand for NOT) and select the desired operation: AND, OR, XOR, NOT, left-shift, or right-shift. The engine computes the exact bitwise result and formats the output across three fundamental representations: raw binary bitstring, signed decimal integer, and uppercase hexadecimal notation. This provides an invaluable reference for low-level protocol development, network masking, and cryptographic implementations. Operating entirely in local browser tab memory, your calculations remain private and confidential. You can inspect bitwise masking and shifting operations step by step without risk of integer overflow.',
+    faqs: [
+      {
+        question: 'Which bitwise operations are supported by this calculator?',
+        answer:
+          'The tool supports six standard bitwise operations: AND (&), OR (|), XOR (^), NOT (~), left-shift (<<), and right-shift (>>).',
+      },
+      {
+        question: 'Does this calculator truncate values to 32 bits?',
+        answer:
+          'No. The calculator utilizes native BigInt bitwise logic, enabling accurate bitwise manipulation on numbers far exceeding 32-bit or 64-bit bounds.',
+      },
+      {
+        question: 'Can I enter negative integers as operands?',
+        answer:
+          "Yes. Negative numbers are supported and handled using standard two's complement arithmetic representation in BigInt calculations across all supported bitwise operations.",
+      },
+      {
+        question: 'Is any calculation data sent to external servers?',
+        answer:
+          'No. All bitwise operations execute locally within your browser tab under strict Content Security Policy directives forbidding network calls to external servers.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'ip-address-converter', ipv4, ipv4Text, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-ip-address-converter': {
+    directAnswer:
+      'Enter an IPv4 address in dotted-quad, integer, or hex format to convert it across all standard numerical representations cleanly and directly in your browser tab. The tool calculates dotted-decimal, 32-bit unsigned decimal, hexadecimal, and 32-bit binary formats reliably without transmitting your internal network addresses to external servers or monitoring platforms.',
+    leadParagraph:
+      'This IP address converter translates IPv4 network addresses across four standard technical representations: dotted-quad decimal notation, 32-bit unsigned integer, hexadecimal, and 32-bit binary. System administrators, network engineers, and security analysts frequently encounter IP addresses represented as integers in database logs, hex strings in packet captures, or binary bitmasks in routing tables. You enter an address in any valid IPv4 format (such as "192.168.1.1" or its decimal equivalent 3232235777). The engine parses the four octets, validates that each octet falls between 0 and 255, and computes the 32-bit integer representation. It displays the converted values in dotted-quad, unsigned decimal, 8-character hex (0x...), and padded 32-character binary notation. Running entirely within your browser tab under strict CSP restrictions, sensitive internal network addresses remain completely confidential. This enables network administrators to translate IP formats during packet analysis without exposing private subnets.',
+    faqs: [
+      {
+        question: 'What input formats does the IP converter accept?',
+        answer:
+          'The tool accepts standard dotted-decimal IPv4 strings (like "10.0.0.1"), unsigned 32-bit integer values, and hexadecimal notation without requiring special formatting.',
+      },
+      {
+        question: 'How is an IP address converted to a 32-bit integer?',
+        answer:
+          'Each octet is shifted by its bit position: (oct1 * 2^24) + (oct2 * 2^16) + (oct3 * 2^8) + oct4, yielding the unsigned 32-bit integer.',
+      },
+      {
+        question: 'Does the tool support IPv6 addresses?',
+        answer:
+          'This specific converter focuses on IPv4 representations; for IPv6 address calculations, please use our dedicated IPv6 Subnet Calculator tool instead.',
+      },
+      {
+        question: 'Are my private IP addresses sent across the internet?',
+        answer:
+          'No. All IP conversions execute locally in browser memory without network activity. No internal IP addresses or infrastructure details are uploaded.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'ipv4-subnet-calculator', subnet, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-ipv4-subnet-calculator': {
+    directAnswer:
+      'Enter an IPv4 network address and CIDR prefix length to calculate network bounds, netmask, broadcast, and usable host ranges accurately directly in your browser tab. The tool computes bitwise subnet parameters, formats structured JSON results, and operates entirely without transmitting your internal network topology to external servers or cloud providers.',
+    leadParagraph:
+      'This IPv4 subnet calculator computes network boundaries, host ranges, and addressing parameters for network planning and firewall configuration. Subnetting requires precise bitwise masking; an incorrect mask can cause routing blackholes or IP collisions across production subnets. You input an IPv4 base address and a prefix length from /0 to /32. The engine calculates the bitwise subnet mask, wildcard inverted mask, network address, broadcast address, first usable host address, last usable host address, total address count, and usable host capacity. The output is structured as formatted JSON, detailing both dotted-quad addresses and their numerical integer equivalents. This provides network engineers with verified addressing parameters for routing tables and cloud VPC configurations. Operating entirely within local browser tab memory under strict CSP restrictions, confidential corporate network topologies remain protected. You can design complex subnet schemes across cloud VPCs and on-premise networks with confidence.',
+    faqs: [
+      {
+        question: 'What prefix range does the subnet calculator support?',
+        answer:
+          'The tool supports all IPv4 CIDR prefix lengths from /0 (the entire IPv4 address space) through /32 (a single host address).',
+      },
+      {
+        question:
+          'Why is the usable host count two fewer than total addresses?',
+        answer:
+          'In standard IPv4 subnets (/30 and larger), the first address is reserved as the network address and the last address is reserved for broadcast.',
+      },
+      {
+        question: 'What information is included in the output report?',
+        answer:
+          'The output JSON details network address, broadcast address, netmask, wildcard mask, first host, last host, total addresses, and usable hosts.',
+      },
+      {
+        question: 'Are my internal subnet designs sent to remote servers?',
+        answer:
+          'No. All subnet calculations execute client-side in your browser tab without dispatching network calls, ensuring internal network privacy for your infrastructure.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'ipv6-subnet-calculator', ipv6Subnet, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-ipv6-subnet-calculator': {
+    directAnswer:
+      'Enter an IPv6 address and CIDR prefix length to calculate full address expansion, network prefix bounds, and host capacity accurately directly in your browser tab. The tool expands compressed colons, calculates 128-bit subnet ranges, and outputs structured JSON reliably without transmitting your infrastructure addressing to external servers or third-party APIs.',
+    leadParagraph:
+      "This IPv6 subnet calculator calculates addressing boundaries and prefix ranges for IPv6 network deployments. Managing 128-bit IPv6 addresses is complicated by compressed double-colon syntax and hexadecimal representations. You supply an IPv6 address (in either compressed or full notation) and a prefix length from /0 to /128 (such as /64 for standard local subnets or /48 for enterprise allocations). The engine parses the hex quads, expands zero-compressed segments into standard 32-nibble canonical notation, and applies the prefix mask to compute the network prefix boundary and maximum interface identifier. The results are presented as structured JSON detailing canonical expanded notation, prefix length, and total address space. Operating completely inside your browser tab without network communication, your organization's internal IPv6 routing plans remain strictly confidential, unexposed, and completely secure on your personal computer.",
+    faqs: [
+      {
+        question: 'What prefix length range does the IPv6 calculator support?',
+        answer:
+          'The tool supports all IPv6 prefix lengths from /0 up to /128, including standard allocations like /48, /56, and /64 subnets.',
+      },
+      {
+        question:
+          'Can I enter compressed IPv6 addresses with double colons (::)?',
+        answer:
+          'Yes. The engine accepts compressed IPv6 notation and expands all zero-compressed groups into full 8-group hexadecimal notation automatically with leading zeros.',
+      },
+      {
+        question: 'Why is /64 the most common IPv6 subnet prefix?',
+        answer:
+          'A /64 prefix is the standard subnet size defined by IETF for local area networks to support Stateless Address Autoconfiguration (SLAAC).',
+      },
+      {
+        question: 'Are my IPv6 address allocations transmitted to any server?',
+        answer:
+          'No. All parsing, expansion, and bitwise calculations execute client-side in browser memory without network activity, guaranteeing total privacy for your IPv6 allocations.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'cidr-calculator', ipv4, subnet, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-cidr-calculator': {
+    directAnswer:
+      'Enter an IPv4 CIDR block string to calculate subnet mask, network address, broadcast address, and usable host capacity accurately and directly in your browser tab. The tool parses address-slash-prefix syntax, validates network boundaries, and outputs clean JSON subnet parameters reliably without transmitting your internal network configurations to external cloud platforms.',
+    leadParagraph:
+      'This CIDR calculator computes subnet masks, IP ranges, and usable host counts directly from Classless Inter-Domain Routing notation. Entering CIDR blocks (such as "10.0.0.0/16" or "172.16.50.0/24") is the standard convention for configuring cloud VPC networks, Kubernetes pod ranges, and router access control lists. You enter the combined CIDR string. The engine validates that the format matches "address/prefix", checks that the prefix is an integer between 0 and 32, and extracts the network address. It computes the netmask (like 255.255.255.0 for /24), the wildcard inverse mask, broadcast IP, first and last usable host IPs, and total usable host capacity. The complete breakdown is returned in clean, pretty-printed JSON. Operating entirely in local browser tab memory under strict CSP restrictions, sensitive corporate VPC layouts and private network designs remain completely secure. You can calculate subnet bounds for cloud configurations without risk of data leakage.',
+    faqs: [
+      {
+        question: 'What input format does the CIDR calculator expect?',
+        answer:
+          'Enter the CIDR block in standard slash notation: "address/prefix" (for example, "192.168.1.0/24" or "10.0.0.0/8") for immediate subnet parameter calculation across your address space.',
+      },
+      {
+        question: 'What is the usable host count for a /24 CIDR block?',
+        answer:
+          'A /24 network provides 256 total IP addresses, of which 254 are usable for host devices (reserving the network and broadcast addresses).',
+      },
+      {
+        question: 'Can I calculate point-to-point /31 and host /32 subnets?',
+        answer:
+          'Yes. The calculator accurately computes parameters for /31 point-to-point links (RFC 3021) and /32 single-host routes without rounding or syntax issues.',
+      },
+      {
+        question: 'Are my private CIDR blocks uploaded to any server?',
+        answer:
+          'No. The entire CIDR parsing and subnet calculation run client-side in your browser session without dispatching network calls to remote web servers.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'http-header-parser', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-http-header-parser': {
+    directAnswer:
+      'Paste raw HTTP response or request headers to parse header names and values into structured JSON directly in your browser. The tool trims whitespace, groups repeated headers into clean value arrays, and outputs formatted JSON reliably without transmitting your headers, cookies, or authorization tokens to remote servers or logging endpoints.',
+    leadParagraph:
+      'This HTTP header parser transforms raw, unformatted HTTP request or response header text into structured, indented JSON. Inspecting HTTP headers from browser developer tools, cURL outputs, or proxy logs is essential for debugging caching directives, CORS policies, security headers, and cookie configurations. You paste raw header blocks into the editor. The engine splits lines on newlines, matches header keys and values across the colon delimiter, and cleans surrounding whitespace. If a header appears multiple times in the block (such as "Set-Cookie" or "Link" headers), the parser automatically groups those values into a clean array under that header key. The output delivers formatted JSON ready for automated test scripts or API documentation. Operating entirely within local browser tab memory under strict CSP directives, sensitive Authorization headers and session tokens remain strictly confidential.',
+    faqs: [
+      {
+        question:
+          'How does the parser handle headers that appear multiple times?',
+        answer:
+          'When the same header key appears more than once, the tool converts the value into an array containing all occurrences in sequential order.',
+      },
+      {
+        question: 'Does the parser preserve header casing?',
+        answer:
+          'Yes. Header names and values are preserved as entered in the raw input block, with surrounding whitespace cleanly trimmed from each field.',
+      },
+      {
+        question: 'Can I paste response status lines alongside headers?',
+        answer:
+          'The parser expects colon-separated header lines. Status lines (like HTTP/1.1 200 OK) lacking colons should be omitted before parsing your headers.',
+      },
+      {
+        question: 'Are authorization tokens or cookies uploaded anywhere?',
+        answer:
+          'No. All header parsing and JSON formatting execute locally in your browser memory without network activity. No credentials are transmitted.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'cookie-parser', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-cookie-parser': {
+    directAnswer:
+      'Paste an HTTP RFC 6265 Cookie header string to parse individual cookie name-value pairs into a structured JSON dictionary cleanly, accurately, and directly in your browser tab. The tool handles semicolon separators, decodes percent-encoded cookie values, and outputs formatted JSON reliably without transmitting your sensitive session identifiers across the network.',
+    leadParagraph:
+      'This cookie parser decodes and formats raw HTTP Cookie header strings into structured JSON key-value pairs. Web developers frequently need to inspect cookie strings extracted from network request logs or backend traces to debug session identifiers, feature flags, and tracking tokens. You paste the complete Cookie header string into the input field. The engine splits the text on semicolon delimiters, extracts the key and value across the first equals sign, and validates that each cookie pair has a valid name. It decodes percent-encoded characters cleanly and formats the resulting dictionary into indented JSON. Because sending production cookie strings to third-party tools risks session hijacking, this utility runs entirely in client-side memory under strict CSP directives forbidding network access. Your session identifiers and authentication tokens remain strictly private on your computer.',
+    faqs: [
+      {
+        question: 'What format does the cookie parser expect as input?',
+        answer:
+          'Enter standard RFC 6265 Cookie header strings formatted as semicolon-separated key-value pairs (for example, "sessionId=abc; theme=dark") for structured decoding and parsing.',
+      },
+      {
+        question: 'How does the parser handle percent-encoded cookie values?',
+        answer:
+          'The engine automatically decodes URL percent-encoded characters, converting sequences like "%20" into spaces and "%2C" into commas accurately throughout values.',
+      },
+      {
+        question: 'What happens if a cookie has no equals sign?',
+        answer:
+          'Invalid cookie segments lacking an equals sign delimiter trigger a validation error, alerting you to malformed cookie syntax in your input.',
+      },
+      {
+        question: 'Are session cookies or tokens logged on any server?',
+        answer:
+          'No. All parsing and JSON generation occur client-side in your browser tab without network communication, guaranteeing session security for your tokens.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'user-agent-parser', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-user-agent-parser': {
+    directAnswer:
+      'Paste an HTTP User-Agent string to inspect browser family, version, layout engine, and operating system directly in your browser tab. The tool parses client tokens, identifies desktop and mobile environments, and formats structured details cleanly and reliably without transmitting device fingerprints or user telemetry to external analytics servers or remote databases.',
+    leadParagraph:
+      'This User-Agent parser decomposes complex browser and device identification strings into clear, structured hardware and software specifications. Debugging device-specific styling bugs, server-side redirection rules, or bot filtering requires understanding the tokens embedded inside incoming User-Agent headers. You paste any User-Agent string into the workbench. The engine inspects product tokens and regex patterns to identify the browser family (such as Chrome, Firefox, Safari, Edge, or bot crawlers), exact browser version, underlying layout engine (Blink, Gecko, WebKit), and operating system (macOS, Windows, Linux, iOS, or Android). It returns a structured report detailing the parsed client environment. Operating entirely in local browser tab memory under strict CSP restrictions, sensitive internal user telemetry and testing logs remain completely confidential on your personal machine. You can inspect client environments across multiple platforms without leaking data.',
+    faqs: [
+      {
+        question: 'Which browser families does the User-Agent parser identify?',
+        answer:
+          'The parser identifies major browsers including Google Chrome, Mozilla Firefox, Apple Safari, Microsoft Edge, and common automated web crawlers across platforms.',
+      },
+      {
+        question: 'Can it distinguish between desktop and mobile devices?',
+        answer:
+          'Yes. It inspects platform tokens to determine whether the user agent originates from desktop systems (macOS, Windows, Linux) or mobile devices (iOS, Android).',
+      },
+      {
+        question: 'Does this tool connect to external device databases?',
+        answer:
+          'No. The parser uses built-in pattern matching algorithms locally in your browser without querying external device lookup services or cloud databases.',
+      },
+      {
+        question: 'Is my User-Agent string stored or tracked online?',
+        answer:
+          'No. All parsing executes client-side in browser memory without dispatching network calls, ensuring complete user privacy and total client anonymity at all times.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'curl-to-code', convertCurlToCode, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-curl-to-code': {
+    directAnswer:
+      'Paste a cURL terminal command from your developer tools and choose your target language to generate idiomatic HTTP client code directly in your browser tab. The tool parses HTTP methods, headers, and request bodies, translating commands into JavaScript fetch, Python requests, Node.js, or Go without transmitting your API payloads to remote servers.',
+    leadParagraph:
+      'This cURL-to-code converter translates command-line cURL syntax into clean, production-ready code snippets across multiple programming languages. Developers frequently copy cURL commands from API documentation or browser network tabs, but manually rewriting headers, authentication flags, and JSON payloads into language-specific HTTP client libraries is slow and error-prone. You paste your raw cURL command into the editor and select your target programming language (such as JavaScript fetch, Python requests, Node.js, Go, or all languages). The engine extracts the request method, destination URL, header flags (-H), authentication parameters (-u), and request body data (-d or --data-raw), generating idiomatic, executable code snippets. Because all parsing and code generation take place locally within your browser tab, proprietary API keys and confidential request payloads remain completely secure. You can convert complex terminal commands into production-ready application code directly on your machine.',
+    faqs: [
+      {
+        question: 'Which programming languages are supported by the converter?',
+        answer:
+          'The tool generates idiomatic HTTP request code for JavaScript (Fetch API), Python (Requests library), Node.js (native http/fetch), and standard Go code.',
+      },
+      {
+        question:
+          'Does the tool parse complex cURL flags like headers and data?',
+        answer:
+          'Yes. It parses standard cURL options including custom methods (-X), header pairs (-H), body payloads (-d, --data-raw), and basic authentication (-u).',
+      },
+      {
+        question:
+          'Can I generate code for all supported languages simultaneously?',
+        answer:
+          'Yes. Selecting the "all" language option generates code snippets for JavaScript, Python, Node.js, and Go in a single combined output view.',
+      },
+      {
+        question:
+          'Are my API keys or request payloads sent across the network?',
+        answer:
+          'No. The cURL command parser and code generators run entirely client-side in browser memory without network activity, protecting secret keys.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'sql-formatter', sqlFormat, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-sql-formatter': {
+    directAnswer:
+      'Paste unformatted or single-line SQL queries to format clauses, capitalize keywords, and indent subqueries cleanly and reliably directly in your browser tab. The tool standardises keywords into uppercase, introduces readable line breaks after major clauses, and outputs structured SQL reliably without sending your database schema or queries to external servers.',
+    leadParagraph:
+      'This SQL formatter cleans, capitalizes, and indents complex database queries to improve readability and code review quality. Unformatted, minified SQL queries extracted from application logs or ORM debuggers are difficult to read and debug. You paste your raw SQL into the editor. The engine tokenises SQL syntax, identifying major clauses (such as SELECT, FROM, WHERE, GROUP BY, ORDER BY, and JOINs) and standardizes reserved keywords into consistent uppercase. It indents nested subqueries, aligns column selections, and introduces logical line breaks before primary statement clauses. The resulting formatted SQL query is ready for pasting into database administration tools or code repositories. Operating completely inside your browser tab under strict Content Security Policy directives, sensitive database table names, column structures, and proprietary business queries remain confidential. This allows database administrators to format complex multi-table joins without data exposure.',
+    faqs: [
+      {
+        question: 'Which SQL dialects does the formatter support?',
+        answer:
+          'The formatter supports standard ANSI SQL syntax, making it compatible with PostgreSQL, MySQL, SQLite, Microsoft SQL Server, and Oracle databases.',
+      },
+      {
+        question: 'Does the tool automatically capitalise SQL keywords?',
+        answer:
+          'Yes. Core SQL keywords like SELECT, INSERT, UPDATE, DELETE, FROM, WHERE, and JOIN are automatically converted to uppercase throughout the query.',
+      },
+      {
+        question: 'How does the formatter handle nested subqueries?',
+        answer:
+          'Subqueries enclosed in parentheses are indented with two spaces to clearly reflect query hierarchy and nesting depth for maximum query readability.',
+      },
+      {
+        question:
+          'Are my database queries or table structures uploaded online?',
+        answer:
+          'No. All SQL tokenisation and indentation run locally in your browser memory without network communication, ensuring complete query confidentiality at all times.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'sql-minifier', sqlMinify, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-sql-minifier': {
+    directAnswer:
+      'Paste multi-line SQL queries to strip comments and collapse redundant whitespace into a single-line query string cleanly and directly in your browser tab. The tool eliminates single-line and block comments, preserves quoted string literals, and outputs compact SQL reliably without transmitting your database code to remote servers or cloud accounts.',
+    leadParagraph:
+      'This SQL minifier strips extraneous whitespace and code comments from database queries to create compact, single-line SQL strings. Embedding multi-line SQL queries into application configuration files, environment variables, or database migration scripts often causes syntax errors due to newline escaping issues. You paste your formatted SQL query into the tool. The engine removes single-line comments (--), strips multi-line block comments (/* ... */), and collapses sequential spaces, tabs, and newlines into single spaces, while carefully preserving spaces and comments inside single-quoted string literals. The output is a clean, single-line SQL statement ready for direct embedding into application code. Running entirely within local browser tab memory under strict CSP restrictions, sensitive database schemas and proprietary business logic remain strictly private on your computer. You can prepare database migration scripts and configuration queries safely.',
+    faqs: [
+      {
+        question: 'Does the minifier remove SQL comments safely?',
+        answer:
+          'Yes. It strips both single-line comments (starting with --) and multi-line comments (/* ... */) while preserving quoted text strings intact.',
+      },
+      {
+        question: 'Are string literals protected from whitespace removal?',
+        answer:
+          'Yes. Spaces, newlines, and characters enclosed within single quotes are preserved exactly as written to avoid altering query data or parameters.',
+      },
+      {
+        question: 'Why should I minify SQL queries?',
+        answer:
+          'Minified queries are ideal for embedding into environment variables, command-line arguments, Docker configurations, and compact API payloads without newline issues.',
+      },
+      {
+        question: 'Are my database queries transmitted across the network?',
+        answer:
+          'No. The entire comment stripping and whitespace compression process runs locally in your browser tab without making network requests to remote services.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'sql-parameter-binder', runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-sql-parameter-binder': {
+    directAnswer:
+      'Paste a parameterized SQL query and a JSON array of parameter values to bind parameters directly in your browser tab. The tool replaces question mark placeholders sequentially, formats string quotes, numbers, and null values safely, and outputs an executable SQL query reliably without transmitting your database queries to remote servers.',
+    leadParagraph:
+      'This SQL parameter binder interpolates parameter values into parameterized SQL queries for local debugging and query inspection. When debugging database errors from backend application logs, queries are recorded with placeholder question marks (?) alongside a separate JSON array of runtime parameter arguments; reconstructing the executable SQL query manually is tedious. You paste the parameterized SQL query alongside its JSON parameters array. The engine validates that the parameter input is a valid array and replaces each question mark placeholder sequentially: escaping and quoting string values, rendering numbers and booleans directly, and formatting null values as NULL. The output is a standalone, executable SQL query ready to run in database administration consoles. Operating entirely in local browser tab memory under strict CSP directives, sensitive customer data and database queries remain completely confidential.',
+    faqs: [
+      {
+        question: 'What placeholder syntax does the parameter binder support?',
+        answer:
+          'The tool supports standard positional question mark (?) placeholders, replacing each placeholder sequentially with its matching array value in order.',
+      },
+      {
+        question: 'How should parameter values be formatted in the input?',
+        answer:
+          'Enter parameters as a standard JSON array (for example, ["user_123", 42, true, null]), matching the sequential order of placeholders in the query.',
+      },
+      {
+        question:
+          'Does the tool automatically escape quotation marks in strings?',
+        answer:
+          'Yes. String parameter values are wrapped in single quotes, and internal single quotes are escaped to produce valid SQL syntax.',
+      },
+      {
+        question:
+          'Are my database queries or parameter values uploaded online?',
+        answer:
+          'No. All parameter substitution and SQL string generation execute locally in browser memory without network activity, ensuring total data privacy.',
+      },
+    ],
+  },
+  // lib/tools/developer-advanced-workbench.ts (DEVELOPER_ADVANCED_OPERATIONS 'graphql-formatter', graphqlFormat, runDeveloperAdvancedOperation), lib/tools/developer-advanced-workbench.test.ts, components/developer-advanced-workbench-tool.tsx and app/developer/[tool]/page.tsx
+  'developer-and-data-graphql-formatter': {
+    directAnswer:
+      'Paste unformatted GraphQL queries, mutations, or schema definitions to format clean indentations, field arguments, and brace structures cleanly and directly in your browser tab. The tool aligns fields, indents arguments, standardises braces, and outputs structured GraphQL documents reliably without transmitting your queries or schemas to external GraphQL endpoints or cloud services.',
+    leadParagraph:
+      'This GraphQL formatter standardises the visual structure and indentation of GraphQL queries, mutations, subscriptions, and schema definitions. Minified or poorly formatted GraphQL documents extracted from network payloads or JavaScript code are difficult to read and review. You paste your raw GraphQL query into the workbench. The engine parses the document structure, identifying operation types, selection sets, field arguments, and directive declarations. It aligns opening and closing braces, applies clean two-space indentation across nested field hierarchies, and places argument lists on separate lines when appropriate. The resulting formatted GraphQL document is easy to review and ready to paste into Apollo Studio, GraphiQL, or code repositories. Operating entirely in local browser tab memory under strict CSP restrictions, sensitive API schemas, query arguments, and proprietary data structures remain strictly private on your computer.',
+    faqs: [
+      {
+        question: 'Which GraphQL operations does the formatter support?',
+        answer:
+          'The formatter supports all GraphQL operations including queries, mutations, subscriptions, fragments, and Schema Definition Language (SDL) blocks across all endpoints.',
+      },
+      {
+        question: 'How does the formatter handle nested field selections?',
+        answer:
+          'Nested selection sets are indented with two spaces per level, clearly illustrating the hierarchical shape of the requested data in the response.',
+      },
+      {
+        question: 'Does the tool send queries to a live GraphQL server?',
+        answer:
+          'No. The formatter operates purely as a local syntax formatting utility. It never makes network calls or queries remote GraphQL endpoints.',
+      },
+      {
+        question: 'Are my GraphQL queries or schemas logged on any server?',
+        answer:
+          'No. All parsing and formatting execute client-side in your browser memory without network activity, guaranteeing complete schema privacy for your API designs.',
+      },
+    ],
+  },
 };
 
 /**
