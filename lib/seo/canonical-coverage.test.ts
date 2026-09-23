@@ -92,7 +92,10 @@ describe('canonical coverage', () => {
   }
 
   it('declares a canonical on every page', () => {
-    const missing = files.filter((file) => !declaresCanonical(file)).map(routeFor).sort();
+    const missing = files
+      .filter((file) => !declaresCanonical(file))
+      .map(routeFor)
+      .sort();
     expect(missing).toEqual([]);
   });
 
@@ -111,7 +114,9 @@ describe('canonical coverage', () => {
         const scope = path.dirname(layout);
         const withinScope = !path.relative(scope, file).startsWith('..');
         if (withinScope && declaresIn(layout)) {
-          inheriting.push(`${routeFor(file)} <- ${path.relative(APP_DIR, layout)}`);
+          inheriting.push(
+            `${routeFor(file)} <- ${path.relative(APP_DIR, layout)}`,
+          );
         }
       }
     }
