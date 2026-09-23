@@ -5,6 +5,7 @@
  *   node scripts/explainer-worklist.mjs                 # every remaining tool
  *   node scripts/explainer-worklist.mjs --batch 3       # batch 3 of --size
  *   node scripts/explainer-worklist.mjs --size 40       # tools per batch
+ *   node scripts/explainer-worklist.mjs --by-category   # group shared engines
  *   node scripts/explainer-worklist.mjs --count         # just the number
  *
  * Output is TSV: slug, id, name, category, rank, destinationUrl. The SLUG is
@@ -35,6 +36,7 @@ const appRoot = path.resolve(
 const { values } = parseArgs({
   options: {
     batch: { type: 'string' },
+    'by-category': { type: 'boolean', default: false },
     size: { type: 'string', default: '40' },
     count: { type: 'boolean', default: false },
   },
@@ -60,19 +62,27 @@ const covered = guideContent.DIFFERENTIATED_GUIDE_SLUGS;
 const remaining = liveTools.LIVE_TOOL_CATALOG.filter(
   (tool) =>
     !covered.has(tool.slug) && !tool.destinationUrl.startsWith('/convert/'),
-).toSorted(
-  // `rank` is each tool's standing WITHIN its category, so ordering by rank
-  // first interleaves the categories: batch 1 is the strongest tool in all
-  // twenty categories, batch 2 the second-strongest, and so on. If the run
-  // stops half way, every category is still covered at its top rather than
-  // four categories being finished and sixteen untouched.
-  (a, b) =>
-    a.rank === b.rank
-      ? a.category === b.category
-        ? a.slug.localeCompare(b.slug)
-        : a.category.localeCompare(b.category)
-      : a.rank - b.rank,
-);
+).toSorted((a, b) => {
+  // Two orderings, because they buy different things.
+  //
+  // --by-category groups tools that share an engine file. It is cheaper — the
+  // author reads lib/tools/<engine>.ts and its test once and writes five pages
+  // from it instead of five times — and it is SAFER for differentiation, since
+  // the pages most at risk of reading alike are exactly the ones sharing an
+  // engine, and they get written side by side where the differences are
+  // visible. Use this when the run will go to completion.
+  //
+  // The default interleaves categories by each tool's rank WITHIN its category,
+  // so batch 1 is the strongest tool in fifteen categories. Use it when the run
+  // may stop early: every category ends up covered at its top rather than four
+  // categories finished and sixteen untouched.
+  if (values['by-category'] && a.category !== b.category) {
+    return a.category.localeCompare(b.category);
+  }
+  if (a.rank !== b.rank) return a.rank - b.rank;
+  if (a.category !== b.category) return a.category.localeCompare(b.category);
+  return a.slug.localeCompare(b.slug);
+});
 
 if (values.count) {
   console.log(String(remaining.length));

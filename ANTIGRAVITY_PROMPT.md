@@ -58,16 +58,20 @@ standing alone, with no "as mentioned above".
 ## Get your worklist
 
 ```bash
-node scripts/explainer-worklist.mjs --count            # how many are left
-node scripts/explainer-worklist.mjs --batch 1 --size 40 # the first 40
+node scripts/explainer-worklist.mjs --count                           # how many are left
+node scripts/explainer-worklist.mjs --by-category --batch 1 --size 40 # the first 40
 ```
 
 TSV columns: `slug`, `id`, `name`, `category`, `rank`, `destinationUrl`.
 
+**Always pass `--by-category`.** It groups tools that share an engine file, so
+you read `lib/tools/<engine>.ts` and its test once and write five pages from it
+instead of five times. It is also safer for differentiation: the pages most at
+risk of reading alike are exactly the ones sharing an engine, and this way they
+get written side by side, where the differences are visible to you.
+
 The list is derived from the catalogue and from `DIFFERENTIATED_GUIDE_SLUGS`, so
-it shrinks by itself as you commit. It is ordered by each tool's rank **within**
-its category, so batch 1 is the strongest tool in fifteen different categories.
-If you stop half way, every category is still covered at its top. Work
+it shrinks by itself as you commit and cannot disagree with the code. Work
 batch 1, 2, 3 … in order. 13 batches of 40.
 
 ## The one rule that matters
@@ -192,7 +196,7 @@ strings, its own format quirks, its own refusals.
 ## Workflow per batch
 
 ```bash
-node scripts/explainer-worklist.mjs --batch N --size 40   # take the list
+node scripts/explainer-worklist.mjs --by-category --batch N --size 40
 # ... read source + tests for each tool, write the 40 entries ...
 npx oxfmt lib/seo/guide-content.ts
 npx tsc --noEmit
