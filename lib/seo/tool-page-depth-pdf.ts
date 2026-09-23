@@ -1896,7 +1896,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       {
         heading: 'Handling vector PDFs versus scanned blueprints',
         body: [
-          'This tool is engineered for native vector PDFs generated from BIM and CAD software such as Revit, AutoCAD, ArchiCAD, Vectorworks, and MicroStation. Vector PDFs embed true text objects with searchable character strings and coordinate positions, allowing instantaneous and 100% accurate metadata extraction.',
+          'This tool is engineered for native vector PDFs generated from BIM and CAD software such as Revit, AutoCAD, ArchiCAD, Vectorworks, and MicroStation. Vector PDFs embed true text objects with searchable character strings and coordinate positions, so the characters are read exactly rather than guessed at the way OCR does with a scan. Which of those strings is the drawing number, the revision or the date is still decided by where they sit in the title block, and title blocks differ between practices — so check the register against a sheet or two before trusting it.',
           'In contrast, scanned blueprints, photocopied plans, and drawings printed to raster images contain only image streams (XObject /Image dictionaries) without underlying text operators. When the parser detects that a page contains no text operators or fewer than 5 characters, it flags the sheet in the register table as "Scanned / No Text" and increments the scanned page counter. For scanned drawing sets, users can process the document through our client-side PDF OCR tool first, which synthesizes a searchable text layer that this drawing register tool can then extract.',
         ],
       },
