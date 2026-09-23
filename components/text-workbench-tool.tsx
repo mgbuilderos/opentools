@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
+import { ToolExplainerSection } from '@/components/tool-explainer';
 import { announceCompletion } from '@/lib/completion';
 import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
@@ -529,6 +530,20 @@ export function TextWorkbenchTool({
                 </div>
               </div>
             </section>
+          ) : null}
+
+          {/*
+            The explainer appears only on a routed tool page, never on the bare
+            workbench URL: on the workbench the operation changes as you pick
+            from the list, so a fixed block of prose about one tool would be
+            wrong the moment somebody switched.
+          */}
+          {routed ? (
+            <ToolExplainerSection
+              toolUrl={`${routedBasePath}/${routed.id}`}
+              toolId={routed.id}
+              toolName={routed.name}
+            />
           ) : null}
 
           <RelatedTools tools={relatedTools} />

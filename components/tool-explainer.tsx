@@ -2,7 +2,11 @@
 
 import { HelpCircle } from 'lucide-react';
 
-import type { GuideDetail } from '@/lib/seo/guide-content';
+import {
+  type GuideDetail,
+  getToolExplainer,
+  getToolExplainerById,
+} from '@/lib/seo/guide-content';
 
 const schemaContext = ['https:', '//', 'schema.org'].join('');
 
@@ -84,4 +88,45 @@ export function ToolExplainer({
       />
     </section>
   );
+}
+
+/**
+ * The explainer for a routed tool page, or nothing when none is written yet.
+ *
+ * WHY IT LIVES HERE. It began as a local helper inside
+ * `schema-workbench-tool.tsx`, which meant only the workbenches that delegate
+ * to that component ever rendered an explainer. Five do not —
+ * `file-workbench-tool` (27 tools), `math-workbench-tool`,
+ * `text-workbench-tool`, `image-editor-tool` and `pdf-page-tools` — so an
+ * entry written for any of their tools was stored, type-checked, counted as
+ * done, and displayed nowhere. `lib/seo/explainer-wiring.test.ts` now fails if
+ * a routed component stops importing this.
+ *
+ * It is deliberately silent when no entry exists. Explainers are being written
+ * in batches, so most tools have none yet, and a placeholder would put the same
+ * paragraph on hundreds of pages — which is the duplication this whole effort
+ * exists to undo.
+ */
+export function ToolExplainerSection({
+  toolUrl,
+  toolId,
+  toolName,
+}: {
+  /** The routed path of this one tool, e.g. `/data/csv-to-json`. */
+  toolUrl?: string;
+  /** The tool's catalogue id, namespaced or bare — e.g. `word-counter`. */
+  toolId?: string;
+  toolName: string;
+}) {
+  // Two keys because the two families of page know different things. A
+  // workbench builds a routed path and has no id to hand; a dedicated page
+  // knows its id and never builds a path. Measured 2026-09-23 over the 105
+  // entries written so far, the id resolves all 105 and the catalogue URL
+  // resolves none that the id misses — but the URL is what the workbenches
+  // already pass and it is matched more strictly, so it is tried first.
+  const detail =
+    (toolUrl ? getToolExplainer(toolUrl) : undefined) ??
+    (toolId ? getToolExplainerById(toolId) : undefined);
+  if (!detail) return null;
+  return <ToolExplainer detail={detail} toolName={toolName} />;
 }

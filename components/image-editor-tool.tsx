@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { RelatedTools } from '@/components/related-tools';
 import { Button } from '@/components/ui/button';
+import { ToolExplainerSection } from '@/components/tool-explainer';
 import { announceCompletion } from '@/lib/completion';
 import type { RelatedTool } from '@/lib/seo/related-tools';
 import type { BackgroundRemovalResponse } from '@/lib/tools/background-removal/protocol';
@@ -962,6 +963,19 @@ export function ImageEditorTool({
               </div>
             </section>
           ) : null}
+          {/*
+            The explainer appears only on a routed tool page, never on the bare
+            workbench URL: on the workbench the operation changes as you pick
+            from the list, so a fixed block of prose about one tool would be
+            wrong the moment somebody switched.
+          */}
+          {task && initialOperationId ? (
+            <ToolExplainerSection
+              toolId={initialOperationId}
+              toolName={task.name}
+            />
+          ) : null}
+
           <RelatedTools tools={relatedTools} />
 
           <footer className="mt-10 border-t py-6 text-xs text-muted-foreground">

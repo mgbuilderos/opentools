@@ -19,8 +19,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { PracticeBriefPanel } from '@/components/practice-brief';
 import { RelatedTools } from '@/components/related-tools';
-import { ToolExplainer } from '@/components/tool-explainer';
-import { getToolExplainer } from '@/lib/seo/guide-content';
+import { ToolExplainerSection } from '@/components/tool-explainer';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import type { PracticeBrief } from '@/lib/practice-briefs';
@@ -714,17 +713,4 @@ export function SchemaWorkbenchTool({
       </section>
     </AppShell>
   );
-}
-
-/** Renders the hand-written explainer for a routed tool, when one exists. */
-function ToolExplainerSection({
-  toolUrl,
-  toolName,
-}: {
-  toolUrl: string;
-  toolName: string;
-}) {
-  const detail = getToolExplainer(toolUrl);
-  if (!detail) return null;
-  return <ToolExplainer detail={detail} toolName={toolName} />;
 }
