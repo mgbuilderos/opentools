@@ -11905,6 +11905,1284 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'system-of-equations-solver', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-system-of-equations-solver': {
+    directAnswer:
+      'Solve systems of linear equations directly in your browser using Gaussian elimination and matrix inversion techniques. Enter your coefficients and constants to compute exact unique solutions, identify dependent linear systems with infinite solutions, or flag inconsistent parallel constraints. The solver processes all equations client-side in browser memory to keep private coursework and engineering computations secure.',
+    leadParagraph:
+      'Solving multiple simultaneous linear equations is a foundational requirement in engineering design, circuit analysis, structural load distribution, and economic modeling. This browser-based linear equation solver processes systems with two, three, or more variables, delivering exact fraction and floating-point solutions alongside determinant checks. The interface validates matrix solvability instantly, alerting users to parallel planes or underdetermined systems where degrees of freedom permit infinite valid solution sets. Solving systems of equations directly in your local browser eliminates software installation steps and provides step-by-step mathematical validation for academic and technical workflows. Because engineering models and academic exercises require computational privacy, all equation solving executes locally in browser memory. No formulas or numerical inputs are ever transmitted across external networks. Mastering simultaneous linear systems accelerates workflow efficiency across scientific computation, mechanical robotics, and statistical data modeling.',
+    faqs: [
+      {
+        question: 'What numerical methods are used to solve linear systems?',
+        answer:
+          'The solver employs Gaussian elimination with row operations to reduce augmented coefficient matrices into row echelon form for reliable back-substitution.',
+      },
+      {
+        question:
+          'How does the tool signal inconsistent systems with no solution?',
+        answer:
+          'The engine checks the coefficient determinant; if equations describe contradictory parallel constraints, it clearly flags the system as inconsistent with zero possible solutions.',
+      },
+      {
+        question: 'Can systems with infinitely many solutions be analyzed?',
+        answer:
+          'Yes. When an equation system has fewer independent constraints than unknown variables, the tool identifies free parameters and describes the infinite family of valid solutions.',
+      },
+      {
+        question:
+          'Are my confidential equations or calculation histories stored?',
+        answer:
+          'No. Every calculation occurs strictly inside your local browser runtime with zero network communication, keeping all academic problem sets and engineering data private.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'ean-13-generator', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-ean-13-generator': {
+    directAnswer:
+      'Generate compliant EAN-13 retail barcodes directly in your browser by entering 12 product digits or supplying a complete 13-digit sequence. The tool automatically computes the modulo-10 check digit and renders crisp, scannable vector graphics. The barcode generator renders all graphics client-side in browser memory to keep trade item numbers and product rosters private.',
+    leadParagraph:
+      'The European Article Number (EAN-13) barcode is the international retail standard for point-of-sale scanning across global consumer merchandise, books, and packaged retail items. This client-side barcode generator produces specification-compliant EAN-13 symbols, automatically calculating the obligatory modulo-10 checksum from the first twelve digits or validating your complete 13-digit Global Trade Item Number (GTIN). Users can customize bar heights, guard bar spacing, quiet zones, and human-readable numeric text labels before exporting production-ready vector SVG or high-resolution PNG assets. Generating compliant retail symbols directly in the browser ensures merchandise packaging satisfies international scanning equipment without requiring proprietary desktop barcoding suites. Because commercial inventory identifiers and unreleased product catalogues require strict confidentiality, all barcode rendering runs locally in browser memory. No item numbers are ever transmitted to remote web servers. Ensuring barcode compliance streamlines logistics acceptance across international distribution networks.',
+    faqs: [
+      {
+        question: 'How is the mandatory EAN-13 check digit computed?',
+        answer:
+          'The check digit uses a modulo-10 algorithm that multiplies alternating digits by weights of 1 and 3, subtracting the weighted sum from the nearest higher multiple of ten.',
+      },
+      {
+        question:
+          'What export graphic formats are supported for packaging labels?',
+        answer:
+          'The generator exports resolution-independent SVG vector files for commercial packaging layouts and crisp PNG raster images suitable for digital mockups.',
+      },
+      {
+        question:
+          'Can I enter a 12-digit number and have the check digit auto-filled?',
+        answer:
+          'Yes. Supplying 12 digits triggers automatic calculation and appending of the valid 13th checksum digit, preventing human typographical errors on packaging.',
+      },
+      {
+        question:
+          'Are my commercial product numbers or barcodes uploaded online?',
+        answer:
+          'No. All barcode calculations and graphics rendering execute client-side in browser memory with zero outbound network calls, ensuring total product catalogue privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'density-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-density-calculator': {
+    directAnswer:
+      'Calculate material density, mass, or volume directly in your browser using the physical formula density equals mass divided by volume (ρ = m / V). Enter any two known parameters to compute the third across metric and imperial units. The calculator executes all physical formulas client-side in browser memory to keep laboratory measurements and experimental numbers secure.',
+    leadParagraph:
+      'Material density is a fundamental physical property that dictates buoyancy, structural strength, metallurgical purity, and chemical composition. This browser-based density calculator solves for density (ρ), mass (m), or volume (V) with automatic unit conversions across grams, kilograms, pounds, cubic centimetres, litres, and cubic metres. The interface allows students, laboratory technicians, and mechanical engineers to verify material properties against standard reference densities for metals, plastics, liquids, and atmospheric gases. Evaluating material density directly in the browser enables laboratory researchers and engineering students to confirm sample composition without relying on specialized laboratory calculation packages. Because laboratory experiments and proprietary material formulations require complete confidentiality, all physical calculations run locally within your browser. No physical parameters or calculation logs are ever sent across external networks. Understanding mass and volume relationships helps students and laboratory researchers solve physical problems rapidly and accurately.',
+    faqs: [
+      {
+        question: 'What fundamental formula governs density calculations?',
+        answer:
+          'Density equals mass divided by volume (ρ = m / V), representing the quantity of matter compressed into a given unit of three-dimensional space.',
+      },
+      {
+        question:
+          'Can I calculate mass or volume when density is already known?',
+        answer:
+          'Yes. Entering any two known physical variables automatically rearranges the formula to calculate the unknown third variable across diverse unit standards.',
+      },
+      {
+        question:
+          'Does temperature influence material density in practical applications?',
+        answer:
+          'Yes. Most materials expand when heated, increasing volume and lowering density, which is particularly notable in fluids and atmospheric gases during thermal changes.',
+      },
+      {
+        question:
+          'Are my laboratory research numbers or density tests uploaded?',
+        answer:
+          'No. All unit conversions and formula calculations execute client-side in browser memory with zero network traffic, ensuring total privacy for experimental measurements.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'tsv-to-csv', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-tsv-to-csv': {
+    directAnswer:
+      'Convert tab-separated values (TSV) into comma-separated values (CSV) directly in your browser with proper RFC 4180 delimiter escaping, quote wrapping, and newline handling. The tool parses tabular text grids into standard CSV tables without data leakage. All format conversions take place client-side in browser memory to keep proprietary data sets and research rosters confidential.',
+    leadParagraph:
+      'Tab-separated text exported from relational databases, spreadsheet workbooks, and bioinformatic pipelines must frequently be converted into comma-separated tables for downstream ingestion into business analytics tools, CRM platforms, and machine learning pipelines. This client-side TSV to CSV converter parses tab-delimited text blocks, systematically replacing tabs with commas while wrapping fields containing commas, line breaks, or double quotes in compliant RFC 4180 quotation marks. The converter preserves Unicode characters, handles multi-line table cells, and validates row consistency without corrupting header rows or numeric formats. Because tabular data frequently contains private customer records, financial figures, or confidential academic research, all text parsing occurs entirely within your browser memory. No data records are ever sent across external networks. Reliable tabular data format conversions prevent data corruption when loading records across enterprise database platforms and reporting tools.',
+    faqs: [
+      {
+        question: 'How does TSV differ structurally from standard CSV format?',
+        answer:
+          'TSV separates fields using tab characters whereas CSV uses commas, requiring RFC 4180 quotation marks whenever values contain internal commas or carriage returns.',
+      },
+      {
+        question:
+          'How are fields containing quotation marks or commas handled?',
+        answer:
+          'The converter encloses cells containing commas or line breaks in double quotes, escaping existing inner quotation marks as pairs per standard RFC 4180 rules.',
+      },
+      {
+        question:
+          'Is there a row or file size limit when converting TSV tables?',
+        answer:
+          'Processing speed depends on available device memory; large tabular files with tens of thousands of rows convert cleanly without remote upload constraints.',
+      },
+      {
+        question:
+          'Are my sensitive database exports or customer tables uploaded?',
+        answer:
+          'No. All delimiter parsing and text transformations execute client-side in local browser memory with zero outbound network calls, maintaining absolute data privacy.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-repeater', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-repeater': {
+    directAnswer:
+      'Repeat any text string, character sequence, or word pattern multiple times directly in your browser with custom separators including newlines, spaces, or custom delimiters. The tool generates repetitive text blocks for software stress testing, mock data creation, and UI layout prototyping. The text repeating engine runs entirely client-side in browser memory to keep generated strings and confidential inputs secure.',
+    leadParagraph:
+      'Generating repeated text blocks is an everyday task for software quality assurance testers evaluating form input limits, developers simulating payload payloads, and designers testing typographic wrap behaviour. This browser-based text repeater enables users to duplicate any phrase, sentence, or ASCII sequence hundreds or thousands of times with configurable joining delimiters such as newlines, spaces, commas, or custom separator strings. The interface provides instantaneous character and word count calculations, allowing testers to generate precise byte-length strings to test buffer overflows and UI container limits. Multiplying text patterns locally in the browser assists quality assurance teams in verifying input buffer boundaries and stress-testing user interface text boxes. Because test payloads may contain proprietary API formats or draft copy, all string manipulation runs locally inside browser memory. No text is ever uploaded to external servers.',
+    faqs: [
+      {
+        question:
+          'Can I insert custom delimiters between each repeated string?',
+        answer:
+          'Yes. You can specify whether repeated segments are joined by newlines, spaces, commas, tabs, or custom delimiter strings according to your testing requirements.',
+      },
+      {
+        question:
+          'Can this tool generate line-numbered repetitions for testing?',
+        answer:
+          'Yes. You can enable optional index numbering prefixes to verify line sorting and visual sequence alignment during debugging and software testing workflows.',
+      },
+      {
+        question: 'Is there a limit on how many repetitions can be generated?',
+        answer:
+          'Yes. You can generate hundreds or thousands of repetitions instantly within available browser memory limits, accommodating large-scale string generation tasks.',
+      },
+      {
+        question:
+          'Are my input phrases or generated test strings sent to servers?',
+        answer:
+          'No. All string generation takes place entirely client-side in local browser memory with zero outbound network transmissions, keeping all test strings confidential.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'query-string-parser', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-query-string-parser': {
+    directAnswer:
+      'Parse and decode URL query parameters directly in your browser by decomposing full query strings into key-value pairs with automatic URL percent-decoding. The tool formats parameters into structured JSON or clean inspection tables. All URL decoding and query extraction execute client-side in browser memory to keep sensitive analytical parameters and tokens secure.',
+    leadParagraph:
+      'Deciphering complex web query strings is essential for digital marketers inspecting tracking parameters, web developers debugging routing logic, and cybersecurity researchers auditing authentication redirects. This client-side query string parser extracts parameter pairs from complete URLs or isolated query fragments, automatically decoding percent-encoded sequences into readable strings. It neatly handles duplicate parameters by converting them into arrays and structures nested parameters into clear key-value inspection tables or formatted JSON objects ready for export. Inspecting query components in client-side memory enables web developers and analytics specialists to audit marketing campaign parameters without transmitting private tokens across public networks. Because URLs often contain sensitive UTM campaign parameters, session identifiers, or confidential tokens, all decoding executes entirely within your browser runtime. No URLs are ever logged or sent to remote servers. Deconstructing URL parameters in client memory ensures accurate tracking verification without exposing private session tokens.',
+    faqs: [
+      {
+        question:
+          'Does the parser automatically decode percent-encoded characters?',
+        answer:
+          'Yes. The parser decodes standard percent-encoded escape sequences such as %20 for whitespace and %2F for slashes into readable plaintext values automatically.',
+      },
+      {
+        question:
+          'How does the tool handle URLs with duplicate parameter keys?',
+        answer:
+          'Repeated parameter names are parsed into arrays, preserving every passed value without overwriting earlier parameters or dropping subsequent URL query arguments.',
+      },
+      {
+        question: 'Can I export parsed query parameters as structured JSON?',
+        answer:
+          'Yes. The tool provides a one-click copy function to export all extracted parameter keys and decoded values as a cleanly formatted JSON object.',
+      },
+      {
+        question:
+          'Are my query strings or tracking parameters sent to any server?',
+        answer:
+          'No. All URL parsing and string decodings run locally inside client browser memory with zero network traffic, ensuring complete secrecy for URLs and tokens.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'credit-card-payoff-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-credit-card-payoff-calculator': {
+    directAnswer:
+      'Calculate credit card debt elimination timelines and interest charges directly in your browser by entering card balances, annual interest rates, and monthly payment amounts. The tool models amortisation schedules to reveal total interest paid and months to payoff. The financial planner computes amortisation client-side in browser memory to keep personal account balances and interest charges private.',
+    leadParagraph:
+      'Credit card balances compound quickly when cardholders make only minimum required payments, turning modest purchases into years of expensive interest obligations. This client-side credit card payoff calculator enables consumers to evaluate payoff timelines under fixed monthly payment plans or discover the exact monthly installment required to eliminate debt by a target deadline. The tool calculates total accrued finance charges, displays month-by-month amortisation breakdowns, and contrasts aggressive repayment strategies against minimum-payment traps to demonstrate real money savings. Calculating debt elimination schedules locally helps account holders plan realistic payment timetables and minimize compound financing expenses without disclosing account records. Because personal debt balances and interest rates are confidential financial records, all calculations execute strictly inside your browser memory. No financial figures are ever sent to remote web servers. Formulating an accelerated debt reduction schedule gives households financial clarity and confidence as they eliminate compound interest expenses.',
+    faqs: [
+      {
+        question:
+          'Why does paying only the minimum payment take decades to pay off?',
+        answer:
+          'Minimum payments typically cover monthly accrued interest plus roughly one percent of the principal, leaving the majority of the balance compounding continuously.',
+      },
+      {
+        question:
+          'How can I calculate how much to pay to clear debt by a specific date?',
+        answer:
+          'Select target payoff mode, enter your preferred timeline in months, and the tool calculates the exact fixed monthly payment needed to extinguish the debt.',
+      },
+      {
+        question:
+          'Does the calculator account for variable interest rate adjustments?',
+        answer:
+          'The calculator assumes a consistent annual percentage rate, whereas variable credit card contracts may adjust finance rates according to central bank index changes.',
+      },
+      {
+        question:
+          'Are my personal debt balances or payment schedules stored online?',
+        answer:
+          'No. All calculations run strictly inside local client memory with zero outbound network calls, keeping your financial liabilities and repayment plans completely confidential.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'matrix-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-matrix-calculator': {
+    directAnswer:
+      'Perform matrix operations directly in your browser including addition, subtraction, multiplication, scalar scaling, transposition, determinant evaluation, and matrix inversion. The tool processes 2x2, 3x3, and arbitrary dimension matrices with exact fractional and decimal results. All linear algebra operations run client-side in browser memory to keep scientific datasets and matrix models secure.',
+    leadParagraph:
+      'Linear algebra is the foundational mathematical engine behind 3D graphics, machine learning algorithms, structural mechanics, and econometric modeling. This client-side matrix calculator allows students, researchers, and software engineers to perform core matrix arithmetic, calculate matrix determinants, compute inverses, transpose dimensions, and evaluate eigenvalues without launching heavy desktop programming libraries. The interface validates dimensional compatibility before computing products, preventing invalid inner dimension mismatches and displaying step-by-step intermediate transformations. Calculating matrix operations directly in client-side memory gives engineering students and scientific analysts immediate feedback on transformations and determinant values without requiring commercial numerical computing packages. Linear algebra forms the foundation of modern computer graphics, structural analysis, and statistical modelling. Because proprietary datasets and academic problem sets require privacy, all computations run locally in browser memory. No data is ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'What condition must matrices satisfy for matrix multiplication?',
+        answer:
+          'The number of columns in the first matrix must strictly equal the number of rows in the second matrix for matrix multiplication to be dimensionally valid.',
+      },
+      {
+        question: 'Can non-square matrices be inverted using this tool?',
+        answer:
+          'No. Classical matrix inversion requires a square matrix with a non-zero determinant; non-square matrices can only be evaluated via pseudo-inverse methods.',
+      },
+      {
+        question: 'What does a matrix determinant value of zero signify?',
+        answer:
+          'A determinant of zero indicates a singular matrix that has no multiplicative inverse, meaning its row vectors are linearly dependent and collapse dimensions.',
+      },
+      {
+        question:
+          'Are my matrix datasets or calculation steps stored remotely?',
+        answer:
+          'No. All matrix operations execute directly in client-side browser memory with zero network traffic, ensuring complete computational privacy for proprietary academic and industrial datasets.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'ean-8-generator', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-ean-8-generator': {
+    directAnswer:
+      'Generate compact EAN-8 retail barcodes directly in your browser by entering 7 product digits or supplying a complete 8-digit sequence. The tool automatically computes the modulo-10 check digit and renders crisp vector SVG and high-resolution PNG barcodes. The barcode symbol renders client-side in browser memory to keep compact retail packaging identifiers and item codes confidential.',
+    leadParagraph:
+      'The EAN-8 barcode format is the condensed retail standard designed specifically for small consumer packaging where standard 13-digit EAN barcodes would occupy excessive printable label area, such as confectionery, cosmetics, and miniature electronic components. This client-side EAN-8 generator creates verified retail barcodes, automatically deriving the mandatory modulo-10 check digit from the initial seven digits or checking the integrity of a provided eight-digit sequence. Packaging designers and retail merchants can adjust bar height, quiet zone widths, and human-readable text styling before exporting clean vector SVG files for prepress production or PNG images for packaging mockups. Generating compact retail symbols directly within the browser enables packaging designers to verify label footprints for miniature merchandise without installing specialized desktop software. Because product inventory numbers and packaging designs require commercial confidentiality, all barcode generation executes entirely within browser memory. No data is ever sent to external servers.',
+    faqs: [
+      {
+        question: 'When should an EAN-8 barcode be used instead of EAN-13?',
+        answer:
+          'EAN-8 is reserved for small packaging items (such as chewing gum or lip balm) where a standard EAN-13 barcode would cover more than 25 percent of the label.',
+      },
+      {
+        question:
+          'How is the final check digit of an EAN-8 barcode calculated?',
+        answer:
+          'The check digit uses a modulo-10 algorithm multiplying alternating digits by weights of 3 and 1 from right to left, subtracting the sum from the next multiple of ten.',
+      },
+      {
+        question:
+          'Can I export EAN-8 barcodes as vector graphics for commercial printing?',
+        answer:
+          'Yes. The generator exports resolution-independent SVG vector files ready for commercial packaging prepress workflows and crisp PNG raster images for rapid prototyping.',
+      },
+      {
+        question:
+          'Are my product codes or generated retail barcodes uploaded online?',
+        answer:
+          'No. All barcode generation takes place client-side in browser memory with zero outbound network calls, ensuring complete product catalogue confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'buoyancy-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-buoyancy-calculator': {
+    directAnswer:
+      "Calculate buoyant force and submerged object displacement directly in your browser using Archimedes' principle (Fb = ρ × V × g). Enter fluid density, displaced volume, and gravitational acceleration to determine net floating or sinking forces. The physical calculations execute client-side in browser memory to keep experimental hydrodynamic numbers and design parameters secure.",
+    leadParagraph:
+      "Archimedes' principle states that an object submerged in fluid experiences an upward buoyant force equal to the weight of fluid displaced by the body. This browser-based buoyancy calculator allows marine engineers, physics students, and naval architects to compute buoyant force, submerged equilibrium volume, and net upward or downward force for objects placed in fresh water, sea water, or custom density fluids. By entering object mass and submerged volume, users can immediately predict whether a vessel will float stably, sink to the seabed, or remain neutrally suspended at equilibrium depth. Because naval engineering parameters and physics laboratory data require confidentiality, all hydrodynamic formulas execute locally within client browser memory. No calculation variables or experimental measurements are ever transmitted to remote web servers. Evaluating hydrodynamic lift forces helps marine designers and physics researchers assess vessel stability in diverse fluid conditions.",
+    faqs: [
+      {
+        question:
+          'What is Archimedes principle of buoyancy expressed mathematically?',
+        answer:
+          'Buoyant force equals the product of fluid density, displaced volume, and gravitational acceleration (Fb = ρ × V × g), acting vertically upward against gravity.',
+      },
+      {
+        question:
+          'What determines whether a submerged solid object will float or sink?',
+        answer:
+          'An object floats if its average density is less than fluid density (buoyant force exceeds weight) and sinks if its density exceeds the surrounding fluid.',
+      },
+      {
+        question:
+          'How does water salinity affect ship buoyancy in marine engineering?',
+        answer:
+          'Dense saline ocean water exerts greater upward buoyant force than fresh river water, causing ships to ride higher in seawater than in inland freshwater canals.',
+      },
+      {
+        question:
+          'Are my hydrodynamic calculations or vessel dimensions saved online?',
+        answer:
+          'No. All fluid mechanics calculations run locally in browser memory with zero network communication, keeping your marine engineering concepts and laboratory data private.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'csv-to-sql', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-csv-to-sql': {
+    directAnswer:
+      'Convert comma-separated values (CSV) into structured SQL INSERT or CREATE TABLE statements directly in your browser. Configure target table names, infer column data types, and choose dialects including PostgreSQL, MySQL, SQLite, and SQL Server. All script conversions execute client-side in browser memory to keep proprietary database records and customer datasets confidential.',
+    leadParagraph:
+      'Migrating spreadsheet records, transaction reports, and catalog exports into relational database management systems requires converting raw delimiter-separated rows into well-formed SQL scripts. This client-side CSV to SQL converter parses structured tabular data, infers column datatypes (including integers, floating-point decimals, booleans, dates, and text strings), and generates compliant CREATE TABLE schemas alongside batch INSERT statements. Database administrators and software engineers can customize target table names, wrap string literals with compliant quotes, and tailor SQL syntax for PostgreSQL, MySQL, SQLite, and Microsoft SQL Server. Because raw CSV datasets frequently contain confidential enterprise records, proprietary customer rosters, or financial transactions, all SQL script generation runs locally in browser memory. No data records are ever sent across external networks. Generating structured database migration scripts directly in browser memory accelerates database schema population without external third-party software.',
+    faqs: [
+      {
+        question: 'Which SQL database dialects are supported by the converter?',
+        answer:
+          'The tool supports standard SQL syntax variations for PostgreSQL, MySQL, SQLite, and Microsoft SQL Server, tailoring escape rules and dialect conventions accordingly.',
+      },
+      {
+        question:
+          'Does the converter automatically infer SQL column data types?',
+        answer:
+          'Yes. The converter scans column values to distinguish between integers, decimal floats, booleans, timestamps, and character strings to construct schemas.',
+      },
+      {
+        question:
+          'How are NULL values and missing cells handled in SQL INSERT scripts?',
+        answer:
+          'Empty cells and designated null representations are converted to unquoted SQL NULL literals to maintain relational database integrity across inserted rows.',
+      },
+      {
+        question:
+          'Are my confidential CSV tables uploaded to external web servers?',
+        answer:
+          'No. All SQL parsing and script generation occur client-side in browser memory with zero outbound network calls, maintaining total confidentiality for your records.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'find-and-replace', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-find-and-replace': {
+    directAnswer:
+      'Find and replace text strings directly in your browser with case-sensitive matching, whole-word filtering, and real-time occurrence counts. The tool performs instant bulk substitutions across extensive documents without formatting corruption. All string replacements execute client-side in browser memory to keep confidential manuscripts and private documents secure. The search engine runs entirely client-side in browser memory with zero network calls.',
+    leadParagraph:
+      'Editing extensive documents, sanitizing data exports, and updating repetitive manuscript terms requires dependable string substitution without accidental partial-word replacements. This browser-based find and replace tool allows writers, editors, and administrative professionals to search for target terms and replace them with new strings across paragraphs or complete document drafts. Users can toggle case matching, enforce whole-word boundaries to avoid unintended substitutions inside longer terms, and review total match counts before applying edits. Conducting bulk text updates directly in the browser lets technical authors and administrative staff clean extensive documentation without copying sensitive copy into remote third-party systems. Because manuscripts, corporate agreements, and customer lists involve private information, all string searching and replacement execute locally inside browser memory. No text is ever uploaded to external servers. Efficient text replacement reduces manual editing time while preserving original formatting integrity across extensive documents.',
+    faqs: [
+      {
+        question:
+          'Can I perform case-sensitive and case-insensitive text replacements?',
+        answer:
+          'Yes. You can toggle case-sensitive matching on or off to control whether capitalisation differences are respected or treated identically during text replacement.',
+      },
+      {
+        question:
+          'How does match whole words only prevent unintended text edits?',
+        answer:
+          'Whole-word matching ensures that searching for a word like cat does not alter substrings within catalog, categorize, or scattered during replacement.',
+      },
+      {
+        question:
+          'Is there a limit on document size for find and replace operations?',
+        answer:
+          'The tool runs smoothly on extensive text documents containing tens of thousands of words within available browser memory without remote processing lag.',
+      },
+      {
+        question:
+          'Are my private text drafts or corporate documents sent online?',
+        answer:
+          'No. All text parsing and string substitutions run client-side in browser memory with zero outbound network calls, ensuring absolute document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'domain-name-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-domain-name-generator': {
+    directAnswer:
+      'Generate creative, memorable domain name ideas directly in your browser by combining seed keywords with industry prefixes, suffixes, brandable word mashups, and modern top-level domain extensions. All domain brainstorming algorithms execute client-side in browser memory to keep unreleased brand ideas and naming concepts confidential. The tool performs all name permutations locally in client browser memory with zero network traffic.',
+    leadParagraph:
+      'Selecting an effective, brandable web domain is one of the most critical decisions when launching a new business venture, mobile application, or digital product. This client-side domain name generator takes your core keywords and algorithmically combines them with curated industry affixes, evocative linguistic roots, compound pairings, and alternative extensions like .com, .io, .dev, and .co. The tool filters candidate names by character length and syllable counts, presenting organized idea rosters ready for registrar lookup. Brainstorming website names locally in your browser lets entrepreneurs and product marketers explore naming variations without broadcasting prospective domain ideas to speculative web registrars. Because naming concepts and startup ideas represent valuable intellectual property, all generation runs locally in browser memory. No keywords are ever shared across external networks. Exploring creative domain name variations locally protects brand ideas from speculative registrations and front-running.',
+    faqs: [
+      {
+        question:
+          'How does the domain name generator construct candidate names?',
+        answer:
+          'The tool generates candidate domain labels by combining prefixes, suffixes, industry keywords, and phonetic variations suitable for manual domain availability verification.',
+      },
+      {
+        question:
+          'Does the tool check real-time domain availability with registrars?',
+        answer:
+          'No. The generator runs completely offline in browser memory without querying DNS servers, protecting your naming concepts from speculative registrar front-running.',
+      },
+      {
+        question:
+          'Can I filter candidate domain names by length and specific extensions?',
+        answer:
+          'Yes. You can specify maximum character lengths and filter domain suggestions across standard TLDs such as .com, .io, .tech, and .app according to your brand.',
+      },
+      {
+        question:
+          'Are my confidential brand names or domain ideas tracked anywhere?',
+        answer:
+          'No. All domain generation logic executes locally in client browser memory with zero network traffic, ensuring complete secrecy for your unreleased startup concepts.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'debt-to-income-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-debt-to-income-calculator': {
+    directAnswer:
+      'Calculate your front-end and back-end debt-to-income (DTI) ratios directly in your browser by entering gross monthly income alongside recurring housing and debt obligations. The tool determines mortgage qualification readiness against standard lending thresholds. All debt ratio calculations run client-side in browser memory to keep personal financial earnings and monthly debt obligations confidential.',
+    leadParagraph:
+      "Mortgage underwriters, automobile lenders, and personal finance institutions evaluate debt-to-income (DTI) ratios to determine an applicant's borrowing capacity and default risk. This client-side DTI calculator computes both front-end ratios (housing expenses including mortgage principal, interest, taxes, and insurance divided by gross monthly income) and back-end ratios (housing costs plus recurring debts such as auto loans, student loans, and credit card minimums). The tool assesses computed ratios against standard mortgage lending guidelines (such as the traditional 28/36 rule and conventional 43 percent maximums), highlighting areas where borrowers can optimize debt profiles prior to loan pre-approval. Because personal salary figures and debt obligations are confidential financial records, all calculations execute strictly inside your browser memory. No financial figures are ever sent to remote web servers. Analyzing debt obligations against gross monthly income gives prospective homebuyers clear insight into loan approval requirements.",
+    faqs: [
+      {
+        question:
+          'What is the distinction between front-end and back-end DTI ratios?',
+        answer:
+          'A front-end debt-to-income ratio measures housing costs against gross monthly income, whereas the back-end ratio includes all recurring debt obligations combined.',
+      },
+      {
+        question:
+          'What is considered a healthy debt-to-income ratio by mortgage lenders?',
+        answer:
+          'Most lenders prefer a front-end ratio under 28 percent and a total back-end ratio at or below 36 percent, though conventional programs allow up to 43 percent.',
+      },
+      {
+        question:
+          'Does the debt-to-income calculation use gross or net monthly income?',
+        answer:
+          'Lenders evaluate debt-to-income ratios using gross monthly income before income taxes and statutory deductions are withheld from your payroll earnings.',
+      },
+      {
+        question:
+          'Are my personal earnings or household debt figures saved online?',
+        answer:
+          'No. All financial calculations occur entirely in client browser memory with zero network traffic, guaranteeing total privacy for your personal earnings and household budgets.',
+      },
+    ],
+  },
+  // components/image-editor-tool.tsx, lib/tools/image.ts, lib/tools/image.test.ts and app/image/editor/page.tsx
+  'image-image-brightness': {
+    directAnswer:
+      'Adjust image brightness directly in your browser by scaling RGB pixel color values across canvas elements in real time. Increase exposure for dark photos or reduce brightness for overexposed captures without quality degradation. All pixel luminance adjustments run client-side in browser memory to keep personal photography and confidential visual assets private.',
+    leadParagraph:
+      'Correcting image brightness is a common initial step when enhancing underexposed smartphone photography, preparing product pictures for digital catalogs, or adjusting graphic backgrounds for web accessibility. This client-side image brightness adjuster processes uploaded photographs directly within an HTML5 canvas element, scaling red, green, and blue colour channels dynamically across every pixel while clamping values within valid 8-bit boundaries (0 to 255). Users can preview luminance adjustments in real time and download the calibrated image as a high-quality PNG or JPEG without compression artifacts. Modifying image luminance directly within local browser memory enables digital photographers and graphic designers to correct underexposed pictures without transferring graphic assets across public networks. Because visual assets frequently contain personal memories or unreleased design prototypes, all canvas rendering occurs locally in browser memory. No images are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question:
+          'How does changing brightness affect pixel color values mathematically?',
+        answer:
+          'Adjusting brightness applies a uniform positive or negative scalar offset across red, green, and blue color channels, shifting overall pixel luminance.',
+      },
+      {
+        question: 'Can excessive brightness adjustments cause image clipping?',
+        answer:
+          'Yes. Increasing brightness excessively can push highlight pixels to pure white (255), causing clipping that permanently flattens subtle texture details in bright areas.',
+      },
+      {
+        question: 'What image formats can I adjust and export with this tool?',
+        answer:
+          'The tool supports standard web raster formats including PNG, JPEG, and WebP, allowing flexible image brightness tuning without external image editing suites.',
+      },
+      {
+        question:
+          'Are my personal photos or graphic designs uploaded to a server?',
+        answer:
+          'No. All canvas rendering and pixel transformations occur locally in client browser memory with zero outbound network calls, maintaining total visual privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'determinant-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-determinant-calculator': {
+    directAnswer:
+      'Calculate matrix determinants directly in your browser across 2x2, 3x3, 4x4, and arbitrary square matrix dimensions using cofactor expansion and LU decomposition. The tool evaluates whether matrices are invertible with exact fractional and decimal answers. All determinant calculations execute client-side in browser memory to keep academic formulas and proprietary numerical matrices confidential.',
+    leadParagraph:
+      'The determinant is a scalar value that captures fundamental geometric and algebraic properties of a square matrix, indicating volume scaling factor and linear system solvability. This client-side determinant calculator evaluates 2x2 matrices via cross-multiplication, 3x3 matrices using Sarrus rule or cofactor expansion, and larger matrices through LU decomposition to maintain numerical precision. The tool instantly informs users whether a matrix is singular (zero determinant) or non-singular, providing crucial verification for vector cross products, coordinate coordinate transformations, and eigenvalues. Evaluating matrix determinants directly in the browser helps linear algebra students and engineering professionals confirm matrix invertibility without relying on expensive scientific mathematical suites. Because academic assignments and scientific simulations involve private equations, all computational steps execute locally in browser memory. No matrix values are ever sent across external networks. Calculating matrix determinants directly provides rapid verification for linear transformations and vector cross products.',
+    faqs: [
+      {
+        question: 'How is the determinant of a 2x2 matrix calculated?',
+        answer:
+          'For a 2x2 matrix with elements [a, b; c, d], the determinant equals ad minus bc, representing the signed area of the parallelogram formed by row vectors.',
+      },
+      {
+        question: 'What does a zero determinant signify about a square matrix?',
+        answer:
+          'A zero determinant indicates that the matrix is singular and cannot be inverted, meaning the associated system of linear equations lacks a unique solution.',
+      },
+      {
+        question: 'What numerical algorithm is used for large square matrices?',
+        answer:
+          'For matrices 4x4 and larger, the calculator uses Gaussian elimination or LU decomposition to convert the matrix into triangular form for rapid diagonal multiplication.',
+      },
+      {
+        question:
+          'Are my numerical matrices or calculation results logged online?',
+        answer:
+          'No. All matrix operations take place inside local client memory with zero outbound network calls, ensuring total privacy for proprietary numerical data.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'upc-a-generator', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-upc-a-generator': {
+    directAnswer:
+      'Generate compliant UPC-A retail barcodes directly in your browser by entering 11 product digits or supplying a complete 12-digit sequence. The tool automatically computes the modulo-10 check digit and renders crisp vector SVG and high-resolution PNG barcode symbols. All barcode rendering occurs client-side in browser memory to keep commercial inventory identifiers and product catalogues private.',
+    leadParagraph:
+      'The Universal Product Code (UPC-A) is the ubiquitous point-of-sale barcode format utilized throughout North America for retail merchandise, grocery inventory, and wholesale product tracking. This client-side UPC-A barcode generator produces verified 12-digit symbols, automatically deriving the mandatory modulo-10 check digit from an 11-digit input or confirming the mathematical accuracy of an existing 12-digit sequence. Packaging designers and manufacturing suppliers can configure bar heights, quiet zone padding, and human-readable text styling before exporting clean vector SVG assets for commercial label packaging or PNG images for digital asset management. Creating retail barcodes directly within client-side browser memory enables retail suppliers and product packaging teams to prepare North American retail symbols without desktop software installations. Because commercial product codes and unreleased packaging identifiers require strict trade secret protection, all barcode rendering runs locally in browser memory. No codes are ever uploaded to remote servers.',
+    faqs: [
+      {
+        question: 'How is the mandatory UPC-A check digit calculated?',
+        answer:
+          'The check digit sums odd-position digits multiplied by three plus even-position digits, subtracting the sum from the next higher multiple of ten.',
+      },
+      {
+        question:
+          'Can I supply 11 digits and have the 12th digit auto-calculated?',
+        answer:
+          'Yes. Entering the first 11 digits automatically computes and appends the mathematically valid 12th check digit according to retail standards.',
+      },
+      {
+        question:
+          'What vector format is recommended for commercial package printing?',
+        answer:
+          'Exporting as an SVG vector file is recommended because vector graphics scale cleanly to any print resolution without pixel blur or scanning read failures.',
+      },
+      {
+        question:
+          'Are my retail product codes or barcodes shared with any server?',
+        answer:
+          'No. All barcode generation executes client-side in browser memory with zero outbound network traffic, guaranteeing total privacy for unreleased commercial product codes.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'reynolds-number-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-reynolds-number-calculator': {
+    directAnswer:
+      'Calculate the dimensionless Reynolds number directly in your browser using fluid density, flow velocity, characteristic linear dimension, and dynamic or kinematic viscosity. The tool classifies laminar, transitional, or turbulent flow regimes. The fluid dynamics calculator runs client-side in browser memory to keep hydrodynamic parameters and aeronautical studies confidential. The fluid calculations execute client-side in browser memory to keep engineering models private.',
+    leadParagraph:
+      'The Reynolds number (Re) is a dimensionless ratio in fluid mechanics that quantifies the relative importance of inertial forces to viscous forces within moving fluid streams. This browser-based Reynolds number calculator evaluates flow regimes in pipes, channels, or around aerodynamic bodies, helping mechanical engineers, chemical process designers, and aerodynamics students determine whether flow behavior is laminar (smooth and organized), transitional, or turbulent (chaotic and mixing-dominated). The tool supports calculations using dynamic viscosity (μ) or kinematic viscosity (ν) with automatic unit conversions across standard metric and imperial fluid measurement systems. Because aerodynamic simulations and industrial pipe designs involve proprietary engineering parameters, all hydrodynamic calculations run locally inside client browser memory. No fluid variables or simulation results are ever sent across external networks. Understanding fluid flow transitions is essential for optimizing pipeline designs, aerodynamic profiles, and chemical mixing processes.',
+    faqs: [
+      {
+        question:
+          'What physical forces does the Reynolds number compare in fluid flow?',
+        answer:
+          'Reynolds number is a dimensionless quantity in fluid mechanics representing the ratio of inertial forces to viscous forces in a moving fluid system.',
+      },
+      {
+        question:
+          'What threshold values separate laminar from turbulent pipe flow?',
+        answer:
+          'In internal pipe flow, Re below 2,300 is generally laminar, Re between 2,300 and 4,000 is transitional, and Re exceeding 4,000 indicates fully turbulent flow.',
+      },
+      {
+        question:
+          'How does fluid temperature alter the computed Reynolds number?',
+        answer:
+          'Temperature changes alter fluid viscosity and density; for liquids, warming decreases viscosity, substantially increasing the Reynolds number at identical velocities.',
+      },
+      {
+        question:
+          'Are my hydrodynamic parameters or calculations uploaded to servers?',
+        answer:
+          'No. All hydrodynamic calculations run client-side in browser memory with zero network traffic, ensuring full confidentiality for experimental engineering research.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'regex-replace', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-regex-replace': {
+    directAnswer:
+      'Search and replace text patterns directly in your browser using regular expressions with support for capture groups, backreferences ($1, $2), and regex flags (g, i, m, s). Test and preview complex text transformations across documents in real time. All regular expression replacements run client-side in browser memory to keep confidential documents and source code strings private.',
+    leadParagraph:
+      'Standard string replacement often fails when cleaning unstructured text, reformatting date stamps, parsing log excerpts, or reorganizing delimited data tables. This client-side regular expression replacement tool gives developers, data analysts, and writers access to JavaScript regex pattern matching with live visual replacements and capture group substitution. Users can define custom regular expressions, test lookahead and lookbehind assertions, toggle global (g), case-insensitive (i), and multiline (m) flags, and substitute captured groups into custom replacement templates effortlessly. Because text processing frequently involves private source code repositories, confidential user datasets, or proprietary business logic, all regular expression evaluations run locally within browser memory. No text content or regex patterns are ever uploaded to remote servers. Harnessing regular expression substitutions enables rapid text transformations across complex logs and data files without desktop programming environments.',
+    faqs: [
+      {
+        question:
+          'What regex syntax standard is supported by the replacement tool?',
+        answer:
+          'The tool adheres to standard ECMAScript regular expression syntax, supporting character classes, quantifiers, lookahead assertions, and named capture groups natively in browser memory.',
+      },
+      {
+        question:
+          'How do I reference captured groups in my replacement string?',
+        answer:
+          'Yes. You can use standard numbered backreferences such as $1 or $2 to inject captured groups from your regular expression into the replacement text.',
+      },
+      {
+        question:
+          'Can I toggle standard regex flags like global and multiline?',
+        answer:
+          'Yes. You can toggle flags such as global (g), case-insensitive (i), and multiline (m) to govern how your regular expression matches document lines.',
+      },
+      {
+        question:
+          'Are my confidential text files or regex patterns sent online?',
+        answer:
+          'No. All regex matching and text substitutions execute client-side in browser memory with zero network traffic, ensuring total document privacy.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'domain-typo-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-domain-typo-generator': {
+    directAnswer:
+      'Generate common typographical domain name variations directly in your browser by applying keyboard adjacency slips, letter omissions, character swaps, vowel substitutions, and double-keystroke permutations. The tool models real-world human typing errors to identify lookalike domain vulnerabilities. All permutation algorithms execute client-side in browser memory to keep unreleased trademark research and brand security audits confidential.',
+    leadParagraph:
+      'Protecting brand identity and consumer trust requires monitoring typosquatting risks, brand impersonation vectors, and deceptive phishing domains that exploit common keyboard typing slips. This client-side domain typo generator takes your brand or domain name and simulates human error patterns, generating comprehensive lists of omitted letters, adjacent QWERTY key slips, transposed adjacent characters, duplicated letters, and phonetic vowel variations. Cybersecurity teams and trademark attorneys can inspect candidate typos to evaluate defensive domain registrations and bolster brand security profiles. Simulating domain typos locally in the browser helps brand managers and cybersecurity teams discover lookalike domain vulnerabilities without broadcasting brand watchlists across third-party web servers. Because brand monitoring and domain research require complete secrecy, all typo permutations run locally in browser memory. No domain names or brand lists are ever transmitted across external networks.',
+    faqs: [
+      {
+        question:
+          'What typographical error models are simulated by the generator?',
+        answer:
+          'The tool applies common keyboard adjacency errors, character omissions, duplicate keystrokes, and phonetic substitutions to simulate human typographical mistakes across domain names.',
+      },
+      {
+        question:
+          'Why do organisations evaluate typosquatting domain permutations?',
+        answer:
+          'Brand managers and cybersecurity professionals register defensive typographical domains to redirect confused visitors and prevent deceptive phishing attacks against customers.',
+      },
+      {
+        question:
+          'Can I export the generated typo domain list for registrar checks?',
+        answer:
+          'Yes. You can copy the generated typo permutations or export them as a clean text list for checking availability across domain registrars.',
+      },
+      {
+        question: 'Are my brand names or domain research lists tracked online?',
+        answer:
+          'No. All typo permutation algorithms execute locally in client browser memory with zero network traffic, ensuring complete brand research privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'net-worth-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-net-worth-calculator': {
+    directAnswer:
+      'Calculate your net worth directly in your browser by tallying liquid assets, investments, real estate equity, and personal property, then deducting current liabilities including credit balances, personal loans, and mortgages. The calculator computes total holdings, aggregate obligations, and your net financial standing entirely client-side in memory to keep all personal balance sheet figures strictly private.',
+    leadParagraph:
+      'Assessing overall financial standing requires a clear consolidation of assets against liabilities. This net worth calculator enables individuals and households to itemise cash reserves, retirement accounts, equity portfolios, residential properties, and vehicle valuations alongside outstanding unsecured lines, educational borrowings, credit cards, and mortgage balances. By aggregating these components into a single clear ledger, the tool establishes a reliable baseline for financial independence planning, retirement forecasting, and debt reduction monitoring. Because wealth calculations involve sensitive personal records that must remain confidential, all numerical processing runs exclusively within your local browser runtime. No asset entries, debt schedules, or calculated equity sums ever get transmitted to external web services or stored in third-party databases. Periodic net worth tracking clarifies whether household debt reduction strategies and investment contributions are generating meaningful long-term financial progress. It allows families to make informed choices regarding major life milestones such as home purchases or retirement transitions.',
+    faqs: [
+      {
+        question: 'How frequently should I calculate personal net worth?',
+        answer:
+          'Most financial advisers recommend calculating net worth quarterly or semi-annually to track long-term capital accumulation trends while ignoring temporary market fluctuations.',
+      },
+      {
+        question:
+          'Should personal vehicles and household contents be included?',
+        answer:
+          'Vehicles and household goods can be included using conservative resale values, though some conservative planners exclude depreciating personal property entirely from net capital.',
+      },
+      {
+        question: 'How does net worth differ from gross annual income?',
+        answer:
+          'Gross income measures periodic monetary flow earned across a specific interval, whereas net worth represents the total accumulated balance of assets minus debt obligations.',
+      },
+      {
+        question:
+          'Are my confidential financial records stored or uploaded anywhere?',
+        answer:
+          'No. Every balance calculation executes entirely client-side in browser memory with zero outbound network transmissions, keeping your personal household balance sheet private.',
+      },
+    ],
+  },
+  // components/image-editor-tool.tsx, lib/tools/image.ts, lib/tools/image.test.ts and app/image/editor/page.tsx
+  'image-image-contrast': {
+    directAnswer:
+      'Adjust image contrast directly in your browser by applying luminance slope scaling across RGBA pixel buffers rendered within an HTML5 canvas element. The tool expands tonal divergence between shadow zones and highlights or flattens extremes for subtle toning. All visual processing takes place client-side in memory to ensure personal photos and proprietary graphic assets remain private.',
+    leadParagraph:
+      'Correcting tonal dynamic range is essential when restoring underexposed digital photos, improving graphic asset readability, or preparing visual media for digital publication. This browser-based contrast editor applies linear and non-linear contrast adjustments across canvas pixel buffers in real time, expanding the separation between dark shadows and bright highlights without degrading image clarity. Users can preview tonal revisions interactively and export the calibrated graphic in standard formats such as PNG or JPEG without compression artefacts. Because image editing often involves personal family photos, proprietary branding, or unreleased marketing assets, all graphical processing executes client-side in browser memory. No source photographs or modified image files are ever uploaded to remote servers. Proper contrast balance enhances visual hierarchy and improves accessibility for readers with low vision. Fine-tuning dynamic tone ranges directly within your browser guarantees that graphic designs remain sharp and impactful across desktop monitors, mobile screens, and printed publications.',
+    faqs: [
+      {
+        question: 'How does increasing contrast alter digital image pixels?',
+        answer:
+          'Increasing contrast expands the mathematical spread between dark and light tones, making shadows darker and highlights brighter across the entire image colour palette.',
+      },
+      {
+        question:
+          'Can contrast adjustment cause clipping in shadow or highlight regions?',
+        answer:
+          'Extreme contrast boosts can cause tonal clipping where dark pixels saturate to pure black (RGB 0) and bright areas clip to pure white (RGB 255).',
+      },
+      {
+        question: 'What image formats can I inspect, adjust, and export?',
+        answer:
+          'The editor supports standard raster formats including PNG, JPEG, and WebP, allowing flexible image enhancement without quality loss or external dependency requirements.',
+      },
+      {
+        question:
+          'Are my uploaded photographs or graphics transmitted to external servers?',
+        answer:
+          'No. All canvas rendering and pixel transformations occur locally in client browser memory with zero outbound network calls, maintaining total visual data privacy.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'complex-number-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-complex-number-calculator': {
+    directAnswer:
+      'Evaluate complex number arithmetic directly in your browser by entering real and imaginary components in rectangular or polar format. The calculator computes addition, subtraction, multiplication, division, modulus, phase argument, and complex conjugates with exact fractional and decimal results. All algebraic operations run client-side in memory to keep scientific formulas and academic problem sets confidential.',
+    leadParagraph:
+      'Complex numbers play a pivotal role in electrical engineering, signal processing, quantum physics, and applied mathematics. This client-side complex number calculator allows students, engineers, and researchers to perform fundamental arithmetic operations, calculate absolute values, determine phase angles in radians or degrees, and evaluate complex conjugates without installing specialized desktop numerical computing environments. The tool seamlessly parses both standard rectangular format (a + bi) and polar notation (r ∠ θ), providing clear intermediate steps alongside final numeric results. Because engineering research and coursework equations require computational privacy, all numerical evaluations take place locally in browser memory. No formulas or arithmetic variables are ever transmitted across external networks. Understanding complex arithmetic is vital for impedance calculations in alternating current circuits and wave function analyses in modern physics. Performing operations directly in the browser provides rapid computational verification for university engineering students and technical researchers.',
+    faqs: [
+      {
+        question: 'What is the complex conjugate of an imaginary number?',
+        answer:
+          'The complex conjugate reverses the sign of the imaginary component, converting a + bi into a - bi, which facilitates real-number polynomial denominators during division.',
+      },
+      {
+        question:
+          'Can I toggle between rectangular and polar coordinate outputs?',
+        answer:
+          'Yes. The calculator displays results in both rectangular cartesian coordinates (a + bi) and polar phasor representations (magnitude and phase angle) for engineering analysis.',
+      },
+      {
+        question: 'How is division handled between two complex numbers?',
+        answer:
+          'Division multiplies both numerator and denominator by the conjugate of the divisor, producing a real denominator that yields distinct real and imaginary components.',
+      },
+      {
+        question:
+          'Are my mathematical expressions or calculation logs stored remotely?',
+        answer:
+          'No. All complex arithmetic functions execute client-side in local browser memory with zero outbound network communication, ensuring absolute computational privacy for research work.',
+      },
+    ],
+  },
+  // components/pdf-page-tools.tsx, workers/pdf-merge.worker.ts, lib/tools/pdf/page-selection.ts and app/pdf/page-tools/page.tsx
+  'pdf-pdf-metadata-editor': {
+    directAnswer:
+      'Edit PDF document metadata directly in your browser by reading and updating standard dictionary fields including title, author, subject, keywords, creator, and producer tags. The tool reads your binary document with client-side Web Workers, applies new string entries, and re-encodes clean PDF files entirely in memory to ensure legal briefs and private records remain confidential.',
+    leadParagraph:
+      'Document metadata often contains sensitive author information, outdated software tags, or missing archival titles that affect search indexing and document confidentiality. This PDF metadata editor enables legal professionals, academic authors, and enterprise staff to inspect and modify internal PDF metadata dictionaries directly within their browser without altering visible document pages or layout structures. You can update title fields, sanitize author names, add searchable keywords, or strip tracking metadata before distributing documents publicly. Because PDF documents frequently contain confidential legal records, financial audits, or medical reports, all parsing and byte rebuilding execute locally using client-side Web Workers. No document bytes are ever uploaded to remote servers. Clean document metadata improves document discoverability across enterprise digital archives and ensures publication compliance with regulatory archiving standards. Sanitizing metadata before public distribution prevents embarrassing data leaks and ensures professional document presentation.',
+    faqs: [
+      {
+        question:
+          'Does modifying metadata alter the visible text on PDF pages?',
+        answer:
+          'No. Metadata editing updates only the internal document information dictionary and XMP metadata streams, leaving all visible text, vector graphics, and page layouts unchanged.',
+      },
+      {
+        question:
+          'Can I remove existing author and organisation tags completely?',
+        answer:
+          'Yes. You can clear author, creator, producer, and keyword fields entirely to sanitize document provenance before distributing files to external clients or public repositories.',
+      },
+      {
+        question:
+          'Is PDF password protection supported by the metadata editor?',
+        answer:
+          'Encrypted or password-restricted PDF files must have security permissions unlocked prior to editing, as cryptographic protection prevents unauthorized modification of document dictionary fields.',
+      },
+      {
+        question:
+          'Are my private PDF documents uploaded during metadata editing?',
+        answer:
+          'No. All PDF binary parsing and byte assembly run strictly inside browser memory using local Web Workers with zero outbound network calls, ensuring total confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'wave-speed-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-wave-speed-calculator': {
+    directAnswer:
+      'Calculate wave speed, frequency, or wavelength directly in your browser using the classical wave equation v = f × λ. Enter any two known physical parameters to compute the missing variable across acoustic, electromagnetic, or mechanical wave systems. The calculation executes entirely client-side in memory to ensure laboratory figures and academic physics exercises remain secure.',
+    leadParagraph:
+      'Understanding wave propagation mechanics is essential in acoustics, telecommunications, optics, and general physics education. This wave speed calculator applies the fundamental wave relationship v = f × λ, enabling students, educators, and laboratory researchers to determine phase velocity, wave frequency in hertz, or wavelength in metres with automatic scientific unit conversions. Whether analyzing sound waves propagating through fluid media, seismic oscillations through rock strata, or radio frequency signals through free space, the tool delivers immediate numerical solutions and derived period calculations. Because academic exercises and laboratory datasets require privacy, all computational logic runs locally within your browser. No physical parameters or calculation histories are ever sent across the web. Wave kinematics equations provide fundamental insights across diverse fields, from seismic wave monitoring in geology to ultrasound imaging in diagnostic medicine. Calculating wave velocity parameters directly in the browser helps students and researchers verify lab measurements without complex software.',
+    faqs: [
+      {
+        question: 'What is the fundamental wave speed equation used here?',
+        answer:
+          'The calculator utilizes the relationship v = f × λ, where wave velocity equals frequency multiplied by wavelength, expressing how quickly wave crests propagate through space.',
+      },
+      {
+        question:
+          'How does wave frequency relate to wave period mathematically?',
+        answer:
+          'Frequency (f) and period (T) are reciprocals (f = 1/T); wave period measures the elapsed time for one complete cycle, whereas frequency counts cycles per second.',
+      },
+      {
+        question:
+          'Does wave speed depend on the physical medium of propagation?',
+        answer:
+          'Yes. Wave speed is determined by medium properties such as elasticity, density, and temperature, meaning sound travels faster in dense solids than in ambient air.',
+      },
+      {
+        question:
+          'Are my physics parameters or calculation histories uploaded online?',
+        answer:
+          'No. Every formula evaluation runs locally in client browser memory with zero network traffic, ensuring complete computational privacy for laboratory and classroom physics work.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-diff', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-diff': {
+    directAnswer:
+      'Compare two text snippets directly in your browser by computing line-by-line and character-level differences using Myers diff algorithm. The tool highlights insertions, deletions, and inline modifications with visual color-coded badges entirely client-side in memory to ensure confidential contracts, draft manuscripts, and source code excerpts remain private. The tool executes all comparison routines locally in client browser memory with zero outbound network calls.',
+    leadParagraph:
+      'Detecting textual modifications between document revisions is vital for software developers reviewing source patches, editors comparing manuscript drafts, and legal teams examining contract variations. This client-side text difference inspector performs fast line-level and character-level comparisons, highlighting additions in green and deletions in red with clean visual indicators. Users can toggle between unified diff view and side-by-side split comparison to inspect nuanced wording changes, whitespace alterations, or punctuation revisions effortlessly. Because revision comparisons frequently involve proprietary source code, unpublished manuscripts, or privileged legal agreements, all diff algorithms execute locally inside browser memory. No text passages or comparison results are ever transmitted across external networks. Fast text difference comparison accelerates code reviews, manuscript proofreading, and contract negotiation audits. Visualizing modifications line by line allows editors and engineers to catch unintended deletions, formatting quirks, and wording discrepancies with total confidence.',
+    faqs: [
+      {
+        question:
+          'What comparison algorithm powers the client-side text diff tool?',
+        answer:
+          'The tool uses Myers difference algorithm to compute the shortest edit script between two text buffers, identifying minimal insertions and deletions line by line.',
+      },
+      {
+        question: 'Can I toggle between unified and split comparison views?',
+        answer:
+          'Yes. You can switch between a unified single-column view and a side-by-side split screen to inspect structural differences according to your review preference.',
+      },
+      {
+        question: 'Does the tool highlight intra-line character changes?',
+        answer:
+          'Yes. In addition to flagging modified lines, the comparison engine highlights specific character additions, deletions, and typographical substitutions within each altered line.',
+      },
+      {
+        question:
+          'Is my sensitive text or contract content uploaded to servers?',
+        answer:
+          'No. All comparison calculations run strictly inside local client memory with zero outbound network transmissions, guaranteeing total confidentiality for sensitive draft documents.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'favicon-inspector', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-favicon-inspector': {
+    directAnswer:
+      'Inspect website favicons directly in your browser by parsing icon image formats, dimension profiles, colour depths, and HTML link tag declarations. The tool validates standard ICO, PNG, and SVG icon sets entirely client-side in memory to ensure website branding assets and staging environment URLs remain confidential. The inspector analyzes all icon files client-side in browser memory to keep staging links and brand assets private.',
+    leadParagraph:
+      'Delivering crisp, properly dimensioned website icons is critical for modern browser tabs, mobile home screen bookmarks, and search engine snippet displays. This client-side favicon inspector analyzes uploaded icon graphics or raw ICO container binaries, extracting individual embedded resolutions (such as 16x16, 32x32, 48x48, and 180x180 pixels), validating format compliance, and generating recommended HTML link header tags. Web developers and graphic designers can confirm that branding assets render sharply across high-density Retina displays and legacy browser interfaces without pixelation. Because digital brand assets and pre-launch website graphics require secrecy, all icon parsing runs locally in browser memory. No icon assets or diagnostic details are ever sent to remote web servers. Maintaining consistent favicon definitions across multiple resolutions ensures sharp display across modern device interfaces and browser tabs. Auditing icon files directly in browser memory saves web developers time during site pre-launch quality audits and branding reviews.',
+    faqs: [
+      {
+        question: 'Why should an ICO file contain multiple icon image sizes?',
+        answer:
+          'Multi-resolution ICO containers allow operating systems and browsers to select the ideal resolution (such as 16px for tabs or 32px for taskbars) without blurry scaling.',
+      },
+      {
+        question:
+          'What dimensions are required for Apple Touch bookmark icons?',
+        answer:
+          'Apple iOS devices expect a square PNG icon measuring 180x180 pixels declared via the rel=apple-touch-icon link tag for home screen bookmarks.',
+      },
+      {
+        question: 'Can SVG vector graphics be used as website favicons?',
+        answer:
+          'Modern desktop browsers support SVG favicons declared with type=image/svg+xml, enabling resolution-independent vector rendering and CSS-driven dark mode colour adaptations across operating system themes.',
+      },
+      {
+        question:
+          'Are my uploaded favicon graphics or web addresses sent online?',
+        answer:
+          'No. All image binary decoding and tag validations occur locally in client browser memory with zero network requests, maintaining complete asset privacy.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS 'budget-planner', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-budget-planner': {
+    directAnswer:
+      'Plan your monthly household budget directly in your browser by categorising gross income sources, fixed obligations, variable living expenses, and discretionary spending. The planner calculates net monthly surplus, expenditure allocations, and savings ratios entirely client-side in memory to keep all personal income figures and household expenditure logs confidential. The planner evaluates all household figures locally in client browser memory to keep personal budgeting data confidential.',
+    leadParagraph:
+      'Maintaining financial discipline requires detailed visibility into recurring revenues and categorised household spending. This browser-based budget planner allows individuals and families to structure their monthly financial flow by itemising net take-home pay alongside essential housing costs, utilities, transportation, groceries, insurance premiums, debt repayments, and discretionary leisure expenses. The tool immediately calculates total outlays, reveals cash surpluses or deficits, and displays percentage distributions across budget buckets to highlight overspending patterns. Because household income and expenditure records involve highly sensitive personal details, all financial computations take place locally inside browser memory. No budget entries or personal savings numbers are ever transmitted to external web services. Structured monthly budgeting helps individuals build emergency cash reserves, pay down revolving debts, and achieve long-term financial independence. Visualizing income allocations empowers households to curb impulse spending and prioritize meaningful savings goals.',
+    faqs: [
+      {
+        question:
+          'How should irregular or seasonal income be entered into the budget?',
+        answer:
+          'Irregular earnings should be entered using conservative baseline monthly estimates, allocating surplus windfalls toward contingency savings or expedited debt elimination.',
+      },
+      {
+        question:
+          'What is the distinction between fixed and variable household expenses?',
+        answer:
+          'Fixed expenses remain identical each month (such as rent or loan repayments), while variable costs fluctuate based on consumption habits (such as groceries and dining).',
+      },
+      {
+        question:
+          'What percentage of income should ideally be allocated to savings?',
+        answer:
+          'Financial standards typically suggest saving at least 20 percent of net disposable earnings toward emergency funds, retirement investments, and specific capital goals.',
+      },
+      {
+        question:
+          'Are my private earnings and household expense numbers tracked online?',
+        answer:
+          'No. All budget calculations execute client-side in browser memory with zero outbound network calls, ensuring absolute privacy for your personal finances.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'logarithm-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-logarithm-calculator': {
+    directAnswer:
+      'Compute logarithms directly in your browser across natural (ln), common (log10), binary (log2), and arbitrary bases using client-side mathematical evaluation. The calculator yields exact fractional and rounded floating-point results entirely client-side in memory to ensure academic exercises and technical calculations remain completely private. All calculations execute client-side in browser memory to keep academic coursework and numerical computations confidential.',
+    leadParagraph:
+      'Logarithmic functions are fundamental in data science, acoustics, earthquake magnitude scales, chemistry pH calculations, and computational complexity analysis. This client-side logarithm calculator computes natural logarithms (base e), decadic common logarithms (base 10), binary logarithms (base 2), and arbitrary user-defined base logarithms using standard change-of-base identities. Users receive accurate floating-point solutions alongside inverse exponential validations in real time without navigating heavy mathematical desktop environments. Because academic assignments, statistical models, and scientific research datasets require total discretion, all logarithmic calculations execute locally within your browser. No mathematical inputs or calculated results are ever sent across external networks. Logarithmic scaling simplifies the representation of exponential growth phenomena across scientific disciplines, from decibel sound intensity to seismic Richter scales. Solving logarithms locally in client memory gives students and researchers instant computational feedback. This ensures reliable mathematical precision across academic problems.',
+    faqs: [
+      {
+        question: 'What is the mathematical definition of a logarithm?',
+        answer:
+          'A logarithm answers the question of what exponent a given base must be raised to in order to produce the specified target number (log_b(x) = y means b^y = x).',
+      },
+      {
+        question:
+          'How does the calculator compute logarithms with arbitrary bases?',
+        answer:
+          'The calculator utilizes the change-of-base formula (log_b(x) = ln(x) / ln(b)), converting arbitrary base equations into natural logarithmic quotients for floating-point precision.',
+      },
+      {
+        question: 'Why is the logarithm of zero or negative numbers undefined?',
+        answer:
+          'In standard real arithmetic, raising a positive base to any finite real power yields a positive value, rendering real logarithms of zero and negative inputs undefined.',
+      },
+      {
+        question:
+          'Are my calculation values or mathematical formulas saved online?',
+        answer:
+          'No. All logarithmic operations run locally inside client browser memory with zero network traffic, ensuring complete confidentiality for academic and industrial research.',
+      },
+    ],
+  },
+  // components/pdf-page-tools.tsx, workers/pdf-merge.worker.ts, lib/tools/pdf/page-selection.ts and app/pdf/page-tools/page.tsx
+  'pdf-pdf-page-numbers': {
+    directAnswer:
+      'Add page numbers to PDF documents directly in your browser by configuring header or footer positioning, margins, font typography, starting indices, and numbering formats. The tool stamps numbering overlays onto document pages using client-side Web Workers entirely in memory to ensure confidential reports and legal filings remain private. The pagination engine runs entirely client-side in browser memory to keep legal records and confidential documents private.',
+    leadParagraph:
+      'Organising formal reports, legal discovery bundles, and academic dissertations requires consistent, legible pagination across every page. This client-side PDF page numbering tool enables users to apply customizable pagination overlays to any PDF file without altering original underlying graphics, tables, or text layers. You can select header or footer placement, align numbers left, center, or right, adjust margins, choose font sizes, and format indices as simple numbers or page count summaries (such as Page X of Y). Because documents requiring pagination often involve sensitive corporate contracts, court filings, or medical dossiers, all PDF parsing and byte re-encoding execute locally in browser memory using Web Workers. No files are ever uploaded to remote servers. Clear page numbering facilitates collaborative document reviews, courtroom references, and academic citations across extensive multi-page documents. Customizing page numbering parameters ensures generated documents adhere strictly to institutional formatting guidelines.',
+    faqs: [
+      {
+        question: 'Can I omit page numbering from cover pages or front matter?',
+        answer:
+          'Yes. You can specify custom start pages and offset initial numbering indices so that titles and tables of contents remain unnumbered according to standard styling.',
+      },
+      {
+        question:
+          'What formatting styles are available for page number labels?',
+        answer:
+          'You can apply standard numerical digits (1, 2, 3), Roman numerals, or composite labels including total page summaries like Page 1 of 50.',
+      },
+      {
+        question:
+          'Does adding page numbers recompress or degrade embedded images?',
+        answer:
+          'No. The tool stamps new vector text layers onto existing page descriptions without modifying or recompressing embedded raster images, preserving original document quality.',
+      },
+      {
+        question: 'Are my PDF documents uploaded during page number insertion?',
+        answer:
+          'No. All PDF byte manipulations occur strictly within your browser using client-side Web Workers with zero network transmission, guaranteeing absolute file privacy.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'doppler-effect-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-doppler-effect-calculator': {
+    directAnswer:
+      'Calculate Doppler frequency shifts directly in your browser by specifying emitted source frequency, wave propagation speed, and relative velocities of both source and observer. The calculator models approaching, receding, and stationary conditions entirely client-side in memory to ensure physical research parameters and coursework problems remain confidential. The calculator executes all kinematic equations client-side in browser memory to keep experimental physics exercises secure.',
+    leadParagraph:
+      'The Doppler effect describes the observed frequency alteration of a wave when the source and observer are moving relative to one another. Essential in radar technology, astronomy redshift analysis, medical ultrasound, and acoustic physics, this Doppler effect calculator evaluates observed frequencies for sound and mechanical waves under moving-source or moving-observer configurations. Users can enter emitter frequency, velocity values, and medium propagation speed to calculate frequency increases as bodies approach and frequency reductions as they move apart. Because academic assignments and scientific investigations require computational privacy, all physics formulas run locally within your browser runtime. No calculation inputs or physical parameters are ever shared across external networks. The Doppler effect underpins critical modern technologies, including police speed radar, astronomical spectroscopy, and cardiovascular Doppler echocardiography. Modeling wave shifts directly in the browser allows physics students and educators to verify kinematic concepts interactively.',
+    faqs: [
+      {
+        question:
+          'What causes the observed frequency shift in the Doppler effect?',
+        answer:
+          'Relative motion compresses wave crests ahead of a moving source, shortening wavelength and raising observed frequency, while elongating waves behind it to lower frequency.',
+      },
+      {
+        question:
+          'How does moving source differ from moving observer in equations?',
+        answer:
+          'A moving source alters the physical wavelength propagating through the medium, whereas a moving observer intercepts stationary wavefronts at altered relative speed.',
+      },
+      {
+        question:
+          'Can this tool calculate relativistic Doppler shifts for light?',
+        answer:
+          'This calculator models classical acoustic wave Doppler equations; relativistic electromagnetic Doppler shifts require Lorentz factor time-dilation adjustments near light speed.',
+      },
+      {
+        question:
+          'Are my scientific parameters or calculations logged on a server?',
+        answer:
+          'No. All calculations run strictly inside local client browser memory with zero network communication, ensuring complete privacy for your laboratory and academic work.',
+      },
+    ],
+  },
+  // components/subtitle-workbench-tool.tsx, lib/tools/subtitle-workbench.ts (SUBTITLE_OPERATIONS 'subtitle-shift', runSubtitleOperation) and app/subtitles/subtitle-shift/page.tsx
+  'subtitles-delay-fixer': {
+    directAnswer:
+      'Fix subtitle timing desynchronisation directly in your browser by shifting SRT and WebVTT cue timestamps forward or backward by exact millisecond or second offsets. The tool recalculates all timecode boundaries entirely client-side in memory to ensure unreleased film dialogue, private video transcriptions, and media files remain confidential. All timestamp transformations execute client-side in browser memory to keep proprietary video scripts and captions secure.',
+    leadParagraph:
+      'Watching subtitled media with desynchronised dialogue ruins the viewing experience, whether cues appear seconds before characters speak or linger long after scenes transition. This browser-based subtitle delay fixer parses standard SubRip (SRT) and WebVTT caption files, applying positive or negative timecode shifts across all cue intervals with millisecond accuracy. The tool automatically handles boundary rollovers across hours, minutes, seconds, and milliseconds, ensuring timestamps conform to strict subtitle file specifications without corrupting cue numbers or text markup. Because video captions often belong to unreleased creative media, internal corporate presentations, or confidential video logs, all subtitle processing runs locally in browser memory. No subtitle files are ever uploaded to remote servers. Synchronising subtitle tracks directly in the browser eliminates the frustration of misaligned media playback. Handling timing offsets locally ensures video creators, localization teams, and media enthusiasts can repair caption drift quickly without specialized desktop video editors.',
+    faqs: [
+      {
+        question:
+          'What subtitle file formats are supported by the delay fixer?',
+        answer:
+          'The tool supports standard SubRip (.srt) and WebVTT (.vtt) caption formats, parsing timing blocks and cue indices with full specification compliance.',
+      },
+      {
+        question:
+          'How do positive and negative timecode offsets affect captions?',
+        answer:
+          'A positive delay shifts subtitles later to fix early cues, while a negative delay moves timestamps earlier to correct captions lagging behind spoken dialogue.',
+      },
+      {
+        question:
+          'What happens if a negative shift pushes a timestamp below zero?',
+        answer:
+          'The tool clamps cue start times at zero (00:00:00,000) to prevent negative timecodes that could crash media players or invalidate standard subtitle syntax.',
+      },
+      {
+        question:
+          'Are my private subtitle transcripts or video scripts uploaded?',
+        answer:
+          'No. All timecode parsing and file generation execute client-side in browser memory with zero outbound network calls, ensuring complete transcript confidentiality.',
+      },
+    ],
+  },
+  // lib/tools/text-workbench.ts (TEXT_OPERATIONS 'text-merge', runTextOperation), lib/tools/text-workbench.test.ts, components/text-workbench-tool.tsx and app/text/[tool]/page.tsx
+  'text-and-writing-text-merge': {
+    directAnswer:
+      'Merge multiple text blocks, word lists, or columnar datasets directly in your browser by combining lines sequentially, interleaving records, or joining columns with custom delimiters. The tool combines textual data entirely client-side in memory to ensure confidential customer lists, proprietary databases, and private documents remain secure. The merger combines all text lines locally in client browser memory to keep private datasets and documents confidential.',
+    leadParagraph:
+      'Consolidating fragmented text lists, combining multi-column spreadsheets, or merging distributed documentation often requires flexible string combination tools. This client-side text merge workbench allows data managers, administrative staff, and writers to merge multiple input streams using custom delimiters, line-by-line concatenation, or alternating interleaving patterns. Users can configure prefix and suffix wrappers, eliminate blank rows, and standardize line endings before copying or exporting consolidated outputs. Because text merging frequently involves proprietary customer contact records, unreleased catalog copy, or confidential corporate datasets, all string manipulation executes locally inside browser memory. No source text or merged outputs are ever sent across external networks. Combining distributed data streams, word lists, or multi-column text records into unified documents saves time during data preparation and administrative analysis. Customizing delimiter characters and formatting rules ensures merged outputs integrate cleanly into downstream workflows.',
+    faqs: [
+      {
+        question: 'Can I join text lines using custom separating delimiters?',
+        answer:
+          'Yes. You can select standard delimiters such as commas, tabs, semicolons, and spaces, or supply custom string characters to join columns precisely.',
+      },
+      {
+        question:
+          'How does alternating line interleaving function during merging?',
+        answer:
+          'Interleaving takes alternating rows from each input list sequentially (line 1 from list A, line 1 from list B), assembling a unified interleaved stream.',
+      },
+      {
+        question:
+          'What happens if input lists have differing numbers of lines?',
+        answer:
+          'The merger pairs matching row indices and appends remaining unpaired items from the longer list, or fills missing slots based on selected join options.',
+      },
+      {
+        question:
+          'Are my merged text documents or contact lists uploaded online?',
+        answer:
+          'No. All text concatenation and list processing occur strictly inside client browser memory with zero network traffic, ensuring complete data security.',
+      },
+    ],
+  },
+  // lib/tools/web-workbench.ts (WEB_OPERATIONS 'web-app-manifest-generator', runWebOperation), lib/tools/web-workbench.test.ts, components/web-workbench-tool.tsx and app/web/[tool]/page.tsx
+  'web-and-seo-web-app-manifest-generator': {
+    directAnswer:
+      'Generate a compliant Progressive Web App manifest.json file directly in your browser by specifying application names, start URLs, display modes, theme colors, background colors, and icon profiles. The tool formats standard JSON specifications entirely client-side in memory to ensure unreleased web app configurations and internal metadata remain private. The generator formats standard JSON structures locally in browser memory to keep internal application configurations private.',
+    leadParagraph:
+      'Transforming web applications into installable Progressive Web Apps requires a valid web app manifest (manifest.json) that informs mobile and desktop operating systems how the application should appear and launch. This client-side manifest generator enables web developers to configure app identifiers, short titles, start URLs, display options (such as standalone, fullscreen, or minimal-ui), orientation preferences, theme colors, and multi-size icon definitions with real-time JSON preview. The generated manifest satisfies Chromium and WebKit PWA installability criteria, ready for immediate deployment into your web project root. Because web architecture configurations and unreleased product metadata require confidentiality, all JSON generation takes place locally in browser memory. No configuration entries are ever transmitted to remote servers. Creating a complete manifest.json file is a mandatory step toward delivering native-like web applications that install directly onto user home screens. Configuring display properties and branding icons directly in browser memory accelerates progressive web development workflows.',
+    faqs: [
+      {
+        question: 'What display modes can be configured in a PWA manifest?',
+        answer:
+          'Supported display modes include standalone (hiding browser UI controls), fullscreen (occupying the entire display), minimal-ui, and browser (standard tab display).',
+      },
+      {
+        question:
+          'What icon dimensions are required for PWA installation prompts?',
+        answer:
+          'Operating systems typically require square PNG icons sized at 192x192 and 512x512 pixels, with maskable icon attributes recommended for Android adaptive badges.',
+      },
+      {
+        question: 'How do theme_color and background_color differ in practice?',
+        answer:
+          'theme_color tints the native application toolbar and status bar, while background_color sets the splash screen background displayed while the application loads.',
+      },
+      {
+        question:
+          'Are my application names or PWA configurations saved remotely?',
+        answer:
+          'No. All JSON schema generation runs entirely client-side in browser memory with zero outbound network calls, ensuring total confidentiality for your web project.',
+      },
+    ],
+  },
+  // lib/tools/finance-business-workbench.ts (FINANCE_OPERATIONS '50-30-20-budget-calculator', runFinanceOperation), lib/tools/finance-business-workbench.test.ts, components/finance-business-workbench-tool.tsx and app/finance/[tool]/page.tsx
+  'finance-and-business-50-30-20-budget-calculator': {
+    directAnswer:
+      'Calculate your 50/30/20 budget breakdown directly in your browser by entering net take-home pay to divide income into 50 percent for essential needs, 30 percent for discretionary wants, and 20 percent for savings and debt repayment. The tool calculates exact monetary allocations entirely client-side in memory to keep personal salary and household budgeting data private.',
+    leadParagraph:
+      'The 50/30/20 budgeting rule offers a proven, intuitive framework for managing household cash flow without micro-managing hundreds of granular spending line items. This client-side budget calculator takes your monthly after-tax income and immediately divides it into three fundamental categories: fifty percent dedicated to essential survival needs (such as rent, mortgage, utilities, basic groceries, and minimum debt repayments), thirty percent assigned to discretionary lifestyle desires (such as dining, recreation, hobbies, and vacations), and twenty percent earmarked for financial progress (including emergency funds, retirement contributions, and accelerated debt payoff). Because personal salary numbers and household spending targets are private financial details, all calculations run locally in your browser runtime. No income figures or calculated budgets are ever sent to remote web servers. Implementing the 50/30/20 framework simplifies financial decision-making by eliminating ambiguity around discretionary lifestyle purchases. By establishing hard percentage thresholds, savers can enjoy guilt-free recreational spending while ensuring continuous wealth accumulation.',
+    faqs: [
+      {
+        question:
+          'Should the 50/30/20 budget be calculated using gross or net pay?',
+        answer:
+          'The 50/30/20 budget must be calculated using net take-home pay after income taxes, payroll levies, and mandatory social insurance contributions have been deducted.',
+      },
+      {
+        question: 'Where do minimum credit card and loan payments belong?',
+        answer:
+          'Minimum required contractual debt payments belong in the 50 percent needs bucket, whereas extra debt payoff amounts above minimums belong in the 20 percent savings tier.',
+      },
+      {
+        question:
+          'Can the percentages be adjusted if living costs exceed 50 percent?',
+        answer:
+          'In high-cost-of-living regions, individuals frequently adjust the ratio to 60/20/20 or 70/20/10 while working to trim fixed costs and rebuild savings capacity.',
+      },
+      {
+        question:
+          'Are my personal earnings or budget allocations stored online?',
+        answer:
+          'No. All budget calculations execute client-side in browser memory with zero outbound network calls, guaranteeing total privacy for your household financial planning.',
+      },
+    ],
+  },
+  // lib/tools/math-workbench.ts (MATH_OPERATIONS 'exponent-calculator', runMathOperation), lib/tools/math-workbench.test.ts, components/math-workbench-tool.tsx and app/math/[tool]/page.tsx
+  'math-and-units-exponent-calculator': {
+    directAnswer:
+      'Calculate exponential powers directly in your browser by raising any base number to positive, negative, integer, or fractional exponents. The calculator delivers exact fractional, scientific notation, and decimal results entirely client-side in memory to ensure proprietary mathematical formulas and academic problem sets remain strictly confidential. All exponential computations execute client-side in browser memory to keep scientific formulas and mathematical problem sets private.',
+    leadParagraph:
+      'Exponential math is central to compound interest modeling, population biology, radioactive half-life calculations, computer science algorithmic growth, and physics equations. This client-side exponent calculator computes base numbers raised to any power, supporting positive integers, negative exponents (representing reciprocals), fractional roots, and large powers rendered in clean scientific notation. Users receive immediate arithmetic solutions alongside step-by-step breakdown explanations of exponent laws without installing heavy scientific calculation suites. Because academic coursework, financial forecasting formulas, and technical datasets require complete discretion, all exponential computations execute locally within your browser runtime. No mathematical variables or equation answers are ever transmitted across external networks. Exponential growth and decay models govern critical processes across computational science, microbiology, finance, and nuclear engineering. Computing high-magnitude powers and fractional roots directly in client memory provides rapid mathematical validation for complex modeling projects.',
+    faqs: [
+      {
+        question: 'How does the calculator handle negative exponent values?',
+        answer:
+          'A negative exponent represents the reciprocal of the base raised to the positive power (for example, x^-2 equals 1 / (x^2)), which the tool computes accurately.',
+      },
+      {
+        question: 'What does a fractional exponent represent in mathematics?',
+        answer:
+          'A fractional exponent represents a root; x^(1/2) is the square root of x, while x^(m/n) represents the n-th root of x raised to the m-th power.',
+      },
+      {
+        question:
+          'Why does any non-zero number raised to the zero power equal one?',
+        answer:
+          'By the laws of exponents, x^a / x^a equals x^(a-a) = x^0; because any non-zero quantity divided by itself equals one, x^0 must equal one.',
+      },
+      {
+        question:
+          'Are my equations or mathematical calculation histories saved online?',
+        answer:
+          'No. All exponent evaluations run locally in client browser memory with zero network traffic, ensuring complete confidentiality for academic and scientific math work.',
+      },
+    ],
+  },
+  // components/pdf-page-tools.tsx, workers/pdf-merge.worker.ts, lib/tools/pdf/page-selection.ts and app/pdf/page-tools/page.tsx
+  'pdf-pdf-watermark': {
+    directAnswer:
+      'Watermark PDF documents directly in your browser by applying customizable text stamps with configurable opacity, rotation angles, font styling, and page ranges. The tool composites watermark overlays directly into PDF page content streams using client-side Web Workers entirely in memory to ensure confidential contracts and proprietary manuscripts remain secure. The tool stamps watermark text directly in browser memory to keep confidential manuscripts and agreements completely private.',
+    leadParagraph:
+      "Protecting draft publications, confidential legal agreements, and corporate intellectual property often requires stamping clear visual warnings such as 'CONFIDENTIAL', 'DRAFT', or recipient-specific identifiers across document pages. This client-side PDF watermark tool enables users to apply customizable text watermarks across selected pages or entire PDF files without altering underlying text structures or corrupting vector graphics. You can adjust opacity levels to preserve underlying document readability, rotate text diagonally, choose typography sizes, and position watermarks precisely in foreground or background layers. Because documents requiring protective watermarking frequently contain trade secrets, financial records, or litigation discovery, all PDF parsing and byte re-encoding execute locally in browser memory using Web Workers. No files are ever sent to remote web servers. Applying prominent watermark stamps establishes clear document status and deters unauthorized sharing of proprietary draft materials. Local browser-based watermarking guarantees that sensitive legal agreements and draft business plans remain secure while being stamped.",
+    faqs: [
+      {
+        question:
+          'Can I apply watermarks to specific pages rather than the entire PDF?',
+        answer:
+          'Yes. You can specify precise page ranges, such as odd pages, even pages, or specific index ranges, leaving cover sheets and appendix pages clean.',
+      },
+      {
+        question:
+          'Does the watermark appear in front of or behind document text?',
+        answer:
+          'You can choose foreground placement (over existing text with configurable transparency) or background layering to suit your document presentation requirements.',
+      },
+      {
+        question:
+          'Does adding a watermark recompress or degrade embedded images?',
+        answer:
+          'No. The tool adds a native vector text overlay to page content streams without recompressing raster images or degrading original vector document elements.',
+      },
+      {
+        question:
+          'Are my confidential PDF documents uploaded during watermarking?',
+        answer:
+          'No. All PDF processing takes place entirely within local browser memory using client-side Web Workers with zero outbound network traffic, ensuring absolute file privacy.',
+      },
+    ],
+  },
+  // lib/tools/qr-barcode-workbench.ts (QR_BARCODE_OPERATIONS 'code-39-generator', buildQrPayload, runQrBarcodeOperation), lib/tools/qr-barcode-workbench.test.ts, components/qr-barcode-workbench-tool.tsx and app/qr/[tool]/page.tsx
+  'qr-and-barcode-code-39-generator': {
+    directAnswer:
+      'Generate Code 39 barcodes directly in your browser by encoding uppercase letters, numeric digits, and special characters into standard variable-length 1D barcode symbols. The tool renders crisp SVG and high-resolution PNG outputs entirely client-side in memory to ensure industrial asset tags, automotive inventory codes, and defense tracking identifiers remain confidential.',
+    leadParagraph:
+      'Code 39 remains one of the most widely adopted barcode symbologies across automotive manufacturing, defense logistics, healthcare inventory, and industrial asset tracking due to its ability to encode alphanumeric characters without mandatory check digits. This client-side Code 39 barcode generator creates specification-compliant 1D barcode symbols, automatically wrapping inputs with required start and stop asterisks and offering optional modulo-43 checksum calculation for high-security applications. Users can customize bar width, height ratios, quiet zones, and human-readable text labels before exporting clean vector SVG or raster PNG files ready for thermal label printing. Because commercial inventory identifiers and equipment serial numbers require strict confidentiality, all barcode rendering runs locally in browser memory. No barcode data is ever transmitted to external web services. Standard Code 39 symbols offer exceptional reliability in harsh industrial and warehouse logistics environments where optical scanners must read labels quickly. Generating vector barcodes directly in the browser streamlines inventory labeling workflows for logistics and warehouse operations.',
+    faqs: [
+      {
+        question:
+          'What characters can be encoded in a standard Code 39 barcode?',
+        answer:
+          'Standard Code 39 encodes 43 characters: uppercase letters (A-Z), numeric digits (0-9), and seven special symbols (space, minus, period, dollar, slash, plus, percent).',
+      },
+      {
+        question: 'Why do Code 39 barcodes begin and end with asterisks?',
+        answer:
+          'Asterisks serve as dedicated start and stop delimiters that inform optical barcode scanners of symbol boundaries and scanning direction during reading.',
+      },
+      {
+        question: 'Is a checksum digit mandatory for Code 39 barcode scanning?',
+        answer:
+          'Checksums are optional in standard Code 39, though high-reliability industrial and defense workflows often enable optional modulo-43 check digits to prevent scan errors.',
+      },
+      {
+        question: 'Are my inventory serials or asset codes transmitted online?',
+        answer:
+          'No. All barcode generation executes client-side in local browser memory with zero outbound network calls, ensuring total privacy for your equipment serial numbers.',
+      },
+    ],
+  },
+  // lib/tools/science-education-workbench.ts (SCIENCE_OPERATIONS 'lens-equation-calculator', runScienceOperation), lib/tools/science-education-workbench.test.ts, components/science-education-workbench-tool.tsx and app/science/[tool]/page.tsx
+  'science-and-education-lens-equation-calculator': {
+    directAnswer:
+      'Calculate optical image distances, object positions, and focal lengths directly in your browser using the thin lens equation 1/f = 1/do + 1/di. The calculator computes linear magnification and determines whether images are real, virtual, upright, or inverted entirely client-side in memory to ensure laboratory optics data and coursework remain secure.',
+    leadParagraph:
+      'Analyzing light propagation through convex and concave optical lenses is fundamental in geometric optics, camera engineering, microscopy, and introductory physics education. This client-side lens equation calculator solves the thin lens formula 1/f = 1/do + 1/di alongside the transverse magnification relation m = -di / do. By entering any two known optical parameters (focal length, object distance, or image distance), users can calculate the missing variable, examine image magnification, and determine image orientation (upright or inverted) and nature (real or virtual) according to standard Cartesian sign conventions. Because academic coursework and laboratory research require computational privacy, all optical formulas run locally within your browser runtime. No experimental optical measurements or calculations are ever uploaded to remote servers. Mastering thin lens optics is essential for optical instrument design, corrective eyewear engineering, and camera lens manufacturing. Computing focal lengths and magnification ratios interactively helps engineering students and optics technicians verify ray-tracing diagrams and laboratory benchmarks.',
+    faqs: [
+      {
+        question:
+          'What sign conventions are applied in the thin lens equation?',
+        answer:
+          'Convex converging lenses have positive focal lengths (+f), concave diverging lenses have negative focal lengths (-f), and real images on the opposite side have positive distances (+di).',
+      },
+      {
+        question:
+          'How does transverse magnification indicate image orientation?',
+        answer:
+          'A positive magnification value indicates an upright virtual image, whereas a negative magnification value indicates an inverted real image relative to the object.',
+      },
+      {
+        question:
+          'What optical condition produces a virtual image in a convex lens?',
+        answer:
+          'When an object is placed closer to a converging convex lens than its focal point (do < f), the lens acts as a magnifying glass, producing an upright virtual image.',
+      },
+      {
+        question:
+          'Are my laboratory measurements or optics calculations saved online?',
+        answer:
+          'No. All geometric optics formulas execute client-side in browser memory with zero network traffic, ensuring complete privacy for your academic and laboratory research.',
+      },
+    ],
+  },
+  // lib/tools/spreadsheet-workbench.ts (SPREADSHEET_OPERATIONS 'spreadsheet-formula-viewer', runSpreadsheetOperation), lib/tools/spreadsheet-workbench.test.ts, components/spreadsheet-workbench-tool.tsx and app/data/[tool]/page.tsx
+  'spreadsheet-and-data-spreadsheet-formula-viewer': {
+    directAnswer:
+      'View and audit spreadsheet formulas directly in your browser by extracting cell formulas, nested functions, and coordinate references from Excel and spreadsheet files without opening desktop software. The tool maps formula dependencies entirely client-side in memory to ensure financial models, auditing spreadsheets, and proprietary corporate budgets remain confidential. The tool audits spreadsheet formulas client-side in browser memory to keep corporate financial models and records secure.',
+    leadParagraph:
+      'Auditing complex financial models and corporate spreadsheets requires inspecting underlying mathematical logic rather than merely viewing calculated output values. This client-side spreadsheet formula viewer extracts raw formula strings, nested functions (such as VLOOKUP, INDEX/MATCH, and compound IF statements), and cell coordinate references directly from uploaded spreadsheet files in your browser. Users can quickly locate hardcoded values within calculation chains, review circular reference warnings, and verify model integrity across extensive multi-sheet workbooks before sharing reports with clients or auditors. Because financial spreadsheets frequently contain confidential corporate payroll data, proprietary valuation formulas, or strategic forecasts, all parsing executes locally inside browser memory. No spreadsheet files or extracted formulas are ever sent to remote web servers. Uncovering embedded calculation formulas across large workbooks helps financial analysts spot hidden logic flaws and ensure auditing compliance. Reviewing raw formulas in client memory protects proprietary financial algorithms and enterprise data from third-party exposure.',
+    faqs: [
+      {
+        question:
+          'Can I inspect formula syntax without altering cell calculations?',
+        answer:
+          'Yes. The viewer acts as a read-only auditing tool that extracts and displays formula expressions without executing changes or modifying source spreadsheet files.',
+      },
+      {
+        question:
+          'Does the viewer reveal hidden formulas in protected spreadsheet sheets?',
+        answer:
+          'The tool reads XML formula definitions directly from the spreadsheet package, surfacing cell formulas that might be obscured by sheet display protection rules.',
+      },
+      {
+        question: 'What spreadsheet file formats can I inspect with this tool?',
+        answer:
+          'The viewer supports modern OpenXML spreadsheet formats including .xlsx and .xlsm workbooks, extracting sheet hierarchies and formula strings accurately without modifying workbook structures.',
+      },
+      {
+        question:
+          'Are my corporate financial models or spreadsheet formulas uploaded?',
+        answer:
+          'No. All spreadsheet parsing and formula extraction occur strictly inside local browser memory with zero network calls, guaranteeing total confidentiality for financial records.',
+      },
+    ],
+  },
 };
 
 /**
