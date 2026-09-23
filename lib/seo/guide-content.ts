@@ -5787,6 +5787,1181 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       },
     ],
   },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'dev-to-front-matter-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-dev-to-front-matter-generator': {
+    directAnswer:
+      "Enter your article title, published status, description, and tags to format standard YAML front matter for DEV.to articles. The tool cleans tag characters to lowercase alphanumeric strings, caps tags to DEV.to's four-tag maximum, and outputs an escape-safe block in your browser without transmitting your unpublished writing to external servers or remote publishing platforms.",
+    leadParagraph:
+      'This front matter generator prepares compliant YAML metadata blocks for articles published on DEV.to. DEV.to requires strict front matter syntax: tags must be lowercase alphanumeric strings without spaces or special symbols, and posts can hold a maximum of four tags. The engine processes your inputs locally, sanitising tag entries, discarding punctuation, and enforcing the four-tag ceiling. If no valid tags remain after cleaning, the tool halts with the error "At least one portable tag is required." String values for title and description are automatically formatted using safe YAML escaping rules, preventing formatting failures caused by quotes or colons. The resulting YAML header can be pasted directly at the top of your markdown files. Because generation runs entirely in client-side memory under strict security headers, article concepts and unpublished drafts remain private on your machine.',
+    faqs: [
+      {
+        question: 'How does the generator handle DEV.to tag restrictions?',
+        answer:
+          'DEV.to permits at most four tags per article. The tool automatically takes the first four valid tags, strips non-alphanumeric characters, and converts them to lowercase.',
+      },
+      {
+        question: 'What happens if a title contains colons or quotation marks?',
+        answer:
+          'The tool applies YAML string escaping rules to title and description fields, enclosing strings with special characters in quotes to prevent parser errors on DEV.to.',
+      },
+      {
+        question: 'Can I toggle the published status of the article?',
+        answer:
+          'Yes. You can select true or false from the published field to indicate whether the post should appear live or remain as a private draft on DEV.to.',
+      },
+      {
+        question: 'Is any draft content sent across the network?',
+        answer:
+          'No. All front matter formatting and tag sanitisation execute locally in your browser. No drafts, titles, or tags are uploaded to any external server.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'hashnode-front-matter-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-hashnode-front-matter-generator': {
+    directAnswer:
+      'Enter an article title, subtitle, and comma-separated tags to format standard YAML front matter for Hashnode blog posts. The tool applies YAML string escaping to text fields, structures tags into a clean array, and outputs a ready-to-paste header block in your browser without sending your unpublished article metadata to remote servers or cloud accounts.',
+    leadParagraph:
+      'This metadata generator formats compliant YAML front matter blocks for developer blogs hosted on Hashnode. Hashnode articles support structured metadata headers that configure the primary post title, an explanatory subtitle, and topic tags. The tool reads your inputs, validates that title and subtitle fields are non-empty, and wraps strings with YAML-safe escaping so that special characters like colons, dashes, and quotation marks parse correctly without syntax errors. Tags are normalised and formatted into a valid YAML list array. The resulting header can be copied directly into markdown files or git-backed publishing repositories. Because all processing executes in local browser memory under strict Content Security Policy directives, confidential research drafts and unannounced engineering posts remain completely secure on your personal computer. You can format multiple articles in sequence without creating an account or installing local CLI tools.',
+    faqs: [
+      {
+        question: 'How does the generator format tags for Hashnode?',
+        answer:
+          'Tags are split on commas or newlines, trimmed, and formatted into a standard YAML bracketed array with proper string quotation for each tag item.',
+      },
+      {
+        question: 'Are title and subtitle fields required?',
+        answer:
+          'Yes. The generator requires non-empty values for both Title and Subtitle. Submitting empty values produces a clear notification indicating the missing field.',
+      },
+      {
+        question: 'How does the tool escape special characters in titles?',
+        answer:
+          'The engine inspects title and subtitle strings and wraps them in escaped quotes if they contain colons, ampersands, or other characters reserved by YAML syntax.',
+      },
+      {
+        question: 'Does this tool communicate with the Hashnode API?',
+        answer:
+          'No. The utility operates completely offline in your browser. It does not connect to Hashnode APIs, require authentication tokens, or transmit article data.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'rss-feed-builder', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-rss-feed-builder': {
+    directAnswer:
+      'Provide your channel title, website link, description, and article items to assemble a valid RSS 2.0 XML feed in your browser. The tool escapes XML entities, validates absolute URLs, and outputs clean feed code directly in your browser without transmitting your content or syndicate data to external web services or remote hosting providers.',
+    leadParagraph:
+      'This feed builder creates standards-compliant RSS 2.0 XML documents for blogs, podcasts, and newsletter archives. You provide your publication title, absolute channel URL, feed description, and article entries formatted as title, URL, and summary triplets separated by pipe characters. The engine validates that your channel link and item links are well-formed absolute HTTP or HTTPS URLs, escaping special XML characters such as ampersands, angle brackets, and quotes across all fields. It then compiles the elements into a clean RSS 2.0 structure complete with standard XML declaration, channel headers, and item nodes. The output can be saved directly as an rss.xml or feed.xml file for static hosting. All processing runs client-side in browser memory, protecting draft links and upcoming publications. This enables writers to maintain an independent feed without paying for external feed management subscriptions.',
+    faqs: [
+      {
+        question: 'How are feed items entered into the builder?',
+        answer:
+          'Enter items one per line using pipe delimiters: "Item Title | https://example.com/post | Item description". The tool converts each row into a structured RSS item node.',
+      },
+      {
+        question: 'Are relative links permitted for channel and item URLs?',
+        answer:
+          'No. RSS readers require absolute URLs. The tool verifies that all links start with an explicit http:// or https:// protocol before building the feed.',
+      },
+      {
+        question: 'Does the tool escape special characters like ampersands?',
+        answer:
+          'Yes. All text fields undergo strict XML entity escaping, replacing characters like "&", "<", and ">" with "&amp;", "&lt;", and "&gt;" automatically.',
+      },
+      {
+        question: 'Can I host the generated XML file on any web server?',
+        answer:
+          'Yes. The output is universal RSS 2.0 XML that can be served from GitHub Pages, Cloudflare Pages, Amazon S3, or any static web host.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'rss-feed-validator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-rss-feed-validator': {
+    directAnswer:
+      'Paste your RSS feed XML to perform a structural check of core elements directly in your browser. The tool verifies the root tag, channel container, title, link, and description nodes, counts total items, and reports structural health without sending your feed content to remote testing servers or third-party validation APIs.',
+    leadParagraph:
+      'This validation tool performs an instant, offline structural check on RSS XML feeds. When you paste your feed text, the engine checks for the presence of essential RSS elements: the outer <rss> root tag, the inner <channel> wrapper, and mandatory channel metadata including title, link, and description. It counts the number of <item> nodes defined in the feed and confirms whether the document satisfies standard RSS 2.0 structural rules. If any required element is absent, the tool highlights each missing element explicitly on its own line. As noted in its report, this tool focuses strictly on local structural checks rather than external schema downloading. Running entirely inside your browser tab without network requests, it allows you to inspect pre-release feeds and private syndication channels safely. You can paste feeds from local dev servers or staging environments without exposing them.',
+    faqs: [
+      {
+        question: 'Which XML elements does the validator check?',
+        answer:
+          'The validator checks for the root <rss> element, the <channel> container, and non-empty channel <title>, <link>, and <description> tags required by RSS 2.0 specifications.',
+      },
+      {
+        question: 'Does the validator download remote schema files or DTDs?',
+        answer:
+          'No. The validation runs purely as a local structural check against standard RSS requirements without making remote network requests to fetch external schemas.',
+      },
+      {
+        question: 'Does the tool report how many items are in the feed?',
+        answer:
+          'Yes. When the basic RSS shape passes, the tool reports the exact count of detected <item> elements alongside its confirmation message.',
+      },
+      {
+        question: 'Can I validate private or staging feeds with this tool?',
+        answer:
+          'Yes. Because the check runs client-side in browser memory without sending data across the network, unreleased staging feeds remain completely confidential.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'social-share-preview', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-social-share-preview': {
+    directAnswer:
+      'Enter your page title, description, and canonical URL to preview text length and structure for social media share cards. The tool measures exact Unicode characters, validates your destination link, and formats an unexcited card summary in your browser without transmitting your campaign details to remote social networks or analytics trackers.',
+    leadParagraph:
+      'This share preview tool helps content creators and webmasters audit social sharing metadata before publishing pages. You enter the title, description, and destination URL intended for Open Graph and Twitter card tags. The engine verifies that the URL is an absolute web address and measures the exact Unicode character count of both title and description using native code point evaluation. The output summary presents your cleaned text alongside character metrics, helping you spot truncated snippets before they appear on social feeds. The tool explicitly reminds users that individual platforms apply differing visual limits and font rendering rules. All calculations take place in local tab memory under strict Content Security Policy protections, ensuring that upcoming article titles and product announcements remain confidential. You can iterate on alternative headlines and test copy lengths before publishing changes to your site.',
+    faqs: [
+      {
+        question:
+          'Why does the tool measure Unicode characters rather than string length?',
+        answer:
+          'Using full Unicode code points ensures that multi-byte characters, accented letters, and emoji count as single characters, matching modern browser and platform standards.',
+      },
+      {
+        question: 'Does the tool fetch Open Graph tags from live URLs?',
+        answer:
+          'No. The tool evaluates the text and link you enter directly, operating entirely client-side without making external HTTP requests to scrape web pages.',
+      },
+      {
+        question: 'What link format is required for the destination URL?',
+        answer:
+          'The URL must be an absolute address starting with http:// or https://. Relative paths are rejected with a clear validation error.',
+      },
+      {
+        question: 'Are preview details logged or stored anywhere?',
+        answer:
+          'No. All parsing and character counts are computed in local browser memory. No text or links are stored, tracked, or sent across the network.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'link-in-bio-page-exporter', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-link-in-bio-page-exporter': {
+    directAnswer:
+      'Enter your display name, short biography, and label-and-URL link pairs to generate a self-contained HTML link-in-bio page in your browser. The tool compiles responsive inline CSS, applies security attributes to external links, and provides clean source code ready to host on any static server directly without relying on subscription platforms.',
+    leadParagraph:
+      'This exporter generates independent, lightweight link-in-bio landing pages as single, self-contained HTML documents. Rather than paying monthly subscription fees or directing followers through third-party tracking portals, you can host your own profile page anywhere. You input your display name, a concise bio, and link pairs formatted with a pipe separator. The engine validates that each link is an absolute web address, escapes HTML characters to prevent rendering bugs, and constructs an HTML5 document featuring inline CSS styling, a responsive mobile-friendly viewport, and secure rel="noopener noreferrer" link attributes. The resulting code has zero external dependencies, no JavaScript requirements, and no analytics tracking. You can upload the generated HTML file directly to GitHub Pages, Cloudflare Pages, Netlify, or your own server. Because there are no external trackers or cookies, your profile loads instantly for visitors on mobile devices.',
+    faqs: [
+      {
+        question: 'How should links be entered into the exporter?',
+        answer:
+          'Enter links one per line using the pipe delimiter: "Portfolio | https://example.com". The tool converts each row into a styled link button.',
+      },
+      {
+        question:
+          'Does the exported page require external CSS or JavaScript files?',
+        answer:
+          'No. The exported HTML file is completely self-contained with inline CSS and semantic HTML, requiring no external stylesheets, scripts, or fonts to render.',
+      },
+      {
+        question: 'Are outbound links configured with security attributes?',
+        answer:
+          'Yes. Every generated anchor tag includes rel="noopener noreferrer" attributes to protect visitor browsing context when opening external links across social media apps and mobile browsers.',
+      },
+      {
+        question:
+          'Can I host the exported file on GitHub Pages or Cloudflare Pages?',
+        answer:
+          'Yes. The output is a standard index.html file that can be deployed to any static web hosting provider without build tools.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'creator-media-kit-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-creator-media-kit-generator': {
+    directAnswer:
+      'Enter your professional creator name, editorial focus, audience metrics, collaboration offerings, and contact details to assemble a structured Markdown media kit directly in your browser. The tool formats bold key-value pairs and clean bulleted sections without ever transmitting your private audience figures or brand partnership details to remote cloud services.',
+    leadParagraph:
+      'This media kit generator structures professional summaries for content creators, podcasters, and independent publishers pitching brand partnerships. You provide five core elements: your brand name, editorial focus summary, audience metrics formatted as key-value pairs (such as YouTube subscribers or newsletter open rates), collaboration formats (one per line), and business contact information. The engine compiles these inputs into a clean Markdown document complete with an H1 header, focus statement, H2 Audience and reach section with bold bullet points, H2 Collaboration formats list, and contact details. This structured document can be shared directly with brand managers, converted to PDF, or pasted into email proposals. Because generation runs entirely in browser memory, confidential sponsorship rates and private audience statistics remain private on your computer. You can revise audience statistics for different pitch decks without maintaining complex design software.',
+    faqs: [
+      {
+        question: 'How should audience reach metrics be formatted?',
+        answer:
+          'Enter metrics one per line using the pipe separator: "YouTube Subscribers | 45,000". The tool renders each pair as a bold bullet: "- **YouTube Subscribers:** 45,000".',
+      },
+      {
+        question: 'What collaboration formats can I include?',
+        answer:
+          'You can enter any collaboration offerings one per line, such as sponsored video segments, dedicated newsletter features, social posts, or speaking engagements.',
+      },
+      {
+        question: 'Can I export the media kit as Markdown or PDF?',
+        answer:
+          'The tool outputs clean standard Markdown that can be copied directly, rendered in any Markdown viewer, or exported to PDF using your browser print function.',
+      },
+      {
+        question:
+          'Are my audience metrics or sponsor rates stored on any server?',
+        answer:
+          'No. All processing happens in local tab memory under strict security headers forbidding network requests. No creator data is ever stored or transmitted.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'rate-card-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-rate-card-generator': {
+    directAnswer:
+      'Enter your creator name, service offerings with prices and notes, and payment terms to compile a structured Markdown rate card directly in your browser. The tool sanitises table pipes, aligns price columns to the right, and formats clear pricing documentation reliably without uploading your confidential commercial fees to external databases.',
+    leadParagraph:
+      'This rate card generator builds clear, structured pricing documents for freelance creators, consultants, and digital influencers. You input your professional name, service offerings, and commercial terms. Each service row combines three details separated by pipes: the deliverable name, standard fee, and deliverable notes (such as turnaround time or usage licensing). The engine automatically escapes internal pipe characters to prevent markdown table breakage, formats a three-column Markdown table with right-aligned pricing, and appends your business terms beneath an H2 section. The resulting document provides a clean, transparent proposal format for potential sponsors and client agencies. Operating entirely within local browser memory under strict CSP restrictions, the generator ensures that proprietary fee structures and custom client rates remain completely confidential. You can update custom pricing packages for individual prospective partners securely on your machine.',
+    faqs: [
+      {
+        question: 'How do I input service items, prices, and notes?',
+        answer:
+          'Enter services one per line using pipe delimiters: "Dedicated Video | $1,500 | Includes 60s integration and usage rights". The tool formats these into a neat table.',
+      },
+      {
+        question:
+          'What happens if a service description contains a pipe character?',
+        answer:
+          'The engine automatically escapes internal pipe characters using backslashes, ensuring that extra pipes do not corrupt the Markdown table structure.',
+      },
+      {
+        question: 'Are the price columns aligned properly in the table?',
+        answer:
+          'Yes. The Markdown table sets the Price column to right-alignment (---:) to ensure clean numerical presentation alongside left-aligned service and notes columns.',
+      },
+      {
+        question: 'Is my pricing information shared or stored anywhere?',
+        answer:
+          'No. All rate card generation takes place in your local browser tab. No pricing information or business terms are uploaded or shared across the network.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'sponsorship-cpm-calculator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-sponsorship-cpm-calculator': {
+    directAnswer:
+      'Enter your campaign sponsorship cost and estimated impression numbers to calculate cost per mille directly in your browser. The tool verifies that cost is non-negative and impressions are strictly positive, applies the standard CPM formula, and reports cost per thousand impressions accurately without transmitting your sponsorship deals to external networks.',
+    leadParagraph:
+      'This sponsorship calculator computes standard Cost Per Mille (CPM) metrics for advertising campaigns across podcasts, newsletters, video sponsorships, and social promotions. CPM measures the advertising cost required to reach one thousand viewers or readers. You supply the total campaign cost and the anticipated impression count. The engine verifies numerical boundaries, requiring non-negative cost and strictly positive impressions (throwing "Cost must be non-negative and impressions must be positive." if invalid numbers are entered). It then executes the standard formula: cost divided by impressions multiplied by 1,000, rounding the final result to two decimal places. This allows creators and marketers to benchmark prospective deals against industry rates before finalizing contracts. Running entirely client-side, your campaign budgets and negotiated rates remain strictly private. This enables media buyers and content creators to evaluate multiple pricing scenarios during contract negotiations without disclosing commercial numbers.',
+    faqs: [
+      {
+        question: 'What does CPM stand for in sponsorship advertising?',
+        answer:
+          'CPM stands for Cost Per Mille, representing the advertising expenditure required to deliver one thousand impressions, views, or downloads for a sponsored campaign.',
+      },
+      {
+        question: 'What is the formula used by this calculator?',
+        answer:
+          'The tool applies the standard advertising equation: (Total Campaign Cost / Total Impressions) * 1,000, formatted to two decimal places.',
+      },
+      {
+        question: 'Can I calculate CPM with zero impressions?',
+        answer:
+          'No. Impressions must be a positive number greater than zero. Entering zero or negative impressions raises an error to prevent division by zero.',
+      },
+      {
+        question: 'Are currency units fixed to dollars?',
+        answer:
+          'The calculation is currency-agnostic. It outputs "cost units per 1,000 impressions", applying equally to dollars, pounds, euros, rupees, or any other currency.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'engagement-rate-calculator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-engagement-rate-calculator': {
+    directAnswer:
+      'Enter total engagements and audience size to calculate your content engagement rate percentage directly in your browser. The tool verifies that engagements are non-negative and audience size is positive, computes the mathematical percentage, and formats the result to two decimal places cleanly without uploading your metrics to external analytics dashboards.',
+    leadParagraph:
+      'This engagement rate calculator provides an objective measure of audience interaction for social media posts, videos, and newsletters. To measure how effectively content connects with an audience, marketers compare total interactions (likes, comments, shares, and saves) against total audience reach or follower count. You input the total engagement count and total audience figure. The engine checks that engagements are non-negative and audience is strictly greater than zero, rejecting invalid inputs with "Engagements must be non-negative and audience must be positive." It divides engagements by audience, multiplies by 100, and returns the percentage formatted to two decimal places. By executing purely client-side without third-party tracking or platform APIs, your private analytics benchmarks and client reporting numbers remain confidential on your device. You can calculate engagement rates for individual posts, monthly summaries, or client campaign audits.',
+    faqs: [
+      {
+        question: 'What formula is used to calculate engagement rate?',
+        answer:
+          'The calculator divides total engagements by total audience size and multiplies by 100: (Engagements / Audience) * 100, formatted to two decimal places.',
+      },
+      {
+        question: 'Should audience represent followers or impressions?',
+        answer:
+          'You can use either total follower count (engagement by followers) or total impressions (engagement by reach), depending on your preferred reporting methodology.',
+      },
+      {
+        question: 'What counts as an engagement?',
+        answer:
+          'Engagements typically include the sum of likes, comments, shares, saves, retweets, and clicks generated by a specific post or campaign.',
+      },
+      {
+        question: 'Is my analytics data uploaded or stored anywhere?',
+        answer:
+          'No. The calculator operates entirely in local browser tab memory without making network calls. No account numbers or metrics are ever logged or shared.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'follower-growth-calculator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-follower-growth-calculator': {
+    directAnswer:
+      'Enter starting and ending follower numbers to calculate net audience growth and percentage growth rate directly in your browser. The tool validates positive starting values, handles gains or losses accurately, and presents clear metrics formatted to two decimal places without transmitting your audience statistics to remote servers or analytics tools.',
+    leadParagraph:
+      'This audience growth calculator measures follower changes over specific tracking periods, such as weeks, months, or quarters. You enter your baseline starting follower count and the concluding ending count. The tool checks that the starting count is positive and ending count is non-negative, halting with "Start must be positive and end must be non-negative." if invalid parameters are provided. It calculates two distinct metrics: net growth (the numerical difference between ending and starting counts) and growth rate percentage (net change divided by starting count, multiplied by 100). If follower count decreased, the tool reports negative growth accurately. Because all calculations take place locally inside your browser tab under strict Content Security Policy directives, client audit reports and creator channel statistics remain completely private. You can track growth performance across social channels without granting third-party permissions.',
+    faqs: [
+      {
+        question: 'How is net follower growth calculated?',
+        answer:
+          'Net growth is calculated by subtracting the starting count from the ending count: End - Start. A positive result indicates net gain, while negative indicates net loss.',
+      },
+      {
+        question: 'How is the percentage growth rate determined?',
+        answer:
+          'The tool divides net growth by the starting audience and multiplies by 100: ((End - Start) / Start) * 100, rounded to two decimal places.',
+      },
+      {
+        question: 'Can the calculator handle follower losses?',
+        answer:
+          'Yes. If the ending follower count is lower than the starting count, the tool reports a negative net change and negative percentage rate accurately.',
+      },
+      {
+        question: 'Are my follower numbers uploaded to any server?',
+        answer:
+          'No. The calculation runs client-side in browser memory without dispatching network requests, guaranteeing total privacy for your audience growth data and channel statistics.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'content-calendar-maker', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-content-calendar-maker': {
+    directAnswer:
+      'Enter content planning entries pairing dates, platforms, and topics to compile a chronological editorial publishing schedule directly in your browser. The tool validates ISO YYYY-MM-DD dates, sorts items chronologically regardless of your initial entry order, and formats a clean schedule without ever uploading your editorial plans to cloud management platforms.',
+    leadParagraph:
+      'This content calendar maker organises editorial publishing schedules across multiple channels and platforms. You enter planning entries pairing publication dates, target platforms (such as YouTube, LinkedIn, or Substack), and content topics using pipe delimiters. The engine verifies each date against strict ISO YYYY-MM-DD formatting and calendar validity, raising "Invalid calendar date: [date]." if a date is malformed or unrecognised. It then sorts all entries into ascending chronological order, ensuring that unsorted brainstorm notes are structured into an orderly timeline. Each item is formatted with clean middle-dot dividers ("YYYY-MM-DD \u00b7 Platform \u00b7 Topic"). The resulting schedule can be copied into project management documents or team briefs. All sorting runs locally in browser memory, protecting upcoming campaign releases. This helps multi-channel creators maintain consistent editorial workflows across different publishing channels without subscribing to expensive cloud scheduling software.',
+    faqs: [
+      {
+        question: 'What date format is required for calendar entries?',
+        answer:
+          'Dates must follow ISO YYYY-MM-DD format (for example, "2026-10-15"). Entries with invalid or malformed dates are stopped with a descriptive error.',
+      },
+      {
+        question: 'Do I need to enter items in chronological order?',
+        answer:
+          'No. You can paste entries in any sequence. The tool automatically sorts all valid entries into strict ascending chronological order based on date.',
+      },
+      {
+        question: 'How should each calendar entry line be structured?',
+        answer:
+          'Enter three elements separated by pipes: "YYYY-MM-DD | Platform | Content topic". The tool parses these and formats them into a clean schedule.',
+      },
+      {
+        question: 'Is my editorial calendar uploaded to any server?',
+        answer:
+          'No. All date validation and chronological sorting run client-side in your browser. No schedule information is transmitted or stored on remote servers.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'content-idea-matrix', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-content-idea-matrix': {
+    directAnswer:
+      'Enter your target audiences and core content pillars to cross-multiply them into a structured matrix of content ideas directly in your browser. The tool generates systematic combinations up to a 500-idea safety limit, helping creators brainstorm topical content angles without uploading proprietary marketing concepts to external AI tools or servers.',
+    leadParagraph:
+      'This idea matrix tool automates systematic content brainstorming by cross-multiplying audience segments with thematic content pillars. Rather than guessing topics randomly, creators can pair distinct audiences (such as junior developers, engineering managers, or career changers) against editorial pillars (such as workflow tips, tooling audits, or case studies). The engine accepts up to 50 audience lines and 50 pillar lines, validating that total permutations do not exceed the 500-combination safety ceiling (halting with "Idea matrix is limited to 500 combinations." if breached). It computes the Cartesian product and outputs every paired topic in a structured "Pillar: Audience" format. This produces an extensive idea bank ready for editorial filtering. Operating entirely in client-side memory, your proprietary content strategy remains secure on your device. You can test different audience segments against diverse content formats to generate dozens of actionable article and video concepts.',
+    faqs: [
+      {
+        question: 'How does the content idea matrix combine inputs?',
+        answer:
+          'The engine performs a Cartesian product, pairing each content pillar against every entered audience segment to generate an exhaustive list of combinations.',
+      },
+      {
+        question: 'What is the maximum number of combinations supported?',
+        answer:
+          'The tool supports up to 500 combinations. If the product of audiences and pillars exceeds 500, the tool halts with a clear notification.',
+      },
+      {
+        question: 'How should audiences and pillars be entered?',
+        answer:
+          'Enter one audience segment per line in the Audiences field, and one content pillar per line in the Pillars field. Empty lines are ignored.',
+      },
+      {
+        question: 'Are my marketing ideas sent to an AI or cloud server?',
+        answer:
+          'No. The matrix runs purely as a deterministic local algorithm in your browser tab. No ideas or strategies are transmitted across the network.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'hook-generator-workspace', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-hook-generator-workspace': {
+    directAnswer:
+      'Enter your primary topic and intended target audience to generate six structured opening hook angles directly in your local browser tab. The tool formats time-tested journalistic and educational hooks with clear phrasing without generating exaggerated AI claims or transmitting your campaign concepts to third-party language models or remote web services.',
+    leadParagraph:
+      'This hook generator provides structured opening angles for articles, video scripts, and social posts. Many AI-driven hook generators produce clickbait or inflated claims; this tool applies six proven, transparent editorial structures based on clarity, contrast, and practical workflow benefits. You enter your primary topic and intended audience. The engine checks that both fields are non-empty and interpolates your inputs into six focused opening hooks, including problem teardowns ("What most [audience] overlook about [topic]"), comparative tests ("I tested the common approach to [topic]"), and workflow overviews. The results are displayed in a clean text area ready to copy and adapt. Running completely inside your browser tab without API calls, upcoming product launches and confidential video scripts remain strictly private. This provides dependable opening structures that focus on genuine reader value rather than sensationalism.',
+    faqs: [
+      {
+        question: 'Does this tool use generative AI or external LLMs?',
+        answer:
+          'No. The generator uses deterministic editorial templates rather than generative language models, avoiding hallucinated claims and keeping processing completely local within your browser.',
+      },
+      {
+        question: 'Are both topic and audience fields required?',
+        answer:
+          'Yes. Both Topic and Audience fields must be filled. Submitting with either field blank produces a clear error naming the missing field.',
+      },
+      {
+        question: 'How many hook variations are generated?',
+        answer:
+          'The tool produces six distinct opening angles covering practical workflows, before-and-after comparisons, common misconceptions, and decision checklists for your chosen audience.',
+      },
+      {
+        question: 'Are my content angles stored or analysed anywhere?',
+        answer:
+          'No. All processing happens in local browser memory under strict Content Security Policy directives. No text is ever uploaded or analysed remotely.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'caption-line-breaker', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-caption-line-breaker': {
+    directAnswer:
+      'Paste your caption text and specify a line width limit to wrap paragraphs cleanly without breaking words in your browser. The tool measures Unicode word lengths, wraps lines greedily to fit within your selected width, and preserves paragraph breaks without uploading your copy to external servers or social media tools.',
+    leadParagraph:
+      'This caption line breaker formats text for visual readability on mobile feeds and social cards. When captions stretch across wide viewports without line breaks, readability declines; conversely, arbitrary hard line breaks can look ragged. This tool wraps text to a configurable character width limit using a greedy word-wrapping algorithm. It preserves intentional double-newline paragraph breaks while wrapping words within each paragraph to stay within your chosen character boundary. Word lengths are evaluated using native Unicode code points via Array.from(word).length, and if an individual word exceeds the selected width, the engine throws "A word exceeds the selected width: [word]." rather than breaking it mid-word. Operating purely within client-side memory, unreleased social copy and draft marketing announcements remain confidential on your device. You can test various character widths to find the optimal typographic balance for mobile feeds.',
+    faqs: [
+      {
+        question: 'How does the greedy word wrapping algorithm work?',
+        answer:
+          'The tool places words onto the current line until adding the next word would exceed the target character width, at which point it begins a new line.',
+      },
+      {
+        question:
+          'What happens if a single word is wider than the width limit?',
+        answer:
+          'The tool stops with the error "A word exceeds the selected width: [word]." so you can either increase the width or hyphenate the word manually.',
+      },
+      {
+        question: 'Does the tool preserve paragraph breaks?',
+        answer:
+          'Yes. Paragraphs separated by double line breaks are processed individually and rejoined with standard paragraph spacing intact throughout the entire text block.',
+      },
+      {
+        question: 'Are draft captions transmitted or stored on any server?',
+        answer:
+          'No. All line wrapping executes in local browser memory without network activity, keeping your draft captions completely private and secure on your personal machine.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'hashtag-deduplicator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-hashtag-deduplicator': {
+    directAnswer:
+      'Paste text containing mixed hashtags or keywords to strip duplicates, normalise formatting, and tally unique tags directly in your browser. The tool ensures every entry carries a leading hash symbol, removes duplicate items regardless of casing, and reports the unique count accurately without ever transmitting your tags across the network.',
+    leadParagraph:
+      'This hashtag deduplicator cleans and organises hashtag lists for social media publishing across Instagram, TikTok, LinkedIn, and YouTube. You paste mixed text, comma-separated keywords, or existing hashtags into the input field. The engine extracts individual words, strips redundant punctuation, converts items to lowercase to detect duplicates reliably, and prepends each unique keyword with a single hash symbol. The formatted tags are rejoined into a tidy space-separated block, accompanied by a count summary confirming the number of unique tags. Unlike marketing platforms that connect to social APIs or recommend trending hashtags, this tool performs pure local deduplication. All processing executes inside your browser tab without network communication, ensuring campaign hashtags remain completely private. This prevents redundant tags from consuming character limits on platforms with strict hashtag caps like Instagram and LinkedIn.',
+    faqs: [
+      {
+        question: 'How does the deduplicator handle mixed casing in hashtags?',
+        answer:
+          'The deduplication process is case-insensitive. Entering "#Tech", "#tech", and "TECH" results in a single, normalised "#tech" tag in the output.',
+      },
+      {
+        question:
+          'Do I need to type hash symbols before every word in the input?',
+        answer:
+          'No. The engine automatically prepends a hash symbol to every unique keyword, so you can paste plain words or existing tags interchangeably.',
+      },
+      {
+        question: 'Does the tool recommend trending or algorithmic hashtags?',
+        answer:
+          'No. The tool focuses strictly on cleaning and deduplicating the tags you provide. It makes no API calls and recommends no external trends.',
+      },
+      {
+        question: 'Is there a limit on how many tags I can clean?',
+        answer:
+          'There is no strict ceiling. You can paste dozens or hundreds of tags to normalise, deduplicate, and count them in a single operation.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'brand-name-shortlister', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-brand-name-shortlister': {
+    directAnswer:
+      'Paste candidate brand names to score, rank, and audit them against naming heuristics directly in your browser. The tool evaluates length, word count, and alphanumeric portability, ranks names out of 100 points, and outputs an ordered shortlist cleanly without uploading your private brand ideas to remote servers or domain brokers.',
+    leadParagraph:
+      'This brand name shortlister evaluates candidate business, product, and channel names against practical naming criteria. You supply a list of candidate names (up to 200 lines). The engine analyzes each entry: measuring character length using Unicode code points, counting distinct words, and verifying alphanumeric portability with a strict regex check (/^[\\p{L}\\p{N}][\\p{L}\\p{N} .&-]*$/u). Names receive an objective score out of 100, deducting points for excessive length beyond 12 characters, word counts exceeding two words, or irregular punctuation that complicates domain registration or international trademarking. Entries are sorted in descending order of score, with alphabetical tie-breaking. Because the tool operates purely client-side without internet requests, confidential startup names, trade secrets, and upcoming project codenames remain protected from domain front-running. You can evaluate dozens of branding options objectively before conducting formal trademark searches.',
+    faqs: [
+      {
+        question: 'How is the brand name score calculated?',
+        answer:
+          'Starting from 100 points, the tool deducts 3 points per character over 12, 10 points per word over 2, and 20 points for irregular punctuation.',
+      },
+      {
+        question: 'What does "punctuation review" mean in the notes?',
+        answer:
+          'It flags names that contain non-standard punctuation, emojis, or characters that may cause issues when registering domains or creating social handles.',
+      },
+      {
+        question: 'How many candidate names can I evaluate at once?',
+        answer:
+          'The shortlister accepts up to 200 candidate names in a single run, ranking and sorting all entries in descending order of their calculated score.',
+      },
+      {
+        question: 'Can domain brokers or search engines see the names I test?',
+        answer:
+          'No. All analysis executes locally in browser memory. No names are sent across the network, preventing front-running or domain registration sniffing.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'brand-palette-generator', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-brand-palette-generator': {
+    directAnswer:
+      'Enter a brand name or concept keyword to generate a five-colour harmonic design palette directly in your browser. The tool uses a deterministic hashing algorithm to derive a base hue, generates coordinated Primary, Accent, Complement, Surface, and Ink colours, and outputs HEX and HSL values without external design API calls.',
+    leadParagraph:
+      'This brand palette generator builds coordinated, accessible colour schemes deterministically from a text seed. You provide your brand name, concept keyword, or project title. The engine hashes the input string using a 32-bit FNV-1a hashing algorithm to calculate a consistent base hue between 0 and 359 degrees. From this base hue, it derives five functional design roles: a saturated Primary brand colour, an Accent colour shifted by 30 degrees, a Complement colour shifted by 180 degrees, a soft Surface background, and a high-contrast dark Ink tone. The output displays both HEX codes and HSL coordinates for each role. Entering the same seed keyword always produces the exact same colour values. Running locally in browser memory, your brand development concepts remain completely confidential. You can experiment with different product keywords or brand themes to explore harmonious colour palettes without registering for design subscriptions.',
+    faqs: [
+      {
+        question: 'How does the generator create colours from a word?',
+        answer:
+          'The tool applies a 32-bit FNV-1a hash to the seed string to compute a base hue angle, then calculates five harmonic roles using fixed saturation and lightness offsets.',
+      },
+      {
+        question: 'Will the same seed word always generate the same palette?',
+        answer:
+          'Yes. The algorithm is completely deterministic. Entering the same keyword will always yield the identical five HEX and HSL colour specifications.',
+      },
+      {
+        question: 'What five functional colour roles are generated?',
+        answer:
+          'The generator outputs five specific roles: Primary (main brand), Accent (+30\u00b0), Complement (+180\u00b0), Surface (light background), and Ink (dark body text).',
+      },
+      {
+        question: 'Are palette keywords or colour codes transmitted online?',
+        answer:
+          'No. The entire hashing and colour calculation occurs client-side in your browser tab without making any network requests or tracking your colour selections.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'brand-font-pairing-notes', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-brand-font-pairing-notes': {
+    directAnswer:
+      'Select candidate display and body font roles alongside your desired brand tone to compile a typographic evaluation checklist directly in your browser. The tool structures pairing notes, highlights essential licensing and accessibility checks, and outputs a testing guide cleanly without downloading font files or transmitting brand concepts to remote servers.',
+    leadParagraph:
+      'This font pairing tool structures typographic evaluation notes for brand designers, web developers, and editorial teams. Effective typography relies on intentional contrast between a distinctive display heading typeface and a highly legible body font. You enter your chosen display family, body family, and brand tone description. The engine validates that the tone field is provided and generates a structured typographic checklist emphasizing five vital implementation tests: verifying actual commercial font licenses, checking language script coverage, reviewing weight and style availability, evaluating web font loading performance, and testing x-height legibility at small mobile viewports and 200% zoom. The tool deliberately does not download font files or endorse commercial type foundries. All notes compile in local browser memory, keeping your design strategy private. This checklist enables design teams to confirm accessibility, licencing rights, and performance constraints before deploying custom fonts in production applications.',
+    faqs: [
+      {
+        question: 'Does this tool download or serve actual font files?',
+        answer:
+          'No. The tool serves purely as an editorial evaluation guide and testing checklist. It does not download, serve, or licence font files.',
+      },
+      {
+        question: 'What key typographic checks does the tool recommend?',
+        answer:
+          'It highlights font licensing verification, language coverage, available font weights, web performance loading cost, x-height, and responsive testing at 320px width.',
+      },
+      {
+        question: 'Why is testing at 200% zoom important?',
+        answer:
+          'Testing at 200% zoom ensures your chosen typography complies with WCAG accessibility guidelines, maintaining readability without content clipping or horizontal scrolling.',
+      },
+      {
+        question:
+          'Is my brand design strategy saved or sent across the network?',
+        answer:
+          'No. All note compilation executes locally in your browser session under strict Content Security Policy directives forbidding external network calls.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'creator-file-naming-tool', runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-social-workbench-tool.tsx and app/creator/[tool]/page.tsx
+  'creator-and-social-creator-file-naming-tool': {
+    directAnswer:
+      'Enter your project creation date, project name, asset descriptor, version number, and file extension to generate a standardised production filename directly in your browser. The tool validates ISO dates, cleans extensions, normalises slugs into lowercase alphanumeric strings, and outputs uniform filenames reliably without sending your project details across the network.',
+    leadParagraph:
+      'This file naming tool standardises asset filenames for video editors, graphic designers, audio engineers, and content creators. Inconsistent naming causes lost assets, version confusion, and broken asset links in production pipelines. You provide five parameters: an ISO YYYY-MM-DD date, project name, asset label, version indicator, and file extension. The engine verifies date validity, confirms the extension contains 1 to 12 alphanumeric characters, and converts project, asset, and version fields into clean, URL-safe kebab-case slugs. It then combines the elements into a standardised production filename: "YYYY-MM-DD_project_asset_version.ext". This ensures consistent sorting across operating systems and storage servers. Operating entirely in local browser memory under strict CSP restrictions, confidential production codenames and client project titles remain strictly secure on your machine. This eliminates naming inconsistencies across collaborative video and audio editing teams, ensuring every asset remains identifiable and neatly organized.',
+    faqs: [
+      {
+        question: 'What format does the generated filename follow?',
+        answer:
+          'The tool formats filenames following the standard convention: "YYYY-MM-DD_project_asset_version.ext", where each text segment is normalised into a clean lowercase alphanumeric slug.',
+      },
+      {
+        question: 'How does the tool handle file extensions?',
+        answer:
+          'The engine trims leading dots, converts extensions to lowercase, and validates that the extension consists of 1 to 12 letters or digits.',
+      },
+      {
+        question: 'What date format is required?',
+        answer:
+          'Dates must follow ISO YYYY-MM-DD syntax (for example, "2026-10-15"). The tool verifies that the date is a valid calendar day before generating the filename.',
+      },
+      {
+        question: 'Are my project names or asset labels stored anywhere?',
+        answer:
+          'No. All string slugification and filename generation run client-side in your browser tab without network communication, guaranteeing complete confidentiality for your projects.',
+      },
+    ],
+  },
+  // lib/tools/creator-workbench.ts (CREATOR_OPERATIONS 'word-cloud-generator', generateWordCloudSvg, runCreatorOperation), lib/tools/creator-workbench.test.ts, components/creator-workbench-tool.tsx and app/creator/workbench/page.tsx
+  'creator-and-social-word-cloud-generator': {
+    directAnswer:
+      'Paste source text, configure word limits, and add optional custom stop words to generate an SVG word cloud directly in your browser. The tool counts word frequencies, filters common English stop words, sizes text proportionally, and renders clean vector graphics without sending your copy to remote visualisation servers or cloud platforms.',
+    leadParagraph:
+      'This word cloud generator transforms unstructured text into clear, downloadable vector visualisations. You paste articles, customer feedback surveys, interview transcripts, or book chapters into the workbench. The engine cleans punctuation, lowercases words, and eliminates standard English stop words such as articles, conjunctions, and prepositions, alongside any custom stop words you specify. It counts frequencies and arranges the top terms inside an 800-by-500 SVG canvas, scaling font sizes proportionally to term frequencies. Because rendering outputs pure SVG vector elements rather than pixelated bitmaps, you can scale the resulting graphic to any resolution for presentation slides or print reports without blurriness. Operating entirely in local browser memory under strict CSP restrictions, sensitive customer feedback and proprietary research text remain confidential on your device. You can download or embed the resulting vector cloud without paying for visualization software or sharing data with cloud platforms.',
+    faqs: [
+      {
+        question: 'How are word frequencies calculated in the word cloud?',
+        answer:
+          'The engine tokenises text into individual words, removes punctuation, ignores case, and counts occurrences while discarding standard and custom stop words.',
+      },
+      {
+        question: 'Can I filter out custom stop words or project jargon?',
+        answer:
+          'Yes. You can supply custom comma-separated or newline-separated stop words to filter out domain-specific terms that would otherwise dominate the visual cloud.',
+      },
+      {
+        question: 'What format is used for the generated word cloud graphic?',
+        answer:
+          'The tool generates standard SVG vector XML with an 800 by 500 viewport, allowing you to copy or download clean vector graphics that scale infinitely.',
+      },
+      {
+        question: 'Is my input text uploaded to any server or AI service?',
+        answer:
+          'No. The entire tokenisation, frequency analysis, and SVG layout computation take place locally in your browser tab without network communication.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'week-number-calculator', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-week-number-calculator': {
+    directAnswer:
+      'Select or enter an ISO date to calculate its exact ISO 8601 week number and week-numbering year directly in your browser. The tool applies standard Monday-start calendar rules, determines the correct week-numbering year across boundary dates, and outputs clean numerical results accurately in your browser without transmitting your dates across the internet.',
+    leadParagraph:
+      'This week number calculator determines the official calendar week for any given date according to the international standard ISO 8601. Under ISO 8601 rules, Monday is defined as the first day of the week, and Week 1 of any year is the week containing the first Thursday of that year (or equivalently, the week containing 4 January). The tool parses your input date using UTC coordinates, shifts to the nearest Thursday, and calculates the precise ordinal week number and week-numbering year. This prevents standard calendar errors where late December dates belong to Week 1 of the following year, or early January days belong to Week 52 or 53 of the preceding year. Operating locally within your browser tab, your scheduling inputs and financial reporting dates remain completely private. This provides dependable ISO week numbering for logistics planners, payroll specialists, and data engineers.',
+    faqs: [
+      {
+        question: 'What standard does this week number calculator follow?',
+        answer:
+          "The tool follows international standard ISO 8601, where Monday is the first day of the week and Week 1 contains the year's first Thursday.",
+      },
+      {
+        question:
+          'Why do some December dates belong to Week 1 of the next year?',
+        answer:
+          "If December 29, 30, or 31 falls on Monday, Tuesday, or Wednesday, ISO rules assign those days to Week 1 of the following year because that week contains the new year's first Thursday.",
+      },
+      {
+        question: 'How does the calculator handle leap years?',
+        answer:
+          'The engine calculates week numbers based on UTC timestamps and calendar day offsets, accounting accurately for leap year day additions.',
+      },
+      {
+        question: 'Are my selected dates transmitted to any server?',
+        answer:
+          'No. The calculation runs entirely inside your browser session using standard JavaScript Date mathematics. No date values are transmitted across the network.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'day-of-year-calculator', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-day-of-year-calculator': {
+    directAnswer:
+      'Enter or pick any calendar date to calculate its ordinal day of the year directly in your browser. The tool computes the exact elapsed day count from January 1st, accounts for leap year February lengths automatically, and outputs the ordinal day number without transmitting your calendar entries to external servers.',
+    leadParagraph:
+      'This day of year calculator computes the ordinal day number (from 1 to 365, or 366 in leap years) for any given calendar date. Ordinal dates are widely utilized in astronomy, meteorology, data logging, manufacturing production batches, and financial accounting schedules. You choose or enter an ISO date. The engine parses the date components, determines the epoch day difference between your date and January 1st of that same year, and adds one to establish the exact ordinal day. Leap year adjustments are handled automatically, ensuring that March 1st correctly reflects day 60 in normal years and day 61 in leap years. Because all mathematical operations execute locally in your browser memory under strict CSP restrictions, scheduling queries and proprietary manufacturing dates remain strictly private. You can verify ordinal numbers across historical or future calendar years without software installations.',
+    faqs: [
+      {
+        question: 'What is an ordinal day of the year?',
+        answer:
+          'An ordinal day represents the sequential count of days elapsed since January 1st of the specified year, ranging from 1 up to 365 or 366.',
+      },
+      {
+        question: 'How does the calculator handle leap years?',
+        answer:
+          'In a leap year, February contains 29 days, so subsequent dates from March 1st onward are incremented by one compared to standard non-leap calendar years.',
+      },
+      {
+        question: 'What date format does the tool expect?',
+        answer:
+          'The tool accepts standard ISO YYYY-MM-DD dates, parsing year, month, and day components using strict calendar mathematics to deliver an exact day count.',
+      },
+      {
+        question: 'Is my date query saved or tracked online?',
+        answer:
+          'No. All calculations run in client-side memory inside your current browser tab. No date entries are logged, cached, or transmitted across the network.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'leap-year-checker', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-leap-year-checker': {
+    directAnswer:
+      'Enter any four-digit year between 1 and 9999 to verify whether it is a leap year directly in your browser. The tool evaluates Gregorian calendar leap rules, confirms whether the year holds 365 or 366 days, and reports the mathematical determination clearly without sending your queries to external web servers.',
+    leadParagraph:
+      'This leap year checker evaluates whether a specific Gregorian calendar year includes a 29th day in February. Under standard Gregorian calendar rules, a year is a leap year if it is divisible by 4, except for end-of-century years (divisible by 100), which are only leap years if they are also evenly divisible by 400. This explains why the year 2000 was a leap year, but 1900 and 2100 are not. The tool accepts any integer year from 1 through 9999, validating input range before testing modular divisibility. It outputs a clear statement detailing whether the year is a leap year and reports the total days in the year (365 or 366). All computations run instantly in local tab memory, requiring no network connection or remote verification. This provides a transparent reference for date arithmetic calculations and software scheduling algorithms.',
+    faqs: [
+      {
+        question: 'What is the complete rule for Gregorian leap years?',
+        answer:
+          'A year is a leap year if divisible by 4, unless it is divisible by 100, in which case it must also be divisible by 400 to qualify.',
+      },
+      {
+        question: 'Why was 2000 a leap year but 2100 is not?',
+        answer:
+          'The year 2000 is divisible by 400, satisfying the century leap year exception. The year 2100 is divisible by 100 but not 400, making it a common year.',
+      },
+      {
+        question: 'What range of years does this tool support?',
+        answer:
+          'The checker supports all integer years from 1 through 9999. Entering numbers outside this range raises a clear validation notice.',
+      },
+      {
+        question: 'Does the checker require an internet connection?',
+        answer:
+          'No. The leap year logic is evaluated locally using simple mathematical modulo operations in your browser, running completely offline without server requests.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'timezone-converter', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-timezone-converter': {
+    directAnswer:
+      'Enter an instant timestamp and select a target IANA timezone to calculate the exact corresponding local date and time directly in your browser. The tool evaluates regional daylight saving offsets using standard Intl.DateTimeFormat specifications and outputs clean formatted date strings without ever transmitting your schedule data to remote time servers.',
+    leadParagraph:
+      'This timezone converter converts date and time instants across international time zones using standard IANA timezone identifiers. Scheduling across timezones is complicated by daylight saving time shifts, seasonal clock transitions, and non-standard thirty-minute or forty-five-minute regional offsets. You provide an ISO timestamp or date-time string alongside an IANA zone descriptor (such as "America/New_York", "Europe/London", or "Asia/Kolkata"). The engine parses the instant into UTC epoch milliseconds and utilizes the browser\'s native Intl.DateTimeFormat engine to resolve the exact local time, date, and timezone offset. Because it relies on the browser\'s built-in time database, it handles historical and future seasonal transitions accurately. All conversions execute locally within your browser tab, ensuring your travel plans and confidential meeting times remain completely private. This prevents scheduling confusion and calendar errors when collaborating with distributed international teams across different global regions.',
+    faqs: [
+      {
+        question: 'What timezone format should I enter?',
+        answer:
+          'Enter standard IANA timezone names such as "America/New_York", "Europe/Paris", "Asia/Tokyo", or "Australia/Sydney" to ensure accurate regional conversions based on local rules.',
+      },
+      {
+        question: 'Does the converter handle daylight saving time changes?',
+        answer:
+          "Yes. Because it uses the browser's native Intl.DateTimeFormat implementation, seasonal daylight saving transitions are applied automatically based on the specific date.",
+      },
+      {
+        question: 'Can it convert half-hour and 45-minute timezone offsets?',
+        answer:
+          'Yes. Zones with fractional hour offsets, such as India (UTC+5:30), Nepal (UTC+5:45), and Adelaide (UTC+9:30), are converted with complete mathematical precision.',
+      },
+      {
+        question: 'Are my schedule details sent to external servers?',
+        answer:
+          'No. The timezone conversion runs locally inside your browser tab without making network requests. No timestamps or locations are tracked.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'world-clock', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-world-clock': {
+    directAnswer:
+      'Enter a specific timestamp and a comma-separated list of IANA timezones to compare simultaneous local times worldwide directly in your browser. The tool formats dates and times across all specified regions simultaneously, handling regional daylight saving variations cleanly and accurately without ever sending your schedule coordinates to remote server systems.',
+    leadParagraph:
+      "This world clock tool provides a clean, consolidated overview of current or scheduled times across multiple global regions. Remote teams, international project coordinators, and cross-border families need a transparent method to compare simultaneous clock times without navigating ad-heavy world clock websites. You enter a target timestamp (defaulting to the current moment) and a comma-separated list of IANA timezone names. The engine parses the time instant once, then iterates through each requested timezone, utilizing native Intl.DateTimeFormat to render the exact local date, time, and daylight saving status for every city. The output displays a neat, synchronized list of all locations side by side. Running entirely within your browser session under strict CSP directives, confidential call times and coordination schedules remain completely private. You can customize the displayed list of global locations to match your team's active timezones.",
+    faqs: [
+      {
+        question: 'Which default timezones are included in the world clock?',
+        answer:
+          'By default, the tool displays five major global hubs: UTC, London (Europe/London), New York (America/New_York), Tokyo (Asia/Tokyo), and Sydney (Australia/Sydney).',
+      },
+      {
+        question: 'Can I add custom cities and timezones?',
+        answer:
+          'Yes. You can edit the timezone list to include any valid IANA timezone identifier, such as "Asia/Kolkata", "America/Los_Angeles", or "Europe/Berlin".',
+      },
+      {
+        question: 'Does the clock account for regional daylight saving shifts?',
+        answer:
+          'Yes. Each location is formatted according to its official regional daylight saving schedule for the specified date and time using browser Intl APIs.',
+      },
+      {
+        question: 'Are my selected locations or times logged on a server?',
+        answer:
+          'No. All timezone rendering is executed client-side in browser memory. No tracking cookies, location data, or timestamps are sent to external servers.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'meeting-time-planner', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-meeting-time-planner': {
+    directAnswer:
+      'Enter a proposed meeting timestamp and a comma-separated list of participant timezones to verify local call times in your browser. The tool calculates local times across up to 20 zones, flags working hours, and outputs an organized timetable without transmitting your meeting agendas or attendee locations to external scheduling servers.',
+    leadParagraph:
+      "This meeting time planner simplifies global call scheduling by projecting a proposed meeting time across multiple participant locations simultaneously. Scheduling cross-continental meetings often results in accidental early-morning or late-night calls for remote teammates. You supply the proposed meeting instant and a list of participant IANA timezones (supporting up to 20 zones). The engine parses the instant into UTC and converts it into the local time for each designated zone using the browser's native Intl.DateTimeFormat API. It indicates the local clock time and day of the week for every participant, allowing meeting organizers to verify whether proposed times fall within reasonable working hours across all regions. Because execution takes place entirely within local browser memory under strict CSP restrictions, sensitive executive meeting dates and internal conference agendas remain confidential. You can iterate through candidate hours to locate a meeting window suitable for all participants.",
+    faqs: [
+      {
+        question: 'How many participant timezones can I evaluate at once?',
+        answer:
+          'The tool supports between 1 and 20 participant timezones in a single run. Entering more than 20 zones raises a clear limit notice.',
+      },
+      {
+        question: 'How should timezones be formatted in the input field?',
+        answer:
+          'Enter timezones as a comma-separated list of standard IANA identifiers, such as "America/Chicago, Europe/Berlin, Asia/Singapore" to check multiple regional participant hours simultaneously.',
+      },
+      {
+        question: 'Does the tool check whether dates change across timezones?',
+        answer:
+          "Yes. If a meeting falls on the following or preceding calendar day in a participant's local zone, the output displays the local date clearly.",
+      },
+      {
+        question: 'Is my meeting schedule sent to calendar services or APIs?',
+        answer:
+          'No. The planner runs purely inside your browser tab without connecting to Google Calendar, Outlook, or external APIs. All meeting data remains private.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'iso-date-formatter', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-iso-date-formatter': {
+    directAnswer:
+      'Enter or paste any date or timestamp string to convert it into a standard ISO 8601 UTC timestamp directly in your browser. The tool parses diverse calendar formats, normalises time values into the canonical YYYY-MM-DDTHH:mm:ss.sssZ format, and outputs clean machine-readable timestamp strings reliably without sending your dates across the internet.',
+    leadParagraph:
+      'This ISO date formatter converts ambiguous, human-readable, or regional date strings into canonical ISO 8601 format. Software applications, database queries, and API payloads require standardized UTC timestamps to prevent time zone drift and parsing discrepancies. You paste any standard date-time string, Unix epoch number, or calendar date into the input field. The engine parses the input into an exact UTC timestamp using native Date.parse routines and outputs the canonical ISO 8601 string: "YYYY-MM-DDTHH:mm:ss.sssZ". This ensures full interoperability across databases, logging pipelines, and serialization protocols. If the date string cannot be parsed, the tool halts with a clear error rather than guessing. Operating entirely in local browser tab memory, confidential timestamps from database exports and proprietary log files remain strictly private on your device. This utility helps software developers standardize log entries and API timestamps without writing custom transformation code.',
+    faqs: [
+      {
+        question: 'What output format does this formatter produce?',
+        answer:
+          'The tool outputs standardized ISO 8601 UTC format: "YYYY-MM-DDTHH:mm:ss.sssZ", complete with four-digit year, millisecond precision, and the trailing Z UTC designator.',
+      },
+      {
+        question: 'Can it parse timestamps in different regional formats?',
+        answer:
+          'Yes. It accepts ISO strings, standard RFC 2822 dates, and common date formats recognized by standard JavaScript Date parsing implementations without issues.',
+      },
+      {
+        question: 'What happens if I enter an invalid date string?',
+        answer:
+          'If the input string cannot be converted into a valid date, the engine raises an error indicating that the timestamp is unparseable.',
+      },
+      {
+        question: 'Are my timestamps uploaded or logged on remote servers?',
+        answer:
+          'No. All date parsing and formatting occur client-side in browser memory without network activity. No timestamps are stored or transmitted.',
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'duration-calculator', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-duration-calculator': {
+    directAnswer:
+      'Enter starting and ending timestamps to calculate the exact elapsed duration between two points in time directly in your browser. The tool calculates millisecond differences, breaks down duration into days, hours, minutes, and seconds, and presents an unexcited summary clearly and accurately without uploading your project intervals to remote servers.',
+    leadParagraph:
+      'This duration calculator computes the precise elapsed time interval between two arbitrary timestamps. Calculating time differences across calendar boundaries, month changes, or daylight saving transitions by hand is prone to mathematical error. You provide the start timestamp and end timestamp. The engine parses both instants into UTC milliseconds, calculates the exact difference between them, and breaks the total duration down into human-readable components: days, hours, minutes, and seconds (such as "3 days, 4 hours, 12 minutes, 30 seconds"). It handles multi-day project spans as accurately as sub-minute tasks. If the end timestamp is earlier than the start timestamp, it reports negative durations accurately. Because all computations execute inside your browser tab without network calls, project time logs and sensitive operational intervals remain private. This enables project managers to calculate project phase durations and task turnaround intervals accurately.',
+    faqs: [
+      {
+        question: 'How does the duration calculator display elapsed time?',
+        answer:
+          'The tool converts the millisecond difference into a decomposed breakdown detailing days, hours, minutes, and seconds clearly for simple project tracking.',
+      },
+      {
+        question: 'Can it calculate durations spanning across months or years?',
+        answer:
+          'Yes. Because calculations are based on absolute UTC millisecond timestamps, spans across months, leap days, and years are calculated accurately.',
+      },
+      {
+        question:
+          'What happens if the end time is earlier than the start time?',
+        answer:
+          'The engine calculates the signed mathematical difference, reporting negative elapsed time to indicate that the end time precedes the start time.',
+      },
+      {
+        question: 'Are my time tracking intervals uploaded to any server?',
+        answer:
+          "No. All duration calculations execute locally in your browser memory under strict CSP connect-src 'none' rules. No data leaves your machine.",
+      },
+    ],
+  },
+  // lib/tools/date-workbench.ts (DATE_OPERATIONS 'hours-calculator', runDateOperation), lib/tools/date-workbench.test.ts, components/date-time-workbench-tool.tsx and app/date/[tool]/page.tsx
+  'date-time-and-productivity-hours-calculator': {
+    directAnswer:
+      'Enter your shift start time, end time, and unpaid break minutes to calculate total net working hours and decimal hours directly in your browser tab. The tool accommodates overnight shifts automatically, subtracts unpaid break durations, and outputs accurate payroll metrics without ever transmitting your work logs to external tracking platforms.',
+    leadParagraph:
+      'This hours calculator computes net worked time for daily shifts, freelance billing, and timesheet logging. Calculating work hours is frequently complicated by overnight schedules spanning midnight and deductions for unpaid lunch breaks. You enter the shift start time in HH:MM format, shift end time in HH:MM format, and any unpaid break minutes. The engine handles overnight shifts seamlessly: if the end time is earlier than the start time, it adds 24 hours (1,440 minutes) to the calculation. It then deducts the specified break minutes, ensuring break time does not exceed total shift duration. The output provides both clock notation (hours and minutes) and decimal hours formatted to two decimal places for payroll entry. Running entirely in local browser memory under strict CSP restrictions, your personal working hours remain completely confidential.',
+    faqs: [
+      {
+        question:
+          'How does the calculator handle overnight shifts across midnight?',
+        answer:
+          'If the shift end time is earlier than the start time (for example, 22:00 to 06:00), the tool automatically adds 24 hours to calculate overnight hours correctly.',
+      },
+      {
+        question:
+          'Why does the tool output decimal hours as well as clock hours?',
+        answer:
+          'Payroll systems and invoicing spreadsheets require decimal hours (such as 7.50 hours rather than 7 hours 30 minutes) to calculate compensation accurately.',
+      },
+      {
+        question: 'What happens if break minutes exceed the shift length?',
+        answer:
+          'The engine validates inputs and halts with "Break minutes cannot exceed total duration." to prevent illogical negative shift calculations during time logging.',
+      },
+      {
+        question: 'Is my timesheet or payroll data saved on any server?',
+        answer:
+          'No. All calculations are executed client-side in your browser tab without dispatching network requests, guaranteeing complete privacy for your work records.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'habit-streak-calculator', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-habit-streak-calculator': {
+    directAnswer:
+      'Enter your list of completed habit dates and an as-of reference date to calculate current and best streak lengths directly in your browser. The tool deduplicates dates, enforces chronological consistency, and evaluates consecutive active days accurately and reliably without transmitting your personal habit routines or wellness logs to external cloud trackers.',
+    leadParagraph:
+      'This habit streak calculator tracks consistency metrics for personal habits, fitness routines, and daily writing goals. You paste a list of completion dates formatted in YYYY-MM-DD syntax alongside an "as of" evaluation date. The engine deduplicates repeat dates, sorts entries chronologically, and validates that no completion dates occur in the future relative to the reference date (raising "Completion dates cannot be after the as-of date." if violated). It then calculates two distinct metrics: your current active streak (evaluating consecutive daily completions leading up to or including the reference day) and your all-time longest streak. This provides an objective review of habit discipline without gamified pressure or subscription lock-in. Operating entirely within local browser memory under strict CSP headers, personal wellness logs and private goals remain completely confidential. You can review your long-term consistency across reading, fitness, or practice goals without third-party tracking.',
+    faqs: [
+      {
+        question: 'How should completion dates be entered into the calculator?',
+        answer:
+          'Enter dates one per line using ISO YYYY-MM-DD format (such as "2026-09-20"). The tool automatically removes duplicate dates and sorts entries chronologically.',
+      },
+      {
+        question:
+          'What is the difference between current streak and best streak?',
+        answer:
+          'Current streak measures unbroken consecutive daily completions up to the reference date, while best streak identifies the longest continuous daily streak across your entire history.',
+      },
+      {
+        question: 'Can completion dates be dated in the future?',
+        answer:
+          'No. The tool verifies that no completion date is later than the specified as-of date, halting with an error if future dates are detected.',
+      },
+      {
+        question: 'Are my personal habit logs uploaded to any cloud service?',
+        answer:
+          'No. All date sorting and streak analysis take place locally in your browser tab without network communication, ensuring complete privacy.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'task-prioritization-matrix', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-task-prioritization-matrix': {
+    directAnswer:
+      'Enter competing project tasks with impact, urgency, effort, and confidence scores to calculate objective priority rankings directly in your browser. The tool applies mathematical scoring formulas, ranks tasks in descending order of priority, and outputs a clear action list reliably and transparently without transmitting your internal projects to third-party management tools.',
+    leadParagraph:
+      'This task prioritization matrix scores and ranks competing work items using an objective, multi-factor weighting formula. Prioritising tasks by intuition often allows high-effort, low-impact distractions to crowd out high-value work. You enter tasks as five-part entries separated by pipe characters: task title, impact rating, urgency rating, effort estimation, and confidence level. The engine evaluates each row, ensuring effort is strictly greater than zero, and computes a composite priority score using the formula: (Impact * Urgency * Confidence) / Effort. It then sorts all candidate tasks in descending order of their calculated score, presenting a ranked action list with clear score breakdowns. This enables engineering and project teams to focus on initiatives with the highest return on invested effort. All calculations run in local browser tab memory, keeping strategic roadmaps secure.',
+    faqs: [
+      {
+        question: 'What formula is used to score task priority?',
+        answer:
+          'The tool computes priority using the formula: (Impact * Urgency * Confidence) / Effort, rewarding high-impact urgent tasks while penalising high effort.',
+      },
+      {
+        question: 'Can effort be set to zero?',
+        answer:
+          'No. Effort must be a positive number greater than zero to prevent division by zero errors during score computation across your task items.',
+      },
+      {
+        question: 'How should task entries be formatted?',
+        answer:
+          'Enter one task per line with five pipe-delimited values: "Task Name | Impact | Urgency | Effort | Confidence" using numeric ratings.',
+      },
+      {
+        question: 'Are my team tasks and priority scores uploaded anywhere?',
+        answer:
+          'No. All mathematical scoring and list sorting execute client-side in your browser tab without dispatching any network requests or tracking tasks.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'eisenhower-matrix', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-eisenhower-matrix': {
+    directAnswer:
+      'Enter your personal or team tasks paired with urgency and importance indicators to sort items into the classic four Eisenhower decision quadrants directly in your browser tab. The tool categorises tasks into Do Now, Schedule, Delegate, and Eliminate quadrants without ever transmitting your confidential to-do lists to external servers or productivity apps.',
+    leadParagraph:
+      'This Eisenhower matrix tool classifies tasks into four actionable quadrants based on urgency and importance. Originally popularized by Dwight D. Eisenhower, this framework separates demanding immediate tasks from strategically vital long-term goals. You enter tasks one per line, separating the task title, urgency (yes/no), and importance (yes/no) with pipe characters. The engine evaluates the flags and assigns each task into its respective quadrant: DO NOW (urgent and important), SCHEDULE (not urgent but important), DELEGATE (urgent but not important), or ELIMINATE (neither urgent nor important). The resulting summary delivers an organised four-part action plan ready for daily standups or weekly planning. Because classification executes entirely in local browser tab memory under strict security headers, confidential operational bottlenecks and personal to-do lists remain private on your computer. You can organize daily priorities efficiently without sharing proprietary project tasks.',
+    faqs: [
+      {
+        question: 'What are the four quadrants of the Eisenhower matrix?',
+        answer:
+          'The four quadrants are: DO NOW (urgent & important), SCHEDULE (important & not urgent), DELEGATE (urgent & not important), and ELIMINATE (neither).',
+      },
+      {
+        question: 'How do I indicate whether a task is urgent or important?',
+        answer:
+          'Use "yes" or "y" for positive values, and "no" or "n" for negative values, separated by pipes: "Task Title | yes | no".',
+      },
+      {
+        question: 'Can I copy the categorized quadrants into my notes?',
+        answer:
+          'Yes. The output formats all four quadrants as clean, titled Markdown lists ready to paste directly into Notion, Obsidian, or text files.',
+      },
+      {
+        question: 'Are my task lists uploaded or stored online?',
+        answer:
+          'No. The classification logic runs completely client-side in your browser tab without network communication, guaranteeing absolute privacy for your task priorities.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'birth-number-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'date-time-and-productivity-birth-number-calculator': {
+    directAnswer:
+      'Select or enter your date of birth to calculate your traditional numerological birth number directly in your browser. The tool isolates the day of the month, sums its digits until a single digit from 1 to 9 remains, and displays the reduction steps without uploading your personal date of birth to external databases.',
+    leadParagraph:
+      'This birth number calculator computes the single-digit numerological birth number derived strictly from the day of the month of your birth. In traditional numerology systems, the birth number (also called the psychic or root number) is calculated by summing the digits of the calendar day until a single digit between 1 and 9 is reached. Unlike life path calculations that incorporate month and year components, the birth number reflects only the day. Master numbers (such as 11 or 22) are not preserved in birth number reduction; for example, a birth day of 29 reduces as 2 + 9 = 11, which further reduces as 1 + 1 = 2. The tool displays the resulting digit alongside the exact reduction arithmetic steps. Operating locally within your browser tab, your personal birth date and identity data remain completely private.',
+    faqs: [
+      {
+        question: 'How is the birth number calculated from a birth date?',
+        answer:
+          'The tool takes only the day of the month and sums its individual digits repeatedly until a single digit between 1 and 9 remains.',
+      },
+      {
+        question: 'Are master numbers (11, 22, 33) kept for birth numbers?',
+        answer:
+          'No. In standard birth number methodology, master numbers are reduced down to a single digit (for example, day 29 becomes 11, then reduces to 2).',
+      },
+      {
+        question: 'How does the birth number differ from a life path number?',
+        answer:
+          'The birth number evaluates only the day of birth, whereas the life path number combines the day, month, and full year of birth.',
+      },
+      {
+        question: 'Is my birth date uploaded or stored anywhere?',
+        answer:
+          'No. The calculation runs entirely inside your browser tab without dispatching network calls, ensuring your personal birth date is never recorded.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'daily-planner', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-daily-planner': {
+    directAnswer:
+      'Enter a day start time and task items with duration minutes to compile a sequential daily time-blocked schedule directly in your browser. The tool calculates start and end clock times for each task, validates duration bounds, and outputs an organized daily itinerary without transmitting your schedule to external calendar servers.',
+    leadParagraph:
+      'This daily planner organizes tasks into a continuous, time-blocked schedule based on task durations. Estimating daily capacity without calculating clock times often results in overbooked schedules and missed deadlines. You specify a day start time in HH:MM format and enter tasks paired with their estimated duration in minutes using pipe delimiters (such as "Deep Work | 90"). The engine verifies that duration minutes are valid integers between 1 and 1,440 minutes, advancing an internal clock cursor sequentially through each task item. It outputs a clear timetable displaying the start and finish time for each commitment alongside its duration. The resulting itinerary can be copied into daily journals or personal planners. Running entirely client-side under strict CSP restrictions, confidential daily appointments and work habits remain completely private. This helps professionals maintain focused daily workflows without relying on complex calendar software.',
+    faqs: [
+      {
+        question: 'What time format is required for the start time?',
+        answer:
+          'Enter the starting time in standard 24-hour HH:MM format (for example, "09:00" or "13:30") to initialise the daily schedule cursor accurately.',
+      },
+      {
+        question: 'How should task entries and durations be formatted?',
+        answer:
+          'Enter tasks one per line with a pipe delimiter: "Task Name | 45", where the number represents duration in minutes.',
+      },
+      {
+        question: 'What is the allowed range for task duration minutes?',
+        answer:
+          'Each task must have a duration between 1 and 1,440 minutes (24 hours). Durations outside this range trigger a validation notice.',
+      },
+      {
+        question:
+          'Are my daily schedules uploaded to cloud calendar providers?',
+        answer:
+          'No. All schedule sequencing executes locally in browser tab memory. No schedule data is transmitted across the network or stored on remote servers.',
+      },
+    ],
+  },
+  // lib/tools/life-admin-workbench.ts (LIFE_ADMIN_OPERATIONS 'life-path-number-calculator', runLifeAdminOperation), lib/tools/life-admin-workbench.test.ts, components/life-admin-workbench-tool.tsx and app/life-admin/[tool]/page.tsx
+  'date-time-and-productivity-life-path-number-calculator': {
+    directAnswer:
+      'Select or enter your full birth date to calculate your numerological life path number directly in your browser. The tool reduces day, month, and year components individually, preserves traditional master numbers (11, 22, 33), and presents step-by-step reduction arithmetic clearly without uploading your personal date of birth to remote servers.',
+    leadParagraph:
+      'This life path number calculator computes the core life path number from a complete birth date using the traditional three-step reduction methodology. Rather than adding all digits in a single sum\u2014which can miscalculate master numbers\u2014the standard Pythagorean method reduces the day, month, and year separately. The tool sums the digits of each component until reaching a single digit or a master number (11, 22, or 33). It then combines the three reduced values and performs a final reduction, preserving master numbers in the final result. The output displays the final life path number accompanied by full mathematical derivation steps, explaining the reduction of each calendar segment. Because all calculations take place locally inside your browser tab, your personal birth date and identity details remain confidential. The tool provides a transparent breakdown of the reduction steps for each calendar component.',
+    faqs: [
+      {
+        question: 'How is the life path number calculated?',
+        answer:
+          'The tool reduces the day, month, and year separately by summing digits until a single digit or master number remains, then sums and reduces the three values.',
+      },
+      {
+        question: 'Which master numbers are preserved in the calculation?',
+        answer:
+          'The calculator preserves master numbers 11, 22, and 33 during both component reduction and the final sum calculation in accordance with Pythagorean numerology.',
+      },
+      {
+        question: 'Why are day, month, and year reduced separately?',
+        answer:
+          'Separate reduction is the authentic Pythagorean method. Adding all digits together in one lump sum can inadvertently miss master numbers.',
+      },
+      {
+        question: 'Is my birth date transmitted or stored online?',
+        answer:
+          'No. The calculation runs entirely in local browser tab memory without network communication, guaranteeing complete privacy for your personal data.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'weekly-planner', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-weekly-planner': {
+    directAnswer:
+      'Enter weekly tasks paired with weekday names to organise them into a structured seven-day weekly schedule directly in your browser. The tool groups tasks from Monday through Sunday in standard ISO calendar order and formats clean daily lists without ever transmitting your schedule or personal priorities to remote cloud databases.',
+    leadParagraph:
+      'This weekly planner organizes loose tasks and commitments into a balanced seven-day schedule. Planning out the entire week helps distribute workload evenly and prevents tasks from piling up towards the weekend. You enter tasks as pairs of weekday and task description separated by pipe characters (for example, "Monday | Team sprint planning" or "Friday | Release deployment"). The engine groups entries into standard seven-day order from Monday through Sunday, collecting multiple tasks assigned to the same day under a single heading. Unassigned days are presented cleanly, providing a clear overview of weekly distribution. The formatted markdown can be copied into personal notebooks, weekly review documents, or team boards. Operating entirely client-side, your weekly work plans and personal appointments remain confidential. This allows you to plan your work commitments and maintain a balanced weekly routine without cloud dependencies.',
+    faqs: [
+      {
+        question: 'How should weekly tasks be entered into the planner?',
+        answer:
+          'Enter tasks one per line with day and description separated by a pipe: "Tuesday | Finalise quarterly budget review" for proper schedule grouping.',
+      },
+      {
+        question: 'What day order does the weekly planner follow?',
+        answer:
+          'The planner follows the international ISO standard order, starting on Monday and proceeding sequentially through Sunday to organize your week.',
+      },
+      {
+        question: 'Can I assign multiple tasks to the same day?',
+        answer:
+          "Yes. All tasks assigned to a specific day are automatically grouped together in the output under that day's section heading.",
+      },
+      {
+        question: 'Are my weekly plans uploaded or synced to external servers?',
+        answer:
+          'No. All task grouping and schedule formatting occur locally in your browser tab without internet access, ensuring full privacy for your personal plans.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'monthly-planner', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-monthly-planner': {
+    directAnswer:
+      'Enter a target calendar month and individual date-stamped tasks to compile a chronological monthly action plan directly in your browser tab. The tool validates YYYY-MM month syntax, filters out tasks outside the target month, and sorts entries chronologically cleanly and accurately without ever uploading your commitments to external calendar platforms.',
+    leadParagraph:
+      'This monthly planner aggregates date-specific milestones, deliverables, and events into an orderly monthly itinerary. When organizing long-term deliverables, tasks from different months can become mixed up in notes. You specify the target month in YYYY-MM format (such as "2026-10") and enter dated tasks using pipe delimiters ("YYYY-MM-DD | Task description"). The engine checks that the month format is valid, discards any entries that do not belong to the selected month, and sorts the remaining tasks in strict ascending chronological order. Each item is formatted with clean middle-dot dividers, creating a coherent monthly timeline ready for project review meetings. Because all filtering and sorting execute inside your browser tab under strict CSP headers, private roadmap dates and personal milestones remain completely secure. You can review scheduled commitments for the month ahead with clarity.',
+    faqs: [
+      {
+        question: 'What month format is required for the target month?',
+        answer:
+          'Enter the month in standard YYYY-MM format (for example, "2026-10"). Providing an invalid format raises a validation error to prevent misaligned schedules.',
+      },
+      {
+        question: 'What happens to tasks with dates in other months?',
+        answer:
+          'The tool automatically filters out tasks whose dates do not match the target month, displaying only commitments scheduled for the selected month.',
+      },
+      {
+        question: 'Do I need to enter dated tasks in chronological sequence?',
+        answer:
+          'No. You can paste dated tasks in any random order; the engine sorts all matching entries into chronological order automatically.',
+      },
+      {
+        question: 'Is my monthly schedule uploaded to any cloud server?',
+        answer:
+          'No. All date validation, filtering, and sorting run locally in your browser without network communication, guaranteeing complete data privacy for your schedules.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'goal-breakdown-tool', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-goal-breakdown-tool': {
+    directAnswer:
+      'Enter a high-level strategic goal, sequential milestone steps, and immediate next action to compile an actionable execution roadmap directly in your browser. The tool structures a numbered roadmap, highlights the immediate next step, and outputs clean Markdown documentation clearly without transmitting your personal or business goals to remote productivity servers.',
+    leadParagraph:
+      'This goal breakdown tool deconstructs large, ambitious goals into manageable sequential milestones and immediate next actions. Broad objectives often fail because they lack structured execution steps or clear starting points. You provide your overall goal statement, a list of milestone achievements (one per line, up to 100 entries), and an immediate next physical action. The engine validates that the goal statement is non-empty and compiles your inputs into a structured Markdown roadmap featuring an all-caps GOAL heading, a numbered MILESTONES list, and an isolated NEXT ACTION block. This layout provides clarity for project kickoff documents or accountability check-ins. Operating entirely in local browser tab memory under strict CSP restrictions, confidential business strategies and personal ambitions remain private on your computer. This structured approach helps turn ambitious ideas into concrete milestones.',
+    faqs: [
+      {
+        question: 'How many milestones can I include in the roadmap?',
+        answer:
+          'The tool supports up to 100 milestone steps per goal. Milestones are automatically numbered sequentially in the output for easy tracking.',
+      },
+      {
+        question: 'Why is the Next Action field kept separate from milestones?',
+        answer:
+          'Isolating the immediate next action provides psychological momentum, clarifying exactly what physical task must be executed first to begin progress.',
+      },
+      {
+        question: 'Can I export the generated goal roadmap?',
+        answer:
+          'Yes. The output is clean, standard Markdown that can be copied directly into Notion, Obsidian, GitHub issues, or personal notes.',
+      },
+      {
+        question: 'Are my goals or milestones sent across the network?',
+        answer:
+          'No. All roadmap generation takes place in your local browser tab under strict Content Security Policy directives forbidding network calls.',
+      },
+    ],
+  },
+  // lib/tools/productivity-workbench.ts (PRODUCTIVITY_OPERATIONS 'decision-matrix', runProductivityOperation), lib/tools/productivity-workbench.test.ts, components/productivity-workbench-tool.tsx and app/productivity/[tool]/page.tsx
+  'date-time-and-productivity-decision-matrix': {
+    directAnswer:
+      'Enter candidate decision options alongside multiple numerical criteria scores to rank competing choices mathematically directly in your browser. The tool sums scores across all evaluation criteria, sorts options in descending order of total score, and outputs an objective ranked decision report cleanly without sending your internal options to external servers.',
+    leadParagraph:
+      'This decision matrix tool provides an objective, mathematical framework for evaluating competing options against multiple criteria. Whether choosing software architecture stacks, vendor contracts, job offers, or product features, complex decisions often suffer from subjective bias. You enter candidate options followed by numerical criteria scores separated by pipes (such as "Option A | 8 | 7 | 9"). The engine parses each score, calculates the total sum for every candidate option, and sorts the options into descending order based on their aggregate score. The resulting report displays a clear ranking with total score totals, highlighting the mathematically superior choice based on your criteria. Running entirely within local browser tab memory under strict CSP restrictions, sensitive commercial negotiations and confidential strategic decisions remain completely private. This framework provides an audit trail for important organizational decisions.',
+    faqs: [
+      {
+        question: 'How should options and scores be formatted in the matrix?',
+        answer:
+          'Enter one option per line with numeric scores separated by pipes: "Candidate A | 8 | 9 | 7". The tool sums all numerical criteria for each row.',
+      },
+      {
+        question: 'How does the tool sort the evaluated options?',
+        answer:
+          'The engine sorts all options in descending order of total score, placing the highest-scoring candidate option at the top of the ranked list.',
+      },
+      {
+        question: 'Can I evaluate an unlimited number of criteria columns?',
+        answer:
+          'Yes. You can supply multiple pipe-separated scores per row; the tool dynamically parses and aggregates all numeric values provided for each option.',
+      },
+      {
+        question:
+          'Are my proprietary decision criteria uploaded to any server?',
+        answer:
+          'No. All mathematical summation and option ranking occur client-side in browser memory without dispatching network calls, ensuring complete privacy for your decisions.',
+      },
+    ],
+  },
 };
 
 /**
