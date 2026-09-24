@@ -5,7 +5,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   auditRenderedPages,
+  duplicateOgTitles,
   missingShareTags,
+  ogTitle,
 } from '../../scripts/check-share-and-heading-order.mjs';
 import {
   SHARE_CARDS,
@@ -179,6 +181,128 @@ describe('share card coverage', () => {
       expect(result.checked).toBeGreaterThan(1000);
       expect(
         result.faults.filter((fault) => fault.check === 'share-tags'),
+      ).toEqual([]);
+    },
+  );
+});
+
+/**
+ * Every card names its own page.
+ *
+ * WHAT BROKE, AND WHY NOTHING SAW IT. The 2026-09-23 sweep above closed the
+ * "is the tag there" question, and all 1,335 tool pages passed it: they had an
+ * `og:title`, an `og:description` and an `og:image`. Re-measured against a
+ * fresh `dist/client` the same day, those 1,335 of 1,413 URLs carried ONE
+ * `og:title` between them -- `OpenTools — Fast, Private Browser Utilities` --
+ * with 79 distinct values across the site, and an `og:url` pointing at the
+ * home page. Same Next.js rule as the 78, read from the other side: a page
+ * that declares no `openGraph` inherits the layout's whole, so
+ * `app/layout.tsx` was answering for every tool.
+ *
+ * `scripts/audit-360.mjs`'s `og` check asserts presence, and the
+ * `duplicate-title` / `duplicate-description` population checks read `<title>`
+ * and `<meta name="description">` -- which were already 1,413 distinct values.
+ * Nothing read the Open Graph pair as a population, so the fault was invisible
+ * to every guard the site had.
+ *
+ * WHY THE FIX IS AN OMISSION. `app/layout.tsx` states no `openGraph.title`,
+ * no `openGraph.description` and no absolute `openGraph.url`. The metadata
+ * shim's `postProcessMetadata` then fills `og:title` from the page's own
+ * resolved title (site template already applied) and `og:description` from its
+ * own description, and `url: '.'` resolves against the page's own pathname.
+ * So the 1,335 pages were fixed without editing any of them -- and nothing in
+ * any page file will look wrong if someone puts the three fields back. That is
+ * what these tests are for.
+ */
+describe('share card titles name their own page', () => {
+  /**
+   * The detector's own eyes, for the same reason `missingShareTags` has a
+   * pair of them: a matcher that quietly stops matching would report 1,413
+   * identical cards as a clean site.
+   */
+  it('reads an og:title, and groups only the values more than one page uses', () => {
+    const page = (title: string) =>
+      `<meta property="og:title" content="${title}"/>`;
+    expect(ogTitle(page('Merge PDF · OpenTools'))).toBe(
+      'Merge PDF · OpenTools',
+    );
+    expect(ogTitle('<html><head></head></html>')).toBeNull();
+
+    expect(
+      duplicateOgTitles([
+        { urlPath: '/a', html: page('Shared') },
+        { urlPath: '/c', html: page('Shared') },
+        { urlPath: '/b', html: page('Shared') },
+        { urlPath: '/d', html: page('Its own') },
+        { urlPath: '/e', html: '<html><head></head></html>' },
+      ]),
+    ).toEqual([{ title: 'Shared', routes: ['/a', '/b', '/c'] }]);
+
+    expect(
+      duplicateOgTitles([
+        { urlPath: '/a', html: page('One') },
+        { urlPath: '/b', html: page('Two') },
+      ]),
+    ).toEqual([]);
+  });
+
+  /**
+   * The source invariant behind all 1,335. Stating any of these three in the
+   * ROOT layout re-breaks every page that declares no block of its own, and
+   * no page file changes when it happens.
+   *
+   * A nested layout or a page may state them freely -- `/guides`, `/blog` and
+   * the templates do, and they are the reason `shareImages()` exists. Only the
+   * root layout answers for pages that said nothing.
+   */
+  it('leaves title, description and an absolute url out of the root layout', () => {
+    const [block, ...rest] = openGraphBlocks(
+      readFileSync(path.join(APP_DIR, 'layout.tsx'), 'utf8'),
+    );
+    expect(block, 'app/layout.tsx declares no openGraph block').toBeDefined();
+    expect(
+      rest,
+      'app/layout.tsx declares more than one openGraph block',
+    ).toEqual([]);
+
+    const stated = ['title', 'description'].filter((field) =>
+      new RegExp(`(^|[{,\\s])${field}:`, 'u').test(block!),
+    );
+    expect(
+      stated,
+      'app/layout.tsx states these in openGraph, so all 1,335 pages that ' +
+        'declare no openGraph of their own will inherit them and every tool ' +
+        'link will preview as the site. Leave them out; postProcessMetadata ' +
+        "fills them from each page's own title and description.",
+    ).toEqual([]);
+
+    const url = block!
+      .match(/(^|[{,\s])url:\s*([^,\n]+)/u)?.[2]
+      ?.trim()
+      .replace(/^['"`]|['"`]$/gu, '');
+    expect(
+      url,
+      "openGraph.url must be '.', which resolves against the page's own " +
+        'pathname. An absolute origin makes every page claim the home page ' +
+        'as its og:url, and Facebook and LinkedIn read og:url as canonical.',
+    ).toBe('.');
+  });
+
+  /**
+   * And the population claim, whenever a build is on disk. This is also the
+   * only place the shim's fill-from-page-title behaviour is proved: it is
+   * behaviour of a dependency, so it is asserted against rendered bytes rather
+   * than against an import of its internals.
+   */
+  it.skipIf(!existsSync(path.join(CLIENT_DIR, 'sitemap.xml')))(
+    'gives no two sitemap URLs the same og:title',
+    () => {
+      const result = auditRenderedPages(CLIENT_DIR)!;
+      expect(result.checked).toBeGreaterThan(1000);
+      expect(
+        result.faults
+          .filter((fault) => fault.check === 'duplicate-og-title')
+          .map((fault) => fault.detail),
       ).toEqual([]);
     },
   );

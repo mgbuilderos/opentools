@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Two fault classes the 2026-09-23 360 sweep found, guarded against return.
+ * Three fault classes the 2026-09-23 360 sweep found, guarded against return.
  *
  *   1. 78 of 1,413 live URLs shipped no `og:image`. Every one was a page that
  *      declares its own `openGraph` block: Next.js replaces the layout's block
@@ -13,6 +13,19 @@
  *   2. 52 URLs skipped a heading level -- `h1` then `h3`, or `h2` then `h4`.
  *      A reader moving through a page by heading level hits the gap and cannot
  *      tell whether they missed a section or the page simply has none there.
+ *
+ *   3. 1,335 of the same 1,413 URLs shipped ONE `og:title` between them --
+ *      `OpenTools — Fast, Private Browser Utilities` -- with 79 distinct
+ *      values across the whole site. The cause is the same Next.js rule as
+ *      fault 1 read from the other side: a tool page that declares no
+ *      `openGraph` inherits the layout's whole, so the site-level headline
+ *      stood in for every tool. Fault 1 was caught by asking whether the tag
+ *      is present, and it was present on all 1,335 -- which is why this needs
+ *      a check of its own. The fix is in `app/layout.tsx`: state no `title`,
+ *      `description` or absolute `url` there and each page fills its own.
+ *
+ * The third check is a population check for the same reason the other two are:
+ * no page file looked wrong, and the fault existed only across the set.
  *
  * WHY THIS IS A BUILD STEP AND NOT ONLY A UNIT TEST. Neither fault was visible
  * in source. Both live in the merged metadata and the rendered markup, which
@@ -56,6 +69,44 @@ export function missingShareTags(html) {
   return REQUIRED_SHARE_TAGS.filter(
     (property) => !new RegExp(`property="${property}"`).test(html),
   );
+}
+
+/**
+ * The `og:title` this HTML serves, or null.
+ *
+ * Read with the same attribute-order assumption as `missingShareTags`, and
+ * pinned by the same test, because a matcher that silently stops matching
+ * would report a site of 1,413 identical cards as a site of none.
+ */
+export function ogTitle(html) {
+  const found = html.match(/<meta property="og:title" content="([^"]*)"/);
+  return found ? found[1] : null;
+}
+
+/**
+ * Every `og:title` that more than one sitemap URL serves.
+ *
+ * Uniqueness, not a ratio. `lib/seo/meta-lengths.test.ts` already holds
+ * `<title>` and `<meta name="description">` to exactly this rule across the
+ * same population, and the card is the same claim made to a different reader:
+ * two links that preview identically are two links a reader cannot tell apart
+ * in a feed. Reported one row per shared value rather than one per page --
+ * the 2026-09-23 fault would otherwise print 1,334 lines of the same fact.
+ *
+ * Pages with no `og:title` at all are not counted here; `missingShareTags`
+ * already fails the build for those, and one fault should be reported once.
+ */
+export function duplicateOgTitles(pages) {
+  const routesByTitle = new Map();
+  for (const { urlPath, html } of pages) {
+    const title = ogTitle(html);
+    if (title === null) continue;
+    routesByTitle.set(title, [...(routesByTitle.get(title) ?? []), urlPath]);
+  }
+  return [...routesByTitle.entries()]
+    .filter(([, routes]) => routes.length > 1)
+    .map(([title, routes]) => ({ title, routes: routes.sort() }))
+    .sort((a, b) => b.routes.length - a.routes.length);
 }
 
 /**
@@ -121,6 +172,15 @@ export function auditRenderedPages(clientDir = CLIENT_DIR) {
     const skip = firstHeadingSkip(html);
     if (skip) faults.push({ urlPath, check: 'heading-order', detail: skip });
   }
+  for (const { title, routes } of duplicateOgTitles(pages)) {
+    faults.push({
+      urlPath: routes[0],
+      check: 'duplicate-og-title',
+      detail:
+        `${routes.length} URLs share "${title}"` +
+        ` (${routes.slice(1, 4).join(', ')}${routes.length > 4 ? ', ...' : ''})`,
+    });
+  }
   return { checked: pages.length, faults };
 }
 
@@ -158,6 +218,11 @@ function main() {
       '  A page that declares its own `openGraph` must declare `images` too:\n' +
         '  Next.js replaces the layout block whole, it does not merge it.\n' +
         '  Use `shareImages()` from lib/seo/share-images.ts.\n\n' +
+        '  Two URLs may not share an `og:title`. If thousands do, the cause is\n' +
+        '  `app/layout.tsx` stating `openGraph.title` again: every page that\n' +
+        '  declares no block of its own then inherits that one headline. Leave\n' +
+        '  `title`, `description` and an absolute `url` out of the layout and\n' +
+        '  each page fills them from its own metadata.\n\n' +
         '  A heading level may descend by any amount but climb by only one.\n' +
         '  Fix the level in the markup and let the class size it; do not\n' +
         '  restyle a correct heading to look like the wrong one.\n',
@@ -166,7 +231,8 @@ function main() {
   }
 
   console.log(
-    `  Verified ${checked} sitemap URLs ship a full share card and skip no heading level`,
+    `  Verified ${checked} sitemap URLs ship a full share card with its own ` +
+      `og:title and skip no heading level`,
   );
 }
 

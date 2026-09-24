@@ -310,6 +310,16 @@ export async function sweepSite({
   const findings = [];
   const titles = new Map();
   const descs = new Map();
+  /*
+    Kept separately from `titles` because the two disagreed for seven days and
+    only one of them was being read. On 2026-09-23 this sweep reported 1,413
+    distinct `<title>` values -- a clean bill -- while 1,335 of the same URLs
+    served one `og:title` between them, inherited from `app/layout.tsx` by
+    every page that declares no `openGraph` of its own. The `og` check above
+    passed all 1,335, because the tag was present; it was simply the wrong
+    page's tag.
+  */
+  const ogTitles = new Map();
   const linkTargets = new Set();
   const add = (url, check, detail, severity, why) =>
     findings.push({ url, check, detail, severity, why });
@@ -351,8 +361,10 @@ export async function sweepSite({
     if (status === 200) {
       const t = pick(html, /<title>([^<]*)<\/title>/);
       const d = pick(html, /<meta name="description" content="([^"]*)"/);
+      const og = pick(html, /<meta property="og:title" content="([^"]*)"/);
       if (t) titles.set(t, [...(titles.get(t) || []), url]);
       if (d) descs.set(d, [...(descs.get(d) || []), url]);
+      if (og) ogTitles.set(og, [...(ogTitles.get(og) || []), url]);
       for (const href of all(html, /href="(\/[^"#?]*)"/g))
         linkTargets.add(href.replace(/\/$/, '') || '/');
     }
@@ -376,6 +388,15 @@ export async function sweepSite({
         `${list.length} pages share one description`,
         'medium',
         'a shared description is a duplicate-content signal',
+      );
+  for (const [v, list] of ogTitles)
+    if (list.length > 1)
+      add(
+        list[0],
+        'duplicate-og-title',
+        `${list.length} pages share "${v.slice(0, 55)}"`,
+        'high',
+        'the whole distribution plan is people posting links, and a card that names the site instead of the tool says nothing about what was shared',
       );
 
   const orphans = urls.filter((u) => {
