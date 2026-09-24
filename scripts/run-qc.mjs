@@ -13,10 +13,14 @@ const releaseMode = process.argv.includes('--release');
 /**
  * Several unit tests (`edge-cache-headers`, `heading-order`, `share-card-coverage`,
  * and `indexability-sweep`) read `dist/client/`. If `dist/` is missing, older
- * than HEAD, or older than source files, running the unit suite produces
- * misleading test diffs that look like regressions.
+ * than the latest source-touching commit, or older than source files, running the
+ * unit suite produces misleading test diffs that look like regressions.
  *
  * Refuse early with a plain instruction to build.
+ *
+ * Known limitation: the mtime scan will false-positive after a branch switch,
+ * because git rewrites the mtime of every file it touches. That failure points
+ * the safe direction (it asks for a rebuild that is merely unnecessary), so it stays.
  */
 function assertFreshDist() {
   const sitemap = path.join(appRoot, 'dist/client/sitemap.xml');
@@ -30,22 +34,26 @@ function assertFreshDist() {
   const distTime = statSync(sitemap).mtimeMs;
 
   try {
-    const headCommitTimeSeconds = parseInt(
-      execSync('git log -1 --format=%ct HEAD', {
+    const rawCommitTime = execSync(
+      'git log -1 --format=%ct -- app components lib public',
+      {
         cwd: appRoot,
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'ignore'],
-      }).trim(),
-      10,
-    );
-    if (
-      Number.isFinite(headCommitTimeSeconds) &&
-      distTime < headCommitTimeSeconds * 1000
-    ) {
-      process.stderr.write(
-        '[QC] dist/ is older than HEAD. Run `npm run build` before running QC.\n',
-      );
-      process.exit(1);
+      },
+    ).trim();
+
+    if (rawCommitTime) {
+      const sourceCommitTimeSeconds = parseInt(rawCommitTime, 10);
+      if (
+        Number.isFinite(sourceCommitTimeSeconds) &&
+        distTime < sourceCommitTimeSeconds * 1000
+      ) {
+        process.stderr.write(
+          '[QC] dist/ is older than the last source commit. Run `npm run build` before running QC.\n',
+        );
+        process.exit(1);
+      }
     }
   } catch {
     // Skip if not in a git repo or git fails.
