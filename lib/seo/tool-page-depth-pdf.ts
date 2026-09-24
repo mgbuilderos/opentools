@@ -812,7 +812,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
     heading: 'About this fill and sign tool',
     directAnswer:
       'Choose a PDF of up to 150 MB. Every fillable field is listed with a control matching its kind — text, tick box, dropdown, multi-select — and you complete them, then draw a signature on the pad or type your name, place it by clicking the page outline, and finish. "Make it final" is on by default: it prints your values into the page and removes the form so the next person cannot edit them.',
-    lead: 'This draws or types a signature; it does not certify one. The result is an image on the page, the same as signing a printout and scanning it — it carries no certificate and no audit trail, so it proves nothing about who signed or when. Where a document demands a qualified or digital signature, this is not that, and the page says so before you choose a file. It also refuses outright to touch a PDF that already carries a digital signature, because any change would break it. Form fields accept basic Latin text for now, and when a character cannot be written the page names the character and the field rather than failing vaguely.',
+    lead: 'This draws or types a signature; it does not certify one. The result is an image on the page, the same as signing a printout and scanning it — it includes neither digital certificate nor cryptographic audit log, so it proves nothing about who signed or when. Where a document demands a qualified or digital signature, this is not that, and the page says so before you choose a file. It also refuses outright to touch a PDF that already carries a digital signature, because any change would break it. Form fields accept basic Latin text for now, and when a character cannot be written the page names the character and the field rather than failing vaguely.',
     steps: [
       {
         name: 'Choose the PDF',
@@ -892,7 +892,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'Can I sign a PDF that has no form fields?',
         answer:
-          'Yes. The page says the PDF has no fillable form fields and lets you place a signature anyway; the receipt then reports "No form in this PDF" alongside where the signature went. Page count and existing content are unchanged.',
+          'Yes. The page says the PDF has no fillable form fields and lets you place a signature anyway; the receipt then reports that no form was present alongside where the signature went. Page count and existing content are unchanged.',
       },
       {
         question: 'Can I do it entirely with the keyboard?',
