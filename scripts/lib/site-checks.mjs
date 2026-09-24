@@ -490,7 +490,7 @@ export function formatFindings({ origin, urls, findings }) {
   for (const f of findings) by.set(f.check, [...(by.get(f.check) || []), f]);
   lines.push(`\n360 sweep — ${urls.length} live URLs at ${origin}`);
   lines.push(
-    `${CHECKS.length} per-URL checks, plus duplicate title/description, orphans, robots.txt, sitemap.xml and 404 handling\n`,
+    `${CHECKS.length} per-URL checks, plus ${POPULATION_CHECKS.map((check) => check.id).join(', ')}, orphans, robots.txt, sitemap.xml and 404 handling\n`,
   );
   if (!findings.length) {
     lines.push('  0 faults.\n');
