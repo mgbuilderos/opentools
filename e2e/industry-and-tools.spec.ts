@@ -1,5 +1,20 @@
 import { expect, test } from '@playwright/test';
 
+import { getBlogPostBySlug } from '../lib/seo/blog-data';
+import { getTemplateBySlug } from '../lib/templates/templates-data';
+
+function titleOfBlog(slug: string) {
+  const post = getBlogPostBySlug(slug);
+  if (!post) throw new Error(`No blog post with slug "${slug}".`);
+  return post.title;
+}
+
+function titleOfTemplate(slug: string) {
+  const template = getTemplateBySlug(slug);
+  if (!template) throw new Error(`No template with slug "${slug}".`);
+  return template.title;
+}
+
 test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () => {
   test('drives lawyer workflow article and verifies live PDF merge tool navigation', async ({
     page,
@@ -8,7 +23,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /In-Browser Legal Document Workflows/i,
+        name: titleOfBlog('legal-document-workflow-in-browser-privacy'),
       }),
     ).toBeVisible();
 
@@ -44,7 +59,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /The Graphic Designer's Asset Pipeline/i,
+        name: titleOfBlog('graphic-design-asset-workflow-in-browser'),
       }),
     ).toBeVisible();
 
@@ -66,7 +81,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
     await toolLink.first().click();
     await expect(page).toHaveURL(/\/image\/optimize/);
     await expect(
-      page.getByRole('button', { name: 'Choose image', exact: true }),
+      page.getByRole('button', { name: 'Choose image(s)' }),
     ).toBeVisible();
   });
 
@@ -77,7 +92,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /Digital Marketing Workflows in Browser/i,
+        name: titleOfBlog('digital-marketer-data-and-asset-workflow'),
       }),
     ).toBeVisible();
 
@@ -107,7 +122,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /Building an In-Browser Audio Converter: The Silent Resampling Trap/i,
+        name: titleOfBlog('audio-to-wav-conversion-silent-resampling-trap'),
       }),
     ).toBeVisible();
 
@@ -144,7 +159,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /Video Editing Without a Codec: Lossless MP4 Trimming/i,
+        name: titleOfBlog('lossless-video-trimming-without-codecs-mp4'),
       }),
     ).toBeVisible();
 
@@ -181,7 +196,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /Court Exhibit Binder & Legal Document Assembly Checklist/i,
+        name: titleOfTemplate('court-exhibit-binder-assembly-checklist'),
       }),
     ).toBeVisible();
 
@@ -211,7 +226,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /Digital Asset Export & Creative Client Handoff Checklist/i,
+        name: titleOfTemplate('client-asset-export-preflight-checklist'),
       }),
     ).toBeVisible();
 
@@ -241,7 +256,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
 
     await expect(
       page.getByRole('heading', {
-        name: /Omnichannel Campaign Launch & Data Hygiene Checklist/i,
+        name: titleOfTemplate('digital-marketing-campaign-launch-checklist'),
       }),
     ).toBeVisible();
 

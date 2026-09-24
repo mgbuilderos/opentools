@@ -143,3 +143,45 @@
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
+
+# The framable tool routes, and the only place on this site where
+# `frame-ancestors 'none'` does not apply. Owner decision 2026-09-24; business
+# rule 33 amended; threat model in `decisions/ADR-019-embed-frame-ancestors.md`.
+#
+# Read what this rule does NOT change. `connect-src` is still `'none'`, so a
+# tool running inside somebody else's page can no more reach the network than
+# the same tool on getopentools.com. `script-src` is unchanged. The frame is
+# cross-origin, so the embedding page cannot read the text a visitor pastes
+# into it, cannot read the output, and cannot restyle or delete the
+# attribution link the embed carries.
+#
+# Two headers here differ from the catch-all and both are required, not
+# cosmetic:
+#
+#   * `X-Frame-Options` is ABSENT, and has to be. It is a legacy header with no
+#     value meaning "any origin", and a browser that honours it would block the
+#     frame no matter what `frame-ancestors` says. `! X-Frame-Options` unsets
+#     the catch-all's `DENY` -- a rule here adds to the earlier rule rather
+#     than replacing it, so without the unset line both would ship and DENY
+#     would win. `next.config.ts` cannot express an unset at all, which is why
+#     its catch-all excludes this prefix by pattern instead.
+#   * `Cross-Origin-Resource-Policy: cross-origin` replaces `same-origin`. A
+#     parent page that sets `Cross-Origin-Embedder-Policy: require-corp` -- any
+#     site using SharedArrayBuffer, so most WASM-based ones -- cannot load a
+#     `same-origin` subresource from another origin at all.
+#
+# `X-Robots-Tag: noindex, follow` is deliberate and is the point of the whole
+# programme: the embed copy must never compete in search with the canonical
+# tool page it links to, or the embeds would split the ranking signal they
+# exist to build. `follow` is what lets the link out of the frame count.
+#
+# `/embed` itself -- the page that hands a site owner the snippet -- does NOT
+# match this rule and keeps `frame-ancestors 'none'`. Only `/embed/<tool>` is
+# framable.
+/embed/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors *; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+  ! X-Frame-Options
+  ! Cross-Origin-Resource-Policy
+  Cross-Origin-Resource-Policy: cross-origin
+  X-Robots-Tag: noindex, follow

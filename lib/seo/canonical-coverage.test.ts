@@ -122,6 +122,7 @@ describe('canonical coverage', () => {
   it('reads the disallow list out of robots.ts, spreads included', () => {
     expect(DISALLOWED).toContain('/api/');
     expect(DISALLOWED).toContain('/guides-cached/');
+    expect(DISALLOWED).toContain('/embed/');
     expect(DISALLOWED).toContain('/wp-json/');
   });
 
@@ -132,7 +133,15 @@ describe('canonical coverage', () => {
    * ones are named here so the check is about the accident, not the intent.
    */
   it('has no scanner prefix shadowing a real route', () => {
-    const intentional = new Set(['/api/', '/guides-cached/']);
+    // `/embed/` joined the two on 2026-09-24. It shadows `app/embed/[tool]`
+    // on purpose: those pages are the framable copies other sites embed, they
+    // are disallowed so a crawler never indexes a stripped duplicate of a page
+    // this site is trying to rank, and they deliberately declare no canonical
+    // -- pointing one at the real tool page would invite Google to treat the
+    // two as one document and prefer the stripped copy. ADR-019 and
+    // `lib/security/embed-framing.test.ts`. `/embed` itself is not disallowed,
+    // is in the sitemap, and is swept like any other page.
+    const intentional = new Set(['/api/', '/guides-cached/', '/embed/']);
     const shadowing = DISALLOWED.filter(
       (prefix) =>
         !intentional.has(prefix) &&
@@ -222,6 +231,38 @@ describe('canonical coverage', () => {
       const match = source.match(/canonical:\s*'([^']+)'/);
       if (!match) continue;
       if (match[1] !== route) wrong.push(`${route} -> ${match[1]}`);
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  /**
+   * Dynamic routes (`[tool]` and `[pair]`) generate 1,200+ of the site's pages.
+   * Skipping them in the static test let dynamic pages ship without their
+   * prefix-bound canonical targets being checked.
+   */
+  it('guarantees every dynamic page file generates self-canonical URLs with its route prefix', () => {
+    const dynamicFiles = files.filter((file) => routeFor(file).includes('['));
+    const wrong: string[] = [];
+    for (const file of dynamicFiles) {
+      const source = readFileSync(file, 'utf8');
+      const route = routeFor(file);
+      const prefix = route.slice(0, route.indexOf('[') - 1);
+      const usesHelper = CANONICAL_HELPERS.some(([name]) =>
+        source.includes(`${name}(`),
+      );
+      const bindsPrefix =
+        source.includes(`${prefix}/`) ||
+        source.includes(`BASE = '${prefix}'`) ||
+        source.includes(`BASE = "${prefix}"`) ||
+        source.includes(`'${prefix}'`);
+      const declaresCanon = DECLARES.test(source);
+      if (!declaresCanon && !usesHelper) {
+        wrong.push(`${route}: missing canonical declaration`);
+      } else if (!usesHelper && !bindsPrefix) {
+        wrong.push(
+          `${route}: canonical does not bind route prefix "${prefix}"`,
+        );
+      }
     }
     expect(wrong).toEqual([]);
   });

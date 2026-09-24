@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { PAGE_DEPTH_CORE } from './tool-page-depth-core';
 import { PAGE_DEPTH_IMAGE } from './tool-page-depth-image';
 import { PAGE_DEPTH_PDF } from './tool-page-depth-pdf';
 import type { ToolPageDepth } from './tool-page-depth-types';
@@ -50,6 +51,7 @@ export type {
 const TOOL_PAGE_DEPTH: Readonly<Record<string, ToolPageDepth>> = {
   ...PAGE_DEPTH_PDF,
   ...PAGE_DEPTH_IMAGE,
+  ...PAGE_DEPTH_CORE,
 };
 
 /** Routes that carry depth content, for tests and for the registry. */
@@ -98,10 +100,18 @@ const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
  * Title, description and a self-canonical for one tool page.
  *
  * The canonical is the reason this helper exists rather than three literals in
- * each page file. `app/layout.tsx` declares `alternates.canonical: '/'`, and
- * Next merges metadata down the segment tree, so a page that sets no canonical
- * of its own inherits the front page's -- which tells Google that 32 tool
- * pages are all the home page. Only the two `[tool]` routes had set one.
+ * each page file. `app/layout.tsx` USED TO declare `alternates.canonical: '/'`,
+ * and Next merges metadata down the segment tree, so every page that set none
+ * of its own inherited the front page's -- telling Google that **59** dedicated
+ * routes (every PDF and image tool, and all fourteen workbenches) were the home
+ * page. Measured live 2026-09-23; only the `[tool]` routes had set their own.
+ *
+ * That declaration is **gone** now -- see the comment in `app/layout.tsx` -- so
+ * nothing is inherited and every page must state its own. Two tests hold the
+ * line: `lib/seo/canonical-coverage.test.ts` and
+ * `lib/seo/indexability-sweep.test.ts`, the latter across all 1,325 live tool
+ * routes. Reintroducing `canonical: CANONICAL_ORIGIN` below turns the sweep's
+ * "self-canonical" assertion red -- verified by mutation on 2026-09-24.
  */
 export function toolPageMetadata(route: string): Metadata {
   const depth = TOOL_PAGE_DEPTH[route];

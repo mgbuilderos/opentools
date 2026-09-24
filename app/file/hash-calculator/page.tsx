@@ -1,12 +1,20 @@
-import type { Metadata } from 'next';
 import { FileHashTool } from '@/components/utility-tools';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
+
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/file/hash-calculator' },
-  title: 'File Hash Calculator',
-  description: 'Calculate SHA file checksums locally in your browser.',
-};
+const ROUTE = '/file/hash-calculator';
+
+export const metadata = toolPageMetadata(ROUTE);
+
 export default function Page() {
-  return <FileHashTool />;
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <FileHashTool />
+    </PageDepthProvider>
+  );
 }

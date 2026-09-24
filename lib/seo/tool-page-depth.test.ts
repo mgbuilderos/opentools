@@ -25,9 +25,29 @@ import {
 
 const projectRoot = path.resolve(import.meta.dirname, '../..');
 
-const depthRoutes = LIVE_TOOL_ROUTES.filter(
-  (route) => route.startsWith('/pdf/') || route.startsWith('/image/'),
-);
+const CORE_DEPTH_ROUTES = [
+  '/life-admin/aadhaar-pan-masker',
+  '/data/csv-to-json',
+  '/audio/convert',
+  '/audio/mp3-toolkit',
+  '/math/percentage-calculator',
+  '/date/age-calculator',
+  '/date/date-difference',
+  '/developer/base64-decoder',
+  '/developer/base64-encoder',
+  '/developer/unix-timestamp',
+  '/developer/uuid-generator',
+  '/file/hash-calculator',
+  '/text/case-converter',
+  '/video/trim',
+] as const;
+
+const depthRoutes = [
+  ...LIVE_TOOL_ROUTES.filter(
+    (route) => route.startsWith('/pdf/') || route.startsWith('/image/'),
+  ),
+  ...CORE_DEPTH_ROUTES,
+];
 
 /**
  * The pages the service worker precaches, read out of the build script.
@@ -56,9 +76,9 @@ function precachedPages(): ReadonlySet<string> {
   );
 }
 
-describe('PDF and image tool page depth', () => {
-  it('covers every live PDF and image tool route, and nothing else', () => {
-    expect(depthRoutes.length).toBe(35);
+describe('PDF, image, and commercial core tool page depth', () => {
+  it('covers every live PDF, image, and commercial core tool route', () => {
+    expect(depthRoutes.length).toBe(49);
     expect([...depthRoutes].sort()).toEqual([...TOOL_PAGE_DEPTH_ROUTES]);
   });
 

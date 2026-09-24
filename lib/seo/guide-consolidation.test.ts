@@ -155,7 +155,10 @@ describe('guide consolidation off is the previous behaviour', () => {
       // Added after d032150 and mirrored here for the same reason every other
       // core route is: this function's job is to rebuild the shipped sitemap
       // minus consolidation, so a core route missing from it would be scored
-      // as a guide the switch dropped.
+      // as a guide the switch dropped. `/embed` (2026-09-24, ADR-019) is the
+      // embed programme's snippet page; the framable `/embed/<tool>` copies
+      // are deliberately not in any sitemap.
+      '/embed',
       ...COMPARE_ROUTES,
     ].map((route) => ({
       url: `${origin}${route}`,

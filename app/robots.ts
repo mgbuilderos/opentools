@@ -72,6 +72,18 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: ['/'],
+        // `/embed/*` is the framable copy of a tool, served for other
+        // people's pages. Every one of them is a stripped version of a page
+        // this site is trying to rank, so letting a crawler index both splits
+        // the signal the embed programme exists to build. The pages must keep
+        // answering 200 -- they are loaded by browsers, not by crawlers -- and
+        // they carry `X-Robots-Tag: noindex, follow` in `public/_headers` as
+        // well, because a frame fetched as a subresource may never have its
+        // `<meta name="robots">` read. `follow` is the half that matters: the
+        // attribution link out of the frame is the whole return. `/embed`
+        // itself, the page that hands a site owner the snippet, is NOT
+        // disallowed -- it is the page meant to rank. ADR-019.
+        //
         // `/guides-cached/*` is the rewrite target behind CACHED_GUIDE_SLUGS,
         // not a place for a reader. Every one of its 50 pages is byte-identical
         // to the `/guides/*` page it serves, answers 200 to anyone who asks,
@@ -79,7 +91,7 @@ export default function robots(): MetadataRoute.Robots {
         // duplicate content and has to guess which URL is canonical. Blocking
         // the prefix is the fix; the pages themselves must keep working,
         // because the rewrite is what serves `/guides/*`.
-        disallow: ['/api/', '/guides-cached/', ...SCANNER_PATHS],
+        disallow: ['/api/', '/guides-cached/', '/embed/', ...SCANNER_PATHS],
       },
       {
         userAgent: [
@@ -94,7 +106,7 @@ export default function robots(): MetadataRoute.Robots {
           'cohere-ai',
         ],
         allow: ['/'],
-        disallow: ['/api/', '/guides-cached/', ...SCANNER_PATHS],
+        disallow: ['/api/', '/guides-cached/', '/embed/', ...SCANNER_PATHS],
       },
     ],
     sitemap: `${siteOrigin}/sitemap.xml`,

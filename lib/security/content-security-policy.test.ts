@@ -17,6 +17,14 @@ describe('content security policy', () => {
     expect(policy).not.toContain('wasm-unsafe-eval');
   });
 
+  it('relaxes framing for an embed without relaxing anything else', () => {
+    const policy = contentSecurityPolicy({ embeddable: true });
+    expect(policy).toContain('frame-ancestors *');
+    expect(policy).toContain("connect-src 'none'");
+    expect(policy).not.toContain('wasm-unsafe-eval');
+    expect(contentSecurityPolicy()).toContain("frame-ancestors 'none'");
+  });
+
   it('allows only same-origin assets and WebAssembly for the local model', () => {
     const policy = contentSecurityPolicy({ localModel: true });
     expect(policy).toContain("connect-src 'self';");
@@ -57,6 +65,8 @@ describe('content security policy', () => {
       contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),
+      // `/embed/*`, the one framable prefix. ADR-019.
+      contentSecurityPolicy({ embeddable: true }),
     ]);
   });
 });

@@ -1,12 +1,20 @@
-import type { Metadata } from 'next';
 import { Base64EncoderTool } from '@/components/utility-tools';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
+
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/developer/base64-encoder' },
-  title: 'Base64 Encoder',
-  description: 'Encode Unicode text as Base64 locally in your browser.',
-};
+const ROUTE = '/developer/base64-encoder';
+
+export const metadata = toolPageMetadata(ROUTE);
+
 export default function Page() {
-  return <Base64EncoderTool />;
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <Base64EncoderTool />
+    </PageDepthProvider>
+  );
 }

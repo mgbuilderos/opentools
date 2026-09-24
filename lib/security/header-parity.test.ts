@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import nextConfig from '@/next.config';
 import { parseHeaderRules } from '../../scripts/lib/headers-policy.mjs';
+import { NON_EMBED_SOURCE } from './content-security-policy';
 
 /**
  * The two header files must say the same thing, and until now that was a
@@ -48,8 +49,17 @@ const catchAllRule = parseHeaderRules(
   readFileSync(path.join(projectRoot, 'public/_headers'), 'utf8'),
 ).find((rule) => rule.pattern === '/*');
 
+/*
+ * The catch-all used to be `/:path*`. Since 2026-09-24 it is
+ * `NON_EMBED_SOURCE`, a negative lookahead that skips `/embed/<tool>` -- the
+ * routes other sites may frame. `X-Frame-Options: DENY` has no value meaning
+ * "any origin" to override it with, so excluding those routes by pattern is
+ * the only way next.config.ts can stop sending it there. The embed rule's own
+ * parity is checked in `embed-framing.test.ts`; this file still governs every
+ * other page on the site.
+ */
 const declared = (await nextConfig.headers!()).find(
-  (entry) => entry.source === '/:path*',
+  (entry) => entry.source === NON_EMBED_SOURCE,
 );
 
 describe('next.config.ts and public/_headers ship the same security headers', () => {
@@ -57,7 +67,7 @@ describe('next.config.ts and public/_headers ship the same security headers', ()
     expect(catchAllRule, 'public/_headers has no /* rule').toBeDefined();
     expect(
       declared,
-      'next.config.ts declares no /:path* headers',
+      `next.config.ts declares no ${NON_EMBED_SOURCE} headers`,
     ).toBeDefined();
     expect(declared!.headers.length).toBeGreaterThan(5);
     expect(catchAllRule!.lines.length).toBeGreaterThan(5);

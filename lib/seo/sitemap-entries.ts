@@ -54,6 +54,11 @@ export function buildSitemap(
     '/guides',
     '/blog',
     '/templates',
+    // The snippet page for the embed programme. `/embed` is listed; the
+    // framable `/embed/<tool>` copies are not, and are disallowed in
+    // app/robots.ts -- they are stripped versions of pages this site is
+    // trying to rank, so indexing both would split the signal. ADR-019.
+    '/embed',
     // The three hand-written comparison pages (Pillar 5 of
     // docs/ORGANIC_GROWTH_PLAYBOOK_CORRECTED.md). Listed here beside /proof
     // and /security rather than in LIVE_TOOL_ROUTES: they are content pages,

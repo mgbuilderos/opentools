@@ -29,6 +29,18 @@ function routedPages(): Array<{ route: string; components: string[] }> {
     withFileTypes: true,
   })
     .filter((entry) => entry.isDirectory())
+    /*
+     * `app/embed/[tool]` is the one routed tool page deliberately outside this
+     * sweep. An explainer is search-facing depth content, and an embed is the
+     * opposite of search-facing: `noindex`, disallowed in robots.txt, and
+     * rendered inside a stranger's page where several hundred extra words of
+     * our prose would be an imposition rather than a service. The route exists
+     * to run one tool and link home. ADR-019.
+     *
+     * Excluded by name, not by a pattern, so a second unexplained exemption
+     * has to be argued for here rather than slipped in.
+     */
+    .filter((entry) => entry.name !== 'embed')
     .map((entry) => path.join('app', entry.name, '[tool]', 'page.tsx'))
     .filter((file) => existsSync(path.join(appRoot, file)));
 
