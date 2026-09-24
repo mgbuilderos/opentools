@@ -23,6 +23,7 @@ import { WRITING_OPERATIONS } from '../tools/writing-workbench';
 import { getAllBlogPosts } from './blog-data';
 import { conversionFacts, conversionPairById } from './conversion-pairs';
 import { formatFacts, formatHubMeta, formatPairById } from './format-pairs';
+import { imagePairFacts, imageSeoPairById } from './image-pairs';
 import { getGuideBySlug } from './guide-content';
 import { guidesIndexMeta } from './guides-index-meta';
 import { hubToolMeta } from './hub-tool-meta';
@@ -268,6 +269,14 @@ function convertPage(route: string): PageMeta | undefined {
       title: format.title,
       description: formatFacts(format).description,
       source: 'lib/seo/format-pairs.ts',
+    };
+  const image = imageSeoPairById(slug);
+  if (image)
+    return {
+      route,
+      title: image.title,
+      description: imagePairFacts(image).description,
+      source: 'lib/seo/image-pairs.ts',
     };
   return undefined;
 }
