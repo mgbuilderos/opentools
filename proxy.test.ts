@@ -46,6 +46,35 @@ describe('proxy — public site', () => {
     );
     expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
   });
+
+  /*
+   * Regression guard. On 2026-09-24 the live site served every one of these
+   * headers correctly over HTTPS and also answered `http://getopentools.com/`
+   * with a plain 200 -- no redirect, no HSTS. On plaintext the CSP has no
+   * integrity protection, so a network attacker can strip `connect-src
+   * 'none'` and upload the very file the product promises never leaves the
+   * device. HSTS is the half of the fix that lives in this repo.
+   */
+  it('pins the browser to HTTPS for a year so the CSP cannot be stripped', () => {
+    const header = proxy(request('/pdf/compress')).headers.get(
+      'Strict-Transport-Security',
+    );
+    expect(header).toBeTruthy();
+
+    const maxAge = Number(/max-age=(\d+)/.exec(header ?? '')?.[1] ?? 0);
+    // Six months is the floor every HSTS preload/scanner check uses.
+    expect(maxAge).toBeGreaterThanOrEqual(15_768_000);
+    expect(header).toContain('includeSubDomains');
+  });
+
+  it('pins embeddable routes to HTTPS too', () => {
+    // `/embed/*` relaxes CORP for framing; it must not relax transport.
+    expect(
+      proxy(request('/embed/pdf-compress')).headers.get(
+        'Strict-Transport-Security',
+      ),
+    ).toContain('max-age=');
+  });
 });
 
 describe('proxy — self-host gate', () => {

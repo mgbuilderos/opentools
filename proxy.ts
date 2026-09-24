@@ -10,6 +10,21 @@ import { siteRedirect } from './lib/seo/site-redirects';
 import { recipeArrivalShape, recipeLinkTarget } from './lib/tools/recipe-link';
 
 const responseHeaders = {
+  /*
+   * HSTS. Browsers MUST ignore this header when it arrives over plain HTTP
+   * (RFC 6797 s7.2), so it is not itself the fix for `http://` being served
+   * -- that is the edge's "Always Use HTTPS" redirect, which is a zone
+   * setting and not in this repo. What it does fix is every SUBSEQUENT
+   * navigation: once a visitor has been here over HTTPS their browser
+   * refuses plaintext for a year, so a network attacker can no longer strip
+   * the CSP below. Without it `connect-src 'none'` is advisory on any
+   * hostile network, which makes the zero-egress promise conditional.
+   *
+   * No `preload`. That is a separate and near-irreversible commitment
+   * (removal from the preload list takes months) and it is the owner's call,
+   * not this change's.
+   */
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Embedder-Policy': 'credentialless',
   'Cross-Origin-Resource-Policy': 'same-origin',
