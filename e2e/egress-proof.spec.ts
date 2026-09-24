@@ -1,4 +1,10 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { expect, test } from '@playwright/test';
+
+import { setFilesWhenLive } from './upload';
 
 /**
  * The egress proof, as something that runs rather than something asserted.
@@ -305,5 +311,65 @@ test.describe('egress proof', () => {
       ),
     );
     expect(sendingInitiators, 'a data-sending request ran').toEqual([]);
+  });
+  /**
+   * The HEIC pages hold the site's one relaxation of `connect-src`, so they are
+   * the one place where "no connections at all" is not the proof. What has to
+   * be true here is narrower and more useful: the origin is the only thing
+   * reachable, the photograph itself never enters a request, and the request
+   * the page does make carries no body.
+   */
+  test('the HEIC page reaches this origin and nothing else, and the photo stays', async ({
+    page,
+    request,
+  }) => {
+    const response = await request.get('/image/heic-to-jpg');
+    expect(response.status()).toBe(200);
+    const csp = response.headers()['content-security-policy'] ?? '';
+    expect(csp).toContain("connect-src 'self'");
+    expect(csp).not.toContain("connect-src 'none'");
+    expect(csp).toContain("default-src 'self'");
+    expect(csp).toContain("form-action 'none'");
+    expect(csp).toContain("object-src 'none'");
+    expect(csp).toContain('wasm-unsafe-eval');
+
+    const watcher = watchOffOrigin(page);
+    const withBody: string[] = [];
+    page.on('request', (sent) => {
+      if (sent.postData()) withBody.push(sent.url());
+    });
+
+    const heic = await readFile(
+      path.join(
+        path.dirname(fileURLToPath(import.meta.url)),
+        '..',
+        'lib',
+        'tools',
+        'image-convert',
+        '__fixtures__',
+        'blocks-64.heic',
+      ),
+    );
+    await page.goto('/image/heic-to-jpg');
+    await setFilesWhenLive(
+      page.locator('input[type="file"]'),
+      [{ name: 'EGRESSPROBE-photo.heic', mimeType: 'image/heic', buffer: heic }],
+      page.getByRole('link', { name: /save jpeg/iu }),
+    );
+    await expect(page.getByRole('link', { name: /save jpeg/iu })).toBeVisible({
+      timeout: 60_000,
+    });
+
+    watcher.assertNothingLeft('HEIC conversion');
+    await watcher.assertZeroBytesOffOrigin(page);
+    expect(withBody, 'the page sent a request with a body').toEqual([]);
+
+    const leakedInUrl = await page.evaluate(() =>
+      performance
+        .getEntriesByType('resource')
+        .map((entry) => entry.name)
+        .filter((url) => url.includes('EGRESSPROBE')),
+    );
+    expect(leakedInUrl, 'the filename appeared in a request URL').toEqual([]);
   });
 });

@@ -122,6 +122,19 @@ export function imageFormatById(id: string) {
   return BY_ID.get(id);
 }
 
+/**
+ * The same lookup where the caller cannot carry on without an answer.
+ *
+ * A component that renders one format needs an `ImageFormat`, not a maybe, and
+ * a `?? throw` written inline at each use site narrows for the statement it is
+ * in and not for the callbacks below it. One function, one throw, one type.
+ */
+export function requireImageFormat(id: string): ImageFormat {
+  const format = BY_ID.get(id);
+  if (!format) throw new Error(`No image format '${id}'`);
+  return format;
+}
+
 /** Every MIME type we accept as input, for the file picker's `accept`. */
 export const ACCEPTED_IMAGE_MIMES = IMAGE_FORMATS.map((f) => f.mime);
 
@@ -146,10 +159,11 @@ export interface ImagePair {
  * checks every route here is still live, so deleting one of those pages surfaces
  * as a failing test rather than as a dead link.
  */
-export const IMAGE_PAIRS_ANSWERED_ELSEWHERE: Readonly<Record<string, string>> = {
-  'heic-to-jpg': '/image/heic-to-jpg',
-  'heic-to-png': '/image/heic-to-png',
-};
+export const IMAGE_PAIRS_ANSWERED_ELSEWHERE: Readonly<Record<string, string>> =
+  {
+    'heic-to-jpg': '/image/heic-to-jpg',
+    'heic-to-png': '/image/heic-to-png',
+  };
 
 /**
  * Every convertible pair, minus the ones a hand-written page already answers.

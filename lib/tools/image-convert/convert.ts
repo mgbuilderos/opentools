@@ -1,7 +1,4 @@
-import type {
-  HeicDecodeRequest,
-  HeicDecodeResponse,
-} from './protocol';
+import type { HeicDecodeRequest, HeicDecodeResponse } from './protocol';
 import { imageFormatById, type ImageFormat } from './formats';
 
 /**
@@ -32,7 +29,11 @@ export interface ConvertResult {
 export class ImageConvertError extends Error {}
 
 function isHeic(file: Blob, from: ImageFormat) {
-  return from.needsDecoder || file.type === 'image/heic' || file.type === 'image/heif';
+  return (
+    from.needsDecoder ||
+    file.type === 'image/heic' ||
+    file.type === 'image/heif'
+  );
 }
 
 async function decodeNatively(file: Blob) {
@@ -50,16 +51,19 @@ async function decodeWithLibheif(file: Blob): Promise<ImageBitmap> {
   );
   try {
     const buffer = await file.arrayBuffer();
-    const response = await new Promise<HeicDecodeResponse>((resolve, reject) => {
-      worker.addEventListener('message', (event: MessageEvent<HeicDecodeResponse>) =>
-        resolve(event.data),
-      );
-      worker.addEventListener('error', () =>
-        reject(new ImageConvertError('The decoder could not start.')),
-      );
-      const request: HeicDecodeRequest = { buffer };
-      worker.postMessage(request, [buffer]);
-    });
+    const response = await new Promise<HeicDecodeResponse>(
+      (resolve, reject) => {
+        worker.addEventListener(
+          'message',
+          (event: MessageEvent<HeicDecodeResponse>) => resolve(event.data),
+        );
+        worker.addEventListener('error', () =>
+          reject(new ImageConvertError('The decoder could not start.')),
+        );
+        const request: HeicDecodeRequest = { buffer };
+        worker.postMessage(request, [buffer]);
+      },
+    );
     if (!response.ok) throw new ImageConvertError(response.message);
     const pixels = new Uint8ClampedArray(response.pixels);
     return await createImageBitmap(
@@ -84,7 +88,8 @@ async function encode(bitmap: ImageBitmap, to: ImageFormat, quality: number) {
   canvas.width = bitmap.width;
   canvas.height = bitmap.height;
   const context = canvas.getContext('2d');
-  if (!context) throw new ImageConvertError('This browser would not give us a canvas.');
+  if (!context)
+    throw new ImageConvertError('This browser would not give us a canvas.');
   // A JPEG has no transparency, so anything see-through would come out black.
   // White is what every other converter does and what people expect.
   if (to.mime === 'image/jpeg') {
@@ -116,7 +121,7 @@ export async function convertImage(
   if (!to) throw new ImageConvertError(`We do not write ${toId} files.`);
   if (!to.canEncode) {
     throw new ImageConvertError(
-      `No browser can write ${to.name}, so we do not offer it. Nothing was uploaded.`,
+      `No browser can write ${to.name}, so this page does not offer it.`,
     );
   }
 

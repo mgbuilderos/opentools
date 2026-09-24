@@ -61,6 +61,8 @@ export const DEDICATED_TOOL_ROUTES = [
   '/video/extract-audio',
   '/video/mute',
   '/image/exact-size',
+  '/image/heic-to-jpg',
+  '/image/heic-to-png',
   '/data/excel',
   '/image/metadata',
   // '/image/svg', '/image/colour', '/data/lists' -- Antigravity phases 4 and 5.

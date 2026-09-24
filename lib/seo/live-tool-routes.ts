@@ -43,6 +43,8 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/video/extract-audio',
   '/video/mute',
   '/image/exact-size',
+  '/image/heic-to-jpg',
+  '/image/heic-to-png',
   '/data/excel',
   '/image/metadata',
   '/documents/metadata',

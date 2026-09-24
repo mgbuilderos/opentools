@@ -30,13 +30,17 @@ describe('image conversion pairs', () => {
     // either had earned. Same rule as `lib/seo/format-pairs.ts`.
     const generated = new Set(imagePairs().map((pair) => pair.id));
     for (const id of Object.keys(IMAGE_PAIRS_ANSWERED_ELSEWHERE)) {
-      expect(generated.has(id), `${id} is generated AND hand-written`).toBe(false);
+      expect(generated.has(id), `${id} is generated AND hand-written`).toBe(
+        false,
+      );
     }
   });
 
   it('routes every hand-written pair at an /image/ tool page', () => {
     for (const [id, href] of Object.entries(IMAGE_PAIRS_ANSWERED_ELSEWHERE)) {
-      expect(href, `${id} must point at a real route`).toMatch(/^\/image\/[a-z0-9-]+$/u);
+      expect(href, `${id} must point at a real route`).toMatch(
+        /^\/image\/[a-z0-9-]+$/u,
+      );
     }
   });
 
@@ -68,10 +72,17 @@ describe('image conversion pairs', () => {
     // Guards against a future edit quietly dropping a format and taking the
     // demand with it. These are the high-volume must-click queries.
     const generated = new Set(imagePairs().map((pair) => pair.id));
-    for (const id of ['webp-to-png', 'webp-to-jpg', 'avif-to-jpg', 'png-to-jpg']) {
+    for (const id of [
+      'webp-to-png',
+      'webp-to-jpg',
+      'avif-to-jpg',
+      'png-to-jpg',
+    ]) {
       expect(generated.has(id), `${id} should have a page`).toBe(true);
     }
     // And HEIC is served, just by a hand-written page rather than a generated one.
-    expect(IMAGE_PAIRS_ANSWERED_ELSEWHERE['heic-to-jpg']).toBe('/image/heic-to-jpg');
+    expect(IMAGE_PAIRS_ANSWERED_ELSEWHERE['heic-to-jpg']).toBe(
+      '/image/heic-to-jpg',
+    );
   });
 });

@@ -19,6 +19,13 @@
 const LOCAL_MODEL_PATHS = [
   /^\/image\/(?:background-remover|editor)\/?$/u,
   /^\/_next\/static\/workers\/background-removal\.worker-[\w-]+\.js$/u,
+  // The HEIC pages fetch `public/wasm/libheif.wasm` from this origin, and only
+  // where the browser cannot decode HEIC itself. Same exception, same reason:
+  // the alternative is uploading the photograph to a machine that holds an
+  // HEVC licence. See HEIC_BUILD_SPEC.md section 4.
+  /^\/image\/heic-to-(?:jpg|png)\/?$/u,
+  /^\/_next\/static\/workers\/heic-decode\.worker-[\w-]+\.js$/u,
+  /^\/wasm\//u,
   /^\/ocr\//u,
 ];
 
@@ -64,6 +71,10 @@ export const LOCAL_MODEL_SOURCES = [
   '/image/background-remover',
   '/image/editor',
   '/_next/static/workers/:file(background-removal\\.worker-[\\w-]+\\.js)',
+  '/image/heic-to-jpg',
+  '/image/heic-to-png',
+  '/_next/static/workers/:file(heic-decode\\.worker-[\\w-]+\\.js)',
+  '/wasm/:path*',
   '/ocr/:path*',
 ];
 
