@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { PDFDocument } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 
+import { readPdfGeometry } from '../pdf/pdf-geometry';
 import { convertExcelToPdf, sanitizePdfText } from './excel-to-pdf';
 import type { Cell, Workbook } from './xlsx-reader';
 
@@ -13,6 +14,35 @@ const fixtures = path.join(
 );
 const loadFixture = (name: string) =>
   new Uint8Array(readFileSync(path.join(fixtures, name)));
+
+const INVENTORY_HEADERS = [
+  'ID',
+  'Product Name',
+  'Quantity',
+  'Unit Price',
+  'Total',
+] as const;
+
+/** 80 rows over five columns — enough to spill onto a third page on A4. */
+function largeInventory(): Workbook {
+  const rows: Cell[][] = [
+    INVENTORY_HEADERS.map((text) => ({ kind: 'text', text }) as Cell),
+  ];
+  for (let i = 1; i <= 80; i += 1) {
+    rows.push([
+      { kind: 'number', value: i },
+      { kind: 'text', text: `Item Description #${i} Alpha Beta` },
+      { kind: 'number', value: i * 5 },
+      { kind: 'number', value: 19.99 },
+      { kind: 'number', value: i * 5 * 19.99 },
+    ]);
+  }
+  return {
+    sheets: [{ name: 'LargeInventory', rows, columnCount: 5 }],
+    date1904: false,
+    notes: [],
+  };
+}
 
 describe('Excel to PDF in-browser vector conversion', () => {
   it('converts sales.xlsx (openpyxl fixture) to a valid vector PDF', async () => {
@@ -67,39 +97,8 @@ describe('Excel to PDF in-browser vector conversion', () => {
     ).rejects.toThrow('Sheet named "NonExistentSheet" was not found.');
   });
 
-  it('paginates large tables across multiple pages and repeats headers', async () => {
-    // Construct a synthetic 80-row workbook
-    const rows: Cell[][] = [
-      [
-        { kind: 'text', text: 'ID' },
-        { kind: 'text', text: 'Product Name' },
-        { kind: 'text', text: 'Quantity' },
-        { kind: 'text', text: 'Unit Price' },
-        { kind: 'text', text: 'Total' },
-      ],
-    ];
-
-    for (let i = 1; i <= 80; i += 1) {
-      rows.push([
-        { kind: 'number', value: i },
-        { kind: 'text', text: `Item Description #${i} Alpha Beta` },
-        { kind: 'number', value: i * 5 },
-        { kind: 'number', value: 19.99 },
-        { kind: 'number', value: i * 5 * 19.99 },
-      ]);
-    }
-
-    const testWorkbook: Workbook = {
-      sheets: [
-        {
-          name: 'LargeInventory',
-          rows,
-          columnCount: 5,
-        },
-      ],
-      date1904: false,
-      notes: [],
-    };
+  it('paginates large tables across multiple pages', async () => {
+    const testWorkbook = largeInventory();
 
     const result = await convertExcelToPdf(testWorkbook, {
       repeatHeader: true,
@@ -113,6 +112,33 @@ describe('Excel to PDF in-browser vector conversion', () => {
 
     const doc = await PDFDocument.load(result.pdfBytes);
     expect(doc.getPageCount()).toBe(result.pageCount);
+  });
+
+  it('repeats the header row on continuation pages, and drops it when told not to', async () => {
+    // A page-count assertion cannot see this. Measured: the same 80 rows
+    // paginate to 3 pages and page 2 starts at row 39 EITHER WAY, so the only
+    // difference is whether the header is redrawn. Read the text back instead.
+    const headersOnPageTwo = async (repeatHeader: boolean) => {
+      const result = await convertExcelToPdf(largeInventory(), {
+        repeatHeader,
+        pageSize: 'a4',
+        orientation: 'portrait',
+      });
+      expect(result.pageCount).toBeGreaterThanOrEqual(2);
+      const pages = await readPdfGeometry(result.pdfBytes);
+      const texts = pages[1].items.map((item) => item.text.trim());
+      return INVENTORY_HEADERS.filter((header) => texts.includes(header));
+    };
+
+    expect(
+      await headersOnPageTwo(true),
+      'page 2 must carry every header when repeatHeader is on',
+    ).toEqual([...INVENTORY_HEADERS]);
+
+    expect(
+      await headersOnPageTwo(false),
+      'page 2 must carry no header when repeatHeader is off',
+    ).toEqual([]);
   });
 
   it('respects explicit landscape and portrait orientations', async () => {
