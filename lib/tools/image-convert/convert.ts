@@ -4,17 +4,30 @@ import { imageFormatById, type ImageFormat } from './formats';
 /**
  * Decode any image the browser will take, then re-encode it with a canvas.
  *
- * THE PROBE IS THE WHOLE DESIGN. `createImageBitmap` is tried first for every
- * format including HEIC, and the 0.45 MB decoder is fetched **only** when it
- * throws. That is free, and it is self-correcting: the day Chromium ships a HEIC
- * decoder this code starts using it without an edit. It is also why there is no
- * user-agent check anywhere here — sniffing would have frozen 2026's browser
- * support into the build.
+ * THE PROBE IS THE WHOLE DESIGN. The browser is asked to decode the file first,
+ * for every format including HEIC, and the 0.45 MB decoder is fetched **only**
+ * when the browser cannot. That is free, and it is self-correcting: the day
+ * Chromium ships a HEIC decoder this code starts using it without an edit. It is
+ * also why there is no user-agent check anywhere here — sniffing would have
+ * frozen 2026's browser support into the build.
  *
- * MEASURED 2026-09-24: WebKit decodes HEIC natively, Chromium does not. The
- * person searching "heic to jpg" cannot open the file, so they are overwhelmingly
- * on the Chromium path — the fallback is the common case, not the edge case.
- * See `HEIC_BUILD_SPEC.md` §1.
+ * TWO NATIVE PATHS, AND THE SECOND ONE IS NOT BELT AND BRACES. Measured
+ * 2026-09-24 in both engines, on a plain 64x64 PNG as well as a real HEIC:
+ *
+ *   WebKit   PNG: createImageBitmap ok, <img> ok.  HEIC: both ok.
+ *   Chromium PNG: createImageBitmap FAILS, <img> ok. HEIC: both fail.
+ *
+ * `createImageBitmap` refuses **ordinary images** in the Chromium build the
+ * browser suite runs, so a converter that only tried that path would refuse
+ * every PNG there and report it as a damaged file. The element path is what
+ * actually decodes in that engine, and it is also the path older Safari needs,
+ * which has no `createImageBitmap` at all. Only when both fail is the file
+ * treated as something the browser genuinely cannot read — which for HEIC in
+ * Chromium is the truth, and is the case libheif exists for.
+ *
+ * The person searching "heic to jpg" cannot open the file, so they are
+ * overwhelmingly on the Chromium path: the libheif fallback is the common case
+ * for HEIC, not the edge case. See `HEIC_BUILD_SPEC.md` §1.
  */
 
 export interface ConvertResult {
@@ -36,15 +49,67 @@ function isHeic(file: Blob, from: ImageFormat) {
   );
 }
 
-async function decodeNatively(file: Blob) {
+/**
+ * A decoded picture, whichever path produced it.
+ *
+ * `drawImage` takes both an `ImageBitmap` and an `HTMLImageElement`, so the
+ * encoder below does not care which one it was handed — but the cleanup does:
+ * a bitmap must be closed and an element's object URL must be revoked, and
+ * leaking either costs memory on a twenty-file batch.
+ */
+interface Decoded {
+  source: CanvasImageSource;
+  width: number;
+  height: number;
+  release(): void;
+}
+
+async function decodeWithImageBitmap(file: Blob): Promise<Decoded | null> {
+  if (typeof createImageBitmap !== 'function') return null;
   try {
-    return await createImageBitmap(file);
+    const bitmap = await createImageBitmap(file);
+    return {
+      source: bitmap,
+      width: bitmap.width,
+      height: bitmap.height,
+      release: () => bitmap.close(),
+    };
   } catch {
     return null;
   }
 }
 
-async function decodeWithLibheif(file: Blob): Promise<ImageBitmap> {
+async function decodeWithImageElement(file: Blob): Promise<Decoded | null> {
+  const url = URL.createObjectURL(file);
+  try {
+    const image = new Image();
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('the browser refused the image'));
+      image.src = url;
+    });
+    if (!image.naturalWidth || !image.naturalHeight) {
+      throw new Error('the browser reported an image with no size');
+    }
+    return {
+      source: image,
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      release: () => URL.revokeObjectURL(url),
+    };
+  } catch {
+    URL.revokeObjectURL(url);
+    return null;
+  }
+}
+
+async function decodeNatively(file: Blob): Promise<Decoded | null> {
+  return (
+    (await decodeWithImageBitmap(file)) ?? (await decodeWithImageElement(file))
+  );
+}
+
+async function decodeWithLibheif(file: Blob): Promise<Decoded> {
   const worker = new Worker(
     new URL('../../../workers/heic-decode.worker.ts', import.meta.url),
     { type: 'module' },
@@ -66,9 +131,27 @@ async function decodeWithLibheif(file: Blob): Promise<ImageBitmap> {
     );
     if (!response.ok) throw new ImageConvertError(response.message);
     const pixels = new Uint8ClampedArray(response.pixels);
-    return await createImageBitmap(
-      new ImageData(pixels, response.width, response.height),
-    );
+    const data = new ImageData(pixels, response.width, response.height);
+    // Straight onto a canvas rather than through `createImageBitmap`: that
+    // function is exactly the one Chromium's headless build refuses, and this
+    // is the engine that needed libheif in the first place.
+    const canvas = document.createElement('canvas');
+    canvas.width = data.width;
+    canvas.height = data.height;
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new ImageConvertError('This browser would not give us a canvas.');
+    }
+    context.putImageData(data, 0, 0);
+    return {
+      source: canvas,
+      width: data.width,
+      height: data.height,
+      release: () => {
+        canvas.width = 0;
+        canvas.height = 0;
+      },
+    };
   } finally {
     worker.terminate();
   }
@@ -83,10 +166,10 @@ async function decodeWithLibheif(file: Blob): Promise<ImageBitmap> {
  * when something refused it. `formats.ts` gates this at the pair level with
  * `canEncode`; this check is the second line, in case a caller bypasses that.
  */
-async function encode(bitmap: ImageBitmap, to: ImageFormat, quality: number) {
+async function encode(decoded: Decoded, to: ImageFormat, quality: number) {
   const canvas = document.createElement('canvas');
-  canvas.width = bitmap.width;
-  canvas.height = bitmap.height;
+  canvas.width = decoded.width;
+  canvas.height = decoded.height;
   const context = canvas.getContext('2d');
   if (!context)
     throw new ImageConvertError('This browser would not give us a canvas.');
@@ -96,7 +179,7 @@ async function encode(bitmap: ImageBitmap, to: ImageFormat, quality: number) {
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
-  context.drawImage(bitmap, 0, 0);
+  context.drawImage(decoded.source, 0, 0);
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, to.mime, quality),
   );
@@ -125,22 +208,22 @@ export async function convertImage(
     );
   }
 
-  let bitmap = await decodeNatively(file);
+  let decoded = await decodeNatively(file);
   let usedDecoder = false;
-  if (!bitmap) {
+  if (!decoded) {
     if (!isHeic(file, from)) {
       throw new ImageConvertError(
         `This browser could not read that ${from.name} file. It may be damaged.`,
       );
     }
-    bitmap = await decodeWithLibheif(file);
+    decoded = await decodeWithLibheif(file);
     usedDecoder = true;
   }
 
   try {
-    const blob = await encode(bitmap, to, quality);
-    return { blob, width: bitmap.width, height: bitmap.height, usedDecoder };
+    const blob = await encode(decoded, to, quality);
+    return { blob, width: decoded.width, height: decoded.height, usedDecoder };
   } finally {
-    bitmap.close();
+    decoded.release();
   }
 }
