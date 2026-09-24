@@ -256,6 +256,11 @@ function sourcesFor(pageFile) {
 /* ------------------------------------------------------------------- output */
 
 const dates = lastCommitDates();
+const headDate = execFileSync(
+  'git',
+  ['-C', ROOT, 'log', '-1', '--format=%cI'],
+  { encoding: 'utf8' },
+).trim();
 const sourceCache = new Map();
 const lastmod = {};
 const undated = [];
@@ -274,6 +279,7 @@ for (const route of routes) {
     const date = dates.get(relative);
     if (date && (!newest || date > newest)) newest = date;
   }
+  if (!newest && headDate) newest = headDate;
   if (newest) lastmod[route] = newest;
   else undated.push(route);
 }

@@ -156,6 +156,46 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Cut, mute or extract the audio from an MP4 or MOV without re-encoding it.',
   },
+  'video-convert': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert MOV to MP4 and MP4 to MOV without re-encoding video or audio frames.',
+  },
+  'video-rotate': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Rotate (90°, 180°, 270°) and flip MP4/MOV videos instantly without quality loss.',
+  },
+  'video-split': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Cut out middle sections or split videos into multiple downloadable clips.',
+  },
+  'video-merge': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Join matching MP4 and MOV video clips end-to-end without quality loss.',
+  },
+  'video-metadata': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Inspect and strip GPS coordinates, device models, and timestamps from MP4/MOV.',
+  },
+  'video-to-gif': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert MP4 or MOV clips into animated GIFs with custom speed and resolution.',
+  },
+  'video-extract-audio': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Extract lossless AAC audio (.m4a) from MP4 or MOV videos without re-encoding.',
+  },
+  'video-mute': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Remove audio track from MP4 or MOV videos instantly without re-encoding.',
+  },
   'excel-converter': {
     version: '0.1.0-canary',
     shortDescription:

@@ -100,9 +100,19 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'video',
     name: 'Video',
     shortDescription:
-      'Trim, mute and extract audio from MP4 and MOV without re-encoding.',
-    destinationCount: 1,
-    toolIds: ['video-trim'],
+      'Trim, convert, rotate, split, merge, and clean MP4 and MOV videos without re-encoding.',
+    destinationCount: 9,
+    toolIds: [
+      'video-trim',
+      'video-convert',
+      'video-rotate',
+      'video-split',
+      'video-merge',
+      'video-metadata',
+      'video-to-gif',
+      'video-extract-audio',
+      'video-mute',
+    ],
   },
   {
     id: 'documents',

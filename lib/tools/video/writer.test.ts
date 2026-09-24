@@ -226,4 +226,33 @@ describe('writing an MP4 from copied samples', () => {
     );
     expect(type).toBe('mdat');
   });
+
+  it('preserves the display matrix so portrait video does not come out rotated', () => {
+    const bytes = load('portrait-video.mp4');
+    const mp4 = readMp4(bytes);
+    const video = mp4.tracks.find((track) => track.kind === 'video')!;
+    expect(video.matrix).toBeDefined();
+    // Non-identity matrix (rotation of 90 degrees):
+    // first value is 0 rather than unity 0x10000
+    const view = new DataView(
+      video.matrix!.buffer,
+      video.matrix!.byteOffset,
+      video.matrix!.byteLength,
+    );
+    expect(view.getInt32(0, false)).toBe(0);
+    expect(view.getInt32(4, false)).toBe(-0x10000);
+
+    const written = writeMp4(bytes, [plan(video, video.samples)], mp4);
+    const back = readMp4(written);
+    const backVideo = back.tracks.find((track) => track.kind === 'video')!;
+    expect(backVideo.matrix).toBeDefined();
+    const backView = new DataView(
+      backVideo.matrix!.buffer,
+      backVideo.matrix!.byteOffset,
+      backVideo.matrix!.byteLength,
+    );
+    expect(backView.getInt32(0, false)).toBe(0);
+    expect(backView.getInt32(4, false)).toBe(-0x10000);
+    expect(Array.from(backVideo.matrix!)).toEqual(Array.from(video.matrix!));
+  });
 });

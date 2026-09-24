@@ -52,6 +52,12 @@ function u16(value: number): number[] {
   return [(value >>> 8) & 0xff, value & 0xff];
 }
 
+function u64(value: number): number[] {
+  const high = Math.floor(value / 4_294_967_296);
+  const low = value >>> 0;
+  return [...u32(high), ...u32(low)];
+}
+
 /** A box is its length, then its type, then its payload. */
 function box(type: string, ...parts: (number[] | Uint8Array)[]): Uint8Array {
   let length = 8;
@@ -78,8 +84,8 @@ function concat(parts: Uint8Array[]): Uint8Array {
   return out;
 }
 
-/** The identity transform, as a 3x3 fixed-point matrix. Required, never varied. */
-const UNITY_MATRIX = [
+/** The identity transform, as a 3x3 fixed-point matrix. */
+export const UNITY_MATRIX = [
   ...u32(0x00010000),
   ...u32(0),
   ...u32(0),
@@ -232,7 +238,7 @@ function trackBox(
     ...u16(0), // alternate group
     ...u16(track.kind === 'audio' ? 0x0100 : 0), // full volume for audio only
     ...u16(0),
-    ...UNITY_MATRIX,
+    ...(plan.track.matrix ? Array.from(plan.track.matrix) : UNITY_MATRIX),
     ...u32((track.width ?? 0) << 16),
     ...u32((track.height ?? 0) << 16),
   ]);
@@ -264,7 +270,9 @@ function trackBox(
       ...u32(1),
     ]),
     sampleSizes(samples),
-    box('stco', [...u32(0), ...u32(1), ...u32(chunkOffset)]),
+    chunkOffset >= 0x100000000
+      ? box('co64', [...u32(0), ...u32(1), ...u64(chunkOffset)])
+      : box('stco', [...u32(0), ...u32(1), ...u32(chunkOffset)]),
     ...(sync ? [sync] : []),
   );
 
@@ -289,10 +297,69 @@ function trackBox(
  * one. Two passes is the honest way; guessing a header size and padding it is
  * how files end up with a mysterious run of zeroes in them.
  */
+import type { ByteSource } from './source';
+
+export interface WriteOptions {
+  /** Target container brand. Default 'mp4' (or 'm4a' for audio-only). */
+  format?: 'mp4' | 'mov' | 'm4a';
+}
+
+function buildFtyp(format?: 'mp4' | 'mov' | 'm4a'): Uint8Array {
+  if (format === 'mov') {
+    return box('ftyp', fourccBytes('qt  '), u32(0x200), fourccBytes('qt  '));
+  }
+  if (format === 'm4a') {
+    return box(
+      'ftyp',
+      fourccBytes('M4A '),
+      u32(0),
+      fourccBytes('M4A '),
+      fourccBytes('mp42'),
+      fourccBytes('isom'),
+    );
+  }
+  return box('ftyp', [
+    ...fourccBytes('isom'),
+    ...u32(0x200),
+    ...fourccBytes('isom'),
+    ...fourccBytes('iso2'),
+    ...fourccBytes('avc1'),
+    ...fourccBytes('mp41'),
+  ]);
+}
+
+function buildMdatHeader(payloadLength: number): Uint8Array {
+  const isLarge = payloadLength + 8 >= 0x100000000;
+  if (isLarge) {
+    const header = new Uint8Array(16);
+    header.set(u32(1), 0);
+    header.set(fourccBytes('mdat'), 4);
+    const total = 16 + payloadLength;
+    const view = new DataView(header.buffer);
+    view.setUint32(8, Math.floor(total / 4_294_967_296), false);
+    view.setUint32(12, total >>> 0, false);
+    return header;
+  }
+  const header = new Uint8Array(8);
+  header.set(u32(8 + payloadLength), 0);
+  header.set(fourccBytes('mdat'), 4);
+  return header;
+}
+
+/**
+ * Builds a new MP4 containing exactly the samples in `plans`.
+ *
+ * The header has to state where the sample data begins, and the header's own
+ * length depends on how many samples there are — so the whole `moov` is built
+ * once against a provisional offset, measured, then rebuilt against the real
+ * one. Two passes is the honest way; guessing a header size and padding it is
+ * how files end up with a mysterious run of zeroes in them.
+ */
 export function writeMp4(
   source: Uint8Array,
   plans: TrackPlan[],
   movie: Mp4File,
+  options?: WriteOptions,
 ): Uint8Array {
   if (!plans.length) throw new Error('There are no tracks to write.');
   for (const plan of plans) {
@@ -303,14 +370,7 @@ export function writeMp4(
     }
   }
 
-  const ftyp = box('ftyp', [
-    ...fourccBytes('isom'),
-    ...u32(0x200),
-    ...fourccBytes('isom'),
-    ...fourccBytes('iso2'),
-    ...fourccBytes('avc1'),
-    ...fourccBytes('mp41'),
-  ]);
+  const ftyp = buildFtyp(options?.format);
 
   const longest = Math.max(
     ...plans.map(
@@ -351,9 +411,16 @@ export function writeMp4(
       }),
     );
 
+  const payloadLength = plans.reduce(
+    (sum, plan) =>
+      sum + plan.samples.reduce((inner, sample) => inner + sample.size, 0),
+    0,
+  );
+  const mdatHeader = buildMdatHeader(payloadLength);
+
   // First pass measures; second pass is correct.
   const provisional = build(0);
-  const dataStart = ftyp.length + provisional.length + 8;
+  const dataStart = ftyp.length + provisional.length + mdatHeader.length;
   const moov = build(dataStart);
   if (moov.length !== provisional.length) {
     throw new Error(
@@ -361,15 +428,9 @@ export function writeMp4(
     );
   }
 
-  const payloadLength = plans.reduce(
-    (sum, plan) =>
-      sum + plan.samples.reduce((inner, sample) => inner + sample.size, 0),
-    0,
-  );
-  const mdat = new Uint8Array(8 + payloadLength);
-  mdat.set(u32(mdat.length), 0);
-  mdat.set(fourccBytes('mdat'), 4);
-  let at = 8;
+  const mdat = new Uint8Array(mdatHeader.length + payloadLength);
+  mdat.set(mdatHeader, 0);
+  let at = mdatHeader.length;
   for (const plan of plans) {
     for (const sample of plan.samples) {
       mdat.set(source.subarray(sample.offset, sample.offset + sample.size), at);
@@ -378,4 +439,121 @@ export function writeMp4(
   }
 
   return concat([ftyp, moov, mdat]);
+}
+
+/**
+ * Builds an MP4/MOV Blob directly from a ByteSource without loading the entire
+ * file into memory. Ideal for multi-gigabyte video files in the browser.
+ */
+export async function writeMp4Source(
+  source: ByteSource,
+  plans: TrackPlan[],
+  movie: Mp4File,
+  options?: WriteOptions,
+): Promise<{ blob: Blob; size: number }> {
+  if (!plans.length) throw new Error('There are no tracks to write.');
+  for (const plan of plans) {
+    if (!plan.samples.length) {
+      throw new Error(
+        `The ${plan.track.kind} track has no frames in the range chosen.`,
+      );
+    }
+  }
+
+  const ftyp = buildFtyp(options?.format);
+
+  const longest = Math.max(
+    ...plans.map(
+      (plan) =>
+        plan.samples.reduce((sum, sample) => sum + sample.duration, 0) /
+        plan.track.timescale,
+    ),
+  );
+  const movieDuration = Math.round(longest * movie.timescale);
+
+  const header = box('mvhd', [
+    ...u32(0),
+    ...u32(NOW),
+    ...u32(NOW),
+    ...u32(movie.timescale),
+    ...u32(movieDuration),
+    ...u32(0x00010000), // normal rate
+    ...u16(0x0100), // full volume
+    ...Array.from({ length: 10 }, () => 0),
+    ...UNITY_MATRIX,
+    ...Array.from({ length: 24 }, () => 0),
+    ...u32(Math.max(...plans.map((plan) => plan.track.id)) + 1),
+  ]);
+
+  const build = (chunkStart: number) =>
+    box(
+      'moov',
+      header,
+      ...plans.map((plan, index) => {
+        let offset = chunkStart;
+        for (let earlier = 0; earlier < index; earlier += 1) {
+          offset += plans[earlier].samples.reduce(
+            (sum, sample) => sum + sample.size,
+            0,
+          );
+        }
+        return trackBox(plan, movie.timescale, offset);
+      }),
+    );
+
+  const payloadLength = plans.reduce(
+    (sum, plan) =>
+      sum + plan.samples.reduce((inner, sample) => inner + sample.size, 0),
+    0,
+  );
+  const mdatHeader = buildMdatHeader(payloadLength);
+
+  const provisional = build(0);
+  const dataStart = ftyp.length + provisional.length + mdatHeader.length;
+  const moov = build(dataStart);
+  if (moov.length !== provisional.length) {
+    throw new Error(
+      'The index changed size between passes, so the frame offsets would be wrong.',
+    );
+  }
+
+  const ranges: { source: ByteSource; start: number; end: number }[] = [];
+  for (const plan of plans) {
+    for (const sample of plan.samples) {
+      const sampleSource = sample.source ?? source;
+      const last = ranges[ranges.length - 1];
+      if (last && last.source === sampleSource && last.end === sample.offset) {
+        last.end += sample.size;
+      } else {
+        ranges.push({
+          source: sampleSource,
+          start: sample.offset,
+          end: sample.offset + sample.size,
+        });
+      }
+    }
+  }
+
+  const parts: (BlobPart | Uint8Array)[] = [ftyp, moov, mdatHeader];
+  for (const range of ranges) {
+    if (range.source.sliceBlob) {
+      parts.push(range.source.sliceBlob(range.start, range.end));
+    } else {
+      parts.push(await range.source.slice(range.start, range.end));
+    }
+  }
+
+  const isAudioOnly = plans.length === 1 && plans[0].track.kind === 'audio';
+  const mime =
+    options?.format === 'mov'
+      ? 'video/quicktime'
+      : options?.format === 'm4a' || isAudioOnly
+        ? 'audio/mp4'
+        : 'video/mp4';
+
+  const blob = new Blob(parts as BlobPart[], { type: mime });
+  return {
+    blob,
+    size: ftyp.length + moov.length + mdatHeader.length + payloadLength,
+  };
 }

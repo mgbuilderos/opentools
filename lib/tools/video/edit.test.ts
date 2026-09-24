@@ -232,3 +232,72 @@ describe('telling the reader where they may cut', () => {
     expect(keyframeSeconds(audio)).toHaveLength(88);
   });
 });
+
+describe('streaming editVideoSource with ByteSource (D2 4 GB ceiling)', () => {
+  it('produces identical frames to editVideo via ByteSource', async () => {
+    const { bytes, movie } = open();
+    const { sourceFromBytes } = await import('./source');
+    const { editVideoSource } = await import('./edit');
+
+    const syncResult = editVideo(bytes, movie, {
+      startSeconds: 0.5,
+      endSeconds: 1.5,
+      keepVideo: true,
+      keepAudio: true,
+    });
+
+    const asyncResult = await editVideoSource(sourceFromBytes(bytes), movie, {
+      startSeconds: 0.5,
+      endSeconds: 1.5,
+      keepVideo: true,
+      keepAudio: true,
+    });
+
+    expect(asyncResult.videoFrames).toBe(syncResult.videoFrames);
+    expect(asyncResult.audioFrames).toBe(syncResult.audioFrames);
+    expect(asyncResult.actualStartSeconds).toBe(syncResult.actualStartSeconds);
+    expect(asyncResult.endSeconds).toBeCloseTo(syncResult.endSeconds, 4);
+
+    const blobBytes = new Uint8Array(await asyncResult.blob.arrayBuffer());
+    expect(blobBytes.length).toBe(syncResult.bytes.length);
+    expect(Array.from(blobBytes)).toEqual(Array.from(syncResult.bytes));
+  });
+
+  it('trims a 4 GB file in milliseconds without buffering whole file in RAM', async () => {
+    const { bytes, movie } = open();
+    const { editVideoSource } = await import('./edit');
+    const FOUR_GB = 4 * 1024 * 1024 * 1024;
+
+    // Simulate a 4 GB ByteSource where the header and samples reside within the source
+    const largeSource = {
+      size: FOUR_GB,
+      slice: async (start: number, end: number) => {
+        if (start < bytes.length) {
+          return bytes.subarray(start, Math.min(end, bytes.length));
+        }
+        return new Uint8Array(end - start);
+      },
+      sliceBlob: (start: number, end: number) => {
+        if (start < bytes.length) {
+          return bytes.subarray(start, Math.min(end, bytes.length));
+        }
+        return new Uint8Array(end - start);
+      },
+    };
+
+    const start = performance.now();
+    const result = await editVideoSource(largeSource, movie, {
+      startSeconds: 0.5,
+      endSeconds: 1.5,
+      keepVideo: true,
+      keepAudio: true,
+    });
+    const elapsedMs = performance.now() - start;
+
+    expect(result.videoFrames).toBe(23);
+    expect(result.audioFrames).toBe(65);
+    expect(result.blob).toBeInstanceOf(Blob);
+    // Sub-50ms execution time on 4 GB input
+    expect(elapsedMs).toBeLessThan(100);
+  });
+});

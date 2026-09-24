@@ -75,6 +75,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
     'IFSC and PIN code lookup, HRA exemption, rent receipts and similar paperwork helpers.',
   'Creator and Social':
     'Caption and hashtag helpers, CPM and engagement maths, and profile QR codes.',
+  Video:
+    'Trim, convert, rotate, split, merge, and clean MP4 and MOV videos without re-encoding in your browser.',
 };
 
 export function getCategoryBySlug(slug: string): string | undefined {
@@ -514,6 +516,38 @@ const CATEGORY_HUB_LINKS: Readonly<Record<string, readonly CategoryHubLink[]>> =
         name: 'Web & SEO Workbench',
         description:
           'Generate and inspect metadata, URLs, sitemaps, CSS, HTML, and accessibility signals locally.',
+      },
+    ],
+    Video: [
+      {
+        href: '/video/convert',
+        name: 'Video Container Converter',
+        description:
+          'Convert MOV to MP4 and MP4 to MOV without re-encoding video or audio frames.',
+      },
+      {
+        href: '/video/rotate',
+        name: 'Video Rotator',
+        description:
+          'Rotate and flip MP4 and MOV videos instantly using track display matrices.',
+      },
+      {
+        href: '/video/split',
+        name: 'Video Splitter',
+        description:
+          'Cut out middle sections or split videos into multiple downloadable clips.',
+      },
+      {
+        href: '/video/to-gif',
+        name: 'Video to GIF Converter',
+        description:
+          'Convert MP4 or MOV clips into animated GIFs with custom speed and resolution.',
+      },
+      {
+        href: '/video/mute',
+        name: 'Mute Video',
+        description:
+          'Strip audio tracks from MP4 and MOV files without touching video quality.',
       },
     ],
   };

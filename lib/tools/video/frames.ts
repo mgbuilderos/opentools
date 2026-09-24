@@ -34,6 +34,7 @@
  */
 
 import { keyframeAtOrBefore, readMp4, type Mp4Track } from './mp4';
+import type { ByteSource } from './source';
 
 export interface ExtractOptions {
   /** Where to start, in seconds. */
@@ -147,7 +148,7 @@ async function drainTo(decoder: VideoDecoder, limit: number): Promise<void> {
  * a badly cut clip.
  */
 export async function extractFrames(
-  bytes: Uint8Array,
+  bytes: Uint8Array | ByteSource,
   options: ExtractOptions,
 ): Promise<ExtractedFrames> {
   const { startSeconds, endSeconds, framesPerSecond, maxEdge, maxFrames } =
@@ -164,7 +165,8 @@ export async function extractFrames(
     );
   }
 
-  const mp4 = readMp4(bytes);
+  const mp4 =
+    bytes instanceof Uint8Array ? readMp4(bytes) : await readMp4(bytes);
   const track = mp4.tracks.find((candidate) => candidate.kind === 'video');
   if (!track) {
     throw new Error('That file has no video track, so it has no frames.');
@@ -259,12 +261,17 @@ export async function extractFrames(
         (sample.timestamp + sample.compositionOffset) / track.timescale;
       if (presentation >= endSeconds) break;
 
+      const chunkData =
+        bytes instanceof Uint8Array
+          ? bytes.subarray(sample.offset, sample.offset + sample.size)
+          : await bytes.slice(sample.offset, sample.offset + sample.size);
+
       decoder.decode(
         new EncodedVideoChunk({
           type: sample.isKeyframe ? 'key' : 'delta',
           timestamp: Math.round(presentation * 1_000_000),
           duration: Math.round((sample.duration / track.timescale) * 1_000_000),
-          data: bytes.subarray(sample.offset, sample.offset + sample.size),
+          data: chunkData,
         }),
       );
       await drainTo(decoder, 24);
