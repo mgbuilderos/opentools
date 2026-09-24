@@ -1,5 +1,5 @@
-import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { execSync, spawnSync } from 'node:child_process';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,6 +9,74 @@ const appRoot = path.resolve(
 );
 const blueprintRoot = path.resolve(appRoot, '../..');
 const releaseMode = process.argv.includes('--release');
+
+/**
+ * Several unit tests (`edge-cache-headers`, `heading-order`, `share-card-coverage`,
+ * and `indexability-sweep`) read `dist/client/`. If `dist/` is missing, older
+ * than HEAD, or older than source files, running the unit suite produces
+ * misleading test diffs that look like regressions.
+ *
+ * Refuse early with a plain instruction to build.
+ */
+function assertFreshDist() {
+  const sitemap = path.join(appRoot, 'dist/client/sitemap.xml');
+  if (!existsSync(sitemap)) {
+    process.stderr.write(
+      '[QC] dist/ is missing. Run `npm run build` before running QC.\n',
+    );
+    process.exit(1);
+  }
+
+  const distTime = statSync(sitemap).mtimeMs;
+
+  try {
+    const headCommitTimeSeconds = parseInt(
+      execSync('git log -1 --format=%ct HEAD', {
+        cwd: appRoot,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim(),
+      10,
+    );
+    if (
+      Number.isFinite(headCommitTimeSeconds) &&
+      distTime < headCommitTimeSeconds * 1000
+    ) {
+      process.stderr.write(
+        '[QC] dist/ is older than HEAD. Run `npm run build` before running QC.\n',
+      );
+      process.exit(1);
+    }
+  } catch {
+    // Skip if not in a git repo or git fails.
+  }
+
+  function findNewerSource(dir) {
+    if (!existsSync(dir)) return null;
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        const found = findNewerSource(full);
+        if (found) return found;
+      } else if (statSync(full).mtimeMs > distTime) {
+        return path.relative(appRoot, full);
+      }
+    }
+    return null;
+  }
+
+  for (const src of ['app', 'components', 'lib', 'public']) {
+    const newer = findNewerSource(path.join(appRoot, src));
+    if (newer) {
+      process.stderr.write(
+        `[QC] dist/ is older than ${newer}. Run \`npm run build\` before running QC.\n`,
+      );
+      process.exit(1);
+    }
+  }
+}
+
+assertFreshDist();
 
 const gates = [
   {
