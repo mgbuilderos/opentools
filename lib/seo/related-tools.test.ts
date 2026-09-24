@@ -182,18 +182,24 @@ describe('related tools are real, live and never the withheld three', () => {
     }
 
     expect(hubs).toEqual([]);
-    // Apart from the landing pages, one live route is invisible here, and on
+    // Apart from the landing pages, two live routes are invisible here, and on
     // purpose: `/image/background-remover` is a second address for the tool at
-    // `/image/editor`, so it has no manifest of its own to take a name and a
-    // description from, and linking both would offer the same tool twice under
-    // two names. Anything else appearing in this list is a tool nothing can
-    // point at, which is the failure this file is here to catch.
+    // `/image/editor`, and `/pdf/compress-offline` is a second address for the
+    // one at `/pdf/compress`. Neither has a manifest of its own to take a name
+    // and a description from, and linking both addresses of one tool would
+    // offer it twice under two names. Each is instead linked from its category
+    // pillar through `CATEGORY_HUB_LINKS` in `internal-linking-graph.ts`, which
+    // is the surface built for exactly this case -- and
+    // `scripts/verify-no-orphans.mjs` reads the rendered HTML on every build, so
+    // a route listed here is still required to have a real inbound link.
+    // Anything else appearing in this list is a tool nothing can point at,
+    // which is the failure this file is here to catch.
     expect(
       unlinkedLiveRoutes().filter(
         (route) => !/\/(?:bench|workbench|advanced|writing)$/u.test(route),
       ),
       'a live tool route this module cannot see is a page nothing will link to',
-    ).toEqual(['/image/background-remover']);
+    ).toEqual(['/pdf/compress-offline', '/image/background-remover']);
     expect(unlinkedLiveRoutes().length).toBeLessThan(
       LIVE_TOOL_ROUTES.length / 10,
     );

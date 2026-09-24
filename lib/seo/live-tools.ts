@@ -28,6 +28,19 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/images-to-pdf',
   '/pdf/page-tools',
   '/pdf/compress',
+  /*
+    A second address for the compressor, not a second compressor -- the same
+    relationship `/image/background-remover` has to `/image/editor`. It exists
+    because of what was measured in Google's autocomplete on 2026-09-24: every
+    "compress pdf offline" completion offers desktop software to download,
+    because a web page that works with the network off is not an answer anyone
+    currently gives. This page gives it, and carries the readiness panel and
+    the precache entry that make the claim checkable rather than rhetorical.
+    It is in no catalogue and no workspace on purpose: two "Compress PDF"
+    entries in the menu would be a worse menu, and the tool itself is already
+    browsable at `/pdf/compress`.
+  */
+  '/pdf/compress-offline',
   '/pdf/ocr',
   '/pdf/to-word',
   '/pdf/to-excel',

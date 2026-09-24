@@ -1,7 +1,7 @@
 import type { ToolPageDepth } from './tool-page-depth-types';
 
 /*
-  Depth content for the 19 live PDF tool pages.
+  Depth content for the 20 live PDF tool pages.
 
   PROVENANCE. Where an entry's `directAnswer` or `lead` reads like the guide,
   that is because it is the guide: `GUIDE_DETAILS` in `guide-content.ts` already
@@ -15,9 +15,11 @@ import type { ToolPageDepth } from './tool-page-depth-types';
   the same sources, named in the comment above each entry. Nothing here states a
   limit, a format or a refusal that the code does not enforce.
 
-  `offlineReady` appears on `/pdf/merge`, `/pdf/compress` and `/pdf/page-tools`
-  only, because those three are in the service worker's precache list in
-  `scripts/build-service-worker-precache.mjs` and nothing else under `/pdf` is.
+  `offlineReady` appears on `/pdf/merge`, `/pdf/compress`, `/pdf/page-tools` and
+  `/pdf/compress-offline` only, because those four are in the service worker's
+  precache list in `scripts/build-service-worker-precache.mjs` and nothing else
+  under `/pdf` is. `lib/seo/tool-page-depth.test.ts` reads that list and fails if
+  the two drift.
   `lib/seo/tool-page-depth.test.ts` reads that list and fails if the two drift.
 */
 
@@ -231,6 +233,119 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
         question: 'Whose upload limits are offered as presets?',
         answer:
           'USCIS online filing, Gmail attachments on a personal account, Income Tax e-filing e-Proceedings attachments, GST appeal supporting documents and GST registration proof documents. Each is shown with the portal page it was read from and the date it was read, and each stated decimal-MB figure is rounded down to whole kibibytes so the result is under the ceiling on either reading of "MB". Portals change limits without announcing it, so check yours before you rely on any of them.',
+      },
+    ],
+  },
+
+  // components/pdf-compress-tool.tsx with `offlineRoute` set,
+  // components/pdf-offline-readiness.tsx, lib/offline-readiness.ts,
+  // scripts/build-service-worker-precache.mjs (PAGES and referencedWorkers),
+  // public/sw.js, e2e/share-target.spec.ts ('compresses a PDF with the network
+  // switched off').
+  '/pdf/compress-offline': {
+    title: 'Compress PDF Offline — No Install, No Upload',
+    description:
+      'Compress a PDF with the network switched off, in a browser tab. Nothing to install, and the page reads your cache to say whether this device is ready yet.',
+    heading: 'About compressing a PDF offline',
+    offlineReady: true,
+    directAnswer:
+      'To compress a PDF with no connection: open this page once while you have one, let the panel at the top confirm that this page and the compression engine are stored on your device, then switch the network off and reload the address. Choose your PDF and compress it exactly as you would online. The work was always done by your own browser; the only thing a connection was ever needed for is fetching the page, and that is what is stored.',
+    lead: 'Searching for an offline PDF compressor almost always returns an installer, because a program you install is the only answer anyone has offered — and it is a large answer to a small question: an executable from the internet, permission to run it, an update channel, and on a work machine an administrator who says no. This page is the other answer. It is an ordinary web page that keeps a copy of itself on your device, so it opens and runs with the network switched off, and there is nothing to install, no account and no installer to trust. What it will not do is pretend that is automatic. The copy is made after a page has loaded at least once, some browsers keep nothing at all, and storage can be cleared between visits — so instead of telling you it works offline, the panel at the top of this page reads what your browser has actually stored and tells you where you stand.',
+    steps: [
+      {
+        name: 'Open this page once with a connection',
+        text: 'Shortly after the page loads, a service worker stores the app shell, this page, several of the most-used tools and the compression engine on your device. Nothing is downloaded to your file system and nothing is installed; the bytes go into the browser\u2019s own cache for this site.',
+      },
+      {
+        name: 'Read the readiness panel',
+        text: 'It reports two separate facts: whether this page is stored, which decides whether the address opens, and whether the compression engine is stored, which decides whether the tool can actually run. Both must be yes. Press Check again after a reload if either is no.',
+      },
+      {
+        name: 'Switch the network off',
+        text: 'Turn off wifi, pull the cable, or put the device in flight mode, then reload this address. The service worker only answers a request when the browser reports that it has no network, so with a connection you are served the live page exactly as any other visitor is.',
+      },
+      {
+        name: 'Choose the PDF and compress it',
+        text: 'One file of up to 150 MB. Leave photo re-encoding off for a lossless rewrite, or turn it on and set a JPEG quality between 40 and 95 per cent and a cap on the longest photo edge of 4000, 2400, 1600 or 1000 pixels. You can also give it a size in KB to land under, and it will perform up to fourteen real rewrites to get there.',
+      },
+      {
+        name: 'Save the result',
+        text: 'The download is written from bytes your browser already holds, so it needs no connection either. The panel reports the true before and after sizes and how many embedded images were re-encoded, and if the rewrite did not actually make the file smaller you are handed your original back unchanged.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'What offline means for a page rather than a program',
+        body: [
+          'A program that works offline is a file on your disk that the operating system runs. A page that works offline is the same idea one layer up: the browser keeps a copy of the page and the scripts it needs, and serves that copy when it cannot reach the network. The mechanism is a service worker, a small script the browser keeps for a site, and the copy is a normal browser cache rather than anything in your documents. Nothing is installed, nothing runs at startup, and clearing site data removes every trace of it.',
+          'There is one honest asymmetry between the two, and it is worth stating plainly: a program you have installed works on a device that has never been online, and this page needs one visit with a connection before it can work without one. After that visit the two behave the same way. If you know you will be without a connection — a flight, a site visit, a secure room — open this page before you go and check the panel.',
+          'The reverse asymmetry is larger and rarely mentioned. An installer is a permanent decision: it asks for the right to execute code on your machine, it usually asks for that right again on every update, and on a managed laptop it often cannot be granted at all. A tab is a temporary one. For a job that takes thirty seconds — a bank statement that is 2 MB too large for a portal — the tab is the proportionate tool, and being offline is not a reason to escalate to an executable.',
+        ],
+      },
+      {
+        heading: 'Why the copy is stored the way it is',
+        body: [
+          'The way the copy is made is unusual, and it is a consequence of this site\u2019s own security policy rather than a preference. Every response served here, including the service worker\u2019s own script, carries a policy that forbids the page from opening any network connection. A service worker inherits the policy delivered with its script, so the ordinary way of filling an offline cache — the worker fetching each file it wants to keep — is refused by our own header. Relaxing the header for the worker was never considered: that header is the product.',
+          'So the bytes are shipped to the worker instead of fetched by it. The build writes the pages, the scripts and the engine into a single payload the worker imports once while it is installing, and stores from memory. It is a stranger design than the usual one and it has a useful property: the worker has no ability to reach the network at any point, so an offline cache cannot become a channel for anything.',
+          'A cached response also has to carry the policy with it. A response the worker synthesised does not arrive from the server, so it brings none of the server\u2019s headers — and a page served from cache without that policy would be the one page on this site that is not sealed. The build therefore copies the policy out of the same file the deploy serves its headers from, and every stored response is kept with it. An end-to-end test loads a cached page with the browser disconnected and fails unless the policy came back with it, and then tries to send data out of that page and requires the attempt to be refused.',
+        ],
+      },
+      {
+        heading: 'Loading is not working, and this page is the difference',
+        body: [
+          'This distinction is the reason this page exists as code rather than as a paragraph added to the compressor. Until 2026-09-24 the compressor was in the offline payload and, with the network off, it loaded: the heading appeared, the file chooser worked, everything looked right. It could not compress anything. The engine that does the rewriting runs in a separate bundle started by name from inside a script, and that name appears in no HTML — so the step that collected what to store never saw it, never stored it, and the first thing a visitor did offline failed at the only moment that mattered.',
+          'Nothing reported this, because the test that covered offline use asserted what the page looked like rather than what it could do. A page that opens is a promise; a rewrite that completes is the product. The build now reads the stored scripts for the engines they start and holds those too, one file of about 215 KB compressed that three PDF tools share, and the end-to-end test disconnects the browser, compresses a real photo-heavy document through this page, saves the file and checks that it is a valid PDF and smaller than the input.',
+          'The readiness panel is the same distinction shown to you rather than to a test. It reports the page and the engine as two separate lines, because a browser that holds the first and not the second is exactly the browser where a confident claim would be wrong.',
+        ],
+      },
+      {
+        heading:
+          'Where offline changes nothing, and where it changes everything',
+        body: [
+          'It changes nothing about privacy, and it is worth being precise about that rather than selling the reassurance. Your document was never uploaded on this site whether you are connected or not.',
+          SEALED_PAGE,
+          'What being offline changes is that you no longer have to take any of that on trust. With the network switched off there is no connection for a file to leave by, and the tool still finishes the job — which is a demonstration rather than an argument. For a document you would rather not reason about at all, that is a better kind of confidence than any policy statement, including ours.',
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Do I have to install anything to use this offline?',
+        answer:
+          'No. There is no installer, no executable and no account. The browser keeps a copy of this page and the code it needs in its own cache for this site, and serves that copy when it has no network. You may optionally install the site as an app so it opens in its own window, but that is a convenience and offline use does not depend on it. Clearing site data in your browser removes everything it kept.',
+      },
+      {
+        question:
+          'Does it really compress with no connection, or does it just load?',
+        answer:
+          'It really compresses. That distinction is not rhetorical: before 2026-09-24 this compressor loaded offline and then failed on the first file, because the engine bundle it starts was not among the stored files. It is stored now, and the check that proves it disconnects a real browser, loads this page, compresses a photo-heavy PDF through it, saves the download and requires the result to be a valid PDF smaller than the input. That test runs on every build.',
+      },
+      {
+        question: 'Why does the first visit need a connection?',
+        answer:
+          'Because the copy has to come from somewhere. A browser cannot hold a page it has never been served. The service worker stores the payload shortly after your first page load, which is why the panel at the top may say "not yet" on a genuinely first visit and "yes" after a reload. If it keeps saying no, the browser is clearing site data between visits — a private window does this by design, and so does a browser set to clear data on close.',
+      },
+      {
+        question: 'Which browsers can do this?',
+        answer:
+          'The mechanism is a service worker, which current versions of every major browser support, and the offline path here is asserted on every build in Chromium. Safari and Firefox implement the same storage but are not covered by that check, so treat the panel rather than this paragraph as the answer on your own browser: it reads your actual cache, which is the only per-browser answer that can be trusted.',
+      },
+      {
+        question: 'Is compressing offline safer than compressing online here?',
+        answer:
+          'Not in the sense of making the tool behave differently, because nothing is uploaded either way and the policy the browser enforces on this page forbids any connection at all. What offline changes is that you no longer have to believe that. With no network available there is no route out for a file even in principle, and the job still completes. The privacy is the same; the need for trust is not.',
+      },
+      {
+        question: 'What are the limits, and are they different offline?',
+        answer:
+          'They are the same as the online compressor, because it is the same code: one PDF of up to 150 MB, photo re-encoding at a JPEG quality between 40 and 95 per cent, a cap on the longest photo edge of 4000, 2400, 1600 or 1000 pixels, and an optional size in KB to land under using up to fourteen real rewrites. A text-heavy PDF has very little to give up whatever the settings; the savings come from photographs and scans.',
+      },
+      {
+        question:
+          'What should I do if the panel says this device is not ready?',
+        answer:
+          'Reload this page once while you have a connection and press Check again. If the page is stored but the engine is not, a newer copy is probably still installing, so reload once more after a few seconds. If neither is stored after several reloads, this browser is not keeping site data for us — check whether you are in a private window, whether site data is set to clear on close, and whether an extension or a managed policy is blocking service workers.',
       },
     ],
   },

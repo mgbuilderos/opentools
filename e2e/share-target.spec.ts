@@ -1,4 +1,7 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test, type BrowserContext, type Page, type Worker } from '@playwright/test';
+
+import { testPhotoPdf } from './fixtures';
 
 /**
  * The share target, the install offer and offline use — the three things that
@@ -178,6 +181,85 @@ test.describe('installed-app behaviour', () => {
         }
       });
       expect(blocked).toBe('TypeError');
+    } finally {
+      await context.setOffline(false);
+    }
+  });
+
+  test('compresses a PDF with the network switched off', async ({ context, page }) => {
+    /*
+      The test that had to exist before `/pdf/compress-offline` could be
+      written, and the one that found the defect it exists to fix.
+
+      "Serves the app with the network switched off", above, loads `/pdf/merge`
+      offline and requires a 200 and a file input. Both were true of
+      `/pdf/compress` for as long as it has been precached — and it could not
+      compress anything, because the engine is started with `new Worker(...)`
+      from a path that appears in no HTML, so `referencedAssets` never saw it
+      and the payload never held it. The page opened and the first file failed.
+      Loading is not working, so this runs the tool: a real photo-heavy PDF, a
+      real rewrite, a real download, with the browser genuinely disconnected.
+    */
+    test.setTimeout(240_000);
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(String(error)));
+
+    await page.goto('/');
+    const worker = await activeWorker(context, page);
+    await waitForPrecache(worker);
+    // Built while there is still a network; the fixture is the input, not the
+    // thing under test.
+    const source = await testPhotoPdf(page, 2);
+
+    await context.setOffline(true);
+    try {
+      expect(await worker.evaluate(() => self.navigator.onLine)).toBe(false);
+
+      const response = await page.goto('/pdf/compress-offline');
+      expect(response?.status(), 'the cached page did not answer').toBe(200);
+
+      // The page's own verdict, computed from Cache Storage with no network.
+      const panel = page.getByRole('region', {
+        name: /Can this device compress a PDF with the network off/iu,
+      });
+      await expect(panel).toContainText(/^Yes\./u, { timeout: 15_000 });
+      await expect(panel).toContainText(
+        'The compression engine, stored for offline use: yes',
+      );
+
+      await expect(async () => {
+        const chooser = page.waitForEvent('filechooser', { timeout: 2_000 });
+        await page
+          .getByRole('button', { name: /choose a pdf/iu })
+          .first()
+          .click();
+        await (
+          await chooser
+        ).setFiles({
+          name: 'offline.pdf',
+          mimeType: 'application/pdf',
+          buffer: source,
+        });
+      }).toPass({ timeout: 45_000 });
+
+      await page.getByRole('slider', { name: 'Photo quality' }).fill('50');
+      const compress = page.getByRole('button', { name: 'Compress PDF' });
+      await expect(compress).toBeEnabled({ timeout: 30_000 });
+      await compress.click();
+
+      // The engine ran, offline. Anything short of this heading means the
+      // worker script was not held and the run never started.
+      await expect(
+        page.getByRole('heading', { name: /^Done — \d+% smaller$/u }),
+      ).toBeVisible({ timeout: 180_000 });
+
+      const download = page.waitForEvent('download');
+      await page.getByRole('button', { name: 'Save compressed PDF' }).click();
+      const saved = await readFile(await (await download).path());
+      expect(new TextDecoder('ascii').decode(saved.subarray(0, 5))).toBe('%PDF-');
+      expect(saved.length).toBeLessThan(source.length);
+
+      expect(errors, `page errors: ${errors.join(' | ')}`).toEqual([]);
     } finally {
       await context.setOffline(false);
     }

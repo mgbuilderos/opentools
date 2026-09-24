@@ -22,6 +22,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/pdf/images-to-pdf',
   '/pdf/page-tools',
   '/pdf/compress',
+  '/pdf/compress-offline',
   '/pdf/ocr',
   '/pdf/to-word',
   '/pdf/to-excel',

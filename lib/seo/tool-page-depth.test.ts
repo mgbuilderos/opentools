@@ -71,9 +71,20 @@ function precachedPages(): ReadonlySet<string> {
   );
   const block = /const PAGES = \[([\s\S]*?)\];/u.exec(source);
   expect(block, 'the precache PAGES list could not be found').not.toBeNull();
-  return new Set(
-    [...block![1]!.matchAll(/'([^']+)'/gu)].map((match) => match[1]!),
-  );
+  /*
+    Comments come out before the quoted paths go in. The array is annotated, and
+    one apostrophe in an annotation -- "the route's engine" -- opens a string
+    this parser then closes on the next real quote, shifting every path after it
+    by one. That is not a theoretical failure: it happened while
+    `/pdf/compress-offline` was being added on 2026-09-24, and it reported
+    `/image/optimize` as absent from a list it was plainly in. A parse that can
+    silently produce the wrong set can also silently produce a passing run, so
+    the comments are removed rather than written around.
+  */
+  const array = block![1]!
+    .replaceAll(/\/\*[\s\S]*?\*\//gu, '')
+    .replaceAll(/\/\/[^\n]*/gu, '');
+  return new Set([...array.matchAll(/'([^']+)'/gu)].map((match) => match[1]!));
 }
 
 describe('PDF, image, and commercial core tool page depth', () => {

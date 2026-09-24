@@ -441,6 +441,21 @@ const CATEGORY_HUB_LINKS: Readonly<Record<string, readonly CategoryHubLink[]>> =
           'Calculate arithmetic, statistics, number theory, geometry, and unit conversions locally.',
       },
     ],
+    PDF: [
+      {
+        /*
+          `/pdf/compress-offline` is in `LIVE_TOOL_ROUTES` but in no catalogue,
+          so nothing built from `tool-catalog-data.ts` can link it -- the exact
+          shape of orphan this map exists to rescue, and the same one
+          `/image/solid-background-remover` is rescued in above.
+          `scripts/verify-no-orphans.mjs` fails the build without this entry.
+        */
+        href: '/pdf/compress-offline',
+        name: 'Compress a PDF With No Network',
+        description:
+          'Compress a PDF with the network switched off, and check first whether this device is ready to. The page reports what it holds offline rather than promising it.',
+      },
+    ],
     'QR and Barcode': [
       {
         href: '/qr/workbench',
