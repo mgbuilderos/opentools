@@ -65,13 +65,13 @@ function loadDecoder(): Promise<LibheifDecoder> {
       const imported = await import('libheif-js/libheif-wasm/libheif.js');
       const factory = ((imported as { default?: unknown }).default ??
         imported) as unknown as LibheifFactory;
-      const module = factory({
+      const libheif = factory({
         // Point the glue at our own copy rather than letting it resolve a path
         // next to the worker chunk, whose name hashes on every build.
         locateFile: (path: string) =>
           path.endsWith('.wasm') ? HEIC_WASM_PATH : path,
       });
-      return new module.HeifDecoder();
+      return new libheif.HeifDecoder();
     })().catch((error: unknown) => {
       // Let the next attempt retry rather than caching a failed load forever.
       decoderPromise = null;
@@ -92,7 +92,12 @@ async function decodeHeic(buffer: ArrayBuffer) {
   const image = images[0];
   const width = image.get_width();
   const height = image.get_height();
-  if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) {
+  if (
+    !Number.isFinite(width) ||
+    !Number.isFinite(height) ||
+    width < 1 ||
+    height < 1
+  ) {
     throw new Error('That file reported an image size we could not use.');
   }
   const data = new Uint8ClampedArray(width * height * 4);
