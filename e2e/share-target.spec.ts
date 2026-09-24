@@ -1,5 +1,11 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test, type BrowserContext, type Page, type Worker } from '@playwright/test';
+import {
+  expect,
+  test,
+  type BrowserContext,
+  type Page,
+  type Worker,
+} from '@playwright/test';
 
 import { testPhotoPdf } from './fixtures';
 
@@ -18,11 +24,20 @@ test.describe('installed-app behaviour', () => {
   );
 
   /** The worker that is actually controlling the page, not merely registered. */
-  async function activeWorker(context: BrowserContext, page: Page): Promise<Worker> {
-    await page.waitForFunction(() => navigator.serviceWorker.controller !== null, undefined, {
-      timeout: 30_000,
-    });
-    const worker = context.serviceWorkers().find((entry) => entry.url().endsWith('/sw.js'));
+  async function activeWorker(
+    context: BrowserContext,
+    page: Page,
+  ): Promise<Worker> {
+    await page.waitForFunction(
+      () => navigator.serviceWorker.controller !== null,
+      undefined,
+      {
+        timeout: 30_000,
+      },
+    );
+    const worker = context
+      .serviceWorkers()
+      .find((entry) => entry.url().endsWith('/sw.js'));
     expect(worker, 'no service worker is running for this origin').toBeTruthy();
     return worker as Worker;
   }
@@ -34,11 +49,16 @@ test.describe('installed-app behaviour', () => {
         async () =>
           await worker.evaluate(async () => {
             const names = await caches.keys();
-            const name = names.find((entry) => entry.startsWith('opentools-offline-'));
+            const name = names.find((entry) =>
+              entry.startsWith('opentools-offline-'),
+            );
             if (!name) return 0;
             return (await (await caches.open(name)).keys()).length;
           }),
-        { timeout: 30_000, message: 'the worker never filled its offline cache' },
+        {
+          timeout: 30_000,
+          message: 'the worker never filled its offline cache',
+        },
       )
       .toBeGreaterThan(5);
   }
@@ -62,17 +82,26 @@ test.describe('installed-app behaviour', () => {
       const body = new FormData();
       body.append(
         'file',
-        new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], 'bank-statement.pdf', {
-          // The type Android hands over for a document forwarded from a chat
-          // app: no useful MIME type at all, only the name to go on.
-          type: 'application/octet-stream',
-        }),
+        new File(
+          [new Uint8Array([0x25, 0x50, 0x44, 0x46])],
+          'bank-statement.pdf',
+          {
+            // The type Android hands over for a document forwarded from a chat
+            // app: no useful MIME type at all, only the name to go on.
+            type: 'application/octet-stream',
+          },
+        ),
       );
       const request = new Request('/share-target', { method: 'POST', body });
       const response = await (
-        self as unknown as { acceptShare: (request: Request) => Promise<Response> }
+        self as unknown as {
+          acceptShare: (request: Request) => Promise<Response>;
+        }
       ).acceptShare(request);
-      return { status: response.status, location: response.headers.get('Location') };
+      return {
+        status: response.status,
+        location: response.headers.get('Location'),
+      };
     });
 
     expect(outcome.status).toBe(303);
@@ -81,14 +110,23 @@ test.describe('installed-app behaviour', () => {
 
     // The redirect the browser would follow. The file has to be in the tool
     // when it gets there, with nobody having chosen it from a picker.
-    await page.goto(new URL(outcome.location as string).pathname + new URL(outcome.location as string).search);
+    await page.goto(
+      new URL(outcome.location as string).pathname +
+        new URL(outcome.location as string).search,
+    );
     const input = page.locator('input[type="file"]').first();
     await expect(input).toBeAttached({ timeout: 15_000 });
     await expect
-      .poll(async () => await input.evaluate((node: HTMLInputElement) => node.files?.[0]?.name ?? ''), {
-        timeout: 15_000,
-        message: 'the shared file never reached the tool',
-      })
+      .poll(
+        async () =>
+          await input.evaluate(
+            (node: HTMLInputElement) => node.files?.[0]?.name ?? '',
+          ),
+        {
+          timeout: 15_000,
+          message: 'the shared file never reached the tool',
+        },
+      )
       .toBe('bank-statement.pdf');
   });
 
@@ -98,7 +136,9 @@ test.describe('installed-app behaviour', () => {
 
     const routed = await worker.evaluate(async () => {
       const share = (
-        self as unknown as { acceptShare: (request: Request) => Promise<Response> }
+        self as unknown as {
+          acceptShare: (request: Request) => Promise<Response>;
+        }
       ).acceptShare;
       const cases: [string, string][] = [
         ['photo.jpg', 'image/jpeg'],
@@ -109,9 +149,16 @@ test.describe('installed-app behaviour', () => {
       const results: Record<string, string> = {};
       for (const [name, type] of cases) {
         const body = new FormData();
-        body.append('file', new File([new Uint8Array([1, 2, 3])], name, { type }));
-        const response = await share(new Request('/share-target', { method: 'POST', body }));
-        results[name] = new URL(response.headers.get('Location') as string).pathname;
+        body.append(
+          'file',
+          new File([new Uint8Array([1, 2, 3])], name, { type }),
+        );
+        const response = await share(
+          new Request('/share-target', { method: 'POST', body }),
+        );
+        results[name] = new URL(
+          response.headers.get('Location') as string,
+        ).pathname;
       }
       return results;
     });
@@ -133,8 +180,12 @@ test.describe('installed-app behaviour', () => {
 
     const location = await worker.evaluate(async () => {
       const response = await (
-        self as unknown as { acceptShare: (request: Request) => Promise<Response> }
-      ).acceptShare(new Request('/share-target', { method: 'POST', body: new FormData() }));
+        self as unknown as {
+          acceptShare: (request: Request) => Promise<Response>;
+        }
+      ).acceptShare(
+        new Request('/share-target', { method: 'POST', body: new FormData() }),
+      );
       return new URL(response.headers.get('Location') as string).pathname;
     });
 
@@ -143,7 +194,10 @@ test.describe('installed-app behaviour', () => {
     expect(location).toBe('/');
   });
 
-  test('serves the app with the network switched off', async ({ context, page }) => {
+  test('serves the app with the network switched off', async ({
+    context,
+    page,
+  }) => {
     await page.goto('/');
     const worker = await activeWorker(context, page);
     await waitForPrecache(worker);
@@ -186,7 +240,10 @@ test.describe('installed-app behaviour', () => {
     }
   });
 
-  test('compresses a PDF with the network switched off', async ({ context, page }) => {
+  test('compresses a PDF with the network switched off', async ({
+    context,
+    page,
+  }) => {
     /*
       The test that had to exist before `/pdf/compress-offline` could be
       written, and the one that found the defect it exists to fix.
@@ -222,7 +279,11 @@ test.describe('installed-app behaviour', () => {
       const panel = page.getByRole('region', {
         name: /Can this device compress a PDF with the network off/iu,
       });
-      await expect(panel).toContainText(/^Yes\./u, { timeout: 15_000 });
+      // Not anchored: the section's text starts with its own heading.
+      await expect(panel).toContainText(
+        'Yes. This page and the compression engine are both stored on this device',
+        { timeout: 15_000 },
+      );
       await expect(panel).toContainText(
         'The compression engine, stored for offline use: yes',
       );
@@ -256,7 +317,9 @@ test.describe('installed-app behaviour', () => {
       const download = page.waitForEvent('download');
       await page.getByRole('button', { name: 'Save compressed PDF' }).click();
       const saved = await readFile(await (await download).path());
-      expect(new TextDecoder('ascii').decode(saved.subarray(0, 5))).toBe('%PDF-');
+      expect(new TextDecoder('ascii').decode(saved.subarray(0, 5))).toBe(
+        '%PDF-',
+      );
       expect(saved.length).toBeLessThan(source.length);
 
       expect(errors, `page errors: ${errors.join(' | ')}`).toEqual([]);
@@ -265,7 +328,10 @@ test.describe('installed-app behaviour', () => {
     }
   });
 
-  test('leaves pages it holds no bytes for to the browser', async ({ context, page }) => {
+  test('leaves pages it holds no bytes for to the browser', async ({
+    context,
+    page,
+  }) => {
     await page.goto('/');
     const worker = await activeWorker(context, page);
     await waitForPrecache(worker);
@@ -278,7 +344,10 @@ test.describe('installed-app behaviour', () => {
         .goto('/pdf/sign')
         .then(() => null)
         .catch((error: Error) => error.message);
-      expect(failed, 'a page with no cached copy was answered anyway').toBeTruthy();
+      expect(
+        failed,
+        'a page with no cached copy was answered anyway',
+      ).toBeTruthy();
     } finally {
       await context.setOffline(false);
     }
