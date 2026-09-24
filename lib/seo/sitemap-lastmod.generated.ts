@@ -1169,6 +1169,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/pdf/compress': '2026-09-23T16:36:56+05:30',
   '/pdf/delete-pdf-pages': '2026-09-23T17:09:22+05:30',
   '/pdf/drawing-register': '2026-09-23T17:09:22+05:30',
+  '/pdf/excel-to-pdf': '2026-09-24T09:07:17+05:30',
   '/pdf/extract-pages': '2026-09-23T16:36:56+05:30',
   '/pdf/images-to-pdf': '2026-09-23T16:36:56+05:30',
   '/pdf/merge': '2026-09-23T16:36:56+05:30',

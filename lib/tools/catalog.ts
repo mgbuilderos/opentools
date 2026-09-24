@@ -1053,6 +1053,34 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'excel-to-pdf',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Convert Excel to PDF',
+    shortDescription:
+      'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
+    category: 'PDF',
+    aliases: [
+      'excel to pdf',
+      'xlsx to pdf',
+      'convert excel to pdf',
+      'spreadsheet to pdf',
+      'xlsx to pdf converter',
+    ],
+    jobs: [
+      'convert excel spreadsheet to printable vector pdf',
+      'convert xlsx to pdf without server upload',
+      'turn financial spreadsheet or payroll into formatted pdf',
+    ],
+    href: '/pdf/excel-to-pdf',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['spreadsheet.read', 'pdf.generate.vector'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'docx-metadata',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1962,6 +1990,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-drawing-register',
       'pdf-preflight',
       'pdf-burst',
+      'excel-to-pdf',
     ],
   },
   {

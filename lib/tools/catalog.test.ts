@@ -180,7 +180,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(694);
+    expect(everyDestination).toBe(695);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -253,12 +253,13 @@ describe('public canary catalog', () => {
       'PDF Drawing Register from Title Blocks',
       'PDF Print Preflight Checker',
       'Burst PDF by Rule and Dynamic Naming',
+      'Convert Excel to PDF',
     ]);
-    expect(pdf).toHaveLength(21);
+    expect(pdf).toHaveLength(22);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(21);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(22);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

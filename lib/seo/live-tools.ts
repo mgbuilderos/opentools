@@ -91,6 +91,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/audio/loudness',
   '/pdf/preflight',
   '/pdf/burst',
+  '/pdf/excel-to-pdf',
 ] as const;
 
 /**

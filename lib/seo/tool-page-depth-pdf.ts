@@ -2145,4 +2145,100 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  '/pdf/excel-to-pdf': {
+    title: 'Convert Excel to PDF Online — Free & No Upload',
+    description:
+      'Convert Excel spreadsheets (.xlsx) to vector PDF online. Preserves gridlines, headers, and formulas without uploading your payroll or customer data. 100% private.',
+    heading: 'About this in-browser Excel to PDF converter',
+    offlineReady: false,
+    directAnswer:
+      'To convert an Excel spreadsheet into a PDF: choose your .xlsx workbook, select whether to export all sheets or a specific tab, choose your page orientation and margin preferences, and click Convert to PDF. The document is converted entirely inside your browser memory using native vector drawing, so your financial data, salaries, and customer records are never uploaded to a cloud server.',
+    lead: 'Spreadsheets are the most confidential files an organization or individual owns. They contain company payroll, profit and loss statements, customer contact databases, invoice registers, and detailed financial models. Traditional online PDF converters force you to upload your entire Excel workbook to their remote servers, creating an immediate data privacy hazard and violating enterprise confidentiality policies. This converter eliminates that exposure by parsing the workbook XML and rendering vector PDF pages directly inside your browser tab with zero network egress.',
+    steps: [
+      {
+        name: 'Select your Excel spreadsheet',
+        text: 'Drop your .xlsx or .xlsm file onto the converter. The browser reads the ZIP container and parses workbook.xml, sharedStrings.xml, and sheet definitions locally. File contents are loaded into memory and never transmitted anywhere.',
+      },
+      {
+        name: 'Configure page layout and sheet options',
+        text: 'Select whether to convert all workbook sheets into a consolidated multi-page PDF or export an individual tab. Choose between automatic orientation (which intelligently switches to Landscape for wide multi-column tables) or forced Portrait/Landscape, select A4 or US Letter page sizing, and customize page margins.',
+      },
+      {
+        name: 'Set table rendering preferences',
+        text: 'Toggle cell gridlines on or off, enable repeated header rows so multi-page tables remain easily readable across page breaks, and configure page numbering ("Page X of Y") in the footer.',
+      },
+      {
+        name: 'Convert and save your vector PDF',
+        text: 'Click Convert to PDF. The engine calculates proportional column widths, renders vector text and table borders via pdf-lib, and generates a downloadable vector PDF in milliseconds. The saved document contains selectable, searchable text with crisp lines at any zoom level.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Why in-browser conversion is vital for business spreadsheets',
+        body: [
+          'Most online conversion tools require you to upload your files to remote cloud infrastructure. While those providers promise to delete files after one to two hours, the mere act of transmitting financial spreadsheets across the public internet introduces compliance risks under GDPR, HIPAA, and corporate confidentiality agreements. Furthermore, cloud services meter free conversions with strict daily task limits or lock high-resolution exports behind recurring monthly subscriptions.',
+          'OpenTools takes the opposite architectural approach: the tool code is delivered as a static client application, and all processing takes place in your local JavaScript runtime. No file bytes, cell values, or metadata ever leave your tab.',
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+        ],
+      },
+      {
+        heading:
+          'Vector precision: native PDF tables versus rasterized screenshots',
+        body: [
+          'Many makeshift browser conversion tools rely on html2canvas or DOM rasterization, converting tables into blurry bitmap images embedded inside a PDF. This degrades typography, renders text unselectable and unsearchable, and produces pixelated lines when printed.',
+          'This tool uses direct vector rendering via pdf-lib. Every table border is drawn as a true PDF vector path with precise sub-point stroke coordinates, and every text cell is encoded using standard font glyph metrics. The resulting PDF is compact in file size, sharp on high-DPI retina displays and commercial printers, and allows text copying and search indexing.',
+        ],
+      },
+      {
+        heading: 'Intelligent auto-orientation and multi-page pagination',
+        body: [
+          'A recurring difficulty when converting spreadsheets to PDF is handling wide tables with dozens of columns. Standard portrait layouts frequently clip columns or crush text into illegible ribbons. Our engine inspects the natural content width of every column in the sheet. In Auto mode, if the total table width exceeds the printable width of a Portrait page, the generator automatically switches that sheet to Landscape orientation.',
+          'For long multi-row tables that span across several pages, the engine dynamically calculates row heights and inserts page breaks cleanly between rows. It also repeats the table header row at the top of subsequent pages with a subtle continuation notice, ensuring readers can easily reference column headers on page five as easily as on page one.',
+        ],
+      },
+      {
+        heading: 'Formulas, dates, and cell formatting support',
+        body: [
+          'Excel workbooks store dates as floating-point serial numbers relative to a calendar epoch (1900 or 1904) and store text inside a shared strings table. This converter leverages our proven spreadsheet engine (lib/tools/spreadsheet/xlsx-reader.ts) to correctly resolve shared string indices, format dates into clean ISO strings without phantom leap-year offsets, and extract cached formula values.',
+          'Cells containing numbers, text, dates, booleans, and errors are cleanly represented. Numbers are right-aligned to match conventional accounting standards, while labels and descriptions are left-aligned with proper typographic padding.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can I convert an Excel workbook with multiple sheets into one PDF?',
+        answer:
+          'Yes. By default, the converter processes all sheets in the workbook in their natural sequence, starting each sheet on a fresh page with a dedicated sheet header and table layout. Alternatively, you can select any individual tab from the dropdown to export only that specific sheet.',
+      },
+      {
+        question:
+          'Does this tool upload my confidential spreadsheet to a server?',
+        answer:
+          'No. The converter operates 100% locally inside your browser memory using WebAssembly and client-side JavaScript. The page is served with a strict Content Security Policy (connect-src none) that prevents all outbound network requests.',
+      },
+      {
+        question:
+          'How does the tool handle wide spreadsheets with many columns?',
+        answer:
+          'When Page Orientation is set to Auto, the tool measures the total content width across all columns. If the table exceeds portrait boundaries, it automatically flips the page to Landscape orientation and scales columns proportionally to fit the printable area perfectly.',
+      },
+      {
+        question: 'Are column headers repeated on every page?',
+        answer:
+          'Yes. When Repeat Headers is enabled, the table column headers are drawn at the top of every subsequent page for long tables, ensuring the document remains legible throughout.',
+      },
+      {
+        question: 'Is there a file size limit or daily conversion quota?',
+        answer:
+          'There are no subscriptions, no paywalls, and no task quotas. You can convert unlimited spreadsheets of any reasonable size (typically up to 50–100 MB depending on available device memory) completely free.',
+      },
+      {
+        question: 'What versions of Excel are supported?',
+        answer:
+          'The converter supports all modern Office Open XML spreadsheets (.xlsx and .xlsm) exported by Microsoft Excel (2007 through Microsoft 365), Google Sheets, LibreOffice Calc, Apple Numbers, and openpyxl.',
+      },
+    ],
+  },
 };

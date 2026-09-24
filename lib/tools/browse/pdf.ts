@@ -128,6 +128,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/pdf/burst',
         workspaceId: 'pdf-burst',
       },
+      {
+        id: 'excel-to-pdf',
+        name: 'Convert Excel to PDF',
+        description:
+          'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
+        href: '/pdf/excel-to-pdf',
+        workspaceId: 'excel-to-pdf',
+      },
     ],
   },
   {

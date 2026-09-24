@@ -65,6 +65,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/audio/loudness',
   '/pdf/preflight',
   '/pdf/burst',
+  '/pdf/excel-to-pdf',
   '/creator/workbench',
   '/data/workbench',
   '/date/workbench',

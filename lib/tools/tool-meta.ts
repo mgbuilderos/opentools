@@ -51,6 +51,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Split bulk PDF statements and invoices by bookmark, blank page, or regex pattern match with dynamic output file naming.',
   },
+  'excel-to-pdf': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
+  },
   bench: {
     version: '0.1.0-canary',
     shortDescription:
