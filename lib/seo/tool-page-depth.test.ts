@@ -89,7 +89,7 @@ function precachedPages(): ReadonlySet<string> {
 
 describe('PDF, image, and commercial core tool page depth', () => {
   it('covers every live PDF, image, and commercial core tool route', () => {
-    expect(depthRoutes.length).toBe(50);
+    expect(depthRoutes.length).toBe(51);
     expect([...depthRoutes].sort()).toEqual([...TOOL_PAGE_DEPTH_ROUTES]);
   });
 
