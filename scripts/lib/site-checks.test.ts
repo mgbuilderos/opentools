@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { CHECKS } from './site-checks.mjs';
+import {
+  CHECKS,
+  POPULATION_CHECKS,
+  populationFindings,
+} from './site-checks.mjs';
 
 /**
  * `npm run audit:360` and `npm run verify:live` both read their fault
@@ -127,5 +131,151 @@ describe('the live-site checks fire on the faults they name', () => {
       (c) => c.severity === 'high' && c.run(ctx(clean)) !== null,
     ).map((c) => c.id);
     expect(fired).toEqual([]);
+  });
+});
+
+/**
+ * The population checks had no test between them, and one of them was wrong
+ * about the site for seven days.
+ *
+ * On 2026-09-23 this sweep reported 1,413 distinct `<title>` values and passed
+ * the site, while 1,335 of those same URLs served ONE `og:title` between them
+ * -- `OpenTools — Fast, Private Browser Utilities` -- inherited from
+ * `app/layout.tsx` by every page that declares no `openGraph` of its own. The
+ * per-page `og` check above passed all 1,335 as well, because the tag was
+ * there; it was simply the wrong page's tag.
+ *
+ * Population faults are the ones no single page reveals, which is also why
+ * they decay unnoticed: a `read` that stops matching reports a site of 1,413
+ * identical cards as a site of none, and nothing goes red. So each check is
+ * shown a population carrying exactly its fault, and one carrying none.
+ */
+describe('the population checks fire on faults no single page shows', () => {
+  const at = (id: string) => {
+    const index = POPULATION_CHECKS.findIndex((check) => check.id === id);
+    if (index < 0) throw new Error(`no population check called ${id}`);
+    return index;
+  };
+
+  /** Maps in `POPULATION_CHECKS` order, built the way `sweepSite` builds them. */
+  const sweep = (pages: { url: string; html: string }[]) => {
+    const seen = POPULATION_CHECKS.map(() => new Map<string, string[]>());
+    for (const { url, html } of pages) {
+      POPULATION_CHECKS.forEach((check, index) => {
+        const value = check.read(html);
+        if (value)
+          seen[index]!.set(value, [...(seen[index]!.get(value) ?? []), url]);
+      });
+    }
+    return populationFindings(seen);
+  };
+
+  it('still defines the three checks, at the severities the gate blocks on', () => {
+    // verify-live.mjs blocks on every high-severity finding. Dropping one of
+    // these to `medium` widens what counts as a healthy deploy in silence.
+    expect(
+      POPULATION_CHECKS.map((check) => [check.id, check.severity]),
+    ).toEqual([
+      ['duplicate-title', 'high'],
+      ['duplicate-description', 'medium'],
+      ['duplicate-og-title', 'high'],
+    ]);
+  });
+
+  it('reads the value each check counts over', () => {
+    const html =
+      '<head><title>A title</title>' +
+      '<meta name="description" content="A description"/>' +
+      '<meta property="og:title" content="A card headline"/></head>';
+    expect(POPULATION_CHECKS[at('duplicate-title')]!.read(html)).toBe(
+      'A title',
+    );
+    expect(POPULATION_CHECKS[at('duplicate-description')]!.read(html)).toBe(
+      'A description',
+    );
+    expect(POPULATION_CHECKS[at('duplicate-og-title')]!.read(html)).toBe(
+      'A card headline',
+    );
+    for (const check of POPULATION_CHECKS) {
+      expect(check.read('<head></head>')).toBeNull();
+    }
+  });
+
+  /**
+   * The 2026-09-23 fault in miniature: distinct titles, one shared card. A
+   * check that only read `<title>` calls this population clean.
+   */
+  it('catches a shared og:title on pages whose own titles are distinct', () => {
+    const tool = (name: string) =>
+      `<title>${name} · OpenTools</title>` +
+      `<meta name="description" content="Do ${name} in your browser."/>` +
+      '<meta property="og:title" content="OpenTools — Fast, Private Browser Utilities"/>';
+
+    const findings = sweep([
+      { url: '/pdf/merge', html: tool('Merge PDF') },
+      { url: '/pdf/split', html: tool('Split PDF') },
+      { url: '/image/crop', html: tool('Crop Image') },
+    ]);
+
+    expect(findings.map((finding) => finding.check)).toEqual([
+      'duplicate-og-title',
+    ]);
+    expect(findings[0]!.severity).toBe('high');
+    expect(findings[0]!.url).toBe('/pdf/merge');
+    expect(findings[0]!.detail).toBe(
+      '3 pages share "OpenTools — Fast, Private Browser Utilities"',
+    );
+  });
+
+  it('catches a shared title and a shared description too', () => {
+    const findings = sweep([
+      {
+        url: '/a',
+        html:
+          '<title>One title</title>' +
+          '<meta name="description" content="One description"/>' +
+          '<meta property="og:title" content="Card A"/>',
+      },
+      {
+        url: '/b',
+        html:
+          '<title>One title</title>' +
+          '<meta name="description" content="One description"/>' +
+          '<meta property="og:title" content="Card B"/>',
+      },
+    ]);
+    expect(findings.map((finding) => finding.check).sort()).toEqual([
+      'duplicate-description',
+      'duplicate-title',
+    ]);
+  });
+
+  /**
+   * The other half of the contract. A check that always fires is as useless as
+   * one that never does, because a permanently red gate gets ignored -- and a
+   * page missing a tag entirely must be left to the per-page `og` check rather
+   * than counted here as a duplicate absence.
+   */
+  it('reports nothing on a population where every page is its own', () => {
+    expect(
+      sweep([
+        {
+          url: '/a',
+          html:
+            '<title>Title A</title>' +
+            '<meta name="description" content="Description A"/>' +
+            '<meta property="og:title" content="Card A"/>',
+        },
+        {
+          url: '/b',
+          html:
+            '<title>Title B</title>' +
+            '<meta name="description" content="Description B"/>' +
+            '<meta property="og:title" content="Card B"/>',
+        },
+        { url: '/c', html: '<head></head>' },
+        { url: '/d', html: '<head></head>' },
+      ]),
+    ).toEqual([]);
   });
 });

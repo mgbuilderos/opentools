@@ -259,6 +259,75 @@ export const CHECKS = [
   },
 ];
 
+/**
+ * Faults that exist only across the whole population, never on one page.
+ *
+ * Each entry pulls one value out of a page. Two URLs that yield the same value
+ * are a fault; a URL that yields nothing is skipped, because a missing tag is
+ * a per-page fault that `CHECKS` already reports and one fault should be
+ * reported once.
+ *
+ * `duplicate-og-title` is here because `duplicate-title` passing proved
+ * nothing about it. On 2026-09-23 this sweep found 1,413 distinct `<title>`
+ * values -- a clean bill -- while 1,335 of the same URLs served ONE `og:title`
+ * between them, inherited from `app/layout.tsx` by every page that declares no
+ * `openGraph` of its own. The `og` check in `CHECKS` passed all 1,335 too,
+ * because the tag was present; it was simply the wrong page's tag. It is
+ * `high` for the same reason `duplicate-title` is: this site's distribution
+ * plan is people posting links, so a card that names the site instead of the
+ * tool is the whole plan failing quietly.
+ */
+export const POPULATION_CHECKS = [
+  {
+    id: 'duplicate-title',
+    severity: 'high',
+    why: 'pages sharing a title compete with each other for one query',
+    read: (html) => pick(html, /<title>([^<]*)<\/title>/),
+    detail: (value, count) => `${count} pages share "${value.slice(0, 55)}"`,
+  },
+  {
+    id: 'duplicate-description',
+    severity: 'medium',
+    why: 'a shared description is a duplicate-content signal',
+    read: (html) => pick(html, /<meta name="description" content="([^"]*)"/),
+    detail: (_value, count) => `${count} pages share one description`,
+  },
+  {
+    id: 'duplicate-og-title',
+    severity: 'high',
+    why: 'the whole distribution plan is people posting links, and a card that names the site instead of the tool says nothing about what was shared',
+    read: (html) => pick(html, /<meta property="og:title" content="([^"]*)"/),
+    detail: (value, count) => `${count} pages share "${value.slice(0, 55)}"`,
+  },
+];
+
+/**
+ * Every population fault, from one value -> urls map per check.
+ *
+ * Split out from `sweepSite` so it can be shown a population and asked what it
+ * finds. The three checks it runs had no test between them until the `og:title`
+ * fault, which is precisely the shape of guard that decays unnoticed: nothing
+ * fails when it stops firing.
+ *
+ * The maps hold extracted strings rather than pages, so sweeping 1,413 URLs
+ * does not mean holding 1,413 documents in memory at once.
+ *
+ * @param {Map<string, string[]>[]} seen One map per `POPULATION_CHECKS` entry.
+ */
+export function populationFindings(seen) {
+  return POPULATION_CHECKS.flatMap((check, index) =>
+    [...(seen[index] ?? new Map())]
+      .filter(([, urls]) => urls.length > 1)
+      .map(([value, urls]) => ({
+        url: urls[0],
+        check: check.id,
+        detail: check.detail(value, urls.length),
+        severity: check.severity,
+        why: check.why,
+      })),
+  );
+}
+
 export async function mapLimit(items, limit, fn) {
   let i = 0;
   await Promise.all(
@@ -308,18 +377,8 @@ export async function sweepSite({
   const urls = await sitemapUrls(origin);
 
   const findings = [];
-  const titles = new Map();
-  const descs = new Map();
-  /*
-    Kept separately from `titles` because the two disagreed for seven days and
-    only one of them was being read. On 2026-09-23 this sweep reported 1,413
-    distinct `<title>` values -- a clean bill -- while 1,335 of the same URLs
-    served one `og:title` between them, inherited from `app/layout.tsx` by
-    every page that declares no `openGraph` of its own. The `og` check above
-    passed all 1,335, because the tag was present; it was simply the wrong
-    page's tag.
-  */
-  const ogTitles = new Map();
+  /* One value -> urls map per population check, in `POPULATION_CHECKS` order. */
+  const seen = POPULATION_CHECKS.map(() => new Map());
   const linkTargets = new Set();
   const add = (url, check, detail, severity, why) =>
     findings.push({ url, check, detail, severity, why });
@@ -359,45 +418,18 @@ export async function sweepSite({
       }
     }
     if (status === 200) {
-      const t = pick(html, /<title>([^<]*)<\/title>/);
-      const d = pick(html, /<meta name="description" content="([^"]*)"/);
-      const og = pick(html, /<meta property="og:title" content="([^"]*)"/);
-      if (t) titles.set(t, [...(titles.get(t) || []), url]);
-      if (d) descs.set(d, [...(descs.get(d) || []), url]);
-      if (og) ogTitles.set(og, [...(ogTitles.get(og) || []), url]);
+      POPULATION_CHECKS.forEach((check, index) => {
+        const value = check.read(html);
+        if (value)
+          seen[index].set(value, [...(seen[index].get(value) || []), url]);
+      });
       for (const href of all(html, /href="(\/[^"#?]*)"/g))
         linkTargets.add(href.replace(/\/$/, '') || '/');
     }
   });
 
   /* Population-level faults: invisible from any single page. */
-  for (const [v, list] of titles)
-    if (list.length > 1)
-      add(
-        list[0],
-        'duplicate-title',
-        `${list.length} pages share "${v.slice(0, 55)}"`,
-        'high',
-        'pages sharing a title compete with each other for one query',
-      );
-  for (const [, list] of descs)
-    if (list.length > 1)
-      add(
-        list[0],
-        'duplicate-description',
-        `${list.length} pages share one description`,
-        'medium',
-        'a shared description is a duplicate-content signal',
-      );
-  for (const [v, list] of ogTitles)
-    if (list.length > 1)
-      add(
-        list[0],
-        'duplicate-og-title',
-        `${list.length} pages share "${v.slice(0, 55)}"`,
-        'high',
-        'the whole distribution plan is people posting links, and a card that names the site instead of the tool says nothing about what was shared',
-      );
+  for (const finding of populationFindings(seen)) findings.push(finding);
 
   const orphans = urls.filter((u) => {
     const p = u.replace(origin, '').replace(/\/$/, '') || '/';
