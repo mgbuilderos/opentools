@@ -53,14 +53,16 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'life-admin-workbench:pin-code-format-checker',
         name: 'PIN code format checker',
-        description: 'Check for a six-digit Indian postal-code shape.',
+        description:
+          'Check an Indian PIN code against the six-digit shape with a non-zero first digit. Spaces are stripped first, and it tests the format, not whether it exists.',
         href: '/life-admin/workbench?tool=pin-code-format-checker',
         workspaceId: 'life-admin-workbench',
       },
       {
         id: 'life-admin-workbench:indian-phone-number-formatter',
         name: 'Indian phone number formatter',
-        description: 'Normalize a mobile number to +91 XXXXX XXXXX.',
+        description:
+          'Paste a mobile number with spaces, brackets, a leading zero or 91, and get it back as +91 XXXXX XXXXX. Ten digits beginning 6 to 9 are accepted.',
         href: '/life-admin/workbench?tool=indian-phone-number-formatter',
         workspaceId: 'life-admin-workbench',
       },
@@ -96,7 +98,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'life-admin-workbench:cheque-amount-writer',
         name: 'Cheque amount writer',
-        description: 'Create an English “Rupees … Only” amount line.',
+        description:
+          'Type an amount in this tab and get the English words line for a cheque, in Indian lakh and crore, with paise spelled out and Rupees … Only wrapped around it.',
         href: '/life-admin/workbench?tool=cheque-amount-writer',
         workspaceId: 'life-admin-workbench',
       },
@@ -165,7 +168,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'life-admin-workbench:emi-due-date-planner',
         name: 'EMI due-date planner',
-        description: 'List monthly due dates from a first due date.',
+        description:
+          'Give a first due date, a count of instalments up to 600 and an amount, and get a CSV of dates; a 31st falls back to the last day of shorter months.',
         href: '/life-admin/workbench?tool=emi-due-date-planner',
         workspaceId: 'life-admin-workbench',
       },
@@ -187,7 +191,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'life-admin-workbench:notice-period-calculator',
         name: 'Notice period calculator',
-        description: 'Add calendar days to a supplied notice date.',
+        description:
+          'Add calendar days, up to 3,650, to the date notice was given to see the end date. Weekends and holidays are counted, as this is plain calendar arithmetic.',
         href: '/life-admin/workbench?tool=notice-period-calculator',
         workspaceId: 'life-admin-workbench',
       },

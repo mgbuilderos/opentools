@@ -13820,7 +13820,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'priority-candidate',
     notes:
       'Counts how often each word appears in pasted text and lays them out as a downloadable SVG, sized by frequency, with English filler words removed. The layout is fixed rather than random, so the same text always gives the same picture.',
-    destinationUrl: '/creator/workbench?tool=word-cloud-generator',
+    destinationUrl: '/creator/word-cloud-generator',
   },
 ] as const;
 

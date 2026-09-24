@@ -131,7 +131,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'resistor-color-code',
     name: 'Resistor color-code calculator',
-    description: 'Decode a four-band resistor value and tolerance.',
+    description:
+      'Pick the two digit bands, a multiplier from silver to blue and a tolerance band, and read back the resistance in ohms with its tolerance range.',
     fields: [
       select('first', 'First digit', [
         { value: '1', label: 'Brown — 1' },
@@ -227,7 +228,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'kinetic-energy-calculator',
     name: 'Kinetic-energy calculator',
-    description: 'Calculate ½mv² in joules.',
+    description:
+      'Enter a mass in kilograms and a speed in metres per second to get ½mv² in joules; a negative velocity is fine, since the speed term is squared.',
     fields: [
       number('mass', 'Mass (kg)', '10'),
       number('velocity', 'Velocity (m/s)', '5'),
@@ -273,7 +275,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'momentum-calculator',
     name: 'Momentum calculator',
-    description: 'Calculate linear momentum p = mv.',
+    description:
+      'Work out linear momentum as mass times velocity, with mass in kilograms and velocity in metres per second; a negative velocity keeps its sign in the result.',
     fields: [
       number('mass', 'Mass (kg)', '10'),
       number('velocity', 'Velocity (m/s)', '5'),
@@ -283,7 +286,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'density-calculator',
     name: 'Density calculator',
-    description: 'Calculate density from mass and volume.',
+    description:
+      'Divide a mass in kilograms by a volume in cubic metres for density in kg/m³. The volume has to be above zero, so an empty volume is rejected.',
     fields: [
       number('mass', 'Mass (kg)', '10'),
       number('volume', 'Volume (m³)', '2'),
@@ -293,7 +297,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'buoyancy-calculator',
     name: 'Buoyancy calculator',
-    description: 'Calculate ideal Archimedean buoyant force ρVg.',
+    description:
+      'Multiply fluid density, displaced volume and gravity for the ideal Archimedean buoyant force in newtons. Gravity starts at 9.80665 m/s² and can be changed.',
     fields: [
       number('density', 'Fluid density (kg/m³)', '1000'),
       number('volume', 'Displaced volume (m³)', '0.01'),
@@ -304,7 +309,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'reynolds-number-calculator',
     name: 'Reynolds-number calculator',
-    description: 'Calculate Re = ρvL/μ from SI inputs.',
+    description:
+      'Divide density times velocity times characteristic length by dynamic viscosity for the dimensionless Reynolds number. Inputs are SI: kg/m³, m/s, m, Pa·s.',
     fields: [
       number('density', 'Fluid density (kg/m³)', '1000'),
       number('velocity', 'Velocity (m/s)', '1'),
@@ -316,7 +322,8 @@ export const SCIENCE_OPERATIONS: readonly ScienceOperation[] = [
   {
     id: 'wave-speed-calculator',
     name: 'Wave-speed calculator',
-    description: 'Calculate wave speed v = fλ.',
+    description:
+      'Multiply frequency in hertz by wavelength in metres for wave speed in metres per second, the relation behind sound, light and waves on a string.',
     fields: [
       number('frequency', 'Frequency (Hz)', '440'),
       number('wavelength', 'Wavelength (m)', '0.779'),

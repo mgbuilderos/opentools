@@ -293,7 +293,8 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
   {
     id: 'utm-parser',
     name: 'UTM parser',
-    description: 'Read UTM parameters from an absolute URL.',
+    description:
+      'Paste a campaign web address and read back its utm_source, utm_medium, utm_campaign, utm_term and utm_content values. HTTP and HTTPS addresses only.',
     fields: [
       text(
         'url',
@@ -398,7 +399,8 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
   {
     id: 'css-border-radius-generator',
     name: 'CSS border-radius generator',
-    description: 'Generate four-corner CSS border-radius shorthand.',
+    description:
+      'Set a pixel radius for each corner and get the border-radius shorthand back in top-left, top-right, bottom-right, bottom-left order. Negatives are refused.',
     fields: [
       number('topLeft', 'Top left px', '16'),
       number('topRight', 'Top right px', '16'),
@@ -429,7 +431,8 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
   {
     id: 'css-flexbox-generator',
     name: 'CSS flexbox generator',
-    description: 'Generate common flex container declarations.',
+    description:
+      'Pick a direction, a justify-content and align-items value, and a pixel gap, then copy the matching flex container block without recalling the property names.',
     fields: [
       select('direction', 'Direction', [
         { value: 'row', label: 'Row' },

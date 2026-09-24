@@ -40,13 +40,20 @@ for (const cat of getLiveCategories()) {
  * One plain sentence per category, describing only what the live tools in it
  * actually do. No speed, egress or offline claims here (AGENTS.md truth rules);
  * privacy wording follows docs/DECISION_LOG.md §6.
+ *
+ * Every live category must appear here. `getCategoryPillar` falls back to
+ * "In-browser utilities for <x> tasks.", which is what
+ * `/guides/category/pdf-and-documents` served to Google until 2026-09-23 --
+ * long enough not to look broken, and saying nothing. `description-coverage.test.ts`
+ * fails on a live category with no entry, so the fallback is now unreachable
+ * rather than merely discouraged.
  */
-const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   PDF: 'Merge PDFs, extract pages, build a PDF from images, and rotate, reorder, delete, number, watermark or retitle pages in your browser.',
   Image:
     'Resize, compress and convert images, fit a photo under a KB limit at exact pixels and DPI, crop and rotate them, and make a plain-colour background transparent.',
   Audio:
-    'Trim a WAV file to the section you want, in your browser tab: set the start and the end, and download just that part of the recording.',
+    'Cut and join MP3 files, trim an audio clip to the seconds you want, turn M4A or FLAC into WAV, and edit the ID3 tags on a track, all in your browser.',
   'Documents and Office':
     'Inspect and convert document text: Markdown, HTML, plain text and structured document fields.',
   'Spreadsheet and Data':
@@ -73,6 +80,10 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
     'Periodic table lookup, molecular weight, scientific unit conversion and physics formulas.',
   'India and Life Admin':
     'IFSC and PIN code lookup, HRA exemption, rent receipts and similar paperwork helpers.',
+  'PDF and Documents':
+    'Read the document properties, XMP packet, dates and file identifier held inside a PDF, and strip all of them out again, in your own browser tab.',
+  'Subtitles and Captions':
+    'Shift subtitle timing, correct drift, change the frame rate, join files, check captions for common faults, and convert between SRT and VTT in your browser.',
   'Creator and Social':
     'Caption and hashtag helpers, CPM and engagement maths, and profile QR codes.',
 };

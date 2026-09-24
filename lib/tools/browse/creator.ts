@@ -355,7 +355,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'creator-workbench:content-calendar-maker',
         name: 'Content-calendar maker',
-        description: 'Validate and sort dated platform/topic entries.',
+        description:
+          'Paste lines of date, platform and topic separated by pipes; each date is checked as a real YYYY-MM-DD day and the rows come back sorted by date.',
         href: '/creator/workbench?tool=content-calendar-maker',
         workspaceId: 'creator-workbench',
       },

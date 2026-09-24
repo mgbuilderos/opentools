@@ -403,7 +403,8 @@ export const CREATOR_OPERATIONS: readonly CreatorOperation[] = [
   {
     id: 'content-calendar-maker',
     name: 'Content-calendar maker',
-    description: 'Validate and sort dated platform/topic entries.',
+    description:
+      'Paste lines of date, platform and topic separated by pipes; each date is checked as a real YYYY-MM-DD day and the rows come back sorted by date.',
     fields: [
       area(
         'entries',
