@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import {
   contentSecurityPolicy,
+  isEmbedRoute,
   loadsLocalModel,
 } from './lib/security/content-security-policy';
 import { authorise, challengeResponse } from './lib/security/self-host-auth';
@@ -134,15 +135,25 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  const embeddable = isEmbedRoute(pathname);
+
   response.headers.set(
     'Content-Security-Policy',
     contentSecurityPolicy({
       development: process.env.NODE_ENV === 'development',
       localModel: loadsLocalModel(request.nextUrl.pathname),
+      embeddable,
     }),
   );
   for (const [name, value] of Object.entries(responseHeaders)) {
     response.headers.set(name, value);
+  }
+  if (embeddable) {
+    // The frame must be loadable by a parent that sets
+    // `Cross-Origin-Embedder-Policy: require-corp`; `same-origin` above would
+    // block it there. Only the `/embed/<tool>` routes; `/embed` itself, and
+    // every other page, keeps `same-origin`. ADR-019.
+    response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   }
 
   return response;
