@@ -28,16 +28,17 @@
  * Any real change renames all three files and the browser installs the new
  * worker.
  *
- * What that does *not* currently buy is a stable id across rebuilds, and it is
- * worth knowing why rather than assuming otherwise. Measured on 2026-09-22:
- * two builds of an identical tree produced different `/_next/static/chunks/*`
- * filenames throughout (`index-CYnqNf_i.js` then `index-Dt_YI4IA.js`), so the
- * prerendered HTML differs, so the payload differs, so this hash differs. The
- * non-determinism is upstream in the bundler, not here; while it lasts, every
- * deploy costs an installed visitor the payload again. That is the same
- * property that already renames every file under the year-long
- * `/_next/static/*` cache rule, so it is a build question rather than a
- * service-worker one.
+ * That id is now also stable across rebuilds of the same commit, which it was
+ * not until 2026-09-23. Two builds of an identical tree used to produce
+ * different `/_next/static/chunks/*` filenames throughout (`index-CYnqNf_i.js`
+ * then `index-Dt_YI4IA.js`), so the prerendered HTML differed, so the payload
+ * differed, so this hash differed -- and every deploy, including one that
+ * changed nothing, cost every installed visitor the whole payload again. The
+ * cause was upstream of this script and is fixed there: see
+ * `lib/build/build-identity.ts`. A deploy of unchanged code now leaves an
+ * installed worker alone, and leaves the year-long `immutable` rule for
+ * `/_next/static/*` in `public/_headers` holding files a returning visitor
+ * already has.
  *
  * Runs after `prerender-to-assets.mjs`, because it reads what that wrote.
  */
