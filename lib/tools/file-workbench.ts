@@ -1009,7 +1009,12 @@ export async function runFileWorkbenchOperation(
       );
     }
     case 'large-file-finder': {
-      const threshold = integer(values, 'threshold', 0, Number.MAX_SAFE_INTEGER);
+      const threshold = integer(
+        values,
+        'threshold',
+        0,
+        Number.MAX_SAFE_INTEGER,
+      );
       const large = files
         .filter((file) => file.size >= threshold)
         .toSorted((a, b) => b.size - a.size);

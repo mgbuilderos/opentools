@@ -370,12 +370,18 @@ export function BenchTool() {
       >
         <header className="space-y-2">
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Private folder automation
+            Batch processing
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight">The Bench</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Run one operation over a whole folder
+          </h1>
           <p className="max-w-3xl text-muted-foreground">
-            Drop a folder, pick an operation, preview the first real result,
-            then run every file locally. Nothing leaves this browser.
+            Point it at a folder of 4,000 files and come back in ten minutes.
+            Every upload site on the internet is one file at a time, because
+            asking you to upload four thousand scanned invoices is unthinkable
+            for them. Here there is nothing to upload: pick an operation,
+            preview the first real result, then let it run. No file limit, no
+            size limit — your machine is the limit.
           </p>
         </header>
 

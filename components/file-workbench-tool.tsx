@@ -370,8 +370,8 @@ export function FileWorkbenchTool({
                     <p className="mt-2 text-muted-foreground">
                       That is a large selection. There is no limit here — the
                       work happens in this tab, so your machine&rsquo;s memory
-                      is the only ceiling, and a selection this size may
-                      exhaust it. Your files stay in this tab either way.
+                      is the only ceiling, and a selection this size may exhaust
+                      it. Your files stay in this tab either way.
                     </p>
                   ) : null}
                 </div>
