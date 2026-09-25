@@ -56,6 +56,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
   },
+  'pdf-form-filler': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Fill interactive PDF form fields and flatten widgets locally.',
+  },
   bench: {
     version: '0.1.0-canary',
     shortDescription:

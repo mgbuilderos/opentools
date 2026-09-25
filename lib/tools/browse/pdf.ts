@@ -73,6 +73,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-to-excel',
       },
       {
+        id: 'pdf-form-filler',
+        name: 'Fill PDF forms',
+        description:
+          'Fill interactive PDF form fields and flatten widgets locally.',
+        href: '/pdf/form-filler',
+        workspaceId: 'pdf-form-filler',
+      },
+      {
         id: 'pdf-bates',
         name: 'Bates numbering for PDFs',
         description:
