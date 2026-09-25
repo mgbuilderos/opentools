@@ -169,6 +169,42 @@ test.describe('Video Suite — Lossless Container Surgery', () => {
     expect(sanitizedParsed.tracks.find((t) => t.kind === 'video')?.samples).toHaveLength(30);
   });
 
+  test('to-gif: converts MP4 to animated GIF in browser', async ({ page }) => {
+    await page.goto('/video/to-gif');
+    await uploadFile(page, TONE_MP4);
+    await expect(page.getByText('160×120 · avc1')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Make the GIF' }).click();
+    const saveButton = page.getByRole('button', { name: /^Save / });
+    await expect(saveButton).toBeVisible();
+
+    const downloadPromise = page.waitForEvent('download');
+    await saveButton.click();
+    const download = await downloadPromise;
+    const gifBytes = new Uint8Array(await readFile((await download.path())!));
+    const header = String.fromCharCode(...gifBytes.subarray(0, 6));
+    expect(header).toBe('GIF89a');
+  });
+
+  test('extract-audio: extracts standalone audio track from MP4', async ({ page }) => {
+    await page.goto('/video/extract-audio');
+    await uploadFile(page, TONE_MP4);
+    await expect(page.getByText('160×120 · avc1')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Make the clip' }).click();
+    const saveButton = page.getByRole('button', { name: /^Save / });
+    await expect(saveButton).toBeVisible();
+
+    const downloadPromise = page.waitForEvent('download');
+    await saveButton.click();
+    const download = await downloadPromise;
+    const audioBytes = new Uint8Array(await readFile((await download.path())!));
+    const parsed = readMp4(audioBytes);
+    expect(parsed.tracks).toHaveLength(1);
+    expect(parsed.tracks[0].kind).toBe('audio');
+    expect(parsed.tracks[0].samples).toHaveLength(88);
+  });
+
   test('zero network egress during operations', async ({ page }) => {
     await page.goto('/video/convert');
     const origin = new URL(page.url()).origin;

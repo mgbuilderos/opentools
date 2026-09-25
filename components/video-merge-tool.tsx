@@ -25,7 +25,7 @@ import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
 import { sourceFromFile, type ByteSource } from '@/lib/tools/video/source';
 import { VideoSuiteNav, VideoRelatedLinks } from '@/components/video-suite-nav';
 
-const MAX_BYTES = 4 * 1024 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024 * 1024;
 
 interface ClipItem {
   id: string;
@@ -85,7 +85,7 @@ export function VideoMergeTool() {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (file.size > MAX_BYTES) {
-          setError(`File "${file.name}" exceeds the 4 GB browser limit.`);
+          setError(`File "${file.name}" exceeds the 2 GB browser limit.`);
           return;
         }
 
@@ -209,7 +209,7 @@ export function VideoMergeTool() {
                 Merge MP4 or MOV video clips without re-encoding
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Lossless clip concatenation up to 4 GB. Joins videos with
+                Lossless in-browser clip concatenation. Joins videos with
                 matching codecs, dimensions, and sample descriptions instantly
                 without quality loss.
               </p>

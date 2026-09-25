@@ -29,7 +29,7 @@ import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
 import { sourceFromFile, type ByteSource } from '@/lib/tools/video/source';
 import { VideoSuiteNav, VideoRelatedLinks } from '@/components/video-suite-nav';
 
-const MAX_BYTES = 4 * 1024 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024 * 1024;
 
 interface Loaded {
   name: string;
@@ -161,7 +161,7 @@ export function VideoMetadataTool() {
                 Inspect and strip video metadata and GPS location
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Lossless privacy sanitization up to 4 GB. View camera make,
+                Lossless in-browser privacy sanitization. View camera make,
                 model, creation dates, and GPS coordinates, and wipe identifying
                 metadata without touching audio or video frames.
               </p>

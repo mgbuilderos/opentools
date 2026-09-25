@@ -233,7 +233,7 @@ describe('telling the reader where they may cut', () => {
   });
 });
 
-describe('streaming editVideoSource with ByteSource (D2 4 GB ceiling)', () => {
+describe('streaming editVideoSource with ByteSource (D2 streaming engine)', () => {
   it('produces identical frames to editVideo via ByteSource', async () => {
     const { bytes, movie } = open();
     const { sourceFromBytes } = await import('./source');
@@ -263,14 +263,14 @@ describe('streaming editVideoSource with ByteSource (D2 4 GB ceiling)', () => {
     expect(Array.from(blobBytes)).toEqual(Array.from(syncResult.bytes));
   });
 
-  it('trims a 4 GB file in milliseconds without buffering whole file in RAM', async () => {
+  it('executes streaming ByteSource with sparse range reads without buffering whole file in RAM', async () => {
     const { bytes, movie } = open();
     const { editVideoSource } = await import('./edit');
-    const FOUR_GB = 4 * 1024 * 1024 * 1024;
+    const SIMULATED_LARGE_SIZE = 4 * 1024 * 1024 * 1024;
 
-    // Simulate a 4 GB ByteSource where the header and samples reside within the source
+    // Verify a streaming ByteSource where header and samples are read sparsely without allocating full size
     const largeSource = {
-      size: FOUR_GB,
+      size: SIMULATED_LARGE_SIZE,
       slice: async (start: number, end: number) => {
         if (start < bytes.length) {
           return bytes.subarray(start, Math.min(end, bytes.length));

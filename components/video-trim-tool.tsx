@@ -23,9 +23,9 @@ import { VideoSuiteNav, VideoRelatedLinks } from '@/components/video-suite-nav';
 
 /**
  * Container surgery operates on byte ranges directly without loading the
- * full file into memory. Tested ceiling: 4 GB.
+ * full file into memory via streaming zero-copy slices.
  */
-const MAX_BYTES = 4 * 1024 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB ceiling for browser file input handling
 
 type Keep = 'both' | 'video' | 'audio' | 'gif';
 

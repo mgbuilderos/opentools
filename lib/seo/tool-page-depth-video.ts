@@ -14,15 +14,15 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
   '/video/trim': {
     title: 'Trim Video Online — Lossless MP4 Cutter',
     description:
-      'Trim MP4 and MOV videos locally in your browser. Cuts at keyframes with zero quality loss and no watermark. Files up to 4 GB.',
+      'Trim MP4 and MOV videos locally in your browser. Cuts at keyframes with zero quality loss and no watermark. Zero-copy streaming container slicing.',
     heading: 'About this video trimmer',
     directAnswer:
-      'Open an MP4 or MOV video file up to 4 GB, set your start and end cut points using the interactive scrubber or exact timestamps, and click Trim Video. The video is cut on keyframe boundaries without re-encoding, preserving exact original video resolution, audio bitrates, and color metadata with zero quality loss and no watermark.',
+      'Open an MP4 or MOV video file, set your start and end cut points using the interactive scrubber or exact timestamps, and click Trim Video. The video is cut on keyframe boundaries without re-encoding, preserving exact original video resolution, audio bitrates, and color metadata with zero quality loss and no watermark.',
     lead: 'This tool performs fast, lossless video trimming directly in your browser tab without uploading video files to remote cloud servers. Standard web video editors re-encode video streams through lossy codecs, degrading visual crispness and taking minutes to render. This tool inspects MP4 ISO Base Media File Format (ISOBMFF) sample tables, extracts H.264/AAC sample packets between chosen keyframe boundaries, and writes a clean new MP4 container in seconds.',
     steps: [
       {
         name: 'Select MP4 or MOV video',
-        text: 'Choose an MP4 or MOV video file up to 4 GB. The container headers are parsed directly from disk using streaming chunk slices without buffering the full video into system RAM.',
+        text: 'Choose an MP4 or MOV video file. The container headers are parsed directly from disk using streaming chunk slices without buffering the full video into system RAM.',
       },
       {
         name: 'Set cut interval',
@@ -45,9 +45,9 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
         ],
       },
       {
-        heading: 'Streaming 4 GB chunk architecture',
+        heading: 'Streaming zero-copy chunk architecture',
         body: [
-          'Traditional web-based tools load entire video files into memory via FileReader.readAsArrayBuffer(), crashing browser tabs when handling videos larger than a few hundred megabytes. Our engine uses a streaming ByteSource abstraction backed by native browser File.slice() APIs. It reads only the lightweight metadata index (moov box, typically 50 KB to 2 MB) to build the sample layout plan. When generating the output, individual sample ranges are referenced as Blob slices pointing directly to the file on disk. A 4 GB video trim executes in under 10 milliseconds with less than 20 MB of active memory allocation.',
+          'Traditional web-based tools load entire video files into memory via FileReader.readAsArrayBuffer(), crashing browser tabs when handling videos larger than a few hundred megabytes. Our engine uses a streaming ByteSource abstraction backed by native browser File.slice() APIs. It reads only the lightweight metadata index (moov box, typically 50 KB to 2 MB) to build the sample layout plan. When generating the output, individual sample ranges are referenced as Blob slices pointing directly to the file on disk. A large video trim executes in milliseconds with minimal active memory allocation by referencing sample byte ranges directly.',
         ],
       },
       {
@@ -80,7 +80,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'Which video formats are supported?',
         answer:
-          'Standard MP4 and MOV files holding H.264 (AVC) or H.265 (HEVC) video alongside AAC or MP3 audio are supported up to 4 GB in file size.',
+          'Standard MP4 and MOV files holding H.264 (AVC) or H.265 (HEVC) video alongside AAC or MP3 audio are supported using streaming zero-copy container slices.',
       },
       {
         question: 'Are my private video recordings uploaded to any server?',
@@ -90,7 +90,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'What is the maximum file size supported?',
         answer:
-          'Files up to 4 GB are tested and supported in the browser using zero-copy streaming ByteSource disk slices and native File APIs.',
+          'Large files are supported in the browser using zero-copy streaming ByteSource disk slices and native File APIs without buffering full files into RAM.',
       },
     ],
   },
@@ -102,12 +102,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Convert MOV to MP4 and MP4 to MOV without re-encoding. Lossless container remuxing with zero quality loss and no watermark.',
     heading: 'About this video container converter',
     directAnswer:
-      'Select a MOV or MP4 video file up to 4 GB, choose your target container format (MP4 or MOV), and click Convert. The video and audio bitstreams are remuxed into the destination container format without re-encoding, finishing in seconds with zero loss in visual quality and no watermark.',
+      'Select a MOV or MP4 video file, choose your target container format (MP4 or MOV), and click Convert. The video and audio bitstreams are remuxed into the destination container format without re-encoding, finishing in seconds with zero loss in visual quality and no watermark.',
     lead: 'Online video converters typically upload your entire video file to remote cloud servers and run it through a heavy FFmpeg transcode. That process takes minutes, burns upload bandwidth, degrades image resolution, and often slaps a watermark on your footage. This tool performs container remuxing directly in your browser. It copies the raw H.264/H.265 and AAC elementary streams into a new container header, preserving every bit of original fidelity.',
     steps: [
       {
         name: 'Load MOV or MP4 file',
-        text: 'Select your video file up to 4 GB. The demuxer reads the file type atom (ftyp) and movie atom (moov) to verify internal track codecs.',
+        text: 'Select your video file. The demuxer reads the file type atom (ftyp) and movie atom (moov) to verify internal track codecs.',
       },
       {
         name: 'Select destination container',
@@ -169,7 +169,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'Does this tool add watermarks or limits?',
         answer:
-          'Never. All tools on this site operate with zero watermarks, zero subscriptions, and zero artificial limits up to the 4 GB tested browser ceiling.',
+          'Never. All tools on this site operate with zero watermarks, zero subscriptions, and zero artificial limits using zero-copy streaming file slices.',
       },
       {
         question: 'Are my video files uploaded to your servers?',
@@ -186,12 +186,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Rotate MP4 and MOV videos 90, 180, or 270 degrees and flip without re-encoding. Instant lossless header matrix update.',
     heading: 'About this video rotator',
     directAnswer:
-      'Select an MP4 or MOV video file up to 4 GB, choose your rotation angle (90° clockwise, 180°, or 270° counter-clockwise) or flip orientation, and click Apply Rotation. The video track display matrix in the container header is updated instantly without re-encoding, preserving 100% original video and audio quality.',
+      'Select an MP4 or MOV video file, choose your rotation angle (90° clockwise, 180°, or 270° counter-clockwise) or flip orientation, and click Apply Rotation. The video track display matrix in the container header is updated instantly without re-encoding, preserving 100% original video and audio quality.',
     lead: 'When smartphone videos are filmed upside down or sideways, standard web rotators force a full re-encode of the entire video. Re-encoding takes several minutes, degrades resolution, and introduces compression artifacts. This tool exploits the ISO Base Media File Format specification: it rewrites nine 32-bit fixed-point numbers inside the track header (tkhd) transformation matrix. The video frames themselves are untouched, completing in milliseconds.',
     steps: [
       {
         name: 'Select sideways or upside-down video',
-        text: 'Choose an MP4 or MOV file up to 4 GB. The tool reads the current track header matrix and dimensions.',
+        text: 'Choose an MP4 or MOV file up to 2 GB. The tool reads the current track header matrix and dimensions.',
       },
       {
         name: 'Choose rotation angle or flip',
@@ -203,7 +203,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       },
       {
         name: 'Download rotated video',
-        text: 'Save the rotated file immediately. The export finishes in milliseconds regardless of whether the video is 10 MB or 4 GB.',
+        text: 'Save the rotated file immediately. The export finishes in milliseconds regardless of video file size.',
       },
     ],
     sections: [
@@ -216,7 +216,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         heading: 'Instant processing on large video files',
         body: [
-          'Because the video stream is not decoded or re-encoded, rotating a 4 GB 4K video takes virtually the exact same processing time as rotating a 5 MB clip (under 50 milliseconds). The output file is byte-identical to the source file with the exception of the nine transformation numbers inside the moov box.',
+          'Because the video stream is not decoded or re-encoded, rotating a large 4K video takes virtually the exact same processing time as rotating a 5 MB clip (under 50 milliseconds). The output file is byte-identical to the source file with the exception of the nine transformation numbers inside the moov box.',
         ],
       },
       {
@@ -254,7 +254,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'What is the maximum file size for rotation?',
         answer:
-          'Videos up to 4 GB are supported and process in milliseconds in your browser using zero-copy streaming ByteSource disk range slices.',
+          'Videos process in milliseconds in your browser using zero-copy streaming ByteSource disk range slices without buffering whole files into RAM.',
       },
       {
         question: 'Is my video uploaded to the internet?',
@@ -271,12 +271,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Cut out middle sections or split MP4/MOV videos into multiple clips. Slices on keyframe boundaries without re-encoding.',
     heading: 'About this video splitter',
     directAnswer:
-      'Open an MP4 or MOV video file up to 4 GB, select whether to cut out an unwanted middle section or split into multiple separate clips at given timestamps, and click Process. The video is sliced cleanly on keyframe boundaries without re-encoding, preserving 100% original quality and providing individual clip downloads plus a ZIP bundle.',
+      'Open an MP4 or MOV video file, select whether to cut out an unwanted middle section or split into multiple separate clips at given timestamps, and click Process. The video is sliced cleanly on keyframe boundaries without re-encoding, preserving 100% original quality and providing individual clip downloads plus a ZIP bundle.',
     lead: 'Editing a video by removing an awkward middle pause or dividing a long lecture into standalone chapters usually requires heavy desktop editing suites or slow web transcoders. This tool performs keyframe-accurate container splitting in your browser tab. It extracts sample ranges from the media data atom, stitches timecodes seamlessly, and writes new MP4 files without decoding or re-compressing video frames.',
     steps: [
       {
         name: 'Select MP4 or MOV video',
-        text: 'Choose your video file up to 4 GB. The splitter inspects sample indexes and identifies all keyframe positions across the timeline.',
+        text: 'Choose your video file. The splitter inspects sample indexes and identifies all keyframe positions across the timeline.',
       },
       {
         name: 'Choose split mode',
@@ -339,7 +339,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'What video file formats can be split?',
         answer:
-          'MP4 and MOV files with H.264, H.265, and AAC tracks are supported up to 4 GB in total size.',
+          'MP4 and MOV files with H.264, H.265, and AAC tracks are supported using zero-copy streaming container surgery.',
       },
       {
         question: 'Are my video files private?',
@@ -361,7 +361,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
     steps: [
       {
         name: 'Add video clips',
-        text: 'Select two or more MP4 or MOV video clips up to 4 GB in total size. The demuxer verifies codec and resolution compatibility.',
+        text: 'Select two or more MP4 or MOV video clips. The demuxer verifies codec and resolution compatibility.',
       },
       {
         name: 'Arrange playback order',
@@ -425,7 +425,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'How many clips can I join together?',
         answer:
-          'You can merge as many clips as desired up to the tested 4 GB browser memory allocation limit, with instant export times.',
+          'You can merge as many clips as desired with instant export times using zero-copy sample concatenation.',
       },
       {
         question: 'Can I reorder clips before merging?',
@@ -447,12 +447,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Inspect and strip GPS location coordinates, device models, and timestamps from MP4 and MOV videos without re-encoding.',
     heading: 'About this video metadata scrubber',
     directAnswer:
-      'Select an MP4 or MOV video file up to 4 GB to inspect hidden GPS coordinates, device hardware identifiers, software versions, and recording timestamps. Click Strip Metadata to rewrite the container without user data atoms, producing a clean video file with zero privacy leaks and zero quality loss.',
+      'Select an MP4 or MOV video file to inspect hidden GPS coordinates, device hardware identifiers, software versions, and recording timestamps. Click Strip Metadata to rewrite the container without user data atoms, producing a clean video file with zero privacy leaks and zero quality loss.',
     lead: 'Modern smartphones automatically embed precise GPS latitude, longitude, and altitude coordinates into video recordings, alongside camera serial numbers, device model names, and exact timestamps. Sharing a phone video of your home or family online exposes your private physical location. This tool inspects ISO Base Media metadata atoms (udta, meta, ©xyz) and strips them losslessly without re-encoding video frames.',
     steps: [
       {
         name: 'Select video file',
-        text: 'Choose an MP4 or MOV video file up to 4 GB. The metadata inspector scans the container header for user data atoms and timestamps.',
+        text: 'Choose an MP4 or MOV video file. The metadata inspector scans the container header for user data atoms and timestamps.',
       },
       {
         name: 'Review privacy findings',
@@ -514,7 +514,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'What video file formats are supported?',
         answer:
-          'MP4 and MOV video containers are supported up to 4 GB with instant zero-copy in-browser metadata stripping.',
+          'MP4 and MOV video containers are supported with instant zero-copy in-browser metadata stripping.',
       },
       {
         question: 'Is my video uploaded to your servers to inspect metadata?',
@@ -531,12 +531,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Turn MP4 and MOV video clips into animated GIFs. Customize frame rates, resolution, color palettes, and dithering locally.',
     heading: 'About this video to GIF converter',
     directAnswer:
-      'Open an MP4 or MOV video file up to 4 GB, select your trim interval, adjust frame rate, maximum dimension, color palette depth, and optional dithering, and click Make GIF. The video frames are decoded and quantized directly in your browser, producing an animated GIF without server uploads or watermarks.',
+      'Open an MP4 or MOV video file, select your trim interval, adjust frame rate, maximum dimension, color palette depth, and optional dithering, and click Make GIF. The video frames are decoded and quantized directly in your browser, producing an animated GIF without server uploads or watermarks.',
     lead: 'Converting video clips to animated GIFs usually involves uploading private media to third-party web tools that add watermarks, throttle frame rates, and place limits on resolution. This tool decodes video frames directly in your browser using hardware-accelerated video decoding. It samples frames, performs color quantization with NeuQuant/median-cut algorithms, and compiles an optimized animated GIF locally.',
     steps: [
       {
         name: 'Select video clip',
-        text: 'Choose an MP4 or MOV video clip up to 4 GB. The video is decoded locally in memory without uploading.',
+        text: 'Choose an MP4 or MOV video clip. The video is decoded locally in memory without uploading.',
       },
       {
         name: 'Set duration and frame rate',
@@ -567,7 +567,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         heading: 'Hardware-accelerated browser frame decoding',
         body: [
-          'Frames are decoded directly using native browser APIs and canvas rendering contexts rather than sluggish WebAssembly emulation. This ensures smooth frame extraction while adhering strictly to zero-egress security policies.',
+          'Frames are decoded directly using native browser APIs and canvas rendering contexts rather than sluggish WebAssembly emulation. VideoDecoder and CanvasRenderingContext2D extract RGBA pixel buffers directly into the hand-written LZW encoder, producing clean animations with zero quality loss, instant local export, and no third-party server telemetry.',
         ],
       },
       {
@@ -616,12 +616,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Extract lossless AAC audio (.m4a) from MP4 and MOV videos without re-encoding. 100% original sound quality, no watermark.',
     heading: 'About this video audio extractor',
     directAnswer:
-      'Open an MP4 or MOV video file up to 4 GB, select the audio extraction mode, and click Export Audio. The compressed audio stream is demuxed directly from the video container and saved as an Apple MPEG-4 Audio (.m4a) file without re-encoding, preserving 100% original sound fidelity.',
+      'Open an MP4 or MOV video file, select the audio extraction mode, and click Export Audio. The compressed audio stream is demuxed directly from the video container and saved as an Apple MPEG-4 Audio (.m4a) file without re-encoding, preserving 100% original sound fidelity.',
     lead: 'Extracting audio from a video recording (such as an interview, lecture, or podcast) is one of the most common media tasks on the web. Incumbent "video to mp3" converters force an upload of the entire video file and transcode the audio to MP3, which takes minutes and degrades acoustic clarity through lossy compression. This tool copies the raw AAC audio elementary stream directly into an M4A container in milliseconds.',
     steps: [
       {
         name: 'Select video file',
-        text: 'Choose an MP4 or MOV video file up to 4 GB. The demuxer scans the track header to locate the audio elementary stream.',
+        text: 'Choose an MP4 or MOV video file. The demuxer scans the track header to locate the audio elementary stream.',
       },
       {
         name: 'Choose extraction range',
@@ -646,13 +646,13 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         heading: 'Universal M4A audio playback compatibility',
         body: [
-          'M4A is the standard audio container for the ISO Base Media File Format and is natively supported by Apple Music, iTunes, Spotify, VLC, Windows Media Player, Android, and all modern web browsers. It supports full metadata tagging, multi-channel stereo, and higher compression efficiency than MP3.',
+          'M4A is the standard audio container for the ISO Base Media File Format and is natively supported by Apple Music, iTunes, Spotify, VLC, Windows Media Player, Android, and all modern web browsers. It supports full metadata tagging, multi-channel stereo, and higher compression efficiency than MP3. Standalone M4A files import seamlessly into digital audio workstations, audio players, transcription engines, and smartphone voice memo libraries.',
         ],
       },
       {
         heading: 'Zero upload streaming architecture',
         body: [
-          'Because the engine uses streaming ByteSource range requests, extracting an audio track from a 4 GB video downloads only the small audio packets (typically 10 to 50 MB) without loading the multi-gigabyte video stream into browser RAM. The operation completes in seconds even on resource-constrained laptops.',
+          'Because the engine uses streaming ByteSource range requests, extracting an audio track downloads only the small audio packets without loading the multi-hundred-megabyte or gigabyte video stream into browser RAM. The operation completes in seconds even on resource-constrained laptops.',
         ],
       },
       {
@@ -683,7 +683,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'Is there a file size limit?',
         answer:
-          'Videos up to 4 GB are tested and supported in the browser using streaming disk range slicing with zero memory exhaustion.',
+          'Large videos are supported in the browser using streaming disk range slicing with zero memory exhaustion.',
       },
       {
         question: 'Is any audio or video uploaded to remote servers?',
@@ -700,12 +700,12 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       'Remove sound from MP4 and MOV videos instantly without re-encoding. Produces clean, silent video clips with zero quality loss.',
     heading: 'About this video muting tool',
     directAnswer:
-      'Select an MP4 or MOV video file up to 4 GB and click Mute Video. The audio track is omitted from the container header, outputting a clean, silent MP4 video in milliseconds with zero quality loss and no watermark.',
+      'Select an MP4 or MOV video file up to 2 GB and click Mute Video. The audio track is omitted from the container header, outputting a clean, silent MP4 video in milliseconds with zero quality loss and no watermark.',
     lead: 'Removing background noise, wind rumble, or unwanted commentary from a video before sharing on social media typically requires importing the video into complex video editors or uploading to cloud converters that re-encode every frame. This tool performs instant container surgery: it reads the video track and writes a new container without the audio track atom. The video frames remain completely untouched.',
     steps: [
       {
         name: 'Select video with audio',
-        text: 'Choose an MP4 or MOV video file up to 4 GB. The demuxer verifies video and audio track allocations.',
+        text: 'Choose an MP4 or MOV video file. The demuxer verifies video and audio track allocations.',
       },
       {
         name: 'Optionally set clip range',
@@ -734,9 +734,9 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
         ],
       },
       {
-        heading: 'Streaming 4 GB zero-copy memory safety',
+        heading: 'Streaming zero-copy memory safety',
         body: [
-          'Using our streaming ByteSource architecture, the tool processes videos up to 4 GB without buffering gigabytes of video frames into browser memory. Video packet ranges are assembled directly into a download Blob via zero-copy file slices.',
+          'Using our streaming ByteSource architecture, the tool processes large videos without buffering gigabytes of video frames into browser memory. Video packet ranges are assembled directly into a download Blob via zero-copy file slices.',
         ],
       },
       {
@@ -773,7 +773,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'What video file formats are supported?',
         answer:
-          'MP4 and MOV video containers are supported up to 4 GB with instant zero-copy in-browser audio removal.',
+          'MP4 and MOV video containers are supported with instant zero-copy in-browser audio removal.',
       },
       {
         question: 'Are my private videos uploaded to any server?',
