@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 import { auditRenderedPages } from '../../scripts/check-share-and-heading-order.mjs';
+import { canonicalFault } from '../../scripts/lib/site-checks.mjs';
 
 /**
  * Every page must state its own canonical URL.
@@ -387,15 +388,50 @@ ${canonicalTags}
    */
   it('finds no canonical fault in the current build, if there is one', () => {
     const clientDir = path.join(__dirname, '..', '..', 'dist', 'client');
-    if (!existsSync(path.join(clientDir, 'sitemap.xml'))) return;
-    const result = auditRenderedPages(clientDir);
-    if (result === null)
-      throw new Error(`${clientDir} has a sitemap but read null`);
-    expect(
-      result.faults.filter(
-        (fault: { check: string }) => fault.check === 'canonical',
-      ),
-    ).toEqual([]);
-    expect(result.checked).toBeGreaterThan(1000);
+    const sitemap = path.join(clientDir, 'sitemap.xml');
+    if (!existsSync(sitemap)) return;
+
+    /* Streamed one page at a time, deliberately NOT through
+     * `auditRenderedPages`. That function returns every page's markup in one
+     * array because `duplicateOgTitles` needs the whole population, and holding
+     * 1,478 pages of HTML is ~280MB in a single vitest worker. On 2026-09-26
+     * that shape made `served-copy-policy.test.ts` cross a 60s CI timeout on GC
+     * alone while passing locally in 3.1s (fixed in 1231181). `share-card-coverage`
+     * already pays it once per run; a second full load in the same run is what
+     * would tip it over. The canonical rule is per-page, so it never needs the
+     * population -- one page is read, checked, and dropped.
+     *
+     * QC moves BUILD to the front when `dist/` is missing, so this is NOT a
+     * test that quietly skips in CI: `dist/client` is there by the time UNIT
+     * runs, and this assertion does execute. */
+    const origin = ['https:', '//', 'getopentools.com'].join('');
+    const routes = [
+      ...readFileSync(sitemap, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g),
+    ].map((match) => new URL(match[1]).pathname);
+    expect(routes.length).toBeGreaterThan(1000);
+
+    const faults: string[] = [];
+    let checked = 0;
+    for (const route of routes) {
+      const clean = route.replace(/^\/+|\/+$/gu, '');
+      const file = (
+        clean === ''
+          ? ['index.html']
+          : [`${clean}.html`, path.join(clean, 'index.html')]
+      )
+        .map((candidate) => path.join(clientDir, candidate))
+        .find((candidate) => existsSync(candidate));
+      /* A route with no file is `verify-static-coverage.mjs`'s fault to report. */
+      if (!file) continue;
+      checked += 1;
+      const fault = canonicalFault(
+        readFileSync(file, 'utf8'),
+        new URL(route, origin).href,
+      );
+      if (fault) faults.push(`${route}: ${fault}`);
+    }
+
+    expect(faults).toEqual([]);
+    expect(checked).toBeGreaterThan(1000);
   });
 });
