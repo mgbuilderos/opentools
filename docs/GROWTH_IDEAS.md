@@ -116,6 +116,76 @@ queries are near-uncontested. **The owner has chosen not to pursue it for now.**
 Recorded because the reasoning does not expire — if the position changes, the
 opportunity is still there.
 
+### Languages as a multiplier, re-pitched 2026-09-25 — **evidence that postdates the deferral**
+
+The multilingual case was put again on 2026-09-25, framed as "the multiplier
+nobody has mentioned": eight locales of the programmatic catalogue, on the
+argument that nobody serves *without uploading* in any language. It is not
+unmentioned — it is the entry above, deferred by the owner six days earlier,
+and the version above is the better-evidenced one (India at 39.7k of 56.5k
+requests beats any intuition about Spanish or Japanese). Recorded so a third
+pitch starts from measurements instead of restating the intuition.
+
+**What the re-pitch got right, for a reason it did not give.** The queries it
+named — `comprimir pdf`, `fusionner pdf`, `PDFを結合` — are all *file*
+operations, and that is precisely the family the results page cannot answer
+for itself. `lib/seo/format-pairs.ts` already states the distinction: a unit
+conversion is answered by Google's own widget, a file conversion needs a
+converter the person has to open.
+
+**Where its mechanism fails.** It proposed reusing "the machinery that made
+512 unit-converter pages". That machinery's output is measured dead: on
+2026-09-23 those 512 unit pages produced **15 page-opens**
+(`lib/seo/image-pairs.ts`, `lib/seo/format-pairs.ts`). Eight translations of a
+dead family is 4,096 dead pages. The instinct points at the format pairs; the
+justification points at the unit pairs.
+
+**The ceiling nobody has costed — crawl budget.** This objection did not exist
+on 19 Sep, because the baseline was taken on 23 Sep
+(`SEARCH_CONSOLE_BASELINE_2026-09-23.md`):
+
+| Measured 2026-09-23                              |     |
+| :----------------------------------------------- | --: |
+| Sitemap URLs served live                          | 1,413 |
+| Indexed                                           | 134 |
+| Not indexed                                       | 552 |
+| — of which *Discovered – currently not indexed*   | 534 |
+| Clicks, 3 months                                  | **0** |
+| Average position                                  | 65.8 |
+
+Google has found four of every five URLs it knows here and declined to spend
+the crawl on them. Eight locales of 1,413 pages is roughly 11,300 new URLs
+asking that same crawler for more budget while it is already refusing. A
+multiplier raises impressions only where the base is non-zero, and the base is
+0 clicks — the site is not losing the English terms to the incumbents, it has
+not yet entered for them at position 65.8.
+
+**It also costs what C9 forbids.** "It's copy" understates the corpus:
+`lib/seo/guide-content.ts` alone is ~236,000 words of source, nearly all of it
+prose, before the ~70,000 across the four `tool-page-depth-*.ts` files.
+Translating that eight times is either paid translation (C9: no spend up
+front) or bulk machine translation, which is the scaled-content pattern search
+engines name explicitly — and a fresh near-template family cloned across
+locales is what C4 forbids.
+
+**Timing is the binding constraint, not appetite.** The baseline sets its
+re-check for **2026-10-21** and requires that a grown sitemap be declared
+before impression totals are compared. Shipping locales before that date
+destroys the only clean read the project has on whether the canonical
+self-exclusion fix worked.
+
+**The free step available now.** `proxy.ts:112` already logs each visit's
+primary browser language, and `REVENUE_OPERATIONS.md` §1 already reports
+traffic leading from Germany, Canada, Brazil and Spain. The demand question is
+answerable from data being collected today, at no cost and inside C6. Read
+that field before translating a single page.
+
+**If the owner reverses the deferral**, the shape that survives the constraint
+set is one locale against the format-pair family only — widget-proof,
+templated, a small set of unique strings, tens of URLs rather than thousands —
+carrying `hreflang`, which the site already ships a generator for
+(`/web/hreflang-generator`), and measured before a second locale is added.
+
 ### The B2B / self-hosted business — **dropped, 2026-09-18**
 
 See `REVENUE_OPERATIONS.md` §2c. The arithmetic held; the delivery did not. A
