@@ -353,7 +353,7 @@ export interface CategoryHubLink {
  * were orphans for one reason: they are in `LIVE_TOOL_ROUTES`, so they reach
  * the sitemap, but they are not in `lib/seo/tool-catalog-data.ts`, so no
  * catalog-driven surface can ever reach them. Ten are workbench hubs (one URL
- * hosting a whole category's operations), one is `/bench`, and two --
+ * hosting a whole category's operations), one is `/batch`, and two --
  * `/data/workbook-audit` and `/image/solid-background-remover` -- are ordinary
  * tool pages that were registered as routes and never added to the catalog.
  *
@@ -570,7 +570,7 @@ const CATEGORY_HUB_LINKS: Readonly<Record<string, readonly CategoryHubLink[]>> =
  */
 const SITE_HUB_LINKS: readonly CategoryHubLink[] = [
   {
-    href: '/bench',
+    href: '/batch',
     name: 'The Bench',
     description:
       'Drop files or choose a folder, run any OpenTools operation locally, and keep the results as a ZIP or in a folder you choose.',

@@ -162,6 +162,36 @@ describe('finance formats', () => {
     ).toEqual({ balanced: false, delta: -0.01 });
   });
 
+  it('reports an absent OFX 1.x opening balance instead of treating it as invalid', async () => {
+    const statement = await parseOfx(await fixture('ofx1.ofx'));
+    if (statement.closingBalance === null) {
+      throw new Error('The OFX fixture must declare a closing balance.');
+    }
+
+    expect(
+      reconcile({
+        opening: statement.openingBalance,
+        transactions: statement.transactions,
+        closing: statement.closingBalance,
+      }),
+    ).toEqual({
+      balanced: false,
+      delta: null,
+      reason: 'no-opening-balance',
+    });
+  });
+
+  it('still rejects genuinely non-finite reconciliation values', () => {
+    expect(() =>
+      reconcile({ opening: Number.NaN, transactions: [], closing: 0 }),
+    ).toThrow(
+      expect.objectContaining({
+        code: 'INVALID_AMOUNT',
+        message: 'Reconciliation values must be finite numbers.',
+      }),
+    );
+  });
+
   it('does not erase a sub-cent reconciliation difference', () => {
     expect(
       reconcile({ opening: 0, transactions: [1.001], closing: 1 }),

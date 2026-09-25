@@ -23,7 +23,7 @@ import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
 export const DEDICATED_TOOL_ROUTES = [
-  '/bench',
+  '/batch',
   '/pdf/merge',
   '/pdf/extract-pages',
   '/pdf/images-to-pdf',

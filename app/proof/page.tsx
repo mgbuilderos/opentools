@@ -5,6 +5,7 @@ import {
   FlaskConical,
   ShieldCheck,
   TerminalSquare,
+  WifiOff,
 } from 'lucide-react';
 
 import egressReceipt from '@/lib/seo/egress-receipt.json';
@@ -137,6 +138,59 @@ export default function ProofPage() {
             tries to smuggle data out of this site and records what happens.
             Below is the protocol, the result, and how to catch us if we are
             wrong.
+          </p>
+        </section>
+
+        {/*
+          The wifi test comes before the devtools one because it needs nothing.
+
+          The section below this asks a reader to open developer tools and read
+          a network panel. That is a fine proof for an engineer and no proof at
+          all for everyone else, who is the person actually being asked to
+          trust this page with a bank statement. Unplugging the internet is a
+          proof anyone can perform in three seconds, with no tooling, no
+          screenshot and no trust: if the page still does the work with the
+          network switched off, it plainly is not sending the file anywhere.
+
+          It is also the honest framing. This does not assert a result — the
+          reader produces it. See `lib/offline-readiness.ts` for why the site
+          reports what a browser actually holds rather than claiming offline
+          support in prose.
+        */}
+        <section className="mt-4 rounded-2xl border bg-card p-5 sm:mt-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <WifiOff aria-hidden="true" className="size-5 shrink-0" />
+            <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+              Don&rsquo;t believe us? Turn your wifi off
+            </h2>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            No developer tools, no network tab, nothing to read. Open a tool
+            page, switch off your wifi or unplug the cable, and use it. If the
+            work still happens, the file cannot be going anywhere — a page with
+            no network cannot upload anything, and nothing we could write here
+            would prove that better than watching it.
+          </p>
+          <ol className="mt-4 space-y-2 text-sm leading-6 text-muted-foreground sm:text-base">
+            <li>
+              1. Open{' '}
+              <a
+                className="focus-ring font-medium text-foreground underline underline-offset-4"
+                href="/pdf/compress-offline"
+              >
+                the offline-ready compressor
+              </a>{' '}
+              once while you still have a connection.
+            </li>
+            <li>2. Turn off your wifi, or switch on aeroplane mode.</li>
+            <li>3. Reload the page and compress a PDF.</li>
+          </ol>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            That page reports what your browser is actually holding rather than
+            telling you it works offline, so you can see the answer for your own
+            machine instead of ours. It is also why these tools work on a plane,
+            in a hospital, on a factory floor or anywhere else the network is
+            absent or not to be trusted.
           </p>
         </section>
 
