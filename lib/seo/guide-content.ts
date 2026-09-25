@@ -6144,9 +6144,9 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-compressor', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-file-compressor': {
     directAnswer:
-      'Choose a single file of up to 256 MiB and select Run operation to compress it into standard gzip format directly inside your browser. The tool streams your local file bytes through the native browser Compression Streams interface, calculates the exact resulting size, and provides a new .gz download without uploading any information across the network.',
+      'Choose a single file of any size and select Run operation to compress it into standard gzip format directly inside your browser. The tool streams your local file bytes through the native browser Compression Streams interface, calculates the exact resulting size, and provides a new .gz download without uploading any information across the network.',
     leadParagraph:
-      'This tool packages an individual file into an RFC 1952 compliant gzip container using your browser\'s built-in CompressionStream interface. Because data processing takes place on a dedicated stream in local tab memory, raw file bytes are never transferred across an external network connection. When compression finishes, the interface reports the exact byte change alongside the percentage reduction, for example "Compressed notes.txt: 12,400 \u2192 3,100 bytes (75% smaller)". For files that are already compressed or contain high-entropy binary sequences, the output summary notes that "gzip overhead exceeded savings". The browser security model prevents overwriting source files in place, so the transformed result is delivered as a separate download carrying the .gz extension. The engine requires exactly one file per run, rejecting empty inputs or multi-file selections with the validation prompt "Choose at least 1 file." Files exceeding the 256 MiB in-browser limit are refused immediately to preserve device stability.',
+      'This tool packages an individual file into an RFC 1952 compliant gzip container using your browser\'s built-in CompressionStream interface. Because data processing takes place on a dedicated stream in local tab memory, raw file bytes are never transferred across an external network connection. When compression finishes, the interface reports the exact byte change alongside the percentage reduction, for example "Compressed notes.txt: 12,400 \u2192 3,100 bytes (75% smaller)". For files that are already compressed or contain high-entropy binary sequences, the output summary notes that "gzip overhead exceeded savings". The browser security model prevents overwriting source files in place, so the transformed result is delivered as a separate download carrying the .gz extension. The engine requires exactly one file per run, rejecting empty inputs or multi-file selections with the validation prompt "Choose at least 1 file." There is no file size limit: the work happens in this tab, so the memory on your own machine is the only ceiling.',
     faqs: [
       {
         question: 'Does this file compressor create a multi-file ZIP archive?',
@@ -6169,7 +6169,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
         question:
           'What is the maximum file size permitted by the browser compressor?',
         answer:
-          'The tool sets an explicit safety ceiling of 256 MiB (268,435,456 bytes). Attempting to provide a larger file throws an error stating that the file exceeds the 256 MiB in-browser processing limit, protecting your browser tab from memory exhaustion.',
+          'There is no size ceiling. Nothing is uploaded, so no server is paying for the bytes and there is nothing for a limit to protect. The work runs in this tab, which means the memory on your own machine is the real constraint; past a few hundred megabytes the page says so and lets you run it anyway.',
       },
     ],
   },
@@ -6191,9 +6191,9 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
           'The splitter permits up to 1,000 chunks per execution. If dividing your file by the requested chunk size yields more than 1,000 parts, the tool refuses the operation with "Chunk count would exceed 1,000. Increase chunk size."',
       },
       {
-        question: 'Can I split a file larger than 256 MiB?',
+        question: 'Is there a maximum file size?',
         answer:
-          'No. The file workbench maintains a strict 256 MiB ceiling across all in-browser operations. Files exceeding this threshold are blocked immediately to ensure tab stability and prevent memory crashes.',
+          'No. The file workbench sets no size limit on any operation, because there is no server to protect: your file never leaves the tab. Your own machine is the limit, and the page warns you when a selection is large enough for that to matter rather than refusing it.',
       },
       {
         question: 'Does the splitting process alter file headers or metadata?',
@@ -6229,7 +6229,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       {
         question: 'Is there a limit on total joined file size?',
         answer:
-          'Yes. The aggregate size of all input chunks combined cannot exceed the browser environment memory limits, and individual file validation caps single inputs at 256 MiB.',
+          'Yes. The only ceiling is the memory your browser can actually allocate; no fixed cap is applied to a single input or to the combined selection.',
       },
     ],
   },
@@ -6352,7 +6352,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       {
         question: 'What is the file size limit for MIME type detection?',
         answer:
-          'The tool operates within the standard 256 MiB per-file safety limit of the file workbench. Because it only needs the leading header bytes to detect signatures, inspection is near instantaneous regardless of file size.',
+          'No size limit applies. Because the tool only needs the leading header bytes to detect signatures, inspection is near instantaneous regardless of file size.',
       },
     ],
   },
@@ -6764,7 +6764,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       {
         question: 'Can I inspect large binary files with this tool?',
         answer:
-          'Yes. Files up to the 256 MiB workbench limit can be loaded, and the tool slices only the specified offset window into memory for display, ensuring rapid rendering.',
+          'Yes. A file of any size can be loaded, and the tool slices only the specified offset window into memory for display, ensuring rapid rendering.',
       },
     ],
   },
@@ -6863,7 +6863,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
     directAnswer:
       'Paste standard Base64 text into the input area, set your desired output filename and MIME type, then click Run operation. The tool validates the Base64 alphabet, decodes the characters into raw binary bytes, and provides the reconstructed file for immediate download without sending any data over the network to remote machines.',
     leadParagraph:
-      'This decoder transforms standard Base64 encoded text back into an authentic downloadable binary file. You paste the Base64 text string, specify the destination filename (defaulting to decoded.bin), and optionally provide an appropriate MIME type (defaulting to application/octet-stream). The engine validates the incoming string strictly against standard RFC 4648 Base64 syntax; any illegal symbols, malformed padding, or non-Base64 characters trigger the error "Enter valid standard Base64." Once validated, the characters are decoded into a raw byte buffer. The tool enforces the workbench safety ceiling of 256 MiB on the decoded result, throwing "Decoded output exceeds 256 MiB." if the reconstructed file is too large. The output filename is automatically sanitised to remove illegal filesystem characters. The reconstructed file is offered as a direct browser download with your chosen filename and MIME type, keeping all decoding private.',
+      'This decoder transforms standard Base64 encoded text back into an authentic downloadable binary file. You paste the Base64 text string, specify the destination filename (defaulting to decoded.bin), and optionally provide an appropriate MIME type (defaulting to application/octet-stream). The engine validates the incoming string strictly against standard RFC 4648 Base64 syntax; any illegal symbols, malformed padding, or non-Base64 characters trigger the error "Enter valid standard Base64." Once validated, the characters are decoded into a raw byte buffer. No size ceiling is applied to the decoded result. The output filename is automatically sanitised to remove illegal filesystem characters. The reconstructed file is offered as a direct browser download with your chosen filename and MIME type, keeping all decoding private.',
     faqs: [
       {
         question: 'What Base64 formats does this decoder accept?',
@@ -6878,7 +6878,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       {
         question: 'What is the maximum size of the decoded file?',
         answer:
-          'The decoded output can be up to 256 MiB. If the resulting binary data exceeds 256 MiB, the engine halts with "Decoded output exceeds 256 MiB."',
+          'There is no limit on the decoded output. The only ceiling is the memory your browser can allocate for the reconstructed file.',
       },
       {
         question: 'Does decoding require an internet connection?',
@@ -6921,7 +6921,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
     directAnswer:
       'Paste an RFC 2397 Base64 data URI into the input box, configure your desired output filename, and click Run operation. The tool extracts the declared MIME type, decodes the embedded binary payload, and offers the reconstructed file for download directly from your browser without uploading any data to remote servers or cloud systems.',
     leadParagraph:
-      'This extractor unpacks binary files embedded inside Base64 data URIs. When given a valid data URI matching the standard pattern "data:[mediatype];base64,[payload]", the tool extracts the embedded MIME type, strips the URI header, and decodes the Base64 data into raw binary bytes. If the input text is not a valid Base64 data URI or uses percent-encoded data instead of Base64, the engine halts with the clear error "Enter a strict Base64 data URI." You can specify any output filename (defaulting to extracted.txt); dangerous characters like slashes and null bytes are automatically sanitised. The decoded payload can be up to 256 MiB in size, with larger outputs stopped by "Decoded output exceeds 256 MiB." The extracted file is prepared as a direct browser download with its authentic MIME type assigned, allowing you to recover images, audio clips, and documents embedded in code without third-party tools.',
+      'This extractor unpacks binary files embedded inside Base64 data URIs. When given a valid data URI matching the standard pattern "data:[mediatype];base64,[payload]", the tool extracts the embedded MIME type, strips the URI header, and decodes the Base64 data into raw binary bytes. If the input text is not a valid Base64 data URI or uses percent-encoded data instead of Base64, the engine halts with the clear error "Enter a strict Base64 data URI." You can specify any output filename (defaulting to extracted.txt); dangerous characters like slashes and null bytes are automatically sanitised. The decoded payload has no size limit. The extracted file is prepared as a direct browser download with its authentic MIME type assigned, allowing you to recover images, audio clips, and documents embedded in code without third-party tools.',
     faqs: [
       {
         question: 'What format must the input data URI follow?',
@@ -6936,7 +6936,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       {
         question: 'What is the maximum size of extracted file data?',
         answer:
-          'The tool supports decoding up to 256 MiB of binary data. Attempting to extract payloads exceeding 256 MiB raises "Decoded output exceeds 256 MiB."',
+          'The tool sets no limit on how much binary data it will decode. The memory your browser can allocate is the only ceiling.',
       },
       {
         question: 'Is the data URI processed on a remote server?',
