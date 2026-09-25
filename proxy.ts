@@ -10,6 +10,21 @@ import { siteRedirect } from './lib/seo/site-redirects';
 import { recipeArrivalShape, recipeLinkTarget } from './lib/tools/recipe-link';
 
 const responseHeaders = {
+  /*
+   * HSTS. Browsers MUST ignore this header when it arrives over plain HTTP
+   * (RFC 6797 s7.2), so it is not itself the fix for plaintext being served
+   * -- that is the edge's "Always Use HTTPS" redirect, which is a zone
+   * setting and not in this repo. What it does fix is every SUBSEQUENT
+   * navigation: once a visitor has been here over HTTPS their browser
+   * refuses plaintext for a year, so a network attacker can no longer strip
+   * the CSP below. Without it `connect-src 'none'` is advisory on any
+   * hostile network, which makes the zero-egress promise conditional.
+   *
+   * No `preload`. That is a separate and near-irreversible commitment
+   * (removal from the preload list takes months) and it is the owner's call,
+   * not this change's.
+   */
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Embedder-Policy': 'credentialless',
   'Cross-Origin-Resource-Policy': 'same-origin',
@@ -19,8 +34,55 @@ const responseHeaders = {
   'X-Content-Type-Options': 'nosniff',
 } as const;
 
+/*
+ * The public zone, and only it. A self-hosted instance on a plain-http
+ * intranet is a supported deployment, so forcing TLS there would break it --
+ * this must never fire for a host we do not own.
+ */
+const CANONICAL_HOST = 'getopentools.com';
+
+/**
+ * The secure URL a plaintext request to the public site should have gone to,
+ * or null when the request is already safe (or is not ours to force).
+ *
+ * Measured 2026-09-24: `http:` + `//getopentools.com/` answered 200 with the
+ * full page body, no redirect. Every security header the site sets travels
+ * over that connection without integrity protection, so a network attacker
+ * strips `connect-src 'none'` and repoints it at their own host -- and the
+ * file the product promises never leaves the device leaves it.
+ */
+function insecurePublicRequest(request: NextRequest): URL | null {
+  const host = request.headers.get('host')?.split(':')[0]?.toLowerCase();
+  if (host !== CANONICAL_HOST) return null;
+
+  // Cloudflare sets this; the nextUrl protocol is the fallback for tests.
+  const forwarded = request.headers
+    .get('x-forwarded-proto')
+    ?.split(',')[0]
+    ?.trim()
+    .toLowerCase();
+  const scheme = forwarded ?? request.nextUrl.protocol.replace(':', '');
+  if (scheme !== 'http') return null;
+
+  const secure = new URL(request.nextUrl.toString());
+  secure.protocol = 'https:';
+  return secure;
+}
+
 export function proxy(request: NextRequest) {
-  // Self-host gate, first thing and before the visit log: an instance that
+  /*
+   * Before everything, including the self-host gate below. That gate answers
+   * with HTTP Basic, so challenging a plaintext request would have the
+   * browser send the operator's password in the clear -- turning a missing
+   * redirect into a credential leak. 301 so browsers and Google both stop
+   * asking for the insecure URL; Google had already indexed nine of them.
+   */
+  const secure = insecurePublicRequest(request);
+  if (secure) {
+    return NextResponse.redirect(secure, 301);
+  }
+
+  // Self-host gate, before the visit log: an instance that
   // refuses a request should not record it either. Off unless
   // OPENTOOLS_AUTH_USER and OPENTOOLS_AUTH_PASSWORD are both set, which is
   // never the case for the public site — no account is the product there.
