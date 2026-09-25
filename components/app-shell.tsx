@@ -43,6 +43,7 @@ import {
 } from '@/lib/pwa-install';
 import { PageDepthContent } from '@/components/page-depth-content';
 import { EgressMeter } from '@/components/egress-meter';
+import { PasteAnywhere } from '@/components/paste-anywhere';
 import { usePageDepth } from '@/components/page-depth-provider';
 import { MilestoneModal } from './milestone-modal';
 import { ReviewModal } from './review-modal';
@@ -778,6 +779,7 @@ export function AppShell({
         <EgressMeter />
       </main>
 
+      <PasteAnywhere />
       <MilestoneModal />
       <ReviewModal isOpen={reviewOpen} onClose={() => setReviewOpen(false)} />
     </div>
