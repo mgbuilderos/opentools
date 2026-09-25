@@ -7,7 +7,9 @@ import {
   CATEGORY_LINKS,
   categoryHub,
 } from './category-hubs';
-import { linkableToolRoutes, toolPagesForPrefix } from './related-tools';
+import { categoryHubTools, omittedFromHub } from './category-hub-tools';
+import { LIVE_TOOL_ROUTES } from './live-tools';
+import { linkableToolRoutes } from './related-tools';
 import { buildSitemap } from './sitemap-entries';
 
 /*
@@ -21,18 +23,8 @@ import { buildSitemap } from './sitemap-entries';
   list that outlived the page it pointed at. So each is a test.
 */
 
-const prefixOf = (route: string) => `/${route.split('/')[1]}`;
-
 /** Categories with a depth-1 address that is not a hub this file renders. */
 const NON_HUB_CATEGORIES = ['/latex', '/schema'];
-
-/**
- * `/convert` has no hub yet: its 632 pages are 512 unit pairs being folded onto
- * twelve system hubs, and a hub listing them today would list pages that are
- * about to become redirects. Named here so adding it is a passing test rather
- * than a discovery.
- */
-const UNCOVERED_PREFIXES = ['/convert', '/bench'];
 
 describe('category hubs', () => {
   it('has a page file for every hub, and a hub for every page file', () => {
@@ -47,20 +39,80 @@ describe('category hubs', () => {
     }
   });
 
-  it('covers every linkable tool route outside the named exceptions', () => {
-    const covered = new Set(
-      CATEGORY_HUB_ROUTES.flatMap((route) =>
-        toolPagesForPrefix(route).map((tool) => tool.href),
-      ),
+  it('lists every live tool page under its prefix, bar the workbench landings', () => {
+    /*
+      The strong form, and the one that matters. An earlier version of this
+      test compared against the related-tools graph, which is built from the
+      workbench operation lists and the `publicTools` manifest -- so it agreed
+      with a hub that was missing `/image/background-remover`,
+      `/image/heic-to-png` and `/pdf/compress-offline`, because the graph did
+      not know those three either. A test that reads the same incomplete source
+      as the code it checks proves nothing.
+
+      `LIVE_TOOL_ROUTES` is the registry the sitemap and the build's orphan
+      guard both read. Comparing against it is what makes "every tool in this
+      category" a checked claim rather than a hopeful one.
+    */
+    for (const hub of CATEGORY_HUBS) {
+      const listed = categoryHubTools(hub.route).map((tool) => tool.href);
+      const expected = LIVE_TOOL_ROUTES.filter(
+        (route) =>
+          route.startsWith(`${hub.route}/`) &&
+          !omittedFromHub(hub.route).includes(route),
+      );
+      expect(
+        [...listed].sort(),
+        `${hub.route} does not list its own tools`,
+      ).toEqual([...expected].sort());
+      expect(new Set(listed).size, `${hub.route} lists a tool twice`).toBe(
+        listed.length,
+      );
+    }
+  });
+
+  it('gives every listed tool a name and a description', () => {
+    // A card with a blank title is worse than no card. `pageMetaFor` covers
+    // the pages the graph does not, and this is what says so out loud.
+    for (const hub of CATEGORY_HUBS) {
+      for (const tool of categoryHubTools(hub.route)) {
+        expect(tool.name.trim(), `${tool.href} has no name`).not.toBe('');
+        expect(
+          tool.description.trim().length,
+          `${tool.href} has no description`,
+        ).toBeGreaterThan(10);
+      }
+    }
+  });
+
+  it('omits only the pages it means to, and names every one of them', () => {
+    // The old one-URL-for-everything addresses, plus the one page an owner
+    // decision keeps out of every menu. If this list grows, a real tool has
+    // gone missing from a category and a visitor can no longer browse to it.
+    const omitted = CATEGORY_HUB_ROUTES.flatMap((route) =>
+      omittedFromHub(route),
     );
-    const missed = linkableToolRoutes().filter(
-      (route) =>
-        !covered.has(route) &&
-        ![...UNCOVERED_PREFIXES, ...NON_HUB_CATEGORIES].includes(
-          prefixOf(route),
-        ),
+    expect([...omitted].sort()).toEqual(
+      [
+        '/creator/workbench',
+        '/data/workbench',
+        '/date/workbench',
+        '/developer/advanced',
+        '/developer/workbench',
+        '/documents/workbench',
+        '/file/workbench',
+        '/finance/workbench',
+        '/life-admin/workbench',
+        '/math/workbench',
+        '/pdf/compress-offline',
+        '/productivity/workbench',
+        '/qr/workbench',
+        '/science/workbench',
+        '/subtitles/workbench',
+        '/text/workbench',
+        '/text/writing',
+        '/web/workbench',
+      ].sort(),
     );
-    expect(missed, `not listed on any hub:\n${missed.join('\n')}`).toEqual([]);
   });
 
   it('lists at least three tools on every hub', () => {
@@ -68,7 +120,7 @@ describe('category hubs', () => {
     // mean the prefix had been emptied without this list being updated.
     for (const hub of CATEGORY_HUBS) {
       expect(
-        toolPagesForPrefix(hub.route).length,
+        categoryHubTools(hub.route).length,
         `${hub.route} lists too few tools`,
       ).toBeGreaterThanOrEqual(3);
     }

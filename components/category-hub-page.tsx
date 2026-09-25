@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 
 import { CATEGORY_LINKS, categoryHub } from '@/lib/seo/category-hubs';
-import { toolPagesForPrefix } from '@/lib/seo/related-tools';
+import { categoryHubTools } from '@/lib/seo/category-hub-tools';
 
 /*
   One component for all 21 category hubs.
@@ -26,14 +26,11 @@ export function CategoryHubPage({ route }: { route: string }) {
   if (!hub) return null;
 
   /*
-    Read from the link graph, never written down: `toolPagesForPrefix` reads the
-    same `collectToolPages` that every tool page's "related tools" block reads,
-    with the withheld routes and the workbench landings already removed. Add a
-    tool to a workbench and it appears here on the next build with no edit to
-    any file. `category-hubs.test.ts` asserts the hubs between them link every
-    linkable route outside `/convert`.
+    Every tool page under this prefix, derived and never written down. See
+    `lib/seo/category-hub-tools.ts` for where the list comes from and which
+    three pages a graph-only list used to miss.
   */
-  const tools = toolPagesForPrefix(route);
+  const tools = categoryHubTools(route);
   const others = CATEGORY_LINKS.filter((other) => other.route !== route);
 
   return (
@@ -60,8 +57,15 @@ export function CategoryHubPage({ route }: { route: string }) {
             {hub.description}
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
-            {tools.length} tools, every one of them running in this tab. No
-            upload, no account, no file leaving your device.
+            All {tools.length} of them are listed below. Each one runs inside
+            this tab, so nothing you open or type is uploaded —{' '}
+            <a
+              href="/proof"
+              className="focus-ring font-medium text-foreground underline underline-offset-4"
+            >
+              see the proof
+            </a>
+            .
           </p>
 
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
