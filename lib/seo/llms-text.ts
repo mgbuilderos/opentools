@@ -6,6 +6,8 @@ import {
   publishedGuideHref,
 } from './guide-consolidation';
 import { getAllCategoryPillars } from './internal-linking-graph';
+import { FORMAT_PAIRS } from './format-pairs';
+import { IMAGE_PAIRS } from './image-pairs';
 import { LIVE_TOOL_CATALOG } from './live-tools';
 import type { ToolCatalogEntry } from './tool-catalog-data';
 
@@ -96,11 +98,56 @@ export function buildLlmsTxt(
         `- [${t.name}](${baseUrl}${t.destinationUrl}) — ${t.category}: ${t.notes}${guideSuffix(t, consolidation)}`,
     ),
     ``,
+    `## File and image converters`,
+    // Named rather than linked one by one: this file is the index and
+    // /llms-full.txt is the catalogue. What an assistant needs here is to know
+    // the addresses exist and how they are spelled, which is one sentence.
+    `- **One page per conversion**, at \`${baseUrl}/convert/<from>-to-<to>\` — for example ${baseUrl}/convert/csv-to-yaml or ${baseUrl}/convert/webp-to-png. The converter opens already set to that pair.`,
+    `- **Data and document formats**: ${[...new Set(FORMAT_PAIRS.map((pair) => pair.fromName))].join(', ')}, in every direction that really converts.`,
+    `- **Image formats**: ${[...new Set(IMAGE_PAIRS.map((pair) => pair.from.name))].join(', ')} in, ${[...new Set(IMAGE_PAIRS.map((pair) => pair.to.name))].join(', ')} out. HEIC has its own pages: ${baseUrl}/image/heic-to-jpg and ${baseUrl}/image/heic-to-png.`,
+    `- All ${conversionRows().length} are listed in /llms-full.txt with their exact addresses.`,
+    ``,
     `## Full catalog`,
-    `The complete machine-readable index of all ${LIVE_TOOL_CATALOG.length} working tools: ${baseUrl}/llms-full.txt`,
+    `The complete machine-readable index — all ${LIVE_TOOL_CATALOG.length} working tools and ${conversionRows().length} conversion pages: ${baseUrl}/llms-full.txt`,
   ];
 
   return lines.join('\n');
+}
+
+/**
+ * The conversion pages, as catalogue rows.
+ *
+ * WHY THEY WERE MISSING AND WHY THAT MATTERED. `LIVE_TOOL_CATALOG` is a list
+ * of tools; `/convert/csv-to-yaml` is a page. So the catalogue listed the
+ * converter once, under the workbench that runs it, and none of the addresses
+ * that answer an actual question. An assistant asked "convert CSV to YAML
+ * without uploading it" found nothing to cite, on a site with a page for
+ * exactly that.
+ *
+ * WHICH FAMILY, AND WHY NOT THE OTHER. The file-format and image pairs are
+ * here; the 512 unit pairs are not. The distinction is the one
+ * `app/convert/[pair]/page.tsx` is built on: Google answers "cm to inches" in
+ * its own results, and those pages produced 15 page-opens on 2026-09-23.
+ * Nobody can answer "webp to png" without a converter, so the person has to
+ * open one. Listing the 512 would quadruple this file with the rows least
+ * likely to be followed, and a catalogue that is mostly noise is read as
+ * noise.
+ *
+ * Derived from the same two modules the pages are generated from, so a pair
+ * the converter cannot perform has no row here for the same reason it has no
+ * page.
+ */
+function conversionRows(): string[] {
+  return [
+    ...FORMAT_PAIRS.map(
+      (pair) =>
+        `convert.${pair.id} | ${pair.title} | File Conversion | ${baseUrl}/convert/${pair.id} | none | local-js`,
+    ),
+    ...IMAGE_PAIRS.map(
+      (pair) =>
+        `convert.${pair.id} | ${pair.title} | Image Conversion | ${baseUrl}/convert/${pair.id} | none | local-js`,
+    ),
+  ];
 }
 
 /** Body of /llms-full.txt. */
@@ -108,7 +155,7 @@ export function buildLlmsFullTxt(
   consolidation: GuideConsolidationState = GUIDE_CONSOLIDATION,
 ): string {
   const lines = [
-    `# OpenTools machine-readable catalog (${LIVE_TOOL_CATALOG.length} working tools)`,
+    `# OpenTools machine-readable catalog (${LIVE_TOOL_CATALOG.length} working tools, ${conversionRows().length} conversion pages)`,
     `# Canonical URL: ${baseUrl}`,
     `# Every tool below runs in the visitor's own browser tab. Files and inputs`,
     `# are not sent to a server. Only tools that work are listed.`,
@@ -129,6 +176,7 @@ export function buildLlmsFullTxt(
       (t) =>
         `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${fullGuideUrl(t, consolidation)} | ${t.executionMode} | ${t.notes}`,
     ),
+    ...conversionRows(),
   ];
 
   return lines.join('\n');
