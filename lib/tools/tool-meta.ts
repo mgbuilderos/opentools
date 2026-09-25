@@ -270,6 +270,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Fit an image under a KB limit at exact pixels with a real DPI value.',
   },
+  'heic-converter': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Turn the .heic photos a phone saves into JPEG or PNG, in this tab.',
+  },
   'image-editor': {
     version: '0.1.0-canary',
     shortDescription: 'Crop, rotate, flip, and adjust a static image locally.',

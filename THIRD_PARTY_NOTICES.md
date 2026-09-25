@@ -32,6 +32,38 @@ Model weights:
   Apache-2.0 is compatible with this project's MIT license; this notice must
   be kept when redistributing the weights.
 
+## LGPL-3.0 component — HEIC decoding
+
+`libheif-js` 1.23.2 is **LGPL-3.0**, the only non-permissive licence in this
+project. The owner accepted it on 2026-09-24 specifically for HEIC decoding
+(`implementation/DECISION_LOG.md`). This project's own code remains MIT and the
+repository LICENSE is unchanged.
+
+- Upstream: libheif by Dirk Farin / struktur AG —
+  <https://github.com/strukturag/libheif>. Corresponding source for the exact
+  version shipped here: <https://github.com/strukturag/libheif/releases>.
+  The npm wrapper's source is at <https://github.com/catdad-experiments/libheif-js>.
+- Full LGPL-3.0 text ships in the installed package at
+  `node_modules/libheif-js/LICENSE` and `node_modules/libheif-js/libheif-wasm/LICENSE`.
+
+**The binary is a separate, replaceable artefact, and that is a licence
+condition rather than a packaging preference.** `public/wasm/libheif.wasm`
+(1,422,377 bytes, SHA-256 `e4aa8333fbe55ec7c6c776f735236f40bed9103188498f8131d4e52b73cdfee8`)
+is served as its own file and loaded at runtime; substituting your own build of
+libheif is a matter of replacing that one file. Separate runtime loading is the
+analogue of dynamic linking, which is the LGPL clause permitting use from a
+non-GPL project.
+
+**Do not switch to the `libheif-js/wasm-bundle` entry point.** It resolves to
+`libheif-bundle.js`, which embeds the same binary as base64 — one file with no
+path to configure, so it is the natural default — and statically bundling the
+LGPL binary would breach the separability condition this approval rests on. It
+is also larger: 0.66 MB gzipped against 0.45 MB for the separate `.wasm`.
+
+**Patents.** HEVC decoding carries patent claims. The owner accepted that
+exposure on 2026-09-24; it has **not** been cleared. No page, notice or
+marketing copy may describe this tool as patent-safe.
+
 Development-only independent validation uses `pdfjs-dist` 6.3.289 under Apache-2.0.
 
 This summary does not replace the license texts distributed in the installed packages or the production notice/SBOM process.

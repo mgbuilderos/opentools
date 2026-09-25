@@ -199,7 +199,15 @@ describe('related tools are real, live and never the withheld three', () => {
         (route) => !/\/(?:bench|workbench|advanced|writing)$/u.test(route),
       ),
       'a live tool route this module cannot see is a page nothing will link to',
-    ).toEqual(['/pdf/compress-offline', '/image/background-remover']);
+    ).toEqual([
+      '/pdf/compress-offline',
+      '/image/background-remover',
+      // `/image/heic-to-png` is the third of these: the same component as
+      // `/image/heic-to-jpg` with a different encoder, sharing its manifest.
+      // The JPG page links to it in its own words, which is the inbound link
+      // `scripts/verify-no-orphans.mjs` checks for on every build.
+      '/image/heic-to-png',
+    ]);
     expect(unlinkedLiveRoutes().length).toBeLessThan(
       LIVE_TOOL_ROUTES.length / 10,
     );

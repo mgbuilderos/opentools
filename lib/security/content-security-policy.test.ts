@@ -61,9 +61,18 @@ describe('content security policy', () => {
     const policies = [...headers.matchAll(/Content-Security-Policy: (.+)/gu)];
     expect(policies.map((match) => match[1])).toEqual([
       contentSecurityPolicy(),
+      // `/image/background-remover`, `/image/editor`, and the background
+      // removal worker chunk.
       contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),
       contentSecurityPolicy({ localModel: true }),
+      // The two HEIC pages, their decode worker chunk, and `/wasm/*`, which is
+      // where the worker reads libheif from. HEIC_BUILD_SPEC.md section 4.
+      contentSecurityPolicy({ localModel: true }),
+      contentSecurityPolicy({ localModel: true }),
+      contentSecurityPolicy({ localModel: true }),
+      contentSecurityPolicy({ localModel: true }),
+      // `/ocr/*`.
       contentSecurityPolicy({ localModel: true }),
       // `/embed/*`, the one framable prefix. ADR-019.
       contentSecurityPolicy({ embeddable: true }),
