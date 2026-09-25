@@ -2556,6 +2556,25 @@ export interface ToolSubsection {
   destinations: ToolDestination[];
 }
 
+/**
+ * The words a subsection predicate may match on.
+ *
+ * NOT `d.id`, which is `<workspaceId>:<operationId>` -- and the workspace name
+ * is the same on every tool in a group, so any word inside it matches all of
+ * them at once. Measured 2026-09-25: the QR split tested the whole id against
+ * a pattern containing "barcode", every id began `qr-barcode-workbench:`, so
+ * all 28 tools were classed as barcodes, the QR bucket came out empty, and a
+ * fallback then filled it with the full list. The home page rendered 56 cards
+ * for 28 tools and stated "28 tools" above them.
+ *
+ * So a predicate reads the operation's own slug and its own words, and can no
+ * longer be fooled by the workbench it happens to live in.
+ */
+function matchText(d: ToolDestination): string {
+  const slug = d.id.includes(':') ? d.id.slice(d.id.indexOf(':') + 1) : d.id;
+  return `${slug} ${d.name} ${d.description}`;
+}
+
 export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   const destinations = toolDestinationsForGroup(group);
 
@@ -2682,9 +2701,13 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   }
 
   if (group.id === 'qr-barcode') {
+    // A linear barcode is one of five named symbologies, so they are named.
+    // The previous pattern also matched "sheet" and "label", words the QR
+    // contact sheet and framed-card tools both use, which is how a split meant
+    // to separate two families ended up claiming every member of both.
     const isBarcode = (d: ToolDestination) =>
-      /barcode|ean|upc|code-128|code-39|sheet|label/i.test(
-        `${d.id} ${d.name} ${d.description}`,
+      /\b(?:ean-?8|ean-?13|upc-?a|upc-?e|code-?39|code-?128|itf-?14)\b/i.test(
+        matchText(d),
       );
 
     const barcode = destinations.filter(isBarcode);
@@ -2696,7 +2719,11 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
         title: 'QR Code Generators',
         description:
           'Wi-Fi, URLs, contact vCards, payments, and custom payloads.',
-        destinations: qr.length ? qr : destinations,
+        // No `qr.length ? qr : destinations` fallback. It was there to avoid an
+        // empty section, but when the split degenerated it produced a full
+        // duplicate instead -- a worse failure, and a silent one. The
+        // `.filter` below already drops an empty section.
+        destinations: qr,
       },
       {
         id: 'barcode-labels',
@@ -2710,9 +2737,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
 
   if (group.id === 'web-seo') {
     const isCss = (d: ToolDestination) =>
-      /css|gradient|glass|neumorph|animat|shadow|palette/i.test(
-        `${d.id} ${d.name} ${d.description}`,
-      );
+      /css|gradient|glass|neumorph|animat|shadow|palette/i.test(matchText(d));
 
     const css = destinations.filter(isCss);
     const seo = destinations.filter((d) => !isCss(d));
