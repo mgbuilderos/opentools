@@ -211,11 +211,14 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   own copy already states the correct posture — *"Portal limits change — check
   the current notice for the exact size, pixels and format."* No `PortalPreset`
   schema change ships, and the existing preset rows are untouched.
-- **What this does not decide.** It does not touch the separate error-message
-  idea in `docs/GROWTH_IDEAS.md` §3, which remains gated on Search Console
-  rather than settled here. The line this entry draws is on **stating an exam's
-  specification as fact**, in a page or in a preset — not on the broader
-  question of meeting people at the wording of an upload failure.
+- **What this does not decide.** The separate error-message idea in
+  `docs/GROWTH_IDEAS.md` §3 stands, and remains gated on Search Console rather
+  than settled here. Its list of example error strings did carry one exam line —
+  *"Photo size should be between 20kb and 50kb"* — and that line was removed on
+  the owner's instruction the same day, leaving the other three, so no exam
+  wording survives as a target anywhere. The line this entry draws is on
+  **stating an exam's specification as fact**, in a page or in a preset — not on
+  the broader question of meeting people at the wording of an upload failure.
 - **Not to be reopened without a new entry in this file**, per the rule at the
   top. The reason above does not expire with a traffic measurement: it is about
   the specification moving, not about how many people search for it.

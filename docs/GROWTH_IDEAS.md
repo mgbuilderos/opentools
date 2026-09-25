@@ -76,7 +76,6 @@ exact wording:
 Attachment size exceeds 25 MB
 File must be less than 2 MB
 Upload failed: file too large
-Photo size should be between 20kb and 50kb
 ```
 
 **People paste those strings into Google verbatim.** They are high-intent — the
