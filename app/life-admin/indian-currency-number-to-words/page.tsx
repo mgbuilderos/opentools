@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { LifeAdminWorkbenchTool } from '@/components/life-admin-workbench-tool';
 import { practiceBrief } from '@/lib/practice-briefs';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -35,11 +36,17 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <LifeAdminWorkbenchTool
-      initialOperationId="indian-currency-number-to-words"
-      routedBasePath="/life-admin"
-      relatedTools={relatedToolsFor(BRIEF.route)}
-      brief={BRIEF}
-    />
+    <>
+      <ToolJsonLd
+        route="/life-admin/indian-currency-number-to-words"
+        meta={metadata}
+      />
+      <LifeAdminWorkbenchTool
+        initialOperationId="indian-currency-number-to-words"
+        routedBasePath="/life-admin"
+        relatedTools={relatedToolsFor(BRIEF.route)}
+        brief={BRIEF}
+      />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { FinanceBusinessWorkbenchTool } from '@/components/finance-business-workbench-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -12,5 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <FinanceBusinessWorkbenchTool />;
+  return (
+    <>
+      <ToolJsonLd route="/finance/workbench" meta={metadata} />
+      <FinanceBusinessWorkbenchTool />
+    </>
+  );
 }
