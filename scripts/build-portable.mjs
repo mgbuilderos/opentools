@@ -44,9 +44,7 @@ export function treeSize(directory) {
   let total = 0;
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     const absolute = path.join(directory, entry.name);
-    total += entry.isDirectory()
-      ? treeSize(absolute)
-      : statSync(absolute).size;
+    total += entry.isDirectory() ? treeSize(absolute) : statSync(absolute).size;
   }
   return total;
 }
@@ -193,6 +191,9 @@ function main() {
   );
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   main();
 }
