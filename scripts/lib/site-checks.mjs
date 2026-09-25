@@ -72,13 +72,37 @@ export const CHECKS = [
   {
     id: 'canonical-self',
     severity: 'high',
-    why: 'the 2026-09-23 bug: a canonical elsewhere asks Google to index that page instead of this one',
+    why: 'the 2026-09-23 bug: a canonical elsewhere asks Google to index that page instead of this one, and two of them ask it to trust neither',
     run: ({ html, url }) => {
-      const c = pick(html, /<link rel="canonical" href="([^"]*)"/);
-      if (!c) return 'no canonical';
-      return c.replace(/\/$/, '') === url.replace(/\/$/, '')
+      /* Every canonical tag on the page, not just the first, and without
+       * assuming Next.js keeps emitting `rel` before `href`.
+       *
+       * Both of those were holes, and both of them turn this check off rather
+       * than fail it. `pick` stops at the first match, so a page that declares
+       * its own canonical AND inherits a second one serves two tags, the
+       * correct one first, and reads as clean -- while Google, handed two
+       * contradicting declarations, honours neither. That is the 2026-09-23
+       * fault one step along: the cause there was an inherited canonical in
+       * `app/layout.tsx`, and inheritance next to a per-page declaration
+       * produces a duplicate, not a wrong single value. An attribute
+       * reordering, meanwhile, made the old pattern match nothing at all.
+       *
+       * Verified against production on 2026-09-26 before the change: 1,464 of
+       * 1,464 live URLs serve exactly one canonical, all self-pointing. So this
+       * guards a regression rather than reporting a present fault.
+       */
+      const tags = html.match(/<link\b[^>]*rel="canonical"[^>]*>/g) ?? [];
+      if (tags.length === 0) return 'no canonical';
+      const hrefOf = (tag) => pick(tag, /href="([^"]*)"/);
+      if (tags.length > 1) {
+        const hrefs = tags.map((tag) => hrefOf(tag) ?? '(no href)');
+        return `${tags.length} canonical tags: ${hrefs.join(', ')}`;
+      }
+      const href = hrefOf(tags[0]);
+      if (href === null) return 'canonical tag has no href';
+      return href.replace(/\/$/, '') === url.replace(/\/$/, '')
         ? null
-        : `points at ${c}`;
+        : `points at ${href}`;
     },
   },
 

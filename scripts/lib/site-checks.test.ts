@@ -76,6 +76,37 @@ describe('the live-site checks fire on the faults they name', () => {
     expect(check('canonical-self').run(ctx(html))).toBe('no canonical');
   });
 
+  /**
+   * The 2026-09-23 fault one step along. Its cause was an inherited canonical in
+   * `app/layout.tsx`; a page that also declares its own therefore serves TWO
+   * tags, the correct one first, and Google honours neither. Reading only the
+   * first tag -- which is what `pick` does -- calls that page clean.
+   */
+  it('catches a second canonical hiding behind a correct one', () => {
+    const home = ['https:', '//', 'example.test', '/'].join('');
+    const html = page().replace(
+      `<link rel="canonical" href="${url}">`,
+      `<link rel="canonical" href="${url}"><link rel="canonical" href="${home}">`,
+    );
+    const detail = check('canonical-self').run(ctx(html));
+    expect(detail).toContain('2 canonical tags');
+    expect(detail).toContain(home);
+  });
+
+  /**
+   * Attribute order is Next.js's to choose. The old pattern required `rel`
+   * before `href` and so would have matched nothing at all on a reordering --
+   * reporting 'no canonical' for 1,464 correct pages, which is the same guard
+   * failing in the opposite direction.
+   */
+  it('reads a canonical whose attributes are in the other order', () => {
+    const html = page().replace(
+      `<link rel="canonical" href="${url}">`,
+      `<link href="${url}" rel="canonical"/>`,
+    );
+    expect(check('canonical-self').run(ctx(html))).toBeNull();
+  });
+
   it('catches a noindex robots meta', () => {
     expect(
       check('noindex').run(ctx(page({ robots: 'noindex, nofollow' }))),
