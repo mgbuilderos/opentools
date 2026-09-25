@@ -180,7 +180,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(704);
+    expect(everyDestination).toBe(707);
     expect(reachable).toBe(everyDestination);
   });
 

@@ -196,6 +196,21 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Remove audio track from MP4 or MOV videos instantly without re-encoding.',
   },
+  'video-compress': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Compress MP4 videos with custom bitrates and quality presets via hardware WebCodecs.',
+  },
+  'video-resize': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Resize and downscale MP4 video resolution with aspect ratio preservation and untouched audio.',
+  },
+  'video-crop': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Crop MP4 videos to 1:1, 9:16, 4:5, or 16:9 aspect ratios using GPU canvas slicing.',
+  },
   'excel-converter': {
     version: '0.1.0-canary',
     shortDescription:

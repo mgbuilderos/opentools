@@ -782,4 +782,275 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+
+  // /video/compress
+  '/video/compress': {
+    title: 'Compress Video Online — Reduce MP4 File Size',
+    description:
+      'Compress MP4 videos locally in your browser using hardware WebCodecs. Reduce file sizes with custom bitrates while preserving source audio tracks untouched.',
+    heading: 'About this video compression tool',
+    directAnswer:
+      'Select an MP4 or MOV video file, choose a target size or quality preset (High, Medium, or Low), and click Compress Video. The video stream is re-encoded on your device using hardware-accelerated WebCodecs, while the source audio track is passed through untouched to preserve original sound fidelity without any cloud uploads or watermarks.',
+    lead: 'Reducing video file sizes for email attachments, messaging apps, and web hosting traditionally forced a compromise between slow cloud upload queues and lossy audio degradation. This tool uses native WebCodecs VideoDecoder and VideoEncoder APIs directly within your browser tab to re-encode H.264 video at your chosen bitrate. Because processing runs on your local GPU or hardware media engine, compression finishes rapidly without sending a single byte across the internet.',
+    steps: [
+      {
+        name: 'Select source video',
+        text: 'Choose an MP4 or MOV file up to 2 GB. The demuxer reads the movie headers, calculates current video and audio bitrates, and verifies that the video track is encoded in H.264/AVC.',
+      },
+      {
+        name: 'Choose compression mode',
+        text: 'Select a quality preset or enter an explicit target file size in megabytes. The calculator estimates the required video bitrate while reserving bandwidth for the untouched audio track.',
+      },
+      {
+        name: 'Hardware-accelerated re-encoding',
+        text: 'Click Compress Video. WebCodecs decodes frames into GPU textures and re-encodes them through hardware H.264 pipelines with strict backpressure to prevent browser memory exhaustion.',
+      },
+      {
+        name: 'Download optimized MP4',
+        text: 'Save the compressed video file immediately. The tool packages the re-encoded video packets and untouched audio packets into a compliant MP4 container with updated duration headers.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'How WebCodecs hardware re-encoding works',
+        body: [
+          'Unlike older web video tools that rely on slow software WebAssembly builds of FFmpeg, this tool leverages modern browser WebCodecs APIs (VideoDecoder and VideoEncoder). WebCodecs interfaces directly with your system graphics hardware (Apple Silicon Media Engine, Intel Quick Sync, Nvidia NVENC, or AMD VCE) through the operating system. Raw video samples are decoded directly into VideoFrame objects and passed to the hardware encoder at precise bitrates. This delivers encoding speeds comparable to desktop editing software while executing entirely inside a standard browser sandbox.',
+        ],
+      },
+      {
+        heading: 'Untouched audio passthrough for flawless sound',
+        body: [
+          'Most online video compressors transcode both video and audio streams simultaneously, which wastes processing cycles and often introduces noticeable audio compression artifacts or synchronization drift. This tool isolates the audio track during demuxing and passes the original compressed audio packets (such as AAC or MP3) directly through into the output container without touching or re-encoding them. You get substantial video size reduction without sacrificing any acoustic fidelity or altering sound dynamics.',
+        ],
+      },
+      {
+        heading: 'Dynamic AVC profile and level selection',
+        body: [
+          'H.264 (AVC) encoders require a valid profile and level configuration string (for example, avc1.42001e for Baseline 3.0 up to avc1.640033 for High 5.1). Specifying an invalid or mismatched level causes hardware encoders to reject the configuration. Our encoding engine inspects the source video resolution and frame rate to automatically assign the appropriate AVC profile and level, ensuring maximum hardware compatibility and flawless playback across mobile devices, smart TVs, and legacy desktop media players.',
+        ],
+      },
+      {
+        heading: 'Bounded queue backpressure and memory safety',
+        body: [
+          'High-speed video decoding can rapidly flood browser memory if decoded frames accumulate faster than the hardware encoder can compress them. An unconstrained decode loop decoding 1080p frames at 60 fps would allocate gigabytes of uncompressed RGBA pixel buffers in seconds, crashing the browser tab. This engine implements backpressure monitoring via encoder.encodeQueueSize and the ondequeue callback. Decoding pauses whenever the queue exceeds 4 frames and resumes only when the hardware encoder has drained the backlog, keeping RAM usage strictly bounded.',
+        ],
+      },
+      {
+        heading: 'Zero upload security guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Does compressing a video reduce its visual quality?',
+        answer:
+          'Compression works by lowering the video bitrate and discarding imperceptible high-frequency visual data. High preset preserves nearly all visual sharpness, while Low preset produces the smallest file size suitable for messaging and quick previews.',
+      },
+      {
+        question: 'Why is audio quality completely preserved?',
+        answer:
+          'The tool extracts the original compressed audio bitstream (such as AAC) and packages it directly into the output MP4 container without re-encoding. This ensures 100% original audio fidelity, eliminates transcoding artifacts, and avoids audio drift.',
+      },
+      {
+        question: 'Why are HEVC and AV1 videos not supported for compression?',
+        answer:
+          'Browsers provide mature hardware WebCodecs encoding support for H.264 (AVC). HEVC and AV1 encoding requires specialized licensing and hardware capabilities that are not universally exposed to browser sandboxes. We explicitly refuse HEVC and AV1 up front.',
+      },
+      {
+        question: 'Will the compressed video have a watermark?',
+        answer:
+          'No. This tool never applies watermarks, brand logos, or visual overlays. The output is a clean, compliant MP4 file containing solely your own compressed video and original audio streams.',
+      },
+      {
+        question: 'Are my video files uploaded to any external server?',
+        answer:
+          'No. All video decoding and encoding happens locally on your computer using hardware acceleration under strict Content Security Policies that prohibit external network requests.',
+      },
+    ],
+  },
+
+  // /video/resize
+  '/video/resize': {
+    title: 'Resize Video Online — Scale MP4 Resolution',
+    description:
+      'Resize and scale MP4 videos to 4K, 1080p, 720p, or 480p in your browser using WebCodecs hardware acceleration. Keeps audio untouched with zero cloud uploads.',
+    heading: 'About this video resizing tool',
+    directAnswer:
+      'Select an MP4 or MOV video file, choose a target resolution preset (such as 1080p Full HD, 720p HD, 480p SD, or 50% scale), and click Resize Video. The video frames are decoded, scaled on a hardware canvas with aspect ratio preservation, and re-encoded via WebCodecs while the audio stream passes through untouched.',
+    lead: 'Downscaling high-resolution video recordings for social media distribution, web embedding, or bandwidth-constrained playback typically requires heavy video editing software or privacy-compromising cloud converters. This tool scales your video frames directly on your local GPU using HTML Canvas and browser WebCodecs hardware acceleration. It ensures macroblock-compliant even pixel dimensions, preserves audio tracks byte-for-byte, and exports clean MP4 files without watermarks.',
+    steps: [
+      {
+        name: 'Load original video',
+        text: 'Select an MP4 or MOV video file up to 2 GB. The engine inspects container track headers to read the source display width, height, aspect ratio, and frame rate.',
+      },
+      {
+        name: 'Select target resolution',
+        text: 'Pick a resolution preset like 1080p, 720p, 480p, or 50% scale. The scaler computes proportional target dimensions, automatically rounding to even pixel counts required by H.264 macroblocks.',
+      },
+      {
+        name: 'Hardware canvas scaling and encoding',
+        text: 'Click Resize Video. Decoded frames are rendered onto an OffscreenCanvas with high-quality bicubic interpolation and fed directly into the hardware VideoEncoder with backpressure regulation.',
+      },
+      {
+        name: 'Download resized MP4',
+        text: 'Save the resized MP4 video. The newly generated visual sample entries (avc1 and avcC) and untouched audio packets are packaged into an updated MP4 container.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Aspect ratio preservation and macroblock alignment',
+        body: [
+          'Video compression standards like H.264 divide pictures into 16x16 pixel macroblocks. If a video is resized to an odd pixel dimension (such as 721 pixels wide), hardware encoders will either fail immediately with configuration errors or introduce green distortion bars along the edges. Our scaling engine calculates proportional dimensions that strictly preserve your source aspect ratio while snapping both width and height to the nearest even integer, guaranteeing clean hardware encoding and universal player compatibility.',
+        ],
+      },
+      {
+        heading: 'GPU-accelerated canvas interpolation',
+        body: [
+          'Resizing video frames without blurring or aliasing requires high-quality image filtering. The engine renders decoded video frames onto an internal canvas context configured for smooth image smoothing. Downscaling 4K drone or camera footage to 1080p or 720p preserves sharp edges and fine image details without the jagged artifacts common in nearest-neighbor scaling algorithms, all while computing on your device graphics hardware.',
+        ],
+      },
+      {
+        heading: 'Untouched audio passthrough without re-encoding',
+        body: [
+          'Changing the visual resolution of a video should never impact its audio clarity. Rather than decoding and re-compressing the soundtrack, this tool leaves the source audio stream completely untouched. AAC or MP3 audio packets are extracted directly from the input container and multiplexed into the output MP4 alongside the resized video frames. This prevents any audio generation loss, eliminates audio-video desynchronization, and cuts processing time significantly.',
+        ],
+      },
+      {
+        heading: 'Dynamic AVC level management for standard and HD video',
+        body: [
+          'Different video resolutions require different H.264 profile and level constraints to ensure hardware decoders can allocate sufficient buffer memory. Scaling a 4K video down to 720p or 480p allows the encoder to use more efficient AVC levels (such as Baseline 3.1 or 3.0), drastically improving playback compatibility on older mobile hardware and low-power devices. The engine handles this parameter mapping dynamically based on target frame geometry.',
+        ],
+      },
+      {
+        heading: 'Zero upload security guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Does resizing a video change its aspect ratio?',
+        answer:
+          'No. The tool automatically computes proportional dimensions to match your original aspect ratio so subjects are never stretched, squished, or distorted.',
+      },
+      {
+        question: 'Why does the output video use even pixel dimensions?',
+        answer:
+          'H.264 compression processes pixels in 16x16 macroblock grids. Specifying odd dimensions causes encoder errors or visual glitches; snapping to even numbers ensures universal compatibility.',
+      },
+      {
+        question: 'Can I upscale low-resolution video to 4K?',
+        answer:
+          'Yes, you can select higher resolution presets. However, upscaling increases file size without inventing new visual detail; resizing is most effective for downscaling large videos.',
+      },
+      {
+        question: 'Is there any watermark on the exported video?',
+        answer:
+          'No. We believe your video belongs entirely to you. Output files contain no watermarks, timestamps, or promotional overlays of any kind.',
+      },
+      {
+        question: 'Are my video files uploaded to any servers during resizing?',
+        answer:
+          'Never. All processing runs entirely inside your browser using client-side WebCodecs and canvas APIs under strict connect-src none Content Security Policies.',
+      },
+    ],
+  },
+
+  // /video/crop
+  '/video/crop': {
+    title: 'Crop Video Online — Change MP4 Aspect Ratio',
+    description:
+      'Crop MP4 videos to 1:1, 9:16, 4:5, or 16:9 aspect ratios right in your browser. Hardware-accelerated canvas cropping with zero cloud uploads and no watermarks.',
+    heading: 'About this video cropping tool',
+    directAnswer:
+      'Select an MP4 or MOV video file, pick an aspect ratio preset (1:1 Square, 9:16 Vertical Story/Reel, 4:5 Portrait, or 16:9 Landscape) or enter custom crop dimensions, and click Crop Video. The video is cropped and re-encoded using browser WebCodecs hardware acceleration, with original audio passed through untouched.',
+    lead: 'Adapting horizontal video recordings for vertical social platforms like Instagram Reels, TikTok, and YouTube Shorts often forces creators to upload private videos to third-party web services that add watermarks or re-compress audio. This tool performs precision video cropping inside your browser using GPU-backed canvas viewport slicing and WebCodecs hardware encoding. The picture is cropped to your exact framing while preserving the original audio track without any loss.',
+    steps: [
+      {
+        name: 'Select input video',
+        text: 'Choose an MP4 or MOV video file up to 2 GB. The demuxer reads track geometry, display matrix flags, and audio configurations from the movie atom.',
+      },
+      {
+        name: 'Choose target aspect ratio',
+        text: 'Select a social media preset (such as 1:1, 9:16, 4:5, or 16:9) or adjust width, height, and offset coordinates. The tool centers the crop box or lets you position it precisely.',
+      },
+      {
+        name: 'Hardware canvas cropping and re-encoding',
+        text: 'Click Crop Video. Each video frame is drawn to a canvas at the specified sub-rectangle offset and piped directly to the hardware VideoEncoder with backpressure control.',
+      },
+      {
+        name: 'Export cropped MP4',
+        text: 'Save the cropped MP4 video to your drive. The tool constructs fresh visual sample descriptions (stsd/avc1/avcC) and multiplexes the re-encoded frames with the original audio.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Canvas viewport clipping and spatial offsets',
+        body: [
+          'Cropping video requires redefining the spatial boundaries of each frame. Rather than masking pixels with black letterboxing bars, our engine extracts the exact sub-region you specify. By drawing the source frame to an internal canvas using source coordinates (sx, sy, sw, sh) mapped to destination coordinates (0, 0, dw, dh), unwanted edges are completely discarded. The resulting video file contains only the cropped visual area, reducing unnecessary data overhead.',
+        ],
+      },
+      {
+        heading: 'Optimized for vertical and square social formats',
+        body: [
+          'Converting standard 16:9 landscape video into 9:16 vertical video for mobile stories or 1:1 square for feed posts is seamless. Presets automatically compute the maximum centered crop area that fits within your source video bounds while ensuring even pixel dimensions for H.264 macroblock compliance. You can also fine-tune the horizontal and vertical offsets to keep key subjects centered in frame.',
+        ],
+      },
+      {
+        heading: 'Preserving original audio fidelity',
+        body: [
+          'Cropping modifies only visual pixel geometry, so re-encoding the audio track would be completely counterproductive. Our engine demuxes the original compressed audio packets (such as AAC) and passes them directly through into the output container without decoding or transcoding. Your dialogue, soundtrack, and ambient audio retain their full original clarity without generational loss or sync drift.',
+        ],
+      },
+      {
+        heading: 'Hardware-accelerated encoding with backpressure regulation',
+        body: [
+          'Processing thousands of high-definition video frames requires careful resource management. By pairing native WebCodecs VideoDecoder with hardware-accelerated VideoEncoder and throttling frame delivery via encoder.encodeQueueSize, this tool prevents browser memory spikes. You get smooth, responsive video processing that runs directly on your local GPU without heating up your computer or crashing the browser tab.',
+        ],
+      },
+      {
+        heading: 'Zero upload security guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can I convert horizontal 16:9 video to vertical 9:16 for Reels or TikTok?',
+        answer:
+          'Yes. Selecting the 9:16 vertical preset automatically frames the center of your landscape video into portrait format, perfect for Instagram Reels, YouTube Shorts, and TikTok.',
+      },
+      {
+        question: 'Does cropping video re-encode the audio?',
+        answer:
+          'No. The audio stream is extracted and multiplexed directly into the new MP4 container without re-encoding, preserving 100% original audio fidelity with zero sync drift.',
+      },
+      {
+        question: 'Can I adjust the crop position so subjects stay centered?',
+        answer:
+          'Yes. In addition to preset aspect ratios, you can adjust the X and Y offset coordinates to reposition the crop window over the most important part of your frame.',
+      },
+      {
+        question: 'Will there be any watermark on the cropped video?',
+        answer:
+          'No. Output video files are completely clean with zero watermarks, logos, or restrictions. The content remains entirely yours.',
+      },
+      {
+        question: 'Are video frames uploaded to a server during cropping?',
+        answer:
+          'No. The entire cropping and re-encoding process runs locally on your device within your browser tab under strict Content Security Policies.',
+      },
+    ],
+  },
 };

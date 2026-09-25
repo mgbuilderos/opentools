@@ -102,7 +102,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     name: 'Video',
     shortDescription:
       'Trim, convert, rotate, split, merge, and clean MP4 and MOV videos without re-encoding.',
-    destinationCount: 9,
+    destinationCount: 12,
     toolIds: [
       'video-trim',
       'video-convert',
@@ -113,6 +113,9 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       'video-to-gif',
       'video-extract-audio',
       'video-mute',
+      'video-compress',
+      'video-resize',
+      'video-crop',
     ],
   },
   {

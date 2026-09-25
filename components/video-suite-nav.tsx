@@ -18,6 +18,9 @@ export const VIDEO_TOOLS = [
     desc: 'Lossless AAC extraction',
   },
   { href: '/video/mute', label: 'Mute', desc: 'Remove audio track' },
+  { href: '/video/compress', label: 'Compress', desc: 'Reduce MP4 file size' },
+  { href: '/video/resize', label: 'Resize', desc: 'Scale resolution' },
+  { href: '/video/crop', label: 'Crop', desc: 'Aspect ratio & framing' },
 ] as const;
 
 export function VideoSuiteNav({ currentPath }: { currentPath: string }) {

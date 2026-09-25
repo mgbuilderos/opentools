@@ -30,7 +30,7 @@ import type { Mp4File, Mp4Sample, Mp4Track } from './mp4';
 
 const NOW = 0;
 
-function fourccBytes(text: string): number[] {
+export function fourccBytes(text: string): number[] {
   return [
     text.charCodeAt(0),
     text.charCodeAt(1),
@@ -39,7 +39,7 @@ function fourccBytes(text: string): number[] {
   ];
 }
 
-function u32(value: number): number[] {
+export function u32(value: number): number[] {
   return [
     (value >>> 24) & 0xff,
     (value >>> 16) & 0xff,
@@ -48,7 +48,7 @@ function u32(value: number): number[] {
   ];
 }
 
-function u16(value: number): number[] {
+export function u16(value: number): number[] {
   return [(value >>> 8) & 0xff, value & 0xff];
 }
 
@@ -59,7 +59,10 @@ function u64(value: number): number[] {
 }
 
 /** A box is its length, then its type, then its payload. */
-function box(type: string, ...parts: (number[] | Uint8Array)[]): Uint8Array {
+export function box(
+  type: string,
+  ...parts: (number[] | Uint8Array)[]
+): Uint8Array {
   let length = 8;
   for (const part of parts) length += part.length;
   const out = new Uint8Array(length);
@@ -212,7 +215,7 @@ export interface TrackPlan {
   sampleDescription: Uint8Array;
 }
 
-function trackBox(
+export function trackBox(
   plan: TrackPlan,
   movieTimescale: number,
   chunkOffset: number,
@@ -304,7 +307,7 @@ export interface WriteOptions {
   format?: 'mp4' | 'mov' | 'm4a';
 }
 
-function buildFtyp(format?: 'mp4' | 'mov' | 'm4a'): Uint8Array {
+export function buildFtyp(format?: 'mp4' | 'mov' | 'm4a'): Uint8Array {
   if (format === 'mov') {
     return box('ftyp', fourccBytes('qt  '), u32(0x200), fourccBytes('qt  '));
   }
@@ -328,7 +331,7 @@ function buildFtyp(format?: 'mp4' | 'mov' | 'm4a'): Uint8Array {
   ]);
 }
 
-function buildMdatHeader(payloadLength: number): Uint8Array {
+export function buildMdatHeader(payloadLength: number): Uint8Array {
   const isLarge = payloadLength + 8 >= 0x100000000;
   if (isLarge) {
     const header = new Uint8Array(16);
