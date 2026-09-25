@@ -153,3 +153,69 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   itself is proved by `e2e/share-target.spec.ts`, which disconnects the browser
   and loads `/pdf/merge`.
 - **Not verified:** anything on getopentools.com. This has not been deployed.
+
+## 2026-09-25 — Indian exam photograph and signature specs are not built, in any form
+
+Decided by: project owner. Recorded by: Claude Code at the owner's request.
+
+### 17. Per-exam photograph and signature spec pages and presets — dropped
+
+- **Date:** 2026-09-25. **Status:** dropped before anything shipped. No code,
+  copy, route or preset row was ever added, so there is nothing to remove from
+  the app; the working notes written while this was evaluated have been deleted
+  from `docs/GROWTH_IDEAS.md` so that this entry is the only record.
+- **What was proposed.** A page per Indian exam, per year — UPSC, SSC, NEET,
+  JEE, IBPS and state boards — each carrying that exam's official photograph
+  and signature specification baked in as a preset, so an applicant chooses
+  nothing. When that was ruled out, a narrower version followed: no new pages,
+  just two or three exam rows in `lib/portal-presets.ts` behind the existing
+  `/image/exact-size`. **Both forms are dropped.**
+- **Owner's reason, and it is sufficient on its own: these sizes change from
+  time to time.** A preset is only worth having if it is right on the day it is
+  clicked. A specification that moves between cycles — or between a notice and
+  its corrigendum — cannot be held correct by a table re-read every 90 days.
+  Decision 16's expiry rule sets a floor on how stale a row may be; it does not
+  make a fresher row right. For a portal whose ceiling holds for years (USCIS,
+  Gmail, the GST and Income Tax rows) that floor is enough. For a number
+  republished each cycle it is not, and the cost of being wrong lands on an
+  applicant inside a once-a-year window. **A preset is the wrong instrument for
+  a number that moves faster than the mechanism that checks it.**
+- **The wider form failed on its own terms too**, independently of the above. A
+  page per exam per year is a near-template family by construction, which the
+  guide consolidation forbids while thin URLs are being taken to 404; and baking
+  a portal's number into a title, heading, meta description, structured data or
+  the sitemap is already barred by decision 16, which permits the number in the
+  app only. A page titled after last cycle's KB range is the ad-farm failure
+  mode, not a fix for it.
+- **What the evaluation established before the drop, recorded so it is not
+  rediscovered.**
+  - **The specification could not be sourced at all.** `ssc.gov.in`,
+    `upsc.gov.in`, `upsconline.gov.in`, `neet.nta.nic.in` and `www.ibps.in` were
+    all unreachable from the working environment, and every discoverable
+    secondary source was a competitor resizer or a coaching site — which
+    decision 16 bars as a `sourceUrl` by name. The niche is underserved by
+    trustworthy pages for the same reason it is hard to source correctly.
+  - **The figures in circulation disagree with each other.** The proposal gave a
+    photograph of 200 × 230 px (aspect 0.870) and a signature of 140 × 60 px
+    (2.33:1). The secondary sources gave 3.5 × 4.5 cm (0.778) and 6.0 × 2.0 cm
+    (3.00:1) for SSC. At 200 DPI, 3.5 × 4.5 cm is 276 × 354 px. These are
+    different shapes, so they were never one specification, and pairing the
+    proposal's pixels with its KB range would have produced an invented row.
+    This was caught **before** a row was written rather than after, which is the
+    same check that killed four of the six original preset rows, working one
+    step earlier.
+- **What is unaffected.** `/image/exact-size` stays exactly as it is, and keeps
+  serving this use without a preset: it already accepts a maximum size, a
+  minimum size, exact pixels, a DPI and JPEG output, so an applicant who has
+  read their own notice can meet any of these specifications on it today. Its
+  own copy already states the correct posture — *"Portal limits change — check
+  the current notice for the exact size, pixels and format."* No `PortalPreset`
+  schema change ships, and the existing preset rows are untouched.
+- **What this does not decide.** It does not touch the separate error-message
+  idea in `docs/GROWTH_IDEAS.md` §3, which remains gated on Search Console
+  rather than settled here. The line this entry draws is on **stating an exam's
+  specification as fact**, in a page or in a preset — not on the broader
+  question of meeting people at the wording of an upload failure.
+- **Not to be reopened without a new entry in this file**, per the rule at the
+  top. The reason above does not expire with a traffic measurement: it is about
+  the specification moving, not about how many people search for it.
