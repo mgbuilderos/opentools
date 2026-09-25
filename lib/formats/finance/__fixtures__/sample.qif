@@ -1,0 +1,24 @@
+!Account
+NSynthetic current account
+TBank
+DGenerated fixture account
+/09/30/2026
+$₹ 2,48,456.78
+^
+!Type:Bank
+D09/01/2026
+T₹ 1,23,456.78
+POpening balance
+MGenerated opening entry
+^
+D09/04/2026
+T1,200.00 DR
+PUtility payment
+N1001
+LHousehold
+^
+D09/10/2026
+T₹ 1,26,200.00
+PTransfer in
+MGenerated credit
+^
