@@ -62,20 +62,31 @@ const VERDICT_TONE: Record<
   Verdict,
   { dot: string; text: string; ring: string }
 > = {
+  /*
+   * Two colours, not four.
+   *
+   * The design system is monochrome apart from `--success` and
+   * `--destructive`, and `design-system-qc.mjs` fails the build on an
+   * arbitrary palette utility. That constraint suits this tool: a four-colour
+   * scale would render RESTRICTED as a warning and UNKNOWN as a fault, and
+   * neither is one. Restricted is a factual description of a normal policy,
+   * and unknown is the absence of a reading. Both are neutral here, which is
+   * what they are.
+   */
   BLOCKED: {
-    dot: 'bg-emerald-500',
-    text: 'text-emerald-600 dark:text-emerald-400',
-    ring: 'border-emerald-500/30 bg-emerald-500/5',
+    dot: 'bg-success',
+    text: 'text-success',
+    ring: 'border-success/30 bg-success/5',
   },
   RESTRICTED: {
-    dot: 'bg-amber-500',
-    text: 'text-amber-600 dark:text-amber-400',
-    ring: 'border-amber-500/30 bg-amber-500/5',
+    dot: 'bg-foreground',
+    text: 'text-foreground',
+    ring: 'border-border bg-muted/40',
   },
   CAPABLE: {
-    dot: 'bg-rose-500',
-    text: 'text-rose-600 dark:text-rose-400',
-    ring: 'border-rose-500/30 bg-rose-500/5',
+    dot: 'bg-destructive',
+    text: 'text-destructive',
+    ring: 'border-destructive/30 bg-destructive/5',
   },
   UNKNOWN: {
     dot: 'bg-muted-foreground',
@@ -167,7 +178,7 @@ export function EgressCheckTool() {
             autoCorrect="off"
           />
           {target.trim() && !url ? (
-            <p className="text-xs text-rose-600 dark:text-rose-400">
+            <p className="text-xs text-destructive">
               That is not a web address. A page address starts with{' '}
               <code>{SCHEME}</code> and has a hostname.
             </p>
