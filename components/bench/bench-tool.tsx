@@ -24,6 +24,7 @@ import type { KernelOperation } from '@/lib/kernel/types';
 import { runPipeline } from '@/lib/pipeline/run';
 import type { Pipeline } from '@/lib/pipeline/types';
 import { validate } from '@/lib/pipeline/validate';
+import { BATCH_LANDINGS } from '@/lib/seo/audience-pages';
 import { searchTools } from '@/lib/tools/catalog';
 import {
   buildReceipt,
@@ -384,6 +385,22 @@ export function BenchTool() {
             size limit — your machine is the limit.
           </p>
         </header>
+
+        {/*
+          The three jobs people arrive with, named as jobs. Also the inbound
+          links that keep those pages out of the orphan sweep.
+        */}
+        <nav aria-label="Common batch jobs" className="flex flex-wrap gap-2">
+          {BATCH_LANDINGS.map((page) => (
+            <a
+              key={page.route}
+              href={page.route}
+              className="focus-ring rounded-lg border bg-card px-3 py-2 text-sm font-medium transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30"
+            >
+              {page.name}
+            </a>
+          ))}
+        </nav>
 
         <section
           className="grid gap-4 rounded-xl border bg-card p-5 lg:grid-cols-3"
