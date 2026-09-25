@@ -51,7 +51,7 @@ function download(blob: Blob, name: string) {
 function recipeDefinition(serialised: string): RecipeDefinition {
   return {
     id: 'bench-pipeline',
-    path: '/bench',
+    path: '/batch',
     fields: [
       {
         kind: 'choice',
@@ -213,7 +213,7 @@ export function PipelineEditor({
         pipeline: serialised,
       });
       await navigator.clipboard.writeText(
-        `${window.location.origin}/bench?${search}`,
+        `${window.location.origin}/batch?${search}`,
       );
       setStatus(
         'Copied a settings-only link. No file names or content are included.',

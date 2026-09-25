@@ -11,7 +11,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/audio/convert': '2026-09-24T09:07:17+05:30',
   '/audio/loudness': '2026-09-23T21:57:44+05:30',
   '/audio/mp3-toolkit': '2026-09-24T09:07:17+05:30',
-  '/bench': '2026-09-23T16:47:24+05:30',
+  '/batch': '2026-09-23T16:47:24+05:30',
   '/blog': '2026-09-23T22:28:19+05:30',
   '/blog/agile-user-story-acceptance-criteria-gherkin':
     '2026-09-23T22:28:19+05:30',

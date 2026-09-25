@@ -22,6 +22,7 @@
     "lint": "oxlint",
     "format": "oxfmt app components lib workers scripts types proxy.ts next.config.ts vite.config.ts vitest.config.ts package.json tsconfig.json",
     "format:check": "oxfmt --check app components lib workers scripts types proxy.ts next.config.ts vite.config.ts vitest.config.ts package.json tsconfig.json",
+    "portable": "node scripts/build-portable.mjs",
     "sbom": "node scripts/generate-sbom.mjs",
     "test": "vitest run",
     "test:operations": "vitest run lib/tools/all-operations-qc.test.ts",
