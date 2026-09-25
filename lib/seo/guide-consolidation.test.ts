@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
 import { CACHED_GUIDE_SLUGS } from './cached-guides';
+import { CATEGORY_HUB_ROUTES } from './category-hubs';
 import { COMPARE_ROUTES } from './compare-pages';
 import { GUIDE_CONSOLIDATION_ENABLED } from './guide-consolidation-config';
 import {
@@ -160,6 +161,11 @@ describe('guide consolidation off is the previous behaviour', () => {
       // are deliberately not in any sitemap.
       '/embed',
       ...COMPARE_ROUTES,
+      // Added 2026-09-25, and mirrored here for the same reason `/embed` is:
+      // this function rebuilds the shipped sitemap minus consolidation, so a
+      // core route missing from it would be scored as a guide the switch
+      // dropped. The nineteen category hubs are content pages, not tools.
+      ...CATEGORY_HUB_ROUTES,
     ].map((route) => ({
       url: `${origin}${route}`,
       changeFrequency: route === '' ? ('daily' as const) : ('weekly' as const),
