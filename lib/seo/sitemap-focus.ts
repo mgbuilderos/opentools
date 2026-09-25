@@ -62,12 +62,14 @@ const KEPT_WITHOUT_DEPTH: readonly string[] = [
     A workbench is the address for a whole family of operations and the page
     the sidebar links to, so dropping one would leave its family reachable only
     through a hub link -- which is the one shape of page where asking the
-    crawler is clearly worth it. `/bench` is the folder runner, and `/latex`
+    crawler is clearly worth it. `/batch` is the folder runner -- it was
+    `/bench` until PR #19 renamed it, and `removed-tool-redirects.ts` 301s the
+    old path -- and `/latex`
     and `/schema` are the two category addresses that really do run a tool,
     which is why they sit in `LIVE_TOOL_ROUTES` rather than in
     `CATEGORY_HUB_ROUTES` (see the note in `sitemap-entries.ts`).
   */
-  '/bench',
+  '/batch',
   '/latex',
   '/schema',
   '/creator/workbench',
