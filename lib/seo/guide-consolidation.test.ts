@@ -260,9 +260,7 @@ describe('guide consolidation off is the previous behaviour', () => {
     ).toHaveLength(kept.size);
     expect(
       previousSitemap().length - buildSitemap(undefined, 'full').length,
-    ).toBe(
-      consolidated.size,
-    );
+    ).toBe(consolidated.size);
   });
 
   it('publishes every live guide and redirects none', () => {

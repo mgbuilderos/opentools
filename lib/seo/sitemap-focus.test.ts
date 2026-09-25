@@ -35,7 +35,8 @@ describe('sitemap focus', () => {
     // are worth a crawl at all. A focused sitemap that dropped one would be
     // withholding the strongest page on the site.
     const focused = paths('focused');
-    for (const route of TOOL_PAGE_DEPTH_ROUTES) expect(focused).toContain(route);
+    for (const route of TOOL_PAGE_DEPTH_ROUTES)
+      expect(focused).toContain(route);
   });
 
   it('lists every hub and every route with measured search demand', () => {

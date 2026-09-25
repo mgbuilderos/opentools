@@ -130,7 +130,10 @@ export function focusedToolRoutes(
   focus: SitemapFocusState = SITEMAP_FOCUS,
 ): readonly string[] {
   if (focus === 'full') return routes;
-  const keep = new Set<string>([...TOOL_PAGE_DEPTH_ROUTES, ...KEPT_WITHOUT_DEPTH]);
+  const keep = new Set<string>([
+    ...TOOL_PAGE_DEPTH_ROUTES,
+    ...KEPT_WITHOUT_DEPTH,
+  ]);
   return routes.filter((route) => keep.has(route));
 }
 
