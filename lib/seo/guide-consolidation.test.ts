@@ -32,7 +32,7 @@ import {
   LIVE_TOOL_ROUTES,
   isLiveToolUrl,
 } from './live-tools';
-import { buildLlmsFullTxt, buildLlmsTxt } from './llms-text';
+import { buildLlmsFullTxt, buildLlmsTxt, canonicalToolUrl } from './llms-text';
 import { removedToolRedirect } from './removed-tool-redirects';
 import { siteRedirect } from './site-redirects';
 import { buildSitemap } from './sitemap-entries';
@@ -320,8 +320,12 @@ describe('guide consolidation off is the previous behaviour', () => {
   it('keeps every guide link in llms.txt and llms-full.txt', () => {
     const full = buildLlmsFullTxt(OFF);
     for (const tool of LIVE_TOOL_CATALOG) {
+      // The tool URL is the canonical one, not the raw `destinationUrl`: 44
+      // entries still carry an inert `?tool=` query and `llms-text.ts`
+      // resolves those to the dedicated page. What this test is about is the
+      // guide beside it, which consolidation must not drop while it is off.
       expect(full).toContain(
-        `${origin}${tool.destinationUrl} | ${origin}/guides/${tool.slug} | `,
+        `${origin}${canonicalToolUrl(tool.destinationUrl)} | ${origin}/guides/${tool.slug} | `,
       );
     }
     expect(full).not.toContain('| none |');
