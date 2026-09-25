@@ -20,6 +20,7 @@ import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
+import { categoryHub } from './category-hubs';
 import { getAllBlogPosts } from './blog-data';
 import { conversionFacts, conversionPairById } from './conversion-pairs';
 import { formatFacts, formatHubMeta, formatPairById } from './format-pairs';
@@ -293,6 +294,20 @@ const PILLAR_BY_HREF = new Map(
 
 /** What one sitemap route serves, or undefined when nothing here can say. */
 export function pageMetaFor(route: string): PageMeta | undefined {
+  // The category hubs, first, because `handWritten` reads the literal in the
+  // page file and these nineteen have none: `categoryHubMetadata` assembles
+  // title, description and canonical from the one entry in `CATEGORY_HUBS`, so
+  // that entry is what the sweep has to measure.
+  const category = categoryHub(route);
+  if (category) {
+    return {
+      route,
+      title: category.title,
+      description: category.description,
+      source: 'lib/seo/category-hubs.ts',
+    };
+  }
+
   const own = handWritten(route);
   if (own.meta) return own.meta;
   if (own.claimed) return undefined;

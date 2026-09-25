@@ -22232,4 +22232,78 @@ export const KERNEL_MANIFEST = [
     runtime: 'pure',
     deterministic: true,
   },
+  {
+    id: 'pdfcrypt-inspect',
+    source: 'formats-pdfcrypt',
+    name: 'Inspect PDF encryption',
+    description:
+      'Identify the Standard security-handler revision and password kind.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
+    id: 'pdfcrypt-decrypt',
+    source: 'formats-pdfcrypt',
+    name: 'Unlock PDF',
+    description:
+      'Decrypt a Standard-handler PDF with a supplied user or owner password.',
+    input: 'file',
+    params: [
+      {
+        id: 'password',
+        label: 'Password',
+        type: 'text',
+        defaultValue: '',
+        serialisable: false,
+      },
+    ],
+    output: {
+      kind: 'files',
+      extension: 'pdf',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
+    id: 'pdfcrypt-encrypt-r6',
+    source: 'formats-pdfcrypt',
+    name: 'Protect PDF with AES-256',
+    description: 'Encrypt a PDF with revision 6 AES-256 Standard security.',
+    input: 'file',
+    params: [
+      {
+        id: 'userPassword',
+        label: 'Open password',
+        type: 'text',
+        defaultValue: '',
+        serialisable: false,
+      },
+      {
+        id: 'ownerPassword',
+        label: 'Owner password',
+        type: 'text',
+        defaultValue: '',
+        serialisable: false,
+      },
+      {
+        id: 'permissions',
+        label: 'Permission mask',
+        type: 'number',
+        defaultValue: '-4',
+        serialisable: true,
+      },
+    ],
+    output: {
+      kind: 'files',
+      extension: 'pdf',
+    },
+    runtime: 'pure',
+    deterministic: false,
+  },
 ] as const satisfies readonly KernelOperationDescriptor[];
