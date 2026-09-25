@@ -42,6 +42,26 @@ function htmlFiles(directory: string, found: string[] = []): string[] {
   return found;
 }
 
+/*
+  Both sweeps below read every built page. At 1,464 pages that is slower than
+  vitest's 5s default on its own, and reading the set twice timed out in CI
+  once the 19 category hubs landed. The file set cannot change mid-run, so read
+  it once and reuse it, and still state a timeout rather than relying on the
+  default — the page count only ever grows.
+*/
+let servedCache: { rel: string; html: string }[] | undefined;
+function servedPages() {
+  if (!servedCache) {
+    servedCache = htmlFiles(CLIENT_DIR).map((file) => ({
+      rel: path.relative(CLIENT_DIR, file),
+      html: readFileSync(file, 'utf8'),
+    }));
+  }
+  return servedCache;
+}
+
+const SWEEP_TIMEOUT = 60_000;
+
 describe('served copy names no competitor', () => {
   it('has a build to check', () => {
     expect(
@@ -50,40 +70,42 @@ describe('served copy names no competitor', () => {
     ).toBe(true);
   });
 
-  it('names no competitor on any served page', () => {
-    const pages = htmlFiles(CLIENT_DIR);
+  it(
+    'names no competitor on any served page',
+    () => {
+      const pages = servedPages();
 
-    // Guards the guard: an empty or near-empty dist would pass every assertion
-    // below while checking nothing at all.
-    expect(pages.length).toBeGreaterThan(1000);
+      // Guards the guard: an empty or near-empty dist would pass every
+      // assertion below while checking nothing at all.
+      expect(pages.length).toBeGreaterThan(1000);
 
-    const violations = pages.flatMap((file) =>
-      findForbiddenCompetitors(
-        readFileSync(file, 'utf8'),
-        path.relative(CLIENT_DIR, file),
-      ),
-    );
+      const violations = pages.flatMap(({ html, rel }) =>
+        findForbiddenCompetitors(html, rel),
+      );
 
-    expect(
-      violations.slice(0, 20),
-      `${violations.length} served pages name a competitor`,
-    ).toEqual([]);
-  });
+      expect(
+        violations.slice(0, 20),
+        `${violations.length} served pages name a competitor`,
+      ).toEqual([]);
+    },
+    SWEEP_TIMEOUT,
+  );
 
-  it('attributes no price to anybody but us on any served page', () => {
-    const pages = htmlFiles(CLIENT_DIR);
-    expect(pages.length).toBeGreaterThan(1000);
+  it(
+    'attributes no price to anybody but us on any served page',
+    () => {
+      const pages = servedPages();
+      expect(pages.length).toBeGreaterThan(1000);
 
-    const violations = pages.flatMap((file) =>
-      findUnsourcedPriceClaims(
-        readFileSync(file, 'utf8'),
-        path.relative(CLIENT_DIR, file),
-      ),
-    );
+      const violations = pages.flatMap(({ html, rel }) =>
+        findUnsourcedPriceClaims(html, rel),
+      );
 
-    expect(
-      violations.slice(0, 20),
-      `${violations.length} served pages attribute a price we never measured`,
-    ).toEqual([]);
-  });
+      expect(
+        violations.slice(0, 20),
+        `${violations.length} served pages attribute a price we never measured`,
+      ).toEqual([]);
+    },
+    SWEEP_TIMEOUT,
+  );
 });
