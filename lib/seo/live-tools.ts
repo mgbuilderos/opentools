@@ -18,6 +18,7 @@ import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
 import { CONVERSION_PAIRS } from './conversion-pairs';
 import { FORMAT_PAIRS } from './format-pairs';
+import { IMAGE_PAIRS } from './image-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
@@ -60,7 +61,12 @@ export const DEDICATED_TOOL_ROUTES = [
   '/video/to-gif',
   '/video/extract-audio',
   '/video/mute',
+  '/video/compress',
+  '/video/resize',
+  '/video/crop',
   '/image/exact-size',
+  '/image/heic-to-jpg',
+  '/image/heic-to-png',
   '/data/excel',
   '/image/metadata',
   // '/image/svg', '/image/colour', '/data/lists' -- Antigravity phases 4 and 5.
@@ -240,6 +246,17 @@ const ROUTED_PREFIX_ENTRIES: readonly (readonly [
         id: pair.id,
         name: pair.title,
         description: `Convert ${pair.fromName} to ${pair.toName} in your browser.`,
+      })),
+      // Image pairs, derived from `canEncode` in
+      // `lib/tools/image-convert/formats.ts`. The same must-click argument as
+      // the file-format pairs: Google cannot convert a picture in its own
+      // results, so the person has to open a converter. HEIC's two pairs are
+      // not here -- they have hand-written pages, because a downloaded decoder
+      // owes the reader a disclosure.
+      ...IMAGE_PAIRS.map((pair) => ({
+        id: pair.id,
+        name: pair.title,
+        description: `Convert ${pair.from.name} to ${pair.to.name} in your browser.`,
       })),
     ],
   ],

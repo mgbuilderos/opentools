@@ -752,7 +752,8 @@ export const KERNEL_MANIFEST = [
     id: 'content-calendar-maker',
     source: 'creator',
     name: 'Content-calendar maker',
-    description: 'Validate and sort dated platform/topic entries.',
+    description:
+      'Paste lines of date, platform and topic separated by pipes; each date is checked as a real YYYY-MM-DD day and the rows come back sorted by date.',
     input: 'text',
     params: [],
     output: {
@@ -1851,7 +1852,8 @@ export const KERNEL_MANIFEST = [
     id: 'week-number-calculator',
     source: 'date',
     name: 'ISO week-number calculator',
-    description: 'Calculate the ISO-8601 week year and week number.',
+    description:
+      'Turn a calendar date into its ISO-8601 week, returned as YYYY-Www. The week year can differ from the date’s own year in early January and late December.',
     input: 'text',
     params: [],
     output: {
@@ -1864,7 +1866,8 @@ export const KERNEL_MANIFEST = [
     id: 'day-of-year-calculator',
     source: 'date',
     name: 'Day-of-year calculator',
-    description: 'Calculate the one-based ordinal day in the year.',
+    description:
+      'Enter a date from year 0100 to 9999 and get its ordinal position in that year, where 1 January is day 1 and 31 December is 365, or 366 in a leap year.',
     input: 'text',
     params: [],
     output: {
@@ -1877,7 +1880,8 @@ export const KERNEL_MANIFEST = [
     id: 'leap-year-checker',
     source: 'date',
     name: 'Leap-year checker',
-    description: 'Apply the proleptic Gregorian leap-year rules.',
+    description:
+      'Enter a year from 1 to 9999 to see whether it is a leap year under the Gregorian rule: divisible by 4, except century years, unless divisible by 400.',
     input: 'none',
     params: [
       {
@@ -2348,7 +2352,8 @@ export const KERNEL_MANIFEST = [
     id: 'checksum-calculator',
     source: 'developer-advanced',
     name: 'Text checksum calculator',
-    description: 'Calculate a SHA checksum for pasted UTF-8 text.',
+    description:
+      'Calculate a SHA-256, SHA-384 or SHA-512 checksum of pasted text in your browser and read it as lowercase hexadecimal to compare with a published value.',
     input: 'text',
     params: [
       {
@@ -4022,7 +4027,8 @@ export const KERNEL_MANIFEST = [
     id: 'url-encode-component',
     source: 'developer-data',
     name: 'URL component encoder',
-    description: 'Percent-encode one query value or path segment.',
+    description:
+      'Percent-encode one query value or path segment so that spaces, ampersands, slashes and question marks survive being placed inside a larger web address.',
     input: 'text',
     params: [],
     output: {
@@ -4061,7 +4067,8 @@ export const KERNEL_MANIFEST = [
     id: 'url-decode',
     source: 'developer-data',
     name: 'Full URL decoder',
-    description: 'Decode percent escapes in a complete URL string.',
+    description:
+      'Decode percent escapes across a whole web address while leaving reserved separators such as %26 and %3F encoded, so the structure of the link is unchanged.',
     input: 'text',
     params: [],
     output: {
@@ -4100,7 +4107,8 @@ export const KERNEL_MANIFEST = [
     id: 'base64-encode-text',
     source: 'developer-data',
     name: 'Base64 text encoder',
-    description: 'Encode UTF-8 text as padded standard Base64.',
+    description:
+      'Encode text as standard Base64 with plus, slash and equals padding. Accented letters, emoji and other non-ASCII characters are read as UTF-8 bytes first.',
     input: 'text',
     params: [],
     output: {
@@ -4113,7 +4121,8 @@ export const KERNEL_MANIFEST = [
     id: 'base64-decode-text',
     source: 'developer-data',
     name: 'Base64 text decoder',
-    description: 'Decode padded standard Base64 and validate UTF-8.',
+    description:
+      'Turn standard Base64 back into readable text. Whitespace is ignored, the padding must be correct, and decoded bytes are rejected if they are not valid UTF-8.',
     input: 'text',
     params: [],
     output: {
@@ -4139,7 +4148,8 @@ export const KERNEL_MANIFEST = [
     id: 'base64url-decode-text',
     source: 'developer-data',
     name: 'Base64URL text decoder',
-    description: 'Decode URL-safe Base64 text and validate UTF-8.',
+    description:
+      'Turn URL-safe Base64 back into text. The hyphen and underscore alphabet is accepted with or without padding, and non-UTF-8 byte sequences are reported.',
     input: 'text',
     params: [],
     output: {
@@ -4285,7 +4295,8 @@ export const KERNEL_MANIFEST = [
     id: 'url-path-segments',
     source: 'developer-data',
     name: 'URL path segments',
-    description: 'Decode and list each non-empty pathname segment.',
+    description:
+      'List the path segments of a web address as a JSON array. Empty segments are dropped and each remaining one is percent-decoded, so %20 reads as a space.',
     input: 'text',
     params: [],
     output: {
@@ -4417,7 +4428,8 @@ export const KERNEL_MANIFEST = [
     id: 'regex-extractor',
     source: 'developer-data',
     name: 'Regex extractor',
-    description: 'Extract one capture group from up to 200 matches.',
+    description:
+      'Pull one capture group out of every regular-expression match and list the results one per line, up to 200 matches, with group 0 returning the whole match.',
     input: 'text',
     params: [
       {
@@ -4636,7 +4648,8 @@ export const KERNEL_MANIFEST = [
     id: 'hex-encode-text',
     source: 'developer-data',
     name: 'Text to hexadecimal',
-    description: 'Encode UTF-8 bytes as lowercase hexadecimal.',
+    description:
+      'Turn text into lowercase hexadecimal, two digits for each UTF-8 byte and no separators, for when you need to see how characters such as emoji are stored.',
     input: 'text',
     params: [],
     output: {
@@ -4662,7 +4675,8 @@ export const KERNEL_MANIFEST = [
     id: 'binary-encode-text',
     source: 'developer-data',
     name: 'Text to binary bytes',
-    description: 'Encode UTF-8 bytes as eight-bit binary groups.',
+    description:
+      'Turn text into eight-bit binary, one space-separated group per UTF-8 byte. Useful for teaching how characters map to bytes or for checking a binary dump.',
     input: 'text',
     params: [],
     output: {
@@ -4688,7 +4702,8 @@ export const KERNEL_MANIFEST = [
     id: 'sha-256-text',
     source: 'developer-data',
     name: 'SHA-256 text hash',
-    description: 'Hash UTF-8 text with the browser Web Crypto implementation.',
+    description:
+      'Hash text with SHA-256 and read back the 64-character hexadecimal digest, the usual choice for fingerprints, cache keys and integrity comparisons.',
     input: 'text',
     params: [],
     output: {
@@ -4701,7 +4716,8 @@ export const KERNEL_MANIFEST = [
     id: 'sha-384-text',
     source: 'developer-data',
     name: 'SHA-384 text hash',
-    description: 'Hash UTF-8 text with the browser Web Crypto implementation.',
+    description:
+      'Hash text with SHA-384 and read back the 96-character hexadecimal digest, used where a longer truncated SHA-2 value is required by a spec or a vendor.',
     input: 'text',
     params: [],
     output: {
@@ -4714,7 +4730,8 @@ export const KERNEL_MANIFEST = [
     id: 'sha-512-text',
     source: 'developer-data',
     name: 'SHA-512 text hash',
-    description: 'Hash UTF-8 text with the browser Web Crypto implementation.',
+    description:
+      'Hash text with SHA-512 and read back the 128-character hexadecimal digest, the longest SHA-2 option, often asked for in signing and archival workflows.',
     input: 'text',
     params: [],
     output: {
@@ -6646,7 +6663,8 @@ export const KERNEL_MANIFEST = [
     id: 'file-chunk-splitter',
     source: 'file-workbench',
     name: 'File chunk splitter',
-    description: 'Split one file into numbered byte-exact chunks.',
+    description:
+      'Split one file into numbered byte-exact parts at the chunk size you set, up to 1,000 pieces. The file is read in this tab and every part downloads separately.',
     input: 'file',
     params: [
       {
@@ -6951,7 +6969,8 @@ export const KERNEL_MANIFEST = [
     id: 'file-extension-changer',
     source: 'file-workbench',
     name: 'File extension changer',
-    description: 'Change only the extension on downloaded copies.',
+    description:
+      'Change the extension on downloaded copies of the files you pick, in your browser. The bytes are untouched, so this relabels a file rather than converting it.',
     input: 'files',
     params: [
       {
@@ -7189,7 +7208,8 @@ export const KERNEL_MANIFEST = [
     id: 'data-uri-file-maker',
     source: 'file-workbench',
     name: 'Data-URI file maker',
-    description: 'Encode one selected file as a Base64 data URI.',
+    description:
+      'Turn one file of up to 16 MiB into a Base64 data URI you can paste into CSS, HTML or a script, read in your browser with its media type kept in the prefix.',
     input: 'file',
     params: [],
     output: {
@@ -7396,7 +7416,8 @@ export const KERNEL_MANIFEST = [
     id: 'simple-interest-calculator',
     source: 'finance-business',
     name: 'Simple-interest calculator',
-    description: 'Calculate I = Prt and final amount.',
+    description:
+      'Multiply principal by annual rate by years for simple interest that is never compounded, shown as the interest alone and as principal plus interest.',
     input: 'none',
     params: [
       {
@@ -7673,7 +7694,8 @@ export const KERNEL_MANIFEST = [
     id: 'roi-calculator',
     source: 'finance-business',
     name: 'ROI calculator',
-    description: 'Calculate simple return relative to stated cost.',
+    description:
+      'Enter what something cost and what it is worth or sold for, and see the net return in money and as a percentage of the cost, worked out in your browser.',
     input: 'none',
     params: [
       {
@@ -8163,7 +8185,8 @@ export const KERNEL_MANIFEST = [
     id: 'net-worth-calculator',
     source: 'finance-business',
     name: 'Net-worth calculator',
-    description: 'Subtract listed liabilities from listed assets.',
+    description:
+      'List assets and liabilities one per line as name and amount, in your own browser tab, and the two totals are subtracted, with every line itemised back.',
     input: 'text',
     params: [
       {
@@ -8543,7 +8566,8 @@ export const KERNEL_MANIFEST = [
     id: 'profit-calculator',
     source: 'finance-business',
     name: 'Profit calculator',
-    description: 'Subtract fixed and variable costs from revenue.',
+    description:
+      'Take fixed and variable costs off revenue to see profit, total costs and margin as a percentage. Margin is reported as undefined when revenue is zero.',
     input: 'none',
     params: [
       {
@@ -8580,7 +8604,8 @@ export const KERNEL_MANIFEST = [
     id: 'discount-calculator',
     source: 'finance-business',
     name: 'Discount calculator',
-    description: 'Calculate discount amount and final price.',
+    description:
+      'Enter an original price and a percentage off to see the amount taken off and the price after the reduction, for a sale tag that shows only the percentage.',
     input: 'none',
     params: [
       {
@@ -8640,7 +8665,8 @@ export const KERNEL_MANIFEST = [
     id: 'tip-calculator',
     source: 'finance-business',
     name: 'Tip calculator',
-    description: 'Calculate a user-supplied tip and total bill.',
+    description:
+      'Type the bill before tip and the percentage you mean to leave; you get the tip on its own and the bill plus tip, so a card slip can be checked quickly.',
     input: 'none',
     params: [
       {
@@ -8670,7 +8696,8 @@ export const KERNEL_MANIFEST = [
     id: 'split-bill-calculator',
     source: 'finance-business',
     name: 'Split-bill calculator',
-    description: 'Add a supplied tip and split total equally.',
+    description:
+      'Enter the bill, a tip percentage and how many people are paying, from 1 to 100,000, and get the tip, the total and the equal share per person.',
     input: 'none',
     params: [
       {
@@ -9568,7 +9595,8 @@ export const KERNEL_MANIFEST = [
     id: 'pin-code-format-checker',
     source: 'life-admin',
     name: 'PIN code format checker',
-    description: 'Check for a six-digit Indian postal-code shape.',
+    description:
+      'Check an Indian PIN code against the six-digit shape with a non-zero first digit. Spaces are stripped first, and it tests the format, not whether it exists.',
     input: 'text',
     params: [],
     output: {
@@ -9583,7 +9611,8 @@ export const KERNEL_MANIFEST = [
     id: 'indian-phone-number-formatter',
     source: 'life-admin',
     name: 'Indian phone number formatter',
-    description: 'Normalize a mobile number to +91 XXXXX XXXXX.',
+    description:
+      'Paste a mobile number with spaces, brackets, a leading zero or 91, and get it back as +91 XXXXX XXXXX. Ten digits beginning 6 to 9 are accepted.',
     input: 'text',
     params: [],
     output: {
@@ -9667,7 +9696,8 @@ export const KERNEL_MANIFEST = [
     id: 'cheque-amount-writer',
     source: 'life-admin',
     name: 'Cheque amount writer',
-    description: 'Create an English “Rupees … Only” amount line.',
+    description:
+      'Type an amount in this tab and get the English words line for a cheque, in Indian lakh and crore, with paise spelled out and Rupees … Only wrapped around it.',
     input: 'none',
     params: [
       {
@@ -10009,7 +10039,8 @@ export const KERNEL_MANIFEST = [
     id: 'emi-due-date-planner',
     source: 'life-admin',
     name: 'EMI due-date planner',
-    description: 'List monthly due dates from a first due date.',
+    description:
+      'Give a first due date, a count of instalments up to 600 and an amount, and get a CSV of dates; a 31st falls back to the last day of shorter months.',
     input: 'text',
     params: [
       {
@@ -10144,7 +10175,8 @@ export const KERNEL_MANIFEST = [
     id: 'notice-period-calculator',
     source: 'life-admin',
     name: 'Notice period calculator',
-    description: 'Add calendar days to a supplied notice date.',
+    description:
+      'Add calendar days, up to 3,650, to the date notice was given to see the end date. Weekends and holidays are counted, as this is plain calendar arithmetic.',
     input: 'text',
     params: [
       {
@@ -10237,7 +10269,8 @@ export const KERNEL_MANIFEST = [
     id: 'fraction-calculator',
     source: 'math',
     name: 'Fraction calculator',
-    description: 'Add, subtract, multiply, or divide two fractions.',
+    description:
+      'Add, subtract, multiply or divide two fractions written as whole-number numerators and denominators. The answer comes back reduced to its lowest terms.',
     input: 'none',
     params: [
       {
@@ -10304,7 +10337,8 @@ export const KERNEL_MANIFEST = [
     id: 'ratio-calculator',
     source: 'math',
     name: 'Ratio calculator',
-    description: 'Reduce an integer ratio to lowest terms.',
+    description:
+      'Reduce a ratio of two whole numbers to its lowest terms, such as 12:18 down to 2:3. Handy for simplifying aspect ratios, mixes and scale drawings.',
     input: 'none',
     params: [
       {
@@ -10332,7 +10366,8 @@ export const KERNEL_MANIFEST = [
     id: 'proportion-calculator',
     source: 'math',
     name: 'Proportion calculator',
-    description: 'Solve a:b = c:x.',
+    description:
+      'Solve a:b = c:x for the missing fourth value when you know the other three. Useful for scaling a recipe, a map distance or a mixing ratio up or down.',
     input: 'none',
     params: [
       {
@@ -10367,7 +10402,8 @@ export const KERNEL_MANIFEST = [
     id: 'average-calculator',
     source: 'math',
     name: 'Average calculator',
-    description: 'Calculate the arithmetic mean of a number list.',
+    description:
+      'Work out the arithmetic mean of a list of numbers typed with commas, spaces or semicolons between them. The total is divided by how many values you entered.',
     input: 'text',
     params: [],
     output: {
@@ -10380,7 +10416,8 @@ export const KERNEL_MANIFEST = [
     id: 'median-calculator',
     source: 'math',
     name: 'Median calculator',
-    description: 'Calculate the middle value of a number list.',
+    description:
+      'Find the middle value of a list of numbers. The list is sorted first, and with an even count the two central values are averaged to give the median.',
     input: 'text',
     params: [],
     output: {
@@ -10393,7 +10430,8 @@ export const KERNEL_MANIFEST = [
     id: 'mode-calculator',
     source: 'math',
     name: 'Mode calculator',
-    description: 'Find every most-frequent value in a number list.',
+    description:
+      'Find the most frequent value in a list of numbers separated by commas or spaces. Every value tied for the top count is listed, so a two-way tie shows both.',
     input: 'text',
     params: [],
     output: {
@@ -10406,7 +10444,8 @@ export const KERNEL_MANIFEST = [
     id: 'variance-calculator',
     source: 'math',
     name: 'Variance calculator',
-    description: 'Calculate population variance.',
+    description:
+      'Work out the population variance of a list of numbers: each value’s squared distance from the mean, averaged over every value, not over n − 1.',
     input: 'text',
     params: [],
     output: {
@@ -10419,7 +10458,8 @@ export const KERNEL_MANIFEST = [
     id: 'standard-deviation-calculator',
     source: 'math',
     name: 'Standard-deviation calculator',
-    description: 'Calculate population standard deviation.',
+    description:
+      'Work out the population standard deviation of a list of numbers: the square root of a variance that divides the squared spread by n, not by n − 1.',
     input: 'text',
     params: [],
     output: {
@@ -10460,7 +10500,8 @@ export const KERNEL_MANIFEST = [
     id: 'permutation-calculator',
     source: 'math',
     name: 'Permutation calculator',
-    description: 'Calculate nPr for whole numbers.',
+    description:
+      'Work out nPr, the number of ways to arrange r items chosen from n where order matters. Both must be whole numbers and r cannot be larger than n.',
     input: 'none',
     params: [
       {
@@ -10488,7 +10529,8 @@ export const KERNEL_MANIFEST = [
     id: 'combination-calculator',
     source: 'math',
     name: 'Combination calculator',
-    description: 'Calculate nCr for whole numbers.',
+    description:
+      'Work out nCr, the number of ways to choose r items from n when order does not matter. Both are whole numbers, and r cannot be larger than n.',
     input: 'none',
     params: [
       {
@@ -10516,7 +10558,8 @@ export const KERNEL_MANIFEST = [
     id: 'prime-number-checker',
     source: 'math',
     name: 'Prime-number checker',
-    description: 'Check a safe positive integer for primality.',
+    description:
+      'Check whether a whole number from 2 up to one trillion is prime. Trial division by odd divisors reports it as prime or not prime, with no factor list.',
     input: 'none',
     params: [
       {
@@ -10558,7 +10601,8 @@ export const KERNEL_MANIFEST = [
     id: 'gcd-calculator',
     source: 'math',
     name: 'GCD calculator',
-    description: 'Find the greatest common divisor of two integers.',
+    description:
+      'Find the greatest common divisor of two whole numbers, the largest value that divides both exactly. Signs are ignored, so −48 and 18 give the same 6.',
     input: 'none',
     params: [
       {
@@ -10586,7 +10630,8 @@ export const KERNEL_MANIFEST = [
     id: 'lcm-calculator',
     source: 'math',
     name: 'LCM calculator',
-    description: 'Find the least common multiple of two integers.',
+    description:
+      'Find the least common multiple of two whole numbers, the smallest value both divide into. Useful for adding fractions with different denominators.',
     input: 'none',
     params: [
       {
@@ -10614,7 +10659,8 @@ export const KERNEL_MANIFEST = [
     id: 'quadratic-equation-solver',
     source: 'math',
     name: 'Quadratic-equation solver',
-    description: 'Solve ax² + bx + c = 0, including complex roots.',
+    description:
+      'Solve ax² + bx + c = 0 for both roots from the three coefficients. When the discriminant is negative the pair is given in a + bi complex form.',
     input: 'none',
     params: [
       {
@@ -10649,7 +10695,8 @@ export const KERNEL_MANIFEST = [
     id: 'linear-equation-solver',
     source: 'math',
     name: 'Linear-equation solver',
-    description: 'Solve ax + b = 0.',
+    description:
+      'Solve ax + b = 0 for the value of x from the two coefficients. a cannot be zero, since an equation without an x term has no single value to solve for.',
     input: 'none',
     params: [
       {
@@ -10677,7 +10724,8 @@ export const KERNEL_MANIFEST = [
     id: 'logarithm-calculator',
     source: 'math',
     name: 'Logarithm calculator',
-    description: 'Calculate log base b of x.',
+    description:
+      'Work out the logarithm of x to any base you name, whether that is base 10, base 2 or e. x must be above zero and the base positive and not equal to 1.',
     input: 'none',
     params: [
       {
@@ -10705,7 +10753,8 @@ export const KERNEL_MANIFEST = [
     id: 'exponent-calculator',
     source: 'math',
     name: 'Exponent calculator',
-    description: 'Calculate base raised to an exponent.',
+    description:
+      'Raise a base to an exponent, including negative and fractional powers such as 2 to the 8 or 9 to the 0.5. Both boxes take any finite number.',
     input: 'none',
     params: [
       {
@@ -11192,7 +11241,8 @@ export const KERNEL_MANIFEST = [
     id: 'fuel-economy-converter',
     source: 'math',
     name: 'Fuel-economy converter',
-    description: 'Convert L/100 km, US MPG, and imperial MPG.',
+    description:
+      'Convert fuel economy between litres per 100 km, US MPG and imperial MPG. The two gallon sizes differ, so US and imperial figures are not the same.',
     input: 'none',
     params: [
       {
@@ -11579,7 +11629,8 @@ export const KERNEL_MANIFEST = [
     id: 'rectangle-calculator',
     source: 'math',
     name: 'Rectangle calculator',
-    description: 'Calculate area, perimeter, and diagonal.',
+    description:
+      'Work out the area, perimeter and corner-to-corner diagonal of a rectangle from its length and width. Both must be zero or above, and any unit can be used.',
     input: 'none',
     params: [
       {
@@ -11636,7 +11687,8 @@ export const KERNEL_MANIFEST = [
     id: 'temperature-converter',
     source: 'math',
     name: 'Temperature converter',
-    description: 'Convert Celsius, Fahrenheit, and Kelvin.',
+    description:
+      'Convert a temperature between Celsius, Fahrenheit and Kelvin. Values below absolute zero are rejected rather than converted into a negative Kelvin.',
     input: 'none',
     params: [
       {
@@ -11762,7 +11814,8 @@ export const KERNEL_MANIFEST = [
     id: 'random-number-generator',
     source: 'math',
     name: 'Random-number generator',
-    description: 'Generate random integers in an inclusive range.',
+    description:
+      'Generate up to 100 random whole numbers between a minimum and a maximum you set, with both ends of the range included in the possible results.',
     input: 'none',
     params: [
       {
@@ -11797,7 +11850,8 @@ export const KERNEL_MANIFEST = [
     id: 'dice-roller',
     source: 'math',
     name: 'Dice roller',
-    description: 'Roll one to 100 dice with two to 1,000 sides.',
+    description:
+      'Roll one to 100 dice with two to 1,000 sides each. Every individual roll is listed and then added up for a total, so d20 and d100 sets both work.',
     input: 'none',
     params: [
       {
@@ -11825,7 +11879,8 @@ export const KERNEL_MANIFEST = [
     id: 'coin-flipper',
     source: 'math',
     name: 'Coin flipper',
-    description: 'Flip one to 100 fair virtual coins.',
+    description:
+      'Flip one to 100 fair coins at once and see each result listed as heads or tails. Each flip is even odds and independent of the ones before it.',
     input: 'none',
     params: [
       {
@@ -11846,7 +11901,8 @@ export const KERNEL_MANIFEST = [
     id: 'sequence-generator',
     source: 'math',
     name: 'Sequence generator',
-    description: 'Generate an arithmetic sequence.',
+    description:
+      'Generate an arithmetic sequence from a starting value, a step and a term count of up to 1,000. The step can be negative or a decimal to count down.',
     input: 'none',
     params: [
       {
@@ -11881,7 +11937,8 @@ export const KERNEL_MANIFEST = [
     id: 'distance-converter',
     source: 'math',
     name: 'Distance converter',
-    description: 'Convert metric, imperial, and nautical distances.',
+    description:
+      'Convert a length between millimetres, centimetres, metres, kilometres, inches, feet, yards, miles and nautical miles, for travel legs or drawing dimensions.',
     input: 'none',
     params: [
       {
@@ -11992,7 +12049,8 @@ export const KERNEL_MANIFEST = [
     id: 'area-converter',
     source: 'math',
     name: 'Area converter',
-    description: 'Convert common metric and imperial areas.',
+    description:
+      'Convert an area between square metres, square kilometres, square centimetres, hectares, acres, square feet, square inches and square miles for land or floors.',
     input: 'none',
     params: [
       {
@@ -12095,7 +12153,8 @@ export const KERNEL_MANIFEST = [
     id: 'volume-converter',
     source: 'math',
     name: 'Volume converter',
-    description: 'Convert metric and common liquid volumes.',
+    description:
+      'Convert a volume between millilitres, litres, cubic metres, cubic centimetres, US fluid ounces, US cups, US gallons and cubic feet for tanks or drinks.',
     input: 'none',
     params: [
       {
@@ -12198,7 +12257,8 @@ export const KERNEL_MANIFEST = [
     id: 'mass-converter',
     source: 'math',
     name: 'Mass converter',
-    description: 'Convert metric and imperial mass units.',
+    description:
+      'Convert a mass between milligrams, grams, kilograms, metric tonnes, ounces, pounds and stone, for recipe amounts, parcel weights or body weight.',
     input: 'none',
     params: [
       {
@@ -12293,7 +12353,8 @@ export const KERNEL_MANIFEST = [
     id: 'speed-converter',
     source: 'math',
     name: 'Speed converter',
-    description: 'Convert speed units using exact standard factors.',
+    description:
+      'Convert a speed between metres per second, kilometres per hour, miles per hour, knots and feet per second, for travel, running or wind figures.',
     input: 'none',
     params: [
       {
@@ -12372,7 +12433,8 @@ export const KERNEL_MANIFEST = [
     id: 'time-unit-converter',
     source: 'math',
     name: 'Time-unit converter',
-    description: 'Convert elapsed-time units.',
+    description:
+      'Convert a duration between milliseconds, seconds, minutes, hours, days and weeks, for timeouts, run times and other elapsed spans given in the wrong unit.',
     input: 'none',
     params: [
       {
@@ -12546,7 +12608,8 @@ export const KERNEL_MANIFEST = [
     id: 'energy-converter',
     source: 'math',
     name: 'Energy converter',
-    description: 'Convert joules, watt-hours, calories, and BTU.',
+    description:
+      'Convert energy between joules, kilojoules, watt-hours, kilowatt-hours, calories, kilocalories and BTU (IT), for food labels, bills and heating figures.',
     input: 'none',
     params: [
       {
@@ -12641,7 +12704,8 @@ export const KERNEL_MANIFEST = [
     id: 'power-converter',
     source: 'math',
     name: 'Power converter',
-    description: 'Convert watts and common power units.',
+    description:
+      'Convert power between watts, kilowatts, megawatts, mechanical horsepower and BTU per hour, for appliance ratings, engines and heating output.',
     input: 'none',
     params: [
       {
@@ -12720,7 +12784,8 @@ export const KERNEL_MANIFEST = [
     id: 'force-converter',
     source: 'math',
     name: 'Force converter',
-    description: 'Convert newtons and common force units.',
+    description:
+      'Convert a force between newtons, kilonewtons, dynes, kilogram-force and pound-force, for load ratings, spring values and physics homework answers.',
     input: 'none',
     params: [
       {
@@ -12799,7 +12864,8 @@ export const KERNEL_MANIFEST = [
     id: 'torque-converter',
     source: 'math',
     name: 'Torque converter',
-    description: 'Convert newton-metres and common torque units.',
+    description:
+      'Convert torque between newton-metres, newton-centimetres, kilogram-force metres, pound-force feet and pound-force inches, for tightening specs.',
     input: 'none',
     params: [
       {
@@ -12878,7 +12944,8 @@ export const KERNEL_MANIFEST = [
     id: 'angle-converter',
     source: 'math',
     name: 'Angle converter',
-    description: 'Convert degrees, radians, gradians, and turns.',
+    description:
+      'Convert an angle between radians, degrees, gradians and turns, for trigonometry, CAD drawings and code that expects radians rather than degrees.',
     input: 'none',
     params: [
       {
@@ -12949,7 +13016,8 @@ export const KERNEL_MANIFEST = [
     id: 'frequency-converter',
     source: 'math',
     name: 'Frequency converter',
-    description: 'Convert hertz and common frequency scales.',
+    description:
+      'Convert a frequency between hertz, kilohertz, megahertz, gigahertz and revolutions per minute, for clock speeds, radio bands and motor ratings.',
     input: 'none',
     params: [
       {
@@ -13028,7 +13096,8 @@ export const KERNEL_MANIFEST = [
     id: 'data-size-converter',
     source: 'math',
     name: 'Data-size converter',
-    description: 'Convert decimal and binary byte units.',
+    description:
+      'Convert a file size between bytes, kilobytes, megabytes and gigabytes in powers of ten, and kibibytes, mebibytes and gibibytes in powers of two.',
     input: 'none',
     params: [
       {
@@ -13283,7 +13352,8 @@ export const KERNEL_MANIFEST = [
     id: 'weekly-planner',
     source: 'productivity',
     name: 'Weekly planner',
-    description: 'Group and order items by weekday.',
+    description:
+      'Paste lines of weekday and task separated by a pipe; tasks are grouped under Monday through Sunday in order, and days with nothing against them are dropped.',
     input: 'text',
     params: [],
     output: {
@@ -13587,7 +13657,8 @@ export const KERNEL_MANIFEST = [
     id: 'url-qr-code',
     source: 'qr-barcode',
     name: 'URL QR code',
-    description: 'Encode a validated HTTP or HTTPS destination.',
+    description:
+      'Turn a link into a downloadable SVG QR symbol. The destination must be a complete HTTP or HTTPS address, and you choose the width and error-correction level.',
     input: 'text',
     params: [
       {
@@ -13779,7 +13850,8 @@ export const KERNEL_MANIFEST = [
     id: 'vcard-qr-code',
     source: 'qr-barcode',
     name: 'vCard QR code',
-    description: 'Create a compact vCard 3.0 contact payload.',
+    description:
+      'Build a vCard 3.0 QR symbol carrying a name, phone, email and organization, so a scan offers to save the contact. The email address is checked for shape.',
     input: 'text',
     params: [
       {
@@ -13912,7 +13984,8 @@ export const KERNEL_MANIFEST = [
     id: 'sms-qr-code',
     source: 'qr-barcode',
     name: 'SMS QR code',
-    description: 'Encode a phone number and draft SMS body.',
+    description:
+      'Encode a phone number and a draft message as an sms URI QR symbol, so that a scan opens a new text with the recipient and the body already filled in.',
     input: 'text',
     params: [
       {
@@ -13968,7 +14041,8 @@ export const KERNEL_MANIFEST = [
     id: 'phone-qr-code',
     source: 'qr-barcode',
     name: 'Phone QR code',
-    description: 'Create a tel URI QR symbol.',
+    description:
+      'Encode a phone number as a tel URI QR symbol, so a scan opens the dialler. Spaces, brackets and dashes are stripped and a leading country-code plus is kept.',
     input: 'text',
     params: [
       {
@@ -14017,7 +14091,8 @@ export const KERNEL_MANIFEST = [
     id: 'location-qr-code',
     source: 'qr-barcode',
     name: 'Location QR code',
-    description: 'Encode latitude and longitude as a geo URI.',
+    description:
+      'Encode a latitude and longitude as a geo URI QR symbol with an optional place label. Both coordinates are range-checked before the SVG symbol is drawn.',
     input: 'text',
     params: [
       {
@@ -14220,7 +14295,8 @@ export const KERNEL_MANIFEST = [
     id: 'bitcoin-qr-code',
     source: 'qr-barcode',
     name: 'Bitcoin QR code',
-    description: 'Create a BIP21-shaped bitcoin payment URI.',
+    description:
+      'Build a BIP21 bitcoin payment URI QR symbol from an address with an optional amount, label and message. The address is shape-checked, not verified as real.',
     input: 'text',
     params: [
       {
@@ -14290,7 +14366,8 @@ export const KERNEL_MANIFEST = [
     id: 'app-store-qr-code',
     source: 'qr-barcode',
     name: 'App Store QR code',
-    description: 'Encode a supplied official app-listing URL.',
+    description:
+      'Turn an app listing page address into an SVG QR symbol for a poster, slide or packaging insert. The listing itself is not checked, only the address shape.',
     input: 'text',
     params: [
       {
@@ -14483,7 +14560,8 @@ export const KERNEL_MANIFEST = [
     id: 'qr-code-batch-generator',
     source: 'qr-barcode',
     name: 'QR code batch generator',
-    description: 'Generate up to 12 QR symbols in one SVG sheet.',
+    description:
+      'Paste one payload per line and get up to 12 QR symbols on a single SVG sheet in a three-column grid, all sharing the error-correction level you choose.',
     input: 'text',
     params: [
       {
@@ -15209,7 +15287,8 @@ export const KERNEL_MANIFEST = [
     id: 'resistor-color-code',
     source: 'science-education',
     name: 'Resistor color-code calculator',
-    description: 'Decode a four-band resistor value and tolerance.',
+    description:
+      'Pick the two digit bands, a multiplier from silver to blue and a tolerance band, and read back the resistance in ohms with its tolerance range.',
     input: 'none',
     params: [
       {
@@ -15534,7 +15613,8 @@ export const KERNEL_MANIFEST = [
     id: 'kinetic-energy-calculator',
     source: 'science-education',
     name: 'Kinetic-energy calculator',
-    description: 'Calculate ½mv² in joules.',
+    description:
+      'Enter a mass in kilograms and a speed in metres per second to get ½mv² in joules; a negative velocity is fine, since the speed term is squared.',
     input: 'none',
     params: [
       {
@@ -15670,7 +15750,8 @@ export const KERNEL_MANIFEST = [
     id: 'momentum-calculator',
     source: 'science-education',
     name: 'Momentum calculator',
-    description: 'Calculate linear momentum p = mv.',
+    description:
+      'Work out linear momentum as mass times velocity, with mass in kilograms and velocity in metres per second; a negative velocity keeps its sign in the result.',
     input: 'none',
     params: [
       {
@@ -15700,7 +15781,8 @@ export const KERNEL_MANIFEST = [
     id: 'density-calculator',
     source: 'science-education',
     name: 'Density calculator',
-    description: 'Calculate density from mass and volume.',
+    description:
+      'Divide a mass in kilograms by a volume in cubic metres for density in kg/m³. The volume has to be above zero, so an empty volume is rejected.',
     input: 'none',
     params: [
       {
@@ -15730,7 +15812,8 @@ export const KERNEL_MANIFEST = [
     id: 'buoyancy-calculator',
     source: 'science-education',
     name: 'Buoyancy calculator',
-    description: 'Calculate ideal Archimedean buoyant force ρVg.',
+    description:
+      'Multiply fluid density, displaced volume and gravity for the ideal Archimedean buoyant force in newtons. Gravity starts at 9.80665 m/s² and can be changed.',
     input: 'none',
     params: [
       {
@@ -15767,7 +15850,8 @@ export const KERNEL_MANIFEST = [
     id: 'reynolds-number-calculator',
     source: 'science-education',
     name: 'Reynolds-number calculator',
-    description: 'Calculate Re = ρvL/μ from SI inputs.',
+    description:
+      'Divide density times velocity times characteristic length by dynamic viscosity for the dimensionless Reynolds number. Inputs are SI: kg/m³, m/s, m, Pa·s.',
     input: 'none',
     params: [
       {
@@ -15811,7 +15895,8 @@ export const KERNEL_MANIFEST = [
     id: 'wave-speed-calculator',
     source: 'science-education',
     name: 'Wave-speed calculator',
-    description: 'Calculate wave speed v = fλ.',
+    description:
+      'Multiply frequency in hertz by wavelength in metres for wave speed in metres per second, the relation behind sound, light and waves on a string.',
     input: 'none',
     params: [
       {
@@ -17225,7 +17310,8 @@ export const KERNEL_MANIFEST = [
     id: 'csv-merger',
     source: 'spreadsheet',
     name: 'CSV merger',
-    description: 'Append two CSV datasets with the same headers.',
+    description:
+      'Stack two CSV datasets into one in your browser: rows from the second are appended below the first, and the headers have to match exactly and in the same order.',
     input: 'text',
     params: [
       {
@@ -17616,7 +17702,8 @@ export const KERNEL_MANIFEST = [
     id: 'spreadsheet-cell-inspector',
     source: 'spreadsheet',
     name: 'Spreadsheet cell inspector',
-    description: 'Inspect one 1-based data row and named column.',
+    description:
+      'Look up one cell by data row number and column name to see its value, whether it is blank, how many characters it holds and how many UTF-8 bytes it takes.',
     input: 'text',
     params: [
       {
@@ -17803,7 +17890,8 @@ export const KERNEL_MANIFEST = [
     id: 'random-row-selector',
     source: 'spreadsheet',
     name: 'Random row selector',
-    description: 'Select one complete row using browser randomness.',
+    description:
+      'Draw one row at random from a pasted CSV and get back its row number together with every column value, for picking a winner or spot-checking a dataset.',
     input: 'text',
     params: [],
     output: {
@@ -17852,7 +17940,8 @@ export const KERNEL_MANIFEST = [
     id: 'outlier-detector',
     source: 'spreadsheet',
     name: 'Outlier detector',
-    description: 'Flag numeric values outside the 1.5×IQR fences.',
+    description:
+      'Flag the values in a numeric CSV column that fall outside the 1.5×IQR fences. At least four numeric rows are needed, and both quartiles are reported too.',
     input: 'text',
     params: [
       {
@@ -19323,7 +19412,8 @@ export const KERNEL_MANIFEST = [
     id: 'word-counter',
     source: 'text',
     name: 'Word counter',
-    description: 'Count words using Unicode-aware word boundaries.',
+    description:
+      'Count the words in a passage using Unicode letter and digit runs, so accented words count once and a contraction such as don’t stays a single word.',
     input: 'text',
     params: [],
     output: {
@@ -19362,7 +19452,8 @@ export const KERNEL_MANIFEST = [
     id: 'paragraph-counter',
     source: 'text',
     name: 'Paragraph counter',
-    description: 'Count non-empty blocks separated by blank lines.',
+    description:
+      'Count the paragraphs in a draft, where a paragraph is any block of text separated by a blank line. Blocks holding only whitespace are left out of the total.',
     input: 'text',
     params: [],
     output: {
@@ -19375,7 +19466,8 @@ export const KERNEL_MANIFEST = [
     id: 'reading-time',
     source: 'text',
     name: 'Reading time calculator',
-    description: 'Estimate reading time at 225 words per minute.',
+    description:
+      'Estimate how long a draft takes to read at 225 words per minute. Anything under a minute is reported in seconds, longer pieces as minutes and seconds.',
     input: 'text',
     params: [],
     output: {
@@ -19388,7 +19480,8 @@ export const KERNEL_MANIFEST = [
     id: 'slug-generator',
     source: 'text',
     name: 'Slug generator',
-    description: 'Create a lowercase, ASCII-friendly URL slug.',
+    description:
+      'Turn a headline into a lowercase URL slug: accents are stripped back to plain ASCII, every other character becomes a hyphen, and stray hyphens are trimmed.',
     input: 'text',
     params: [],
     output: {
@@ -19401,7 +19494,8 @@ export const KERNEL_MANIFEST = [
     id: 'whitespace-remover',
     source: 'text',
     name: 'Whitespace remover',
-    description: 'Collapse whitespace runs to a single space.',
+    description:
+      'Collapse every run of spaces, tabs and line breaks into one space and trim the ends, turning text copied out of a PDF back into a single tidy line.',
     input: 'text',
     params: [],
     output: {
@@ -19414,7 +19508,8 @@ export const KERNEL_MANIFEST = [
     id: 'blank-line-remover',
     source: 'text',
     name: 'Blank-line remover',
-    description: 'Remove empty or whitespace-only lines.',
+    description:
+      'Strip the empty and whitespace-only lines out of a pasted list or block of text. Line endings are normalized first, so Windows CRLF files clean up too.',
     input: 'text',
     params: [],
     output: {
@@ -19427,7 +19522,8 @@ export const KERNEL_MANIFEST = [
     id: 'duplicate-line-remover',
     source: 'text',
     name: 'Duplicate-line remover',
-    description: 'Keep the first occurrence of every exact line.',
+    description:
+      'Keep only the first appearance of each exact line and drop every later repeat. Matching is literal, so case and trailing spaces both count as a difference.',
     input: 'text',
     params: [],
     output: {
@@ -19440,7 +19536,8 @@ export const KERNEL_MANIFEST = [
     id: 'line-sorter',
     source: 'text',
     name: 'Line sorter',
-    description: 'Sort lines with locale-aware comparison.',
+    description:
+      'Sort a list of lines into ascending or descending order with locale-aware comparison, so accented words land where a reader would expect to find them.',
     input: 'text',
     params: [
       {
@@ -19471,7 +19568,8 @@ export const KERNEL_MANIFEST = [
     id: 'line-shuffler',
     source: 'text',
     name: 'Line shuffler',
-    description: 'Randomize line order with browser randomness.',
+    description:
+      'Put a list of lines into random order in your browser. Useful for drawing names, mixing up quiz questions, or reordering rows of sample data before a test.',
     input: 'text',
     params: [],
     output: {
@@ -19484,7 +19582,8 @@ export const KERNEL_MANIFEST = [
     id: 'line-number-adder',
     source: 'text',
     name: 'Line-number adder',
-    description: 'Prefix every line with a stable line number.',
+    description:
+      'Put a number in front of every line, zero-padded to the width of the largest number so the numbers stay aligned when you paste the list somewhere else.',
     input: 'text',
     params: [],
     output: {
@@ -19497,7 +19596,8 @@ export const KERNEL_MANIFEST = [
     id: 'text-reverser',
     source: 'text',
     name: 'Text reverser',
-    description: 'Reverse user-perceived Unicode characters.',
+    description:
+      'Reverse text by user-perceived character, so an accented letter, an emoji or a flag sequence stays whole instead of breaking into separate pieces.',
     input: 'text',
     params: [],
     output: {
@@ -19510,7 +19610,8 @@ export const KERNEL_MANIFEST = [
     id: 'text-repeater',
     source: 'text',
     name: 'Text repeater',
-    description: 'Repeat text up to 100 times.',
+    description:
+      'Repeat a word, a line or a whole block of text between 1 and 100 times, each copy on its own line. Handy for test data and for filling out a draft layout.',
     input: 'text',
     params: [
       {
@@ -19566,7 +19667,8 @@ export const KERNEL_MANIFEST = [
     id: 'regex-replace',
     source: 'text',
     name: 'Regex replace',
-    description: 'Replace JavaScript regular-expression matches.',
+    description:
+      'Replace every match of a JavaScript regular expression, with capture groups available in the replacement and a switch for matching upper and lower case.',
     input: 'text',
     params: [
       {
@@ -19622,7 +19724,8 @@ export const KERNEL_MANIFEST = [
     id: 'text-deduplicator',
     source: 'text',
     name: 'Text deduplicator',
-    description: 'Remove duplicate whitespace-delimited tokens.',
+    description:
+      'Remove repeated words from a whitespace-separated list, keeping the first of each. Matching is exact, so two spellings that differ in case both survive.',
     input: 'text',
     params: [],
     output: {
@@ -19635,7 +19738,8 @@ export const KERNEL_MANIFEST = [
     id: 'lorem-ipsum-generator',
     source: 'text',
     name: 'Lorem ipsum generator',
-    description: 'Generate local placeholder paragraphs.',
+    description:
+      'Generate 1 to 20 paragraphs of placeholder text, each three to five sentences long, with the familiar lorem ipsum opening line on the first paragraph.',
     input: 'none',
     params: [
       {
@@ -19656,7 +19760,8 @@ export const KERNEL_MANIFEST = [
     id: 'random-word-generator',
     source: 'text',
     name: 'Random word generator',
-    description: 'Pick words from a small built-in neutral list.',
+    description:
+      'Generate 1 to 100 random words, one per line, drawn from a built-in list of 20 plain English words. Nothing needs pasting in to get a list back out.',
     input: 'none',
     params: [
       {
@@ -19677,7 +19782,8 @@ export const KERNEL_MANIFEST = [
     id: 'anagram-finder',
     source: 'text',
     name: 'Anagram finder',
-    description: 'Find exact anagrams in a list you provide.',
+    description:
+      'Paste a word and a list of candidates, one per line, to see which are exact anagrams. Case, accents and punctuation are ignored, and the word itself is skipped.',
     input: 'text',
     params: [
       {
@@ -19725,7 +19831,8 @@ export const KERNEL_MANIFEST = [
     id: 'unicode-normalizer',
     source: 'text',
     name: 'Unicode normalizer',
-    description: 'Normalize text to NFC, NFD, NFKC, or NFKD.',
+    description:
+      'Convert text to NFC, NFD, NFKC or NFKD normalization, for when the same accented word compares as unequal between two systems or two pasted files.',
     input: 'text',
     params: [
       {
@@ -19778,7 +19885,8 @@ export const KERNEL_MANIFEST = [
     id: 'emoji-remover',
     source: 'text',
     name: 'Emoji remover',
-    description: 'Remove extended pictographic characters.',
+    description:
+      'Take the emoji out of a caption or a message, including the joined multi-part sequences, then tidy up the double spaces that removing them leaves behind.',
     input: 'text',
     params: [],
     output: {
@@ -19845,7 +19953,8 @@ export const KERNEL_MANIFEST = [
     id: 'pig-latin-translator',
     source: 'text',
     name: 'Pig Latin translator',
-    description: 'Convert simple English words to Pig Latin.',
+    description:
+      'Convert English text to Pig Latin: a word starting with a vowel gains way, and any other word moves its leading consonants to the end and gains ay.',
     input: 'text',
     params: [],
     output: {
@@ -20322,7 +20431,8 @@ export const KERNEL_MANIFEST = [
     id: 'utm-parser',
     source: 'web',
     name: 'UTM parser',
-    description: 'Read UTM parameters from an absolute URL.',
+    description:
+      'Paste a campaign web address and read back its utm_source, utm_medium, utm_campaign, utm_term and utm_content values. HTTP and HTTPS addresses only.',
     input: 'text',
     params: [],
     output: {
@@ -20554,7 +20664,8 @@ export const KERNEL_MANIFEST = [
     id: 'css-border-radius-generator',
     source: 'web',
     name: 'CSS border-radius generator',
-    description: 'Generate four-corner CSS border-radius shorthand.',
+    description:
+      'Set a pixel radius for each corner and get the border-radius shorthand back in top-left, top-right, bottom-right, bottom-left order. Negatives are refused.',
     input: 'none',
     params: [
       {
@@ -20646,7 +20757,8 @@ export const KERNEL_MANIFEST = [
     id: 'css-flexbox-generator',
     source: 'web',
     name: 'CSS flexbox generator',
-    description: 'Generate common flex container declarations.',
+    description:
+      'Pick a direction, a justify-content and align-items value, and a pixel gap, then copy the matching flex container block without recalling the property names.',
     input: 'none',
     params: [
       {
@@ -22119,5 +22231,79 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+  },
+  {
+    id: 'pdfcrypt-inspect',
+    source: 'formats-pdfcrypt',
+    name: 'Inspect PDF encryption',
+    description:
+      'Identify the Standard security-handler revision and password kind.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
+    id: 'pdfcrypt-decrypt',
+    source: 'formats-pdfcrypt',
+    name: 'Unlock PDF',
+    description:
+      'Decrypt a Standard-handler PDF with a supplied user or owner password.',
+    input: 'file',
+    params: [
+      {
+        id: 'password',
+        label: 'Password',
+        type: 'text',
+        defaultValue: '',
+        serialisable: false,
+      },
+    ],
+    output: {
+      kind: 'files',
+      extension: 'pdf',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
+    id: 'pdfcrypt-encrypt-r6',
+    source: 'formats-pdfcrypt',
+    name: 'Protect PDF with AES-256',
+    description: 'Encrypt a PDF with revision 6 AES-256 Standard security.',
+    input: 'file',
+    params: [
+      {
+        id: 'userPassword',
+        label: 'Open password',
+        type: 'text',
+        defaultValue: '',
+        serialisable: false,
+      },
+      {
+        id: 'ownerPassword',
+        label: 'Owner password',
+        type: 'text',
+        defaultValue: '',
+        serialisable: false,
+      },
+      {
+        id: 'permissions',
+        label: 'Permission mask',
+        type: 'number',
+        defaultValue: '-4',
+        serialisable: true,
+      },
+    ],
+    output: {
+      kind: 'files',
+      extension: 'pdf',
+    },
+    runtime: 'pure',
+    deterministic: false,
   },
 ] as const satisfies readonly KernelOperationDescriptor[];

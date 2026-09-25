@@ -79,7 +79,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'simple-interest-calculator',
     name: 'Simple-interest calculator',
-    description: 'Calculate I = Prt and final amount.',
+    description:
+      'Multiply principal by annual rate by years for simple interest that is never compounded, shown as the interest alone and as principal plus interest.',
     fields: [
       number('principal', 'Principal', '100000'),
       number('annualRate', 'Annual rate (%)', '8'),
@@ -152,7 +153,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'roi-calculator',
     name: 'ROI calculator',
-    description: 'Calculate simple return relative to stated cost.',
+    description:
+      'Enter what something cost and what it is worth or sold for, and see the net return in money and as a percentage of the cost, worked out in your browser.',
     fields: [
       number('gain', 'Final value / proceeds', '130000'),
       number('cost', 'Cost', '100000'),
@@ -322,7 +324,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'net-worth-calculator',
     name: 'Net-worth calculator',
-    description: 'Subtract listed liabilities from listed assets.',
+    description:
+      'List assets and liabilities one per line as name and amount, in your own browser tab, and the two totals are subtracted, with every line itemised back.',
     fields: [
       area(
         'assets',
@@ -456,7 +459,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'profit-calculator',
     name: 'Profit calculator',
-    description: 'Subtract fixed and variable costs from revenue.',
+    description:
+      'Take fixed and variable costs off revenue to see profit, total costs and margin as a percentage. Margin is reported as undefined when revenue is zero.',
     fields: [
       number('revenue', 'Revenue', '500000'),
       number('fixed', 'Fixed costs', '100000'),
@@ -467,7 +471,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'discount-calculator',
     name: 'Discount calculator',
-    description: 'Calculate discount amount and final price.',
+    description:
+      'Enter an original price and a percentage off to see the amount taken off and the price after the reduction, for a sale tag that shows only the percentage.',
     fields: [
       number('price', 'Original price', '1000'),
       number('discount', 'Discount (%)', '20'),
@@ -487,7 +492,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'tip-calculator',
     name: 'Tip calculator',
-    description: 'Calculate a user-supplied tip and total bill.',
+    description:
+      'Type the bill before tip and the percentage you mean to leave; you get the tip on its own and the bill plus tip, so a card slip can be checked quickly.',
     fields: [
       number('bill', 'Bill before tip', '2000'),
       number('rate', 'Tip (%)', '10'),
@@ -498,7 +504,8 @@ export const FINANCE_OPERATIONS: readonly FinanceOperation[] = [
   {
     id: 'split-bill-calculator',
     name: 'Split-bill calculator',
-    description: 'Add a supplied tip and split total equally.',
+    description:
+      'Enter the bill, a tip percentage and how many people are paying, from 1 to 100,000, and get the tip, the total and the equal share per person.',
     fields: [
       number('bill', 'Bill before tip', '3000'),
       number('tip', 'Tip (%)', '10'),

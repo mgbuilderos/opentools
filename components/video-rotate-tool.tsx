@@ -21,7 +21,7 @@ import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
 import { sourceFromFile, type ByteSource } from '@/lib/tools/video/source';
 import { VideoSuiteNav, VideoRelatedLinks } from '@/components/video-suite-nav';
 
-const MAX_BYTES = 4 * 1024 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024 * 1024;
 
 interface Loaded {
   name: string;

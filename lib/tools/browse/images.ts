@@ -72,6 +72,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/image/to-text',
         workspaceId: 'image-to-text',
       },
+      {
+        id: 'heic-converter',
+        name: 'HEIC to JPG converter',
+        description:
+          'Turn the .heic photos a phone saves into JPEG or PNG, in this tab.',
+        href: '/image/heic-to-jpg',
+        workspaceId: 'heic-converter',
+      },
     ],
   },
   {

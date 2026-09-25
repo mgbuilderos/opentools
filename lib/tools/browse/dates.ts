@@ -73,21 +73,24 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'date-workbench:week-number-calculator',
         name: 'ISO week-number calculator',
-        description: 'Calculate the ISO-8601 week year and week number.',
+        description:
+          'Turn a calendar date into its ISO-8601 week, returned as YYYY-Www. The week year can differ from the date’s own year in early January and late December.',
         href: '/date/workbench?tool=week-number-calculator',
         workspaceId: 'date-workbench',
       },
       {
         id: 'date-workbench:day-of-year-calculator',
         name: 'Day-of-year calculator',
-        description: 'Calculate the one-based ordinal day in the year.',
+        description:
+          'Enter a date from year 0100 to 9999 and get its ordinal position in that year, where 1 January is day 1 and 31 December is 365, or 366 in a leap year.',
         href: '/date/workbench?tool=day-of-year-calculator',
         workspaceId: 'date-workbench',
       },
       {
         id: 'date-workbench:leap-year-checker',
         name: 'Leap-year checker',
-        description: 'Apply the proleptic Gregorian leap-year rules.',
+        description:
+          'Enter a year from 1 to 9999 to see whether it is a leap year under the Gregorian rule: divisible by 4, except century years, unless divisible by 400.',
         href: '/date/workbench?tool=leap-year-checker',
         workspaceId: 'date-workbench',
       },
@@ -182,7 +185,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'productivity-workbench:weekly-planner',
         name: 'Weekly planner',
-        description: 'Group and order items by weekday.',
+        description:
+          'Paste lines of weekday and task separated by a pipe; tasks are grouped under Monday through Sunday in order, and days with nothing against them are dropped.',
         href: '/productivity/workbench?tool=weekly-planner',
         workspaceId: 'productivity-workbench',
       },

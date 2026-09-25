@@ -98,7 +98,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'spreadsheet-workbench:csv-merger',
         name: 'CSV merger',
-        description: 'Append two CSV datasets with the same headers.',
+        description:
+          'Stack two CSV datasets into one in your browser: rows from the second are appended below the first, and the headers have to match exactly and in the same order.',
         href: '/data/workbench?tool=csv-merger',
         workspaceId: 'spreadsheet-workbench',
       },
@@ -215,7 +216,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'spreadsheet-workbench:spreadsheet-cell-inspector',
         name: 'Spreadsheet cell inspector',
-        description: 'Inspect one 1-based data row and named column.',
+        description:
+          'Look up one cell by data row number and column name to see its value, whether it is blank, how many characters it holds and how many UTF-8 bytes it takes.',
         href: '/data/workbench?tool=spreadsheet-cell-inspector',
         workspaceId: 'spreadsheet-workbench',
       },
@@ -269,7 +271,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'spreadsheet-workbench:random-row-selector',
         name: 'Random row selector',
-        description: 'Select one complete row using browser randomness.',
+        description:
+          'Draw one row at random from a pasted CSV and get back its row number together with every column value, for picking a winner or spot-checking a dataset.',
         href: '/data/workbench?tool=random-row-selector',
         workspaceId: 'spreadsheet-workbench',
       },
@@ -292,7 +295,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'spreadsheet-workbench:outlier-detector',
         name: 'Outlier detector',
-        description: 'Flag numeric values outside the 1.5×IQR fences.',
+        description:
+          'Flag the values in a numeric CSV column that fall outside the 1.5×IQR fences. At least four numeric rows are needed, and both quartiles are reported too.',
         href: '/data/workbench?tool=outlier-detector',
         workspaceId: 'spreadsheet-workbench',
       },

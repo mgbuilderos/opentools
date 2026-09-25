@@ -204,6 +204,20 @@ const CHROME = new Set([
   'lib/utils.ts',
   'lib/seo/live-tools.ts',
   'lib/seo/live-tool-routes.ts',
+  /*
+    The related-tools graph, which every tool page imports and which is
+    recomputed from the whole catalogue: add one tool anywhere and the four
+    suggestions at the foot of some other page may change. That is the second
+    bullet above exactly -- adding a tool elsewhere must not redate every
+    existing tool -- and it is what this list was written to stop. Measured
+    2026-09-25: appending one unused export to this file moved 1,307 of 1,464
+    URLs to that day's date, for pages whose rendered bytes were identical.
+
+    The words themselves are not lost. Every name and description in that block
+    belongs to the tool it points at, and that tool's own module dates its own
+    page.
+  */
+  'lib/seo/related-tools.ts',
   // Title and description tables read by every tool page. Rewording one tool's
   // description must not claim that all 1,413 pages changed -- which is what
   // happened on the 2026-09-23 release, where a metadata pass across ~58 files

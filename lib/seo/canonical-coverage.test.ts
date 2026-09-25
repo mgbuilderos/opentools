@@ -89,7 +89,13 @@ const DECLARES = /canonical\s*:/;
  */
 const CANONICAL_HELPERS: ReadonlyArray<
   readonly [name: string, source: string]
-> = [['toolPageMetadata', 'lib/seo/tool-page-depth.ts']];
+> = [
+  ['toolPageMetadata', 'lib/seo/tool-page-depth.ts'],
+  // The nineteen category hubs. Every one of them is four lines calling this
+  // helper, which is the point: one place states the canonical, so it cannot
+  // be right on eighteen pages and missing on the nineteenth.
+  ['categoryHubMetadata', 'lib/seo/category-hub-metadata.ts'],
+];
 
 function declaresIn(file: string): boolean {
   const source = readFileSync(file, 'utf8');

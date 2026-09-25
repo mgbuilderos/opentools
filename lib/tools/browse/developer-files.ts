@@ -48,7 +48,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:url-encode-component',
         name: 'URL component encoder',
-        description: 'Percent-encode one query value or path segment.',
+        description:
+          'Percent-encode one query value or path segment so that spaces, ampersands, slashes and question marks survive being placed inside a larger web address.',
         href: '/developer/workbench?tool=url-encode-component',
         workspaceId: 'developer-data-workbench',
       },
@@ -71,7 +72,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:url-decode',
         name: 'Full URL decoder',
-        description: 'Decode percent escapes in a complete URL string.',
+        description:
+          'Decode percent escapes across a whole web address while leaving reserved separators such as %26 and %3F encoded, so the structure of the link is unchanged.',
         href: '/developer/workbench?tool=url-decode',
         workspaceId: 'developer-data-workbench',
       },
@@ -94,14 +96,16 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:base64-encode-text',
         name: 'Base64 text encoder',
-        description: 'Encode UTF-8 text as padded standard Base64.',
+        description:
+          'Encode text as standard Base64 with plus, slash and equals padding. Accented letters, emoji and other non-ASCII characters are read as UTF-8 bytes first.',
         href: '/developer/workbench?tool=base64-encode-text',
         workspaceId: 'developer-data-workbench',
       },
       {
         id: 'developer-data-workbench:base64-decode-text',
         name: 'Base64 text decoder',
-        description: 'Decode padded standard Base64 and validate UTF-8.',
+        description:
+          'Turn standard Base64 back into readable text. Whitespace is ignored, the padding must be correct, and decoded bytes are rejected if they are not valid UTF-8.',
         href: '/developer/workbench?tool=base64-decode-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -115,7 +119,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:base64url-decode-text',
         name: 'Base64URL text decoder',
-        description: 'Decode URL-safe Base64 text and validate UTF-8.',
+        description:
+          'Turn URL-safe Base64 back into text. The hyphen and underscore alphabet is accepted with or without padding, and non-UTF-8 byte sequences are reported.',
         href: '/developer/workbench?tool=base64url-decode-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -198,7 +203,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:url-path-segments',
         name: 'URL path segments',
-        description: 'Decode and list each non-empty pathname segment.',
+        description:
+          'List the path segments of a web address as a JSON array. Empty segments are dropped and each remaining one is percent-decoded, so %20 reads as a space.',
         href: '/developer/workbench?tool=url-path-segments',
         workspaceId: 'developer-data-workbench',
       },
@@ -236,7 +242,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:regex-extractor',
         name: 'Regex extractor',
-        description: 'Extract one capture group from up to 200 matches.',
+        description:
+          'Pull one capture group out of every regular-expression match and list the results one per line, up to 200 matches, with group 0 returning the whole match.',
         href: '/developer/workbench?tool=regex-extractor',
         workspaceId: 'developer-data-workbench',
       },
@@ -301,7 +308,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:hex-encode-text',
         name: 'Text to hexadecimal',
-        description: 'Encode UTF-8 bytes as lowercase hexadecimal.',
+        description:
+          'Turn text into lowercase hexadecimal, two digits for each UTF-8 byte and no separators, for when you need to see how characters such as emoji are stored.',
         href: '/developer/workbench?tool=hex-encode-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -316,7 +324,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-data-workbench:binary-encode-text',
         name: 'Text to binary bytes',
-        description: 'Encode UTF-8 bytes as eight-bit binary groups.',
+        description:
+          'Turn text into eight-bit binary, one space-separated group per UTF-8 byte. Useful for teaching how characters map to bytes or for checking a binary dump.',
         href: '/developer/workbench?tool=binary-encode-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -332,7 +341,7 @@ export const SECTIONS: readonly BrowseSection[] = [
         id: 'developer-data-workbench:sha-256-text',
         name: 'SHA-256 text hash',
         description:
-          'Hash UTF-8 text with the browser Web Crypto implementation.',
+          'Hash text with SHA-256 and read back the 64-character hexadecimal digest, the usual choice for fingerprints, cache keys and integrity comparisons.',
         href: '/developer/workbench?tool=sha-256-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -340,7 +349,7 @@ export const SECTIONS: readonly BrowseSection[] = [
         id: 'developer-data-workbench:sha-384-text',
         name: 'SHA-384 text hash',
         description:
-          'Hash UTF-8 text with the browser Web Crypto implementation.',
+          'Hash text with SHA-384 and read back the 96-character hexadecimal digest, used where a longer truncated SHA-2 value is required by a spec or a vendor.',
         href: '/developer/workbench?tool=sha-384-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -348,7 +357,7 @@ export const SECTIONS: readonly BrowseSection[] = [
         id: 'developer-data-workbench:sha-512-text',
         name: 'SHA-512 text hash',
         description:
-          'Hash UTF-8 text with the browser Web Crypto implementation.',
+          'Hash text with SHA-512 and read back the 128-character hexadecimal digest, the longest SHA-2 option, often asked for in signing and archival workflows.',
         href: '/developer/workbench?tool=sha-512-text',
         workspaceId: 'developer-data-workbench',
       },
@@ -465,7 +474,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'developer-advanced-workbench:checksum-calculator',
         name: 'Text checksum calculator',
-        description: 'Calculate a SHA checksum for pasted UTF-8 text.',
+        description:
+          'Calculate a SHA-256, SHA-384 or SHA-512 checksum of pasted text in your browser and read it as lowercase hexadecimal to compare with a published value.',
         href: '/developer/advanced?tool=checksum-calculator',
         workspaceId: 'developer-advanced-workbench',
       },

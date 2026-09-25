@@ -104,14 +104,16 @@ export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
   {
     id: 'pin-code-format-checker',
     name: 'PIN code format checker',
-    description: 'Check for a six-digit Indian postal-code shape.',
+    description:
+      'Check an Indian PIN code against the six-digit shape with a non-zero first digit. Spaces are stripped first, and it tests the format, not whether it exists.',
     fields: [text('input', 'PIN code', '560038')],
     notice: syntaxNotice,
   },
   {
     id: 'indian-phone-number-formatter',
     name: 'Indian phone number formatter',
-    description: 'Normalize a mobile number to +91 XXXXX XXXXX.',
+    description:
+      'Paste a mobile number with spaces, brackets, a leading zero or 91, and get it back as +91 XXXXX XXXXX. Ten digits beginning 6 to 9 are accepted.',
     fields: [text('input', 'Mobile number', '+91 98765 43210')],
     notice:
       'Formatting check only. It does not verify assignment, ownership, reachability, consent, or DND status.',
@@ -151,7 +153,8 @@ export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
   {
     id: 'cheque-amount-writer',
     name: 'Cheque amount writer',
-    description: 'Create an English “Rupees … Only” amount line.',
+    description:
+      'Type an amount in this tab and get the English words line for a cheque, in Indian lakh and crore, with paise spelled out and Rupees … Only wrapped around it.',
     fields: [number('amount', 'Amount', '12500.5')],
     notice:
       'Writing aid only. Verify the numeric amount, payee, date, bank instructions, overwriting rules, and local acceptance before signing.',
@@ -257,7 +260,8 @@ export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
   {
     id: 'emi-due-date-planner',
     name: 'EMI due-date planner',
-    description: 'List monthly due dates from a first due date.',
+    description:
+      'Give a first due date, a count of instalments up to 600 and an amount, and get a CSV of dates; a 31st falls back to the last day of shorter months.',
     fields: [
       text('start', 'First due date (YYYY-MM-DD)', '2026-10-05'),
       number('months', 'Number of instalments', '12'),
@@ -298,7 +302,8 @@ export const LIFE_ADMIN_OPERATIONS: readonly LifeAdminOperation[] = [
   {
     id: 'notice-period-calculator',
     name: 'Notice period calculator',
-    description: 'Add calendar days to a supplied notice date.',
+    description:
+      'Add calendar days, up to 3,650, to the date notice was given to see the end date. Weekends and holidays are counted, as this is plain calendar arithmetic.',
     fields: [
       text('start', 'Notice date (YYYY-MM-DD)', '2026-09-06'),
       number('days', 'Calendar notice days', '30'),

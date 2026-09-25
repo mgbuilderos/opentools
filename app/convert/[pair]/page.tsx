@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { FormatConverterTool } from '@/components/format-converter-tool';
+import { ImagePairConverterTool } from '@/components/image-pair-converter-tool';
 import { MathWorkbenchTool } from '@/components/math-workbench-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
 import {
@@ -12,6 +13,11 @@ import {
   formatFacts,
   formatPairById,
 } from '@/lib/seo/format-pairs';
+import {
+  IMAGE_PAIRS,
+  imagePairFacts,
+  imageSeoPairById,
+} from '@/lib/seo/image-pairs';
 
 /*
   One page per conversion pair, which is the next order of magnitude after one
@@ -61,7 +67,7 @@ const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return [...CONVERSION_PAIRS, ...FORMAT_PAIRS].map((pair) => ({
+  return [...CONVERSION_PAIRS, ...FORMAT_PAIRS, ...IMAGE_PAIRS].map((pair) => ({
     pair: pair.id,
   }));
 }
@@ -91,6 +97,15 @@ export async function generateMetadata({
       alternates,
     };
   }
+
+  const image = imageSeoPairById(slug);
+  if (image) {
+    return {
+      title: image.title,
+      description: imagePairFacts(image).description,
+      alternates,
+    };
+  }
   return {};
 }
 
@@ -117,6 +132,27 @@ export default async function Page({
           to: unit.to,
           units: facts.units,
           routes: facts.routes,
+        }}
+      />
+    );
+  }
+
+  const image = imageSeoPairById(slug);
+  if (image) {
+    const imageFacts = imagePairFacts(image);
+    return (
+      <ImagePairConverterTool
+        relatedTools={relatedToolsFor(`/convert/${slug}`)}
+        pair={{
+          title: image.title,
+          summary: imageFacts.description,
+          measured: imageFacts.measured,
+          from: image.from.id,
+          to: image.to.id,
+          formats: imageFacts.formats,
+          routes: imageFacts.routes,
+          extension: imageFacts.extension,
+          needsDecoder: imageFacts.needsDecoder,
         }}
       />
     );

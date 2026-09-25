@@ -83,6 +83,30 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/video/mute',
         workspaceId: 'video-mute',
       },
+      {
+        id: 'video-compress',
+        name: 'Compress video',
+        description:
+          'Compress MP4 videos with custom bitrates and quality presets via hardware WebCodecs.',
+        href: '/video/compress',
+        workspaceId: 'video-compress',
+      },
+      {
+        id: 'video-resize',
+        name: 'Resize video',
+        description:
+          'Resize and downscale MP4 video resolution with aspect ratio preservation and untouched audio.',
+        href: '/video/resize',
+        workspaceId: 'video-resize',
+      },
+      {
+        id: 'video-crop',
+        name: 'Crop video',
+        description:
+          'Crop MP4 videos to 1:1, 9:16, 4:5, or 16:9 aspect ratios using GPU canvas slicing.',
+        href: '/video/crop',
+        workspaceId: 'video-crop',
+      },
     ],
   },
 ];

@@ -22,7 +22,9 @@ async function uploadFile(page: Page, filename: string, customBuffer?: Uint8Arra
   const buffer = customBuffer
     ? Buffer.from(customBuffer)
     : await readFile(path.join(fixtureDir, filename));
-  await page.locator('input[type="file"]').setInputFiles({
+  const fileInput = page.locator('input[type="file"]');
+  await fileInput.waitFor({ state: 'attached' });
+  await fileInput.setInputFiles({
     name: filename,
     mimeType: filename.endsWith('.mov') ? 'video/quicktime' : 'video/mp4',
     buffer,
@@ -75,8 +77,9 @@ test.describe('Video Suite — Lossless Container Surgery', () => {
 
   test('rotate: updates track matrix to 90 degrees losslessly', async ({ page }) => {
     await page.goto('/video/rotate');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await uploadFile(page, TONE_MP4);
-    await expect(page.getByText('tone-video.mp4')).toBeVisible();
+    await expect(page.getByText('tone-video.mp4')).toBeVisible({ timeout: 15000 });
 
     // Select 90° Clockwise
     await page.getByRole('button', { name: '90° Clockwise' }).click();
@@ -123,17 +126,20 @@ test.describe('Video Suite — Lossless Container Surgery', () => {
 
   test('merge: concatenates matching video clips end-to-end', async ({ page }) => {
     await page.goto('/video/merge');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     const filePath = path.join(fixtureDir, TONE_MP4);
     const buffer = await readFile(filePath);
 
     // Upload 2 copies of tone-video.mp4
-    await page.locator('input[type="file"]').setInputFiles([
+    const fileInput = page.locator('input[type="file"]');
+    await fileInput.waitFor({ state: 'attached' });
+    await fileInput.setInputFiles([
       { name: 'clip-1.mp4', mimeType: 'video/mp4', buffer },
       { name: 'clip-2.mp4', mimeType: 'video/mp4', buffer },
     ]);
 
-    await expect(page.getByText(/clip-1\.mp4/i)).toBeVisible();
-    await expect(page.getByText(/clip-2\.mp4/i)).toBeVisible();
+    await expect(page.getByText(/clip-1\.mp4/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/clip-2\.mp4/i)).toBeVisible({ timeout: 15000 });
 
     await page.getByRole('button', { name: /Merge \d+ Clips/i }).click();
     const downloadLink = page.locator('a[data-receipt-download]');
@@ -169,6 +175,42 @@ test.describe('Video Suite — Lossless Container Surgery', () => {
     expect(sanitizedParsed.tracks.find((t) => t.kind === 'video')?.samples).toHaveLength(30);
   });
 
+  test('to-gif: converts MP4 to animated GIF in browser', async ({ page }) => {
+    await page.goto('/video/to-gif');
+    await uploadFile(page, TONE_MP4);
+    await expect(page.getByText('160×120 · avc1')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Make the GIF' }).click();
+    const saveButton = page.getByRole('button', { name: /^Save / });
+    await expect(saveButton).toBeVisible();
+
+    const downloadPromise = page.waitForEvent('download');
+    await saveButton.click();
+    const download = await downloadPromise;
+    const gifBytes = new Uint8Array(await readFile((await download.path())!));
+    const header = String.fromCharCode(...gifBytes.subarray(0, 6));
+    expect(header).toBe('GIF89a');
+  });
+
+  test('extract-audio: extracts standalone audio track from MP4', async ({ page }) => {
+    await page.goto('/video/extract-audio');
+    await uploadFile(page, TONE_MP4);
+    await expect(page.getByText('160×120 · avc1')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Make the clip' }).click();
+    const saveButton = page.getByRole('button', { name: /^Save / });
+    await expect(saveButton).toBeVisible();
+
+    const downloadPromise = page.waitForEvent('download');
+    await saveButton.click();
+    const download = await downloadPromise;
+    const audioBytes = new Uint8Array(await readFile((await download.path())!));
+    const parsed = readMp4(audioBytes);
+    expect(parsed.tracks).toHaveLength(1);
+    expect(parsed.tracks[0].kind).toBe('audio');
+    expect(parsed.tracks[0].samples).toHaveLength(88);
+  });
+
   test('zero network egress during operations', async ({ page }) => {
     await page.goto('/video/convert');
     const origin = new URL(page.url()).origin;
@@ -178,6 +220,7 @@ test.describe('Video Suite — Lossless Container Surgery', () => {
     });
 
     await uploadFile(page, TONE_MP4);
+    await expect(page.getByText('tone-video.mp4')).toBeVisible();
     await page.getByRole('button', { name: /^MOV / }).click();
     await page.getByRole('button', { name: 'Convert to MOV' }).click();
     await expect(page.locator('a[data-receipt-download]')).toBeVisible();

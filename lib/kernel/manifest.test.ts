@@ -9,8 +9,8 @@ describe('kernel manifest', () => {
   });
 
   it('registers every measured workbench operation once per source', () => {
-    expect(KERNEL_MANIFEST).toHaveLength(631);
-    expect(new Set(KERNEL_MANIFEST.map(descriptorKey)).size).toBe(631);
-    expect(new Set(KERNEL_MANIFEST.map((item) => item.source)).size).toBe(17);
+    expect(KERNEL_MANIFEST).toHaveLength(634);
+    expect(new Set(KERNEL_MANIFEST.map(descriptorKey)).size).toBe(634);
+    expect(new Set(KERNEL_MANIFEST.map((item) => item.source)).size).toBe(18);
   });
 });

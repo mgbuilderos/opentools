@@ -27,7 +27,7 @@ import {
   type SplitClipsResult,
 } from '@/lib/tools/video/split';
 
-const MAX_BYTES = 4 * 1024 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024 * 1024;
 
 interface Loaded {
   name: string;

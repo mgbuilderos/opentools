@@ -129,7 +129,7 @@ describe('live tool registry', () => {
     expect(isLiveToolUrl('/pdf/page-tools?tool=compress-pdf')).toBe(false);
     expect(isLiveToolUrl('/pdf/page-tools?tool=pdf-to-images')).toBe(false);
     expect(isLiveToolUrl('/developer/workbench?tool=jwt-decoder')).toBe(false);
-    expect(isLiveToolUrl('/video/compress')).toBe(false);
+    expect(isLiveToolUrl('/video/keyframes')).toBe(false);
     expect(isLiveToolUrl('/image/ocr')).toBe(false);
   });
 
@@ -225,7 +225,7 @@ describe('sitemap', () => {
 
   it('leaves out placeholder pages and the roadmap', () => {
     for (const route of [
-      '/video/compress',
+      '/video/keyframes',
       '/image/ocr',
       '/developer/sql-visualizer',
       '/roadmap',

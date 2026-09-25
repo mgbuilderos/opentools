@@ -192,7 +192,8 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     {
       id: 'checksum-calculator',
       name: 'Text checksum calculator',
-      description: 'Calculate a SHA checksum for pasted UTF-8 text.',
+      description:
+        'Calculate a SHA-256, SHA-384 or SHA-512 checksum of pasted text in your browser and read it as lowercase hexadecimal to compare with a published value.',
       fields: [
         area('input', 'Text', 'verify this text'),
         select('algorithm', 'Algorithm', hashOptions),

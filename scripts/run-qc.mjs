@@ -12,23 +12,34 @@ const releaseMode = process.argv.includes('--release');
 
 /**
  * Several unit tests (`edge-cache-headers`, `heading-order`, `share-card-coverage`,
- * and `indexability-sweep`) read `dist/client/`. If `dist/` is missing, older
- * than the latest source-touching commit, or older than source files, running the
- * unit suite produces misleading test diffs that look like regressions.
+ * and `indexability-sweep`) read `dist/client/`. If `dist/` is older than the
+ * latest source-touching commit, or older than source files, running the unit
+ * suite produces misleading test diffs that look like regressions.
  *
  * Refuse early with a plain instruction to build.
  *
  * Known limitation: the mtime scan will false-positive after a branch switch,
  * because git rewrites the mtime of every file it touches. That failure points
  * the safe direction (it asks for a rebuild that is merely unnecessary), so it stays.
+ *
+ * A MISSING `dist/` IS A DIFFERENT CASE, and refusing on it was wrong. A fresh
+ * checkout has nothing stale to be misled by, and CI is exactly that: it clones,
+ * installs and runs `npm run qc`. From 2026-09-24 every pull request therefore
+ * failed on the first line with "dist/ is missing" and not one gate ran --
+ * observed on PR #3, where the same tree passed 8/8 locally. The build is
+ * already one of these gates; when nothing is built it simply has to run before
+ * the tests that read it. This returns false in that case and the caller moves
+ * BUILD to the front.
+ *
+ * @returns true when a usable `dist/` is already present.
  */
 function assertFreshDist() {
   const sitemap = path.join(appRoot, 'dist/client/sitemap.xml');
   if (!existsSync(sitemap)) {
-    process.stderr.write(
-      '[QC] dist/ is missing. Run `npm run build` before running QC.\n',
+    process.stdout.write(
+      '[QC] dist/ is missing, so BUILD runs before the tests that read it.\n',
     );
-    process.exit(1);
+    return false;
   }
 
   const distTime = statSync(sitemap).mtimeMs;
@@ -82,9 +93,11 @@ function assertFreshDist() {
       process.exit(1);
     }
   }
+
+  return true;
 }
 
-assertFreshDist();
+const distIsBuilt = assertFreshDist();
 
 const gates = [
   {
@@ -139,6 +152,27 @@ if (existsSync(path.join(blueprintRoot, 'scripts/verify_blueprint.mjs'))) {
   process.stdout.write(
     '[QC] BLUEPRINT INTEGRITY skipped: blueprint package not present.\n',
   );
+}
+
+/*
+  Nothing built yet, so BUILD leads.
+
+  The order the gates run in is otherwise deliberate -- format and lint before
+  a four-minute build, so a missing semicolon fails in seconds. That reasoning
+  only holds when there is a build to read; on a fresh checkout the choice is
+  between building first and failing four gates that read `dist/`.
+*/
+if (!distIsBuilt) {
+  const buildIndex = gates.findIndex((gate) => gate.name === 'BUILD');
+  if (buildIndex < 0) {
+    process.stderr.write(
+      '[QC] cannot place BUILD first: no gate named BUILD. ' +
+        'If BUILD was renamed, update this lookup.\n',
+    );
+    process.exit(1);
+  }
+  const [build] = gates.splice(buildIndex, 1);
+  gates.unshift(build);
 }
 
 if (releaseMode) {

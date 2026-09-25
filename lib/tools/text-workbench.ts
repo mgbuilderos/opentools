@@ -72,7 +72,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'word-counter',
     name: 'Word counter',
-    description: 'Count words using Unicode-aware word boundaries.',
+    description:
+      'Count the words in a passage using Unicode letter and digit runs, so accented words count once and a contraction such as don’t stays a single word.',
     inputLabel: 'Text to count',
     outputLabel: 'Word count',
   },
@@ -93,49 +94,56 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'paragraph-counter',
     name: 'Paragraph counter',
-    description: 'Count non-empty blocks separated by blank lines.',
+    description:
+      'Count the paragraphs in a draft, where a paragraph is any block of text separated by a blank line. Blocks holding only whitespace are left out of the total.',
     inputLabel: 'Text to count',
     outputLabel: 'Paragraph count',
   },
   {
     id: 'reading-time',
     name: 'Reading time calculator',
-    description: 'Estimate reading time at 225 words per minute.',
+    description:
+      'Estimate how long a draft takes to read at 225 words per minute. Anything under a minute is reported in seconds, longer pieces as minutes and seconds.',
     inputLabel: 'Text to estimate',
     outputLabel: 'Reading time',
   },
   {
     id: 'slug-generator',
     name: 'Slug generator',
-    description: 'Create a lowercase, ASCII-friendly URL slug.',
+    description:
+      'Turn a headline into a lowercase URL slug: accents are stripped back to plain ASCII, every other character becomes a hyphen, and stray hyphens are trimmed.',
     inputLabel: 'Title or phrase',
     outputLabel: 'Slug',
   },
   {
     id: 'whitespace-remover',
     name: 'Whitespace remover',
-    description: 'Collapse whitespace runs to a single space.',
+    description:
+      'Collapse every run of spaces, tabs and line breaks into one space and trim the ends, turning text copied out of a PDF back into a single tidy line.',
     inputLabel: 'Text to clean',
     outputLabel: 'Clean text',
   },
   {
     id: 'blank-line-remover',
     name: 'Blank-line remover',
-    description: 'Remove empty or whitespace-only lines.',
+    description:
+      'Strip the empty and whitespace-only lines out of a pasted list or block of text. Line endings are normalized first, so Windows CRLF files clean up too.',
     inputLabel: 'Lines to clean',
     outputLabel: 'Clean lines',
   },
   {
     id: 'duplicate-line-remover',
     name: 'Duplicate-line remover',
-    description: 'Keep the first occurrence of every exact line.',
+    description:
+      'Keep only the first appearance of each exact line and drop every later repeat. Matching is literal, so case and trailing spaces both count as a difference.',
     inputLabel: 'Lines to deduplicate',
     outputLabel: 'Unique lines',
   },
   {
     id: 'line-sorter',
     name: 'Line sorter',
-    description: 'Sort lines with locale-aware comparison.',
+    description:
+      'Sort a list of lines into ascending or descending order with locale-aware comparison, so accented words land where a reader would expect to find them.',
     inputLabel: 'Lines to sort',
     outputLabel: 'Sorted lines',
     optionKind: 'sort',
@@ -143,28 +151,32 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'line-shuffler',
     name: 'Line shuffler',
-    description: 'Randomize line order with browser randomness.',
+    description:
+      'Put a list of lines into random order in your browser. Useful for drawing names, mixing up quiz questions, or reordering rows of sample data before a test.',
     inputLabel: 'Lines to shuffle',
     outputLabel: 'Shuffled lines',
   },
   {
     id: 'line-number-adder',
     name: 'Line-number adder',
-    description: 'Prefix every line with a stable line number.',
+    description:
+      'Put a number in front of every line, zero-padded to the width of the largest number so the numbers stay aligned when you paste the list somewhere else.',
     inputLabel: 'Lines to number',
     outputLabel: 'Numbered lines',
   },
   {
     id: 'text-reverser',
     name: 'Text reverser',
-    description: 'Reverse user-perceived Unicode characters.',
+    description:
+      'Reverse text by user-perceived character, so an accented letter, an emoji or a flag sequence stays whole instead of breaking into separate pieces.',
     inputLabel: 'Text to reverse',
     outputLabel: 'Reversed text',
   },
   {
     id: 'text-repeater',
     name: 'Text repeater',
-    description: 'Repeat text up to 100 times.',
+    description:
+      'Repeat a word, a line or a whole block of text between 1 and 100 times, each copy on its own line. Handy for test data and for filling out a draft layout.',
     inputLabel: 'Text to repeat',
     outputLabel: 'Repeated text',
     optionKind: 'repeat',
@@ -180,7 +192,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'regex-replace',
     name: 'Regex replace',
-    description: 'Replace JavaScript regular-expression matches.',
+    description:
+      'Replace every match of a JavaScript regular expression, with capture groups available in the replacement and a switch for matching upper and lower case.',
     inputLabel: 'Text to edit',
     outputLabel: 'Edited text',
     optionKind: 'regex',
@@ -196,14 +209,16 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'text-deduplicator',
     name: 'Text deduplicator',
-    description: 'Remove duplicate whitespace-delimited tokens.',
+    description:
+      'Remove repeated words from a whitespace-separated list, keeping the first of each. Matching is exact, so two spellings that differ in case both survive.',
     inputLabel: 'Words or tokens',
     outputLabel: 'Unique tokens',
   },
   {
     id: 'lorem-ipsum-generator',
     name: 'Lorem ipsum generator',
-    description: 'Generate local placeholder paragraphs.',
+    description:
+      'Generate 1 to 20 paragraphs of placeholder text, each three to five sentences long, with the familiar lorem ipsum opening line on the first paragraph.',
     inputLabel: 'No source text required',
     outputLabel: 'Placeholder text',
     needsInput: false,
@@ -212,7 +227,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'random-word-generator',
     name: 'Random word generator',
-    description: 'Pick words from a small built-in neutral list.',
+    description:
+      'Generate 1 to 100 random words, one per line, drawn from a built-in list of 20 plain English words. Nothing needs pasting in to get a list back out.',
     inputLabel: 'No source text required',
     outputLabel: 'Random words',
     needsInput: false,
@@ -221,7 +237,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'anagram-finder',
     name: 'Anagram finder',
-    description: 'Find exact anagrams in a list you provide.',
+    description:
+      'Paste a word and a list of candidates, one per line, to see which are exact anagrams. Case, accents and punctuation are ignored, and the word itself is skipped.',
     inputLabel: 'Word to match',
     outputLabel: 'Matching anagrams',
     optionKind: 'candidates',
@@ -244,7 +261,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'unicode-normalizer',
     name: 'Unicode normalizer',
-    description: 'Normalize text to NFC, NFD, NFKC, or NFKD.',
+    description:
+      'Convert text to NFC, NFD, NFKC or NFKD normalization, for when the same accented word compares as unequal between two systems or two pasted files.',
     inputLabel: 'Text to normalize',
     outputLabel: 'Normalized text',
     optionKind: 'normalization',
@@ -260,7 +278,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'emoji-remover',
     name: 'Emoji remover',
-    description: 'Remove extended pictographic characters.',
+    description:
+      'Take the emoji out of a caption or a message, including the joined multi-part sequences, then tidy up the double spaces that removing them leaves behind.',
     inputLabel: 'Text containing emoji',
     outputLabel: 'Text without emoji',
   },
@@ -297,7 +316,8 @@ export const TEXT_OPERATIONS: readonly TextOperation[] = [
   {
     id: 'pig-latin-translator',
     name: 'Pig Latin translator',
-    description: 'Convert simple English words to Pig Latin.',
+    description:
+      'Convert English text to Pig Latin: a word starting with a vowel gains way, and any other word moves its leading consonants to the end and gains ay.',
     inputLabel: 'English text',
     outputLabel: 'Pig Latin',
   },
