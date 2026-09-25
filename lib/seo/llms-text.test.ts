@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { loadsLocalModel } from '../security/content-security-policy';
+import { FORMAT_PAIRS } from './format-pairs';
+import { IMAGE_PAIRS } from './image-pairs';
 import { LIVE_TOOL_ROUTES } from './live-tool-routes';
 import { buildLlmsFullTxt, buildLlmsTxt } from './llms-text';
 
@@ -93,6 +95,31 @@ describe('the claims these files make', () => {
   it('claims no rating in the structured-data line', () => {
     expect(llms).toContain('SoftwareApplication');
     expect(llms).not.toContain('aggregateRating');
+  });
+
+  /*
+    The pages a person has to open, because converting a file needs a
+    converter. They were absent from the catalogue entirely: an assistant
+    asked "convert CSV to YAML without uploading it" had nothing to cite on a
+    site with a page for exactly that.
+  */
+  it('lists every must-click conversion page', () => {
+    for (const pair of [...FORMAT_PAIRS, ...IMAGE_PAIRS]) {
+      expect(full, `${pair.id} has a page but no catalog row`).toContain(
+        `${origin}/convert/${pair.id} `,
+      );
+    }
+    expect(FORMAT_PAIRS.length + IMAGE_PAIRS.length).toBeGreaterThan(100);
+  });
+
+  /*
+    And not the other family. Google answers "cm to inches" in its own
+    results; those 512 pages produced 15 page-opens on 2026-09-23. Listing
+    them would quadruple the file with the rows least likely to be followed.
+  */
+  it('leaves the unit pairs out', () => {
+    expect(full).not.toContain('/convert/centimetres-to-inches');
+    expect(full).not.toContain('/convert/kilograms-to-pounds');
   });
 
   it('keeps the catalog row format it declares', () => {

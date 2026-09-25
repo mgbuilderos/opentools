@@ -38,6 +38,23 @@ import { buildSitemap } from './sitemap-entries';
 import { TOOL_CATALOG } from './tool-catalog-data';
 
 const origin = ['https:', '//', 'getopentools.com'].join('');
+
+/*
+  The catalogue rows of llms-full.txt, without the conversion pages.
+
+  `/convert/<from>-to-<to>` pages are listed there too and carry `none` in the
+  Guide column, because a generated conversion page has never had a guide. The
+  counts below are about guides that consolidation redirected, so they must not
+  sweep in rows that could never have had one. No catalogue id starts with
+  `convert.`, which is what makes this a safe discriminator.
+*/
+function catalogRowsWithoutGuide(full: string): string[] {
+  return full
+    .split('\n')
+    .filter(
+      (line) => line.includes('| none |') && !line.startsWith('convert.'),
+    );
+}
 const liveSlugs = new Set(LIVE_TOOL_CATALOG.map((tool) => tool.slug));
 
 // Kept guides for the "on" state: a dedicated route, a routed developer tool,
@@ -309,7 +326,7 @@ describe('guide consolidation off is the previous behaviour', () => {
         `${origin}${canonicalToolUrl(tool.destinationUrl)} | ${origin}/guides/${tool.slug} | `,
       );
     }
-    expect(full).not.toContain('| none |');
+    expect(catalogRowsWithoutGuide(full)).toEqual([]);
     const txt = buildLlmsTxt(OFF);
     expect(guideLinksIn(txt).length).toBeGreaterThan(0);
     for (const slug of guideLinksIn(txt)) {
@@ -475,9 +492,7 @@ describe('guide consolidation on', () => {
     expect(guideLinksIn(buildLlmsTxt(ON)).filter(isRedirected)).toEqual([]);
     const full = buildLlmsFullTxt(ON);
     expect(guideLinksIn(full).sort()).toEqual([...KEPT].sort());
-    expect(
-      full.split('\n').filter((line) => line.includes('| none |')),
-    ).toHaveLength(redirects.size);
+    expect(catalogRowsWithoutGuide(full)).toHaveLength(redirects.size);
   });
 });
 
@@ -532,9 +547,7 @@ describe('the shipped state', () => {
 
   it('names a tool page, not a redirect, in llms-full.txt', () => {
     const full = buildLlmsFullTxt();
-    expect(
-      full.split('\n').filter((line) => line.includes('| none |')),
-    ).toHaveLength(redirects.size);
+    expect(catalogRowsWithoutGuide(full)).toHaveLength(redirects.size);
     expect(new Set(guideLinksIn(full))).toEqual(
       new Set(getPublishedGuideTools().map((tool) => tool.slug)),
     );
