@@ -471,6 +471,35 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-password',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Unlock and protect PDF',
+    shortDescription:
+      'Unlock encrypted PDFs with password or protect documents with AES-256.',
+    category: 'PDF',
+    aliases: [
+      'unlock pdf',
+      'protect pdf',
+      'remove pdf password',
+      'pdf password remover',
+      'encrypt pdf',
+      'add password to pdf',
+    ],
+    jobs: [
+      'unlock password protected pdf files',
+      'encrypt and protect pdf documents with aes 256',
+      'remove owner password restrictions from pdf',
+    ],
+    href: '/pdf/password',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.crypto.decrypt', 'pdf.crypto.encrypt'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-extract',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2368,6 +2397,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-preflight',
       'pdf-burst',
       'excel-to-pdf',
+      'pdf-password',
     ],
   },
   {

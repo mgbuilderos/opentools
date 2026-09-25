@@ -73,6 +73,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-to-excel',
       },
       {
+        id: 'pdf-password',
+        name: 'Unlock and protect PDF',
+        description:
+          'Unlock encrypted PDFs with password or protect documents with AES-256.',
+        href: '/pdf/password',
+        workspaceId: 'pdf-password',
+      },
+      {
         id: 'pdf-bates',
         name: 'Bates numbering for PDFs',
         description:
