@@ -30,17 +30,24 @@ const CANONICAL = ['https:', '//', 'getopentools.com', '/self-host'].join('');
 export const metadata: Metadata = {
   title: 'Self-host OpenTools — run the whole site inside your own network',
   description:
-    'Run every OpenTools utility on your own hardware from one container: two commands, no Cloudflare account, no outbound network, and an optional access gate for the whole instance. MIT licensed.',
+    'Run every OpenTools utility on your own hardware from one container: one docker run, no Cloudflare account, no outbound network, and an optional access gate for the whole instance. MIT licensed.',
   alternates: { canonical: CANONICAL },
 };
 
-const BUILD_COMMAND = 'docker build -t opentools-selfhost:local .';
-const RUN_COMMAND = 'docker run --rm -p 8796:8796 opentools-selfhost:local';
+/* The published image. Written as a constant rather than inline because it
+   appears in four commands below, and a registry address that disagrees with
+   itself on one of them is the kind of error a reader cannot debug. */
+const IMAGE = 'ghcr.io/mgbuilderos/opentools:latest';
+
+const RUN_COMMAND = `docker run --rm -p 8796:8796 ${IMAGE}`;
+const DIGEST_COMMAND = `docker image inspect ${IMAGE} --format '{{index .RepoDigests 0}}'`;
+const BUILD_COMMAND = `docker build -t opentools-selfhost:local .
+docker run --rm -p 8796:8796 opentools-selfhost:local`;
 const GATED_RUN_COMMAND = `docker run --rm -p 8796:8796 \\
   -e OPENTOOLS_AUTH_USER=ops \\
   -e OPENTOOLS_AUTH_PASSWORD='choose something long' \\
-  opentools-selfhost:local`;
-const OFFLINE_COMMAND = `docker run --rm -d --network none --name opentools opentools-selfhost:local
+  ${IMAGE}`;
+const OFFLINE_COMMAND = `docker run --rm -d --network none --name opentools ${IMAGE}
 docker exec opentools node -e "fetch('http://127.0.0.1:8796/').then(r=>console.log(r.status))"`;
 
 /* Measured on the image with `--network none`, the container serving and the
@@ -137,24 +144,16 @@ export default function SelfHostPage() {
           <div className="flex items-center gap-2.5">
             <Terminal aria-hidden="true" className="size-5 shrink-0" />
             <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
-              Two commands
+              One command
             </h2>
           </div>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-            Clone{' '}
-            <a
-              href={REPO}
-              rel="noreferrer noopener"
-              className="focus-ring font-semibold text-foreground underline underline-offset-4"
-            >
-              the repository
-            </a>
-            , then, from its root:
+            The image is published to GitHub Container Registry for{' '}
+            <code className="text-[0.9em]">linux/amd64</code> and{' '}
+            <code className="text-[0.9em]">linux/arm64</code>, so there is
+            nothing to clone and no toolchain to install:
           </p>
           <pre className="mt-3 overflow-x-auto rounded-xl border bg-muted/50 p-3.5 text-[0.8rem] leading-6 sm:p-4 sm:text-sm">
-            <code>{BUILD_COMMAND}</code>
-          </pre>
-          <pre className="mt-2 overflow-x-auto rounded-xl border bg-muted/50 p-3.5 text-[0.8rem] leading-6 sm:p-4 sm:text-sm">
             <code>{RUN_COMMAND}</code>
           </pre>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
@@ -168,6 +167,39 @@ export default function SelfHostPage() {
             metrics, remote lookups and observability are switched off in the
             image, so nothing contacts Cloudflare.
           </p>
+          <h3 className="mt-5 text-base font-semibold sm:text-lg">
+            Pinning it, if your policy requires it
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            <code className="text-[0.9em]">latest</code> follows the most recent
+            release tag, which means it moves. Where approval is granted against
+            a specific artefact rather than a moving tag, take the digest and
+            deploy that instead — the published image carries build provenance
+            attestations, so the digest you approve is the one you can later
+            show you ran:
+          </p>
+          <pre className="mt-2 overflow-x-auto rounded-xl border bg-muted/50 p-3.5 text-[0.8rem] leading-6 sm:p-4 sm:text-sm">
+            <code>{DIGEST_COMMAND}</code>
+          </pre>
+          <h3 className="mt-5 text-base font-semibold sm:text-lg">
+            Or build it yourself
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            None of the above is required. If your policy is that you compile
+            what you run, or you need something newer than the last release,
+            clone{' '}
+            <a
+              href={REPO}
+              rel="noreferrer noopener"
+              className="focus-ring font-semibold text-foreground underline underline-offset-4"
+            >
+              the repository
+            </a>{' '}
+            and build the same image from its root:
+          </p>
+          <pre className="mt-2 overflow-x-auto rounded-xl border bg-muted/50 p-3.5 text-[0.8rem] leading-6 sm:p-4 sm:text-sm">
+            <code>{BUILD_COMMAND}</code>
+          </pre>
         </section>
 
         {/*
