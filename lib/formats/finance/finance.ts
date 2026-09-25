@@ -72,15 +72,21 @@ export interface FinanceParseResult {
 }
 
 export interface ReconcileInput {
-  opening: number;
+  opening: number | null;
   transactions: readonly (number | { readonly amount: number })[];
   closing: number;
 }
 
-export interface ReconcileResult {
-  balanced: boolean;
-  delta: number;
-}
+export type ReconcileResult =
+  | {
+      balanced: boolean;
+      delta: number;
+    }
+  | {
+      balanced: false;
+      delta: null;
+      reason: 'no-opening-balance';
+    };
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
   $: 'USD',
@@ -738,6 +744,13 @@ function scaled(decimal: ExactDecimal, scale: number): bigint {
 }
 
 export function reconcile(input: ReconcileInput): ReconcileResult {
+  if (input.opening === null) {
+    return {
+      balanced: false,
+      delta: null,
+      reason: 'no-opening-balance',
+    };
+  }
   const values = [
     input.opening,
     ...input.transactions.map((item) =>
