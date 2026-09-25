@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Three fault classes the 2026-09-23 360 sweep found, guarded against return.
+ * Four fault classes, guarded against return. Three the 2026-09-23 360 sweep
+ * found, and the canonical one that sweep could only find after a deploy.
  *
  *   1. 78 of 1,413 live URLs shipped no `og:image`. Every one was a page that
  *      declares its own `openGraph` block: Next.js replaces the layout's block
@@ -24,6 +25,29 @@
  *      a check of its own. The fix is in `app/layout.tsx`: state no `title`,
  *      `description` or absolute `url` there and each page fills its own.
  *
+ *   4. Every sitemap URL must name ITSELF as canonical, checked here in the
+ *      prerendered bytes rather than only on the live site.
+ *
+ *      The canonical rule was already guarded at both ends and unguarded in the
+ *      middle. `lib/seo/canonical-coverage.test.ts` greps `app/**` for
+ *      `canonical:` declarations -- source only; it reads no built HTML.
+ *      `canonical-self` in `scripts/lib/site-checks.mjs` reads the live site,
+ *      which `scripts/verify-live.mjs` can only do AFTER a deploy has shipped
+ *      the fault to Google. Prerendering sits between the two, and it is a step
+ *      that can drop a tag the source correctly declares.
+ *
+ *      So the same function decides it in both places: `canonicalFault` is
+ *      imported from `site-checks.mjs` and given the prerendered HTML instead of
+ *      a live response. Two readers of one definition, because a build guard and
+ *      a deploy gate that each describe this fault their own way is how the two
+ *      come to disagree about what "correct" means.
+ *
+ *      The worst SEO defect this site has had was this fault: on 2026-09-23, 59
+ *      pages served `<link rel="canonical" href="https://getopentools.com">`,
+ *      asking Google to index the home page instead of themselves, for seven
+ *      days. Catching it one stage earlier is the difference between a failed
+ *      build and a week of de-indexed pages.
+ *
  * The third check is a population check for the same reason the other two are:
  * no page file looked wrong, and the fault existed only across the set.
  *
@@ -46,6 +70,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { canonicalFault, DEFAULT_ORIGIN } from './lib/site-checks.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 export const CLIENT_DIR = path.join(ROOT, 'dist/client');
@@ -171,6 +197,16 @@ export function auditRenderedPages(clientDir = CLIENT_DIR) {
     }
     const skip = firstHeadingSkip(html);
     if (skip) faults.push({ urlPath, check: 'heading-order', detail: skip });
+    /* The canonical a page must name is its own absolute URL, so the comparison
+     * is against the origin joined to this route -- which also fails a canonical
+     * on a foreign origin whose path happens to match. */
+    const canonical = canonicalFault(
+      html,
+      new URL(urlPath, DEFAULT_ORIGIN).href,
+    );
+    if (canonical) {
+      faults.push({ urlPath, check: 'canonical', detail: canonical });
+    }
   }
   for (const { title, routes } of duplicateOgTitles(pages)) {
     faults.push({
@@ -223,6 +259,11 @@ function main() {
         '  declares no block of its own then inherits that one headline. Leave\n' +
         '  `title`, `description` and an absolute `url` out of the layout and\n' +
         '  each page fills them from its own metadata.\n\n' +
+        '  A canonical must name the page it sits on. A page that declares none\n' +
+        '  inherits one -- that is the 2026-09-23 fault, and the inherited value\n' +
+        '  is the home page. Set it through the same helper that sets the title,\n' +
+        '  and never re-declare a site-wide canonical on the root layout. Two\n' +
+        '  canonical tags is the same fault mid-fix: Google honours neither.\n\n' +
         '  A heading level may descend by any amount but climb by only one.\n' +
         '  Fix the level in the markup and let the class size it; do not\n' +
         '  restyle a correct heading to look like the wrong one.\n',
@@ -232,7 +273,7 @@ function main() {
 
   console.log(
     `  Verified ${checked} sitemap URLs ship a full share card with its own ` +
-      `og:title and skip no heading level`,
+      `og:title, name themselves as canonical, and skip no heading level`,
   );
 }
 
