@@ -49,6 +49,11 @@ export function buildSitemap(
     '',
     ...LIVE_TOOL_ROUTES,
     '/proof',
+    // The egress check, listed beside /proof rather than in LIVE_TOOL_ROUTES.
+    // It runs a tool, but not one that takes a file -- so the smart dropzone
+    // and the tool CTAs must never offer it as a place to send one. Same
+    // reasoning as the comparison pages and the category hubs below.
+    '/proof/check',
     '/privacy',
     '/security',
     // The self-hosting page. It is the only route written for an
