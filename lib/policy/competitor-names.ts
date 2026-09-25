@@ -106,6 +106,36 @@ export const FORBIDDEN_COMPETITORS: readonly ForbiddenCompetitor[] = [
   { pattern: /\bPDF-?eXPLODE\b/iu, reason: 'PDF splitting' },
   { pattern: /\bNUGEN\b/iu, reason: 'audio loudness metering' },
   { pattern: /\bVisLM\b/iu, reason: 'audio loudness metering' },
+
+  /*
+   * Owner instruction, 2026-09-25: "we dont want to name any other brand."
+   *
+   * The names below were never a competitive claim — they were compatibility
+   * lists, of the form "the output opens cleanly in X, Y and Z". That is a
+   * friendlier kind of mention and it was genuinely useful to a reader, which
+   * is exactly why the rule has to be a rule: once naming is allowed for a good
+   * reason, the boundary is someone's judgement on a deadline.
+   *
+   * The replacement copy says what the output *is* — standard SVG, a vector PDF
+   * with a text layer — which is more durable than a list of products that
+   * rename and get acquired.
+   */
+  { pattern: /\bIllustrator\b/iu, reason: 'vector editing' },
+  { pattern: /\bCorelDRAW\b/iu, reason: 'vector editing' },
+  { pattern: /\bInkscape\b/iu, reason: 'vector editing' },
+  { pattern: /\bFigma\b/iu, reason: 'interface design' },
+  { pattern: /\bPremiere\s?Pro\b/iu, reason: 'video editing' },
+  { pattern: /\bFinal\s?Cut\b/iu, reason: 'video editing' },
+  { pattern: /\bDaVinci\s?Resolve\b/iu, reason: 'video editing' },
+  { pattern: /\bAutodesk\b/iu, reason: 'CAD and BIM' },
+  { pattern: /\bAutoCAD\b/iu, reason: 'CAD drafting' },
+  { pattern: /\bRevit\b/iu, reason: 'BIM authoring' },
+  { pattern: /\bArchiCAD\b/iu, reason: 'BIM authoring' },
+  { pattern: /\bGraphisoft\b/iu, reason: 'BIM authoring' },
+  { pattern: /\bVectorworks\b/iu, reason: 'CAD drafting' },
+  { pattern: /\bNemetschek\b/iu, reason: 'CAD drafting' },
+  { pattern: /\bMicroStation\b/iu, reason: 'CAD drafting' },
+  { pattern: /\bProcore\b/iu, reason: 'construction document management' },
 ];
 
 /**

@@ -21164,7 +21164,7 @@ export const KERNEL_MANIFEST = [
         options: [
           {
             value: 'yes',
-            label: 'Yes — Strip inkscape, sodipodi, adobe, sketch tags',
+            label: 'Yes — strip editor namespace tags',
           },
           {
             value: 'no',

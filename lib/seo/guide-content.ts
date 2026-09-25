@@ -10013,7 +10013,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
       {
         question: 'Can I use the generated examples in my API test fixtures?',
         answer:
-          'Yes. The output is standard formatted JSON that can be copied directly into Jest fixtures, Postman collections, or documentation samples.',
+          'Yes. The output is standard formatted JSON that can be copied directly into test fixtures, API request collections, or documentation samples.',
       },
       {
         question:
@@ -12234,7 +12234,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
     directAnswer:
       'Generate high-resolution, resolution-independent SVG vector QR codes with customizable dimensions and error correction levels directly in your browser. The tool draws vector paths client-side without raster pixelation, producing clean graphics for print publishing and architectural signage without uploading your URLs or private text payloads to remote servers. The tool draws vector paths directly in browser memory to protect proprietary target destinations and campaign branding. The tool draws vector paths directly in browser memory to protect proprietary target destinations and campaign branding.',
     leadParagraph:
-      'This QR code SVG export tool generates scalable vector graphics (SVG) QR codes for graphic designers, commercial printers, product packaging engineers, and web developers. Raster formats like PNG or JPEG blur, pixelate, and lose edge sharpness when scaled up for large promotional banners or down for small product labels; however, using online vector generators often involves paid subscriptions or watermarks on SVG downloads. You input your text content or website URL, choose error correction tolerances (L, M, Q, H), and define pixel dimensions. The engine generates pure vector path elements with crisp rectangular modules and exports an SVG file ready for Adobe Illustrator, Figma, or direct web embedding. Operating completely client-side in browser tab memory with CSP connect-src none controls, your target links and brand assets remain completely confidential. Generating crisp SVG vectors guarantees flawless printing results across commercial packaging, architectural displays, and marketing publications. Generating crisp SVG vectors guarantees flawless printing results across commercial packaging, architectural displays, and marketing publications.',
+      'This QR code SVG export tool generates scalable vector graphics (SVG) QR codes for graphic designers, commercial printers, product packaging engineers, and web developers. Raster formats like PNG or JPEG blur, pixelate, and lose edge sharpness when scaled up for large promotional banners or down for small product labels; however, using online vector generators often involves paid subscriptions or watermarks on SVG downloads. You input your text content or website URL, choose error correction tolerances (L, M, Q, H), and define pixel dimensions. The engine generates pure vector path elements with crisp rectangular modules and exports an SVG file ready for any vector editor or direct web embedding. Operating completely client-side in browser tab memory with CSP connect-src none controls, your target links and brand assets remain completely confidential. Generating crisp SVG vectors guarantees flawless printing results across commercial packaging, architectural displays, and marketing publications. Generating crisp SVG vectors guarantees flawless printing results across commercial packaging, architectural displays, and marketing publications.',
     faqs: [
       {
         question:
@@ -12246,7 +12246,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
         question:
           'Can I import the exported SVG file into professional design tools?',
         answer:
-          'Yes. The generated SVG opens cleanly in Adobe Illustrator, Figma, Inkscape, CorelDRAW, and vector publishing software for custom color styling.',
+          'Yes. The output is standard SVG, so it opens cleanly in any vector editor or publishing package for custom colour styling.',
       },
       {
         question:
