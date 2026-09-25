@@ -7,6 +7,7 @@ import {
   auditRenderedPages,
   firstHeadingSkip,
 } from '../../scripts/check-share-and-heading-order.mjs';
+import { buildSitemap } from '../seo/sitemap-entries';
 
 /**
  * No page climbs more than one heading level at a time.
@@ -39,6 +40,22 @@ import {
  */
 const PROJECT_ROOT = path.resolve(import.meta.dirname, '..', '..');
 const CLIENT_DIR = path.join(PROJECT_ROOT, 'dist', 'client');
+
+/**
+ * Every route the build could serve, as a path.
+ *
+ * `'full'`, not the shipped focus state. Since 2026-09-25 the served sitemap
+ * lists about a seventh of the live routes (`lib/seo/sitemap-focus.ts`), and
+ * this sweep is about pages a reader can open, not pages a crawler was asked
+ * to take. Reading the served sitemap here would have quietly retired ~1,260
+ * pages' worth of checking the moment the sitemap was focused.
+ */
+function sweepPaths(): string[] {
+  const origin = ['https:', '//', 'getopentools.com'].join('');
+  return buildSitemap(undefined, 'full').map((entry) =>
+    String(entry.url).slice(origin.length),
+  );
+}
 
 describe('heading order', () => {
   /**
@@ -115,7 +132,7 @@ describe('heading order', () => {
   it.skipIf(!existsSync(path.join(CLIENT_DIR, 'sitemap.xml')))(
     'skips no heading level on any sitemap URL',
     () => {
-      const result = auditRenderedPages(CLIENT_DIR)!;
+      const result = auditRenderedPages(CLIENT_DIR, sweepPaths())!;
       expect(result.checked).toBeGreaterThan(1000);
       expect(
         result.faults.filter((fault) => fault.check === 'heading-order'),
