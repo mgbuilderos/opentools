@@ -18,6 +18,24 @@ const request = (path: string, authorization?: string) =>
     headers: authorization ? { authorization } : {},
   });
 
+/*
+ * A request as it actually arrives at the edge: `host` and `x-forwarded-proto`
+ * are what Cloudflare sets, and what the redirect reads.
+ */
+const edgeRequest = (
+  scheme: 'http' | 'https',
+  host: string,
+  path: string,
+  authorization?: string,
+) =>
+  new NextRequest(`${scheme}:` + `//${host}${path}`, {
+    headers: {
+      host,
+      'x-forwarded-proto': scheme,
+      ...(authorization ? { authorization } : {}),
+    },
+  });
+
 const basic = (user: string, password: string) =>
   `Basic ${btoa(`${user}:${password}`)}`;
 
@@ -45,6 +63,80 @@ describe('proxy — public site', () => {
       "default-src 'self'",
     );
     expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+  });
+
+  /*
+   * Regression guard. On 2026-09-24 the live site served every one of these
+   * headers correctly over HTTPS and also answered `http://getopentools.com/`
+   * with a plain 200 -- no redirect, no HSTS. On plaintext the CSP has no
+   * integrity protection, so a network attacker can strip `connect-src
+   * 'none'` and upload the very file the product promises never leaves the
+   * device. HSTS is the half of the fix that lives in this repo.
+   */
+  it('pins the browser to HTTPS for a year so the CSP cannot be stripped', () => {
+    const header = proxy(request('/pdf/compress')).headers.get(
+      'Strict-Transport-Security',
+    );
+    expect(header).toBeTruthy();
+
+    const maxAge = Number(/max-age=(\d+)/.exec(header ?? '')?.[1] ?? 0);
+    // Six months is the floor every HSTS preload/scanner check uses.
+    expect(maxAge).toBeGreaterThanOrEqual(15_768_000);
+    expect(header).toContain('includeSubDomains');
+  });
+
+  /*
+   * Measured live 2026-09-24: http://getopentools.com/ returned 200 with the
+   * full page, no redirect, and Google had indexed nine such URLs as separate
+   * pages -- one of them ranking at position 6.8.
+   */
+  it('301s a plaintext request to the public site, keeping path and query', () => {
+    const response = proxy(
+      edgeRequest('http', 'getopentools.com', '/pdf/redact?lang=en'),
+    );
+    expect(response.status).toBe(301);
+    const location = new URL(response.headers.get('location') ?? '');
+    expect(location.protocol).toBe('https:');
+    expect(location.host).toBe('getopentools.com');
+    expect(location.pathname).toBe('/pdf/redact');
+    expect(location.search).toBe('?lang=en');
+  });
+
+  it('leaves an already-secure request alone', () => {
+    expect(
+      proxy(edgeRequest('https', 'getopentools.com', '/pdf/redact')).status,
+    ).not.toBe(301);
+  });
+
+  /*
+   * A self-hosted instance on a plain-http intranet is supported. Forcing TLS
+   * on a host we do not own would break that deployment outright.
+   */
+  it('never forces TLS on a host that is not the public zone', () => {
+    expect(
+      proxy(edgeRequest('http', 'tools.internal.example', '/pdf/redact')).status,
+    ).not.toBe(301);
+  });
+
+  /*
+   * Order matters more than the redirect itself. The gate answers with HTTP
+   * Basic, so challenging a plaintext request would have the browser send the
+   * operator's password in cleartext.
+   */
+  it('redirects before the auth gate can ask for a password in the clear', () => {
+    gateOn();
+    const response = proxy(edgeRequest('http', 'getopentools.com', '/pdf/redact'));
+    expect(response.status).toBe(301);
+    expect(response.headers.get('WWW-Authenticate')).toBeNull();
+  });
+
+  it('pins embeddable routes to HTTPS too', () => {
+    // `/embed/*` relaxes CORP for framing; it must not relax transport.
+    expect(
+      proxy(request('/embed/pdf-compress')).headers.get(
+        'Strict-Transport-Security',
+      ),
+    ).toContain('max-age=');
   });
 });
 
