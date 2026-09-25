@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import {
   findForbiddenCompetitors,
   findUnsourcedPriceClaims,
@@ -43,24 +43,34 @@ function htmlFiles(directory: string, found: string[] = []): string[] {
 }
 
 /*
-  Both sweeps below read every built page. At 1,464 pages that is slower than
-  vitest's 5s default on its own, and reading the set twice timed out in CI
-  once the 19 category hubs landed. The file set cannot change mid-run, so read
-  it once and reuse it, and still state a timeout rather than relying on the
-  default — the page count only ever grows.
-*/
-let servedCache: { rel: string; html: string }[] | undefined;
-function servedPages() {
-  if (!servedCache) {
-    servedCache = htmlFiles(CLIENT_DIR).map((file) => ({
-      rel: path.relative(CLIENT_DIR, file),
-      html: readFileSync(file, 'utf8'),
-    }));
-  }
-  return servedCache;
-}
+  One streaming pass, because the cost here is memory rather than CPU.
 
-const SWEEP_TIMEOUT = 60_000;
+  Measured against a real 1,478-page build: reading the set costs 609ms, the
+  competitor scan 2,398ms and the price scan 446ms — about 3.5s of actual work.
+  Yet CI failed this suite at a 60s timeout. The difference was the heap. An
+  earlier version of this file held every page's HTML so both sweeps could
+  share it: 134MB of markup, 280MB heap, in one of several vitest workers on a
+  shared runner. That GC pressure, not the scanning, is what took a 446ms sweep
+  past a minute.
+
+  So read one page at a time, run both scanners on it, keep only the findings
+  and let the markup go. Peak memory is one page; the set is still read once.
+*/
+type Finding = ReturnType<typeof findForbiddenCompetitors>[number];
+
+const competitorFindings: Finding[] = [];
+const priceFindings: Finding[] = [];
+let pagesSwept = 0;
+
+beforeAll(() => {
+  for (const file of htmlFiles(CLIENT_DIR)) {
+    const html = readFileSync(file, 'utf8');
+    const rel = path.relative(CLIENT_DIR, file);
+    competitorFindings.push(...findForbiddenCompetitors(html, rel));
+    priceFindings.push(...findUnsourcedPriceClaims(html, rel));
+    pagesSwept += 1;
+  }
+}, 120_000);
 
 describe('served copy names no competitor', () => {
   it('has a build to check', () => {
@@ -70,42 +80,23 @@ describe('served copy names no competitor', () => {
     ).toBe(true);
   });
 
-  it(
-    'names no competitor on any served page',
-    () => {
-      const pages = servedPages();
+  it('names no competitor on any served page', () => {
+    // Guards the guard: an empty or near-empty dist would pass every assertion
+    // below while checking nothing at all.
+    expect(pagesSwept).toBeGreaterThan(1000);
 
-      // Guards the guard: an empty or near-empty dist would pass every
-      // assertion below while checking nothing at all.
-      expect(pages.length).toBeGreaterThan(1000);
+    expect(
+      competitorFindings.slice(0, 20),
+      `${competitorFindings.length} served pages name a competitor`,
+    ).toEqual([]);
+  });
 
-      const violations = pages.flatMap(({ html, rel }) =>
-        findForbiddenCompetitors(html, rel),
-      );
+  it('attributes no price to anybody but us on any served page', () => {
+    expect(pagesSwept).toBeGreaterThan(1000);
 
-      expect(
-        violations.slice(0, 20),
-        `${violations.length} served pages name a competitor`,
-      ).toEqual([]);
-    },
-    SWEEP_TIMEOUT,
-  );
-
-  it(
-    'attributes no price to anybody but us on any served page',
-    () => {
-      const pages = servedPages();
-      expect(pages.length).toBeGreaterThan(1000);
-
-      const violations = pages.flatMap(({ html, rel }) =>
-        findUnsourcedPriceClaims(html, rel),
-      );
-
-      expect(
-        violations.slice(0, 20),
-        `${violations.length} served pages attribute a price we never measured`,
-      ).toEqual([]);
-    },
-    SWEEP_TIMEOUT,
-  );
+    expect(
+      priceFindings.slice(0, 20),
+      `${priceFindings.length} served pages attribute a price we never measured`,
+    ).toEqual([]);
+  });
 });
