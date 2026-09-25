@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { BenchTool } from '@/components/bench/bench-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -11,5 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <BenchTool />;
+  return (
+    <>
+      <ToolJsonLd route="/bench" meta={metadata} />
+      <BenchTool />
+    </>
+  );
 }
