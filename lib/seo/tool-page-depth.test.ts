@@ -26,6 +26,7 @@ import {
 const projectRoot = path.resolve(import.meta.dirname, '../..');
 
 const CORE_DEPTH_ROUTES = [
+  '/finance/ofx-qif',
   '/life-admin/aadhaar-pan-masker',
   '/data/csv-to-json',
   '/audio/convert',
@@ -100,7 +101,7 @@ function precachedPages(): ReadonlySet<string> {
 
 describe('PDF, image, and commercial core tool page depth', () => {
   it('covers every live PDF, image, and commercial core tool route', () => {
-    expect(depthRoutes.length).toBe(64);
+    expect(depthRoutes.length).toBe(65);
     expect([...depthRoutes].sort()).toEqual([...TOOL_PAGE_DEPTH_ROUTES]);
   });
 
