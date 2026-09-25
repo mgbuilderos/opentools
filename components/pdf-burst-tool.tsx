@@ -164,9 +164,8 @@ export function PdfBurstTool({ relatedTools = [] }: PdfBurstToolProps) {
               <p className="mt-1.5 max-w-3xl text-sm text-muted-foreground">
                 Split 500+ page bulk statements, invoices, and payroll runs by
                 blank pages, regex text patterns, or account value changes — and
-                dynamically name every output PDF from the matched text. EverMap
-                AutoSplit charges $149 and PDF-eXPLODE charges $595; this bursts
-                locally in your browser tab.
+                dynamically name every output PDF from the matched text. This
+                bursts locally in your browser tab.
               </p>
             </div>
           </div>

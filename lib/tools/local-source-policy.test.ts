@@ -1,6 +1,10 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import {
+  findForbiddenCompetitors,
+  findUnsourcedPriceClaims,
+} from '@/lib/policy/competitor-names';
 
 const projectRoot = path.resolve(import.meta.dirname, '../..');
 const guardedRoots = [
@@ -99,26 +103,36 @@ describe('local tool source policy', () => {
       path.join(projectRoot, 'components'),
       path.join(projectRoot, 'app'),
     ].flatMap(sourceFiles);
-    const forbiddenCompetitors = [
-      /\bAdobe\b/iu,
-      /\bAcrobat\b/iu,
-      /\biLovePDF\b/iu,
-      /\bSmallpdf\b/iu,
-      /\biLoveIMG\b/iu,
-      /\bCanva\b/iu,
-      /\bSejda\b/iu,
-      /\bPDF24\b/iu,
-      /\bTinyPNG\b/iu,
-    ];
-    const violations = interfaceFiles.flatMap((file) => {
-      const source = readFileSync(file, 'utf8');
-      return forbiddenCompetitors
-        .filter((pattern) => pattern.test(source))
-        .map(
-          (pattern) =>
-            `${path.relative(projectRoot, file)} matched competitor name ${pattern.source}`,
-        );
-    });
+    const violations = interfaceFiles.flatMap((file) =>
+      findForbiddenCompetitors(
+        readFileSync(file, 'utf8'),
+        path.relative(projectRoot, file),
+      ),
+    );
+
+    expect(violations).toEqual([]);
+  });
+
+  it('attributes no price to anybody but us', () => {
+    /*
+     * The companion to the name check, and the one that would have caught what
+     * the name check missed. On 2026-09-25 four shipped tool pages named eight
+     * companies and eight prices — none of which this repository has any
+     * measurement of — and the nine-name list in force that day matched none of
+     * them. A list of names can only forbid the companies somebody already
+     * thought of; this forbids the construction.
+     */
+    const interfaceFiles = [
+      path.join(projectRoot, 'components'),
+      path.join(projectRoot, 'app'),
+    ].flatMap(sourceFiles);
+
+    const violations = interfaceFiles.flatMap((file) =>
+      findUnsourcedPriceClaims(
+        readFileSync(file, 'utf8'),
+        path.relative(projectRoot, file),
+      ),
+    );
 
     expect(violations).toEqual([]);
   });
