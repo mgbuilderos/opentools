@@ -21,7 +21,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:url-qr-code',
         name: 'URL QR code',
-        description: 'Encode a validated HTTP or HTTPS destination.',
+        description:
+          'Turn a link into a downloadable SVG QR symbol. The destination must be a complete HTTP or HTTPS address, and you choose the width and error-correction level.',
         href: '/qr/workbench?tool=url-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -43,7 +44,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:vcard-qr-code',
         name: 'vCard QR code',
-        description: 'Create a compact vCard 3.0 contact payload.',
+        description:
+          'Build a vCard 3.0 QR symbol carrying a name, phone, email and organization, so a scan offers to save the contact. The email address is checked for shape.',
         href: '/qr/workbench?tool=vcard-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -57,21 +59,24 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:sms-qr-code',
         name: 'SMS QR code',
-        description: 'Encode a phone number and draft SMS body.',
+        description:
+          'Encode a phone number and a draft message as an sms URI QR symbol, so that a scan opens a new text with the recipient and the body already filled in.',
         href: '/qr/workbench?tool=sms-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
       {
         id: 'qr-barcode-workbench:phone-qr-code',
         name: 'Phone QR code',
-        description: 'Create a tel URI QR symbol.',
+        description:
+          'Encode a phone number as a tel URI QR symbol, so a scan opens the dialler. Spaces, brackets and dashes are stripped and a leading country-code plus is kept.',
         href: '/qr/workbench?tool=phone-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
       {
         id: 'qr-barcode-workbench:location-qr-code',
         name: 'Location QR code',
-        description: 'Encode latitude and longitude as a geo URI.',
+        description:
+          'Encode a latitude and longitude as a geo URI QR symbol with an optional place label. Both coordinates are range-checked before the SVG symbol is drawn.',
         href: '/qr/workbench?tool=location-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -93,14 +98,16 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:bitcoin-qr-code',
         name: 'Bitcoin QR code',
-        description: 'Create a BIP21-shaped bitcoin payment URI.',
+        description:
+          'Build a BIP21 bitcoin payment URI QR symbol from an address with an optional amount, label and message. The address is shape-checked, not verified as real.',
         href: '/qr/workbench?tool=bitcoin-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
       {
         id: 'qr-barcode-workbench:app-store-qr-code',
         name: 'App Store QR code',
-        description: 'Encode a supplied official app-listing URL.',
+        description:
+          'Turn an app listing page address into an SVG QR symbol for a poster, slide or packaging insert. The listing itself is not checked, only the address shape.',
         href: '/qr/workbench?tool=app-store-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -129,7 +136,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:qr-code-batch-generator',
         name: 'QR code batch generator',
-        description: 'Generate up to 12 QR symbols in one SVG sheet.',
+        description:
+          'Paste one payload per line and get up to 12 QR symbols on a single SVG sheet in a three-column grid, all sharing the error-correction level you choose.',
         href: '/qr/workbench?tool=qr-code-batch-generator',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -238,7 +246,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:url-qr-code',
         name: 'URL QR code',
-        description: 'Encode a validated HTTP or HTTPS destination.',
+        description:
+          'Turn a link into a downloadable SVG QR symbol. The destination must be a complete HTTP or HTTPS address, and you choose the width and error-correction level.',
         href: '/qr/workbench?tool=url-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -260,7 +269,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:vcard-qr-code',
         name: 'vCard QR code',
-        description: 'Create a compact vCard 3.0 contact payload.',
+        description:
+          'Build a vCard 3.0 QR symbol carrying a name, phone, email and organization, so a scan offers to save the contact. The email address is checked for shape.',
         href: '/qr/workbench?tool=vcard-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -274,21 +284,24 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:sms-qr-code',
         name: 'SMS QR code',
-        description: 'Encode a phone number and draft SMS body.',
+        description:
+          'Encode a phone number and a draft message as an sms URI QR symbol, so that a scan opens a new text with the recipient and the body already filled in.',
         href: '/qr/workbench?tool=sms-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
       {
         id: 'qr-barcode-workbench:phone-qr-code',
         name: 'Phone QR code',
-        description: 'Create a tel URI QR symbol.',
+        description:
+          'Encode a phone number as a tel URI QR symbol, so a scan opens the dialler. Spaces, brackets and dashes are stripped and a leading country-code plus is kept.',
         href: '/qr/workbench?tool=phone-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
       {
         id: 'qr-barcode-workbench:location-qr-code',
         name: 'Location QR code',
-        description: 'Encode latitude and longitude as a geo URI.',
+        description:
+          'Encode a latitude and longitude as a geo URI QR symbol with an optional place label. Both coordinates are range-checked before the SVG symbol is drawn.',
         href: '/qr/workbench?tool=location-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -310,14 +323,16 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:bitcoin-qr-code',
         name: 'Bitcoin QR code',
-        description: 'Create a BIP21-shaped bitcoin payment URI.',
+        description:
+          'Build a BIP21 bitcoin payment URI QR symbol from an address with an optional amount, label and message. The address is shape-checked, not verified as real.',
         href: '/qr/workbench?tool=bitcoin-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
       {
         id: 'qr-barcode-workbench:app-store-qr-code',
         name: 'App Store QR code',
-        description: 'Encode a supplied official app-listing URL.',
+        description:
+          'Turn an app listing page address into an SVG QR symbol for a poster, slide or packaging insert. The listing itself is not checked, only the address shape.',
         href: '/qr/workbench?tool=app-store-qr-code',
         workspaceId: 'qr-barcode-workbench',
       },
@@ -346,7 +361,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'qr-barcode-workbench:qr-code-batch-generator',
         name: 'QR code batch generator',
-        description: 'Generate up to 12 QR symbols in one SVG sheet.',
+        description:
+          'Paste one payload per line and get up to 12 QR symbols on a single SVG sheet in a three-column grid, all sharing the error-correction level you choose.',
         href: '/qr/workbench?tool=qr-code-batch-generator',
         workspaceId: 'qr-barcode-workbench',
       },

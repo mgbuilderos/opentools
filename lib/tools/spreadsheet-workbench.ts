@@ -139,7 +139,8 @@ export const SPREADSHEET_OPERATIONS: readonly SpreadsheetOperation[] = [
   {
     id: 'csv-merger',
     name: 'CSV merger',
-    description: 'Append two CSV datasets with the same headers.',
+    description:
+      'Stack two CSV datasets into one in your browser: rows from the second are appended below the first, and the headers have to match exactly and in the same order.',
     fields: [
       csv(),
       area(
@@ -295,7 +296,8 @@ export const SPREADSHEET_OPERATIONS: readonly SpreadsheetOperation[] = [
   {
     id: 'spreadsheet-cell-inspector',
     name: 'Spreadsheet cell inspector',
-    description: 'Inspect one 1-based data row and named column.',
+    description:
+      'Look up one cell by data row number and column name to see its value, whether it is blank, how many characters it holds and how many UTF-8 bytes it takes.',
     fields: [
       csv(),
       number('row', 'Data row (1-based)', '2'),
@@ -359,7 +361,8 @@ export const SPREADSHEET_OPERATIONS: readonly SpreadsheetOperation[] = [
   {
     id: 'random-row-selector',
     name: 'Random row selector',
-    description: 'Select one complete row using browser randomness.',
+    description:
+      'Draw one row at random from a pasted CSV and get back its row number together with every column value, for picking a winner or spot-checking a dataset.',
     fields: [csv()],
   },
   {
@@ -379,7 +382,8 @@ export const SPREADSHEET_OPERATIONS: readonly SpreadsheetOperation[] = [
   {
     id: 'outlier-detector',
     name: 'Outlier detector',
-    description: 'Flag numeric values outside the 1.5×IQR fences.',
+    description:
+      'Flag the values in a numeric CSV column that fall outside the 1.5×IQR fences. At least four numeric rows are needed, and both quartiles are reported too.',
     fields: [
       area('input', 'CSV data', 'name,score\nA,10\nB,11\nC,12\nD,13\nE,100'),
       text('column', 'Numeric column', 'score'),

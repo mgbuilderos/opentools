@@ -28,56 +28,64 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:fraction-calculator',
         name: 'Fraction calculator',
-        description: 'Add, subtract, multiply, or divide two fractions.',
+        description:
+          'Add, subtract, multiply or divide two fractions written as whole-number numerators and denominators. The answer comes back reduced to its lowest terms.',
         href: '/math/workbench?tool=fraction-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:ratio-calculator',
         name: 'Ratio calculator',
-        description: 'Reduce an integer ratio to lowest terms.',
+        description:
+          'Reduce a ratio of two whole numbers to its lowest terms, such as 12:18 down to 2:3. Handy for simplifying aspect ratios, mixes and scale drawings.',
         href: '/math/workbench?tool=ratio-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:proportion-calculator',
         name: 'Proportion calculator',
-        description: 'Solve a:b = c:x.',
+        description:
+          'Solve a:b = c:x for the missing fourth value when you know the other three. Useful for scaling a recipe, a map distance or a mixing ratio up or down.',
         href: '/math/workbench?tool=proportion-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:average-calculator',
         name: 'Average calculator',
-        description: 'Calculate the arithmetic mean of a number list.',
+        description:
+          'Work out the arithmetic mean of a list of numbers typed with commas, spaces or semicolons between them. The total is divided by how many values you entered.',
         href: '/math/workbench?tool=average-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:median-calculator',
         name: 'Median calculator',
-        description: 'Calculate the middle value of a number list.',
+        description:
+          'Find the middle value of a list of numbers. The list is sorted first, and with an even count the two central values are averaged to give the median.',
         href: '/math/workbench?tool=median-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:mode-calculator',
         name: 'Mode calculator',
-        description: 'Find every most-frequent value in a number list.',
+        description:
+          'Find the most frequent value in a list of numbers separated by commas or spaces. Every value tied for the top count is listed, so a two-way tie shows both.',
         href: '/math/workbench?tool=mode-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:variance-calculator',
         name: 'Variance calculator',
-        description: 'Calculate population variance.',
+        description:
+          'Work out the population variance of a list of numbers: each value’s squared distance from the mean, averaged over every value, not over n − 1.',
         href: '/math/workbench?tool=variance-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:standard-deviation-calculator',
         name: 'Standard-deviation calculator',
-        description: 'Calculate population standard deviation.',
+        description:
+          'Work out the population standard deviation of a list of numbers: the square root of a variance that divides the squared spread by n, not by n − 1.',
         href: '/math/workbench?tool=standard-deviation-calculator',
         workspaceId: 'math-workbench',
       },
@@ -91,21 +99,24 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:permutation-calculator',
         name: 'Permutation calculator',
-        description: 'Calculate nPr for whole numbers.',
+        description:
+          'Work out nPr, the number of ways to arrange r items chosen from n where order matters. Both must be whole numbers and r cannot be larger than n.',
         href: '/math/workbench?tool=permutation-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:combination-calculator',
         name: 'Combination calculator',
-        description: 'Calculate nCr for whole numbers.',
+        description:
+          'Work out nCr, the number of ways to choose r items from n when order does not matter. Both are whole numbers, and r cannot be larger than n.',
         href: '/math/workbench?tool=combination-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:prime-number-checker',
         name: 'Prime-number checker',
-        description: 'Check a safe positive integer for primality.',
+        description:
+          'Check whether a whole number from 2 up to one trillion is prime. Trial division by odd divisors reports it as prime or not prime, with no factor list.',
         href: '/math/workbench?tool=prime-number-checker',
         workspaceId: 'math-workbench',
       },
@@ -119,42 +130,48 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:gcd-calculator',
         name: 'GCD calculator',
-        description: 'Find the greatest common divisor of two integers.',
+        description:
+          'Find the greatest common divisor of two whole numbers, the largest value that divides both exactly. Signs are ignored, so −48 and 18 give the same 6.',
         href: '/math/workbench?tool=gcd-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:lcm-calculator',
         name: 'LCM calculator',
-        description: 'Find the least common multiple of two integers.',
+        description:
+          'Find the least common multiple of two whole numbers, the smallest value both divide into. Useful for adding fractions with different denominators.',
         href: '/math/workbench?tool=lcm-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:quadratic-equation-solver',
         name: 'Quadratic-equation solver',
-        description: 'Solve ax² + bx + c = 0, including complex roots.',
+        description:
+          'Solve ax² + bx + c = 0 for both roots from the three coefficients. When the discriminant is negative the pair is given in a + bi complex form.',
         href: '/math/workbench?tool=quadratic-equation-solver',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:linear-equation-solver',
         name: 'Linear-equation solver',
-        description: 'Solve ax + b = 0.',
+        description:
+          'Solve ax + b = 0 for the value of x from the two coefficients. a cannot be zero, since an equation without an x term has no single value to solve for.',
         href: '/math/workbench?tool=linear-equation-solver',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:logarithm-calculator',
         name: 'Logarithm calculator',
-        description: 'Calculate log base b of x.',
+        description:
+          'Work out the logarithm of x to any base you name, whether that is base 10, base 2 or e. x must be above zero and the base positive and not equal to 1.',
         href: '/math/workbench?tool=logarithm-calculator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:exponent-calculator',
         name: 'Exponent calculator',
-        description: 'Calculate base raised to an exponent.',
+        description:
+          'Raise a base to an exponent, including negative and fractional powers such as 2 to the 8 or 9 to the 0.5. Both boxes take any finite number.',
         href: '/math/workbench?tool=exponent-calculator',
         workspaceId: 'math-workbench',
       },
@@ -226,7 +243,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:fuel-economy-converter',
         name: 'Fuel-economy converter',
-        description: 'Convert L/100 km, US MPG, and imperial MPG.',
+        description:
+          'Convert fuel economy between litres per 100 km, US MPG and imperial MPG. The two gallon sizes differ, so US and imperial figures are not the same.',
         href: '/math/workbench?tool=fuel-economy-converter',
         workspaceId: 'math-workbench',
       },
@@ -326,7 +344,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:rectangle-calculator',
         name: 'Rectangle calculator',
-        description: 'Calculate area, perimeter, and diagonal.',
+        description:
+          'Work out the area, perimeter and corner-to-corner diagonal of a rectangle from its length and width. Both must be zero or above, and any unit can be used.',
         href: '/math/workbench?tool=rectangle-calculator',
         workspaceId: 'math-workbench',
       },
@@ -341,7 +360,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:temperature-converter',
         name: 'Temperature converter',
-        description: 'Convert Celsius, Fahrenheit, and Kelvin.',
+        description:
+          'Convert a temperature between Celsius, Fahrenheit and Kelvin. Values below absolute zero are rejected rather than converted into a negative Kelvin.',
         href: '/math/workbench?tool=temperature-converter',
         workspaceId: 'math-workbench',
       },
@@ -371,70 +391,80 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:random-number-generator',
         name: 'Random-number generator',
-        description: 'Generate random integers in an inclusive range.',
+        description:
+          'Generate up to 100 random whole numbers between a minimum and a maximum you set, with both ends of the range included in the possible results.',
         href: '/math/workbench?tool=random-number-generator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:dice-roller',
         name: 'Dice roller',
-        description: 'Roll one to 100 dice with two to 1,000 sides.',
+        description:
+          'Roll one to 100 dice with two to 1,000 sides each. Every individual roll is listed and then added up for a total, so d20 and d100 sets both work.',
         href: '/math/workbench?tool=dice-roller',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:coin-flipper',
         name: 'Coin flipper',
-        description: 'Flip one to 100 fair virtual coins.',
+        description:
+          'Flip one to 100 fair coins at once and see each result listed as heads or tails. Each flip is even odds and independent of the ones before it.',
         href: '/math/workbench?tool=coin-flipper',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:sequence-generator',
         name: 'Sequence generator',
-        description: 'Generate an arithmetic sequence.',
+        description:
+          'Generate an arithmetic sequence from a starting value, a step and a term count of up to 1,000. The step can be negative or a decimal to count down.',
         href: '/math/workbench?tool=sequence-generator',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:distance-converter',
         name: 'Distance converter',
-        description: 'Convert metric, imperial, and nautical distances.',
+        description:
+          'Convert a length between millimetres, centimetres, metres, kilometres, inches, feet, yards, miles and nautical miles, for travel legs or drawing dimensions.',
         href: '/math/workbench?tool=distance-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:area-converter',
         name: 'Area converter',
-        description: 'Convert common metric and imperial areas.',
+        description:
+          'Convert an area between square metres, square kilometres, square centimetres, hectares, acres, square feet, square inches and square miles for land or floors.',
         href: '/math/workbench?tool=area-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:volume-converter',
         name: 'Volume converter',
-        description: 'Convert metric and common liquid volumes.',
+        description:
+          'Convert a volume between millilitres, litres, cubic metres, cubic centimetres, US fluid ounces, US cups, US gallons and cubic feet for tanks or drinks.',
         href: '/math/workbench?tool=volume-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:mass-converter',
         name: 'Mass converter',
-        description: 'Convert metric and imperial mass units.',
+        description:
+          'Convert a mass between milligrams, grams, kilograms, metric tonnes, ounces, pounds and stone, for recipe amounts, parcel weights or body weight.',
         href: '/math/workbench?tool=mass-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:speed-converter',
         name: 'Speed converter',
-        description: 'Convert speed units using exact standard factors.',
+        description:
+          'Convert a speed between metres per second, kilometres per hour, miles per hour, knots and feet per second, for travel, running or wind figures.',
         href: '/math/workbench?tool=speed-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:time-unit-converter',
         name: 'Time-unit converter',
-        description: 'Convert elapsed-time units.',
+        description:
+          'Convert a duration between milliseconds, seconds, minutes, hours, days and weeks, for timeouts, run times and other elapsed spans given in the wrong unit.',
         href: '/math/workbench?tool=time-unit-converter',
         workspaceId: 'math-workbench',
       },
@@ -448,49 +478,56 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'math-workbench:energy-converter',
         name: 'Energy converter',
-        description: 'Convert joules, watt-hours, calories, and BTU.',
+        description:
+          'Convert energy between joules, kilojoules, watt-hours, kilowatt-hours, calories, kilocalories and BTU (IT), for food labels, bills and heating figures.',
         href: '/math/workbench?tool=energy-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:power-converter',
         name: 'Power converter',
-        description: 'Convert watts and common power units.',
+        description:
+          'Convert power between watts, kilowatts, megawatts, mechanical horsepower and BTU per hour, for appliance ratings, engines and heating output.',
         href: '/math/workbench?tool=power-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:force-converter',
         name: 'Force converter',
-        description: 'Convert newtons and common force units.',
+        description:
+          'Convert a force between newtons, kilonewtons, dynes, kilogram-force and pound-force, for load ratings, spring values and physics homework answers.',
         href: '/math/workbench?tool=force-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:torque-converter',
         name: 'Torque converter',
-        description: 'Convert newton-metres and common torque units.',
+        description:
+          'Convert torque between newton-metres, newton-centimetres, kilogram-force metres, pound-force feet and pound-force inches, for tightening specs.',
         href: '/math/workbench?tool=torque-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:angle-converter',
         name: 'Angle converter',
-        description: 'Convert degrees, radians, gradians, and turns.',
+        description:
+          'Convert an angle between radians, degrees, gradians and turns, for trigonometry, CAD drawings and code that expects radians rather than degrees.',
         href: '/math/workbench?tool=angle-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:frequency-converter',
         name: 'Frequency converter',
-        description: 'Convert hertz and common frequency scales.',
+        description:
+          'Convert a frequency between hertz, kilohertz, megahertz, gigahertz and revolutions per minute, for clock speeds, radio bands and motor ratings.',
         href: '/math/workbench?tool=frequency-converter',
         workspaceId: 'math-workbench',
       },
       {
         id: 'math-workbench:data-size-converter',
         name: 'Data-size converter',
-        description: 'Convert decimal and binary byte units.',
+        description:
+          'Convert a file size between bytes, kilobytes, megabytes and gigabytes in powers of ten, and kibibytes, mebibytes and gibibytes in powers of two.',
         href: '/math/workbench?tool=data-size-converter',
         workspaceId: 'math-workbench',
       },

@@ -87,7 +87,8 @@ export const FILE_WORKBENCH_OPERATIONS: readonly FileWorkbenchOperation[] = [
   {
     id: 'file-chunk-splitter',
     name: 'File chunk splitter',
-    description: 'Split one file into numbered byte-exact chunks.',
+    description:
+      'Split one file into numbered byte-exact parts at the chunk size you set, up to 1,000 pieces. The file is read in this tab and every part downloads separately.',
     fields: [number('chunkSize', 'Chunk size (bytes)', '1048576')],
     requiresFiles: true,
     notice: fileApiNotice,
@@ -226,7 +227,8 @@ export const FILE_WORKBENCH_OPERATIONS: readonly FileWorkbenchOperation[] = [
   {
     id: 'file-extension-changer',
     name: 'File extension changer',
-    description: 'Change only the extension on downloaded copies.',
+    description:
+      'Change the extension on downloaded copies of the files you pick, in your browser. The bytes are untouched, so this relabels a file rather than converting it.',
     fields: [text('extension', 'New extension', 'txt')],
     requiresFiles: true,
     multiple: true,
@@ -343,7 +345,8 @@ export const FILE_WORKBENCH_OPERATIONS: readonly FileWorkbenchOperation[] = [
   {
     id: 'data-uri-file-maker',
     name: 'Data-URI file maker',
-    description: 'Encode one selected file as a Base64 data URI.',
+    description:
+      'Turn one file of up to 16 MiB into a Base64 data URI you can paste into CSS, HTML or a script, read in your browser with its media type kept in the prefix.',
     fields: [],
     requiresFiles: true,
     notice:
