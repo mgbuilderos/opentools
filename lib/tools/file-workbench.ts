@@ -404,8 +404,27 @@ export const FILE_WORKBENCH_OPERATIONS: readonly FileWorkbenchOperation[] = [
   },
 ] as const;
 
-const MAX_FILE = 256 * 1024 * 1024;
-const MAX_TOTAL = 512 * 1024 * 1024;
+/**
+ * How large an input has to be before the page *warns* about it. An advisory,
+ * not a limit — nothing in this file refuses work on the strength of it.
+ *
+ * WHY THERE IS NO LIMIT HERE ANY MORE. Until now this file refused any file
+ * over 256 MiB and any selection over 512 MiB combined. Those two numbers
+ * protected nothing. There is no server in this product, no upload, and no
+ * bandwidth anyone is billed for: the bytes never leave the tab, so a larger
+ * file costs the project exactly nothing. Every hosted rival prints a ceiling
+ * on its page because the ceiling *is* its cost structure — 100 MB free, two
+ * files a day, three tasks — and this page printed the same kind of sentence
+ * with none of the same reason behind it.
+ *
+ * The true statement is that the machine is the limit, so the machine is now
+ * allowed to be the limit. Past this threshold the UI says the tab may run out
+ * of memory and lets the person decide anyway; it does not decide for them. A
+ * refusal is a guaranteed failure, and a warning is only a possible one — and
+ * the person holding the file knows how much memory they have, which this code
+ * never can.
+ */
+export const LARGE_INPUT_ADVISORY_BYTES = 256 * 1024 * 1024;
 function result(
   summary: string,
   output: string,
@@ -413,27 +432,36 @@ function result(
 ): FileWorkbenchResult {
   return { summary, output, downloads };
 }
+/**
+ * Check that a selection satisfies the operation's own arity, and that each
+ * file arrived intact. Nothing here is a size cap — see
+ * `LARGE_INPUT_ADVISORY_BYTES`.
+ *
+ * `minimum`/`maximum` describe what the operation genuinely needs: "exactly
+ * one file", "at least two to compare". They are not a quota, so `maximum`
+ * defaults to unbounded rather than to a round number somebody picked once.
+ */
 function validateFiles(
   files: readonly LocalFileInput[],
   minimum = 1,
-  maximum = 1_000,
+  maximum = Number.POSITIVE_INFINITY,
 ) {
   if (files.length < minimum || files.length > maximum)
     throw new Error(
-      `Select from ${minimum} to ${maximum.toLocaleString()} files.`,
+      Number.isFinite(maximum)
+        ? `Select from ${minimum} to ${maximum.toLocaleString()} files.`
+        : `Select at least ${minimum} file${minimum === 1 ? '' : 's'}.`,
     );
   let total = 0;
   for (const file of files) {
+    // Integrity, not capacity: a declared size that disagrees with the bytes
+    // actually present means the read went wrong, whatever the size is.
     if (file.size !== file.bytes.length)
       throw new Error(
         `${file.name} byte length does not match its declared size.`,
       );
-    if (file.size > MAX_FILE)
-      throw new Error(`${file.name} exceeds the 256 MiB per-file limit.`);
     total += file.size;
   }
-  if (total > MAX_TOTAL)
-    throw new Error('Selected files exceed the 512 MiB combined limit.');
   return total;
 }
 function integer(
@@ -690,7 +718,7 @@ export async function runFileWorkbenchOperation(
     }
     case 'file-chunk-splitter': {
       validateFiles(files, 1, 1);
-      const size = integer(values, 'chunkSize', 1, MAX_FILE);
+      const size = integer(values, 'chunkSize', 1, Number.MAX_SAFE_INTEGER);
       const count = Math.ceil(files[0].size / size);
       if (count > 1_000)
         throw new Error('Chunk count would exceed 1,000. Increase chunk size.');
@@ -981,7 +1009,12 @@ export async function runFileWorkbenchOperation(
       );
     }
     case 'large-file-finder': {
-      const threshold = integer(values, 'threshold', 0, MAX_FILE);
+      const threshold = integer(
+        values,
+        'threshold',
+        0,
+        Number.MAX_SAFE_INTEGER,
+      );
       const large = files
         .filter((file) => file.size >= threshold)
         .toSorted((a, b) => b.size - a.size);
@@ -1051,8 +1084,6 @@ export async function runFileWorkbenchOperation(
     }
     case 'base64-file-decoder': {
       const bytes = base64ToBytes(values.input);
-      if (bytes.length > MAX_FILE)
-        throw new Error('Decoded output exceeds 256 MiB.');
       const name = safeName(values.outputName);
       return result(
         `Decoded ${bytes.length.toLocaleString()} bytes`,
@@ -1081,8 +1112,6 @@ export async function runFileWorkbenchOperation(
       );
       if (!match) throw new Error('Enter a strict Base64 data URI.');
       const bytes = base64ToBytes(match[2]);
-      if (bytes.length > MAX_FILE)
-        throw new Error('Decoded output exceeds 256 MiB.');
       const name = safeName(values.outputName);
       return result(
         `Extracted ${bytes.length.toLocaleString()} bytes`,
@@ -1214,7 +1243,7 @@ export async function runFileWorkbenchOperation(
       );
     }
     case 'exif-metadata-inspector': {
-      validateFiles(files, 1, 100);
+      validateFiles(files);
       const reports: string[] = [];
       let gpsCount = 0;
       for (const file of files) {
@@ -1295,7 +1324,7 @@ export async function runFileWorkbenchOperation(
       return result(summary, reports.join('\n').trim());
     }
     case 'exif-metadata-stripper': {
-      validateFiles(files, 1, 100);
+      validateFiles(files);
       const suffix = (values.outputSuffix || '_clean').trim();
       const downloads: GeneratedFile[] = [];
       let totalOriginal = 0;

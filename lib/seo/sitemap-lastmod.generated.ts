@@ -11,7 +11,6 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/audio/convert': '2026-09-24T09:07:17+05:30',
   '/audio/loudness': '2026-09-25T23:41:43+05:30',
   '/audio/mp3-toolkit': '2026-09-24T09:07:17+05:30',
-  '/bench': '2026-09-24T09:00:48+05:30',
   '/blog': '2026-09-24T09:00:48+05:30',
   '/blog/agile-user-story-acceptance-criteria-gherkin':
     '2026-09-24T09:00:48+05:30',
@@ -1331,7 +1330,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/science/weighted-grade-calculator': '2026-09-24T16:18:20+05:30',
   '/science/workbench': '2026-09-24T09:00:48+05:30',
   '/security': '2026-09-25T21:04:20+00:00',
-  '/self-host': '2026-09-25T21:23:33+00:00',
+  '/self-host': '2026-09-25T21:46:29+00:00',
   '/subtitles': '2026-09-26T01:12:47+05:30',
   '/subtitles/subtitle-check': '2026-09-24T09:00:48+05:30',
   '/subtitles/subtitle-clean': '2026-09-24T09:00:48+05:30',

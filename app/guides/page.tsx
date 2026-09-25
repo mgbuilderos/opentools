@@ -212,7 +212,7 @@ export default function GuidesDirectoryPage() {
           {/*
             Hubs that belong to no single category.
 
-            `/bench` runs operations from every category over a whole folder,
+            `/batch` runs operations from every category over a whole folder,
             so no category pillar owns it -- and until 2026-09-23 that meant no
             page on the site linked to it at all and it sat in the sitemap with
             no inbound link. This page is the one whose subject is everything
