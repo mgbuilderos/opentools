@@ -181,7 +181,23 @@ export function renderedPages(clientDir = CLIENT_DIR) {
     });
 }
 
-/** Every fault of both classes, over every sitemap URL that has a file. */
+/**
+ * Every fault of all four classes, over every sitemap URL that has a file.
+ *
+ * COSTS ~280MB, AND A PER-PAGE RULE MUST NOT CALL THIS. `renderedPages` returns
+ * every page's markup in one array, because `duplicateOgTitles` is a population
+ * check and genuinely needs the whole set. A caller that only wants a per-page
+ * answer therefore pays for a collection it never uses: 1,478 pages of HTML is
+ * roughly 280MB held in one process. On 2026-09-26 that shape made
+ * `served-copy-policy.test.ts` cross a 60s CI timeout on GC alone while passing
+ * locally in 3.1s, and `lib/seo/share-card-coverage.test.ts` already pays it once
+ * per `vitest run` — so a second full load in the same run is what tips it over.
+ *
+ * `lib/seo/canonical-coverage.test.ts` sweeps the same population for the
+ * canonical rule and deliberately does NOT come through here: it reads one file,
+ * checks it with `canonicalFault`, and drops it. Do the same for any new
+ * per-page rule, and reach for this function only when you need the population.
+ */
 export function auditRenderedPages(clientDir = CLIENT_DIR) {
   const pages = renderedPages(clientDir);
   if (pages === null) return null;
