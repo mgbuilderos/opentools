@@ -2,6 +2,17 @@
 import type { Metadata } from 'next';
 import { ArrowLeft, HeartHandshake, ShieldCheck } from 'lucide-react';
 import { SupportDualView } from '@/components/support-dual-view';
+import { buildSitemap } from '@/lib/seo/sitemap-entries';
+
+/*
+  Counted, never typed. This page asks people for money and states the size of
+  the site as a fact, and the fact had gone stale: it read "645+ pages" while
+  the sitemap carried 1,464, and quoted a cache figure of "<125 writes/day"
+  against a real budget of 900. `stated-numbers.test.ts` now fails on a
+  hand-written count in any page, which is the only thing that keeps a number
+  in a sentence honest a year from now.
+*/
+const PAGE_COUNT = buildSitemap().length;
 
 export const revalidate = 86400;
 
@@ -85,10 +96,10 @@ export default function SupportPage() {
                 <span>$5 / month</span>
               </div>
               <p className="mt-1.5 text-xs leading-normal text-muted-foreground">
-                Funds independent edge infrastructure and development time. All
-                645+ pages operate under an optimized cache budget (&lt;125
-                writes/day) so tools load instantly worldwide without commercial
-                sponsors.
+                Funds independent edge infrastructure and development time. All{' '}
+                {PAGE_COUNT.toLocaleString('en-GB')} pages are prerendered and
+                served from the edge as static files, so tools load instantly
+                worldwide without commercial sponsors.
               </p>
             </div>
 

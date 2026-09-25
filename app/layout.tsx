@@ -44,11 +44,35 @@ export const metadata: Metadata = {
    * page states its own canonical in `app/page.tsx`; every other page
    * states its own too, held to it by `lib/seo/canonical-coverage.test.ts`.
    */
+  /*
+   * NO `title`, `description` OR ABSOLUTE `url` HERE, AND THAT IS THE POINT.
+   *
+   * Measured against a fresh `dist/client` on 2026-09-23: of 1,413 sitemap
+   * URLs, 1,335 served the identical `og:title`
+   * `OpenTools — Fast, Private Browser Utilities`, the identical
+   * `og:description`, and an `og:url` pointing at the home page. Only 79
+   * distinct values existed across the whole site. Every one of those 1,335 is
+   * a tool page that declares no `openGraph` of its own and inherited this
+   * block wholesale, so a link posted to Hacker News or Reddit previewed as
+   * the site rather than as the tool that was shared -- and `og:url` is read
+   * as the canonical by Facebook and LinkedIn, which folded all 1,335 shares
+   * into one object. Their `<title>` tags were already 1,413 distinct values;
+   * only the card was generic.
+   *
+   * Leaving the three fields out is the fix, not an omission. The metadata
+   * shim fills `og:title` from the page's own resolved title (template
+   * applied) and `og:description` from its own description whenever this block
+   * states neither -- see `postProcessMetadata` in vinext's metadata shim, and
+   * `lib/seo/share-card-coverage.test.ts`, which pins that behaviour so an
+   * upgrade that drops it fails here rather than in a feed. `url: '.'`
+   * resolves against the page's own pathname for the same reason.
+   *
+   * Setting any of the three again re-breaks all 1,335 pages at once and no
+   * page file will look wrong. The population check in
+   * `scripts/check-share-and-heading-order.mjs` is what catches it.
+   */
   openGraph: {
-    title: 'OpenTools — Fast, Private Browser Utilities',
-    description:
-      '100% in-browser, zero-upload private utilities for PDF, image, audio, video, text, developer, and structured data tasks.',
-    url: siteOrigin,
+    url: '.',
     siteName: 'OpenTools',
     locale: 'en_US',
     type: 'website',
@@ -69,11 +93,15 @@ export const metadata: Metadata = {
       },
     ],
   },
+  /*
+   * Same omission, same reason. X reads `twitter:title` first and does not
+   * fall back to `og:title` once a card type is declared, so a generic pair
+   * here would have kept all 1,335 pages generic on X alone even after the
+   * Open Graph block was fixed. With neither field stated, the shim copies
+   * `og:title` and `og:description` -- which are now the page's own.
+   */
   twitter: {
     card: 'summary_large_image',
-    title: 'OpenTools — Fast, Private Browser Utilities',
-    description:
-      '100% in-browser, zero-upload private utilities for PDF, image, audio, video, text, developer, and structured data tasks.',
     images: ['/og.png'],
   },
   robots: {

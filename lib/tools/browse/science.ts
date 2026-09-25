@@ -65,7 +65,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'science-education-workbench:resistor-color-code',
         name: 'Resistor color-code calculator',
-        description: 'Decode a four-band resistor value and tolerance.',
+        description:
+          'Pick the two digit bands, a multiplier from silver to blue and a tolerance band, and read back the resistance in ohms with its tolerance range.',
         href: '/science/workbench?tool=resistor-color-code',
         workspaceId: 'science-education-workbench',
       },
@@ -103,7 +104,8 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'science-education-workbench:kinetic-energy-calculator',
         name: 'Kinetic-energy calculator',
-        description: 'Calculate ½mv² in joules.',
+        description:
+          'Enter a mass in kilograms and a speed in metres per second to get ½mv² in joules; a negative velocity is fine, since the speed term is squared.',
         href: '/science/workbench?tool=kinetic-energy-calculator',
         workspaceId: 'science-education-workbench',
       },
@@ -133,35 +135,40 @@ export const SECTIONS: readonly BrowseSection[] = [
       {
         id: 'science-education-workbench:momentum-calculator',
         name: 'Momentum calculator',
-        description: 'Calculate linear momentum p = mv.',
+        description:
+          'Work out linear momentum as mass times velocity, with mass in kilograms and velocity in metres per second; a negative velocity keeps its sign in the result.',
         href: '/science/workbench?tool=momentum-calculator',
         workspaceId: 'science-education-workbench',
       },
       {
         id: 'science-education-workbench:density-calculator',
         name: 'Density calculator',
-        description: 'Calculate density from mass and volume.',
+        description:
+          'Divide a mass in kilograms by a volume in cubic metres for density in kg/m³. The volume has to be above zero, so an empty volume is rejected.',
         href: '/science/workbench?tool=density-calculator',
         workspaceId: 'science-education-workbench',
       },
       {
         id: 'science-education-workbench:buoyancy-calculator',
         name: 'Buoyancy calculator',
-        description: 'Calculate ideal Archimedean buoyant force ρVg.',
+        description:
+          'Multiply fluid density, displaced volume and gravity for the ideal Archimedean buoyant force in newtons. Gravity starts at 9.80665 m/s² and can be changed.',
         href: '/science/workbench?tool=buoyancy-calculator',
         workspaceId: 'science-education-workbench',
       },
       {
         id: 'science-education-workbench:reynolds-number-calculator',
         name: 'Reynolds-number calculator',
-        description: 'Calculate Re = ρvL/μ from SI inputs.',
+        description:
+          'Divide density times velocity times characteristic length by dynamic viscosity for the dimensionless Reynolds number. Inputs are SI: kg/m³, m/s, m, Pa·s.',
         href: '/science/workbench?tool=reynolds-number-calculator',
         workspaceId: 'science-education-workbench',
       },
       {
         id: 'science-education-workbench:wave-speed-calculator',
         name: 'Wave-speed calculator',
-        description: 'Calculate wave speed v = fλ.',
+        description:
+          'Multiply frequency in hertz by wavelength in metres for wave speed in metres per second, the relation behind sound, light and waves on a string.',
         href: '/science/workbench?tool=wave-speed-calculator',
         workspaceId: 'science-education-workbench',
       },

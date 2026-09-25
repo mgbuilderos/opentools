@@ -236,6 +236,38 @@ export interface FormatFacts {
 const lines = (value: string) => value.split('\n').length;
 
 /**
+ * What a search result will print of a description before it truncates it.
+ *
+ * Measured on 2026-09-23: 100 of the 103 `/convert` format pages ran to about
+ * 181 characters, so every one of them ended mid-sentence in results. The
+ * sentence was the same length whatever the pair, because it was one template
+ * with five holes in it -- and `reStructuredText to Markdown` fills those
+ * holes with four times the characters `CSV to XML` does.
+ */
+const SNIPPET_LIMIT = 160;
+
+/**
+ * The fullest true sentence about this pair that still fits a result snippet.
+ *
+ * Longest first: the version that names the paste-and-copy step, then the one
+ * that drops it and keeps the format summary, then the one that keeps neither.
+ * Nothing is cut mid-word and nothing is padded -- a short pair of format
+ * names simply buys a longer sentence.
+ */
+function descriptionFor(pair: FormatPair, summary: string): string {
+  const { fromName: from, toName: to } = pair;
+  const candidates = [
+    `Convert ${from} to ${to} in this browser tab — ${summary}. Paste your ${from}, copy the ${to}: quoting and escaping are handled for you.`,
+    `Convert ${from} to ${to} in this browser tab — ${summary}. Quoting and escaping are handled for you.`,
+    `Convert ${from} to ${to} in this browser tab. Quoting and escaping are handled for you.`,
+  ];
+  return (
+    candidates.find((text) => text.length <= SNIPPET_LIMIT) ??
+    candidates[candidates.length - 1]!
+  );
+}
+
+/**
  * The pair-specific content of the page, computed at build time by running the
  * converter. Kept out of `FORMAT_PAIRS` on purpose: the list is imported by the
  * route registry and the sitemap, and only the page being rendered needs its
@@ -262,7 +294,7 @@ export function formatFacts(pair: FormatPair): FormatFacts {
     sample,
     output,
     measured: `${SAMPLE_TABLE.rows.length} rows and ${SAMPLE_TABLE.headers.length} columns: ${lines(sample)} lines of ${pair.fromName} become ${lines(output)} lines of ${pair.toName}.`,
-    description: `Turn ${pair.fromName} into ${pair.toName} — ${to?.summary ?? ''} — in this browser tab. Paste your ${pair.fromName}, copy the ${pair.toName}: the quoting and escaping ${pair.toName} needs are applied for you.`,
+    description: descriptionFor(pair, to?.summary ?? ''),
     formats,
     routes,
     extension: to?.extension ?? 'txt',
@@ -288,6 +320,21 @@ export function formatHubPair(): FormatPair {
     fromName: from.name,
     toName: to.name,
     title: 'File format converter',
+  };
+}
+
+/**
+ * Title and description for the hub at `/convert/formats`.
+ *
+ * Here rather than in the page file because both counts in it are facts about
+ * this module, and because `meta-lengths.test.ts` must be able to measure the
+ * finished sentence -- a page-local template literal is a string no test can
+ * read.
+ */
+export function formatHubMeta(): { title: string; description: string } {
+  return {
+    title: 'Convert CSV, JSON, YAML, XML, Markdown & SQL tables',
+    description: `One page per conversion between ${FILE_FORMATS.length} table formats — ${FORMAT_PAIRS.length} of them — each running in this browser tab with the quoting and escaping that format needs.`,
   };
 }
 

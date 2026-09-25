@@ -13,18 +13,19 @@ import { useEffect, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { editVideo, keyframeSeconds } from '@/lib/tools/video/edit';
+import { editVideoSource, keyframeSeconds } from '@/lib/tools/video/edit';
 import { extractFrames } from '@/lib/tools/video/frames';
 import { encodeGif } from '@/lib/tools/video/gif';
 import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
+import { sourceFromFile, type ByteSource } from '@/lib/tools/video/source';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import { VideoSuiteNav, VideoRelatedLinks } from '@/components/video-suite-nav';
 
 /**
- * Nothing is decoded here, so memory is roughly twice the file rather than the
- * tens of times a decoded frame buffer would need. That is why this limit is far
- * higher than the audio converter's.
+ * Container surgery operates on byte ranges directly without loading the
+ * full file into memory via streaming zero-copy slices.
  */
-const MAX_BYTES = 250 * 1024 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB ceiling for browser file input handling
 
 type Keep = 'both' | 'video' | 'audio' | 'gif';
 
@@ -35,7 +36,7 @@ const GIF_MAX_EDGE = 480;
 interface Loaded {
   name: string;
   size: number;
-  bytes: Uint8Array;
+  source: ByteSource;
   movie: Mp4File;
   keyframes: number[];
 }
@@ -73,7 +74,15 @@ function readSeconds(value: string, label: string): number | null {
   return parsed;
 }
 
-export function VideoTrimTool() {
+export interface VideoTrimToolProps {
+  initialMode?: Keep;
+  forcedToolId?: string;
+}
+
+export function VideoTrimTool({
+  initialMode = 'both',
+  forcedToolId = 'video-trim',
+}: VideoTrimToolProps = {}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const savedRef = useRef<Saved | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
@@ -83,14 +92,23 @@ export function VideoTrimTool() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
 
+  const currentPath =
+    forcedToolId === 'video-to-gif'
+      ? '/video/to-gif'
+      : forcedToolId === 'video-extract-audio'
+        ? '/video/extract-audio'
+        : forcedToolId === 'video-mute'
+          ? '/video/mute'
+          : '/video/trim';
+
   const [startAt, setStartAt] = useState('');
   const [endAt, setEndAt] = useState('');
-  const [keep, setKeep] = useState<Keep>('both');
+  const [keep, setKeep] = useState<Keep>(initialMode);
   const [gifFps, setGifFps] = useState(10);
   const [gifColors, setGifColors] = useState(128);
   const [gifDither, setGifDither] = useState(false);
 
-  const manifest = toolMeta('video-trim');
+  const manifest = toolMeta(forcedToolId);
 
   useEffect(() => {
     savedRef.current = saved;
@@ -126,19 +144,19 @@ export function VideoTrimTool() {
     setLoaded(null);
     if (file.size > MAX_BYTES) {
       setError(
-        `That file is ${formatBytes(file.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}, because the whole thing has to fit in this tab's memory.`,
+        `That file is ${formatBytes(file.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}, processed entirely in your browser without uploading.`,
       );
       return;
     }
     setBusy('Reading the file…');
     try {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      const movie = readMp4(bytes);
+      const source = sourceFromFile(file);
+      const movie = await readMp4(source);
       const video = movie.tracks.find((track) => track.kind === 'video');
       setLoaded({
         name: file.name,
         size: file.size,
-        bytes,
+        source,
         movie,
         keyframes: video ? keyframeSeconds(video) : [],
       });
@@ -165,7 +183,7 @@ export function VideoTrimTool() {
         readSeconds(endAt, 'The end time') ?? loaded.movie.durationSeconds;
       // The bytes go straight to the decoder; there is no URL and no element,
       // which is what keeps this working under the site's own media policy.
-      const extracted = await extractFrames(loaded.bytes, {
+      const extracted = await extractFrames(loaded.source, {
         startSeconds: from,
         endSeconds: to,
         framesPerSecond: gifFps,
@@ -227,14 +245,14 @@ export function VideoTrimTool() {
     }
   };
 
-  const onRun = () => {
+  const onRun = async () => {
     if (!loaded) return;
     clearSaved();
     setError('');
     setBusy('Making the clip…');
     const started = performance.now();
     try {
-      const result = editVideo(loaded.bytes, loaded.movie, {
+      const result = await editVideoSource(loaded.source, loaded.movie, {
         startSeconds: readSeconds(startAt, 'The start time') ?? 0,
         endSeconds: readSeconds(endAt, 'The end time'),
         keepVideo: keep !== 'audio',
@@ -250,11 +268,7 @@ export function VideoTrimTool() {
           : keep === 'video'
             ? 'muted.mp4'
             : 'clip.mp4';
-      const url = URL.createObjectURL(
-        new Blob([result.bytes as BlobPart], {
-          type: keep === 'audio' ? 'audio/mp4' : 'video/mp4',
-        }),
-      );
+      const url = URL.createObjectURL(result.blob);
 
       const what =
         keep === 'audio'
@@ -266,7 +280,7 @@ export function VideoTrimTool() {
       const next: Saved = {
         name: `${base}-${suffix}`,
         url,
-        size: result.bytes.length,
+        size: result.size,
         headline: what,
         detail: `${formatClock(result.actualStartSeconds)} to ${formatClock(result.endSeconds)}, written in ${durationMs < 1000 ? `${durationMs.toFixed(0)} ms` : `${(durationMs / 1000).toFixed(2)} s`}. The frames were copied, not re-encoded, so nothing was lost.`,
         note:
@@ -282,14 +296,16 @@ export function VideoTrimTool() {
         durationMs,
         summary: `Made a clip from ${loaded.name}.`,
         metrics: [
-          { label: 'Size', value: formatBytes(result.bytes.length) },
+          { label: 'Size', value: formatBytes(result.size) },
           { label: 'Re-encoded', value: 'No' },
           { label: 'Uploaded', value: 'No' },
         ],
       });
     } catch (caught) {
       setError(
-        caught instanceof Error ? caught.message : 'That could not be done.',
+        caught instanceof Error
+          ? caught.message
+          : 'That clip could not be made.',
       );
     } finally {
       setBusy('');
@@ -302,7 +318,7 @@ export function VideoTrimTool() {
     loaded?.movie.tracks.find((track) => track.kind === 'audio') ?? null;
 
   return (
-    <AppShell currentToolId="video-trim">
+    <AppShell currentToolId={forcedToolId}>
       <section
         id="tool"
         tabIndex={-1}
@@ -331,6 +347,8 @@ export function VideoTrimTool() {
               Runs in this tab
             </span>
           </div>
+
+          <VideoSuiteNav currentPath={currentPath} />
 
           {error ? (
             <div
@@ -625,6 +643,7 @@ export function VideoTrimTool() {
             output is genuinely worse than its input. That is the format rather
             than the tool.
           </p>
+          <VideoRelatedLinks currentPath={currentPath} />
         </div>
       </section>
     </AppShell>

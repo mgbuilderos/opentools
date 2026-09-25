@@ -23,6 +23,7 @@ const LOADERS: Readonly<Record<string, AdapterLoader>> = {
   text: () => import('./adapters/text'),
   web: () => import('./adapters/web'),
   writing: () => import('./adapters/writing'),
+  'formats-pdfcrypt': () => import('../formats/pdfcrypt/kernel'),
 };
 
 const sourceCache = new Map<

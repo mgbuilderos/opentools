@@ -5,9 +5,9 @@ import { relatedToolsFor } from '@/lib/seo/related-tools';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'LaTeX Authoring & Academic Notation Hub | OpenTools',
+  title: 'LaTeX Authoring & Academic Notation Hub',
   description:
-    'Research-grade browser suite for academic authoring: multi-format table generation, LaTeX table reader, BibTeX deduplication, accurate TeXcount word counts, and symbol lookup.',
+    'A browser suite for academic authoring: multi-format table generation, a LaTeX table reader, BibTeX deduplication, word counts and symbol lookup.',
   alternates: {
     canonical: '/latex',
   },

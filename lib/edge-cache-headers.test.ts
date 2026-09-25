@@ -1,6 +1,12 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+
+import {
+  auditCachePolicy,
+  directive,
+  parseHeaderRules,
+} from '../scripts/lib/headers-policy.mjs';
 
 /**
  * `public/_headers` is the only header source the Cloudflare deploy ships, so
@@ -25,57 +31,19 @@ import { describe, expect, it } from 'vitest';
  */
 const projectRoot = path.resolve(import.meta.dirname, '..');
 
-interface HeaderLine {
-  kind: 'set' | 'unset';
-  name: string;
-  /** Empty for an `! Name` line. */
-  value: string;
-}
-
-interface HeaderRule {
-  pattern: string;
-  /** Every line of the rule, in the order the file writes them. */
-  lines: HeaderLine[];
-}
+type HeaderRule = ReturnType<typeof parseHeaderRules>[number];
 
 /**
- * Parses `_headers` the way the asset layer reads it: an unindented line opens
- * a rule, indented lines belong to it, `#` lines and blanks are ignored.
+ * The parser and the policy live in `scripts/lib/headers-policy.mjs` because
+ * the build guard `scripts/verify-built-headers.mjs` has to ask the same
+ * questions of `dist/client/_headers`, and a second copy of either is how one
+ * of the two ends up passing on a file the other would reject.
  */
-function parseHeaderRules(source: string): HeaderRule[] {
-  const rules: HeaderRule[] = [];
-  for (const line of source.split('\n')) {
-    if (!line.trim() || line.trimStart().startsWith('#')) continue;
-    if (!/^\s/u.test(line)) {
-      rules.push({ pattern: line.trim(), lines: [] });
-      continue;
-    }
-    const rule = rules.at(-1);
-    expect(rule, `an indented line precedes any rule: ${line}`).toBeDefined();
-    const removed = /^\s*!\s*(\S+)\s*$/u.exec(line);
-    if (removed) {
-      rule!.lines.push({ kind: 'unset', name: removed[1], value: '' });
-      continue;
-    }
-    const assigned = /^\s*([^:\s]+):\s*(.+?)\s*$/u.exec(line);
-    expect(assigned, `unparseable header line: ${line}`).not.toBeNull();
-    rule!.lines.push({ kind: 'set', name: assigned![1], value: assigned![2] });
-  }
-  return rules;
-}
-
-function directive(value: string, name: string): string | undefined {
-  const match = new RegExp(
-    `(?:^|,)\\s*${name}(?:=([^,]+))?\\s*(?:,|$)`,
-    'u',
-  ).exec(value);
-  if (!match) return undefined;
-  return match[1]?.trim() ?? '';
-}
-
-const rules = parseHeaderRules(
-  readFileSync(path.join(projectRoot, 'public/_headers'), 'utf8'),
+const sourceText = readFileSync(
+  path.join(projectRoot, 'public/_headers'),
+  'utf8',
 );
+const rules: HeaderRule[] = parseHeaderRules(sourceText);
 
 function ruleFor(pattern: string): HeaderRule {
   const rule = rules.find((candidate) => candidate.pattern === pattern);
@@ -196,5 +164,43 @@ describe('public/_headers lets Cloudflare answer without waking the Worker', () 
         `${rule.pattern} removes Cache-Control after setting it, which leaves the rule with nothing`,
       ).toBeLessThan(cacheControlAt(rule, 'set'));
     }
+  });
+
+  it('passes the shared policy audit the build guard runs', () => {
+    // Same function, same file. If this disagrees with the granular checks
+    // above, one of the two is wrong and both are meant to be fixed together.
+    expect(auditCachePolicy(rules)).toEqual([]);
+  });
+});
+
+/**
+ * Everything above reads `public/_headers`. That is the file the policy is
+ * written in and the wrong file to conclude anything about the live site from:
+ * Cloudflare reads `_headers` from the uploaded asset directory, so what
+ * actually governs a visitor is `dist/client/_headers`. A build that stopped
+ * copying `public/` would leave every test above green while the live site
+ * reverted to `max-age=0, must-revalidate` on every page.
+ */
+describe('the copy the deploy actually uploads', () => {
+  const builtPath = path.join(projectRoot, 'dist/client/_headers');
+
+  it('is byte-identical to public/_headers and states the same policy', () => {
+    if (!existsSync(builtPath)) {
+      // There is no build to inspect yet, which is the normal state when the
+      // unit suite runs on its own. This is not a silent pass: the invariant
+      // is enforced by scripts/verify-built-headers.mjs on every build, and
+      // scripts/build-guards.test.ts fails if that step ever leaves
+      // `npm run build`. So an absent dist/ here cannot mean it went
+      // unchecked — only that the build is where it gets checked.
+      expect(existsSync(path.join(projectRoot, 'dist'))).toBe(false);
+      return;
+    }
+    const builtText = readFileSync(builtPath, 'utf8');
+    expect(
+      builtText,
+      'dist/client/_headers differs from public/_headers — the live site is ' +
+        'not serving the reviewed file',
+    ).toBe(sourceText);
+    expect(auditCachePolicy(parseHeaderRules(builtText))).toEqual([]);
   });
 });

@@ -6,6 +6,7 @@ import { AppShell } from '@/components/app-shell';
 import { destinationIcon } from '@/components/category-icons';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
+import { CATEGORY_LINKS } from '@/lib/seo/category-hubs';
 import {
   INITIAL_GROUP_ID,
   INITIAL_SECTIONS,
@@ -153,6 +154,38 @@ export function HomeWorkspace() {
             <SmartDropzone />
           </div>
 
+          {/*
+            The crawlable twin of the category switcher in the top bar.
+
+            That switcher calls `selectCategory`, which is
+            `history.pushState('/?category=' + id)` — no navigation, no `href`,
+            and therefore nothing for a crawler to follow. Measured 2026-09-25:
+            this page carried 22 links to tool pages out of 1,335, and every
+            tool outside /pdf sat four or more clicks from the front page.
+
+            These 21 links are real `<a href>` in the prerendered HTML, one per
+            category hub, so the whole catalogue is two clicks deep. The
+            switcher stays exactly as it is: it is the faster way to browse for
+            someone who is already here.
+          */}
+          <nav aria-label="Tool categories" className="mt-8">
+            <h2 className="text-sm font-semibold text-foreground">
+              Browse every category
+            </h2>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {CATEGORY_LINKS.map((category) => (
+                <li key={category.route}>
+                  <a
+                    href={category.route}
+                    className="focus-ring inline-flex min-h-9 items-center rounded-lg border bg-background px-3 text-sm font-medium transition-colors hover:border-foreground/30"
+                  >
+                    {category.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
           <div className="my-6 flex flex-wrap items-center justify-between gap-4">
             <output className="text-sm text-muted-foreground">
               {loadingGroupId
@@ -281,6 +314,17 @@ export function HomeWorkspace() {
                 className="focus-ring underline underline-offset-4 hover:text-foreground"
               >
                 About
+              </a>
+              {/*
+                The comparison pages are reachable from here because an orphan
+                page earns nothing: this footer is on the most-linked page on
+                the site, so it is where their crawl path starts.
+              */}
+              <a
+                href="/compare/browser-based-vs-cloud-file-tools"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                In your browser vs in the cloud
               </a>
             </nav>
           </footer>

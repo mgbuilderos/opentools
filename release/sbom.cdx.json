@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:e5641b66-fa38-48aa-9ae8-ac7d215f7555",
+  "serialNumber": "urn:uuid:16934c69-d7f4-4b0a-9e95-5ed2632f1da6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-21T05:56:09.214Z",
+    "timestamp": "2026-09-24T11:15:12.929Z",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -21,7 +21,7 @@
     "component": {
       "bom-ref": "local-tools-canary@0.1.0",
       "type": "library",
-      "name": "claude-worktree",
+      "name": "claude-heic",
       "version": "0.1.0",
       "scope": "required",
       "purl": "pkg:npm/local-tools-canary@0.1.0",
@@ -9394,6 +9394,34 @@
       ]
     },
     {
+      "bom-ref": "libheif-js@1.23.2",
+      "type": "library",
+      "name": "libheif-js",
+      "version": "1.23.2",
+      "scope": "required",
+      "purl": "pkg:npm/libheif-js@1.23.2",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/libheif-js/-/libheif-js-1.23.2.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "aaf1c85ed82012cc3594234258160a9682f6677e832419b447d4e11a21f626784a61d79914b3c590fdf42f0e3232c931c61c746ca83580bac11d7d43db0da94b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "LGPL-3.0"
+          }
+        }
+      ]
+    },
+    {
       "bom-ref": "lightningcss@1.31.1",
       "type": "library",
       "name": "lightningcss",
@@ -13900,6 +13928,7 @@
         "@vinext/cloudflare@1.0.0-beta.7",
         "class-variance-authority@0.7.1",
         "clsx@2.1.1",
+        "libheif-js@1.23.2",
         "lucide-react@1.31.0",
         "onnxruntime-web@1.21.0",
         "pdf-lib@1.17.1",
@@ -15524,6 +15553,10 @@
     },
     {
       "ref": "kleur@4.1.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "libheif-js@1.23.2",
       "dependsOn": []
     },
     {

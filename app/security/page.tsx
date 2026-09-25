@@ -35,7 +35,7 @@ const CANONICAL = ['https:', '//', 'getopentools.com', '/security'].join('');
 export const metadata: Metadata = {
   title: 'Security — threat model, enforced controls and reporting',
   description:
-    'How OpenTools keeps files on the device: the content-security policy the browser enforces, the vulnerability classes we treat as critical, what is out of scope, and how to report a finding.',
+    'How OpenTools keeps files on the device: the content-security policy the browser enforces, the vulnerability classes we treat as critical, and how to report one.',
   alternates: { canonical: CANONICAL },
 };
 
@@ -152,7 +152,21 @@ export default function SecurityPage() {
             >
               proof page
             </a>
-            .
+            . If you are weighing this against a hosted service,{' '}
+            <a
+              href="/compare/browser-based-vs-cloud-file-tools"
+              className="focus-ring font-semibold text-foreground underline underline-offset-4"
+            >
+              the two architectures compared
+            </a>{' '}
+            sets out what each one can and cannot guarantee, and{' '}
+            <a
+              href="/compare/open-source-pdf-tools"
+              className="focus-ring font-semibold text-foreground underline underline-offset-4"
+            >
+              the licence and self-hosting page
+            </a>{' '}
+            covers running it inside your own network.
           </p>
           <p className="mt-3 rounded-xl border bg-muted/50 p-3.5 text-sm leading-6 sm:p-4 sm:leading-7">
             <strong>One route differs, deliberately.</strong> The background

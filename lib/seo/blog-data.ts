@@ -3463,7 +3463,7 @@ The [subtitle workbench](/subtitles/workbench) applies the two-point scale and o
   },
   {
     slug: 'what-lossless-mp3-cutting-actually-means',
-    title: "What 'Lossless' Actually Means When You Cut an MP3",
+    title: 'Lossless MP3 Cutting: What It Actually Means',
     metaDescription:
       'Explore how lossless MP3 trimming works at the frame layer, why precision is bound to 26.12 ms frames, and the impact of the 511-byte bit reservoir.',
     keywords: [

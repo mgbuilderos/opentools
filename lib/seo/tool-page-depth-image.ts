@@ -31,7 +31,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/optimize': {
     title: 'Compress Image Online — Free JPG, PNG and WebP',
     description:
-      'Resize, compress and convert JPEG, PNG and WebP in your own browser. Real before and after sizes, batch mode with a ZIP download, and the saved file is decoded again to check its dimensions.',
+      'Resize, compress and convert JPEG, PNG and WebP in your own browser. Real before and after sizes, and batch mode with a ZIP download when you have a folder.',
     heading: 'About this image optimiser',
     offlineReady: true,
     directAnswer:
@@ -127,7 +127,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/exact-size': {
     title: 'Resize Image to Exact KB — Pixels and DPI, Free',
     description:
-      'Fit a photo or signature under a KB limit at exact pixels with a real DPI, in your browser. Every requirement is checked against the saved bytes and shown as a pass or fail table.',
+      'Fit a photo or signature under a KB limit at exact pixels with a real DPI, in your browser. Every requirement is checked against the saved bytes and shown.',
     heading: 'About this exact-size image tool',
     directAnswer:
       'To resize an image to an exact KB size without uploading it: enter the maximum KB, the pixels and the DPI your form asks for, and choose Fit to size. The browser re-encodes the image with Canvas, binary-searches the JPEG quality until the file fits, writes the DPI into the file itself, and then reads the saved bytes back and shows you a pass or fail for every requirement you set.',
@@ -229,7 +229,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/background-remover': {
     title: 'Remove Image Background — Free, Runs in Your Tab',
     description:
-      'Cut a subject out of a photo with a U²-Net model that runs in your own browser, or clear one plain colour. The model is served from this site; the picture is never uploaded.',
+      'Cut a subject out of a photo with a U²-Net model that runs in your own browser, or clear one plain colour. The picture itself is never uploaded.',
     heading: 'About this background remover',
     directAnswer:
       'Choose a JPEG, PNG or WebP and the cut-out starts on its own. AI Subject mode runs the U²-Net small model in a Web Worker inside your tab; Solid Color mode instead clears every pixel within a distance you set of one colour you pick. Save the result as PNG or WebP, the two formats that can hold transparency.',
@@ -325,7 +325,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/editor': {
     title: 'Photo Editor Online — Free Crop, Rotate, No Upload',
     description:
-      'Crop to exact pixels, rotate in quarter turns, flip, adjust brightness, contrast, greyscale and sepia, then save as WebP, JPEG or PNG. One pass over one picture, entirely in your browser.',
+      'Crop to exact pixels, rotate in quarter turns, flip, and adjust brightness, contrast, greyscale and sepia, then save as WebP, JPEG or PNG — all in your browser.',
     heading: 'About this local photo editor',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB, then set a crop by typing X, Y, width and height in the image’s own pixels, turn it in quarter turns, flip it horizontally or vertically, adjust brightness, contrast, greyscale and sepia, and save as WebP, JPEG or PNG. Everything is applied in a single canvas pass and the saved file is decoded again to confirm its dimensions.',
@@ -416,7 +416,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/to-text': {
     title: 'Image to Text Online — Free OCR, Nothing Uploaded',
     description:
-      'Read printed English text out of a screenshot, photo or scan in your own browser. Nothing downloads until you press the button, and the button states its exact size in bytes.',
+      'Read printed English text out of a screenshot, photo or scan in your own browser. Nothing downloads until you press the button, which states its exact size.',
     heading: 'About this image to text tool',
     directAnswer:
       'Choose one or more pictures containing printed text and press the button, which names the exact number of bytes it is about to download. Recognition runs in a Tesseract worker inside your browser, the text appears in a box you can copy or save as a .txt, and every word the engine was unsure about is highlighted so you can check it rather than trust it.',
@@ -512,7 +512,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/metadata': {
     title: 'EXIF Viewer and Remover — Free, No Re-encoding',
     description:
-      'See the camera, GPS location and shot settings inside a JPEG, PNG or WebP, then strip them. The picture is never re-encoded: the compressed image data is copied byte for byte.',
+      'See the camera, GPS location and shot settings inside a JPEG, PNG or WebP, then strip them. The image data is copied byte for byte and never re-encoded.',
     heading: 'About this photo metadata tool',
     directAnswer:
       'To strip EXIF from a photo without uploading it: choose a JPEG, PNG or WebP file up to 50 MB, read what it found, then save the cleaned copy. The tool rewrites the container only: it deletes the metadata blocks and copies the compressed image data through untouched, so the picture is never re-encoded and loses no quality.',
@@ -607,7 +607,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-cropper': {
     title: 'Crop Image Online — Free, Exact Pixels, No Upload',
     description:
-      'Crop a JPEG, PNG or WebP to exact pixel coordinates in your own browser. Four numbers rather than a dragged box, so the same crop is repeatable, and the saved size is verified.',
+      'Crop a JPEG, PNG or WebP to exact pixel coordinates in your own browser. Four numbers rather than a dragged box, so the same crop repeats exactly.',
     heading: 'About this image cropper',
     directAnswer:
       'To crop an image to exact pixel coordinates: choose a JPEG, PNG or WebP of up to 25 MB, type the crop’s X, Y, width and height into the four boxes, and export. The rectangle is taken from the source pixels with the browser’s canvas, and the saved file’s dimensions are read back and compared with what was asked for before the download is offered.',
@@ -695,7 +695,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-rotator': {
     title: 'Rotate Image Online — Free 90° Steps, No Upload',
     description:
-      'Turn a JPEG, PNG or WebP in quarter turns and save it that way, in your own browser. No interpolation, no invented pixels, and the saved dimensions are verified before you download.',
+      'Turn a JPEG, PNG or WebP in quarter turns and save it that way, in your own browser. No interpolation, no invented pixels, and the size is verified.',
     heading: 'About this image rotator',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and press Rotate to step the image a quarter turn clockwise each time — 90, 180, 270 and back to none. Saving draws the turned image onto a canvas and encodes it as WebP, JPEG or PNG, and the saved file is decoded again to confirm the dimensions came out as expected.',
@@ -780,7 +780,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-flipper': {
     title: 'Flip Image Online — Free Mirror Tool, No Upload',
     description:
-      'Mirror a JPEG, PNG or WebP horizontally, vertically or both, in your own browser. The flip is written into the pixels, so it survives being sent on, and nothing is uploaded.',
+      'Mirror a JPEG, PNG or WebP horizontally, vertically or both, in your own browser. The flip is written into the pixels, so it survives being sent on.',
     heading: 'About this image flipper',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and press Flip H to mirror it left to right, Flip V to mirror it top to bottom, or both to turn it through 180 degrees. Saving draws the mirrored image onto a canvas and encodes it as WebP, JPEG or PNG, and the saved dimensions are checked before the download is offered.',
@@ -866,7 +866,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-brightness': {
     title: 'Brighten or Darken an Image Online — Free Tool',
     description:
-      'Lighten or darken a JPEG, PNG or WebP in your own browser with a percentage you can write down and repeat. No upload, no account, and the saved dimensions are verified.',
+      'Lighten or darken a JPEG, PNG or WebP in your own browser with a percentage you can write down and repeat. No upload and no account needed.',
     heading: 'About this image brightness tool',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and move the brightness slider, which runs from 0 to 200 per cent with 100 meaning unchanged. Below 100 darkens, above 100 lightens. The adjustment is applied in the same canvas pass as any crop, turn, flip and other colour change, and the result is saved as WebP, JPEG or PNG.',
@@ -952,7 +952,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-contrast': {
     title: 'Adjust Image Contrast Online — Free, No Upload',
     description:
-      'Strengthen or soften the contrast of a JPEG, PNG or WebP in your browser with a repeatable percentage. Applied in one pass with brightness, greyscale and sepia. Nothing is uploaded.',
+      'Strengthen or soften the contrast of a JPEG, PNG or WebP in your browser with a repeatable percentage, in one pass with brightness and greyscale.',
     heading: 'About this image contrast tool',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and move the contrast slider, which runs from 0 to 200 per cent with 100 meaning unchanged. Below 100 flattens the image towards a uniform grey, above 100 pushes light and dark further apart. The adjustment is applied in the same canvas pass as any crop, turn, flip, brightness, greyscale and sepia change.',
@@ -1038,7 +1038,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/image-grayscale': {
     title: 'Image to Black and White Online — Free Greyscale',
     description:
-      'Convert a JPEG, PNG or WebP towards greyscale in your own browser, at any strength from 0 to 100 per cent. No upload, no account, and the saved file is verified before download.',
+      'Convert a JPEG, PNG or WebP towards greyscale in your own browser, at any strength from 0 to 100 per cent. The saved file is verified before download.',
     heading: 'About this greyscale converter',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB and move the greyscale slider, which runs from 0 to 100 per cent. At 100 the image is fully greyscale; anything in between is a partial desaturation that keeps some of the original colour. The conversion is applied in the same canvas pass as any crop, turn, flip, brightness and contrast change, and saved as WebP, JPEG or PNG.',
@@ -1124,7 +1124,7 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
   '/image/solid-background-remover': {
     title: 'Remove White Background Online — Free, No Upload',
     description:
-      'Make a plain white or single-colour background transparent in your browser. Pick the colour, set the tolerance and edge softness, and save as PNG or WebP. Nothing is uploaded.',
+      'Make a plain white or single-colour background transparent in your browser. Pick the colour, set tolerance and edge softness, and save as PNG or WebP.',
     heading: 'About this solid background remover',
     directAnswer:
       'Choose a JPEG, PNG or WebP of up to 25 MB, switch to Solid Color mode, pick the background colour, and every pixel within the tolerance you set of that colour is made transparent. A softness setting fades the pixels just outside the tolerance instead of cutting them off. Save as PNG or WebP, the two formats that can hold transparency, and the panel reports how many pixels were cleared.',
@@ -1211,6 +1211,206 @@ export const PAGE_DEPTH_IMAGE: Readonly<Record<string, ToolPageDepth>> = {
         question: 'What are the limits?',
         answer:
           'One JPEG, PNG or WebP of up to 25 MB, and 16 megapixels per image in this mode — a tighter ceiling than the rest of the editor, because every pixel is examined individually. The background colour must be a full six-digit hex value.',
+      },
+    ],
+  },
+  // components/heic-convert-tool.tsx, lib/tools/image-convert/convert.ts,
+  // lib/tools/image-convert/formats.ts, workers/heic-decode.worker.ts,
+  // lib/security/content-security-policy.ts, e2e/heic-convert.spec.ts,
+  // e2e/egress-proof.spec.ts. Measurements: HEIC_BUILD_SPEC.md section 1b.
+  '/image/heic-to-jpg': {
+    title: 'HEIC to JPG Converter — Free, Runs in Your Tab',
+    description:
+      'Convert the .heic photos a phone saves into JPG files any computer will open. The photo is decoded and re-encoded inside your own browser tab, never uploaded.',
+    heading: 'About this HEIC to JPG converter',
+    directAnswer:
+      'To convert a HEIC photo to JPG without uploading it, choose the .heic files on this page. Your browser is asked to decode each one first. Safari can read HEIC on its own, so nothing extra is fetched. Chrome, Edge and Firefox cannot, so the page then fetches a half-megabyte decoder from this site and runs it in a worker on your own machine. The decoded picture is drawn onto a canvas and written out as a JPEG, and the file is offered straight back to you. The photograph itself is never sent anywhere.',
+    lead: 'HEIC is what a modern phone saves a photograph as by default, and it is the reason a picture that looks fine on the phone will not open on a work laptop, will not attach to a claim form and comes back from a print shop as an error. The format is a container holding a still image coded with HEVC, which buys roughly half the file size of a JPEG at the same quality and costs you the ability to open it anywhere that has not licensed the codec. This page converts it to JPEG, which every operating system, browser, printer and upload form built in the last thirty years accepts. Up to twenty photographs at a time, fifty megabytes each, converted one after another so that a tab holding several forty-eight-megapixel pictures at once does not run out of memory part-way through the batch.',
+    steps: [
+      {
+        name: 'Choose the HEIC photos',
+        text: 'Up to twenty files, fifty megabytes each. The picker also accepts .heif, which is the same container under its other extension, and the files can come straight off a phone, a memory card or a folder your phone has already synced.',
+      },
+      {
+        name: 'Let the page try your browser first',
+        text: 'Every photo is handed to the browser to decode before anything is downloaded. This is a capability test rather than a guess about which browser you are using, so the day yours learns to read HEIC the fetch below simply stops happening, with no change to this page.',
+      },
+      {
+        name: 'The decoder is fetched only if it is needed',
+        text: 'If the browser refuses the file, a half-megabyte WebAssembly decoder is fetched from this site and started in a worker. It is cached afterwards, so the second and twentieth photographs cost nothing extra to download.',
+      },
+      {
+        name: 'Save the JPEG',
+        text: 'Each finished photo is listed with its pixel dimensions and its size in bytes, and a save button that writes the file straight out of your tab. Nothing is queued, stored or uploaded, and closing the tab discards everything.',
+      },
+    ],
+    sections: [
+      {
+        heading:
+          'Why a HEIC will not open, and what converting actually changes',
+        body: [
+          'A HEIC file is a container. Inside it the picture is coded with HEVC, the same compression a 4K video uses, which is why the file is about half the size of the equivalent JPEG. HEVC is patent-encumbered, so the ability to decode it is licensed rather than universal: phones and recent Apple software have it, a great deal of desktop software does not, and web browsers other than Safari have never shipped it for still images.',
+          'Converting does not re-photograph anything. The picture is decoded to plain pixels and those pixels are written out again as a JPEG. What changes is the coding and therefore the file size: expect the JPEG to be roughly twice the bytes of the HEIC for the same picture, which is the price of a file that opens everywhere.',
+          'JPEG cannot hold transparency, so any see-through area is filled with white before encoding rather than coming out black, which is what an unfilled canvas would give you. Photographs from a phone camera have no transparency, so in practice this only matters for a HEIC that was edited rather than taken.',
+        ],
+      },
+      {
+        heading:
+          'The decoder runs on your machine, and only when your browser needs it',
+        body: [
+          'The usual way to offer this conversion is to take the upload, decode it on a server that holds an HEVC licence, and send a JPEG back. That means handing over the photograph — and holiday photographs, photographs of children, of documents, of an injury for an insurance claim, of a room for a landlord — for the sake of a fraction of a second of computing that your own machine can do.',
+          'Instead the decoder comes to you. It is libheif compiled to WebAssembly, served from this site as its own file, started inside a Web Worker in your tab and terminated the moment the conversion finishes. Measured on 2026-09-24 by weighing what the package actually ships, the transfer is about half a megabyte compressed, and a twelve-megapixel photograph decodes in roughly a seventh of a second after a five-millisecond start.',
+          'This page therefore allows same-origin connections and permission to compile WebAssembly, exactly as the background remover does, and nothing further. No third-party origin is reachable from it, peer connections stay blocked, and the only request your photograph causes is the one that fetches the decoder — a request that carries no part of your photograph, because the file is read from your own disk by the file picker and never enters a network request at all.',
+          'The decoder is licensed LGPL-3.0 and is deliberately served as a separate file rather than compiled into the page, so it remains a component you can read, replace or rebuild for yourself. The notices file in the repository names the licence and points at the upstream source. The HEVC patent position is a separate matter from the licence and is not something this page claims to have cleared.',
+        ],
+      },
+      {
+        heading: 'What does not survive the conversion',
+        body: [
+          'The metadata does not come across. Because the picture is decoded to pixels and re-encoded by the browser, the EXIF block goes with the original: the camera model, the exposure settings, the orientation flag, the date and — the one most people care about — the GPS coordinates. If you need that information, keep the .heic file; if you were converting in order to strip it, that is what this does, though the photo metadata tool is the honest place to check what a file carries.',
+          'A Live Photo is two files, a .heic still and a .mov of the seconds around it. Only the still is converted here, because only the still is what you handed over. The motion clip is a separate file and this page does not read it.',
+          'A HEIC can hold more than one picture — a burst, a depth map, an alternative exposure. The primary image is the one decoded, which is the picture the phone shows you when you open the file. High-dynamic-range HEICs are flattened to ordinary eight-bit colour, because that is what a canvas holds and what a JPEG can store, so a picture that glowed on a phone screen will look like an ordinary well-exposed photograph.',
+          'Nothing is upscaled, sharpened, colour-corrected or rotated beyond what the decoded pixels already contain. The conversion is meant to be boring.',
+        ],
+      },
+      {
+        heading: 'Limits, and what happens when you cross them',
+        body: [
+          'Twenty photographs per batch and fifty megabytes per file. Fifty megabytes is comfortably larger than any single frame a phone produces, and the batch ceiling exists because each decode briefly holds the whole uncompressed picture in memory: a forty-eight-megapixel photograph is nearly two hundred megabytes of raw pixels, and four of those in flight at once is how a tab dies rather than how it goes faster. The photos are therefore converted one after another, and the count of the one in progress is shown.',
+          'A file that is not a HEIC is reported as such rather than being converted into something wrong. A truncated or corrupt file fails with a sentence saying so, and the batch stops there rather than silently skipping it.',
+          'If your browser cannot write the output format at all, nothing is saved. A canvas asked for a type it does not know quietly returns a PNG instead of failing, which would hand you a file named .jpg that is not a JPEG, so the produced type is checked against the type that was asked for and a mismatch is an error rather than a download.',
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Is my photo uploaded to convert it?',
+        answer:
+          'No. The file is read from your disk by the file picker, decoded in your tab and written back out by your browser. The only network request this page can make is for the decoder itself, and that request carries no part of your photograph. The policy served with the page allows same-origin requests and nothing else, and the browser is what enforces it.',
+      },
+      {
+        question: 'Why does it download something in Chrome but not in Safari?',
+        answer:
+          'Because Safari can already decode HEIC and Chrome cannot. The page asks your browser to open the photo first and only fetches the decoder when that fails, so on Safari nothing extra is downloaded at all. This is a capability test rather than a check of which browser you are running, so it stays correct as browsers change.',
+      },
+      {
+        question: 'Will the JPEG be bigger than the HEIC?',
+        answer:
+          'Usually about twice the size, for the same picture at the same dimensions. HEIC uses HEVC compression, which is roughly twice as efficient as JPEG, so the file grows when you move the picture into a format that opens everywhere. The pixels and the visible quality are not reduced to make up for it.',
+      },
+      {
+        question: 'Does the location where I took the photo come across?',
+        answer:
+          'No. Re-encoding through a canvas drops the whole EXIF block, so the GPS coordinates, the camera model, the exposure settings and the capture date stay with the original .heic file and are not written into the JPEG. Keep the original if you need that information later.',
+      },
+      {
+        question: 'Can I convert a whole folder at once?',
+        answer:
+          'Up to twenty photographs in one go, fifty megabytes each. They are converted one after another rather than all at once, because each decode holds the full uncompressed picture in memory, and the page shows which one it is working on as it goes.',
+      },
+      {
+        question: 'What happens to a Live Photo?',
+        answer:
+          'Only the still is converted. A Live Photo is a .heic still plus a separate .mov holding the moving part, and this page reads the still you gave it. The video file is untouched and is not read, uploaded or combined into the result.',
+      },
+    ],
+  },
+
+  // Same component as /image/heic-to-jpg with a different encoder. The two
+  // routes answer different questions: a JPEG is what a form accepts, a PNG is
+  // what keeps every pixel exactly as decoded.
+  '/image/heic-to-png': {
+    title: 'HEIC to PNG — Lossless, In Your Own Browser',
+    description:
+      'Convert a .heic photo to PNG without uploading it. The picture is decoded in your browser and written out losslessly, with no second round of compression.',
+    heading: 'About this HEIC to PNG converter',
+    directAnswer:
+      'To convert a HEIC photo to PNG without uploading it, choose the .heic files on this page. Your browser is asked to decode each one first; Safari can, and Chrome, Edge and Firefox cannot, in which case a half-megabyte decoder is fetched from this site and run in a worker on your machine. The decoded pixels are written out as a PNG, which stores them exactly rather than compressing them again, and the file is handed straight back to you.',
+    lead: 'PNG is the right destination when the picture is going to be edited, annotated, cropped or pasted into a document, and the wrong one when it is going into an upload form with a size limit. PNG compression is lossless: every pixel that came out of the HEIC is stored exactly, no second generation of lossy compression is applied, and transparency survives if the file has any. The cost is size — a photograph as PNG is commonly three to six times the bytes of the same photograph as JPEG, because photographic detail is exactly the kind of data lossless compression cannot shrink. If what you need is a file that attaches to a form, convert to JPG instead; if what you need is a file you will work on, this is the one.',
+    steps: [
+      {
+        name: 'Choose the HEIC photos',
+        text: 'Up to twenty files, fifty megabytes each. The .heif extension is the same container and is accepted too, and the files can come straight from a phone, a card reader or a synced folder.',
+      },
+      {
+        name: 'Let the page try your browser first',
+        text: 'The photo is handed to your browser to decode before anything else happens. Where that works, which today means Safari, no decoder is downloaded at all and the conversion is done entirely with what your browser already carries.',
+      },
+      {
+        name: 'The decoder is fetched only when it is needed',
+        text: 'Where the browser refuses, a half-megabyte WebAssembly decoder is fetched from this site and started in a worker, then cached by your browser so the rest of the batch costs nothing more to download.',
+      },
+      {
+        name: 'Save the PNG',
+        text: 'Each finished picture is listed with its pixel dimensions and its size in bytes. The save button writes the file out of your tab; nothing is stored here and closing the tab discards it all.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Lossless, and what that is actually worth',
+        body: [
+          'The HEIC you started with is lossy: the phone threw away detail when it saved the file, and no conversion can put that back. What lossless means here is narrower and still useful — the pixels that come out of the decoder are the pixels written into the PNG, with no second round of loss stacked on top of the first.',
+          'That matters when the file has more work ahead of it. Every time a photograph is saved again as a JPEG it is re-compressed, and edges and flat areas of colour degrade a little more each time. A PNG in the middle of that chain stops the accumulation, which is why it is the sensible format for a picture you are about to crop, annotate, redact or paste into a report.',
+          'It does not matter at all if the next thing that happens to the file is an upload form that re-compresses it anyway. In that case the PNG is three to six times the bytes for no benefit, and the JPG page is the one you want.',
+        ],
+      },
+      {
+        heading: 'The decoder runs here, not on a server',
+        body: [
+          'Converting HEIC usually means uploading the photograph to something that holds an HEVC licence and downloading the result. That is a disclosure of the picture itself, and it is made for a fraction of a second of computing your own machine is perfectly capable of.',
+          'This page fetches the decoder rather than sending the photograph. It is libheif compiled to WebAssembly, served from this site as a separate file, run inside a Web Worker in your tab, and terminated as soon as the work is done. The transfer is about half a megabyte compressed, measured by weighing the files the package ships, and a twelve-megapixel photograph decodes in roughly a seventh of a second.',
+          'The page allows same-origin connections and permission to compile WebAssembly, which is the same narrow exception the background remover holds, and nothing beyond it. No third-party origin is reachable and peer connections remain blocked. The decoder is LGPL-3.0, kept as a replaceable file rather than compiled into the page, and the notices file in the repository names the licence and the upstream source.',
+        ],
+      },
+      {
+        heading: 'What is not carried across',
+        body: [
+          'PNG can hold transparency and a HEIC edited to have some will keep it here. What it will not keep is the metadata: re-encoding through a canvas discards the EXIF block, so the camera model, the exposure, the capture date and the GPS coordinates stay with the .heic file. Keep the original if you need them.',
+          'High-dynamic-range HEICs are flattened to ordinary eight-bit colour per channel, because that is what a canvas holds. A sixteen-bit HDR photograph will therefore look like a well-exposed ordinary one rather than glowing the way it does in the phone gallery.',
+          'A HEIC holding several pictures — a burst, a depth map, an alternative exposure — gives up its primary image, which is the one the phone shows when you open the file. A Live Photo is a still plus a separate video file; only the still is read here.',
+        ],
+      },
+      {
+        heading: 'Limits, and the check that stops a mislabelled file',
+        body: [
+          'Twenty photographs per batch, fifty megabytes each, converted one after another. Sequential is deliberate: a forty-eight-megapixel picture is close to two hundred megabytes of raw pixels while it is being encoded, and holding several at once is how a tab runs out of memory rather than how it goes faster.',
+          'A canvas asked to write a format it does not support does not fail — it quietly returns a PNG. Here the destination is PNG, so that particular trap cannot bite, but the produced type is checked against the requested type anyway, on both of these pages, so that a browser which behaves unexpectedly produces an error rather than a file whose name is a lie about its contents.',
+          'A file that is not a HEIC is reported rather than converted into something wrong, and a corrupt or truncated file fails with a sentence that says so instead of hanging.',
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Should I choose PNG or JPG for a HEIC photo?',
+        answer:
+          'PNG if the picture is going to be edited, annotated or pasted into a document, because nothing is re-compressed and no further quality is lost. JPG if it is going into an upload form or an email, because the PNG of a photograph is commonly three to six times the size for no visible benefit.',
+      },
+      {
+        question: 'Is the PNG really lossless if the HEIC was lossy?',
+        answer:
+          'The PNG stores exactly the pixels the decoder produced, so nothing further is lost. What the phone discarded when it first saved the HEIC is gone and no conversion can restore it. The value of lossless here is that no second generation of compression is stacked on the first.',
+      },
+      {
+        question: 'Is the photo uploaded anywhere?',
+        answer:
+          'No. The file is read from your own disk, decoded in your tab and written back out by your browser. The only request this page can make is for the decoder file itself, and it carries no part of your photograph. The policy served with the page allows same-origin requests and nothing else.',
+      },
+      {
+        question: 'Why is the PNG so much bigger than the HEIC?',
+        answer:
+          'Because lossless compression cannot shrink photographic detail much, while HEVC, which is what a HEIC uses, is built to throw away what an eye does not notice. Expect several times the bytes. That is the trade you are making for pixels that will not degrade when the file is edited and saved again.',
+      },
+      {
+        question: 'Does transparency survive?',
+        answer:
+          'Yes, where the HEIC has any. PNG holds an alpha channel, so a picture with see-through areas keeps them here, unlike the JPG page, which fills them with white because JPEG cannot store transparency at all. Photographs straight from a camera have no transparency to keep.',
+      },
+      {
+        question: 'Can I convert several photos at once?',
+        answer:
+          'Up to twenty in one batch, fifty megabytes each, converted one after another with the current file shown as it goes. Each finished picture appears in the list with its dimensions and byte size and its own save button, so you can take them as they arrive.',
       },
     ],
   },

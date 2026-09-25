@@ -4,11 +4,18 @@
 # declaration is what runs and this file is ignored. On the Cloudflare build it
 # is the exact opposite: `headers()` is never applied, and only this file
 # reaches a visitor. Neither file is redundant and neither is authoritative on
-# its own — **they must be kept in step by hand**, and a header added to one and
-# not the other silently ships to only half the users.
+# its own, and a header added to one and not the other silently ships to only
+# half the users.
 #
 # Verified on 2026-09-19 against production: `X-Frame-Options`, declared in
 # `next.config.ts` but absent here, was reaching nobody.
+#
+# This used to say the two files must be kept in step by hand. They are now
+# kept in step by `lib/security/header-parity.test.ts`, which fails when a
+# header declared in `next.config.ts` is missing here or carries a different
+# value. `X-Robots-Tag` is the one deliberate exception, for the reason below.
+# `scripts/verify-built-headers.mjs` then fails the build if the copy that
+# actually gets uploaded, `dist/client/_headers`, is not this file.
 #
 # `ALLOW_INDEXING=false` has the same shape of problem and cannot be fixed here:
 # this file is static and cannot read an environment variable. **Setting it does
@@ -61,8 +68,17 @@
 # **The cost of this is deploy propagation.** The edge may go on serving the
 # previous build for up to the `s-maxage` below (plus however long until the
 # next request triggers the background refresh). An hour is the deliberate
-# ceiling on that; purge the zone cache after a deploy that has to be visible
-# immediately. Do not raise it without deciding that trade again.
+# ceiling on that. Do not raise it without deciding that trade again;
+# `lib/edge-cache-headers.test.ts` fails if it goes up.
+#
+# The dangerous part of that window is not the delay, it is that a check run
+# during it reads the PREVIOUS build and finds it healthy — because the
+# previous build was healthy, that is why it was deployed. `npm run verify:live`
+# cannot be fooled that way: every page this build produces carries its own
+# build id inline (`"deploymentVersion"`), and that script compares the served
+# id against `dist/server/BUILD_ID` on every page it reads. A stale or
+# half-refreshed edge is reported as "cannot tell" and exits 2. It never
+# reports success on bytes it cannot attribute to the build being verified.
 
 /*
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
@@ -126,6 +142,28 @@
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
 
+# The two HEIC pages, their decode worker, and the decoder binary the worker
+# fetches. Same exception as the background remover and for the same reason:
+# same-origin `connect-src` plus `wasm-unsafe-eval`, so libheif can be fetched
+# and compiled here instead of the photograph being uploaded to a machine that
+# holds an HEVC licence. The worker's own response headers matter separately
+# from the page's -- the page policy never gates what a worker may fetch.
+/image/heic-to-jpg
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+
+/image/heic-to-png
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+
+/_next/static/workers/heic-decode.worker-*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+
+/wasm/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+
 # OCR pages keep the default `connect-src 'none'`. The directly-created worker
 # alone may read its same-origin core, WASM and English data from this prefix.
 # Nothing here is an HTML page — `public/ocr/` holds the Tesseract worker, its
@@ -136,3 +174,45 @@
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
+
+# The framable tool routes, and the only place on this site where
+# `frame-ancestors 'none'` does not apply. Owner decision 2026-09-24; business
+# rule 33 amended; threat model in `decisions/ADR-019-embed-frame-ancestors.md`.
+#
+# Read what this rule does NOT change. `connect-src` is still `'none'`, so a
+# tool running inside somebody else's page can no more reach the network than
+# the same tool on getopentools.com. `script-src` is unchanged. The frame is
+# cross-origin, so the embedding page cannot read the text a visitor pastes
+# into it, cannot read the output, and cannot restyle or delete the
+# attribution link the embed carries.
+#
+# Two headers here differ from the catch-all and both are required, not
+# cosmetic:
+#
+#   * `X-Frame-Options` is ABSENT, and has to be. It is a legacy header with no
+#     value meaning "any origin", and a browser that honours it would block the
+#     frame no matter what `frame-ancestors` says. `! X-Frame-Options` unsets
+#     the catch-all's `DENY` -- a rule here adds to the earlier rule rather
+#     than replacing it, so without the unset line both would ship and DENY
+#     would win. `next.config.ts` cannot express an unset at all, which is why
+#     its catch-all excludes this prefix by pattern instead.
+#   * `Cross-Origin-Resource-Policy: cross-origin` replaces `same-origin`. A
+#     parent page that sets `Cross-Origin-Embedder-Policy: require-corp` -- any
+#     site using SharedArrayBuffer, so most WASM-based ones -- cannot load a
+#     `same-origin` subresource from another origin at all.
+#
+# `X-Robots-Tag: noindex, follow` is deliberate and is the point of the whole
+# programme: the embed copy must never compete in search with the canonical
+# tool page it links to, or the embeds would split the ranking signal they
+# exist to build. `follow` is what lets the link out of the frame count.
+#
+# `/embed` itself -- the page that hands a site owner the snippet -- does NOT
+# match this rule and keeps `frame-ancestors 'none'`. Only `/embed/<tool>` is
+# framable.
+/embed/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors *; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+  ! X-Frame-Options
+  ! Cross-Origin-Resource-Policy
+  Cross-Origin-Resource-Policy: cross-origin
+  X-Robots-Tag: noindex, follow

@@ -5,9 +5,9 @@ import { relatedToolsFor } from '@/lib/seo/related-tools';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Schema Architecture & Data Modeling Hub | OpenTools',
+  title: 'Schema Architecture & Data Modeling Hub',
   description:
-    'Browser database architecture suite: SQL to ER diagram (Mermaid, DBML, PlantUML), ERD to DDL, SQL dialect conversion, ORM models (Prisma, Django, SQLAlchemy), data dictionary, and schema diffing.',
+    'A browser database architecture suite: SQL to ER diagram, ERD to DDL, dialect conversion, ORM models, data dictionaries and schema diffing.',
   alternates: {
     canonical: '/schema',
   },

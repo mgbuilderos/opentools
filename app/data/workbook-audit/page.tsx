@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/data/workbook-audit' },
   title: 'Excel Workbook Audit & Formula Inspector Online',
   description:
-    'Forensic Excel spreadsheet audit. Detect hardcoded constants in formulas, broken formula runs, error cells, circular references, hidden sheets, mixed column types, and statistical anomalies with zero server uploads.',
+    'Audit an Excel workbook in your browser: hardcoded constants in formulas, broken formula runs, error cells, circular references, hidden sheets and mixed types.',
 };
 
 export default function Page() {

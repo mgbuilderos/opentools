@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 import { notFound } from 'next/navigation';
 import {
   ArrowRight,
@@ -18,9 +19,11 @@ import {
 import {
   getAllCategoryPillars,
   getCategoryBySlug,
+  getCategoryHubLinks,
   getCategoryPillar,
 } from '@/lib/seo/internal-linking-graph';
 import { getLiveToolsByCategory } from '@/lib/seo/live-tools';
+import { guideCategoryMetaTitle } from '@/lib/seo/guide-category-meta';
 
 export const revalidate = 86400;
 
@@ -49,7 +52,7 @@ export async function generateMetadata({
   const pillar = getCategoryPillar(categoryName);
   if (!pillar) return { title: 'Category Not Found' };
 
-  const title = `${categoryName} Tools — Free In-Browser ${categoryName} Utilities`;
+  const title = guideCategoryMetaTitle(categoryName);
   const description = pillar.description;
 
   return {
@@ -64,7 +67,9 @@ export async function generateMetadata({
       url: `${httpsOrigin}/guides/category/${categorySlug}`,
       siteName: 'OpenTools',
       type: 'website',
+      images: shareImages('guides'),
     },
+    twitter: shareTwitterCard('guides', title, description),
   };
 }
 
@@ -81,6 +86,7 @@ export default async function CategoryPillarPage({
   const tools = getLiveToolsByCategory(categoryName);
   if (tools.length === 0) notFound();
   const toolWord = tools.length === 1 ? 'tool' : 'tools';
+  const hubLinks = getCategoryHubLinks(categoryName);
 
   const jsonLd = {
     '@context': ['https:', '//schema.org'].join(''),
@@ -310,6 +316,49 @@ export default async function CategoryPillarPage({
               })}
             </div>
           </section>
+
+          {/*
+            Workbench hubs and catalog-absent tool pages for this category.
+
+            These are real pages in the sitemap that no page on the site linked
+            to before 2026-09-23 -- see the note on `CATEGORY_HUB_LINKS` in
+            `lib/seo/internal-linking-graph.ts`. The pillar is where they
+            belong: it is already the page whose subject is "everything in this
+            category", and a reader who has scrolled the tool list is exactly
+            the reader who wants the workbench that runs all of them at once.
+          */}
+          {hubLinks.length > 0 ? (
+            <section className="mt-12">
+              <h2 className="text-xl font-semibold tracking-[-0.03em] sm:text-2xl">
+                More in {categoryName}
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Workspaces that run several {categoryName.toLowerCase()}{' '}
+                operations on one page.
+              </p>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {hubLinks.map((hub) => (
+                  <a
+                    key={hub.href}
+                    href={hub.href}
+                    className="focus-ring flex flex-col rounded-xl border bg-card p-5 hover:bg-muted/40"
+                  >
+                    <h3 className="text-base font-semibold text-foreground">
+                      {hub.name}
+                    </h3>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      {hub.description}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold">
+                      Open
+                      <ArrowRight aria-hidden="true" className="size-3.5" />
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {/* Footer Navigation */}
           <footer className="mt-12 rounded-2xl border bg-card p-6 text-center sm:p-8">

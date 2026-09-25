@@ -1,4 +1,5 @@
 import { MATH_OPERATIONS, runMathOperation } from '../tools/math-workbench';
+import { TITLE_SUFFIX_LENGTH } from './title-budget';
 
 /**
  * One page per from->to unit pair, derived from the converters' own unit lists.
@@ -126,6 +127,9 @@ function inSentence(label: string) {
     : label;
 }
 
+/** What a search result shows of a title before it truncates it. */
+const SNIPPET_LIMIT = 60;
+
 /** A key short enough to read as a unit symbol in a title: `cm`, `kWh`, `m/s`. */
 function isSymbol(unit: ConversionUnit) {
   return /^[^\s-]{1,5}$/u.test(unit.value) && unit.value !== unit.label;
@@ -141,10 +145,14 @@ function titleFor(from: ConversionUnit, to: ConversionUnit) {
   const words = `Convert ${from.label} to ${to.label}`;
   const withSymbols = `${words} (${from.value} to ${to.value})`;
   const bracketed = from.label.includes('(') || to.label.includes('(');
+  // The 60 is the whole served title, so it has to include the twelve
+  // characters `app/layout.tsx` appends. Counting only this string let six
+  // pairs ship a 72-character title -- `km² to cm²` was cut off in results by
+  // the site name it was measured without.
   return isSymbol(from) &&
     isSymbol(to) &&
     !bracketed &&
-    withSymbols.length <= 60
+    withSymbols.length + TITLE_SUFFIX_LENGTH <= SNIPPET_LIMIT
     ? withSymbols
     : words;
 }

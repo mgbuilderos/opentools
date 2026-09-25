@@ -1,16 +1,20 @@
-import type { Metadata } from 'next';
-
 import { VideoTrimTool } from '@/components/video-trim-tool';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
 
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/video/trim' },
-  title: 'Trim a Video Without Re-encoding — MP4 and MOV',
-  description:
-    'Cut, mute or extract the audio from an MP4 or MOV in your browser. The frames are copied rather than re-encoded, so the clip keeps the original quality.',
-};
+const ROUTE = '/video/trim';
+
+export const metadata = toolPageMetadata(ROUTE);
 
 export default function Page() {
-  return <VideoTrimTool />;
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <VideoTrimTool />
+    </PageDepthProvider>
+  );
 }

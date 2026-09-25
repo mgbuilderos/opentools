@@ -869,9 +869,9 @@ CREATE TABLE invoices (
               <div className="rounded-xl border border-border bg-card p-5 shadow-xs">
                 <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-3">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h2 className="text-sm font-semibold text-foreground">
                       Generated Migration Script
-                    </h3>
+                    </h2>
                     <p className="text-xs text-muted-foreground">
                       Forward SQL migration to update Schema V1 &rarr; V2.
                     </p>

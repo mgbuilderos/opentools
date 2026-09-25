@@ -20,8 +20,6 @@ export interface AdvancedDeveloperField {
 export interface AdvancedDeveloperOperation {
   id: string;
   name: string;
-  searchTitle?: string;
-  searchDescription?: string;
   description: string;
   fields: readonly AdvancedDeveloperField[];
   notice?: string;
@@ -194,7 +192,8 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     {
       id: 'checksum-calculator',
       name: 'Text checksum calculator',
-      description: 'Calculate a SHA checksum for pasted UTF-8 text.',
+      description:
+        'Calculate a SHA-256, SHA-384 or SHA-512 checksum of pasted text in your browser and read it as lowercase hexadecimal to compare with a published value.',
       fields: [
         area('input', 'Text', 'verify this text'),
         select('algorithm', 'Algorithm', hashOptions),
@@ -1003,7 +1002,6 @@ export const ADVANCED_DEVELOPER_OPERATIONS: readonly AdvancedDeveloperOperation[
     {
       id: 'sql-to-er-diagram',
       name: 'SQL Schema to Visual ER Diagram',
-      searchTitle: 'ER Diagram from SQL (ERD) — Generate Mermaid, DBML & SVG',
       description:
         'Create an ER diagram from SQL DDL online. Export interactive visual SVG, Mermaid erDiagram, DBML, and PlantUML in your browser with zero server uploads.',
       fields: [

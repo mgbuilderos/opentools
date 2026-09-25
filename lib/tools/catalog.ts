@@ -654,6 +654,353 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'video-convert',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video converter',
+    shortDescription:
+      'Convert MOV to MP4 and MP4 to MOV without re-encoding video or audio frames.',
+    category: 'Video',
+    aliases: [
+      'mov to mp4',
+      'mp4 to mov',
+      'video converter',
+      'remux mov to mp4',
+      'lossless video converter',
+    ],
+    jobs: [
+      'convert mov to mp4',
+      'convert mp4 to mov',
+      'change video container without re-encoding',
+      'turn quicktime into mp4',
+    ],
+    href: '/video/convert',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['video.mp4.demux', 'video.mp4.mux', 'video.sample.copy'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-rotate',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video rotator',
+    shortDescription:
+      'Rotate (90°, 180°, 270°) and flip MP4/MOV videos instantly without quality loss.',
+    category: 'Video',
+    aliases: [
+      'rotate video',
+      'flip video',
+      'rotate mp4',
+      'rotate video 90 degrees',
+      'fix sideways video',
+    ],
+    jobs: [
+      'rotate a sideways video',
+      'turn portrait video to landscape',
+      'flip a video horizontally',
+      'flip a video vertically',
+    ],
+    href: '/video/rotate',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'video.mp4.demux',
+        'video.mp4.mux',
+        'video.matrix.transform',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-split',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video splitter',
+    shortDescription:
+      'Cut out middle sections or split videos into multiple downloadable clips.',
+    category: 'Video',
+    aliases: [
+      'split video',
+      'cut out middle of video',
+      'split video into clips',
+      'video divider',
+      'cut section from video',
+    ],
+    jobs: [
+      'remove middle section of video',
+      'split a long video into clips',
+      'cut out unwanted parts',
+      'download video parts as zip',
+    ],
+    href: '/video/split',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'video.mp4.demux',
+        'video.mp4.mux',
+        'video.sample.copy',
+        'archive.zip.write',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-merge',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video joiner',
+    shortDescription:
+      'Join matching MP4 and MOV video clips end-to-end without quality loss.',
+    category: 'Video',
+    aliases: [
+      'merge video',
+      'join video clips',
+      'combine videos',
+      'concatenate mp4',
+      'stitch videos together',
+    ],
+    jobs: [
+      'join two videos together',
+      'merge video clips',
+      'combine multiple mp4 files',
+      'stitch clips without re-encoding',
+    ],
+    href: '/video/merge',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['video.mp4.demux', 'video.mp4.mux', 'video.sample.copy'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-metadata',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video metadata scrubber',
+    shortDescription:
+      'Inspect and strip GPS coordinates, device models, and timestamps from MP4/MOV.',
+    category: 'Video',
+    aliases: [
+      'remove video metadata',
+      'strip video gps',
+      'view video metadata',
+      'remove location from video',
+      'clean mp4 metadata',
+    ],
+    jobs: [
+      'remove gps from video',
+      'strip camera details from video',
+      'see what metadata is in a video',
+      'scrub mp4 privacy tags',
+    ],
+    href: '/video/metadata',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['video.mp4.demux', 'video.mp4.mux', 'video.sample.copy'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-to-gif',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Video to GIF converter',
+    shortDescription:
+      'Convert MP4 or MOV clips into animated GIFs with custom speed and resolution.',
+    category: 'Video',
+    aliases: [
+      'video to gif',
+      'mp4 to gif',
+      'convert video to gif',
+      'make gif from video',
+      'clip to gif',
+    ],
+    jobs: [
+      'make a gif from a video clip',
+      'turn mp4 into gif',
+      'create animated gif from video',
+      'export gif with custom colors and dither',
+    ],
+    href: '/video/to-gif',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'video.mp4.demux',
+        'video.frame.decode',
+        'image.gif.encode',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-extract-audio',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Extract audio from video',
+    shortDescription:
+      'Extract lossless AAC audio (.m4a) from MP4 or MOV videos without re-encoding.',
+    category: 'Video',
+    aliases: [
+      'extract audio from video',
+      'video to audio',
+      'video to mp3',
+      'video to m4a',
+      'rip audio from video',
+    ],
+    jobs: [
+      'extract audio from video',
+      'get audio track from mp4',
+      'save video sound as m4a',
+      'separate audio from video',
+    ],
+    href: '/video/extract-audio',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['video.mp4.demux', 'video.mp4.mux', 'audio.sample.copy'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-mute',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Mute video',
+    shortDescription:
+      'Remove audio track from MP4 or MOV videos instantly without re-encoding.',
+    category: 'Video',
+    aliases: [
+      'mute video',
+      'remove sound from video',
+      'remove audio from mp4',
+      'silence video',
+      'strip audio track',
+    ],
+    jobs: [
+      'remove audio from video',
+      'mute a video',
+      'create silent video',
+      'strip background sound from video',
+    ],
+    href: '/video/mute',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['video.mp4.demux', 'video.mp4.mux', 'video.sample.copy'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-compress',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Compress video',
+    shortDescription:
+      'Compress MP4 videos with custom bitrates and quality presets via hardware WebCodecs.',
+    category: 'Video',
+    aliases: [
+      'compress video',
+      'reduce video size',
+      'video compressor',
+      'shrink mp4',
+      'compress mp4',
+    ],
+    jobs: [
+      'compress video to smaller file size',
+      'reduce mp4 size for email or discord',
+      'lower video bitrate',
+      'shrink video size with hardware acceleration',
+    ],
+    href: '/video/compress',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'video.mp4.demux',
+        'video.frame.decode',
+        'video.frame.encode',
+        'video.mp4.mux',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-resize',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Resize video',
+    shortDescription:
+      'Resize and downscale MP4 video resolution with aspect ratio preservation and untouched audio.',
+    category: 'Video',
+    aliases: [
+      'resize video',
+      'change video resolution',
+      'downscale video',
+      'video 1080p to 720p',
+      'scale mp4',
+    ],
+    jobs: [
+      'resize video to 1080p, 720p or 480p',
+      'downscale 4k video to hd',
+      'change mp4 resolution while keeping aspect ratio',
+      'scale video dimensions with hardware encoding',
+    ],
+    href: '/video/resize',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'video.mp4.demux',
+        'video.frame.decode',
+        'video.frame.encode',
+        'video.mp4.mux',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'video-crop',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Crop video',
+    shortDescription:
+      'Crop MP4 videos to 1:1, 9:16, 4:5, or 16:9 aspect ratios using GPU canvas slicing.',
+    category: 'Video',
+    aliases: [
+      'crop video',
+      'crop mp4',
+      'change video aspect ratio',
+      'square video',
+      'vertical video crop',
+    ],
+    jobs: [
+      'crop landscape video to vertical 9:16 for reels or tiktok',
+      'crop mp4 to 1:1 square for instagram',
+      'crop video framing without black bars',
+      'adjust video crop rectangle with hardware re-encoding',
+    ],
+    href: '/video/crop',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'video.mp4.demux',
+        'video.frame.decode',
+        'video.frame.encode',
+        'video.mp4.mux',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'excel-converter',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1053,6 +1400,34 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'excel-to-pdf',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Convert Excel to PDF',
+    shortDescription:
+      'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
+    category: 'PDF',
+    aliases: [
+      'excel to pdf',
+      'xlsx to pdf',
+      'convert excel to pdf',
+      'spreadsheet to pdf',
+      'xlsx to pdf converter',
+    ],
+    jobs: [
+      'convert excel spreadsheet to printable vector pdf',
+      'convert xlsx to pdf without server upload',
+      'turn financial spreadsheet or payroll into formatted pdf',
+    ],
+    href: '/pdf/excel-to-pdf',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['spreadsheet.read', 'pdf.generate.vector'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'docx-metadata',
     version: '0.1.0-canary',
     status: 'canary',
@@ -1333,6 +1708,36 @@ export const publicTools: ToolManifest[] = [
         'image.raster.encode',
         'image.metadata.density',
       ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'heic-converter',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'HEIC to JPG converter',
+    shortDescription:
+      'Turn the .heic photos a phone saves into JPEG or PNG, in this tab.',
+    category: 'Image',
+    aliases: [
+      'heic to jpg',
+      'heic to jpeg',
+      'heic to png',
+      'convert heic',
+      'heif to jpg',
+      'open heic on windows',
+      'iphone photo to jpg',
+    ],
+    jobs: [
+      'open an iPhone photo on a Windows PC',
+      'attach a phone photo to a form that refuses heic',
+      'convert a folder of heic photos to jpg',
+    ],
+    href: '/image/heic-to-jpg',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['image.raster.decode', 'image.raster.encode'],
       offlineReady: false,
     },
     owner: 'platform-foundation',
@@ -1962,6 +2367,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-drawing-register',
       'pdf-preflight',
       'pdf-burst',
+      'excel-to-pdf',
     ],
   },
   {
@@ -1973,6 +2379,7 @@ export const toolGroups: ToolGroup[] = [
       'image-to-text',
       'image-exact-size',
       'image-editor',
+      'heic-converter',
       'photo-metadata',
       'svg-optimizer',
       'color-converter',
@@ -1989,8 +2396,21 @@ export const toolGroups: ToolGroup[] = [
     id: 'video',
     name: 'Video',
     shortDescription:
-      'Trim, mute and extract audio from MP4 and MOV without re-encoding.',
-    toolIds: ['video-trim'],
+      'Trim, convert, rotate, split, merge, and clean MP4 and MOV videos without re-encoding.',
+    toolIds: [
+      'video-trim',
+      'video-convert',
+      'video-rotate',
+      'video-split',
+      'video-merge',
+      'video-metadata',
+      'video-to-gif',
+      'video-extract-audio',
+      'video-mute',
+      'video-compress',
+      'video-resize',
+      'video-crop',
+    ],
   },
   {
     id: 'documents',
@@ -2136,6 +2556,25 @@ export interface ToolSubsection {
   destinations: ToolDestination[];
 }
 
+/**
+ * The words a subsection predicate may match on.
+ *
+ * NOT `d.id`, which is `<workspaceId>:<operationId>` -- and the workspace name
+ * is the same on every tool in a group, so any word inside it matches all of
+ * them at once. Measured 2026-09-25: the QR split tested the whole id against
+ * a pattern containing "barcode", every id began `qr-barcode-workbench:`, so
+ * all 28 tools were classed as barcodes, the QR bucket came out empty, and a
+ * fallback then filled it with the full list. The home page rendered 56 cards
+ * for 28 tools and stated "28 tools" above them.
+ *
+ * So a predicate reads the operation's own slug and its own words, and can no
+ * longer be fooled by the workbench it happens to live in.
+ */
+function matchText(d: ToolDestination): string {
+  const slug = d.id.includes(':') ? d.id.slice(d.id.indexOf(':') + 1) : d.id;
+  return `${slug} ${d.name} ${d.description}`;
+}
+
 export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   const destinations = toolDestinationsForGroup(group);
 
@@ -2262,9 +2701,13 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
   }
 
   if (group.id === 'qr-barcode') {
+    // A linear barcode is one of five named symbologies, so they are named.
+    // The previous pattern also matched "sheet" and "label", words the QR
+    // contact sheet and framed-card tools both use, which is how a split meant
+    // to separate two families ended up claiming every member of both.
     const isBarcode = (d: ToolDestination) =>
-      /barcode|ean|upc|code-128|code-39|sheet|label/i.test(
-        `${d.id} ${d.name} ${d.description}`,
+      /\b(?:ean-?8|ean-?13|upc-?a|upc-?e|code-?39|code-?128|itf-?14)\b/i.test(
+        matchText(d),
       );
 
     const barcode = destinations.filter(isBarcode);
@@ -2276,7 +2719,11 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
         title: 'QR Code Generators',
         description:
           'Wi-Fi, URLs, contact vCards, payments, and custom payloads.',
-        destinations: qr.length ? qr : destinations,
+        // No `qr.length ? qr : destinations` fallback. It was there to avoid an
+        // empty section, but when the split degenerated it produced a full
+        // duplicate instead -- a worse failure, and a silent one. The
+        // `.filter` below already drops an empty section.
+        destinations: qr,
       },
       {
         id: 'barcode-labels',
@@ -2290,9 +2737,7 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
 
   if (group.id === 'web-seo') {
     const isCss = (d: ToolDestination) =>
-      /css|gradient|glass|neumorph|animat|shadow|palette/i.test(
-        `${d.id} ${d.name} ${d.description}`,
-      );
+      /css|gradient|glass|neumorph|animat|shadow|palette/i.test(matchText(d));
 
     const css = destinations.filter(isCss);
     const seo = destinations.filter((d) => !isCss(d));

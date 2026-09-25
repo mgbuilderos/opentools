@@ -25,9 +25,40 @@ import {
 
 const projectRoot = path.resolve(import.meta.dirname, '../..');
 
-const depthRoutes = LIVE_TOOL_ROUTES.filter(
-  (route) => route.startsWith('/pdf/') || route.startsWith('/image/'),
-);
+const CORE_DEPTH_ROUTES = [
+  '/life-admin/aadhaar-pan-masker',
+  '/data/csv-to-json',
+  '/audio/convert',
+  '/audio/mp3-toolkit',
+  '/math/percentage-calculator',
+  '/date/age-calculator',
+  '/date/date-difference',
+  '/developer/base64-decoder',
+  '/developer/base64-encoder',
+  '/developer/unix-timestamp',
+  '/developer/uuid-generator',
+  '/file/hash-calculator',
+  '/text/case-converter',
+  '/video/trim',
+  '/video/convert',
+  '/video/rotate',
+  '/video/split',
+  '/video/merge',
+  '/video/metadata',
+  '/video/to-gif',
+  '/video/extract-audio',
+  '/video/mute',
+  '/video/compress',
+  '/video/resize',
+  '/video/crop',
+] as const;
+
+const depthRoutes = [
+  ...LIVE_TOOL_ROUTES.filter(
+    (route) => route.startsWith('/pdf/') || route.startsWith('/image/'),
+  ),
+  ...CORE_DEPTH_ROUTES,
+];
 
 /**
  * The pages the service worker precaches, read out of the build script.
@@ -51,14 +82,25 @@ function precachedPages(): ReadonlySet<string> {
   );
   const block = /const PAGES = \[([\s\S]*?)\];/u.exec(source);
   expect(block, 'the precache PAGES list could not be found').not.toBeNull();
-  return new Set(
-    [...block![1]!.matchAll(/'([^']+)'/gu)].map((match) => match[1]!),
-  );
+  /*
+    Comments come out before the quoted paths go in. The array is annotated, and
+    one apostrophe in an annotation -- "the route's engine" -- opens a string
+    this parser then closes on the next real quote, shifting every path after it
+    by one. That is not a theoretical failure: it happened while
+    `/pdf/compress-offline` was being added on 2026-09-24, and it reported
+    `/image/optimize` as absent from a list it was plainly in. A parse that can
+    silently produce the wrong set can also silently produce a passing run, so
+    the comments are removed rather than written around.
+  */
+  const array = block![1]!
+    .replaceAll(/\/\*[\s\S]*?\*\//gu, '')
+    .replaceAll(/\/\/[^\n]*/gu, '');
+  return new Set([...array.matchAll(/'([^']+)'/gu)].map((match) => match[1]!));
 }
 
-describe('PDF and image tool page depth', () => {
-  it('covers every live PDF and image tool route, and nothing else', () => {
-    expect(depthRoutes.length).toBe(35);
+describe('PDF, image, and commercial core tool page depth', () => {
+  it('covers every live PDF, image, and commercial core tool route', () => {
+    expect(depthRoutes.length).toBe(64);
     expect([...depthRoutes].sort()).toEqual([...TOOL_PAGE_DEPTH_ROUTES]);
   });
 

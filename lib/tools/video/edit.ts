@@ -24,7 +24,8 @@ import {
   type Mp4Sample,
   type Mp4Track,
 } from './mp4';
-import { writeMp4, type TrackPlan } from './writer';
+import type { ByteSource } from './source';
+import { writeMp4, writeMp4Source, type TrackPlan } from './writer';
 
 export interface EditOptions {
   startSeconds: number;
@@ -32,6 +33,18 @@ export interface EditOptions {
   endSeconds: number | null;
   keepVideo: boolean;
   keepAudio: boolean;
+  format?: 'mp4' | 'mov' | 'm4a';
+}
+
+export interface EditSourceResult {
+  blob: Blob;
+  size: number;
+  requestedStartSeconds: number;
+  actualStartSeconds: number;
+  endSeconds: number;
+  videoFrames: number;
+  audioFrames: number;
+  movedBackBySeconds: number;
 }
 
 export interface EditResult {
@@ -148,6 +161,99 @@ export function editVideo(
 
   return {
     bytes,
+    requestedStartSeconds: options.startSeconds,
+    actualStartSeconds,
+    endSeconds: actualStartSeconds + longest,
+    videoFrames,
+    audioFrames,
+    movedBackBySeconds: options.startSeconds - actualStartSeconds,
+  };
+}
+
+/**
+ * Builds a new MP4/MOV Blob from a ByteSource (such as a multi-gigabyte File),
+ * without keeping the full file in memory.
+ */
+export async function editVideoSource(
+  source: ByteSource,
+  movie: Mp4File,
+  options: EditOptions,
+): Promise<EditSourceResult> {
+  const video = movie.tracks.find((track) => track.kind === 'video') ?? null;
+  const audio = movie.tracks.find((track) => track.kind === 'audio') ?? null;
+
+  if (!options.keepVideo && !options.keepAudio) {
+    throw new Error('Keep at least one of the picture or the sound.');
+  }
+  if (options.keepVideo && !video) {
+    throw new Error('This file has no video track.');
+  }
+  if (options.keepAudio && !audio) {
+    throw new Error(
+      'This file has no audio track, so there is no sound to keep.',
+    );
+  }
+  if (options.startSeconds < 0) {
+    throw new Error('The start time cannot be negative.');
+  }
+  if (
+    options.endSeconds !== null &&
+    options.endSeconds <= options.startSeconds
+  ) {
+    throw new Error('The end of the clip must come after its start.');
+  }
+
+  let actualStartSeconds = options.startSeconds;
+  if (options.keepVideo && video && options.startSeconds > 0) {
+    const keyframe = keyframeAtOrBefore(video, options.startSeconds);
+    if (keyframe) actualStartSeconds = secondsOf(keyframe, video);
+  }
+
+  const plans: TrackPlan[] = [];
+  let videoFrames = 0;
+  let audioFrames = 0;
+
+  if (options.keepVideo && video) {
+    const samples = samplesInRange(
+      video,
+      actualStartSeconds,
+      options.endSeconds,
+    );
+    videoFrames = samples.length;
+    plans.push({
+      track: video,
+      samples,
+      sampleDescription: video.sampleDescription,
+    });
+  }
+  if (options.keepAudio && audio) {
+    const samples = samplesInRange(
+      audio,
+      actualStartSeconds,
+      options.endSeconds,
+    );
+    audioFrames = samples.length;
+    plans.push({
+      track: audio,
+      samples,
+      sampleDescription: audio.sampleDescription,
+    });
+  }
+
+  const written = await writeMp4Source(source, plans, movie, {
+    format: options.format,
+  });
+  const longest = Math.max(
+    ...plans.map(
+      (plan) =>
+        plan.samples.reduce((sum, sample) => sum + sample.duration, 0) /
+        plan.track.timescale,
+    ),
+  );
+
+  return {
+    blob: written.blob,
+    size: written.size,
     requestedStartSeconds: options.startSeconds,
     actualStartSeconds,
     endSeconds: actualStartSeconds + longest,

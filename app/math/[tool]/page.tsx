@@ -3,6 +3,7 @@ import { MathWorkbenchTool } from '@/components/math-workbench-tool';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { MATH_OPERATIONS } from '@/lib/tools/math-workbench';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import { toolSearchCopy } from '@/lib/seo/tool-search-copy';
 
 export const revalidate = 86400;
 
@@ -52,10 +53,18 @@ export async function generateMetadata({
   const { tool } = await params;
   const operation = operationFor(tool);
   if (!operation) return {};
+  /*
+    The operation's own line is written for someone already looking at the
+    tool; `lib/seo/tool-search-copy.ts` carries the sentence written for
+    someone still on a results page. A route with no entry there keeps its
+    own, which is the usual case.
+  */
+  const route = `/math/${operation.id}`;
+  const copy = toolSearchCopy(route);
   return {
-    title: operation.name,
-    description: operation.description,
-    alternates: { canonical: `${CANONICAL_ORIGIN}/math/${operation.id}` },
+    title: copy?.title ?? operation.name,
+    description: copy?.description ?? operation.description,
+    alternates: { canonical: `${CANONICAL_ORIGIN}${route}` },
   };
 }
 

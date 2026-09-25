@@ -75,7 +75,7 @@ const XHR = ['XML', 'HttpRequest'].join('');
 export const metadata: Metadata = {
   title: 'Proof your file never leaves your device — OpenTools',
   description:
-    'OpenTools runs every tool inside your browser tab. This page shows the adversarial test that proves it, the measured result, and how to verify it yourself in 30 seconds.',
+    'OpenTools runs every tool inside your browser tab. This page shows the adversarial test that proves it, and how to verify the result yourself in 30 seconds.',
   alternates: { canonical: CANONICAL },
 };
 
@@ -456,7 +456,21 @@ export default function ProofPage() {
           </ul>
         </section>
 
-        <p className="mt-6 text-center text-xs leading-5 text-muted-foreground sm:text-sm">
+        {/*
+          The evidence is the hard part and it is above. This is the reader's
+          next question — "so how do I tell, on some other site?" — and it has
+          its own page rather than another section here.
+        */}
+        <p className="mt-6 text-center text-sm leading-6 sm:leading-7">
+          <a
+            href="/compare/browser-based-vs-cloud-file-tools"
+            className="focus-ring font-medium underline underline-offset-4"
+          >
+            How to run this check yourself, on any file tool
+          </a>
+        </p>
+
+        <p className="mt-4 text-center text-xs leading-5 text-muted-foreground sm:text-sm">
           Protocol run {TESTED_ON} against the production build of this release.
           Every figure on this page comes from that run.
         </p>

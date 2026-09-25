@@ -16,6 +16,7 @@ import {
   formatCompletionDuration,
   type CompletionDetail,
 } from '@/lib/completion';
+import { loadsLocalModel } from '@/lib/security/content-security-policy';
 import { findRecipe } from '@/lib/tools/recipe-link';
 import {
   isLikelyIndiaVisitor,
@@ -206,6 +207,24 @@ export function CompletionValueDialog() {
 
   if (!receipt) return null;
 
+  /*
+    The policy THIS page is served, not the one most pages are served.
+
+    Four tool pages -- the image editor, the background remover and the two
+    HEIC converters -- are served `connect-src 'self'` so the decoder or the
+    U²-Net model can be fetched from this origin; everything else is
+    `connect-src 'none'`. This dialog is rendered by `app-shell.tsx` on every
+    tool page, so until now it told someone finishing a HEIC conversion that
+    their page was `'none'` when the header said `'self'`. A privacy claim that
+    names a mechanism has to name the right one, or the next person to check it
+    finds the site overstating and stops believing the rest.
+
+    Read from `loadsLocalModel`, which is the same function `proxy.ts` uses to
+    decide the header, so the sentence and the header cannot disagree.
+    `completion-value-dialog.test.tsx` holds that pairing.
+  */
+  const sealed = !loadsLocalModel(window.location.pathname);
+
   // Resolved from the id, never from a definition handed over in the event —
   // see `CompletionRecipe`. An unrecognised id simply renders no share.
   const shareRecipe = receipt.recipe ? findRecipe(receipt.recipe.id) : null;
@@ -254,16 +273,30 @@ export function CompletionValueDialog() {
 
         {/*
           The mechanism, named, because it is checkable in a way an adjective
-          is not: this page is served with `connect-src 'none'`, so the browser
-          itself refuses to let it open a connection. Verified per release by
-          `e2e/egress-proof.spec.ts` in Chromium and WebKit.
+          is not: the browser itself refuses to let the page open a connection.
+          Which policy it is depends on the page -- see `sealed` above.
+          Verified per release by `e2e/egress-proof.spec.ts` in Chromium and
+          WebKit.
         */}
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          Your browser blocks this page from uploading anything —{' '}
-          <code className="font-mono text-[11px]">
-            connect-src &apos;none&apos;
-          </code>
-          .
+          {sealed ? (
+            <>
+              Your browser blocks this page from uploading anything —{' '}
+              <code className="font-mono text-[11px]">
+                connect-src &apos;none&apos;
+              </code>
+              .
+            </>
+          ) : (
+            <>
+              Your file stays here. This page may only fetch its decoder from
+              getopentools.com, and nothing else —{' '}
+              <code className="font-mono text-[11px]">
+                connect-src &apos;self&apos;
+              </code>
+              .
+            </>
+          )}
         </p>
 
         <dl className="my-4 grid grid-cols-2 gap-3 border-y py-3">

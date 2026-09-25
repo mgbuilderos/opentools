@@ -7,6 +7,8 @@ import { describe, expect, it } from 'vitest';
 import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
 import { CACHED_GUIDE_SLUGS } from './cached-guides';
+import { CATEGORY_HUB_ROUTES } from './category-hubs';
+import { COMPARE_ROUTES } from './compare-pages';
 import { GUIDE_CONSOLIDATION_ENABLED } from './guide-consolidation-config';
 import {
   GUIDE_CONSOLIDATION,
@@ -151,6 +153,19 @@ describe('guide consolidation off is the previous behaviour', () => {
       '/guides',
       '/blog',
       '/templates',
+      // Added after d032150 and mirrored here for the same reason every other
+      // core route is: this function's job is to rebuild the shipped sitemap
+      // minus consolidation, so a core route missing from it would be scored
+      // as a guide the switch dropped. `/embed` (2026-09-24, ADR-019) is the
+      // embed programme's snippet page; the framable `/embed/<tool>` copies
+      // are deliberately not in any sitemap.
+      '/embed',
+      ...COMPARE_ROUTES,
+      // Added 2026-09-25, and mirrored here for the same reason `/embed` is:
+      // this function rebuilds the shipped sitemap minus consolidation, so a
+      // core route missing from it would be scored as a guide the switch
+      // dropped. The nineteen category hubs are content pages, not tools.
+      ...CATEGORY_HUB_ROUTES,
     ].map((route) => ({
       url: `${origin}${route}`,
       changeFrequency: route === '' ? ('daily' as const) : ('weekly' as const),
@@ -192,8 +207,23 @@ describe('guide consolidation off is the previous behaviour', () => {
     ];
   }
 
+  /**
+   * `lastModified` is compared by neither of the two tests below, and the
+   * frozen copy above is left alone rather than updated to carry it.
+   *
+   * That copy exists to be a control: "sitemap.ts exactly as it read at
+   * d032150". Editing it to track a later change would destroy the only thing
+   * it is for. The question here is whether consolidation moved, dropped or
+   * reordered any entry, so both sides are compared on everything except the
+   * date, which has its own guard in `sitemap-lastmod.test.ts`.
+   */
+  const withoutLastmod = (entries: MetadataRoute.Sitemap) =>
+    entries.map(({ lastModified: _lastModified, ...rest }) => rest);
+
   it('produces the same sitemap, entry for entry and in the same order', () => {
-    expect(buildSitemap(OFF)).toEqual(previousSitemap());
+    expect(withoutLastmod(buildSitemap(OFF))).toEqual(
+      withoutLastmod(previousSitemap()),
+    );
   });
 
   it('is the only thing the shipped sitemap drops', () => {
@@ -208,8 +238,10 @@ describe('guide consolidation off is the previous behaviour', () => {
         (path) => `${origin}${path}`,
       ),
     );
-    expect(buildSitemap()).toEqual(
-      previousSitemap().filter((entry) => !consolidated.has(entry.url)),
+    expect(withoutLastmod(buildSitemap())).toEqual(
+      withoutLastmod(
+        previousSitemap().filter((entry) => !consolidated.has(entry.url)),
+      ),
     );
     expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
       kept.size,

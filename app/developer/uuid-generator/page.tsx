@@ -1,12 +1,20 @@
-import type { Metadata } from 'next';
 import { UuidGeneratorTool } from '@/components/utility-tools';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
+
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/developer/uuid-generator' },
-  title: 'UUID Generator',
-  description: 'Generate random UUID v4 values locally in your browser.',
-};
+const ROUTE = '/developer/uuid-generator';
+
+export const metadata = toolPageMetadata(ROUTE);
+
 export default function Page() {
-  return <UuidGeneratorTool />;
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <UuidGeneratorTool />
+    </PageDepthProvider>
+  );
 }

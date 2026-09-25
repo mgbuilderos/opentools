@@ -99,6 +99,17 @@ const PAGES = [
   '/pdf/page-tools',
   '/pdf/merge',
   '/pdf/compress',
+  /*
+    The one page on this site whose whole subject is working with no network,
+    so it is the one page that would be absurd to leave out of the payload.
+    `/pdf/compress-offline` mounts the same compressor as `/pdf/compress` and
+    adds a readiness panel that reports, from this cache, whether the network
+    can be switched off yet -- a panel served from the network on a page about
+    not needing the network. `lib/seo/tool-page-depth.test.ts` reads this array
+    and refuses an offline claim for any route absent from it, and
+    `e2e/share-target.spec.ts` loads it with the browser disconnected.
+  */
+  '/pdf/compress-offline',
   '/image/optimize',
   '/data/csv-to-json',
   '/developer/workbench',
@@ -172,6 +183,42 @@ function referencedAssets(htmlFiles) {
   return [...found].sort((left, right) => left.localeCompare(right));
 }
 
+/**
+ * Every `/_next/static/workers/*` script the precached pages can start.
+ *
+ * MEASURED, 2026-09-24, and the reason this function exists. `/pdf/compress`
+ * has been in `PAGES` since this file was written, and with the network off it
+ * *loaded* — and could not compress anything. Its engine is started with
+ * `new Worker(new URL('/_next/static/workers/pdf-merge.worker-<hash>.js'))`,
+ * and that path appears nowhere in any HTML: it is a string inside
+ * `chunks/pdf-compress-tool-<hash>.js`, so `referencedAssets` above never saw
+ * it, so it was never held, so the first action a visitor took offline failed
+ * at the one step the page exists for. `e2e/share-target.spec.ts` proved
+ * exactly what it asserted — a 200 and a working file input — and no more.
+ *
+ * So the referenced scripts are read for the workers they start. Deliberately
+ * only `/_next/static/workers/*`, not every `/_next/static/*` string a bundle
+ * mentions: that would follow the whole lazy-import graph and hand every
+ * installed visitor megabytes on every worker update. A worker is the narrow
+ * case where a tool cannot do its job at all without one more file, and these
+ * bundles are self-contained — `pdf-merge.worker` imports nothing (536 KB
+ * raw, 215 KB gzipped, shared by the compressor, the merger and the page
+ * tools, so one entry makes three tools work rather than one).
+ */
+function referencedWorkers(assetFiles) {
+  const found = new Set();
+  for (const file of assetFiles) {
+    if (!file || !file.endsWith('.js')) continue;
+    const code = readFileSync(file, 'utf8');
+    for (const match of code.matchAll(
+      /\/_next\/static\/workers\/[A-Za-z0-9/_.-]+\.js/gu,
+    )) {
+      found.add(match[0]);
+    }
+  }
+  return [...found].sort((left, right) => left.localeCompare(right));
+}
+
 const routes = [...SHELL, ...PAGES];
 const missing = routes.filter((route) => fileFor(route) === null);
 if (missing.length) {
@@ -186,7 +233,8 @@ if (missing.length) {
 }
 
 const assets = referencedAssets(routes.map(fileFor));
-const paths = [...routes, ...assets];
+const workers = referencedWorkers(assets.map(fileFor));
+const paths = [...routes, ...assets, ...workers];
 
 const entries = [];
 const chunks = [];

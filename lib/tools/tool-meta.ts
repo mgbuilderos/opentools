@@ -51,6 +51,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Split bulk PDF statements and invoices by bookmark, blank page, or regex pattern match with dynamic output file naming.',
   },
+  'excel-to-pdf': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
+  },
   bench: {
     version: '0.1.0-canary',
     shortDescription:
@@ -151,6 +156,61 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Cut, mute or extract the audio from an MP4 or MOV without re-encoding it.',
   },
+  'video-convert': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert MOV to MP4 and MP4 to MOV without re-encoding video or audio frames.',
+  },
+  'video-rotate': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Rotate (90°, 180°, 270°) and flip MP4/MOV videos instantly without quality loss.',
+  },
+  'video-split': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Cut out middle sections or split videos into multiple downloadable clips.',
+  },
+  'video-merge': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Join matching MP4 and MOV video clips end-to-end without quality loss.',
+  },
+  'video-metadata': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Inspect and strip GPS coordinates, device models, and timestamps from MP4/MOV.',
+  },
+  'video-to-gif': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert MP4 or MOV clips into animated GIFs with custom speed and resolution.',
+  },
+  'video-extract-audio': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Extract lossless AAC audio (.m4a) from MP4 or MOV videos without re-encoding.',
+  },
+  'video-mute': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Remove audio track from MP4 or MOV videos instantly without re-encoding.',
+  },
+  'video-compress': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Compress MP4 videos with custom bitrates and quality presets via hardware WebCodecs.',
+  },
+  'video-resize': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Resize and downscale MP4 video resolution with aspect ratio preservation and untouched audio.',
+  },
+  'video-crop': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Crop MP4 videos to 1:1, 9:16, 4:5, or 16:9 aspect ratios using GPU canvas slicing.',
+  },
   'excel-converter': {
     version: '0.1.0-canary',
     shortDescription:
@@ -224,6 +284,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     version: '0.1.0-canary',
     shortDescription:
       'Fit an image under a KB limit at exact pixels with a real DPI value.',
+  },
+  'heic-converter': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Turn the .heic photos a phone saves into JPEG or PNG, in this tab.',
   },
   'image-editor': {
     version: '0.1.0-canary',

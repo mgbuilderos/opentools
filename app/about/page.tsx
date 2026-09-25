@@ -24,7 +24,7 @@ const CANONICAL = ['https:', '//', 'getopentools.com', '/about'].join('');
 export const metadata: Metadata = {
   title: 'About OpenTools — why it exists and how it is paid for',
   description:
-    'An independent, MIT-licensed collection of everyday file and text tools that run inside your browser. Why it was built, how it stays free, and the things it will never do.',
+    'An independent, MIT-licensed collection of everyday file and text tools that run inside your browser. Why it was built, and how it stays free to use.',
   alternates: { canonical: CANONICAL },
 };
 
@@ -141,6 +141,21 @@ export default function AboutPage() {
               security page
             </a>
             .
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            The same property makes the tools cheap to give away. Because the
+            work happens in the reader&rsquo;s browser rather than on a server,
+            it costs nothing to let another site run one inside its own pages,
+            so anyone may{' '}
+            <a
+              href="/embed"
+              className="focus-ring font-semibold text-foreground underline underline-offset-4"
+            >
+              embed a tool
+            </a>{' '}
+            free, with no key and no account. A service that uploaded your file
+            could not make that offer; every use would be a bill it had to
+            recover from someone.
           </p>
         </section>
 

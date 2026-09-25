@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
-"""Draw the Open Graph share card.
+"""Draw the Open Graph share cards.
 
 Why this exists as a committed script rather than a one-off export: the PNG in
 `public/og.png` is the product's entire appearance on Hacker News, Reddit, X,
 LinkedIn, Slack, Discord and WhatsApp, and a card nobody can regenerate is a
-card nobody will ever update. Run it, commit the PNG it writes.
+card nobody will ever update. Run it, commit the PNGs it writes.
 
     python3 scripts/generate-og-image.py
+
+It writes one card per section, not one card for the whole site. A 360 sweep on
+2026-09-23 found 78 URLs shipping no `og:image` at all -- `/guides`, `/blog`,
+every `/guides/category/*` and all 19 templates -- because each of those routes
+declares its own `openGraph` block and Next.js replaces the parent block whole
+rather than merging it field by field. Pointing all 78 at `/og.png` would have
+closed the audit finding while making every guide, article and template share
+look like the home page. The paths written here are the ones
+`lib/seo/share-images.ts` declares, and `lib/seo/share-images.test.ts` fails if
+the two lists ever disagree or a file goes missing.
 
 No new project dependency: this runs on Pillow at author time and produces a
 static file. Nothing here ships to the browser.
@@ -87,13 +97,65 @@ def wrap(draw: ImageDraw.ImageDraw, text: str, f, max_width: int) -> list[str]:
     return lines
 
 
-def main() -> None:
-    t = dark_tokens()
-    image = Image.new("RGB", (WIDTH, HEIGHT), t["background"])
+# The cards. One per section, because a share of a guide, an article or a
+# template should say what that section is -- a reader deciding whether to open
+# a link on Hacker News gets the section's promise, not the site's.
+#
+# `eyebrow` is the URL the card stands for, `headline` is what the section
+# promises, `sub` is how it delivers it. `out` must match the path the same
+# section declares in `lib/seo/share-images.ts`.
+CARDS = [
+    {
+        "out": "og.png",
+        "eyebrow": "getopentools.com",
+        "headline": "Your files never leave your browser.",
+        "sub": (
+            "Free PDF, image and text tools that run on your own device. "
+            "No upload, no signup, no ads."
+        ),
+    },
+    {
+        "out": os.path.join("og", "guides.png"),
+        "eyebrow": "getopentools.com/guides",
+        "headline": "Guides that show the whole job.",
+        "sub": (
+            "Step-by-step walkthroughs for every tool, with the limits named "
+            "up front and nothing left on a server."
+        ),
+    },
+    {
+        "out": os.path.join("og", "blog.png"),
+        "eyebrow": "getopentools.com/blog",
+        "headline": "How the tools actually work.",
+        "sub": (
+            "Engineering notes on file formats, browser APIs and the bugs we "
+            "found in our own code before you did."
+        ),
+    },
+    {
+        "out": os.path.join("og", "templates.png"),
+        "eyebrow": "getopentools.com/templates",
+        "headline": "Templates you fill in offline.",
+        "sub": (
+            "Free, open-source starting documents. Customise and download "
+            "them without an account."
+        ),
+    },
+]
+
+# The proof, not an adjective. This is the line that earns a sceptic's click:
+# it names a policy they can verify in devtools in ten seconds.
+CHIP_TEXT = "connect-src 'none'"
+CHIP_NOTE = "\u2014 your browser blocks this page from uploading"
+
+
+def draw_card(card: dict[str, str], tokens: dict[str, str]) -> str:
+    """Render one card and return the path written."""
+    image = Image.new("RGB", (WIDTH, HEIGHT), tokens["background"])
     draw = ImageDraw.Draw(image)
 
     # A single accent rule down the left edge. One brand gesture, not five.
-    draw.rectangle([0, 0, 10, HEIGHT], fill=t["success"])
+    draw.rectangle([0, 0, 10, HEIGHT], fill=tokens["success"])
 
     headline_font = font(SANS_BOLD, 76)
     sub_font = font(SANS, 31)
@@ -104,41 +166,45 @@ def main() -> None:
     y = MARGIN - 8
 
     # Wordmark, quiet, so the claim below it is what carries the card.
-    draw.text((x, y), "getopentools.com", font=label_font, fill=t["muted-foreground"])
+    draw.text(
+        (x, y), card["eyebrow"], font=label_font, fill=tokens["muted-foreground"]
+    )
     y += 62
 
-    # The whole product in one sentence. This is what a thumbnail has to land.
-    headline = "Your files never leave your browser."
-    lines = wrap(draw, headline, headline_font, WIDTH - MARGIN * 2)
-    for line in lines:
-        draw.text((x, y), line, font=headline_font, fill=t["foreground"])
+    # The whole section in one sentence. This is what a thumbnail has to land.
+    for line in wrap(draw, card["headline"], headline_font, WIDTH - MARGIN * 2):
+        draw.text((x, y), line, font=headline_font, fill=tokens["foreground"])
         y += 88
     y += 18
 
-    sub = "Free PDF, image and text tools that run on your own device. No upload, no signup, no ads."
-    for line in wrap(draw, sub, sub_font, WIDTH - MARGIN * 2 - 40):
-        draw.text((x, y), line, font=sub_font, fill=t["muted-foreground"])
+    for line in wrap(draw, card["sub"], sub_font, WIDTH - MARGIN * 2 - 40):
+        draw.text((x, y), line, font=sub_font, fill=tokens["muted-foreground"])
         y += 44
 
-    # The proof, not an adjective. This is the line that earns a sceptic's click:
-    # it names a policy they can verify in devtools in ten seconds.
     chip_y = HEIGHT - MARGIN - 54
-    chip_text = "connect-src 'none'"
-    chip_w = draw.textlength(chip_text, font=mono_font) + 40
+    chip_w = draw.textlength(CHIP_TEXT, font=mono_font) + 40
     draw.rounded_rectangle(
-        [x, chip_y, x + chip_w, chip_y + 54], radius=10, fill=t["border"]
+        [x, chip_y, x + chip_w, chip_y + 54], radius=10, fill=tokens["border"]
     )
-    draw.text((x + 20, chip_y + 13), chip_text, font=mono_font, fill=t["success"])
+    draw.text((x + 20, chip_y + 13), CHIP_TEXT, font=mono_font, fill=tokens["success"])
     draw.text(
         (x + chip_w + 20, chip_y + 15),
-        "— your browser blocks this page from uploading",
+        CHIP_NOTE,
         font=sub_font,
-        fill=t["muted-foreground"],
+        fill=tokens["muted-foreground"],
     )
 
-    out = os.path.join(ROOT, "public", "og.png")
+    out = os.path.join(ROOT, "public", card["out"])
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     image.save(out, "PNG", optimize=True)
-    print(f"wrote {out}  {WIDTH}x{HEIGHT}  {os.path.getsize(out):,} bytes")
+    return out
+
+
+def main() -> None:
+    tokens = dark_tokens()
+    for card in CARDS:
+        out = draw_card(card, tokens)
+        print(f"wrote {out}  {WIDTH}x{HEIGHT}  {os.path.getsize(out):,} bytes")
 
 
 if __name__ == "__main__":

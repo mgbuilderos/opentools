@@ -1,12 +1,20 @@
-import type { Metadata } from 'next';
 import { TimestampTool } from '@/components/utility-tools';
+import { PageDepthProvider } from '@/components/page-depth-provider';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
+
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/developer/unix-timestamp' },
-  title: 'Unix Timestamp Converter',
-  description: 'Convert Unix timestamps and ISO dates locally.',
-};
+const ROUTE = '/developer/unix-timestamp';
+
+export const metadata = toolPageMetadata(ROUTE);
+
 export default function Page() {
-  return <TimestampTool />;
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <TimestampTool />
+    </PageDepthProvider>
+  );
 }

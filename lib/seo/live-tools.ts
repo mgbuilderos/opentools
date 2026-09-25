@@ -18,6 +18,7 @@ import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
 import { CONVERSION_PAIRS } from './conversion-pairs';
 import { FORMAT_PAIRS } from './format-pairs';
+import { IMAGE_PAIRS } from './image-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
 
 /** Routes that render one complete tool page. */
@@ -28,6 +29,19 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/images-to-pdf',
   '/pdf/page-tools',
   '/pdf/compress',
+  /*
+    A second address for the compressor, not a second compressor -- the same
+    relationship `/image/background-remover` has to `/image/editor`. It exists
+    because of what was measured in Google's autocomplete on 2026-09-24: every
+    "compress pdf offline" completion offers desktop software to download,
+    because a web page that works with the network off is not an answer anyone
+    currently gives. This page gives it, and carries the readiness panel and
+    the precache entry that make the claim checkable rather than rhetorical.
+    It is in no catalogue and no workspace on purpose: two "Compress PDF"
+    entries in the menu would be a worse menu, and the tool itself is already
+    browsable at `/pdf/compress`.
+  */
+  '/pdf/compress-offline',
   '/pdf/ocr',
   '/pdf/to-word',
   '/pdf/to-excel',
@@ -39,7 +53,20 @@ export const DEDICATED_TOOL_ROUTES = [
   '/audio/mp3-toolkit',
   '/audio/convert',
   '/video/trim',
+  '/video/convert',
+  '/video/rotate',
+  '/video/split',
+  '/video/merge',
+  '/video/metadata',
+  '/video/to-gif',
+  '/video/extract-audio',
+  '/video/mute',
+  '/video/compress',
+  '/video/resize',
+  '/video/crop',
   '/image/exact-size',
+  '/image/heic-to-jpg',
+  '/image/heic-to-png',
   '/data/excel',
   '/image/metadata',
   // '/image/svg', '/image/colour', '/data/lists' -- Antigravity phases 4 and 5.
@@ -91,6 +118,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/audio/loudness',
   '/pdf/preflight',
   '/pdf/burst',
+  '/pdf/excel-to-pdf',
 ] as const;
 
 /**
@@ -218,6 +246,17 @@ const ROUTED_PREFIX_ENTRIES: readonly (readonly [
         id: pair.id,
         name: pair.title,
         description: `Convert ${pair.fromName} to ${pair.toName} in your browser.`,
+      })),
+      // Image pairs, derived from `canEncode` in
+      // `lib/tools/image-convert/formats.ts`. The same must-click argument as
+      // the file-format pairs: Google cannot convert a picture in its own
+      // results, so the person has to open a converter. HEIC's two pairs are
+      // not here -- they have hand-written pages, because a downloaded decoder
+      // owes the reader a disclosure.
+      ...IMAGE_PAIRS.map((pair) => ({
+        id: pair.id,
+        name: pair.title,
+        description: `Convert ${pair.from.name} to ${pair.to.name} in your browser.`,
       })),
     ],
   ],

@@ -1,7 +1,7 @@
 import type { ToolPageDepth } from './tool-page-depth-types';
 
 /*
-  Depth content for the 19 live PDF tool pages.
+  Depth content for the 20 live PDF tool pages.
 
   PROVENANCE. Where an entry's `directAnswer` or `lead` reads like the guide,
   that is because it is the guide: `GUIDE_DETAILS` in `guide-content.ts` already
@@ -15,9 +15,11 @@ import type { ToolPageDepth } from './tool-page-depth-types';
   the same sources, named in the comment above each entry. Nothing here states a
   limit, a format or a refusal that the code does not enforce.
 
-  `offlineReady` appears on `/pdf/merge`, `/pdf/compress` and `/pdf/page-tools`
-  only, because those three are in the service worker's precache list in
-  `scripts/build-service-worker-precache.mjs` and nothing else under `/pdf` is.
+  `offlineReady` appears on `/pdf/merge`, `/pdf/compress`, `/pdf/page-tools` and
+  `/pdf/compress-offline` only, because those four are in the service worker's
+  precache list in `scripts/build-service-worker-precache.mjs` and nothing else
+  under `/pdf` is. `lib/seo/tool-page-depth.test.ts` reads that list and fails if
+  the two drift.
   `lib/seo/tool-page-depth.test.ts` reads that list and fails if the two drift.
 */
 
@@ -35,7 +37,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/merge': {
     title: 'Merge PDF Online — Free, No Upload, No Sign-Up',
     description:
-      'Combine up to 20 PDFs into one in your own browser tab. Set the order, merge, and the result is reopened and its page count checked before you download. No upload, no account, no watermark.',
+      'Combine up to 20 PDFs into one in your own browser tab. Set the order, merge, and the page count is checked before you download. No upload, no account.',
     heading: 'About this PDF merger',
     offlineReady: true,
     directAnswer:
@@ -136,7 +138,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/compress': {
     title: 'Compress PDF Online — Free, No Upload, Real Sizes',
     description:
-      'Make a PDF smaller in your own browser, or fit it under a filing portal ceiling with measured rewrites. Real before and after sizes, and if it cannot be made smaller you get your original back byte for byte.',
+      'Make a PDF smaller in your own browser, or fit it under a filing portal ceiling. Real before and after sizes, and your original back if it cannot be shrunk.',
     heading: 'About this PDF compressor',
     offlineReady: true,
     directAnswer:
@@ -235,12 +237,125 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
     ],
   },
 
+  // components/pdf-compress-tool.tsx with `offlineRoute` set,
+  // components/pdf-offline-readiness.tsx, lib/offline-readiness.ts,
+  // scripts/build-service-worker-precache.mjs (PAGES and referencedWorkers),
+  // public/sw.js, e2e/share-target.spec.ts ('compresses a PDF with the network
+  // switched off').
+  '/pdf/compress-offline': {
+    title: 'Compress PDF Offline — No Install, No Upload',
+    description:
+      'Compress a PDF with the network switched off, in a browser tab. Nothing to install, and the page reads your cache to say whether this device is ready yet.',
+    heading: 'About compressing a PDF offline',
+    offlineReady: true,
+    directAnswer:
+      'To compress a PDF with no connection: open this page once while you have one, let the panel at the top confirm that this page and the compression engine are stored on your device, then switch the network off and reload the address. Choose your PDF and compress it exactly as you would online. The work was always done by your own browser; the only thing a connection was ever needed for is fetching the page, and that is what is stored.',
+    lead: 'Searching for an offline PDF compressor almost always returns an installer, because a program you install is the only answer anyone has offered — and it is a large answer to a small question: an executable from the internet, permission to run it, an update channel, and on a work machine an administrator who says no. This page is the other answer. It is an ordinary web page that keeps a copy of itself on your device, so it opens and runs with the network switched off, and there is nothing to install, no account and no installer to trust. What it will not do is pretend that is automatic. The copy is made after a page has loaded at least once, some browsers keep nothing at all, and storage can be cleared between visits — so instead of telling you it works offline, the panel at the top of this page reads what your browser has actually stored and tells you where you stand.',
+    steps: [
+      {
+        name: 'Open this page once with a connection',
+        text: 'Shortly after the page loads, a service worker stores the app shell, this page, several of the most-used tools and the compression engine on your device. Nothing is downloaded to your file system and nothing is installed; the bytes go into the browser\u2019s own cache for this site.',
+      },
+      {
+        name: 'Read the readiness panel',
+        text: 'It reports two separate facts: whether this page is stored, which decides whether the address opens, and whether the compression engine is stored, which decides whether the tool can actually run. Both must be yes. Press Check again after a reload if either is no.',
+      },
+      {
+        name: 'Switch the network off',
+        text: 'Turn off wifi, pull the cable, or put the device in flight mode, then reload this address. The service worker only answers a request when the browser reports that it has no network, so with a connection you are served the live page exactly as any other visitor is.',
+      },
+      {
+        name: 'Choose the PDF and compress it',
+        text: 'One file of up to 150 MB. Leave photo re-encoding off for a lossless rewrite, or turn it on and set a JPEG quality between 40 and 95 per cent and a cap on the longest photo edge of 4000, 2400, 1600 or 1000 pixels. You can also give it a size in KB to land under, and it will perform up to fourteen real rewrites to get there.',
+      },
+      {
+        name: 'Save the result',
+        text: 'The download is written from bytes your browser already holds, so it needs no connection either. The panel reports the true before and after sizes and how many embedded images were re-encoded, and if the rewrite did not actually make the file smaller you are handed your original back unchanged.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'What offline means for a page rather than a program',
+        body: [
+          'A program that works offline is a file on your disk that the operating system runs. A page that works offline is the same idea one layer up: the browser keeps a copy of the page and the scripts it needs, and serves that copy when it cannot reach the network. The mechanism is a service worker, a small script the browser keeps for a site, and the copy is a normal browser cache rather than anything in your documents. Nothing is installed, nothing runs at startup, and clearing site data removes every trace of it.',
+          'There is one honest asymmetry between the two, and it is worth stating plainly: a program you have installed works on a device that has never been online, and this page needs one visit with a connection before it can work without one. After that visit the two behave the same way. If you know you will be without a connection — a flight, a site visit, a secure room — open this page before you go and check the panel.',
+          'The reverse asymmetry is larger and rarely mentioned. An installer is a permanent decision: it asks for the right to execute code on your machine, it usually asks for that right again on every update, and on a managed laptop it often cannot be granted at all. A tab is a temporary one. For a job that takes thirty seconds — a bank statement that is 2 MB too large for a portal — the tab is the proportionate tool, and being offline is not a reason to escalate to an executable.',
+        ],
+      },
+      {
+        heading: 'Why the copy is stored the way it is',
+        body: [
+          'The way the copy is made is unusual, and it is a consequence of this site\u2019s own security policy rather than a preference. Every response served here, including the service worker\u2019s own script, carries a policy that forbids the page from opening any network connection. A service worker inherits the policy delivered with its script, so the ordinary way of filling an offline cache — the worker fetching each file it wants to keep — is refused by our own header. Relaxing the header for the worker was never considered: that header is the product.',
+          'So the bytes are shipped to the worker instead of fetched by it. The build writes the pages, the scripts and the engine into a single payload the worker imports once while it is installing, and stores from memory. It is a stranger design than the usual one and it has a useful property: the worker has no ability to reach the network at any point, so an offline cache cannot become a channel for anything.',
+          'A cached response also has to carry the policy with it. A response the worker synthesised does not arrive from the server, so it brings none of the server\u2019s headers — and a page served from cache without that policy would be the one page on this site that is not sealed. The build therefore copies the policy out of the same file the deploy serves its headers from, and every stored response is kept with it. An end-to-end test loads a cached page with the browser disconnected and fails unless the policy came back with it, and then tries to send data out of that page and requires the attempt to be refused.',
+        ],
+      },
+      {
+        heading: 'Loading is not working, and this page is the difference',
+        body: [
+          'This distinction is the reason this page exists as code rather than as a paragraph added to the compressor. Until 2026-09-24 the compressor was in the offline payload and, with the network off, it loaded: the heading appeared, the file chooser worked, everything looked right. It could not compress anything. The engine that does the rewriting runs in a separate bundle started by name from inside a script, and that name appears in no HTML — so the step that collected what to store never saw it, never stored it, and the first thing a visitor did offline failed at the only moment that mattered.',
+          'Nothing reported this, because the test that covered offline use asserted what the page looked like rather than what it could do. A page that opens is a promise; a rewrite that completes is the product. The build now reads the stored scripts for the engines they start and holds those too, one file of about 215 KB compressed that three PDF tools share, and the end-to-end test disconnects the browser, compresses a real photo-heavy document through this page, saves the file and checks that it is a valid PDF and smaller than the input.',
+          'The readiness panel is the same distinction shown to you rather than to a test. It reports the page and the engine as two separate lines, because a browser that holds the first and not the second is exactly the browser where a confident claim would be wrong.',
+        ],
+      },
+      {
+        heading:
+          'Where offline changes nothing, and where it changes everything',
+        body: [
+          'It changes nothing about privacy, and it is worth being precise about that rather than selling the reassurance. Your document was never uploaded on this site whether you are connected or not.',
+          SEALED_PAGE,
+          'What being offline changes is that you no longer have to take any of that on trust. With the network switched off there is no connection for a file to leave by, and the tool still finishes the job — which is a demonstration rather than an argument. For a document you would rather not reason about at all, that is a better kind of confidence than any policy statement, including ours.',
+          NO_NETWORK_CODE,
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Do I have to install anything to use this offline?',
+        answer:
+          'No. There is no installer, no executable and no account. The browser keeps a copy of this page and the code it needs in its own cache for this site, and serves that copy when it has no network. You may optionally install the site as an app so it opens in its own window, but that is a convenience and offline use does not depend on it. Clearing site data in your browser removes everything it kept.',
+      },
+      {
+        question:
+          'Does it really compress with no connection, or does it just load?',
+        answer:
+          'It really compresses. That distinction is not rhetorical: before 2026-09-24 this compressor loaded offline and then failed on the first file, because the engine bundle it starts was not among the stored files. It is stored now, and the check that proves it disconnects a real browser, loads this page, compresses a photo-heavy PDF through it, saves the download and requires the result to be a valid PDF smaller than the input. That test runs on every build.',
+      },
+      {
+        question: 'Why does the first visit need a connection?',
+        answer:
+          'Because the copy has to come from somewhere. A browser cannot hold a page it has never been served. The service worker stores the payload shortly after your first page load, which is why the panel at the top may say "not yet" on a genuinely first visit and "yes" after a reload. If it keeps saying no, the browser is clearing site data between visits — a private window does this by design, and so does a browser set to clear data on close.',
+      },
+      {
+        question: 'Which browsers can do this?',
+        answer:
+          'The mechanism is a service worker, which current versions of every major browser support, and the offline path here is asserted on every build in Chromium. Safari and Firefox implement the same storage but are not covered by that check, so treat the panel rather than this paragraph as the answer on your own browser: it reads your actual cache, which is the only per-browser answer that can be trusted.',
+      },
+      {
+        question: 'Is compressing offline safer than compressing online here?',
+        answer:
+          'Not in the sense of making the tool behave differently, because nothing is uploaded either way and the policy the browser enforces on this page forbids any connection at all. What offline changes is that you no longer have to believe that. With no network available there is no route out for a file even in principle, and the job still completes. The privacy is the same; the need for trust is not.',
+      },
+      {
+        question: 'What are the limits, and are they different offline?',
+        answer:
+          'They are the same as the online compressor, because it is the same code: one PDF of up to 150 MB, photo re-encoding at a JPEG quality between 40 and 95 per cent, a cap on the longest photo edge of 4000, 2400, 1600 or 1000 pixels, and an optional size in KB to land under using up to fourteen real rewrites. A text-heavy PDF has very little to give up whatever the settings; the savings come from photographs and scans.',
+      },
+      {
+        question:
+          'What should I do if the panel says this device is not ready?',
+        answer:
+          'Reload this page once while you have a connection and press Check again. If the page is stored but the engine is not, a newer copy is probably still installing, so reload once more after a few seconds. If neither is stored after several reloads, this browser is not keeping site data for us — check whether you are in a private window, whether site data is set to clear on close, and whether an extension or a managed policy is blocking service workers.',
+      },
+    ],
+  },
+
   // components/pdf-to-word-tool.tsx, the text-layer extraction and .docx writer
   // it calls, and e2e/pdf-to-word.spec.ts.
   '/pdf/to-word': {
     title: 'PDF to Word Online — Free, No Upload, No Email',
     description:
-      'Pull the text out of a PDF into an editable .docx in your own browser. Reading order, paragraphs, page breaks and headings come across; layout, tables and images do not. Nothing is uploaded.',
+      'Pull the text out of a PDF into an editable .docx in your own browser. Reading order, paragraphs, page breaks and headings survive; layout and tables do not.',
     heading: 'About this PDF to Word converter',
     directAnswer:
       'Choose a PDF of up to 150 MB and convert it. The text layer is read in the page, regrouped into lines and paragraphs by the coordinates of the characters, and written to a .docx named after your PDF. This recovers the words, not the page: it is a text extraction, and the page says so above the button.',
@@ -335,7 +450,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/to-excel': {
     title: 'PDF to Excel Online — Free Bank Statement Converter',
     description:
-      'Turn a statement or table PDF into .xlsx or CSV in your browser. The column dividers it found are drawn over the page so you can drag any that landed wrong, and suspect cells are named rather than scored.',
+      'Turn a statement or table PDF into .xlsx or CSV in your browser. The column dividers it found are drawn over the page, so you can drag any that landed wrong.',
     heading: 'About this PDF to Excel converter',
     directAnswer:
       'Choose a statement or table PDF of up to 100 MB. The page finds the columns, rebuilds the rows, and shows you the table over an image of the page with the column dividers drawn on it so you can drag any that landed in the wrong place; then you label each column and export .xlsx or .csv. It extracts the one table it finds, not the whole document.',
@@ -434,7 +549,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/extract-pages': {
     title: 'Extract PDF Pages Online — Free, No Upload',
     description:
-      'Pull chosen pages out of a PDF into a new file, in your own browser. Type numbers and ranges, get them in your order, and the page count is checked before you download. Your original is not modified.',
+      'Pull chosen pages out of a PDF into a new file, in your own browser. Type numbers and ranges, get them in your order, and keep your original untouched.',
     heading: 'About this PDF page extractor',
     directAnswer:
       'To pull selected pages out of a PDF into a file of their own: choose the PDF, type the pages as numbers and ranges — 1-3, 5, 8-10 — and extract. The pages are copied whole into a new document in the order you listed them, and the file on your disk is not modified.',
@@ -527,7 +642,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/images-to-pdf': {
     title: 'JPG to PDF Online — Free Image to PDF, No Upload',
     description:
-      'Turn JPEG and PNG images into one PDF in your browser. Up to 40 images, A4, Letter or fit-to-image pages, four margin sizes, and every file checked against its real signature bytes.',
+      'Turn JPEG and PNG images into one PDF in your browser. Up to 40 images, A4, Letter or fit-to-image pages, and four margin sizes to choose between.',
     heading: 'About this image to PDF converter',
     directAnswer:
       'To turn JPEG or PNG images into a single PDF: choose the images, set their order with the arrows, pick a page size and a margin, and generate. Each image becomes one page, centred and scaled to fit inside the margins with its proportions kept.',
@@ -620,7 +735,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/bates': {
     title: 'Bates Numbering PDF Online — Free, No Upload',
     description:
-      'Stamp one unbroken Bates sequence across a whole bundle of PDFs in your browser. Prefix, start number, padding, six positions, page labels that match, and originals never written to.',
+      'Stamp one unbroken Bates sequence across a whole bundle of PDFs in your browser. Prefix, start number, padding, six positions and matching page labels.',
     heading: 'About this Bates numbering tool',
     directAnswer:
       'Add the PDFs of a bundle, put them in the order you want with the up and down arrows, set a prefix, a starting number and a padding width, and stamp. Every page of every file is numbered, and the count carries on from one file into the next, so a two-page exhibit followed by a three-page exhibit runs 000001 to 000005 across both. Your originals are never touched: each file is stamped in the page and offered as a new download.',
@@ -714,7 +829,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/ocr': {
     title: 'OCR PDF Online — Free Searchable PDF, No Upload',
     description:
-      'Add an invisible English text layer to a scanned PDF in your own browser, keeping the visible pages exactly as they are. The exact download size is stated before anything loads.',
+      'Add an invisible English text layer to a scanned PDF in your own browser, keeping the visible pages exactly as they are. The download size is stated first.',
     heading: 'About this PDF OCR tool',
     directAnswer:
       'Choose an image-only PDF of up to 50 pages. The page first checks whether the document already has selectable text, and only if it does not does it load the English recogniser — at most 9,832,213 bytes, stated on the button before you press it. Each page is rendered, recognised, and given an invisible text layer over the original page, so the document looks identical and is now searchable. The plain text is offered as a separate download.',
@@ -808,11 +923,11 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/sign': {
     title: 'Sign PDF Online Free — Fill and Sign, No Upload',
     description:
-      'Fill a PDF form and draw or type a signature onto it in your own browser. Place it by clicking the page, flatten it so nobody can edit your entries, and keep the file on your device throughout.',
+      'Fill a PDF form and draw or type a signature onto it in your own browser. Place it by clicking the page, then flatten it so nobody can edit your entries.',
     heading: 'About this fill and sign tool',
     directAnswer:
       'Choose a PDF of up to 150 MB. Every fillable field is listed with a control matching its kind — text, tick box, dropdown, multi-select — and you complete them, then draw a signature on the pad or type your name, place it by clicking the page outline, and finish. "Make it final" is on by default: it prints your values into the page and removes the form so the next person cannot edit them.',
-    lead: 'This draws or types a signature; it does not certify one. The result is an image on the page, the same as signing a printout and scanning it — it carries no certificate and no audit trail, so it proves nothing about who signed or when. Where a document demands a qualified or digital signature, this is not that, and the page says so before you choose a file. It also refuses outright to touch a PDF that already carries a digital signature, because any change would break it. Form fields accept basic Latin text for now, and when a character cannot be written the page names the character and the field rather than failing vaguely.',
+    lead: 'This draws or types a signature; it does not certify one. The result is an image on the page, the same as signing a printout and scanning it — it includes neither digital certificate nor cryptographic audit log, so it proves nothing about who signed or when. Where a document demands a qualified or digital signature, this is not that, and the page says so before you choose a file. It also refuses outright to touch a PDF that already carries a digital signature, because any change would break it. Form fields accept basic Latin text for now, and when a character cannot be written the page names the character and the field rather than failing vaguely.',
     steps: [
       {
         name: 'Choose the PDF',
@@ -892,7 +1007,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       {
         question: 'Can I sign a PDF that has no form fields?',
         answer:
-          'Yes. The page says the PDF has no fillable form fields and lets you place a signature anyway; the receipt then reports "No form in this PDF" alongside where the signature went. Page count and existing content are unchanged.',
+          'Yes. The page says the PDF has no fillable form fields and lets you place a signature anyway; the receipt then reports that no form was present alongside where the signature went. Page count and existing content are unchanged.',
       },
       {
         question: 'Can I do it entirely with the keyboard?',
@@ -908,7 +1023,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/redact': {
     title: 'Redact PDF Online — Free, Text Truly Removed',
     description:
-      'Black out text in a PDF so the words are gone, not hidden. Redacted pages are rasterised, metadata, bookmarks, attachments and annotations are purged, and everything runs in your browser.',
+      'Black out text in a PDF so the words are gone, not hidden. Redacted pages are rasterised, and metadata, bookmarks, attachments and annotations are purged.',
     heading: 'About this PDF redaction tool',
     directAnswer:
       'Load a PDF, then mark what has to go: search for a name or phrase, scan for secrets such as email addresses, card numbers, IP addresses and API keys, or draw a box on the page. Applying the redaction rasterises every page that carries a mark, burns the black boxes into the image, and purges the document’s metadata, bookmarks, attachments and annotations. Pages with nothing to redact are copied through untouched and stay selectable.',
@@ -1006,7 +1121,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/metadata': {
     title: 'PDF Metadata Remover — See It, Then Strip It Free',
     description:
-      'See every piece of identity a PDF carries — document properties, the XMP packet most tools miss, dates and the file identifier — then remove all of it in your browser without touching the pages.',
+      'See every piece of identity a PDF carries — properties, the XMP packet most tools miss, dates and the file identifier — then remove all of it in your browser.',
     heading: 'About this PDF metadata viewer and remover',
     directAnswer:
       'Choose a PDF of up to 100 MB. The page reads everything the file says about itself and groups it in four panels — document properties, the XMP packet, dates, and the file identifier — and then removes all of it in one action, saving a copy with -no-metadata added to the name. The pages themselves are untouched; this changes only what describes the file.',
@@ -1100,7 +1215,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/compare': {
     title: 'Compare Two PDFs Online — Free Redline, No Upload',
     description:
-      'Find what changed between two PDF drafts in your browser. Survives reflow, reports moved clauses as moves, and exports an annotated PDF, a tracked-changes Word redline and a CSV change list.',
+      'Find what changed between two PDF drafts in your browser. Survives reflow, reports moved clauses as moves, and exports a redline, an annotated PDF and a CSV.',
     heading: 'About this PDF comparison tool',
     directAnswer:
       'Load the original and the revised PDF and compare. The text of both is read out with each word’s position, the two streams are aligned, and the result is a list of insertions, deletions, moved clauses and formatting-only changes, each shown on the page it occurs on. Export an annotated PDF, a Word redline with real tracked changes, or a CSV change list.',
@@ -1213,7 +1328,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/page-tools': {
     title: 'Organise PDF Pages Online — Free, No Upload',
     description:
-      'Reorder, delete, rotate, number, watermark and label a PDF in one local pass. Type the pages in the order you want them, and the result is reopened and checked before you download.',
+      'Reorder, delete, rotate, number, watermark and label a PDF in one local pass. Type the pages in the order you want, and the result is checked before download.',
     heading: 'About this PDF page organiser',
     offlineReady: true,
     directAnswer:
@@ -1305,7 +1420,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/rotate-pdf': {
     title: 'Rotate PDF Online — Free, Saves the Rotation',
     description:
-      'Turn every page of a PDF by a quarter turn and save it that way, in your own browser. Nothing is rasterised, and every page is checked to sit on a whole quarter turn before you download.',
+      'Turn every page of a PDF by a quarter turn and save it that way, in your own browser. Nothing is rasterised, and every page is checked before you download.',
     heading: 'About this PDF rotation tool',
     directAnswer:
       'To turn the pages of a PDF: choose the file, leave the page list as it is, pick 90°, 180° or 270° clockwise, and apply. The angle you choose is added to each page’s existing rotation, and after saving the file is opened again and every page checked to be sitting on a whole quarter turn.',
@@ -1396,7 +1511,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/reorder-pdf-pages': {
     title: 'Reorder PDF Pages Online — Free, No Upload',
     description:
-      'Put the pages of a PDF into any order by typing the numbers. Pages are copied whole so nothing is rasterised, and the page count is verified against what you asked for before you download.',
+      'Put the pages of a PDF into any order by typing the numbers. Pages are copied whole, and the page count is verified against what you asked for.',
     heading: 'About this PDF page reorderer',
     directAnswer:
       'To put a PDF’s pages into a different order: choose the file and type the page numbers in the order you want them, such as 3, 1-2. The pages are copied into a new document in exactly that order, and any page you leave out of the list is left out of the file.',
@@ -1490,7 +1605,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/delete-pdf-pages': {
     title: 'Delete Pages from PDF Online — Free, No Upload',
     description:
-      'Remove pages from a PDF by listing the ones you want to keep. Pages are copied whole so nothing is rasterised, and the result is verified against your selection before you download.',
+      'Remove pages from a PDF by listing the ones you want to keep. Pages are copied whole, and the result is verified against your selection before download.',
     heading: 'About this PDF page remover',
     directAnswer:
       'To remove pages from a PDF: choose the file and type the pages you want to keep, such as 2-9 on a ten-page document. Anything you leave out of the list is left out of the new file, which is copied page by page and then checked against your selection before a download is offered. Your original is not modified.',
@@ -1580,7 +1695,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/pdf-page-numbers': {
     title: 'Add Page Numbers to PDF Online — Free, No Upload',
     description:
-      'Number every page of a PDF before you send it, in your own browser. Centred at the foot of the page in 10 pt Helvetica, numbered by position in the output, with no upload and no account.',
+      'Number every page of a PDF before you send it, in your own browser. Centred at the foot of the page in 10 pt Helvetica, numbered by position in the output.',
     heading: 'About this PDF page numbering tool',
     directAnswer:
       'To number the pages of a PDF: choose the file, tick "Add page numbers", and apply. Every page in the output gets its number set in 10 pt Helvetica, centred and 18 points up from the bottom edge. The numbering follows the output, so if you also reorder or remove pages in the same run the numbers come out consecutive in the new order.',
@@ -1673,7 +1788,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/pdf-watermark': {
     title: 'Add Watermark to PDF Online — Free, No Upload',
     description:
-      'Stamp text diagonally across every page of a PDF in your own browser. Up to 80 characters, drawn into the page content at 20 per cent opacity so no reader setting can hide it.',
+      'Stamp text diagonally across every page of a PDF in your own browser. Up to 80 characters, drawn into the page content so no reader setting can hide it.',
     heading: 'About this PDF watermarking tool',
     directAnswer:
       'To watermark a PDF: choose the file, type up to 80 characters into the watermark box, and apply. The text is drawn across the middle of every page in the output, rotated 35 degrees anticlockwise, in grey at 20 per cent opacity, sized to fit the page width. It becomes part of the page content rather than an annotation, so no reader setting can hide it.',
@@ -1767,7 +1882,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
   '/pdf/pdf-metadata-editor': {
     title: 'Edit PDF Metadata Online — Title and Author, Free',
     description:
-      'Set the title, author, subject and keywords stored inside a PDF, in your own browser. Written while the pages are copied, with no upload, no account and no watermark on the result.',
+      'Set the title, author, subject and keywords stored inside a PDF, in your own browser. Written while the pages are copied, with no upload and no account.',
     heading: 'About this PDF metadata editor',
     directAnswer:
       'To change what a PDF says about itself: choose the file, open the document metadata section, and type a title, author, subject or comma-separated keywords. Applying writes those values into a new copy of the document. Fields you leave empty are simply not written — this sets metadata, it does not clear it.',
@@ -2142,6 +2257,102 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
         question: 'Is my data stored or sent across the internet?',
         answer:
           'No. The entire bursting pipeline—including text inspection, regex parsing, document splitting, and file creation—operates strictly within your local browser memory.',
+      },
+    ],
+  },
+  '/pdf/excel-to-pdf': {
+    title: 'Convert Excel to PDF Online — Free & No Upload',
+    description:
+      'Convert Excel spreadsheets (.xlsx) to vector PDF online. Preserves gridlines, headers, and formulas without uploading your payroll or customer data. 100% private.',
+    heading: 'About this in-browser Excel to PDF converter',
+    offlineReady: false,
+    directAnswer:
+      'To convert an Excel spreadsheet into a PDF: choose your .xlsx workbook, select whether to export all sheets or a specific tab, choose your page orientation and margin preferences, and click Convert to PDF. The document is converted entirely inside your browser memory using native vector drawing, so your financial data, salaries, and customer records are never uploaded to a cloud server.',
+    lead: 'Spreadsheets are the most confidential files an organization or individual owns. They contain company payroll, profit and loss statements, customer contact databases, invoice registers, and detailed financial models. Traditional online PDF converters force you to upload your entire Excel workbook to their remote servers, creating an immediate data privacy hazard and violating enterprise confidentiality policies. This converter eliminates that exposure by parsing the workbook XML and rendering vector PDF pages directly inside your browser tab with zero network egress.',
+    steps: [
+      {
+        name: 'Select your Excel spreadsheet',
+        text: 'Drop your .xlsx or .xlsm file onto the converter. The browser reads the ZIP container and parses workbook.xml, sharedStrings.xml, and sheet definitions locally. File contents are loaded into memory and never transmitted anywhere.',
+      },
+      {
+        name: 'Configure page layout and sheet options',
+        text: 'Select whether to convert all workbook sheets into a consolidated multi-page PDF or export an individual tab. Choose between automatic orientation (which intelligently switches to Landscape for wide multi-column tables) or forced Portrait/Landscape, select A4 or US Letter page sizing, and customize page margins.',
+      },
+      {
+        name: 'Set table rendering preferences',
+        text: 'Toggle cell gridlines on or off, enable repeated header rows so multi-page tables remain easily readable across page breaks, and configure page numbering ("Page X of Y") in the footer.',
+      },
+      {
+        name: 'Convert and save your vector PDF',
+        text: 'Click Convert to PDF. The engine calculates proportional column widths, renders vector text and table borders via pdf-lib, and generates a downloadable vector PDF in milliseconds. The saved document contains selectable, searchable text with crisp lines at any zoom level.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Why in-browser conversion is vital for business spreadsheets',
+        body: [
+          'Most online conversion tools require you to upload your files to remote cloud infrastructure. While those providers promise to delete files after one to two hours, the mere act of transmitting financial spreadsheets across the public internet introduces compliance risks under GDPR, HIPAA, and corporate confidentiality agreements. Furthermore, cloud services meter free conversions with strict daily task limits or lock high-resolution exports behind recurring monthly subscriptions.',
+          'OpenTools takes the opposite architectural approach: the tool code is delivered as a static client application, and all processing takes place in your local JavaScript runtime. No file bytes, cell values, or metadata ever leave your tab.',
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+        ],
+      },
+      {
+        heading:
+          'Vector precision: native PDF tables versus rasterized screenshots',
+        body: [
+          'Many makeshift browser conversion tools rely on html2canvas or DOM rasterization, converting tables into blurry bitmap images embedded inside a PDF. This degrades typography, renders text unselectable and unsearchable, and produces pixelated lines when printed.',
+          'This tool uses direct vector rendering via pdf-lib. Every table border is drawn as a true PDF vector path with precise sub-point stroke coordinates, and every text cell is encoded using standard font glyph metrics. The resulting PDF is compact in file size, sharp on high-DPI retina displays and commercial printers, and allows text copying and search indexing.',
+        ],
+      },
+      {
+        heading: 'Intelligent auto-orientation and multi-page pagination',
+        body: [
+          'A recurring difficulty when converting spreadsheets to PDF is handling wide tables with dozens of columns. Standard portrait layouts frequently clip columns or crush text into illegible ribbons. Our engine inspects the natural content width of every column in the sheet. In Auto mode, if the total table width exceeds the printable width of a Portrait page, the generator automatically switches that sheet to Landscape orientation.',
+          'For long multi-row tables that span across several pages, the engine dynamically calculates row heights and inserts page breaks cleanly between rows. It also repeats the table header row at the top of subsequent pages with a subtle continuation notice, ensuring readers can easily reference column headers on page five as easily as on page one.',
+        ],
+      },
+      {
+        heading: 'Formulas, dates, and cell formatting support',
+        body: [
+          'Excel workbooks store dates as floating-point serial numbers relative to a calendar epoch (1900 or 1904) and store text inside a shared strings table. This converter leverages our proven spreadsheet engine (lib/tools/spreadsheet/xlsx-reader.ts) to correctly resolve shared string indices, format dates into clean ISO strings without phantom leap-year offsets, and extract cached formula values.',
+          'Cells containing numbers, text, dates, booleans, and errors are cleanly represented. Numbers are right-aligned to match conventional accounting standards, while labels and descriptions are left-aligned with proper typographic padding.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can I convert an Excel workbook with multiple sheets into one PDF?',
+        answer:
+          'Yes. By default, the converter processes all sheets in the workbook in their natural sequence, starting each sheet on a fresh page with a dedicated sheet header and table layout. Alternatively, you can select any individual tab from the dropdown to export only that specific sheet.',
+      },
+      {
+        question:
+          'Does this tool upload my confidential spreadsheet to a server?',
+        answer:
+          'No. The converter operates 100% locally inside your browser memory using WebAssembly and client-side JavaScript. The page is served with a strict Content Security Policy (connect-src none) that prevents all outbound network requests.',
+      },
+      {
+        question:
+          'How does the tool handle wide spreadsheets with many columns?',
+        answer:
+          'When Page Orientation is set to Auto, the tool measures the total content width across all columns. If the table exceeds portrait boundaries, it automatically flips the page to Landscape orientation and scales columns proportionally to fit the printable area perfectly.',
+      },
+      {
+        question: 'Are column headers repeated on every page?',
+        answer:
+          'Yes. When Repeat Headers is enabled, the table column headers are drawn at the top of every subsequent page for long tables, ensuring the document remains legible throughout.',
+      },
+      {
+        question: 'Is there a file size limit or daily conversion quota?',
+        answer:
+          'There are no subscriptions, no paywalls, and no task quotas. You can convert unlimited spreadsheets of any reasonable size (typically up to 50–100 MB depending on available device memory) completely free.',
+      },
+      {
+        question: 'What versions of Excel are supported?',
+        answer:
+          'The converter supports all modern Office Open XML spreadsheets (.xlsx and .xlsm) exported by Microsoft Excel (2007 through Microsoft 365), Google Sheets, LibreOffice Calc, Apple Numbers, and openpyxl.',
       },
     ],
   },

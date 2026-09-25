@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 import { notFound } from 'next/navigation';
 import {
   ArrowRight,
@@ -55,7 +56,9 @@ export async function generateMetadata({
       url: `${httpsOrigin}/guides/${slug}`,
       siteName: 'OpenTools',
       type: 'article',
+      images: shareImages('guides'),
     },
+    twitter: shareTwitterCard('guides', guide.metaTitle, guide.metaDescription),
   };
 }
 

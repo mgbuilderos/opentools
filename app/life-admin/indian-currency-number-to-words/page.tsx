@@ -29,7 +29,7 @@ const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 export const metadata: Metadata = {
   title: BRIEF.heading,
   description:
-    'Write a rupee figure out in words for a cheque, a payment voucher or a bill, grouped in thousand, lakh and crore rather than in millions. Runs in your browser; the amount is not sent anywhere.',
+    'Write a rupee figure out in words for a cheque, a voucher or a bill, grouped in thousand, lakh and crore rather than in millions. Runs in your browser.',
   alternates: { canonical: `${CANONICAL_ORIGIN}${BRIEF.route}` },
 };
 

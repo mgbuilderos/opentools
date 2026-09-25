@@ -164,6 +164,48 @@ describe('reading an MP4 written by ffmpeg', () => {
     const truncated = load('tone-video.mp4').slice(0, 200);
     expect(() => readMp4(truncated)).toThrow(/no tracks/u);
   });
+
+  it('detects fragmented MP4 (fMP4) and names it plainly', () => {
+    const bytes = new Uint8Array(64);
+    const view = new DataView(bytes.buffer);
+    const write = (text: string, at: number) => {
+      for (let index = 0; index < 4; index += 1)
+        bytes[at + index] = text.charCodeAt(index);
+    };
+    view.setUint32(0, 16, false);
+    write('ftyp', 4);
+    write('isom', 8);
+    view.setUint32(16, 16, false);
+    write('moof', 20); // Fragmented movie fragment box
+    view.setUint32(32, 32, false);
+    write('mdat', 36);
+    expect(() => readMp4(bytes)).toThrow(/fragmented MP4/u);
+  });
+
+  it('reads identically via ByteSource without full file buffering', async () => {
+    const bytes = load('tone-video.mp4');
+    const syncResult = readMp4(bytes);
+    const { sourceFromBytes } = await import('./source');
+    const source = sourceFromBytes(bytes);
+    const asyncResult = await readMp4(source);
+
+    expect(asyncResult.timescale).toBe(syncResult.timescale);
+    expect(asyncResult.durationSeconds).toBeCloseTo(
+      syncResult.durationSeconds,
+      4,
+    );
+    expect(asyncResult.tracks.length).toBe(syncResult.tracks.length);
+    for (let i = 0; i < syncResult.tracks.length; i++) {
+      expect(asyncResult.tracks[i].kind).toBe(syncResult.tracks[i].kind);
+      expect(asyncResult.tracks[i].codec).toBe(syncResult.tracks[i].codec);
+      expect(asyncResult.tracks[i].samples.length).toBe(
+        syncResult.tracks[i].samples.length,
+      );
+      expect(asyncResult.tracks[i].samples[0].offset).toBe(
+        syncResult.tracks[i].samples[0].offset,
+      );
+    }
+  });
 });
 describe('a QuickTime .mov, which is what an iPhone records', () => {
   /**

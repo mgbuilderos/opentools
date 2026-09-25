@@ -35,6 +35,8 @@
  * Reading only. Writing is `writer.ts`, and it depends on this being right.
  */
 
+import { type ByteSource } from './source';
+
 export type TrackKind = 'video' | 'audio' | 'other';
 
 export interface Mp4Sample {
@@ -64,6 +66,8 @@ export interface Mp4Sample {
    * in a badly cut clip.
    */
   isKeyframe: boolean;
+  /** Optional ByteSource if this sample is sourced from a specific file. */
+  source?: ByteSource;
 }
 
 export interface Mp4Track {
@@ -89,6 +93,11 @@ export interface Mp4Track {
    * original's bytes. See `writer.ts`.
    */
   sampleDescription: Uint8Array;
+  /**
+   * The 36-byte 3x3 display transformation matrix from `tkhd`, preserving
+   * orientation (e.g. portrait video captured on smartphones).
+   */
+  matrix?: Uint8Array;
 }
 
 export interface Mp4File {
@@ -408,6 +417,15 @@ function readTrack(
     readSyncSamples(view, stbl),
   );
 
+  let matrix: Uint8Array | undefined;
+  if (tkhd) {
+    const isV1 = bytes[tkhd.body] === 1;
+    const matrixOffset = isV1 ? tkhd.body + 52 : tkhd.body + 40;
+    if (matrixOffset + 36 <= tkhd.end) {
+      matrix = bytes.slice(matrixOffset, matrixOffset + 36);
+    }
+  }
+
   return {
     id: tkhd
       ? view.getUint32(
@@ -425,10 +443,11 @@ function readTrack(
     channels,
     sampleRate,
     sampleDescription,
+    matrix,
   };
 }
 
-export function readMp4(input: Uint8Array): Mp4File {
+function readMp4Sync(input: Uint8Array): Mp4File {
   if (input.length < 16)
     throw new Error('This file is too small to be an MP4.');
   const view = new DataView(input.buffer, input.byteOffset, input.byteLength);
@@ -451,6 +470,11 @@ export function readMp4(input: Uint8Array): Mp4File {
   }
 
   const top = boxes(input, view, 0, input.length);
+  if (find(top, 'moof')) {
+    throw new Error(
+      'This is a fragmented MP4 (fMP4), which stores frames across separate chunks rather than in a single index table. Fragmented MP4s cannot be edited without remuxing first.',
+    );
+  }
   const moov = find(top, 'moov');
   if (!moov) {
     throw new Error(
@@ -483,6 +507,112 @@ export function readMp4(input: Uint8Array): Mp4File {
     throw new Error('This MP4 contains no tracks this page can read.');
 
   return { timescale, durationSeconds, tracks };
+}
+
+export async function readMp4FromSource(source: ByteSource): Promise<Mp4File> {
+  if (source.size < 16) {
+    throw new Error('This file is too small to be an MP4.');
+  }
+  const prefix = await source.slice(0, 16);
+  if (
+    prefix[0] === 0x1a &&
+    prefix[1] === 0x45 &&
+    prefix[2] === 0xdf &&
+    prefix[3] === 0xa3
+  ) {
+    throw new Error(
+      'This is a WebM or Matroska file. It stores its index in a different format entirely, so this page cannot read it — MP4 and MOV only.',
+    );
+  }
+  if (fourcc(prefix, 4) !== 'ftyp') {
+    throw new Error('This is not an MP4 or MOV file.');
+  }
+
+  let offset = 0;
+  let moovBytes: Uint8Array | null = null;
+  while (offset < source.size) {
+    const headerBytes = await source.slice(
+      offset,
+      Math.min(offset + 16, source.size),
+    );
+    if (headerBytes.length < 8) break;
+    const view = new DataView(
+      headerBytes.buffer,
+      headerBytes.byteOffset,
+      headerBytes.byteLength,
+    );
+    let size = view.getUint32(0, false);
+    const type = fourcc(headerBytes, 4);
+    let headerSize = 8;
+    if (size === 1) {
+      if (headerBytes.length < 16) break;
+      size =
+        view.getUint32(8, false) * 4_294_967_296 + view.getUint32(12, false);
+      headerSize = 16;
+    } else if (size === 0) {
+      size = source.size - offset;
+    }
+    if (size < headerSize) {
+      throw new Error('Corrupt MP4 box size.');
+    }
+    if (type === 'moof') {
+      throw new Error(
+        'This is a fragmented MP4 (fMP4), which stores frames across separate chunks rather than in a single index table. Fragmented MP4s cannot be edited without remuxing first.',
+      );
+    }
+    if (type === 'moov') {
+      moovBytes = await source.slice(offset, offset + size);
+    }
+    offset += size;
+  }
+
+  if (!moovBytes) {
+    throw new Error(
+      'This MP4 has no index, so its frames cannot be located. A file still being written, or one truncated mid-upload, looks like this.',
+    );
+  }
+
+  const moovView = new DataView(
+    moovBytes.buffer,
+    moovBytes.byteOffset,
+    moovBytes.byteLength,
+  );
+  const moovBoxes = boxes(moovBytes, moovView, 8, moovBytes.length);
+  const mvhd = find(moovBoxes, 'mvhd');
+  let timescale = 1000;
+  let durationSeconds = 0;
+  if (mvhd) {
+    const version = moovBytes[mvhd.body];
+    const at = version === 1 ? mvhd.body + 20 : mvhd.body + 12;
+    timescale = moovView.getUint32(at, false) || 1000;
+    const duration =
+      version === 1
+        ? moovView.getUint32(at + 4, false) * 4_294_967_296 +
+          moovView.getUint32(at + 8, false)
+        : moovView.getUint32(at + 4, false);
+    durationSeconds = duration / timescale;
+  }
+
+  const tracks: Mp4Track[] = [];
+  for (const trak of moovBoxes.filter((box) => box.type === 'trak')) {
+    const track = readTrack(moovBytes, moovView, trak);
+    if (track) tracks.push(track);
+  }
+  if (!tracks.length)
+    throw new Error('This MP4 contains no tracks this page can read.');
+
+  return { timescale, durationSeconds, tracks };
+}
+
+export function readMp4(input: Uint8Array): Mp4File;
+export function readMp4(input: ByteSource): Promise<Mp4File>;
+export function readMp4(
+  input: Uint8Array | ByteSource,
+): Mp4File | Promise<Mp4File> {
+  if (input instanceof Uint8Array) {
+    return readMp4Sync(input);
+  }
+  return readMp4FromSource(input);
 }
 
 /**

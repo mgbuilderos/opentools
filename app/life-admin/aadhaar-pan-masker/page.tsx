@@ -1,7 +1,10 @@
-import type { Metadata } from 'next';
-
 import { AadhaarPanMaskerTool } from '@/components/aadhaar-pan-masker-tool';
+import { PageDepthProvider } from '@/components/page-depth-provider';
 import { practiceBrief } from '@/lib/practice-briefs';
+import {
+  requireToolPageDepth,
+  toolPageMetadata,
+} from '@/lib/seo/tool-page-depth';
 
 export const revalidate = 86400;
 
@@ -12,15 +15,15 @@ export const revalidate = 86400;
   the bank and it still has the client's Aadhaar in it".
 */
 
+const ROUTE = '/life-admin/aadhaar-pan-masker';
 const BRIEF = practiceBrief('mask-before-it-leaves-the-firm');
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/life-admin/aadhaar-pan-masker' },
-  title: BRIEF.heading,
-  description:
-    'Find and mask Aadhaar and PAN numbers in a working paper, client list or exported statement before it goes to a bank, a lender or an auditor. Aadhaar keeps its last 4 digits; runs on your device. Text only: scans and PDFs are not read.',
-};
+export const metadata = toolPageMetadata(ROUTE);
 
 export default function Page() {
-  return <AadhaarPanMaskerTool brief={BRIEF} />;
+  return (
+    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+      <AadhaarPanMaskerTool brief={BRIEF} />
+    </PageDepthProvider>
+  );
 }

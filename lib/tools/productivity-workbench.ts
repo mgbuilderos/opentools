@@ -90,7 +90,8 @@ export const PRODUCTIVITY_OPERATIONS: readonly ProductivityOperation[] = [
   {
     id: 'weekly-planner',
     name: 'Weekly planner',
-    description: 'Group and order items by weekday.',
+    description:
+      'Paste lines of weekday and task separated by a pipe; tasks are grouped under Monday through Sunday in order, and days with nothing against them are dropped.',
     fields: [
       area(
         'tasks',

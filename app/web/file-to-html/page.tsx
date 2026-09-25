@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/web/file-to-html' },
   title: 'File to HTML Converter — Email Marketing & Web',
   description:
-    'Convert JPEG, PNG, WebP, SVG images and multi-page PDFs into production-ready email marketing HTML packages and standalone web pages. Runs 100% locally in your browser.',
+    'Convert JPEG, PNG, WebP, SVG images and multi-page PDFs into email-ready HTML packages and standalone web pages, entirely in your own browser tab.',
 };
 
 export default function Page() {

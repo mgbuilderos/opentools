@@ -9,13 +9,18 @@ import {
 import { AppShell } from '@/components/app-shell';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getAllCategoryPillars } from '@/lib/seo/internal-linking-graph';
+import {
+  getAllCategoryPillars,
+  getSiteHubLinks,
+} from '@/lib/seo/internal-linking-graph';
 import {
   GUIDE_CONSOLIDATION,
   getFeaturedGuideTools,
   getPublishedGuideTools,
   guideOrToolHref,
 } from '@/lib/seo/guide-consolidation';
+import { guidesIndexMeta } from '@/lib/seo/guides-index-meta';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 
 // After consolidation only some tools keep a guide, so "every" would be false.
 const guideScope = GUIDE_CONSOLIDATION.enabled
@@ -28,19 +33,31 @@ const schemaContext = `${httpsScheme}schema.org`;
 
 export const revalidate = 86400;
 
+/*
+  Named once, used by both the Open Graph and the Twitter block below, which
+  different platforms read and which drift apart when written out twice.
+*/
+const guidesIndexShareTitle = 'Tool Guides & Solution Playbooks | OpenTools';
+const guidesIndexShareDescription = `Step-by-step guides, comparisons and FAQs for ${guideScope}.`;
+
 export const metadata: Metadata = {
-  title: 'Tool Guides — every OpenTools utility, step by step',
-  description: `Step-by-step guides and FAQs for ${guideScope}. Each tool runs in your browser tab; your files and inputs never touch a server.`,
+  ...guidesIndexMeta(),
   alternates: {
     canonical: `${httpsOrigin}/guides`,
   },
   openGraph: {
-    title: 'Tool Guides & Solution Playbooks | OpenTools',
-    description: `Step-by-step guides, comparisons and FAQs for ${guideScope}.`,
+    title: guidesIndexShareTitle,
+    description: guidesIndexShareDescription,
     url: `${httpsOrigin}/guides`,
     siteName: 'OpenTools',
     type: 'website',
+    images: shareImages('guides'),
   },
+  twitter: shareTwitterCard(
+    'guides',
+    guidesIndexShareTitle,
+    guidesIndexShareDescription,
+  ),
 };
 
 export default function GuidesDirectoryPage() {
@@ -117,9 +134,9 @@ export default function GuidesDirectoryPage() {
                 <LockKeyhole className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">
+                <h2 className="text-sm font-semibold">
                   Your file stays in the page
-                </h3>
+                </h2>
                 <p className="text-xs text-muted-foreground">
                   Your file is read by the page you have open. It never touches
                   a server.
@@ -131,7 +148,7 @@ export default function GuidesDirectoryPage() {
                 <Cpu className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">No upload to wait for</h3>
+                <h2 className="text-sm font-semibold">No upload to wait for</h2>
                 <p className="text-xs text-muted-foreground">
                   The work starts as soon as you pick a file — there is no
                   transfer step.
@@ -143,7 +160,7 @@ export default function GuidesDirectoryPage() {
                 <ShieldCheck className="h-5 w-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold">Free, and no account</h3>
+                <h2 className="text-sm font-semibold">Free, and no account</h2>
                 <p className="text-xs text-muted-foreground">
                   No paywall, no subscription, no sign-up.
                 </p>
@@ -185,6 +202,47 @@ export default function GuidesDirectoryPage() {
                   </p>
                   <div className="mt-4 flex items-center gap-1 text-xs font-medium text-foreground group-hover:underline">
                     <span>View Category Hub</span>
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/*
+            Hubs that belong to no single category.
+
+            `/bench` runs operations from every category over a whole folder,
+            so no category pillar owns it -- and until 2026-09-23 that meant no
+            page on the site linked to it at all and it sat in the sitemap with
+            no inbound link. This page is the one whose subject is everything
+            here, which makes it the honest place for it. See `SITE_HUB_LINKS`
+            in `lib/seo/internal-linking-graph.ts`.
+          */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Run tools over a whole folder
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                One workspace, every operation, batched.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {getSiteHubLinks().map((hub) => (
+                <a
+                  key={hub.href}
+                  href={hub.href}
+                  className="group rounded-xl border bg-card p-5 transition-colors hover:border-foreground/40 hover:bg-muted/30 block"
+                >
+                  <h3 className="font-semibold group-hover:text-foreground">
+                    {hub.name}
+                  </h3>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {hub.description}
+                  </p>
+                  <div className="mt-4 flex items-center gap-1 text-xs font-medium text-foreground group-hover:underline">
+                    <span>Open the Bench</span>
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </a>

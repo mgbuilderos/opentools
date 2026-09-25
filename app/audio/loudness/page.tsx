@@ -5,7 +5,7 @@ import { relatedToolsFor } from '@/lib/seo/related-tools';
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: 'Audio Loudness & Delivery Check — LUFS & True Peak | OpenTools',
+  title: 'Audio Loudness Check — LUFS & True Peak',
   description:
     'Measure ITU-R BS.1770-4 integrated LUFS, true peak (dBTP), loudness range (LRA), and noise floor against Spotify, Apple Music, and ACX audiobook standards.',
   alternates: {

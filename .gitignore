@@ -51,3 +51,4 @@ next-env.d.ts
 
 # deploy lock capability token — proves this worktree holds the lock
 .deploy-lock-token
+.indexnow-state.json

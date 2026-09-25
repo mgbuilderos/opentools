@@ -23,8 +23,6 @@ export interface DeveloperField {
 export interface DeveloperOperation {
   id: string;
   name: string;
-  searchTitle?: string;
-  searchDescription?: string;
   description: string;
   fields: readonly DeveloperField[];
   notice?: string;
@@ -105,7 +103,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'url-encode-component',
     name: 'URL component encoder',
-    description: 'Percent-encode one query value or path segment.',
+    description:
+      'Percent-encode one query value or path segment so that spaces, ampersands, slashes and question marks survive being placed inside a larger web address.',
     fields: [input('hello world & tea')],
   },
   {
@@ -123,7 +122,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'url-decode',
     name: 'Full URL decoder',
-    description: 'Decode percent escapes in a complete URL string.',
+    description:
+      'Decode percent escapes across a whole web address while leaving reserved separators such as %26 and %3F encoded, so the structure of the link is unchanged.',
     fields: [input(`${EXAMPLE_ORIGIN}/a%20file?q=red%20apple`)],
   },
   {
@@ -141,13 +141,15 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'base64-encode-text',
     name: 'Base64 text encoder',
-    description: 'Encode UTF-8 text as padded standard Base64.',
+    description:
+      'Encode text as standard Base64 with plus, slash and equals padding. Accented letters, emoji and other non-ASCII characters are read as UTF-8 bytes first.',
     fields: [input('Hello, 世界')],
   },
   {
     id: 'base64-decode-text',
     name: 'Base64 text decoder',
-    description: 'Decode padded standard Base64 and validate UTF-8.',
+    description:
+      'Turn standard Base64 back into readable text. Whitespace is ignored, the padding must be correct, and decoded bytes are rejected if they are not valid UTF-8.',
     fields: [input('SGVsbG8sIOS4lueVjA==')],
   },
   {
@@ -159,7 +161,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'base64url-decode-text',
     name: 'Base64URL text decoder',
-    description: 'Decode URL-safe Base64 text and validate UTF-8.',
+    description:
+      'Turn URL-safe Base64 back into text. The hyphen and underscore alphabet is accepted with or without padding, and non-UTF-8 byte sequences are reported.',
     fields: [input('SGVsbG8_IHllcy9ubw')],
   },
   {
@@ -238,7 +241,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'url-path-segments',
     name: 'URL path segments',
-    description: 'Decode and list each non-empty pathname segment.',
+    description:
+      'List the path segments of a web address as a JSON array. Empty segments are dropped and each remaining one is percent-decoded, so %20 reads as a space.',
     fields: [urlInput(`${EXAMPLE_ORIGIN}/team/Ada%20Lovelace/projects`)],
   },
   {
@@ -275,7 +279,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'regex-extractor',
     name: 'Regex extractor',
-    description: 'Extract one capture group from up to 200 matches.',
+    description:
+      'Pull one capture group out of every regular-expression match and list the results one per line, up to 200 matches, with group 0 returning the whole match.',
     fields: [...regexFields(), number('group', 'Capture group', '0')],
     notice:
       'Potentially explosive nested-quantifier patterns are rejected; matches are capped at 200.',
@@ -335,7 +340,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'hex-encode-text',
     name: 'Text to hexadecimal',
-    description: 'Encode UTF-8 bytes as lowercase hexadecimal.',
+    description:
+      'Turn text into lowercase hexadecimal, two digits for each UTF-8 byte and no separators, for when you need to see how characters such as emoji are stored.',
     fields: [input('Hello ☕')],
   },
   {
@@ -347,7 +353,8 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'binary-encode-text',
     name: 'Text to binary bytes',
-    description: 'Encode UTF-8 bytes as eight-bit binary groups.',
+    description:
+      'Turn text into eight-bit binary, one space-separated group per UTF-8 byte. Useful for teaching how characters map to bytes or for checking a binary dump.',
     fields: [input('Hi')],
   },
   {
@@ -359,19 +366,22 @@ export const DEVELOPER_DATA_OPERATIONS: readonly DeveloperOperation[] = [
   {
     id: 'sha-256-text',
     name: 'SHA-256 text hash',
-    description: 'Hash UTF-8 text with the browser Web Crypto implementation.',
+    description:
+      'Hash text with SHA-256 and read back the 64-character hexadecimal digest, the usual choice for fingerprints, cache keys and integrity comparisons.',
     fields: [input('hello')],
   },
   {
     id: 'sha-384-text',
     name: 'SHA-384 text hash',
-    description: 'Hash UTF-8 text with the browser Web Crypto implementation.',
+    description:
+      'Hash text with SHA-384 and read back the 96-character hexadecimal digest, used where a longer truncated SHA-2 value is required by a spec or a vendor.',
     fields: [input('hello')],
   },
   {
     id: 'sha-512-text',
     name: 'SHA-512 text hash',
-    description: 'Hash UTF-8 text with the browser Web Crypto implementation.',
+    description:
+      'Hash text with SHA-512 and read back the 128-character hexadecimal digest, the longest SHA-2 option, often asked for in signing and archival workflows.',
     fields: [input('hello')],
   },
   {

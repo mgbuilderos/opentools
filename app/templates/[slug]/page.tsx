@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 import { notFound } from 'next/navigation';
 import {
   ArrowRight,
@@ -46,7 +47,12 @@ export async function generateMetadata({
   if (!template) return { title: 'Template Not Found' };
 
   return {
-    title: `${template.title} | Free Open-Source Template`,
+    /*
+      The template's own name. The ` | Free Open-Source Template` suffix spent
+      28 characters, plus the layout's twelve, saying what the page below it
+      already says -- and truncated every one of the 18 template titles.
+    */
+    title: template.title,
     description: template.metaDescription,
     keywords: [...template.keywords],
     alternates: {
@@ -58,7 +64,13 @@ export async function generateMetadata({
       url: `${httpsOrigin}/templates/${slug}`,
       siteName: 'OpenTools',
       type: 'website',
+      images: shareImages('templates'),
     },
+    twitter: shareTwitterCard(
+      'templates',
+      template.title,
+      template.metaDescription,
+    ),
   };
 }
 
@@ -298,14 +310,14 @@ export default async function TemplateDetailPage({
                       <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                         {oTemp.format}
                       </span>
-                      <h4 className="mt-2 text-sm font-semibold text-foreground line-clamp-2">
+                      <h3 className="mt-2 text-sm font-semibold text-foreground line-clamp-2">
                         <a
                           href={`/templates/${oTemp.slug}`}
                           className="hover:underline"
                         >
                           {oTemp.title}
                         </a>
-                      </h4>
+                      </h3>
                     </div>
                     <div className="mt-4 pt-3 border-t flex items-center justify-between text-xs">
                       <span className="text-muted-foreground font-mono text-[11px]">

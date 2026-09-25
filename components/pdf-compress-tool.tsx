@@ -20,6 +20,7 @@ import {
   BatchRunnerPanel,
   useFileBatchRunner,
 } from '@/components/batch-runner';
+import { PdfOfflineReadiness } from '@/components/pdf-offline-readiness';
 import { PracticeBriefPanel } from '@/components/practice-brief';
 import {
   RecipeAppliedNotice,
@@ -273,7 +274,26 @@ function PortalCeilingPanel({
  * `brief` re-points this page at one profession without forking the tool.
  * See the same prop on `pdf-to-excel-tool.tsx` for why it exists.
  */
-export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
+/**
+ * `offlineRoute` makes this the page at that address instead of `/pdf/compress`.
+ *
+ * It is one prop rather than a boolean and a route because the two can never
+ * legitimately disagree: the readiness panel has to ask about the address the
+ * reader is on, and a panel reporting on some other page's cache entry would be
+ * the most convincing possible way to get this wrong. Setting it also leads the
+ * heading with the words the page is for — business rule 31 — and leaves the
+ * practice brief off, because "no network" and "a filing portal's size ceiling"
+ * are two different jobs and a page that opens with both asks the reader to
+ * pick one before they have done anything.
+ *
+ * Everything below this line is the same engine, the same controls and the same
+ * limits as `/pdf/compress`. That is deliberate: rule 29 permits a second
+ * address only where a working tool stands behind it.
+ */
+export function PdfCompressTool({
+  brief,
+  offlineRoute,
+}: { brief?: PracticeBrief; offlineRoute?: string } = {}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -602,17 +622,23 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
                   <>
                     <span>PDF</span>
                     <span aria-hidden="true">/</span>
-                    <span>Compress</span>
+                    <span>{offlineRoute ? 'Offline' : 'Compress'}</span>
                   </>
                 )}
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                {brief ? brief.heading : 'Compress a PDF'}
+                {offlineRoute
+                  ? 'Compress a PDF offline'
+                  : brief
+                    ? brief.heading
+                    : 'Compress a PDF'}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                {brief
-                  ? brief.lede
-                  : 'Rewrite a PDF more compactly and re-encode the photos inside it. The file is read by this page and never sent to a server.'}
+                {offlineRoute
+                  ? 'No upload, no installer, and no connection needed once this page has loaded once. The compressing is done by this tab, so the only question left is whether your browser has kept a copy — which the panel below reads and reports.'
+                  : brief
+                    ? brief.lede
+                    : 'Rewrite a PDF more compactly and re-encode the photos inside it. The file is read by this page and never sent to a server.'}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -620,6 +646,8 @@ export function PdfCompressTool({ brief }: { brief?: PracticeBrief } = {}) {
               prototype
             </span>
           </div>
+
+          {offlineRoute ? <PdfOfflineReadiness route={offlineRoute} /> : null}
 
           {brief ? <PracticeBriefPanel brief={brief} /> : null}
 

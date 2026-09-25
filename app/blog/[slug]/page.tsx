@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { shareImages, shareTwitterCard } from '@/lib/seo/share-images';
 import { notFound } from 'next/navigation';
 import {
   ArrowRight,
@@ -44,7 +45,13 @@ export async function generateMetadata({
   if (!post) return { title: 'Article Not Found' };
 
   return {
-    title: `${post.title} | OpenTools Engineering Blog`,
+    /*
+      The post's own title, and nothing else. `| OpenTools Engineering Blog`
+      cost 29 characters before the layout's ` · OpenTools` added twelve more,
+      which put all 30 posts past what a result shows -- the site was named
+      three times over and the article once, at the end.
+    */
+    title: post.title,
     description: post.metaDescription,
     keywords: [...post.keywords],
     alternates: {
@@ -58,7 +65,9 @@ export async function generateMetadata({
       type: 'article',
       publishedTime: post.publishedAt,
       authors: [post.author],
+      images: shareImages('blog'),
     },
+    twitter: shareTwitterCard('blog', post.title, post.metaDescription),
   };
 }
 
@@ -401,9 +410,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       Try The Interactive Tool Now
                     </span>
                   </div>
-                  <h3 className="mt-1 text-lg font-bold text-foreground">
+                  <h2 className="mt-1 text-lg font-bold text-foreground">
                     {post.toolName}
-                  </h3>
+                  </h2>
                   <p className="text-xs text-muted-foreground">
                     100% In-browser execution. Zero server uploads, instant
                     results, free forever.
@@ -511,14 +520,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                         {rPost.category}
                       </span>
-                      <h4 className="mt-2 text-sm font-semibold text-foreground line-clamp-2">
+                      <h3 className="mt-2 text-sm font-semibold text-foreground line-clamp-2">
                         <a
                           href={`/blog/${rPost.slug}`}
                           className="hover:underline"
                         >
                           {rPost.title}
                         </a>
-                      </h4>
+                      </h3>
                     </div>
                     <div className="mt-4 pt-3 border-t flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">
