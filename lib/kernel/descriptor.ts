@@ -16,6 +16,17 @@ export function descriptorFor(
     output: operation.output,
     runtime: operation.runtime,
     deterministic: operation.deterministic,
+    streamable: operation.streamable ?? false,
+    ...(operation.inputLimitBytes !== undefined
+      ? { inputLimitBytes: operation.inputLimitBytes }
+      : {}),
+    ...(operation.workingSetMultiplier !== undefined
+      ? { workingSetMultiplier: operation.workingSetMultiplier }
+      : {}),
+    ...(operation.chunkSizeBytes !== undefined
+      ? { chunkSizeBytes: operation.chunkSizeBytes }
+      : {}),
+    ...(operation.transfer ? { transfer: operation.transfer } : {}),
     ...(operation.notice ? { notice: operation.notice } : {}),
   };
 }
