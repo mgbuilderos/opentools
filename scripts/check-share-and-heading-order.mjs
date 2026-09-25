@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Three fault classes the 2026-09-23 360 sweep found, guarded against return.
+ * Four fault classes, guarded against return. Three the 2026-09-23 360 sweep
+ * found, and the canonical one that sweep could only find after a deploy.
  *
  *   1. 78 of 1,413 live URLs shipped no `og:image`. Every one was a page that
  *      declares its own `openGraph` block: Next.js replaces the layout's block
@@ -24,6 +25,29 @@
  *      a check of its own. The fix is in `app/layout.tsx`: state no `title`,
  *      `description` or absolute `url` there and each page fills its own.
  *
+ *   4. Every sitemap URL must name ITSELF as canonical, checked here in the
+ *      prerendered bytes rather than only on the live site.
+ *
+ *      The canonical rule was already guarded at both ends and unguarded in the
+ *      middle. `lib/seo/canonical-coverage.test.ts` greps `app/**` for
+ *      `canonical:` declarations -- source only; it reads no built HTML.
+ *      `canonical-self` in `scripts/lib/site-checks.mjs` reads the live site,
+ *      which `scripts/verify-live.mjs` can only do AFTER a deploy has shipped
+ *      the fault to Google. Prerendering sits between the two, and it is a step
+ *      that can drop a tag the source correctly declares.
+ *
+ *      So the same function decides it in both places: `canonicalFault` is
+ *      imported from `site-checks.mjs` and given the prerendered HTML instead of
+ *      a live response. Two readers of one definition, because a build guard and
+ *      a deploy gate that each describe this fault their own way is how the two
+ *      come to disagree about what "correct" means.
+ *
+ *      The worst SEO defect this site has had was this fault: on 2026-09-23, 59
+ *      pages served `<link rel="canonical" href="https://getopentools.com">`,
+ *      asking Google to index the home page instead of themselves, for seven
+ *      days. Catching it one stage earlier is the difference between a failed
+ *      build and a week of de-indexed pages.
+ *
  * The third check is a population check for the same reason the other two are:
  * no page file looked wrong, and the fault existed only across the set.
  *
@@ -46,6 +70,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { canonicalFault, DEFAULT_ORIGIN } from './lib/site-checks.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 export const CLIENT_DIR = path.join(ROOT, 'dist/client');
@@ -183,7 +209,44 @@ export function renderedPages(
   });
 }
 
-/** Every fault of both classes, over every URL that has a file. */
+/**
+ * Every fault of all four classes, over every URL that has a file.
+ *
+ * COSTS ~280MB, AND A PER-PAGE RULE MUST NOT CALL THIS. `renderedPages` returns
+ * every page's markup in one array, because `duplicateOgTitles` is a population
+ * check and genuinely needs the whole set. A caller that only wants a per-page
+ * answer therefore pays for a collection it never uses: 1,478 pages of HTML is
+ * roughly 280MB held in one process. On 2026-09-26 that shape made
+ * `served-copy-policy.test.ts` cross a 60s CI timeout on GC alone while passing
+ * locally in 3.1s, and `lib/seo/share-card-coverage.test.ts` already pays it once
+ * per `vitest run` — so a second full load in the same run is what tips it over.
+ *
+ * `lib/seo/canonical-coverage.test.ts` sweeps the same population for the
+ * canonical rule and deliberately does NOT come through here: it reads one file,
+ * checks it with `canonicalFault`, and drops it. Do the same for any new
+ * per-page rule, and reach for this function only when you need the population.
+ *
+ * ON `urlPaths`, AND WHY IT DOES NOT CHANGE THAT COST. Since 2026-09-25 the
+ * served sitemap lists about a seventh of the live routes
+ * (`lib/seo/sitemap-focus.ts`). The default is still the sitemap, which is the
+ * right set for the build gate — those are the URLs this deploy asks a crawler
+ * to take, and shipping one without a share card is a release fault. The test
+ * suites pass the full list from `buildSitemap(undefined, 'full')` instead,
+ * because a skipped heading level or a missing `og:title` is a fault on any page
+ * a reader can open, listed or not; letting focus narrow them would have
+ * silently retired ~1,260 pages' worth of checking.
+ *
+ * So the population those suites load is the same ~1,464 it was before focus,
+ * and the 280MB above is unchanged rather than newly introduced — passing the
+ * focused sitemap would have made this function cheaper only by making it
+ * check almost nothing.
+ *
+ * @param {string} [clientDir] the built client directory to read pages from
+ * @param {readonly string[]} [urlPaths] URL paths to sweep, instead of the
+ *   served sitemap's. The cast on the default is load-bearing: this file is
+ *   `.mjs`, so without it TypeScript infers the parameter type from `undefined`
+ *   and rejects every real argument at the call site.
+ */
 export function auditRenderedPages(
   clientDir = CLIENT_DIR,
   urlPaths = /** @type {readonly string[] | undefined} */ (undefined),
@@ -202,6 +265,16 @@ export function auditRenderedPages(
     }
     const skip = firstHeadingSkip(html);
     if (skip) faults.push({ urlPath, check: 'heading-order', detail: skip });
+    /* The canonical a page must name is its own absolute URL, so the comparison
+     * is against the origin joined to this route -- which also fails a canonical
+     * on a foreign origin whose path happens to match. */
+    const canonical = canonicalFault(
+      html,
+      new URL(urlPath, DEFAULT_ORIGIN).href,
+    );
+    if (canonical) {
+      faults.push({ urlPath, check: 'canonical', detail: canonical });
+    }
   }
   for (const { title, routes } of duplicateOgTitles(pages)) {
     faults.push({
@@ -254,6 +327,11 @@ function main() {
         '  declares no block of its own then inherits that one headline. Leave\n' +
         '  `title`, `description` and an absolute `url` out of the layout and\n' +
         '  each page fills them from its own metadata.\n\n' +
+        '  A canonical must name the page it sits on. A page that declares none\n' +
+        '  inherits one -- that is the 2026-09-23 fault, and the inherited value\n' +
+        '  is the home page. Set it through the same helper that sets the title,\n' +
+        '  and never re-declare a site-wide canonical on the root layout. Two\n' +
+        '  canonical tags is the same fault mid-fix: Google honours neither.\n\n' +
         '  A heading level may descend by any amount but climb by only one.\n' +
         '  Fix the level in the markup and let the class size it; do not\n' +
         '  restyle a correct heading to look like the wrong one.\n',
@@ -263,7 +341,7 @@ function main() {
 
   console.log(
     `  Verified ${checked} sitemap URLs ship a full share card with its own ` +
-      `og:title and skip no heading level`,
+      `og:title, name themselves as canonical, and skip no heading level`,
   );
 }
 

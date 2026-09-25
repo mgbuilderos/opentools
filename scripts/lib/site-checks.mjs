@@ -61,6 +61,54 @@ export const RANK = { high: 0, medium: 1, low: 2 };
  *
  * @type {SiteCheck[]}
  */
+/**
+ * The canonical fault on this HTML, or null when it correctly names `expected`.
+ *
+ * ONE DEFINITION, TWO READERS, TWO STAGES. `canonical-self` below asks this
+ * about the bytes Cloudflare serves, which is only answerable after a deploy;
+ * `scripts/check-share-and-heading-order.mjs` asks it about the prerendered HTML
+ * in `dist/client/` during the build, which is answerable before one. The chain
+ * of custody for a canonical had a hole in the middle: source `.tsx` is guarded
+ * by `lib/seo/canonical-coverage.test.ts`, which greps `app/**` for
+ * `canonical:` declarations and reads no built HTML at all; live bytes are
+ * guarded here. Prerendering sits between them and was guarded by nothing, and
+ * prerendering is a step that can drop a tag the source correctly declares.
+ *
+ * Two readers of one function rather than two functions, because the same fault
+ * described two ways is how a gate and a report come to disagree about what
+ * "correct" means -- the thing this module's own header exists to prevent.
+ *
+ * Every canonical tag is read, not just the first, and `rel` is not assumed to
+ * come before `href`. Both were holes, and both turn the check OFF rather than
+ * fail it. `pick` stops at the first match, so a page that declares its own
+ * canonical AND inherits a second serves two tags, the correct one first, and
+ * reads as clean -- while Google, handed two contradicting declarations, honours
+ * neither. That is the 2026-09-23 fault one step along: its cause was an
+ * inherited canonical in `app/layout.tsx`, and inheritance beside a per-page
+ * declaration produces a duplicate, not a wrong single value. An attribute
+ * reordering, meanwhile, made the old pattern match nothing at all.
+ *
+ * `expected` is an absolute URL, so a canonical on a foreign origin fails even
+ * when its path matches -- `https://evil.test/pdf/merge` is not `/pdf/merge`.
+ *
+ * Measured on 2026-09-26, before any of this: 1,464 of 1,464 live URLs and
+ * 1,476 of 1,476 prerendered files carry exactly one self-canonical. So this
+ * guards a regression and reports no present fault.
+ */
+export function canonicalFault(html, expected) {
+  const tags = html.match(/<link\b[^>]*rel="canonical"[^>]*>/g) ?? [];
+  if (tags.length === 0) return 'no canonical';
+  const hrefOf = (tag) => pick(tag, /href="([^"]*)"/);
+  if (tags.length > 1) {
+    const hrefs = tags.map((tag) => hrefOf(tag) ?? '(no href)');
+    return `${tags.length} canonical tags: ${hrefs.join(', ')}`;
+  }
+  const href = hrefOf(tags[0]);
+  if (href === null) return 'canonical tag has no href';
+  const trim = (value) => value.replace(/\/$/, '');
+  return trim(href) === trim(expected) ? null : `points at ${href}`;
+}
+
 export const CHECKS = [
   {
     id: 'status',
@@ -73,37 +121,7 @@ export const CHECKS = [
     id: 'canonical-self',
     severity: 'high',
     why: 'the 2026-09-23 bug: a canonical elsewhere asks Google to index that page instead of this one, and two of them ask it to trust neither',
-    run: ({ html, url }) => {
-      /* Every canonical tag on the page, not just the first, and without
-       * assuming Next.js keeps emitting `rel` before `href`.
-       *
-       * Both of those were holes, and both of them turn this check off rather
-       * than fail it. `pick` stops at the first match, so a page that declares
-       * its own canonical AND inherits a second one serves two tags, the
-       * correct one first, and reads as clean -- while Google, handed two
-       * contradicting declarations, honours neither. That is the 2026-09-23
-       * fault one step along: the cause there was an inherited canonical in
-       * `app/layout.tsx`, and inheritance next to a per-page declaration
-       * produces a duplicate, not a wrong single value. An attribute
-       * reordering, meanwhile, made the old pattern match nothing at all.
-       *
-       * Verified against production on 2026-09-26 before the change: 1,464 of
-       * 1,464 live URLs serve exactly one canonical, all self-pointing. So this
-       * guards a regression rather than reporting a present fault.
-       */
-      const tags = html.match(/<link\b[^>]*rel="canonical"[^>]*>/g) ?? [];
-      if (tags.length === 0) return 'no canonical';
-      const hrefOf = (tag) => pick(tag, /href="([^"]*)"/);
-      if (tags.length > 1) {
-        const hrefs = tags.map((tag) => hrefOf(tag) ?? '(no href)');
-        return `${tags.length} canonical tags: ${hrefs.join(', ')}`;
-      }
-      const href = hrefOf(tags[0]);
-      if (href === null) return 'canonical tag has no href';
-      return href.replace(/\/$/, '') === url.replace(/\/$/, '')
-        ? null
-        : `points at ${href}`;
-    },
+    run: ({ html, url }) => canonicalFault(html, url),
   },
 
   {

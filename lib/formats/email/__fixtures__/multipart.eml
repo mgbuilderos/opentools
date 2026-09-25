@@ -1,0 +1,33 @@
+From: sender@example.invalid
+To: recipient@example.invalid
+Subject: =?UTF-8?Q?Quarterly_=E2=9C=93_report?=
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="outer-boundary"
+
+--outer-boundary
+Content-Type: multipart/alternative; boundary="body-boundary"
+
+--body-boundary
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Plain body with a check mark: =E2=9C=93
+--body-boundary
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<p>HTML body ✓</p><img src="https://remote.invalid/pixel.png">
+--body-boundary--
+--outer-boundary
+Content-Type: text/csv; name="report.csv"
+Content-Disposition: attachment; filename="report.csv"
+Content-Transfer-Encoding: base64
+
+bmFtZSx2YWx1ZQphbHBoYSwxCg==
+--outer-boundary
+Content-Type: text/plain; name="notes.txt"
+Content-Disposition: attachment; filename="notes.txt"
+Content-Transfer-Encoding: quoted-printable
+
+Generated=20attachment=2E
+--outer-boundary--
