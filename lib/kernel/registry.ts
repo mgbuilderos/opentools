@@ -15,6 +15,7 @@ const LOADERS: Readonly<Record<string, AdapterLoader>> = {
   'finance-business': () => import('./adapters/finance-business'),
   'life-admin': () => import('./adapters/life-admin'),
   math: () => import('./adapters/math'),
+  pdf: () => import('./adapters/pdf'),
   productivity: () => import('./adapters/productivity'),
   'qr-barcode': () => import('./adapters/qr-barcode'),
   'science-education': () => import('./adapters/science-education'),

@@ -20,7 +20,7 @@
     "board:sync": "node scripts/board.mjs sync",
     "board:append": "node scripts/board.mjs append",
     "mcp:build": "node mcp/build.mjs",
-    "mcp:start": "node dist/mcp/server.mjs",
+    "mcp:start": "node build/mcp/server.mjs",
     "lint": "oxlint",
     "format": "oxfmt app components lib mcp workers scripts types proxy.ts next.config.ts vite.config.ts vitest.config.ts package.json tsconfig.json",
     "format:check": "oxfmt --check app components lib mcp workers scripts types proxy.ts next.config.ts vite.config.ts vitest.config.ts package.json tsconfig.json",

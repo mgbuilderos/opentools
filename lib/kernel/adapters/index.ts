@@ -7,6 +7,7 @@ import { fileOperations } from './file';
 import { financeBusinessOperations } from './finance-business';
 import { lifeAdminOperations } from './life-admin';
 import { mathOperations } from './math';
+import { pdfOperations } from './pdf';
 import { productivityOperations } from './productivity';
 import { qrBarcodeOperations } from './qr-barcode';
 import { scienceEducationOperations } from './science-education';
@@ -28,6 +29,7 @@ export const ALL_ADAPTER_OPERATIONS = [
   ...financeBusinessOperations,
   ...lifeAdminOperations,
   ...mathOperations,
+  ...pdfOperations,
   ...productivityOperations,
   ...qrBarcodeOperations,
   ...scienceEducationOperations,

@@ -7,9 +7,9 @@ publishing it is an owner decision under constraint C8 that has not been made.
 ## What it is
 
 ```sh
-node mcp/build.mjs                                   # → dist/mcp/server.mjs
-node dist/mcp/server.mjs --root /path/to/files       # read-only
-node dist/mcp/server.mjs --root /path --allow-write  # may write output files
+node mcp/build.mjs                                    # → build/mcp/server.mjs
+node build/mcp/server.mjs --root /path/to/files       # read-only
+node build/mcp/server.mjs --root /path --allow-write  # may write output files
 ```
 
 Three MCP tools, not one per operation:
@@ -51,30 +51,35 @@ console.log('ops', c(/source: '/g), 'file-in', c(/input: 'files?'/g), 'file-out'
 ```
 
 `lib/kernel/README.md` states 631 operations from 17 sources, measured on the
-2026-09-21 `origin/main`. It is 637 from 19 here. The number moves, which is
-the argument for counting it.
+2026-09-21 `origin/main`; it was 637 from 19 when this branch opened and is 643
+from 20 now that `pdf` is registered. The number moves three times in a week,
+which is the argument for counting it rather than typing it.
 
 ## What it cannot do
 
 This is the honest list, and it is the reason this is a branch and not a
 release.
 
-1. **No PDF merge, split, compress or convert.** The PDF engine lives in
-   `lib/tools/pdf/engine` and is reachable from `engine/index.ts`, but it was
-   never registered as a kernel adapter. `search_operations("merge pdf")`
-   returns nothing. The five kernel operations whose id contains "pdf" are a
-   form-field schema builder, a markdown-to-PDF writer and the three
-   `formats-pdfcrypt` operations.
+1. **~~No PDF merge, split, compress or convert.~~ Closed on this branch.**
+   `lib/tools/pdf/engine` is now registered as the `pdf` source
+   (`lib/kernel/adapters/pdf.ts`): merge, inspect, extract pages, rotate,
+   lossless compress and form inspect. `lib/kernel/adapters/pdf.test.ts` runs
+   real PDFs through each in Node with no DOM. What is still missing is
+   image-to-PDF and the lossy compression path, because re-encoding embedded
+   JPEGs needs `OffscreenCanvas`; `pdf-compress` therefore carries a notice
+   saying it is a lossless rewrite instead of implying a reduction it did not
+   make.
 2. **No image operations at all.** Zero kernel operations match
    `image|resize|jpeg`. Resize, convert, compress and background removal are
    site-side.
-3. **Only 34 of 637 operations touch a file.** The catalogue is overwhelmingly
-   calculators and text transforms. Of the file operations, only three are
-   file→text (`formats-finance:finance-parse-ofx`, `finance-parse-qif`,
-   `formats-pdfcrypt:pdfcrypt-inspect`); the rest are `file-workbench`.
-4. **`engine/` and `lib/kernel/` are two different abstractions.** This server
-   is built on the kernel and reaches none of the PDF surface `engine/`
-   exposes. Which one is the operation model is an open architectural
+3. **Only 40 of 643 operations touch a file.** The catalogue is overwhelmingly
+   calculators and text transforms. Most of the file operations are
+   `file-workbench`; the rest are `pdf`, `formats-finance` and
+   `formats-pdfcrypt`.
+4. **`engine/` and `lib/kernel/` are still two different abstractions.**
+   Registering `pdf` narrows the gap but does not close it: the same engine is
+   now reachable two ways, through `engine/index.ts` and through the kernel
+   adapter. Which one is _the_ operation model is an open architectural
    question, and a published package API would freeze the answer early.
 5. **Purity is declared and fixture-tested, not proven for real input.**
    `lib/kernel/conformance.test.ts` runs every operation against one generic
@@ -98,7 +103,7 @@ process an agent drives, so the sandbox that used to be free has to be built.
 - Boundary refusals come back as tool content with `isError`, not as transport
   errors, so the agent can read and correct them.
 
-`mcp/server.test.ts` covers each of these. 21 tests.
+`mcp/server.test.ts` covers each of these. 25 tests.
 
 ## No new dependency
 
@@ -114,4 +119,4 @@ Branch work, answering the question "what would this actually be?" — not a
 proposal to publish. Before any publication decision, the gaps above are the
 list, and "1,464 file operations" is not a claim this tree supports: 1,464 is
 the sitemap page count (`lib/seo/stated-numbers.test.ts`), and the file-operation
-count is 34.
+count is 40.

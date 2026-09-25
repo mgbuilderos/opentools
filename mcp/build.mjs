@@ -14,7 +14,11 @@ import { build } from 'esbuild';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
-const outDirectory = resolve(root, 'dist/mcp');
+// Deliberately NOT under dist/. lib/edge-cache-headers.test.ts treats a dist/
+// that exists without dist/client/_headers as a site build that dropped the
+// file, which is the dangerous case it is there to catch. Writing MCP output
+// into dist/ would trip that guard with an unrelated artefact.
+const outDirectory = resolve(root, 'build/mcp');
 const outfile = resolve(outDirectory, 'server.mjs');
 const entry = resolve(outDirectory, 'entry.ts');
 

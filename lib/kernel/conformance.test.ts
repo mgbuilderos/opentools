@@ -117,7 +117,10 @@ describe('kernel conformance', () => {
         }
       }
     }
-    expect({ successes, refusals }).toEqual({ successes: 593, refusals: 44 });
+    // 637 → 643 when the pdf source was registered. All six PDF operations
+    // refuse the generic CSV fixture with a specific message, which is the
+    // correct outcome for a PDF operation handed a CSV: successes unchanged.
+    expect({ successes, refusals }).toEqual({ successes: 593, refusals: 50 });
   }, 30_000);
 
   it('is deterministic when the descriptor says it is', async () => {
