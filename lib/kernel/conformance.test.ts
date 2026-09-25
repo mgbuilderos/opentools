@@ -117,7 +117,7 @@ describe('kernel conformance', () => {
         }
       }
     }
-    expect({ successes, refusals }).toEqual({ successes: 593, refusals: 41 });
+    expect({ successes, refusals }).toEqual({ successes: 593, refusals: 44 });
   }, 30_000);
 
   it('is deterministic when the descriptor says it is', async () => {
