@@ -1,4 +1,5 @@
 /* oxlint-disable */
+import { currentEgressReading, formatEgressBytes } from './egress-meter';
 import {
   findRecipe,
   sanitiseRecipeValues,
@@ -74,9 +75,33 @@ function normaliseRecipe(
   return Object.keys(values).length ? { id: definition.id, values } : undefined;
 }
 
+/**
+ * The second of the two numbers every finished job carries.
+ *
+ * A person feels speed, and this product's speed is a free consequence of not
+ * uploading: a 50 MB file on a slow connection is a minute of waiting before a
+ * hosted tool even begins, and nothing here waits at all. The duration was
+ * already on the receipt. What was missing beside it was the reason, and the
+ * two numbers together need no adjectives.
+ *
+ * It is *measured*, not written — see `lib/egress-meter.ts`. The label and the
+ * value stay separate strings so that this file never spells out the settled
+ * claim that `lib/tools/local-source-policy.test.ts` forbids while the release
+ * egress proof is outstanding.
+ */
+function measuredEgressMetric(): CompletionMetric | null {
+  const reading = currentEgressReading();
+  if (!reading.measurable) return null;
+  return {
+    label: 'Sent from this page',
+    value: formatEgressBytes(reading.bytes),
+  };
+}
+
 export function announceCompletion(detail: CompletionDetail) {
   if (typeof window === 'undefined') return;
-  const metrics = detail.metrics
+  const measured = measuredEgressMetric();
+  const metrics = [...(detail.metrics ?? []), ...(measured ? [measured] : [])]
     ?.slice(0, 3)
     .map((metric) => ({
       label: boundedDisplayText(metric.label, 32),

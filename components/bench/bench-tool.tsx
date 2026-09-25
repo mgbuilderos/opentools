@@ -328,7 +328,7 @@ export function BenchTool() {
           ? `Bench pipeline: ${pipeline.name}`
           : `Bench: ${operation.name}`,
         durationMs: completedReceipt.durationMs,
-        summary: `${outputs.length} outputs from ${inputs.length} inputs; nothing uploaded.`,
+        summary: `${outputs.length} outputs from ${inputs.length} inputs.`,
         metrics: [
           { label: 'Files', value: String(inputs.length) },
           {
@@ -337,7 +337,6 @@ export function BenchTool() {
               result.filter((item) => item.status === 'done').length,
             ),
           },
-          { label: 'Uploaded', value: '0 bytes' },
         ],
       });
     } catch (cause) {

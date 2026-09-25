@@ -42,6 +42,7 @@ import {
   subscribeInstall,
 } from '@/lib/pwa-install';
 import { PageDepthContent } from '@/components/page-depth-content';
+import { EgressMeter } from '@/components/egress-meter';
 import { usePageDepth } from '@/components/page-depth-provider';
 import { MilestoneModal } from './milestone-modal';
 import { ReviewModal } from './review-modal';
@@ -774,6 +775,7 @@ export function AppShell({
       >
         {children}
         {toolDepth ? <PageDepthContent content={toolDepth} /> : null}
+        <EgressMeter />
       </main>
 
       <MilestoneModal />
