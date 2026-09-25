@@ -1,5 +1,12 @@
 import type { Metadata } from 'next';
-import { ArrowLeft, KeyRound, Server, Terminal, WifiOff } from 'lucide-react';
+import {
+  ArrowLeft,
+  KeyRound,
+  Server,
+  ShieldCheck,
+  Terminal,
+  WifiOff,
+} from 'lucide-react';
 
 export const revalidate = 86400;
 
@@ -160,6 +167,71 @@ export default function SelfHostPage() {
             container runs as an unprivileged user, and Wrangler&rsquo;s
             metrics, remote lookups and observability are switched off in the
             image, so nothing contacts Cloudflare.
+          </p>
+        </section>
+
+        {/*
+          The section this page existed without for its first commit, and the
+          reason an administrator should read the rest of it.
+
+          Self-hosting is normally a statement about *where* the server is. The
+          argument here is about whether there is a server in the transaction
+          at all, which is a different review with a different scope -- and it
+          is the one thing on this page that is not also true of moving some
+          other file tool onto your own hardware. Drawn against the
+          architecture and never against a named product: the project has no
+          verified source for how anyone else handles a file, and
+          lib/policy/competitor-names.ts keeps that rule enforceable.
+        */}
+        <section className="mt-4 rounded-2xl border bg-card p-5 sm:mt-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck aria-hidden="true" className="size-5 shrink-0" />
+            <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+              The container never receives the document
+            </h2>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            This is the part worth reading twice, because it is not what
+            self-hosting usually buys you. The common pattern is to move the
+            processing onto a machine you own: the file still leaves the
+            workstation, and it arrives somewhere — request bodies, working
+            memory, temporary files, whatever the process writes while it works,
+            and whatever your backups then copy. That server is inside your
+            perimeter, which answers the residency question, and it is also a
+            system holding client documents, which means it inherits the
+            hardening, the retention schedule, the log review and the access
+            control that go with one.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            Here the container serves the page and the page does the work. The
+            tool runs in the browser tab on the machine where the file already
+            is, so the document is never put on the wire and the container never
+            has it to store, cache, log or back up.{' '}
+            <strong>
+              What you are deploying is a static site, not a document processor.
+            </strong>
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            For whoever signs this off, the consequence is scope rather than
+            comfort: there is no file store to encrypt, no retention period to
+            set, no per-document audit trail to design, and nothing on the
+            instance for a subject access request or a breach notification to
+            reach. The questions that remain are the ordinary ones you would ask
+            of any internal web server — who can reach it, who can change the
+            image, and how it is patched.
+          </p>
+          <p className="mt-3 rounded-xl border bg-muted/50 p-3.5 text-sm leading-6 sm:p-4 sm:leading-7">
+            <strong>Where that argument stops.</strong> Serving no documents is
+            not the same as being irrelevant to the outcome: the container still
+            serves the code that runs in the tab, so whoever can change the
+            image can change what the tool does. That is the trust you are
+            actually taking on, it is the same trust you take on with any
+            internally hosted application, and it is why the image is built from
+            a repository you can read rather than pulled from us. Verify the
+            claim rather than accept it — put a synthetic file through a tool
+            with the network tab open, or run{' '}
+            <code className="text-[0.9em]">e2e/egress-proof.spec.ts</code>{' '}
+            against the build you intend to deploy.
           </p>
         </section>
 
