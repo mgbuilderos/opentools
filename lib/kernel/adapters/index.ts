@@ -15,6 +15,7 @@ import { subtitleOperations } from './subtitle';
 import { textOperations } from './text';
 import { webOperations } from './web';
 import { writingOperations } from './writing';
+import { pdfCryptOperations } from '../../formats/pdfcrypt/kernel';
 
 export const ALL_ADAPTER_OPERATIONS = [
   ...creatorOperations,
@@ -34,4 +35,5 @@ export const ALL_ADAPTER_OPERATIONS = [
   ...textOperations,
   ...webOperations,
   ...writingOperations,
+  ...pdfCryptOperations,
 ] as const;
