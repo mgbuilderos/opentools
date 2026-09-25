@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { expect, test } from '@playwright/test';
 
+import { useOriginOf, watchOffOrigin } from './egress-watch';
 import { setFilesWhenLive } from './upload';
 
 /**
@@ -34,99 +35,14 @@ import { setFilesWhenLive } from './upload';
  */
 
 /**
- * Hosts the page is allowed to talk to. Anything else is a finding.
- *
- * Derived from the target rather than hardcoded, so the same protocol can run
- * against a local build (the default) or against what is actually deployed.
- * Rule 23 asks whether *a build that ships* passed the protocol, and until now
- * the protocol could only ever be pointed at localhost.
- */
-let SAME_ORIGIN = new URL(
-  process.env.EGRESS_BASE_URL ??
-    `http://localhost:${process.env.E2E_PORT ?? 8788}`,
-).host;
-
-/**
- * Take the origin from the config the run is actually using.
- *
- * Without this the default above wins, and `playwright.production.config.ts`
- * -- which points the browser at the deployed site -- scored every real
- * request as off-origin. The command `docs/EGRESS_PROOF.md` documents could not
- * pass unless the reader also happened to export `EGRESS_BASE_URL`, which the
- * document does not say. A proof nobody can reproduce is not a proof.
+ * The detector moved to `./egress-watch` when `egress-sweep.spec.ts` needed the
+ * same one across every route. The reasoning for each assertion's shape lives
+ * there now, unchanged; two copies of a leak detector is how one of them
+ * quietly stops detecting.
  */
 test.beforeEach(({ baseURL }) => {
-  if (baseURL) SAME_ORIGIN = new URL(baseURL).host;
+  useOriginOf(baseURL);
 });
-
-const isOffOrigin = (url: string) => {
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol === 'data:' || parsed.protocol === 'blob:')
-      return false;
-    return !parsed.host.includes(SAME_ORIGIN);
-  } catch {
-    return false;
-  }
-};
-
-/**
- * What an off-origin request *did*, not that one was attempted.
- *
- * Chromium raises a request event for an XHR the CSP is about to kill, then
- * reports `csp` as the failure and transfers zero bytes; WebKit raises nothing
- * at all. Asserting "nothing was attempted" therefore fails Chromium on a page
- * that is behaving exactly as intended. What actually matters is that no
- * off-origin request ever received a response, and that anything attempted was
- * refused by policy rather than merely by a network error that could go the
- * other way on a different day.
- */
-function watchOffOrigin(page: import('@playwright/test').Page) {
-  const responded: string[] = [];
-  const refused: string[] = [];
-  page.on('response', (response) => {
-    if (isOffOrigin(response.url())) {
-      responded.push(`${response.status()} ${response.url()}`);
-    }
-  });
-  page.on('requestfailed', (request) => {
-    if (isOffOrigin(request.url())) {
-      refused.push(
-        `${request.failure()?.errorText ?? 'unknown'} ${request.url()}`,
-      );
-    }
-  });
-  return {
-    assertNothingLeft(context: string) {
-      expect(responded, `${context}: an off-origin host answered`).toEqual([]);
-      for (const refusal of refused) {
-        expect(refusal, `${context}: refused, but not by policy`).toMatch(
-          /csp|blocked|security|refused|denied/iu,
-        );
-      }
-    },
-    /** Bytes actually put on the wire to anywhere off-origin. Must be zero. */
-    async assertZeroBytesOffOrigin(page: import('@playwright/test').Page) {
-      const transferred = await page.evaluate(
-        (sameOrigin) =>
-          performance
-            .getEntriesByType('resource')
-            .map((entry) => entry as PerformanceResourceTiming)
-            .filter((entry) => !entry.name.includes(sameOrigin))
-            .filter(
-              (entry) =>
-                !entry.name.startsWith('blob:') &&
-                !entry.name.startsWith('data:'),
-            )
-            .map((entry) => ({ url: entry.name, bytes: entry.transferSize })),
-        SAME_ORIGIN,
-      );
-      for (const entry of transferred) {
-        expect(entry.bytes, `bytes reached ${entry.url}`).toBe(0);
-      }
-    },
-  };
-}
 
 test.describe('egress proof', () => {
   test('the served policy forbids network connections', async ({ request }) => {

@@ -132,8 +132,35 @@ a real file through a real tool leaves no trace on the wire. The detector is not
 vacuous — pointed at a page that genuinely loads a cross-origin resource it
 fails, catching 1 response and 618 bytes.
 
-**Does not:** cover every tool, every browser, every device, or CDN and origin
-logs. It says nothing about whether a vulnerability exists — egress evidence
+**Does not:** cover every browser, every device, or CDN and origin logs.
+
+### Coverage, as of 2026-09-26
+
+"Does not cover every tool" was true of this document until `e2e/egress-sweep.spec.ts`
+was added. The sweep visits **all 67 dedicated tool routes** in both engines and,
+for each, asserts that no off-origin host answered, that nothing carrying a body
+was sent anywhere **including to our own origin**, that zero bytes reached any
+off-origin URL, and that the probe filename never appeared in a request URL.
+
+**49 of the 67 routes are handed a real file** — a PNG from a canvas, a
+structurally valid PDF with a correct xref table, a WAV, a CSV, and for the
+twelve video routes a genuinely encoded clip from `MediaRecorder`. The files are
+built in the page, so none is committed and none has a provenance question. The
+remaining 18 routes have no file input at all — they take typed text — and the
+set of routes that accept a file is pinned in `TAKES_A_FILE` so that a route
+losing or gaining an intake fails the run rather than passing quietly.
+
+**What the sweep does not do:** click each route's own action button. It proves
+intake, not the full pipeline; 67 selectors would rot. The deep path stays in
+`egress-proof.spec.ts`, which drives a real PNG all the way through
+`/image/optimize`. Breadth and depth are separate specs on purpose.
+
+**The detector was vacuous when first written, and that was caught by mutating
+it.** The probe-name check scanned only off-origin and body-carrying requests,
+so a same-origin `<img src="/og.png?name=…">` — which `default-src 'self'`
+permits, and which is a real exfiltration shape — passed unseen. It now scans
+every request URL. Re-run that mutation before trusting any change to
+`e2e/egress-watch.ts`. It says nothing about whether a vulnerability exists — egress evidence
 reports where bytes went, never that no flaw remains. This is exactly why
 `zero data leaks` was removed from the product rather than re-justified:
 no egress proof can support a security guarantee.
