@@ -384,10 +384,22 @@ export function pageMetaFor(route: string): PageMeta | undefined {
   return undefined;
 }
 
-/** Every route the sitemap offers, as a path: `''` for the home page. */
+/**
+ * Every route the sitemap *could* offer, as a path: `''` for the home page.
+ *
+ * Deliberately `'full'`, not the shipped focus state. This is what the meta
+ * sweeps run against -- titles, descriptions, share cards -- and those are
+ * properties of a page a reader can reach, not of a page a crawler was asked
+ * to take. Since 2026-09-25 the served sitemap lists about a tenth of the live
+ * tool routes (`lib/seo/sitemap-focus.ts`); passing the focused list here
+ * would have quietly narrowed every one of those sweeps to that tenth and
+ * stopped guarding the rest, which still answer 200 and are still linked.
+ */
 export function sitemapRoutes(): readonly string[] {
   const origin = ['https:', '//', 'getopentools.com'].join('');
-  return buildSitemap().map((entry) => String(entry.url).slice(origin.length));
+  return buildSitemap(undefined, 'full').map((entry) =>
+    String(entry.url).slice(origin.length),
+  );
 }
 
 export interface MetaInventory {

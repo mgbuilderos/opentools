@@ -21,7 +21,18 @@ import { SITEMAP_LASTMOD } from './sitemap-lastmod.generated';
  * guarding, and which the first run of the generator actually produced.
  */
 describe('sitemap lastmod', () => {
-  const entries = buildSitemap();
+  /*
+    `'full'`, deliberately, and it makes this guard stronger rather than
+    weaker.
+
+    Since 2026-09-25 the served sitemap lists about a seventh of what it could
+    (`lib/seo/sitemap-focus.ts`). Sweeping only the focused set would stop
+    guarding the 1,261 routes it leaves out -- and those are exactly the ones
+    at risk, because a route can lose its lastmod while it is unlisted and then
+    be restored in a later tranche with no date on it, which is the silent
+    version of the failure this file exists to catch.
+  */
+  const entries = buildSitemap(undefined, 'full');
 
   it('builds the sitemap at all, so an empty sweep cannot pass', () => {
     expect(entries.length).toBeGreaterThan(1000);

@@ -10,6 +10,11 @@ import {
 } from './guide-consolidation';
 import { getAllCategoryPillars } from './internal-linking-graph';
 import { LIVE_TOOL_ROUTES } from './live-tools';
+import {
+  SITEMAP_FOCUS,
+  type SitemapFocusState,
+  focusedToolRoutes,
+} from './sitemap-focus';
 import { SITEMAP_LASTMOD } from './sitemap-lastmod.generated';
 
 const baseUrl = ['https:', '//', 'getopentools.com'].join('');
@@ -43,10 +48,17 @@ function lastModifiedFor(route: string): string | undefined {
  */
 export function buildSitemap(
   consolidation: GuideConsolidationState = GUIDE_CONSOLIDATION,
+  focus: SitemapFocusState = SITEMAP_FOCUS,
 ): MetadataRoute.Sitemap {
   const coreRoutes: MetadataRoute.Sitemap = [
     '',
-    ...LIVE_TOOL_ROUTES,
+    // Not every live route, since 2026-09-25. `lib/seo/sitemap-focus.ts`
+    // holds which ones and, at length, why: on 2026-09-23 Google had declined
+    // 534 of these as "Discovered - currently not indexed", so the sitemap
+    // asks for the pages there is a reason to bet on and lets the rest be
+    // found through the internal link graph. Nothing about those pages
+    // changes -- they still answer 200 and are still prerendered.
+    ...focusedToolRoutes(LIVE_TOOL_ROUTES, focus),
     '/proof',
     '/privacy',
     '/security',

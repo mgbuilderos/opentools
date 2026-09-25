@@ -220,8 +220,20 @@ describe('guide consolidation off is the previous behaviour', () => {
   const withoutLastmod = (entries: MetadataRoute.Sitemap) =>
     entries.map(({ lastModified: _lastModified, ...rest }) => rest);
 
+  /*
+    Both tests below pass `'full'`.
+
+    The frozen `previousSitemap()` copy is a control for one question: did
+    consolidation move, drop or reorder an entry? The sitemap focus added on
+    2026-09-25 (`lib/seo/sitemap-focus.ts`) drops entries for an unrelated
+    reason, so letting it apply here would make this control answer a question
+    it was not built for -- and would make a consolidation regression
+    indistinguishable from a focus change. Focus has its own control in
+    `sitemap-focus.test.ts`, which asserts that `'full'` still reproduces this
+    exact list.
+  */
   it('produces the same sitemap, entry for entry and in the same order', () => {
-    expect(withoutLastmod(buildSitemap(OFF))).toEqual(
+    expect(withoutLastmod(buildSitemap(OFF, 'full'))).toEqual(
       withoutLastmod(previousSitemap()),
     );
   });
@@ -238,15 +250,17 @@ describe('guide consolidation off is the previous behaviour', () => {
         (path) => `${origin}${path}`,
       ),
     );
-    expect(withoutLastmod(buildSitemap())).toEqual(
+    expect(withoutLastmod(buildSitemap(undefined, 'full'))).toEqual(
       withoutLastmod(
         previousSitemap().filter((entry) => !consolidated.has(entry.url)),
       ),
     );
-    expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
-      kept.size,
-    );
-    expect(previousSitemap().length - buildSitemap().length).toBe(
+    expect(
+      buildSitemap(undefined, 'full').filter((entry) => kept.has(entry.url)),
+    ).toHaveLength(kept.size);
+    expect(
+      previousSitemap().length - buildSitemap(undefined, 'full').length,
+    ).toBe(
       consolidated.size,
     );
   });

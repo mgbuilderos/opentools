@@ -69,7 +69,20 @@ gets throttled; the same domain asking for 150 gets them crawled. The 534 are
 not waiting in a queue — they are declined, and every declined URL spends a
 little of the credibility the next one needs.
 
-**Proposal:** cut the sitemap to the pages you would actually bet on — the live
+**Implemented 2026-09-25, on a branch, not deployed.** `lib/seo/sitemap-focus.ts`
+takes the sitemap from **1,464 URLs to 203**. It lists the 64 routes carrying
+800-word bodies from `lib/seo/tool-page-depth.ts`, the 21 hubs and workbenches,
+and the 13 `/latex/*` and `/schema/*` pages behind the only two non-brand query
+clusters the 2026-09-23 baseline ever recorded — plus the hubs, guides, blog,
+templates and comparison pages, which focus does not touch. The other 1,261
+tool routes are unchanged in every other respect: still 200, still prerendered
+(`prerender-to-assets.mjs` reads `dist/server/prerendered-routes`, never the
+sitemap), still internally linked, still swept for canonicals, titles and
+descriptions. `buildSitemap(consolidation, 'full')` restores the previous list
+exactly, and `sitemap-focus.test.ts` asserts that equivalence so the revert
+cannot rot.
+
+**Original proposal:** cut the sitemap to the pages you would actually bet on — the live
 tool pages that carry their own 800-word body under `lib/seo/tool-page-depth.ts`,
 the category hubs, the three `/compare/*` pages, the 15 kept guides and the
 blog. Everything else stays 200, stays internally linked, and gets discovered
@@ -388,7 +401,7 @@ Phases 0 and 1 need no new code at all.
 | :-- | :--- | :--- | :--- |
 | 0 | Run IndexNow `--all`; register Bing/Yandex/Naver/Seznam/Marginalia/Mojeek/Brave webmaster (§2b, §2c) | nothing | accounts |
 | 1 | Cut `v0.1.0` (§4c); submit extension to AMO + Edge (§4b) | nothing | C8 |
-| 2 | Trim the sitemap to the pages worth betting on (§2a) | nothing | review |
+| 2 | ~~Trim the sitemap to the pages worth betting on (§2a)~~ **done, 1,464 → 203** | nothing | review + deploy |
 | 3 | Reddit sequence as written in `LAUNCH_KIT.md` §2–§3 | phase 1 gives it something to point at | C8 |
 | 4 | Aggregate CSP finding (§4a) | selection rule written first | review |
 | 5 | `awesome-privacy`, `free-for-dev`, PRISM Break, Privacy Guides (§4e) | phase 1 | C8 |
