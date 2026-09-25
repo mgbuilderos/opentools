@@ -165,6 +165,59 @@ reports where bytes went, never that no flaw remains. This is exactly why
 `zero data leaks` was removed from the product rather than re-justified:
 no egress proof can support a security guarantee.
 
+## The protocol, as a tool for pages we did not write
+
+*Added 2026-09-25.* Everything above proves one thing about one site. The
+reader it convinces still uses other file tools, those tools also say they
+respect privacy, and nothing here helped them tell which ones enforce it.
+
+`/proof/check` hands the protocol over. The visitor pastes the address of any
+page that takes a file, runs a ten-second check in their own browser, and gets
+a verdict about a page nobody here wrote.
+
+**It does not fetch the URL, and the reason is the argument.** The literal
+build -- paste a URL, we tell you -- is a server that receives every address
+people are suspicious of. Three things rule it out:
+
+1. Every route is served `connect-src 'none'`, asserted on the response header
+   by the protocol above. A page here cannot open a connection. Relaxing that
+   for this one tool would mean breaking the proof in order to ship the page
+   that demonstrates it.
+2. A browser cannot read a cross-origin response's headers without CORS
+   permission from the target. The check is impossible from any page.
+3. A box of ours doing it would hold a log of what strangers distrust.
+
+So the check runs in the visitor's browser, on the page they chose. That is the
+stronger test anyway: a server fetch sees what a page **declares** in a header,
+while `lib/egress/live-check.ts` watches what it **does** once it is holding a
+file. The snippet ports `e2e/egress-watch.ts` -- the five deliberate
+exfiltration attempts, the off-origin byte count, and the rule that a request
+carrying a body is watched even when it points at the page's own origin, which
+CSP does not cover -- and carries the three traps above rather than
+rediscovering them. It reads the enforced policy out of a
+`securitypolicyviolation` event, because `originalPolicy` is the only way
+script can see a policy that arrived in a header.
+
+**Three copies of the verdict became one plus a gate.** The logic existed in
+`extension/verdict.js`, `scripts/measure-csp.mjs` and again for the site, each
+copy carrying a comment asking the next maintainer to keep it identical to the
+others by hand. Two remain -- a `.ts` the site imports and a `.js` the
+extension and the script share, because neither can load the other's format --
+and `lib/egress/verdict-parity.test.ts` runs both over one table and fails the
+build on disagreement.
+
+**Three bugs that consolidating it exposed**, all in shipped code:
+
+| Where | What it did |
+| :--- | :--- |
+| All three copies | Read `connect-src` without its `default-src` fallback, so a page serving `default-src 'none'` -- refusing every connection -- was reported CAPABLE. The strongest possible policy scored as the weakest. |
+| `scripts/measure-csp.mjs` | Scored a refusal as a finding. Its own header says UNKNOWN exists because *"some sites refuse automated requests; that says nothing about their CSP"*, and it then read a 403 as no policy and no policy as no restriction -- so the outcome it was written to avoid was the one it produced against any site with a bot filter. |
+| `extension/verdict.js` | Downgraded a report-only `'none'` to CAPABLE but left a report-only source list as RESTRICTED -- crediting an unenforced policy with restricting while refusing to credit it with blocking. Found by the parity test on its first run. |
+
+**What it still does not establish** is everything in the section above, which
+applies unchanged: capability is not intent, and no egress measurement can
+report that a page has no flaw. Every non-blocked verdict carries that line.
+
 ## Closed: the third-party beacon is gone at source
 
 Cloudflare was injecting its Web Analytics beacon
