@@ -41,7 +41,7 @@ const read = (relative: string) =>
 
 /** The 12 URLs the 2026-09-23 live sweep found with no inbound link. */
 const KNOWN_ORPHANS = [
-  '/bench',
+  '/batch',
   '/creator/workbench',
   '/data/workbook-audit',
   '/date/workbench',

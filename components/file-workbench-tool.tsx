@@ -22,6 +22,7 @@ import { announceCompletion } from '@/lib/completion';
 import type { RelatedTool } from '@/lib/seo/related-tools';
 import {
   FILE_WORKBENCH_OPERATIONS,
+  LARGE_INPUT_ADVISORY_BYTES,
   type FileWorkbenchOperation,
   type FileWorkbenchResult,
   runFileWorkbenchOperation,
@@ -85,6 +86,7 @@ export function FileWorkbenchTool({
     defaults(routed ?? initial),
   );
   const [files, setFiles] = useState<File[]>([]);
+
   const [result, setResult] = useState<FileWorkbenchResult | null>(null);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState('');
@@ -167,10 +169,6 @@ export function FileWorkbenchTool({
     setError('');
     const started = Date.now();
     try {
-      if (files.some((file) => file.size > 256 * 1024 * 1024))
-        throw new Error('Each selected file must be 256 MiB or smaller.');
-      if (files.reduce((sum, file) => sum + file.size, 0) > 512 * 1024 * 1024)
-        throw new Error('Selected files must total 512 MiB or less.');
       const inputs = await Promise.all(
         files.map(async (file) => {
           const bytes = new Uint8Array(await file.arrayBuffer());
@@ -230,6 +228,17 @@ export function FileWorkbenchTool({
   };
 
   const selectedBytes = files.reduce((sum, file) => sum + file.size, 0);
+  /*
+    An advisory, never a refusal. This tool used to throw at 256 MiB per file
+    and 512 MiB combined; nothing was protected by that, because nothing is
+    uploaded and no server pays for the bytes. What *is* true is that the work
+    happens in this tab's memory, so a very large selection can exhaust it. The
+    page says so and runs anyway — the person knows how much memory they have,
+    and this code never can.
+  */
+  const largeInput =
+    selectedBytes > LARGE_INPUT_ADVISORY_BYTES ||
+    files.some((file) => file.size > LARGE_INPUT_ADVISORY_BYTES);
 
   return (
     <AppShell currentToolId="file-workbench">
@@ -322,7 +331,7 @@ export function FileWorkbenchTool({
                         : 'Choose one file'}
                   </span>
                   <span className="mt-1 block text-xs text-muted-foreground">
-                    256 MiB each · 512 MiB combined · files stay in this tab
+                    No size limit · no file limit · files stay in this tab
                   </span>
                   <input
                     ref={inputRef}
@@ -355,6 +364,14 @@ export function FileWorkbenchTool({
                   {files.length > 100 ? (
                     <p className="mt-2 text-muted-foreground">
                       + {files.length - 100} more selected files
+                    </p>
+                  ) : null}
+                  {largeInput ? (
+                    <p className="mt-2 text-muted-foreground">
+                      That is a large selection. There is no limit here — the
+                      work happens in this tab, so your machine&rsquo;s memory
+                      is the only ceiling, and a selection this size may exhaust
+                      it. Your files stay in this tab either way.
                     </p>
                   ) : null}
                 </div>
