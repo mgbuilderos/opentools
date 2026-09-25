@@ -583,7 +583,32 @@ describe('every operation reads its own input', () => {
             break;
           }
         }
-        if (!responded) inert.push(`${suiteName}/${operation.id}`);
+        /*
+          Before calling it inert, make sure it is not simply random.
+
+          The two-run check above is one sample, and one sample cannot tell a
+          stub from a coin landing the same way twice. `productivity/name-picker`
+          returns `shuffle(names, random)[0]`: with a short default list, two
+          runs match often enough that the check misses the randomness, the
+          perturbed run then matches the baseline as well, and a correct tool is
+          reported as ignoring its input. Measured on CI 2026-09-25 -- it failed
+          the deploy gate on one commit and passed on the next, with nothing
+          between them that touched it.
+
+          A deploy gate that fails at random is worse than no gate: it teaches
+          whoever is looking at it to re-run until it goes green, which is the
+          habit that lets a real failure through. So the doubt is resolved here,
+          on the rare path only -- an operation that already looks inert -- and
+          a handful of samples takes the odds of a wrong verdict from roughly
+          one in thirty to one in millions.
+        */
+        if (!responded) {
+          let varies = false;
+          for (let sample = 0; sample < 8 && !varies; sample += 1) {
+            varies = (await answer(run, operation.id, base)) !== baseline;
+          }
+          if (!varies) inert.push(`${suiteName}/${operation.id}`);
+        }
       }
     }
 
