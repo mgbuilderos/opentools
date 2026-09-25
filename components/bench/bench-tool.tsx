@@ -467,6 +467,26 @@ export function BenchTool() {
           </p>
         </section>
 
+        {/*
+          The chaining was built and never sold.
+
+          lib/pipeline/ has run, validate, serialise and store, and the editor
+          below saves, loads, imports, exports and shares a multi-step
+          pipeline. None of that was stated anywhere, so the one sentence that
+          explains why it matters — the file is never handed back and re-taken
+          between steps — went unsaid on the page that does it.
+        */}
+        <section className="rounded-xl border bg-card p-5">
+          <h2 className="text-lg font-semibold">Chain steps (optional)</h2>
+          <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
+            Scan, deskew, OCR, redact, compress, sign — one drop, every step, in
+            order. A hosted tool makes you download the result and pick it up
+            again between each step, because each step is a separate job on
+            someone else&rsquo;s machine that someone has to bill for. Here the
+            file simply stays in memory from one step to the next.
+          </p>
+        </section>
+
         <PipelineEditor
           operation={operation}
           params={params}
