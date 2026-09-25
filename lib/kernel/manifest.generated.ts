@@ -22233,6 +22233,51 @@ export const KERNEL_MANIFEST = [
     deterministic: true,
   },
   {
+    id: 'finance-parse-ofx',
+    source: 'formats-finance',
+    name: 'Parse OFX',
+    description:
+      'Read accounts, transactions, and balances from OFX 1.x or 2.x.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
+    id: 'finance-parse-qif',
+    source: 'formats-finance',
+    name: 'Parse QIF',
+    description:
+      'Read QIF account metadata, transactions, and statement balances.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
+    id: 'finance-reconcile',
+    source: 'formats-finance',
+    name: 'Reconcile statement totals',
+    description:
+      'Compare opening balance plus transactions with the closing balance without rounding.',
+    input: 'text',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+  },
+  {
     id: 'pdfcrypt-inspect',
     source: 'formats-pdfcrypt',
     name: 'Inspect PDF encryption',
