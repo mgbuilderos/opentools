@@ -2136,6 +2136,33 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'bank-statement',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Bank statement converter',
+    shortDescription:
+      'Convert bank statement PDFs to Excel and CSV with balance reconciliation.',
+    category: 'Finance',
+    aliases: [
+      'bank statement to excel',
+      'bank statement to csv',
+      'statement converter',
+      'pdf statement parser',
+    ],
+    jobs: [
+      'convert bank statement pdf to excel spreadsheets',
+      'convert statement to csv without uploading',
+      'reconcile running balance and extract transactions',
+    ],
+    href: '/finance/bank-statement',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['finance.statement.parse', 'finance.statement.reconcile'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'science-education-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2486,7 +2513,7 @@ export const toolGroups: ToolGroup[] = [
     id: 'finance',
     name: 'Finance & business',
     shortDescription: 'Loans, tax, invoices, margins, and business maths.',
-    toolIds: ['finance-business-workbench'],
+    toolIds: ['finance-business-workbench', 'bank-statement'],
   },
   {
     id: 'science',

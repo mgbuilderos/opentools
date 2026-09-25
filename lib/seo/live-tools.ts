@@ -46,6 +46,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/to-word',
   '/pdf/to-excel',
   '/pdf/sign',
+  '/finance/bank-statement',
   '/image/editor',
   '/image/background-remover',
   '/image/optimize',

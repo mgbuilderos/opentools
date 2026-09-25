@@ -56,6 +56,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
   },
+  'bank-statement': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert bank statement PDFs to Excel and CSV with balance reconciliation.',
+  },
   bench: {
     version: '0.1.0-canary',
     shortDescription:
