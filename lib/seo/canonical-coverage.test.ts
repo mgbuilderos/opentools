@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
+
+import { auditRenderedPages } from '../../scripts/check-share-and-heading-order.mjs';
 
 /**
  * Every page must state its own canonical URL.
@@ -271,5 +282,120 @@ describe('canonical coverage', () => {
       }
     }
     expect(wrong).toEqual([]);
+  });
+});
+
+/**
+ * The half of this claim that source cannot make.
+ *
+ * Everything above greps `app/**` for a `canonical:` declaration. That is a
+ * statement about what the pages ASK FOR, and the 2026-09-23 fault was not a
+ * missing declaration -- it was an INHERITED one, which no page file contains.
+ * Nothing in this file reads a byte of built HTML, so prerendering was
+ * unguarded: source correct, live bytes checked only after a deploy had already
+ * shown Google the fault, and the step in between checked by nothing.
+ *
+ * `scripts/check-share-and-heading-order.mjs` closes that, on every build,
+ * using the same `canonicalFault` the live gate uses. These two tests prove the
+ * build actually runs it -- a guard that has quietly become a no-op is worse
+ * than none, which is the argument `share-card-coverage.test.ts` makes for its
+ * own detectors.
+ */
+describe('the build guards canonicals in the prerendered bytes', () => {
+  /** A throwaway `dist/client` holding one route, so the guard has bytes to read. */
+  function fakeClientDir(canonicalTags: string): string {
+    const dir = mkdtempSync(path.join(tmpdir(), 'canon-guard-'));
+    const origin = ['https:', '//', 'getopentools.com'].join('');
+    writeFileSync(
+      path.join(dir, 'sitemap.xml'),
+      `<urlset><url><loc>${origin}/pdf/merge</loc></url></urlset>`,
+    );
+    mkdirSync(path.join(dir, 'pdf'), { recursive: true });
+    /* Everything the other three checks want, so the only fault that can be
+     * reported is the canonical one under test. */
+    writeFileSync(
+      path.join(dir, 'pdf', 'merge.html'),
+      `<!doctype html><html lang="en"><head>
+<meta property="og:title" content="Merge PDF"/>
+<meta property="og:description" content="Merge PDF files in your browser."/>
+<meta property="og:image" content="${origin}/og.png"/>
+${canonicalTags}
+</head><body><h1>Merge PDF</h1><h2>How</h2></body></html>`,
+    );
+    return dir;
+  }
+
+  const self = ['https:', '//', 'getopentools.com', '/pdf/merge'].join('');
+  const home = ['https:', '//', 'getopentools.com'].join('');
+  const foreign = ['https:', '//', 'evil.test', '/pdf/merge'].join('');
+
+  /* `auditRenderedPages` returns null when it finds no sitemap to read, which
+   * would make every assertion below vacuous. The fixture always writes one, so
+   * a null here is the fixture being wrong and must be loud. */
+  const canonicalFaults = (tags: string) => {
+    const audited = auditRenderedPages(fakeClientDir(tags));
+    if (audited === null) throw new Error('fixture wrote no sitemap.xml');
+    return audited.faults.filter(
+      (fault: { check: string }) => fault.check === 'canonical',
+    );
+  };
+
+  it('passes a prerendered page that names itself', () => {
+    expect(canonicalFaults(`<link rel="canonical" href="${self}"/>`)).toEqual(
+      [],
+    );
+  });
+
+  /** The 2026-09-23 fault itself, caught one stage before a deploy. */
+  it('fails a prerendered page whose canonical points at the home page', () => {
+    const [fault] = canonicalFaults(`<link rel="canonical" href="${home}"/>`);
+    expect(fault?.detail).toContain('points at');
+    expect(fault?.detail).toContain(home);
+  });
+
+  it('fails a prerendered page carrying no canonical at all', () => {
+    expect(canonicalFaults('')[0]?.detail).toBe('no canonical');
+  });
+
+  /**
+   * The same fault mid-fix: a page that declares its own canonical and still
+   * inherits one serves two, the correct one first. Google honours neither.
+   */
+  it('fails a second canonical hiding behind a correct one', () => {
+    const [fault] = canonicalFaults(
+      `<link rel="canonical" href="${self}"/><link rel="canonical" href="${home}"/>`,
+    );
+    expect(fault?.detail).toContain('2 canonical tags');
+  });
+
+  /** A matching path on someone else's origin is not this page. */
+  it('fails a canonical whose path matches on a foreign origin', () => {
+    expect(
+      canonicalFaults(`<link rel="canonical" href="${foreign}"/>`)[0]?.detail,
+    ).toContain('evil.test');
+  });
+
+  /**
+   * And over the real population when a build is present, so `vitest run` after
+   * a build proves the whole thing rather than the fixture.
+   *
+   * Measured against the `5a1a6a8` build on 2026-09-26: 1,464 sitemap URLs, 0
+   * canonical faults -- the same 1,464 the live sweep reads. The two prerendered
+   * files with no canonical, `404.html` and `embed/table-converter.html`, are
+   * correctly out of scope: neither is a sitemap URL, `/embed/` is disallowed in
+   * `robots.txt` and that page ships `noindex`.
+   */
+  it('finds no canonical fault in the current build, if there is one', () => {
+    const clientDir = path.join(__dirname, '..', '..', 'dist', 'client');
+    if (!existsSync(path.join(clientDir, 'sitemap.xml'))) return;
+    const result = auditRenderedPages(clientDir);
+    if (result === null)
+      throw new Error(`${clientDir} has a sitemap but read null`);
+    expect(
+      result.faults.filter(
+        (fault: { check: string }) => fault.check === 'canonical',
+      ),
+    ).toEqual([]);
+    expect(result.checked).toBeGreaterThan(1000);
   });
 });
