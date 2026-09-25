@@ -214,6 +214,33 @@ build on disagreement.
 | `scripts/measure-csp.mjs` | Scored a refusal as a finding. Its own header says UNKNOWN exists because *"some sites refuse automated requests; that says nothing about their CSP"*, and it then read a 403 as no policy and no policy as no restriction -- so the outcome it was written to avoid was the one it produced against any site with a bot filter. |
 | `extension/verdict.js` | Downgraded a report-only `'none'` to CAPABLE but left a report-only source list as RESTRICTED -- crediting an unenforced policy with restricting while refusing to credit it with blocking. Found by the parity test on its first run. |
 
+**The checker is held to the standard it reports on.** The first question any
+reader should ask about a page that says "paste an address and some headers" is
+whether *that* page transmits what they paste. A tool measuring other people's
+egress while leaking its own input would be worse than not shipping one, so the
+answer is a test rather than a paragraph: `egress-proof.spec.ts` now types a
+probe token into both inputs, asserts the verdict actually rendered, and then
+runs the full detector over the result -- no off-origin response, zero
+off-origin bytes, no request carrying a body anywhere including our own origin,
+and the token absent from every request URL.
+
+It also asserts the verdict rendered *before* checking for leaks, because a
+page that failed to hydrate would pass every leak assertion by doing nothing at
+all -- the vacuous detector this protocol keeps catching in itself.
+
+**Verified by mutation, 2026-09-25.** Adding `<img src="/icon-32.png?h={host}">`
+to the component -- a same-origin GET carrying what the visitor typed, permitted
+by `default-src 'self'` and a real exfiltration shape -- fails the run with *"the
+probe filename reached a request URL"*. Restoring it passes 5/5. Re-run that
+mutation before trusting any change to this test.
+
+One detail worth keeping: the probe token is lowercase because `new URL()`
+lowercases a hostname. An uppercase token goes into the box in one case and
+comes out of the page in another, which made the visible assertion fail and
+would have made a case-sensitive scan of request URLs miss the normalised
+form. The scans are case-insensitive now; a leak that arrived re-cased is still
+a leak.
+
 **What it still does not establish** is everything in the section above, which
 applies unchanged: capability is not intent, and no egress measurement can
 report that a page has no flaw. Every non-blocked verdict carries that line.
