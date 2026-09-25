@@ -268,9 +268,9 @@ export function DesignSvgTool() {
             SVG Optimizer & PNG Converter
           </h1>
           <p className="text-sm text-muted-foreground sm:text-base">
-            Clean Inkscape/Illustrator metadata, strip comments, round
-            precision, and render high-resolution PNG or WebP rasters at custom
-            scale. Processed 100% locally in your browser.
+            Clean editor metadata, strip comments, round precision, and render
+            high-resolution PNG or WebP rasters at custom scale. Processed 100%
+            locally in your browser.
           </p>
         </div>
 
@@ -492,9 +492,7 @@ export function DesignSvgTool() {
                       onChange={(e) => setRemoveMetadata(e.target.checked)}
                       className="h-4 w-4 rounded border-border"
                     />
-                    <span>
-                      Remove editor metadata (Inkscape, Illustrator, namespaces)
-                    </span>
+                    <span>Remove editor metadata and unused namespaces</span>
                   </label>
 
                   <label className="flex items-center gap-2.5 text-xs text-foreground sm:text-sm">

@@ -143,8 +143,7 @@ export function PdfDrawingRegisterTool({
               <p className="mt-1.5 max-w-3xl text-sm text-muted-foreground">
                 Extract drawing numbers, sheet titles, revisions, dates, and
                 authors across multi-page architectural sets into a clean
-                spreadsheet. Bluebeam charges $330/year for title block parsing;
-                this runs 100% free inside your browser tab.
+                spreadsheet. This runs 100% free inside your browser tab.
               </p>
             </div>
           </div>

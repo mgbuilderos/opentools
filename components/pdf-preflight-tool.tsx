@@ -110,8 +110,7 @@ export function PdfPreflightTool({ relatedTools = [] }: PdfPreflightToolProps) {
               <p className="mt-1.5 max-w-3xl text-sm text-muted-foreground">
                 Verify bleed boxes (≥ 3 mm / 8.5 pt), TrimBox alignment, font
                 embedding, and image placed resolution (PPI) before sending to
-                press. Enfocus PitStop charges $40/mo and FlightCheck charges
-                $249/yr; this inspects your PDF object hierarchy 100% locally in
+                press. This inspects your PDF object hierarchy 100% locally in
                 your browser.
               </p>
             </div>

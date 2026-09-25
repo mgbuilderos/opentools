@@ -124,8 +124,7 @@ export function AudioLoudnessTool({
                 Measure integrated LUFS, true peak (dBTP), loudness range (LRA),
                 and noise floor according to ITU-R BS.1770-4. Verify ACX
                 audiobook rejection limits, Spotify (−14 LUFS), Apple Music (−16
-                LUFS), and EBU R128 (−23 LUFS). Auphonic charges $11–89/mo and
-                NUGEN VisLM charges $382; this measures directly in your
+                LUFS), and EBU R128 (−23 LUFS). This measures directly in your
                 browser.
               </p>
             </div>

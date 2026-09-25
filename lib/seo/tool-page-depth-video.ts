@@ -111,7 +111,7 @@ export const PAGE_DEPTH_VIDEO: Readonly<Record<string, ToolPageDepth>> = {
       },
       {
         name: 'Select destination container',
-        text: 'Choose MP4 for universal compatibility across web browsers, Windows, and Android, or MOV for native QuickTime and Final Cut Pro workflows.',
+        text: 'Choose MP4 for universal compatibility across web browsers, Windows, and Android, or MOV where a QuickTime-native container is wanted.',
       },
       {
         name: 'Verify codec compatibility',

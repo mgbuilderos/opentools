@@ -578,7 +578,7 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
       area(
         'svg',
         'SVG XML markup',
-        `<svg xmlns="${svgNamespace}" viewBox="0 0 100 100">\n  <!-- Generator: Vector Designer 1.0 -->\n  <g id="layer1" inkscape:label="Layer 1">\n    <circle cx="50.0001" cy="50.0002" r="40.0000" fill="#09090b" style="opacity: 1;" />\n  </g>\n</svg>`,
+        `<svg xmlns="${svgNamespace}" viewBox="0 0 100 100">\n  <!-- Generator: Vector Designer 1.0 -->\n  <g id="layer1" x:label="Layer 1">\n    <circle cx="50.0001" cy="50.0002" r="40.0000" fill="#09090b" style="opacity: 1;" />\n  </g>\n</svg>`,
       ),
       select('precision', 'Decimal precision', [
         { value: '2', label: '2 decimals (0.01px - recommended)' },
@@ -593,7 +593,7 @@ export const WEB_OPERATIONS: readonly WebOperation[] = [
       select('removeMetadata', 'Remove editor metadata & namespaces', [
         {
           value: 'yes',
-          label: 'Yes — Strip inkscape, sodipodi, adobe, sketch tags',
+          label: 'Yes — strip editor namespace tags',
         },
         { value: 'no', label: 'No' },
       ]),
@@ -1499,6 +1499,15 @@ function optimizeSvg(values: Record<string, string>): string {
     optimized = optimized.replace(/<sodipodi:namedview[\s\S]*?\/>/giu, '');
     optimized = optimized.replace(/<inkscape:[a-zA-Z0-9_-]+[\s\S]*?\/>/giu, '');
     optimized = optimized.replace(
+      /*
+       * These are XML namespace prefixes that real SVG files carry, not brand
+       * names in our copy: the tool has to match them by name to remove them.
+       * `lib/policy/competitor-names.ts` bans naming a company in what a
+       * visitor reads; it does not reach implementation strings, and shortening
+       * this list to satisfy a reading of that rule would stop the tool working
+       * on the files people actually have. The sample input above deliberately
+       * uses `x:`, which is in this list and is nobody's trade mark.
+       */
       /\s*xmlns:(?:inkscape|sodipodi|adobe|sketch|serif|i|x)="[^"]*"/giu,
       '',
     );

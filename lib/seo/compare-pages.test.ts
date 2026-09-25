@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COMPARE_ROUTES, MAX_COMPARE_PAGES } from './compare-pages';
 import { buildSitemap } from './sitemap-entries';
+import { findForbiddenCompetitors } from '@/lib/policy/competitor-names';
 
 /**
  * The rules Pillar 5 of `docs/ORGANIC_GROWTH_PLAYBOOK_CORRECTED.md` sets for
@@ -178,30 +179,21 @@ describe('hand-written comparison pages', () => {
 
   it('names no competitor, in the body or in the metadata', () => {
     /*
-     * The same nine names local-source-policy.test.ts refuses under app/ and
-     * components/, restated here for one reason: that test's roots could be
-     * narrowed, or a page's title could be moved into lib/ where its scan does
-     * not reach. A comparison page is precisely where someone would be tempted
-     * to do that, so the rule is asserted where the temptation is.
+     * The same names local-source-policy.test.ts refuses under app/ and
+     * components/, asserted again here for one reason: that test's roots could
+     * be narrowed, or a page's title could be moved into lib/ where its scan
+     * does not reach. A comparison page is precisely where someone would be
+     * tempted to do that, so the rule is asserted where the temptation is.
+     *
+     * The two scans stay independent — that is the defence. The *list* they
+     * scan for was shared into `lib/policy/competitor-names.ts` on 2026-09-25,
+     * when it grew from nine names to thirty-eight: two copies of a list that
+     * long drift, and a name present in one scan and missing from the other is
+     * a hole that looks like coverage.
      */
-    const forbidden = [
-      /\bAdobe\b/iu,
-      /\bAcrobat\b/iu,
-      /\biLovePDF\b/iu,
-      /\bSmallpdf\b/iu,
-      /\biLoveIMG\b/iu,
-      /\bCanva\b/iu,
-      /\bSejda\b/iu,
-      /\bPDF24\b/iu,
-      /\bTinyPNG\b/iu,
-    ];
-
-    const violations = COMPARE_ROUTES.flatMap((route) => {
-      const source = sourceFor(route);
-      return forbidden
-        .filter((pattern) => pattern.test(source))
-        .map((pattern) => `${route} names ${pattern.source}`);
-    });
+    const violations = COMPARE_ROUTES.flatMap((route) =>
+      findForbiddenCompetitors(sourceFor(route), route),
+    );
 
     expect(
       violations,

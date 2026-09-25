@@ -1,6 +1,6 @@
 /**
  * SVG Optimizer and Sanitizer.
- * Cleans editor metadata (Inkscape, Illustrator), comments, and redundant precision.
+ * Cleans editor metadata, comments, and redundant precision.
  *
  * It also removes the parts of an SVG that can run code: script elements, event
  * handler attributes, and URLs whose scheme is not one an image should use.

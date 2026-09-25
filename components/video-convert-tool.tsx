@@ -311,7 +311,7 @@ export function VideoConvertTool() {
                   >
                     <span className="text-base">MOV</span>
                     <span className="text-xs text-muted-foreground mt-1">
-                      Apple QuickTime & Final Cut friendly
+                      QuickTime-compatible MOV container
                     </span>
                   </button>
                 </div>
