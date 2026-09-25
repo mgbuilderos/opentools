@@ -1450,6 +1450,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/video/split': '2026-09-25T21:44:45+05:30',
   '/video/to-gif': '2026-09-25T21:44:45+05:30',
   '/video/trim': '2026-09-25T21:44:45+05:30',
+  '/email/reader': '2026-09-26T01:12:47+05:30',
   '/web': '2026-09-26T01:12:47+05:30',
   '/web/accessibility-contrast-checker': '2026-09-25T23:54:19+05:30',
   '/web/aria-label-checklist': '2026-09-25T23:54:19+05:30',
