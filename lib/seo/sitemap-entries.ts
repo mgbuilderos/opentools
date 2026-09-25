@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
+import { CATEGORY_HUB_ROUTES } from './category-hubs';
 import { COMPARE_ROUTES } from './compare-pages';
 import {
   GUIDE_CONSOLIDATION,
@@ -65,6 +66,13 @@ export function buildSitemap(
     // and putting them in that list would make every tool CTA and the smart
     // dropzone offer them as a place to send a file.
     ...COMPARE_ROUTES,
+    // The nineteen category hubs. Listed beside the content pages rather than
+    // in LIVE_TOOL_ROUTES for the same reason the comparison pages are: they
+    // run no tool, so a CTA or the smart dropzone must never offer one as a
+    // place to send a file. `/latex` and `/schema` are the other two
+    // categories and are already in LIVE_TOOL_ROUTES, because those two
+    // addresses really do run a tool.
+    ...CATEGORY_HUB_ROUTES,
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: lastModifiedFor(route === '' ? '/' : route),

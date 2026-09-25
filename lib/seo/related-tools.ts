@@ -427,3 +427,39 @@ export function linkableToolRoutes(): readonly string[] {
 export function unlinkedLiveRoutes(): readonly string[] {
   return LIVE_TOOL_ROUTES.filter((route) => !PAGE_BY_HREF.has(route));
 }
+
+/** A tool page as a hub lists it: the address, and what to call it. */
+export interface ToolPageLink {
+  href: string;
+  name: string;
+  description: string;
+  category: string;
+}
+
+/**
+ * Every linkable tool page under one URL prefix, named and described.
+ *
+ * The category hub at `/math` has to list all 68 math pages, and the list has
+ * to be the one the link graph already believes in — a hand-written list
+ * drifts from what ships and eventually links a 404. `collectToolPages` has
+ * resolved exactly this for every route since the graph was written: routed
+ * operations, the hand-written folders that shadow them, and the manifest
+ * pages that were never operations at all, with the withheld routes and the
+ * workbench landings already taken out. So a hub reads it rather than
+ * re-deriving it, and `category-hubs.test.ts` asserts the two agree.
+ *
+ * Sorted by name, so the page has an order that does not depend on which
+ * workbench happened to declare an operation first.
+ */
+export function toolPagesForPrefix(prefix: string): readonly ToolPageLink[] {
+  return TOOL_PAGES.filter((page) => page.prefix === prefix)
+    .map((page) => ({
+      href: page.href,
+      name: page.name,
+      description: page.description,
+      category: page.category,
+    }))
+    .sort(
+      (a, b) => a.name.localeCompare(b.name) || a.href.localeCompare(b.href),
+    );
+}
