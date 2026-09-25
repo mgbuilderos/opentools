@@ -144,10 +144,12 @@ export const ACCEPTED_IMAGE_EXTENSIONS = IMAGE_FORMATS.flatMap((f) =>
 );
 
 export interface ImagePair {
-  /** `heic-to-jpg`. */
+  /** `webp-to-png`. */
   id: string;
   from: ImageFormat;
   to: ImageFormat;
+  /** The page title, in the casing each format's own community writes it. */
+  title: string;
 }
 
 /**
@@ -181,7 +183,12 @@ export function imagePairs(): ImagePair[] {
       if (!to.canEncode) continue;
       const id = `${from.id}-to-${to.id}`;
       if (id in IMAGE_PAIRS_ANSWERED_ELSEWHERE) continue;
-      pairs.push({ id, from, to });
+      pairs.push({
+        id,
+        from,
+        to,
+        title: `${from.name} to ${to.name} converter`,
+      });
     }
   }
   return pairs;

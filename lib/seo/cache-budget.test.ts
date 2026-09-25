@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { getAllTemplates } from '../templates/templates-data';
 import { CONVERSION_PAIRS } from './conversion-pairs';
 import { FORMAT_PAIRS } from './format-pairs';
+import { IMAGE_PAIRS } from './image-pairs';
 import { CACHED_GUIDE_SLUGS } from './cached-guides';
 import { getAllBlogPosts } from './blog-data';
 import { getAllCategoryPillars } from './internal-linking-graph';
@@ -38,7 +39,8 @@ const DYNAMIC_PAGE_COUNTS: Record<string, () => number> = {
   // conversion pairs are the largest page family on the site, so opting them
   // in would cost more than double the whole free allowance on its own. Stated
   // here rather than left to be rediscovered by a deploy that serves no-store.
-  'convert/[pair]': () => CONVERSION_PAIRS.length + FORMAT_PAIRS.length,
+  'convert/[pair]': () =>
+    CONVERSION_PAIRS.length + FORMAT_PAIRS.length + IMAGE_PAIRS.length,
   'guides/category/[category]': () => getAllCategoryPillars().length,
   'guides/[slug]': () => LIVE_TOOL_CATALOG.length,
   'blog/[slug]': () => getAllBlogPosts().length,
