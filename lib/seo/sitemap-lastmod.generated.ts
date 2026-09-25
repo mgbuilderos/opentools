@@ -1347,7 +1347,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/subtitles/subtitle-to-vtt': '2026-09-23T21:57:44+05:30',
   '/subtitles/subtitle-trim': '2026-09-23T21:57:44+05:30',
   '/subtitles/workbench': '2026-09-23T15:54:01+05:30',
-  '/support': '2026-09-23T22:28:19+05:30',
+  '/support': '2026-09-25T23:57:32+05:30',
   '/templates': '2026-09-23T21:57:44+05:30',
   '/templates/broadcast-captioning-subtitle-style-guide':
     '2026-09-23T22:28:19+05:30',
