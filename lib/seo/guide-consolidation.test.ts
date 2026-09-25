@@ -146,6 +146,11 @@ describe('guide consolidation off is the previous behaviour', () => {
       '',
       ...LIVE_TOOL_ROUTES,
       '/proof',
+      // Added 2026-09-25, and mirrored here for the same reason `/embed` is.
+      // The egress check takes a URL and a pasted header, never a file, so it
+      // is a core route rather than a tool route -- registering it would let
+      // every file CTA offer it as a destination.
+      '/proof/check',
       '/privacy',
       '/security',
       '/about',

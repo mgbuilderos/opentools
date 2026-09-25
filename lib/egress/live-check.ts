@@ -64,7 +64,16 @@ export function liveCheckSnippet(targetLabel?: string): string {
   const label = (targetLabel ?? '').replace(/[^\w.:/-]/gu, '').slice(0, 120);
   return `/* Can this page send your file anywhere?  —  getopentools.com/proof/check
    Paste into DevTools › Console on the page you want to check, then press Enter.
-   Reads this page only. Sends nothing, anywhere. Stops when you reload. */
+
+   It reports nothing about you to anyone: no result leaves your browser. It
+   does deliberately ATTEMPT five connections — four to a host that does not
+   exist, one to a path on this site that does not exist — because the only way
+   to know a browser refuses a connection is to have it refuse one. They carry
+   the word 'probe' and nothing else. Everything stops when you reload.
+
+   It is long because it is readable. You should be able to read anything you
+   paste into a console, and a tool about trust is a poor place to start
+   asking for some. */
 (async () => {
   const PROBE = ${JSON.stringify(PROBE_HOST)};
   const here = location.host;
@@ -91,12 +100,17 @@ export function liveCheckSnippet(targetLabel?: string): string {
   const violations = [];
   const collector = (e) => violations.push(e.effectiveDirective + '|' + e.disposition);
   document.addEventListener('securitypolicyviolation', collector);
-  const violated = (fragment) => violations.some((v) => v.indexOf(fragment) === 0);
 
   try { await fetch(PROBE, { mode: 'no-cors' }); record('fetch → third party', false, 'a request completed'); }
   catch (e) { record('fetch → third party', true, String(e.message || e).slice(0, 70)); }
 
-  try { await fetch(location.href, { method: 'POST', body: 'probe' }); record('POST → this origin', false, 'a request completed'); }
+  /* A same-origin POST, but NEVER to location.href: on a stranger's site that
+     URL may be a real endpoint, and a probe that logs someone out or submits
+     their form is not a probe. A path that cannot exist answers the same
+     question -- whether the policy permits a body-carrying request at all --
+     and a 404 is the worst it can do. */
+  const SAME_ORIGIN_PROBE = location.origin + '/.egress-probe-' + Math.random().toString(36).slice(2);
+  try { await fetch(SAME_ORIGIN_PROBE, { method: 'POST', body: 'probe' }); record('POST → this origin', false, 'a request completed'); }
   catch (e) { record('POST → this origin', true, String(e.message || e).slice(0, 70)); }
 
   await new Promise((resolve) => {
@@ -116,13 +130,25 @@ export function liveCheckSnippet(targetLabel?: string): string {
   /* sendBeacon returns TRUE even when CSP refuses it — the spec returns true
      once the beacon is queued. Never assert on that boolean. Ask the policy. */
   try {
+    /* Only violations raised AFTER this point count. Asking "did a connect-src
+       violation happen" would be answered yes by the fetch probe above, and the
+       check would report sendBeacon as refused without ever testing it -- a
+       detector that passes without looking, which is the failure mode
+       docs/EGRESS_PROOF.md was written about. */
+    const before = violations.length;
     navigator.sendBeacon(PROBE, 'probe');
     await new Promise((r) => setTimeout(r, 250));
-    const blocked = violated('connect-src') || violated('default-src');
-    record('navigator.sendBeacon', blocked, blocked ? 'refused by policy' : 'queued — return value is never evidence');
+    const blocked = violations.slice(before).some((v) => v.indexOf('connect-src') === 0 || v.indexOf('default-src') === 0);
+    record('navigator.sendBeacon', blocked, blocked ? 'refused by policy' : 'queued — the return value is never evidence');
   } catch (e) { record('navigator.sendBeacon', true, String(e.message || e).slice(0, 70)); }
 
-  /* 3 — bytes that actually moved, off this origin. */
+  /* 3 — which third-party hosts this page has already contacted.
+        Hosts, not bytes, are the headline. transferSize reads 0 for a
+        cross-origin resource whose server sends no Timing-Allow-Origin header,
+        which is most of them -- so "0 bytes" would be a measurement failure
+        rendered as an all-clear, and this tool cannot afford that direction of
+        error. The count of hosts is reliable; the byte figure is reported only
+        where it is non-zero, and described as a floor. */
   for (const entry of performance.getEntriesByType('resource')) {
     const url = entry.name || '';
     if (url.indexOf('blob:') === 0 || url.indexOf('data:') === 0) continue;
@@ -134,20 +160,25 @@ export function liveCheckSnippet(targetLabel?: string): string {
 
   /* 4 — keep watching. Anything with a body can carry a file out, including to
         this page's own origin, which is the case CSP does not cover. */
+  const note = (what) => { out.carried.push(what); console.warn('[egress] this page tried to send: ' + what); };
   const realFetch = window.fetch;
   window.fetch = function (input, init) {
     const url = typeof input === 'string' ? input : (input && input.url) || '';
     const method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
-    if (method !== 'GET' || (init && init.body)) out.carried.push(method + ' ' + url);
+    if (method !== 'GET' || (init && init.body)) note(method + ' ' + url);
     return realFetch.apply(this, arguments);
   };
   const realSend = XMLHttpRequest.prototype.send;
   XMLHttpRequest.prototype.send = function (body) {
-    if (body) out.carried.push('XHR with body');
+    if (body) note('XHR with a body');
     return realSend.apply(this, arguments);
   };
-  const realBeacon = navigator.sendBeacon && navigator.sendBeacon.bind(navigator);
-  if (realBeacon) navigator.sendBeacon = function (url, data) { out.carried.push('sendBeacon ' + url); return realBeacon(url, data); };
+  /* navigator.sendBeacon is read-only in some engines; a failed assignment
+     must not take the rest of the check down with it. */
+  try {
+    const realBeacon = navigator.sendBeacon && navigator.sendBeacon.bind(navigator);
+    if (realBeacon) navigator.sendBeacon = function (url, data) { note('sendBeacon ' + url); return realBeacon(url, data); };
+  } catch (e) {}
 
   /* The verdict, by the same rule the site and the extension use. */
   const directives = {};
@@ -166,6 +197,7 @@ export function liveCheckSnippet(targetLabel?: string): string {
   if (!out.enforced && verdict === 'BLOCKED') verdict = 'CAPABLE';
 
   const bytes = out.offOrigin.reduce((sum, e) => sum + e.bytes, 0);
+  const hosts = out.offOrigin.map((e) => e.host).filter((h, i, all) => all.indexOf(h) === i);
   const copy = {
     BLOCKED: ['This page cannot send your file anywhere.', 'The browser refuses every connection it attempts' + (viaDefault ? ', through its default-src fallback' : '') + '. That is enforcement, not a promise.'],
     RESTRICTED: ['This page can send to a named list of destinations.', 'Connections are limited' + (viaDefault ? ' by default-src' : '') + ', but not switched off: ' + String(source).slice(0, 90)],
@@ -192,7 +224,11 @@ export function liveCheckSnippet(targetLabel?: string): string {
       '<div style="color:#9ca3af;font-size:13px;margin-bottom:14px">' + esc(copy[1]) + '</div>' +
       '<div style="border-top:1px solid #1f2937;padding-top:12px">' + rows + '</div>' +
       '<div style="border-top:1px solid #1f2937;margin-top:12px;padding-top:12px;color:#9ca3af;font-size:12.5px">' +
-        esc(bytes === 0 ? 'No bytes have reached any third-party host on this page.' : String(bytes) + ' bytes reached ' + out.offOrigin.length + ' third-party host(s).') +
+        esc(
+          out.offOrigin.length === 0
+            ? 'No third-party host was contacted while this page loaded.'
+            : hosts.length + ' third-party host' + (hosts.length === 1 ? '' : 's') + ' contacted: ' + hosts.slice(0, 4).join(', ') + (hosts.length > 4 ? ', and ' + (hosts.length - 4) + ' more' : '') + (bytes > 0 ? ' — at least ' + bytes + ' bytes' : '')
+        ) +
       '</div>' +
       '<div style="margin-top:10px;color:#6b7280;font-size:11.5px">' +
         (verdict === 'BLOCKED' ? 'Capability only. It says nothing about bugs.' : 'Able to send is not the same as does send. Server-side processing is a normal, legitimate design.') +

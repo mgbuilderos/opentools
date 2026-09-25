@@ -230,11 +230,17 @@ export function EgressCheckTool() {
               aria-label="The check, as code to paste into your browser console"
             />
             <p className="mt-2 text-xs text-muted-foreground">
-              It reads that page only, sends nothing anywhere, and disappears
-              when you reload. It attempts five deliberate connections and
-              reports which the browser refused — because watching an idle page
-              proves only that nothing happened to fire, never that the control
-              works.
+              No result leaves your browser, and everything stops when you
+              reload. It does deliberately attempt five connections to addresses
+              that do not exist, carrying the word <code>probe</code> and
+              nothing else — because the only way to know a browser refuses a
+              connection is to watch it refuse one. Watching an idle page proves
+              that nothing happened to fire, never that the control works.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              It is long because it is readable. You should be able to read
+              anything you paste into a console, and a tool about trust is a
+              poor place to start asking for some.
             </p>
           </div>
 
