@@ -4,6 +4,7 @@ import {
   requireToolPageDepth,
   toolPageMetadata,
 } from '@/lib/seo/tool-page-depth';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 /*
   The title, the description, the self-canonical and the written half of this
@@ -21,8 +22,11 @@ export const metadata = toolPageMetadata(ROUTE);
 
 export default function Page() {
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <ImageExactSizeTool />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route="/image/exact-size" meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <ImageExactSizeTool />
+      </PageDepthProvider>
+    </>
   );
 }

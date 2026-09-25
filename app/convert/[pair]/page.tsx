@@ -18,6 +18,7 @@ import {
   imagePairFacts,
   imageSeoPairById,
 } from '@/lib/seo/image-pairs';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 /*
   One page per conversion pair, which is the next order of magnitude after one
@@ -109,7 +110,7 @@ export async function generateMetadata({
   return {};
 }
 
-export default async function Page({
+async function renderToolPage({
   params,
 }: {
   params: Promise<{ pair: string }>;
@@ -177,5 +178,35 @@ export default async function Page({
         extension: facts.extension,
       }}
     />
+  );
+}
+
+/*
+  The structured data and the page, in that order.
+
+  The body above is unchanged apart from its name: it has several returns and
+  one of them is `null`, so rather than threading a script tag through every
+  branch it is rendered once here and the JSON-LD placed beside whatever it
+  produced. A branch that renders nothing gets no structured data either, which
+  is the right answer -- there is no tool at that URL to describe. Lowercase
+  because `react-compiler` reserves capitalised calls for JSX components.
+
+  `generateMetadata` above is the single source of the name and description, so
+  the sentence a machine reads is the sentence the search result shows.
+*/
+export default async function Page(props: {
+  params: Promise<{ pair: string }>;
+}) {
+  const rendered = await renderToolPage(props);
+  if (rendered === null) return null;
+  const { pair } = await props.params;
+  return (
+    <>
+      <ToolJsonLd
+        route={`/convert/${pair}`}
+        meta={await generateMetadata(props)}
+      />
+      {rendered}
+    </>
   );
 }
