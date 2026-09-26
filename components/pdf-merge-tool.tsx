@@ -16,6 +16,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { useToolUi } from '@/components/locale-edition-provider';
+import { fillMessage } from '@/lib/i18n/tool-ui';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { toolMeta } from '@/lib/tools/tool-meta';
@@ -90,6 +92,8 @@ async function toWorkerInputs(items: Array<{ id: string; file: File }>) {
 }
 
 export function PdfMergeTool() {
+  /* Localised control strings; the English bundle everywhere else. */
+  const t = useToolUi();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -297,18 +301,21 @@ export function PdfMergeTool() {
         worker.terminate();
         workerRef.current = null;
         announceCompletion({
-          operation: 'PDF merge',
+          operation: t.mergeOperation,
           durationMs: completedIn,
-          summary: `${files.length.toLocaleString()} PDF files merged into ${message.pageCount.toLocaleString()} pages.`,
+          summary: fillMessage(t.mergeSummary, {
+            files: files.length.toLocaleString(),
+            pages: message.pageCount.toLocaleString(),
+          }),
           metrics: [
-            { label: 'Files', value: files.length.toLocaleString() },
+            { label: t.files, value: files.length.toLocaleString() },
             {
-              label: 'Input',
+              label: t.input,
               value: formatBytes(
                 files.reduce((total, item) => total + item.file.size, 0),
               ),
             },
-            { label: 'Output', value: formatBytes(blob.size) },
+            { label: t.output, value: formatBytes(blob.size) },
           ],
         });
         return;
@@ -401,23 +408,22 @@ export function PdfMergeTool() {
               <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground">
                 <span>PDF</span>
                 <span aria-hidden="true">/</span>
-                <span>Page management</span>
+                <span>{t.mergePageManagement}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Merge PDF
+                {t.mergeTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Combine PDFs in your chosen order. Processing happens in a
-                dedicated browser worker.
+                {t.mergeStandfirst}
               </p>
             </div>
             <button
               type="button"
               className="focus-ring flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold"
-              aria-label="Local processing status. Release proof is pending."
+              aria-label={t.mergeStatusAria}
             >
               <LockKeyhole aria-hidden="true" className="size-3.5" />
-              On-device prototype
+              {t.onDevicePrototype}
             </button>
           </div>
 
@@ -429,14 +435,14 @@ export function PdfMergeTool() {
               className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
             >
               <div>
-                <p className="font-semibold">Couldn’t use that PDF</p>
+                <p className="font-semibold">{t.mergeCouldntUse}</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setError(null)}
                 className="focus-ring rounded-md p-1"
-                aria-label="Dismiss error"
+                aria-label={t.dismissError}
               >
                 <X aria-hidden="true" className="size-4" />
               </button>
@@ -450,7 +456,7 @@ export function PdfMergeTool() {
             <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
               <div>
                 <h2 id="pdf-input-heading" className="text-sm font-semibold">
-                  PDFs to merge
+                  {t.mergePdfsToMerge}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   Up to {MAX_FILES} files · 150 MB total in this canary
@@ -458,8 +464,11 @@ export function PdfMergeTool() {
               </div>
               {files.length ? (
                 <span className="tabular text-xs text-muted-foreground">
-                  {files.length} files · {totalPages} pages ·{' '}
-                  {formatBytes(totalBytes)}
+                  {fillMessage(t.mergeCounts, {
+                    files: files.length,
+                    pages: totalPages,
+                  })}{' '}
+                  · {formatBytes(totalBytes)}
                 </span>
               ) : null}
             </div>
@@ -482,7 +491,7 @@ export function PdfMergeTool() {
                     : 'Drop PDFs here'}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  File signatures and page counts are checked in your browser.
+                  {t.mergeSignatureNote}
                 </p>
                 <input
                   ref={fileInputRef}
@@ -502,13 +511,13 @@ export function PdfMergeTool() {
                   disabled={status === 'inspecting' || status === 'processing'}
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  Choose PDFs
+                  {t.mergeChoosePdfs}
                 </Button>
               </div>
             </div>
 
             {files.length ? (
-              <ol className="border-t" aria-label="PDF merge order">
+              <ol className="border-t" aria-label={t.mergeOrderAria}>
                 {files.map((item, index) => (
                   <li
                     key={item.id}
@@ -593,7 +602,7 @@ export function PdfMergeTool() {
                     className="h-11 px-5"
                     onClick={cancelMerge}
                   >
-                    Cancel
+                    {t.cancel}
                   </Button>
                 </div>
                 <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-border">
@@ -612,7 +621,7 @@ export function PdfMergeTool() {
                       : 'Ready to merge'}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    The originals will not be modified.
+                    {t.mergeOriginalsNote}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -622,7 +631,7 @@ export function PdfMergeTool() {
                       className="h-11 px-4"
                       onClick={clearAll}
                     >
-                      Clear all
+                      {t.clearAll}
                     </Button>
                   ) : null}
                   <Button
@@ -639,7 +648,7 @@ export function PdfMergeTool() {
 
           {status === 'cancelled' ? (
             <output className="mt-4 block text-sm text-muted-foreground">
-              Merge cancelled. Your selected PDFs are still here and unchanged.
+              {t.mergeCancelled}
             </output>
           ) : null}
 
@@ -673,35 +682,41 @@ export function PdfMergeTool() {
                   data-receipt-download
                   href={receipt.outputUrl}
                   download="merged.pdf"
-                  aria-label="Download merged PDF"
+                  aria-label={t.mergeDownloadAria}
                   onClick={() =>
                     window.dispatchEvent(new CustomEvent('tool-downloaded'))
                   }
                   className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-transparent bg-primary px-5 text-sm font-medium text-primary-foreground outline-none transition-all hover:bg-primary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <ArrowDownToLine aria-hidden="true" className="size-4" />
-                  Download merged.pdf
+                  {t.mergeDownloadLabel}
                 </a>
               </div>
               <div className="grid border-t sm:grid-cols-3">
                 <div className="border-b p-4 sm:border-b-0 sm:border-r sm:p-5">
-                  <p className="text-xs text-muted-foreground">Processing</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.processing}
+                  </p>
                   <p className="mt-1 flex items-center gap-2 text-sm font-semibold">
                     <ShieldCheck
                       aria-hidden="true"
                       className="size-4 text-success"
                     />
-                    Browser worker
+                    {t.browserWorker}
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r sm:p-5">
-                  <p className="text-xs text-muted-foreground">Output check</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.outputCheck}
+                  </p>
                   <p className="mt-1 text-sm font-semibold">
                     Reopened · {receipt.pageCount} pages
                   </p>
                 </div>
                 <div className="p-4 sm:p-5">
-                  <p className="text-xs text-muted-foreground">Phase timing</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.mergePhaseTiming}
+                  </p>
                   <p className="tabular mt-1 text-sm font-semibold">
                     Merge {formatDuration(receipt.computeDurationMs)} · check{' '}
                     {formatDuration(receipt.validationDurationMs)}

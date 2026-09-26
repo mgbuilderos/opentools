@@ -6,6 +6,7 @@ import { toolPageDepth, toolPageMetadata } from '../seo/tool-page-depth';
 import type { ToolPageDepth } from '../seo/tool-page-depth-types';
 import { LOCALE_COPY } from './copy';
 import { LOCALE_CODES, LOCALES } from './locales';
+import { EN_TOOL_UI, fillMessage, TOOL_UI } from './tool-ui';
 import {
   hubLanguageAlternates,
   languageAlternates,
@@ -259,6 +260,93 @@ describe('documented limits', () => {
     expect(Object.keys(DOCUMENTED_LIMITS).sort()).toEqual(
       [...LOCALIZED_TOOL_ROUTES].sort(),
     );
+  });
+});
+
+describe('tool control strings', () => {
+  /*
+    The half of a localised page a reader has to understand in order to *use*
+    the tool: the dropzone, the buttons, the option labels, the receipt. A key
+    left on its English default here is a Spanish page with an English button.
+  */
+  it('has a bundle for every published locale and nothing else', () => {
+    expect(Object.keys(TOOL_UI).sort()).toEqual([...LOCALE_CODES].sort());
+  });
+
+  /*
+    Strings that really are the same word in a target language. Listed as
+    locale.key pairs rather than bare keys, so an exemption covers exactly the
+    language it was argued for: "Pages" is French for pages, but leaving the
+    Spanish one as "Pages" is a bug.
+  */
+  const SHARED_WITH_ENGLISH = new Set([
+    // English borrowed these from French, or they are spelled identically.
+    'fr.compressPages',
+    'fr.compressPhotos',
+    'fr.imagesLabel',
+    'fr.imagesOrientation',
+    'fr.optimizeImage',
+    // Indonesian uses the English "email".
+    'id.compressEdgeEmail',
+    // A paper size, a page orientation and a technical term, unchanged in
+    // every language this site publishes.
+    'fr.imagesUsLetter',
+    'de.imagesUsLetter',
+    'it.imagesUsLetter',
+    'ru.imagesUsLetter',
+    'id.imagesUsLetter',
+    'fr.imagesPortrait',
+    'fr.imagesMargin',
+    'id.imagesMargin',
+  ]);
+
+  it('fills every key in every locale, and never with the English default', () => {
+    const englishEntries = Object.entries(EN_TOOL_UI);
+    const untranslated: string[] = [];
+    for (const code of LOCALE_CODES) {
+      const bundle = TOOL_UI[code];
+      expect(bundle, code).toBeDefined();
+      if (!bundle) continue;
+      for (const [key, english] of englishEntries) {
+        const value = bundle[key as keyof typeof bundle];
+        if (typeof value !== 'string' || value.trim() === '') {
+          untranslated.push(`${code}.${key}: empty`);
+          continue;
+        }
+        if (value === english && !SHARED_WITH_ENGLISH.has(`${code}.${key}`)) {
+          untranslated.push(`${code}.${key}: still "${english}"`);
+        }
+      }
+    }
+    expect(untranslated).toEqual([]);
+  });
+
+  it('keeps every placeholder a template declares', () => {
+    // `fillMessage` leaves an unknown `{name}` in place, so a translation that
+    // renamed or dropped one would ship a literal "{pages}" to a reader.
+    const placeholders = (value: string) =>
+      [...value.matchAll(/\{(\w+)\}/g)].map((match) => match[1]).sort();
+    const broken: string[] = [];
+    for (const code of LOCALE_CODES) {
+      const bundle = TOOL_UI[code];
+      if (!bundle) continue;
+      for (const [key, english] of Object.entries(EN_TOOL_UI)) {
+        const expected = placeholders(english);
+        if (expected.length === 0) continue;
+        const got = placeholders(bundle[key as keyof typeof bundle]);
+        if (JSON.stringify(got) !== JSON.stringify(expected)) {
+          broken.push(
+            `${code}.${key}: ${got.join(',')} vs ${expected.join(',')}`,
+          );
+        }
+      }
+    }
+    expect(broken).toEqual([]);
+  });
+
+  it('fills placeholders and leaves unknown ones alone', () => {
+    expect(fillMessage('{a} of {b}', { a: 1, b: 2 })).toBe('1 of 2');
+    expect(fillMessage('{a} of {b}', { a: 1 })).toBe('1 of {b}');
   });
 });
 

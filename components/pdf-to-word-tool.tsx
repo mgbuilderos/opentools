@@ -10,6 +10,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { useToolUi } from '@/components/locale-edition-provider';
+import { fillMessage } from '@/lib/i18n/tool-ui';
 import {
   BatchLocalPromise,
   BatchRunnerPanel,
@@ -67,6 +69,8 @@ function docxBlob(bytes: Uint8Array) {
 }
 
 export function PdfToWordTool() {
+  /* Localised control strings; the English bundle everywhere else. */
+  const t = useToolUi();
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -159,21 +163,22 @@ export function PdfToWordTool() {
         durationMs,
       });
       announceCompletion({
-        operation: 'PDF to Word',
+        operation: t.toWordTitle,
         durationMs,
-        summary: `${response.pageCount} ${
-          response.pageCount === 1 ? 'page' : 'pages'
-        } read in this browser; text only.`,
+        summary: fillMessage(
+          response.pageCount === 1 ? t.toWordSummaryOne : t.toWordSummaryMany,
+          { pages: response.pageCount },
+        ),
         metrics: [
           {
-            label: 'Paragraphs',
+            label: t.toWordParagraphs,
             value: response.paragraphCount.toLocaleString(),
           },
           {
-            label: 'Characters',
+            label: t.toWordCharacters,
             value: response.characterCount.toLocaleString(),
           },
-          { label: 'Word file', value: formatBytes(blob.size) },
+          { label: t.toWordWordFile, value: formatBytes(blob.size) },
         ],
       });
     } catch (cause) {
@@ -243,10 +248,10 @@ export function PdfToWordTool() {
               <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                 <span>PDF</span>
                 <span aria-hidden="true">/</span>
-                <span>To Word</span>
+                <span>{t.toWordShort}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                PDF to Word
+                {t.toWordTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
                 Pull the text out of a PDF into an editable{' '}
@@ -263,9 +268,7 @@ export function PdfToWordTool() {
           </div>
 
           <div className="mt-6 rounded-xl border bg-muted/40 p-4 text-sm leading-6">
-            <p className="font-semibold">
-              What this does, and what it does not
-            </p>
+            <p className="font-semibold">{t.toWordScope}</p>
             <p className="mt-1 text-muted-foreground">
               It recovers the <strong>text</strong>: reading order, paragraphs,
               page breaks, and headings where the PDF sets them in larger type.
@@ -285,7 +288,7 @@ export function PdfToWordTool() {
               className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
             >
               <div>
-                <p className="font-semibold">Couldn’t convert this PDF</p>
+                <p className="font-semibold">{t.toWordCouldnt}</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
                 {canOpenOcr ? (
                   <Button
@@ -294,14 +297,14 @@ export function PdfToWordTool() {
                     className="mt-3"
                     onClick={() => void openOcr()}
                   >
-                    Read this scan with OCR
+                    {t.toWordOcrLink}
                   </Button>
                 ) : null}
               </div>
               <button
                 type="button"
                 onClick={() => setError('')}
-                aria-label="Dismiss error"
+                aria-label={t.dismissError}
                 className="focus-ring rounded-lg border p-1.5"
               >
                 <X aria-hidden="true" className="size-4" />
@@ -315,7 +318,7 @@ export function PdfToWordTool() {
               type="file"
               multiple
               accept="application/pdf,.pdf"
-              aria-label="Choose a PDF"
+              aria-label={t.chooseAPdf}
               className="sr-only"
               onChange={(event) => chooseFiles(event.target.files ?? [])}
             />
@@ -335,12 +338,12 @@ export function PdfToWordTool() {
                     disabled={batch.running}
                     onClick={() => fileRef.current?.click()}
                   >
-                    Choose another
+                    {t.chooseAnother}
                   </Button>
                   <Button
                     variant="outline"
                     className="h-10"
-                    aria-label="Remove the chosen PDF"
+                    aria-label={t.toWordRemoveAria}
                     onClick={() => {
                       clearAll();
                     }}
@@ -352,7 +355,7 @@ export function PdfToWordTool() {
             ) : (
               <div className="flex flex-col items-start gap-3">
                 <p className="text-sm text-muted-foreground">
-                  Choose a PDF from this device to convert.
+                  {t.toWordChooseHint}
                 </p>
                 <Button
                   className="h-11"
@@ -360,7 +363,7 @@ export function PdfToWordTool() {
                   onClick={() => fileRef.current?.click()}
                 >
                   <FileText aria-hidden="true" className="mr-2 size-4" />
-                  Choose PDF file(s)
+                  {t.toWordChooseAria}
                 </Button>
               </div>
             )}
@@ -411,25 +414,33 @@ export function PdfToWordTool() {
               </h2>
               <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <dt className="text-xs text-muted-foreground">Paragraphs</dt>
+                  <dt className="text-xs text-muted-foreground">
+                    {t.toWordParagraphs}
+                  </dt>
                   <dd className="mt-1 text-sm font-semibold">
                     {receipt.paragraphCount.toLocaleString()}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Characters</dt>
+                  <dt className="text-xs text-muted-foreground">
+                    {t.toWordCharacters}
+                  </dt>
                   <dd className="mt-1 text-sm font-semibold">
                     {receipt.characterCount.toLocaleString()}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Word file</dt>
+                  <dt className="text-xs text-muted-foreground">
+                    {t.toWordWordFile}
+                  </dt>
                   <dd className="mt-1 text-sm font-semibold">
                     {formatBytes(receipt.docxBytes)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Took</dt>
+                  <dt className="text-xs text-muted-foreground">
+                    {t.toWordTook}
+                  </dt>
                   <dd className="mt-1 text-sm font-semibold">
                     {formatDuration(receipt.durationMs)}
                   </dd>
@@ -438,15 +449,15 @@ export function PdfToWordTool() {
 
               {receipt.pagesWithoutText > 0 ? (
                 <p className="mt-4 rounded-lg border border-destructive/35 bg-destructive/5 p-3 text-sm">
-                  {receipt.pagesWithoutText} of {receipt.pageCount} pages held
-                  no text and contributed nothing to the Word file. Those pages
-                  are images — a scan or a photo — so there was nothing to copy.
+                  {fillMessage(t.toWordNoTextNote, {
+                    without: receipt.pagesWithoutText,
+                    total: receipt.pageCount,
+                  })}
                 </p>
               ) : null}
 
               <p className="mt-4 text-sm text-muted-foreground">
-                Text only. Layout, columns, tables and images from the PDF are
-                not in this file.
+                {t.toWordTextOnlyNote}
               </p>
 
               <div className="mt-5 flex flex-wrap gap-3">
@@ -458,11 +469,11 @@ export function PdfToWordTool() {
                       data-receipt-download
                       href={receipt.url}
                       download={receipt.name}
-                      aria-label="Save Word document"
+                      aria-label={t.toWordSave}
                     />
                   }
                 >
-                  <ArrowDownToLine aria-hidden="true" /> Save Word file
+                  <ArrowDownToLine aria-hidden="true" /> {t.toWordSaveShort}
                 </Button>
                 <Button
                   variant="outline"
@@ -472,7 +483,7 @@ export function PdfToWordTool() {
                     clearReceipt();
                   }}
                 >
-                  Convert another
+                  {t.toWordConvertAnother}
                 </Button>
               </div>
             </section>

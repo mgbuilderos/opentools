@@ -2,6 +2,8 @@
 
 import { createContext, useContext, type ReactNode } from 'react';
 
+import { EN_TOOL_UI, type ToolUiMessages } from '@/lib/i18n/tool-ui';
+
 /*
   How a localised page tells the app shell which edition it is.
 
@@ -30,6 +32,14 @@ export interface LocaleEdition {
   stepsHeading: string;
   /** "Preguntas frecuentes" -- the heading above the FAQs. */
   faqsHeading: string;
+  /**
+   * Every string the tool's own controls show, in this locale.
+   *
+   * Passed down rather than looked up in the components, because a lookup
+   * there would import all eight bundles into the client bundle of every page
+   * that renders a tool -- English pages included.
+   */
+  ui: ToolUiMessages;
 }
 
 const LocaleEditionContext = createContext<LocaleEdition | null>(null);
@@ -50,4 +60,15 @@ export function LocaleEditionProvider({
 
 export function useLocaleEdition(): LocaleEdition | null {
   return useContext(LocaleEditionContext);
+}
+
+/**
+ * The tool-control strings for wherever this component is rendered.
+ *
+ * Returns the locale's bundle inside `LocaleEditionProvider` and the English
+ * one everywhere else, which is what keeps all 1,478 English pages rendering
+ * exactly what they rendered before this existed.
+ */
+export function useToolUi(): ToolUiMessages {
+  return useContext(LocaleEditionContext)?.ui ?? EN_TOOL_UI;
 }

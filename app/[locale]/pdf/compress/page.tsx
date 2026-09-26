@@ -5,6 +5,7 @@ import { LocaleEditionProvider } from '@/components/locale-edition-provider';
 import { PageDepthProvider } from '@/components/page-depth-provider';
 import { practiceBrief } from '@/lib/practice-briefs';
 import { LOCALE_COPY } from '@/lib/i18n/copy';
+import { toolUiFor } from '@/lib/i18n/tool-ui';
 import { LOCALE_CODES } from '@/lib/i18n/locales';
 import {
   localizedToolMetadata,
@@ -67,6 +68,7 @@ export default async function Page({
         englishLabel: hub.englishLinkLabel,
         stepsHeading: hub.stepsHeading,
         faqsHeading: hub.faqsHeading,
+        ui: toolUiFor(locale),
       }}
     >
       <PageDepthProvider content={requireLocalizedDepth(locale, ROUTE)}>
