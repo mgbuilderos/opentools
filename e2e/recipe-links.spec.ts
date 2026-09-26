@@ -187,7 +187,20 @@ test.describe('Recipe links carry settings between people', () => {
     await page
       .getByRole('combobox', { name: /output format/iu })
       .selectOption('image/jpeg');
-    await page.getByRole('spinbutton', { name: /max width/iu }).fill('720');
+    /*
+     * Wait for the auto-fit before typing, not just for the preview.
+     *
+     * `image-optimize-tool.tsx` fits the dimension boxes to the decoded image
+     * (`setMaxWidth(Math.min(decoded.naturalWidth, 2400))`), and that runs when
+     * the decode resolves -- after `chooseImage` returns. A human never notices
+     * because they cannot type that fast; this test can, and did: the 720 was
+     * written first and the fit overwrote it with the fixture's own 64, so the
+     * share link carried `width=64&height=64` and the assertion read as a
+     * product bug when the product was fine.
+     */
+    const maxWidth = page.getByRole('spinbutton', { name: /max width/iu });
+    await expect(maxWidth).not.toHaveValue('1600', { timeout: 15_000 });
+    await maxWidth.fill('720');
 
     const copied = await copiedLink(page);
     expect(copied).toContain('format=jpeg');
@@ -344,7 +357,12 @@ test.describe('the share loop closes from the relief moment', () => {
     await page
       .getByRole('combobox', { name: /output format/iu })
       .selectOption('image/jpeg');
-    await page.getByRole('spinbutton', { name: /max width/iu }).fill('720');
+    // Same auto-fit race as above: wait for the fit, then type.
+    const maxWidthHere = page.getByRole('spinbutton', {
+      name: /max width/iu,
+    });
+    await expect(maxWidthHere).not.toHaveValue('1600', { timeout: 15_000 });
+    await maxWidthHere.fill('720');
 
     await page.getByRole('button', { name: 'Optimize image' }).click();
 
