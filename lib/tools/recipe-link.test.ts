@@ -3,8 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { isLiveToolUrl } from '@/lib/seo/live-tools';
 import { textCaseOptions } from '@/lib/tools/text-case';
 
+import { validateRequest, type FitMode } from '@/lib/tools/exact-size';
+
 import {
   ALL_RECIPES,
+  IMAGE_EXACT_SIZE_RECIPE,
   IMAGE_OPTIMIZE_RECIPE,
   PDF_COMPRESS_RECIPE,
   TEXT_CASE_RECIPE,
@@ -244,6 +247,52 @@ describe('the declarations stay honest about the tools they describe', () => {
     expect(declared.choices.map((choice) => choice.label)).toEqual(
       textCaseOptions.map((option) => option.label),
     );
+  });
+
+  it('offers exactly the two output formats the exact-size page offers', () => {
+    const declared = IMAGE_EXACT_SIZE_RECIPE.fields.find(
+      (field) => field.param === 'format',
+    );
+    expect(declared?.kind).toBe('choice');
+    if (declared?.kind !== 'choice') return;
+    // The two <option> values in components/image-exact-size-tool.tsx, minus
+    // the `image/` prefix a URL would have to escape.
+    expect(declared.choices.map((choice) => choice.value)).toEqual([
+      'jpeg',
+      'png',
+    ]);
+  });
+
+  /*
+   * The fit modes are tied to the engine rather than to the markup, which is
+   * the stronger end: a mode the page renders but the engine rejects would be
+   * a link that always errors, and `validateRequest` is what the page calls
+   * before it runs anything.
+   */
+  it('offers only fit modes the exact-size engine accepts', () => {
+    const declared = IMAGE_EXACT_SIZE_RECIPE.fields.find(
+      (field) => field.param === 'fit',
+    );
+    expect(declared?.kind).toBe('choice');
+    if (declared?.kind !== 'choice') return;
+    expect(declared.choices.map((choice) => choice.value)).toEqual([
+      'crop',
+      'pad',
+      'stretch',
+    ]);
+    for (const choice of declared.choices) {
+      expect(
+        validateRequest({
+          format: 'image/jpeg',
+          maxKb: 50,
+          kbUnit: 1024,
+          width: 200,
+          height: 230,
+          fit: choice.value as FitMode,
+        }),
+        choice.value,
+      ).toBeNull();
+    }
   });
 
   it('offers exactly the photo sizes the compressor offers', () => {

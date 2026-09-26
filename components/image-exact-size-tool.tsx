@@ -14,8 +14,19 @@ import {
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { AskLinkOffer } from '@/components/ask-link-offer';
+import {
+  RecipeAppliedNotice,
+  RecipeShareButton,
+} from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import {
+  IMAGE_EXACT_SIZE_RECIPE,
+  describeRecipe,
+  readRecipeValues,
+  recipeParamNames,
+} from '@/lib/tools/recipe-link';
 import {
   PORTAL_PRESETS,
   findPreset,
@@ -191,6 +202,7 @@ export function ImageExactSizeTool() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('');
+  const [recipeSummary, setRecipeSummary] = useState('');
   const manifest = toolMeta('image-exact-size');
 
   useEffect(() => {
@@ -210,6 +222,55 @@ export function ImageExactSizeTool() {
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
+
+  /*
+   * Settings that arrived on somebody else's link — a shared setup, or an ask
+   * link where the person who sent it stated the requirement and this page is
+   * where it is met. Read through `IMAGE_EXACT_SIZE_RECIPE`, so a value the
+   * controls below could not have produced is dropped rather than clamped, and
+   * the page sits on its own defaults instead of on a stranger's numbers.
+   *
+   * Applied once and then removed from the address bar, for the same reason
+   * `image-optimize-tool.tsx` does it: every one of these stays editable after
+   * arrival, so a URL that kept asserting them would fight whoever is using the
+   * page. Removing them also makes the effect idempotent — if React rebuilds
+   * the tree recovering from a hydration mismatch, this either runs again with
+   * the same values or finds nothing left to do, and neither loses an edit.
+   *
+   * `presetId` is deliberately left alone. A preset is a claim about what one
+   * named portal currently asks for, sourced and dated on this page; a link
+   * carrying numbers is not evidence about a portal, so it fills the boxes and
+   * selects no preset.
+   */
+  /* oxlint-disable react/react-compiler -- reads the address bar, an external
+     system, once on mount. */
+  useEffect(() => {
+    const applied = readRecipeValues(
+      IMAGE_EXACT_SIZE_RECIPE,
+      window.location.search,
+    );
+    if (Object.keys(applied).length === 0) return;
+
+    if (typeof applied.format === 'string') {
+      setFormat(`image/${applied.format}` as ExactOutputFormat);
+    }
+    if (typeof applied.maxkb === 'number') setMaxKb(String(applied.maxkb));
+    if (typeof applied.width === 'number') setWidth(String(applied.width));
+    if (typeof applied.height === 'number') setHeight(String(applied.height));
+    if (typeof applied.fit === 'string') setFit(applied.fit as FitMode);
+    setRecipeSummary(describeRecipe(IMAGE_EXACT_SIZE_RECIPE, applied));
+
+    const url = new URL(window.location.href);
+    for (const name of recipeParamNames(IMAGE_EXACT_SIZE_RECIPE)) {
+      url.searchParams.delete(name);
+    }
+    window.history.replaceState(
+      null,
+      '',
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, []);
+  /* oxlint-enable react/react-compiler */
 
   const clearResults = () => {
     for (const result of resultsRef.current)
@@ -252,6 +313,26 @@ export function ImageExactSizeTool() {
     sourcesRef.current = loaded;
     setSources(loaded);
     if (problems.length) setError(problems.join(' '));
+  };
+
+  /**
+   * The settings a share link or an ask link would carry.
+   *
+   * Only the five the definition declares, and only when the box holds
+   * something the field would accept — an empty or half-typed box is left out
+   * rather than sent as a zero. `buildRecipeSearch` filters again on the way
+   * into a URL, so this is convenience, not the guarantee.
+   */
+  const shareValues = () => {
+    const whole = (raw: string) =>
+      /^\d+$/.test(raw.trim()) ? Number(raw.trim()) : undefined;
+    return {
+      format: format.split('/')[1]!,
+      ...(whole(maxKb) === undefined ? {} : { maxkb: whole(maxKb)! }),
+      ...(whole(width) === undefined ? {} : { width: whole(width)! }),
+      ...(whole(height) === undefined ? {} : { height: whole(height)! }),
+      fit,
+    };
   };
 
   const currentRequest = (): ExactSizeRequest => ({
@@ -562,7 +643,11 @@ export function ImageExactSizeTool() {
             </div>
           ) : null}
 
-          <section className="mt-8 overflow-hidden rounded-2xl border bg-card">
+          <div className="mt-6">
+            <RecipeAppliedNotice summary={recipeSummary} subjectNoun="image" />
+          </div>
+
+          <section className="mt-2 overflow-hidden rounded-2xl border bg-card">
             <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
               <div>
                 <h2 className="text-sm font-semibold">Images</h2>
@@ -866,6 +951,20 @@ export function ImageExactSizeTool() {
                     <Trash2 aria-hidden="true" />
                     Clear
                   </Button>
+                ) : null}
+                <RecipeShareButton
+                  definition={IMAGE_EXACT_SIZE_RECIPE}
+                  values={shareValues()}
+                  subjectNoun="image"
+                />
+                {/*
+                  The loop, offered under the result and not over it: somebody
+                  who has just met a specification is the one person here who
+                  already knows what asking for one is worth. A link, so it
+                  cannot cover or delay the file they came for.
+                */}
+                {results.length ? (
+                  <AskLinkOffer requestId="photo-size" values={shareValues()} />
                 ) : null}
               </form>
             </div>

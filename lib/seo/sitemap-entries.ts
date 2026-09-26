@@ -75,6 +75,12 @@ export function buildSitemap(
     // the question people type -- "is there a free tool for X" -- and because
     // an unlisted page cannot earn the inbound interest it exists to collect.
     '/requests',
+    // The ask-link creator. Listed because it is a product page anybody can
+    // use, and because it is the one surface that explains the mechanism. The
+    // recipient pages under `/ask/<request>` are deliberately absent and say
+    // `noindex`: each one is a private request between two people, and a
+    // generated link variant is not an address this site publishes.
+    '/ask',
     // The snippet page for the embed programme. `/embed` is listed; the
     // framable `/embed/<tool>` copies are not, and are disallowed in
     // app/robots.ts -- they are stripped versions of pages this site is
