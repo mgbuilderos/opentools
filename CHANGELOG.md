@@ -15,8 +15,8 @@ The dates are release dates in UTC.
 
 ## 0.2.0 — 2026-09-26
 
-Everything merged since `v0.1.0` — 203 commits. The two that matter most if you
-run this yourself are the access gate and the prerendering.
+Everything merged since `v0.1.0`. The two that matter most if you run this
+yourself are the access gate and the prerendering.
 
 **The instance can be locked now.** 0.1.0 had no authentication of any kind;
 anyone who could reach the port got the whole site. Set `OPENTOOLS_AUTH_USER`
@@ -48,6 +48,21 @@ you can see it rather than be told.
 **New pages.** `/self-host` states the case for running it inside your own
 building, and `/proof` shows the offline demonstration next to the devtools
 one.
+
+**Six more tools**, none of which existed in 0.1.0: an offline email reader for
+EML, MSG and Mbox; File X-ray, which shows the hidden metadata in any file;
+bank statement to Excel or CSV; OFX and QIF to CSV or Excel; a PDF AcroForm
+filler; and PDF unlock and encryption. `/whats-new` lists what has shipped and
+publishes it as a feed.
+
+**It is packaged for the self-host app stores.** `packaging/` carries
+submission-ready manifests for Umbrel, Unraid Community Applications, CasaOS,
+Runtipi and Portainer — each naming the same image and port, with
+`packaging/packaging.test.ts` failing the build when one of them drifts or pins
+a release older than this changelog's newest section. They are prepared, not
+yet submitted; `docs/APP_CATALOGUES.md` covers each store's rules. Umbrel
+additionally requires the multi-arch manifest digest, which can only be filled
+in once this release's image exists.
 
 **Also.** `npm run portable` produces a copy of the site you can keep and open
 without a server. `llms.txt` now says what each tool does rather than which

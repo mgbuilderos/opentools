@@ -84,6 +84,22 @@ done. It is here because GHCR publishes private by default and a private image
 makes every `docker run` in every post fail: GitHub profile → Packages →
 `opentools` → Package settings → Visibility → Public.
 
+**Then fill in the Umbrel digest.** `packaging/umbrel/docker-compose.yml`
+carries an all-zeros placeholder, because Umbrel rejects a moving tag and wants
+the multi-arch manifest digest, which cannot exist before the image does. Ship
+the placeholder to their store and the app fails to pull for everyone:
+
+```bash
+docker buildx imagetools inspect ghcr.io/mgbuilderos/opentools:<version> \
+  --format '{{json .Manifest.Digest}}'
+```
+
+Put that in place of the zeros and commit it. `packaging/packaging.test.ts`
+guards both ends — it fails if the digest goes missing, and it fails on the
+half-finished state where one manifest has a real digest and another still has
+the placeholder. `docs/APP_CATALOGUES.md` has each store's rules; none of the
+five submissions should go out before this is done.
+
 **Verify from outside** before pointing anyone at it:
 
 ```bash
