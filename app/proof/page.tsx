@@ -512,9 +512,35 @@ export default function ProofPage() {
 
         {/*
           The evidence is the hard part and it is above. This is the reader's
-          next question — "so how do I tell, on some other site?" — and it has
-          its own page rather than another section here.
+          next question — "so how do I tell, on some other site?"
+
+          It used to be answered with an essay. The protocol is now something
+          they can point at a page of their own choosing, so the answer is the
+          tool, and the essay is the secondary link. Nothing here names a site
+          to check: the reader brings the target, which is both the rule
+          (`lib/policy/competitor-names.ts`) and the stronger position — a
+          result somebody reached themselves beats one we handed them.
         */}
+        <section className="mt-6 rounded-2xl border bg-card p-5 text-center sm:mt-8 sm:p-8">
+          <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+            Now check a page we did not write
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            The same protocol, pointed wherever you like. Paste the address of
+            any page that asks you for a file and run the check in your own
+            browser — it takes about ten seconds, and the answer never leaves
+            your device.
+          </p>
+          <p className="mt-4">
+            <a
+              href="/proof/check"
+              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border bg-background px-5 text-sm font-medium hover:bg-muted"
+            >
+              Can this page send your file anywhere?
+            </a>
+          </p>
+        </section>
+
         <p className="mt-6 text-center text-sm leading-6 sm:leading-7">
           <a
             href="/compare/browser-based-vs-cloud-file-tools"

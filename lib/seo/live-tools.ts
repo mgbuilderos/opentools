@@ -120,6 +120,7 @@ export const DEDICATED_TOOL_ROUTES = [
   '/pdf/preflight',
   '/pdf/burst',
   '/pdf/excel-to-pdf',
+  '/email/reader',
 ] as const;
 
 /**

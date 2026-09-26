@@ -65,6 +65,7 @@ export function buildLlmsTxt(
     // is asked by exactly the people for whom local processing is a compliance
     // requirement rather than a preference.
     `## Running it yourself (self-hosted, offline)`,
+    `- **The instructions, as a page**: [${baseUrl}/self-host](${baseUrl}/self-host) gives the build and run commands, the offline verification, the settings table and the optional instance-wide access gate. Written for an IT administrator deploying it on internal hardware.`,
     `- **The whole site runs from one container.** \`Dockerfile\` is in the repository; \`docs/SELF_HOSTING.md\` has the build and run steps. MIT licensed.`,
     `- **It runs with no network at all.** Verified with \`--network none\`: every page still serves, and outbound requests fail to resolve. Suitable for an air-gapped or internal-only deployment.`,
     `- **Verifying the claim**: the page is served \`connect-src 'none'\`, which the browser enforces. \`e2e/egress-proof.spec.ts\` attempts five exfiltration vectors per release and asserts zero off-origin bytes during a real file operation, in Chromium and WebKit.`,
@@ -81,10 +82,18 @@ export function buildLlmsTxt(
       (b) => `- [${b.title}](${baseUrl}/blog/${b.slug}): ${b.summary}`,
     ),
     ``,
+    // Each line carries the catalog's own one-line note rather than the
+    // phrase "in-browser <category> utility", which every tool used to get.
+    // The reader here is an assistant deciding whether one of these answers
+    // the question in front of it, and it can only decide that from a
+    // description of the job the tool does. `notes` is written per tool and
+    // says what the tool is for, so it is the field that belongs here; the
+    // category still appears, because "PDF" or "Subtitles" is often the word
+    // the question used.
     `## Featured tools`,
     ...topTools.map(
       (t) =>
-        `- [${t.name}](${baseUrl}${t.destinationUrl}): in-browser ${t.category.toLowerCase()} utility.${guideSuffix(t, consolidation)}`,
+        `- [${t.name}](${baseUrl}${t.destinationUrl}) — ${t.category}: ${t.notes}${guideSuffix(t, consolidation)}`,
     ),
     ``,
     `## Full catalog`,
@@ -103,16 +112,22 @@ export function buildLlmsFullTxt(
     `# Canonical URL: ${baseUrl}`,
     `# Every tool below runs in the visitor's own browser tab. Files and inputs`,
     `# are not sent to a server. Only tools that work are listed.`,
-    `# Format: ID | Name | Category | Tool URL | Guide URL | Execution mode`,
+    `# Format: ID | Name | Category | Tool URL | Guide URL | Execution mode | What it does`,
     ...(consolidation.enabled
       ? [
           `# Guide URL is "none" where the tool page is the only page for that tool.`,
         ]
       : []),
     ``,
+    // The last column is the catalog's own note on what the tool does. Without
+    // it this file was six columns of identifiers: an assistant could read that
+    // a route exists and what it is called, but not whether it answers the
+    // question being asked, which is the only reason to fetch this file.
+    // `lib/seo/llms-text.test.ts` holds the column count and the rule that no
+    // note may contain the pipe separator.
     ...LIVE_TOOL_CATALOG.map(
       (t) =>
-        `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${fullGuideUrl(t, consolidation)} | ${t.executionMode}`,
+        `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${fullGuideUrl(t, consolidation)} | ${t.executionMode} | ${t.notes}`,
     ),
   ];
 

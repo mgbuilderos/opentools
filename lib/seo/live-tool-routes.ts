@@ -81,6 +81,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/pdf/preflight',
   '/pdf/burst',
   '/pdf/excel-to-pdf',
+  '/email/reader',
   '/creator/workbench',
   '/data/workbench',
   '/date/workbench',

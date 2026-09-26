@@ -66,6 +66,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Run any of 631 operations over a whole folder, on this machine.',
   },
+  'email-reader': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
+  },
   'aadhaar-pan-masker': {
     version: '0.1.0-canary',
     shortDescription:

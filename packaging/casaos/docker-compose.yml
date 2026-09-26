@@ -1,0 +1,76 @@
+# CasaOS App Store submission.
+#
+# Submitted as a pull request to IceWhaleTech/CasaOS-AppStore. Requirements
+# checked 2026-09-26: docker-compose.yml, icon.png and at least one screenshot
+# are all required; the app name may contain only lower-case letters, numbers,
+# underscores and hyphens; and the image tag must be specific rather than
+# :latest, so that a reviewed app stays the app that was reviewed.
+name: opentools
+services:
+  opentools:
+    image: ghcr.io/mgbuilderos/opentools:0.1.0
+    container_name: opentools
+    ports:
+      - "8796:8796"
+    environment:
+      # Both must be set for the access gate to come on; setting one fails
+      # closed. Left empty here so the default install is open on the LAN,
+      # which is the normal expectation for a CasaOS app.
+      - OPENTOOLS_AUTH_USER=
+      - OPENTOOLS_AUTH_PASSWORD=
+    volumes:
+      # Optional. The page cache lives here; without the mount it starts empty
+      # after each restart, which costs nothing but a warm cache.
+      - /DATA/AppData/opentools:/tmp/opentools-state
+    restart: unless-stopped
+    x-casaos:
+      envs:
+        - container: OPENTOOLS_AUTH_USER
+          description:
+            en_us: "Optional. Username for the instance-wide access gate. Set both this and the password, or neither."
+        - container: OPENTOOLS_AUTH_PASSWORD
+          description:
+            en_us: "Optional. Password for the access gate. Credentials are HTTP Basic and travel in clear text unless you put TLS in front."
+      ports:
+        - container: "8796"
+          description:
+            en_us: "Web interface."
+      volumes:
+        - container: /tmp/opentools-state
+          description:
+            en_us: "Page cache. Safe to discard."
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: opentools
+  author: mgbuilderos
+  developer: mgbuilderos
+  category: Utilities
+  icon: https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png
+  screenshot_link:
+    - https://raw.githubusercontent.com/mgbuilderos/opentools/main/packaging/screenshots/1-home.png
+    - https://raw.githubusercontent.com/mgbuilderos/opentools/main/packaging/screenshots/2-text-case-converter.png
+  thumbnail: https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png
+  title:
+    en_us: OpenTools
+  tagline:
+    en_us: 568 file tools that run in your browser, not on the server
+  description:
+    en_us: >-
+      Document, image, audio, video, data and developer tools served from one
+      container. Every tool runs in the browser tab that opened it, so the file
+      is never sent anywhere - this container serves the page and never
+      receives the document. What you are hosting is a static site, not a
+      document processor.
+
+      Runs with no outbound network at all, verified with --network none. An
+      optional instance-wide access gate (HTTP Basic, one shared credential)
+      can be switched on with two environment variables. No TLS - put a reverse
+      proxy in front if you expose it beyond your own network. MIT licensed.
+  tips:
+    before_install:
+      en_us: "No account, no sign-up and no configuration are needed. Open the web interface and every tool works immediately."
+  index: /
+  port_map: "8796"
+  scheme: http

@@ -1888,6 +1888,43 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'email-reader',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Offline email reader',
+    shortDescription:
+      'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
+    category: 'File',
+    aliases: [
+      'eml reader',
+      'msg reader',
+      'mbox viewer',
+      'open eml file',
+      'view msg file',
+      'outlook msg reader',
+      'email attachment viewer',
+    ],
+    jobs: [
+      'open an eml file in browser',
+      'view outlook msg email',
+      'read mbox archive',
+      'extract email attachments',
+      'inspect email headers',
+    ],
+    href: '/email/reader',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'email.eml.read',
+        'email.msg.read',
+        'email.mbox.read',
+        'email.html.sanitize',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'file-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2460,7 +2497,13 @@ export const toolGroups: ToolGroup[] = [
     id: 'files',
     name: 'Files & archives',
     shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
-    toolIds: ['file-hash', 'archive-toolkit', 'file-workbench', 'bench'],
+    toolIds: [
+      'file-hash',
+      'archive-toolkit',
+      'email-reader',
+      'file-workbench',
+      'bench',
+    ],
   },
   {
     id: 'text-data',

@@ -52,6 +52,7 @@ const CORE_DEPTH_ROUTES = [
   '/video/compress',
   '/video/resize',
   '/video/crop',
+  '/email/reader',
 ] as const;
 
 const depthRoutes = [
