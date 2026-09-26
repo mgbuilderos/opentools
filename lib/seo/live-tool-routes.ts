@@ -60,6 +60,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/data/csv-to-json',
   '/convert/formats',
   '/data/json',
+  '/file/xray',
   '/file/hash-calculator',
   '/file/archive',
   '/life-admin/aadhaar-pan-masker',

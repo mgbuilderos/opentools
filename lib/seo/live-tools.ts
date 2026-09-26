@@ -88,6 +88,7 @@ export const DEDICATED_TOOL_ROUTES = [
   // the `[pair]` segment beside it. See app/convert/formats/page.tsx.
   '/convert/formats',
   '/data/json',
+  '/file/xray',
   '/file/hash-calculator',
   '/file/archive',
   '/life-admin/aadhaar-pan-masker',

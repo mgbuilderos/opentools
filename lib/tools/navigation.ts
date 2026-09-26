@@ -132,8 +132,9 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'files',
     name: 'Files & archives',
     shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
-    destinationCount: 35,
+    destinationCount: 36,
     toolIds: [
+      'file-xray',
       'file-hash',
       'archive-toolkit',
       'email-reader',

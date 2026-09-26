@@ -1864,6 +1864,43 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'file-xray',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'File X-ray',
+    shortDescription:
+      'Drop any file and see what is hidden inside it, from GPS coordinates to text you deleted, then remove it.',
+    category: 'File',
+    aliases: [
+      'file metadata viewer',
+      'what is in my file',
+      'check photo for gps location',
+      'does my photo have my address',
+      'remove metadata from any file',
+      'see hidden data in a file',
+      'metadata checker',
+      'exif checker',
+    ],
+    jobs: [
+      'check a file for hidden personal data before sending it',
+      'find out if a photo reveals where it was taken',
+      'see who wrote a document and on which machine',
+      'find text that was deleted but is still in a file',
+      'strip metadata from a photo, pdf or word file',
+    ],
+    href: '/file/xray',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'file.metadata.detect',
+        'file.metadata.read',
+        'file.metadata.strip',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'file-hash',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2583,6 +2620,7 @@ export const toolGroups: ToolGroup[] = [
     name: 'Files & archives',
     shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
     toolIds: [
+      'file-xray',
       'file-hash',
       'archive-toolkit',
       'email-reader',
