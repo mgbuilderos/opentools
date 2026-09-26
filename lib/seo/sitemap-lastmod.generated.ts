@@ -1247,6 +1247,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/productivity/weighted-scoring-matrix': '2026-09-24T16:18:20+05:30',
   '/productivity/workbench': '2026-09-23T15:54:01+05:30',
   '/proof': '2026-09-26T11:18:12+05:30',
+  '/proof/check': '2026-09-26T11:18:58+05:30',
   '/qr': '2026-09-26T01:12:47+05:30',
   '/qr/app-store-qr-code': '2026-09-24T16:18:20+05:30',
   '/qr/bitcoin-qr-code': '2026-09-24T16:18:20+05:30',
