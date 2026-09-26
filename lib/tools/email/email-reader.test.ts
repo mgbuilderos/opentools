@@ -109,3 +109,55 @@ describe('Email Reader and Sanitizer', () => {
     });
   });
 });
+
+/**
+ * The four vectors that fetched through the original sanitiser, held here as
+ * unit assertions as well as in `e2e/email-tracker.spec.ts`.
+ *
+ * The e2e guard is the authoritative one — it watches real network traffic in
+ * a real browser, which is the only place the DOMParser path runs. These are
+ * the cheap copy that fails in a second rather than in a browser run, and they
+ * cover the regex fallback, which is what `environment: 'node'` actually
+ * executes here.
+ *
+ * Verified to go red: against the pre-fix sanitiser all five fail.
+ */
+describe('remote fetch vectors', () => {
+  const TRACKER = 'http://tracker.invalid';
+
+  it('strips an SVG image href', () => {
+    expect(
+      sanitizeEmailHtml(`<svg><image href="${TRACKER}/svgimg.png" /></svg>`),
+    ).not.toContain('tracker.invalid');
+  });
+
+  it('strips an SVG image xlink:href', () => {
+    expect(
+      sanitizeEmailHtml(
+        `<svg><image xlink:href="${TRACKER}/svgxlink.png" /></svg>`,
+      ),
+    ).not.toContain('tracker.invalid');
+  });
+
+  it('strips an SVG use href', () => {
+    expect(
+      sanitizeEmailHtml(`<svg><use href="${TRACKER}/svguse.svg" /></svg>`),
+    ).not.toContain('tracker.invalid');
+  });
+
+  it('strips a legacy table-cell background', () => {
+    expect(
+      sanitizeEmailHtml(
+        `<table><tr><td background="${TRACKER}/td.png">x</td></tr></table>`,
+      ),
+    ).not.toContain('tracker.invalid');
+  });
+
+  it('strips poster, srcset, imagesrcset, ping and formaction', () => {
+    expect(
+      sanitizeEmailHtml(
+        `<p poster="${TRACKER}/a.png" srcset="${TRACKER}/b.png" imagesrcset="${TRACKER}/c.png" ping="${TRACKER}/d" formaction="${TRACKER}/e">x</p>`,
+      ),
+    ).not.toContain('tracker.invalid');
+  });
+});
