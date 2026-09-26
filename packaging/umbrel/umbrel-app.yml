@@ -12,7 +12,7 @@ manifestVersion: 1
 id: opentools
 category: files
 name: OpenTools
-version: "0.1.0"
+version: "0.2.0"
 tagline: 568 file tools that run in your browser, not on the server
 description: >-
   Document, image, audio, video, data and developer tools, served from one

@@ -8,7 +8,7 @@
 name: opentools
 services:
   opentools:
-    image: ghcr.io/mgbuilderos/opentools:0.1.0
+    image: ghcr.io/mgbuilderos/opentools:0.2.0
     container_name: opentools
     ports:
       - "8796:8796"
@@ -27,19 +27,22 @@ services:
       envs:
         - container: OPENTOOLS_AUTH_USER
           description:
-            en_us: "Optional. Username for the instance-wide access gate. Set both this and the password, or neither."
+            en_US: "Optional. Username for the instance-wide access gate. Set both this and the password, or neither."
         - container: OPENTOOLS_AUTH_PASSWORD
           description:
-            en_us: "Optional. Password for the access gate. Credentials are HTTP Basic and travel in clear text unless you put TLS in front."
+            en_US: "Optional. Password for the access gate. Credentials are HTTP Basic and travel in clear text unless you put TLS in front."
       ports:
         - container: "8796"
           description:
-            en_us: "Web interface."
+            en_US: "Web interface."
       volumes:
         - container: /tmp/opentools-state
           description:
-            en_us: "Page cache. Safe to discard."
+            en_US: "Page cache. Safe to discard."
 x-casaos:
+  # Reverse-domain, and mandatory: alongside `docker compose config -q` this is
+  # the one field the store's validator hard-fails on rather than warning about.
+  id: com.getopentools.opentools
   architectures:
     - amd64
     - arm64
@@ -52,11 +55,11 @@ x-casaos:
     - https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/og.png
   thumbnail: https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png
   title:
-    en_us: OpenTools
+    en_US: OpenTools
   tagline:
-    en_us: 568 file tools that run in your browser, not on the server
+    en_US: 568 file tools that run in your browser, not on the server
   description:
-    en_us: >-
+    en_US: >-
       Document, image, audio, video, data and developer tools served from one
       container. Every tool runs in the browser tab that opened it, so the file
       is never sent anywhere - this container serves the page and never
@@ -69,7 +72,8 @@ x-casaos:
       proxy in front if you expose it beyond your own network. MIT licensed.
   tips:
     before_install:
-      en_us: "No account, no sign-up and no configuration are needed. Open the web interface and every tool works immediately."
+      en_US: "No account, no sign-up and no configuration are needed. Open the web interface and every tool works immediately."
   index: /
   port_map: "8796"
+  version: "0.2.0"
   scheme: http
