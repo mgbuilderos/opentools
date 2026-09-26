@@ -47,8 +47,12 @@ dependencies: []
 repo: https://github.com/mgbuilderos/opentools
 support: https://github.com/mgbuilderos/opentools/issues
 port: 8796
+# Copied into the app directory of the umbrel-apps pull request from
+# packaging/screenshots/ in this repo; Umbrel serves them from beside the
+# manifest rather than from a URL.
 gallery:
   - 1.jpg
+  - 2.jpg
 path: ""
 defaultUsername: ""
 defaultPassword: ""
