@@ -78,10 +78,15 @@ The largest by installed base, and the only one that reads a repository
 rather than taking a pull request.
 
 - **What to submit:** the URL of this repository, at <https://ca.unraid.net/submit>.
-- **Artifacts:** `packaging/unraid/opentools.xml` and `packaging/unraid/ca_profile.xml`.
+- **Artifacts:** `packaging/unraid/opentools.xml`, and `ca_profile.xml` at the
+  **repository root**. The profile describes the repository rather than one
+  app, and the page stating exactly where their scanner looks for it is not
+  reachable from the container these docs were written in, so it sits at the
+  root: a scanner that walks the whole tree finds it there as well, which the
+  reverse is not true of. Their Validate step is what settles it.
 - **Their requirements, checked:** one XML file per app ✓, a `<Repository>` tag
   pointing at a real image ✓, readable `<Name>` and `<Overview>` for the
-  moderator ✓, a `ca_profile.xml` with a non-empty `<Profile>` ✓, an
+  moderator ✓, a root `ca_profile.xml` with a non-empty `<Profile>` ✓, an
   OSI-approved licence on the repository ✓ (MIT), repository public and active ✓.
 - **Before you submit:** run _Validate_ and _Scan_ in their submission flow. It
   checks the templates and reports what a moderator would otherwise bounce.
@@ -117,6 +122,7 @@ rather than taking a pull request.
   architectures, and refuses rather than guessing if the tag is not published
   yet — which is the failure that would otherwise ship a manifest that looks
   fine and installs for nobody. `--check` prints without writing.
+
 - **The compose file sets `user: "1000:1000"`,** which is not decoration. The
   image runs as `node`, uid 1000; without it Umbrel creates the bind mount
   root-owned and the page cache cannot be written.
@@ -137,10 +143,10 @@ rather than taking a pull request.
 `packaging/screenshots/` holds the two shop-window images, and both manifests
 point at them:
 
-| File | What it shows |
-| :--- | :--- |
-| `1-home.png` | The home page: the drop zone, the category rail, the breadth |
-| `2-text-case-converter.png` | A tool mid-use, with real input and its real output |
+| File                        | What it shows                                                |
+| :-------------------------- | :----------------------------------------------------------- |
+| `1-home.png`                | The home page: the drop zone, the category rail, the breadth |
+| `2-text-case-converter.png` | A tool mid-use, with real input and its real output          |
 
 Taken 2026-09-26 against the built site at 1280x800 on a 2x display, so they are
 2560x1600 and stay sharp on a retina screen. The marquee across the top is
@@ -156,7 +162,7 @@ docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:0.1.0
 
 **The Umbrel gallery is the one thing that is not simply a path.** Its manifest
 lists `1.jpg` and `2.jpg`, which Umbrel serves from the app directory inside
-*their* repository rather than from a URL. Copy the two files from
+_their_ repository rather than from a URL. Copy the two files from
 `packaging/screenshots/` into the app directory of the pull request under those
 names.
 
