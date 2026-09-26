@@ -137,6 +137,19 @@ export function PdfPasswordTool() {
 
       const baseName = doc.name.replace(/\.pdf$/i, '');
       setResultFileName(`${baseName}-unlocked.pdf`);
+
+      /*
+       * Clear the field now the password has done its work.
+       *
+       * This page tells the reader that passwords never reach "the DOM after
+       * use". That was not true: a controlled input serialises its value, so
+       * `document.documentElement.outerHTML` contained `value="secret"` after
+       * a successful unlock -- measured in Chromium on 2026-09-26. The claim
+       * is the kind this project may not make without a test behind the exact
+       * wording, so the code is changed to match the claim rather than the
+       * claim softened to match the code.
+       */
+      setUserPassword('');
     } catch (err) {
       if (err instanceof PdfCryptError) {
         if (err.code === 'WRONG_PASSWORD') {
