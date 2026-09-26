@@ -52,7 +52,8 @@ test.describe('Excel to PDF in-browser vector conversion', () => {
 
     // Verify file info and workbook sheet preview
     await expect(page.getByText('sales.xlsx')).toBeVisible();
-    await expect(page.getByText(/3 sheet\(s\)/i)).toBeVisible();
+    // The detection line, not the file summary that repeats the count.
+    await expect(page.getByText('Sheet(s) detected')).toBeVisible();
     await expect(page.getByText('Sales', { exact: true })).toBeVisible();
     await expect(page.getByText('Empty Sheet', { exact: true })).toBeVisible();
     await expect(page.getByText('Gaps', { exact: true })).toBeVisible();
