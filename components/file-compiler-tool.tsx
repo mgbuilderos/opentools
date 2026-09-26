@@ -124,16 +124,39 @@ function decodeSize(
     const blob = new Blob([bytes as Uint8Array<ArrayBuffer>], { type });
     const url = URL.createObjectURL(blob);
     const image = new Image();
+    let settled = false;
     const finish = (size: DecodedSize | null) => {
+      if (settled) return;
+      settled = true;
       URL.revokeObjectURL(url);
       resolve(size);
     };
-    image.onload = () =>
+    // Same unbounded wait as `loadBitmap`, and the same answer to it: a decode
+    // that never replies resolves to null, and verification then reports the
+    // pixel size as unprovable instead of hanging.
+    const timer = window.setTimeout(() => finish(null), DECODE_TIMEOUT_MS);
+    image.onload = () => {
+      window.clearTimeout(timer);
       finish({ width: image.naturalWidth, height: image.naturalHeight });
-    image.onerror = () => finish(null);
+    };
+    image.onerror = () => {
+      window.clearTimeout(timer);
+      finish(null);
+    };
     image.src = url;
   });
 }
+
+/**
+ * How long to wait for the browser to decode an image before giving up on it.
+ *
+ * There is a timeout here because an `<img>` is not guaranteed to answer. Under
+ * load, Chromium was observed firing neither `onload` nor `onerror` — the
+ * promise simply never settled, and the page sat on "Preparing your file
+ * locally…" with no error and no way forward. A tool that can hang silently is
+ * worse than one that admits defeat, so it admits defeat.
+ */
+const DECODE_TIMEOUT_MS = 15_000;
 
 function loadBitmap(bytes: Uint8Array, type: string) {
   return new Promise<{ image: HTMLImageElement; release: () => void }>(
@@ -141,12 +164,34 @@ function loadBitmap(bytes: Uint8Array, type: string) {
       const blob = new Blob([bytes as Uint8Array<ArrayBuffer>], { type });
       const url = URL.createObjectURL(blob);
       const image = new Image();
-      image.onload = () =>
-        resolve({ image, release: () => URL.revokeObjectURL(url) });
-      image.onerror = () => {
-        URL.revokeObjectURL(url);
-        reject(new ShowableError('The browser could not decode this image.'));
+      let settled = false;
+      const finish = (action: () => void) => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        action();
       };
+      const timer = window.setTimeout(
+        () =>
+          finish(() => {
+            URL.revokeObjectURL(url);
+            reject(
+              new ShowableError(
+                'This image took too long to open in this browser.',
+              ),
+            );
+          }),
+        DECODE_TIMEOUT_MS,
+      );
+      image.onload = () =>
+        finish(() =>
+          resolve({ image, release: () => URL.revokeObjectURL(url) }),
+        );
+      image.onerror = () =>
+        finish(() => {
+          URL.revokeObjectURL(url);
+          reject(new ShowableError('The browser could not decode this image.'));
+        });
       image.src = url;
     },
   );
@@ -385,9 +430,13 @@ export function FileCompilerTool() {
       setStatus(
         `${formatLabel(`image/${detected}` as VerifiableFormat)}, ${size.width} by ${size.height} pixels, ${describeBytes(bytes.length)}.`,
       );
-    } catch {
+    } catch (error) {
       setPhase('empty');
-      setProblem('That file could not be read in this browser.');
+      setProblem(
+        error instanceof ShowableError
+          ? error.message
+          : 'That file could not be read in this browser.',
+      );
     }
   }, []);
 

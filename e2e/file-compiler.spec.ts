@@ -103,7 +103,17 @@ async function transparentPng(page: Page, size = 400) {
     context.fillRect(0, 0, edge / 2, edge);
     return canvas.toDataURL('image/png').split(',')[1]!;
   }, size);
-  return Buffer.from(base64, 'base64');
+  const bytes = Buffer.from(base64, 'base64');
+  /*
+   * Checked, because a fixture that quietly comes back as something other than a
+   * PNG makes the page's correct refusal of it look like a product bug — which
+   * is exactly how an hour went missing here. If `toDataURL` ever returns
+   * nothing useful, this fails on the line that produced it.
+   */
+  expect(startsWith(new Uint8Array(bytes), PNG), 'fixture is not a PNG').toBe(
+    true,
+  );
+  return bytes;
 }
 
 async function open(page: Page, fragment = '') {
@@ -113,20 +123,39 @@ async function open(page: Page, fragment = '') {
   ).toBeVisible();
 }
 
+/**
+ * Wait until the page's React has taken over its own controls.
+ *
+ * The file input is server-rendered, so it exists before `onChange` is attached,
+ * and a file set in that window lands in the DOM while the component never hears
+ * about it. `e2e/ask-link.spec.ts` documents the same race one control class up.
+ */
+async function hydrated(page: Page) {
+  await page.waitForLoadState('networkidle');
+}
+
+/**
+ * Hand the page a file, and wait until it has really taken it.
+ *
+ * Retried as a whole, which is the idiom every spec here uses for this. The
+ * symptom when it is not retried is specific and misleading: no panel, no error
+ * and nothing on screen at all, because the change event fired into a control
+ * React had not adopted yet. It cost an hour of looking for a product bug that
+ * was not there, so the wait reports what the page said when it gives up.
+ */
 async function choose(page: Page, bytes: Buffer, name = 'photo.png') {
-  await page.locator('#file-compiler-input').setInputFiles({
-    name,
-    mimeType: name.endsWith('.jpg') ? 'image/jpeg' : 'image/png',
-    buffer: bytes,
-  });
-  // The panel appears only once the bytes have really been inspected: the file
-  // is read, the container sniffed, the image decoded and — when it has an alpha
-  // channel — its pixels scanned. That is genuine work, and Playwright runs
-  // several of these tests at once on one machine, so the default five seconds
-  // is too tight. Waiting longer here is not hiding a hang; a hang still fails.
-  await expect(page.getByText(/^Your file$/iu).first()).toBeVisible({
-    timeout: 20_000,
-  });
+  await hydrated(page);
+  await expect(async () => {
+    await page.locator('#file-compiler-input').setInputFiles({
+      name,
+      mimeType: name.endsWith('.jpg') ? 'image/jpeg' : 'image/png',
+      buffer: bytes,
+    });
+    // The panel is the page having inspected the bytes, not merely received them.
+    await expect(page.getByText(/^Your file$/iu).first()).toBeVisible({
+      timeout: 15_000,
+    });
+  }).toPass({ timeout: 90_000 });
 }
 
 async function say(page: Page, command: string) {
