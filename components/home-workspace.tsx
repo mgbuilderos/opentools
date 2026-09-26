@@ -4,9 +4,12 @@ import { LockKeyhole, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { destinationIcon } from '@/components/category-icons';
+import { CommandBar } from '@/components/command-bar';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
+import { PROFESSION_HUBS } from '@/lib/seo/audience-pages';
 import { CATEGORY_LINKS } from '@/lib/seo/category-hubs';
+import type { SubjectKind } from '@/lib/command/types';
 import {
   INITIAL_GROUP_ID,
   INITIAL_SECTIONS,
@@ -19,6 +22,16 @@ export function HomeWorkspace() {
   const [selectedGroupId, setSelectedGroupId] =
     useState<NavGroupId>(INITIAL_GROUP_ID);
   const [filter, setFilter] = useState('');
+  /*
+    What is on the dropzone, for the box above it.
+
+    "Make this under 2MB" never says what "this" is, and the answer depends
+    entirely on it -- a PDF compressor and an image resizer are different tools.
+    The dropzone already knows, because it read the file to choose which shortcuts
+    to show. This carries that one word between the two, and nothing else: the
+    file itself stays where it was, which is in the tab.
+  */
+  const [dropped, setDropped] = useState<SubjectKind | undefined>(undefined);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const selectedGroup =
     NAV_GROUPS.find((group) => group.id === selectedGroupId) ?? NAV_GROUPS[0]!;
@@ -149,10 +162,88 @@ export function HomeWorkspace() {
             </span>
           </div>
 
-          {/* Smart Universal Auto-Detector Dropzone */}
+          {/*
+            The box you type a sentence into.
+
+            It is first because it is the answer to the problem this page has: 21
+            categories and 1,367 tools, and somebody who knows what they want done
+            but not what it is called here. Everything below it -- the dropzone,
+            the categories, the cards -- is for browsing, which is the other way
+            people arrive at a tool and not the way they describe a job.
+
+            It costs the page nothing until it is used: `components/command-bar.tsx`
+            imports the catalogue on the first keystroke.
+          */}
           <div className="mt-8">
-            <SmartDropzone />
+            <CommandBar subject={dropped} />
           </div>
+
+          {/* Smart Universal Auto-Detector Dropzone */}
+          <div className="mt-4">
+            <SmartDropzone onSubjectChange={setDropped} />
+          </div>
+
+          {/*
+            The folder runner, on the front page.
+
+            This is the one thing on the site that no hosted competitor can
+            offer at any price, and until now it lived on a side route called
+            /bench with a generic description — a word nobody types, one click
+            from nowhere. Every upload site is one file at a time because
+            "upload your folder of 4,000 scanned invoices" is unthinkable when
+            someone is paying for the bytes. Nobody is paying for these.
+          */}
+          <a
+            href="/batch"
+            className="focus-ring mt-4 flex flex-col gap-3 rounded-xl border bg-card p-5 transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span>
+              <span className="block text-lg font-semibold tracking-tight">
+                Got a whole folder?
+              </span>
+              <span className="mt-1 block max-w-2xl text-sm leading-6 text-muted-foreground">
+                Point it at a folder of 4,000 files and come back in ten
+                minutes. Compress, convert, rename or strip metadata across
+                every file at once. No file limit, no size limit — your machine
+                is the limit.
+              </span>
+            </span>
+            <span className="shrink-0 rounded-lg border px-3 py-2 text-sm font-semibold">
+              Open batch
+            </span>
+          </a>
+
+          {/*
+            Pages addressed to a job rather than a file format. Owner decision
+            2026-09-25, overriding C4; see lib/seo/audience-pages.ts for what
+            makes these defensible rather than a doorway family.
+
+            They are linked from here because a page reachable only from the
+            sitemap gets minimal crawl priority and no internal authority —
+            the exact failure lib/seo/orphan-coverage.test.ts exists to catch.
+          */}
+          <nav aria-label="Pages for your profession" className="mt-8">
+            <h2 className="text-sm font-semibold text-foreground">
+              Built for your work
+            </h2>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {PROFESSION_HUBS.map((page) => (
+                <li key={page.route}>
+                  <a
+                    href={page.route}
+                    className="focus-ring block h-full rounded-xl border bg-card p-4 transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30"
+                  >
+                    <span className="block text-sm font-semibold">
+                      {page.name}
+                    </span>
+                    <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                      {page.blurb}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
           {/*
             The crawlable twin of the category switcher in the top bar.
@@ -310,10 +401,40 @@ export function HomeWorkspace() {
                 Security
               </a>
               <a
+                href="/self-host"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Self-host
+              </a>
+              <a
                 href="/about"
                 className="focus-ring underline underline-offset-4 hover:text-foreground"
               >
                 About
+              </a>
+              {/*
+                The only page that gives a returning visitor a reason to come
+                back before their next file problem, so it belongs on the
+                most-linked page on the site rather than in the sitemap alone.
+              */}
+              <a
+                href="/whats-new"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                What&rsquo;s new
+              </a>
+              {/*
+                The request page hangs off the footer for the same reason: it is
+                otherwise reachable only from the sitemap, and a page nothing
+                links to collects nothing. It sits beside "What's new" because
+                the two are the same loop from opposite ends -- what got built,
+                and what to build next.
+              */}
+              <a
+                href="/requests"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Ask for a tool
               </a>
               {/*
                 The comparison pages are reachable from here because an orphan

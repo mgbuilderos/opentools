@@ -5,6 +5,7 @@ import {
   FlaskConical,
   ShieldCheck,
   TerminalSquare,
+  WifiOff,
 } from 'lucide-react';
 
 import egressReceipt from '@/lib/seo/egress-receipt.json';
@@ -137,6 +138,59 @@ export default function ProofPage() {
             tries to smuggle data out of this site and records what happens.
             Below is the protocol, the result, and how to catch us if we are
             wrong.
+          </p>
+        </section>
+
+        {/*
+          The wifi test comes before the devtools one because it needs nothing.
+
+          The section below this asks a reader to open developer tools and read
+          a network panel. That is a fine proof for an engineer and no proof at
+          all for everyone else, who is the person actually being asked to
+          trust this page with a bank statement. Unplugging the internet is a
+          proof anyone can perform in three seconds, with no tooling, no
+          screenshot and no trust: if the page still does the work with the
+          network switched off, it plainly is not sending the file anywhere.
+
+          It is also the honest framing. This does not assert a result — the
+          reader produces it. See `lib/offline-readiness.ts` for why the site
+          reports what a browser actually holds rather than claiming offline
+          support in prose.
+        */}
+        <section className="mt-4 rounded-2xl border bg-card p-5 sm:mt-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <WifiOff aria-hidden="true" className="size-5 shrink-0" />
+            <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+              Don&rsquo;t believe us? Turn your wifi off
+            </h2>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            No developer tools, no network tab, nothing to read. Open a tool
+            page, switch off your wifi or unplug the cable, and use it. If the
+            work still happens, the file cannot be going anywhere — a page with
+            no network cannot upload anything, and nothing we could write here
+            would prove that better than watching it.
+          </p>
+          <ol className="mt-4 space-y-2 text-sm leading-6 text-muted-foreground sm:text-base">
+            <li>
+              1. Open{' '}
+              <a
+                className="focus-ring font-medium text-foreground underline underline-offset-4"
+                href="/pdf/compress-offline"
+              >
+                the offline-ready compressor
+              </a>{' '}
+              once while you still have a connection.
+            </li>
+            <li>2. Turn off your wifi, or switch on aeroplane mode.</li>
+            <li>3. Reload the page and compress a PDF.</li>
+          </ol>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            That page reports what your browser is actually holding rather than
+            telling you it works offline, so you can see the answer for your own
+            machine instead of ours. It is also why these tools work on a plane,
+            in a hospital, on a factory floor or anywhere else the network is
+            absent or not to be trusted.
           </p>
         </section>
 
@@ -458,9 +512,35 @@ export default function ProofPage() {
 
         {/*
           The evidence is the hard part and it is above. This is the reader's
-          next question — "so how do I tell, on some other site?" — and it has
-          its own page rather than another section here.
+          next question — "so how do I tell, on some other site?"
+
+          It used to be answered with an essay. The protocol is now something
+          they can point at a page of their own choosing, so the answer is the
+          tool, and the essay is the secondary link. Nothing here names a site
+          to check: the reader brings the target, which is both the rule
+          (`lib/policy/competitor-names.ts`) and the stronger position — a
+          result somebody reached themselves beats one we handed them.
         */}
+        <section className="mt-6 rounded-2xl border bg-card p-5 text-center sm:mt-8 sm:p-8">
+          <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+            Now check a page we did not write
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            The same protocol, pointed wherever you like. Paste the address of
+            any page that asks you for a file and run the check in your own
+            browser — it takes about ten seconds, and the answer never leaves
+            your device.
+          </p>
+          <p className="mt-4">
+            <a
+              href="/proof/check"
+              className="focus-ring inline-flex min-h-11 items-center justify-center rounded-xl border bg-background px-5 text-sm font-medium hover:bg-muted"
+            >
+              Can this page send your file anywhere?
+            </a>
+          </p>
+        </section>
+
         <p className="mt-6 text-center text-sm leading-6 sm:leading-7">
           <a
             href="/compare/browser-based-vs-cloud-file-tools"

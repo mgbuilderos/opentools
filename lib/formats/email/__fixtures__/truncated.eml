@@ -1,0 +1,7 @@
+From: sender@example.invalid
+Content-Type: multipart/mixed; boundary="cut"
+
+--cut
+Content-Type: text/plain
+
+incomplete

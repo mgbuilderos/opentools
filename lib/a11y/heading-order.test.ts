@@ -48,7 +48,7 @@ describe('heading order', () => {
    */
   it('names a skipped level and stays quiet about a legal outline', () => {
     expect(firstHeadingSkip('<h1>A</h1><h3>B</h3>')).toBe('h1 followed by h3');
-    expect(firstHeadingSkip('<h2>A</h2><h4 class="x">B</h4>')).toBe(
+    expect(firstHeadingSkip('<h1>T</h1><h2>A</h2><h4 class="x">B</h4>')).toBe(
       'h2 followed by h4',
     );
     // Descending any distance closes subsections and opens a new one: legal.
@@ -59,7 +59,36 @@ describe('heading order', () => {
     expect(
       firstHeadingSkip('<h2>Categories</h2><h1>Title</h1><h2>S</h2>'),
     ).toBe(null);
-    expect(firstHeadingSkip('<p>no headings at all</p>')).toBe(null);
+  });
+
+  /*
+    The `h1` rule, which the level rule cannot reach.
+
+    Headings that start at `h2` skip nothing -- `h2` to `h2` is not a climb --
+    so before 2026-09-26 this detector returned null for them, and four tool
+    pages reached production with no `h1`: /pdf/form-filler, /finance/ofx-qif,
+    /finance/bank-statement and /email/reader. `scripts/verify-live.mjs` named
+    all four, but only after the deploy, because asking whether an `h1` exists
+    was the one thing nothing did before the bytes went out.
+
+    A page with no headings at all is the same fault and is reported the same
+    way. It used to be allowed here, on the reading that a fragment with no
+    outline has nothing to get wrong -- but this runs over whole served pages,
+    and a page with nothing to announce itself by is exactly what the rule is
+    for. No served page is heading-less: at the time this changed, 1,477 of
+    1,481 had exactly one `h1` and none had two.
+  */
+  it('requires exactly one h1, which a skipped level cannot detect', () => {
+    expect(firstHeadingSkip('<h2>A</h2><h3>B</h3>')).toBe('no h1');
+    expect(firstHeadingSkip('<p>no headings at all</p>')).toBe('no h1');
+    expect(firstHeadingSkip('<h1>A</h1><h1>B</h1>')).toBe('2 h1 elements');
+    // The four shapes that shipped: an outline that is legal but headless.
+    expect(firstHeadingSkip('<h2>Select a file</h2><h2>Result</h2>')).toBe(
+      'no h1',
+    );
+    expect(firstHeadingSkip('<h1>Fill PDF forms</h1><h2>Select</h2>')).toBe(
+      null,
+    );
   });
 
   /**

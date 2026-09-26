@@ -3,6 +3,7 @@ import { getAllTemplates } from '../templates/templates-data';
 import { localizedSitemapRoutes } from '../i18n/routes';
 import { getAllBlogPosts } from './blog-data';
 import { CATEGORY_HUB_ROUTES } from './category-hubs';
+import { BATCH_LANDING_ROUTES, PROFESSION_HUB_ROUTES } from './audience-pages';
 import { COMPARE_ROUTES } from './compare-pages';
 import {
   GUIDE_CONSOLIDATION,
@@ -49,13 +50,31 @@ export function buildSitemap(
     '',
     ...LIVE_TOOL_ROUTES,
     '/proof',
+    // The egress check, listed beside /proof rather than in LIVE_TOOL_ROUTES.
+    // It runs a tool, but not one that takes a file -- so the smart dropzone
+    // and the tool CTAs must never offer it as a place to send one. Same
+    // reasoning as the comparison pages and the category hubs below.
+    '/proof/check',
     '/privacy',
     '/security',
+    // The self-hosting page. It is the only route written for an
+    // administrator deciding whether to run this inside their own network,
+    // rather than for someone with a file to convert.
+    '/self-host',
     '/about',
+    // What shipped, for a returning visitor. Listed with the content pages
+    // rather than in LIVE_TOOL_ROUTES: it runs no tool, so a CTA or the smart
+    // dropzone must never offer it as a place to send a file. Its `feed.xml`
+    // is deliberately absent -- a feed is for readers, not for crawlers.
+    '/whats-new',
     '/support',
     '/guides',
     '/blog',
     '/templates',
+    // The tool-request page. Listed because it is the one page whose text is
+    // the question people type -- "is there a free tool for X" -- and because
+    // an unlisted page cannot earn the inbound interest it exists to collect.
+    '/requests',
     // The snippet page for the embed programme. `/embed` is listed; the
     // framable `/embed/<tool>` copies are not, and are disallowed in
     // app/robots.ts -- they are stripped versions of pages this site is
@@ -74,6 +93,12 @@ export function buildSitemap(
     // categories and are already in LIVE_TOOL_ROUTES, because those two
     // addresses really do run a tool.
     ...CATEGORY_HUB_ROUTES,
+    // Pages addressed to a job rather than a file format (owner decision,
+    // 2026-09-25, overriding C4 -- see lib/seo/audience-pages.ts). Listed here
+    // with the other content pages for the same reason: they run no tool, so
+    // no CTA or dropzone must offer one as a place to send a file.
+    ...PROFESSION_HUB_ROUTES,
+    ...BATCH_LANDING_ROUTES,
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: lastModifiedFor(route === '' ? '/' : route),

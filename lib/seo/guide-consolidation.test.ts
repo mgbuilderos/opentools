@@ -8,6 +8,7 @@ import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
 import { CACHED_GUIDE_SLUGS } from './cached-guides';
 import { CATEGORY_HUB_ROUTES } from './category-hubs';
+import { BATCH_LANDING_ROUTES, PROFESSION_HUB_ROUTES } from './audience-pages';
 import { COMPARE_ROUTES } from './compare-pages';
 import { GUIDE_CONSOLIDATION_ENABLED } from './guide-consolidation-config';
 import {
@@ -31,7 +32,7 @@ import {
   LIVE_TOOL_ROUTES,
   isLiveToolUrl,
 } from './live-tools';
-import { buildLlmsFullTxt, buildLlmsTxt } from './llms-text';
+import { buildLlmsFullTxt, buildLlmsTxt, canonicalToolUrl } from './llms-text';
 import { removedToolRedirect } from './removed-tool-redirects';
 import { siteRedirect } from './site-redirects';
 import { localizedSitemapRoutes } from '../i18n/routes';
@@ -39,6 +40,23 @@ import { buildSitemap } from './sitemap-entries';
 import { TOOL_CATALOG } from './tool-catalog-data';
 
 const origin = ['https:', '//', 'getopentools.com'].join('');
+
+/*
+  The catalogue rows of llms-full.txt, without the conversion pages.
+
+  `/convert/<from>-to-<to>` pages are listed there too and carry `none` in the
+  Guide column, because a generated conversion page has never had a guide. The
+  counts below are about guides that consolidation redirected, so they must not
+  sweep in rows that could never have had one. No catalogue id starts with
+  `convert.`, which is what makes this a safe discriminator.
+*/
+function catalogRowsWithoutGuide(full: string): string[] {
+  return full
+    .split('\n')
+    .filter(
+      (line) => line.includes('| none |') && !line.startsWith('convert.'),
+    );
+}
 const liveSlugs = new Set(LIVE_TOOL_CATALOG.map((tool) => tool.slug));
 
 // Kept guides for the "on" state: a dedicated route, a routed developer tool,
@@ -147,13 +165,29 @@ describe('guide consolidation off is the previous behaviour', () => {
       '',
       ...LIVE_TOOL_ROUTES,
       '/proof',
+      // Added 2026-09-25, and mirrored here for the same reason `/embed` is.
+      // The egress check takes a URL and a pasted header, never a file, so it
+      // is a core route rather than a tool route -- registering it would let
+      // every file CTA offer it as a destination.
+      '/proof/check',
       '/privacy',
       '/security',
+      // Added 2026-09-25 and mirrored here for the same reason `/embed` and the
+      // category hubs are: this function rebuilds the shipped sitemap minus
+      // consolidation, so a core route missing from it would be scored as a
+      // guide the switch dropped. `/self-host` is a content page written for an
+      // administrator, and the switch has nothing to do with it.
+      '/self-host',
       '/about',
       '/support',
       '/guides',
       '/blog',
       '/templates',
+      // Added with app/requests/page.tsx. This frozen copy is a control for
+      // whether consolidation moved an entry, so a genuinely new content page
+      // belongs in it -- leaving it out would report the new page as a
+      // consolidation regression.
+      '/requests',
       // Added after d032150 and mirrored here for the same reason every other
       // core route is: this function's job is to rebuild the shipped sitemap
       // minus consolidation, so a core route missing from it would be scored
@@ -167,6 +201,13 @@ describe('guide consolidation off is the previous behaviour', () => {
       // core route missing from it would be scored as a guide the switch
       // dropped. The nineteen category hubs are content pages, not tools.
       ...CATEGORY_HUB_ROUTES,
+      // Added 2026-09-25, mirrored here for the same reason `/embed` and the
+      // category hubs are: this function rebuilds the shipped sitemap minus
+      // consolidation, so a core route missing from it would be scored as a
+      // guide the switch dropped. These are the profession and batch pages
+      // (lib/seo/audience-pages.ts) -- content pages, not tools.
+      ...PROFESSION_HUB_ROUTES,
+      ...BATCH_LANDING_ROUTES,
     ].map((route) => ({
       url: `${origin}${route}`,
       changeFrequency: route === '' ? ('daily' as const) : ('weekly' as const),
@@ -222,24 +263,35 @@ describe('guide consolidation off is the previous behaviour', () => {
     entries.map(({ lastModified: _lastModified, ...rest }) => rest);
 
   /**
-   * The localised editions are not part of the question this file asks.
+   * Routes added to the sitemap after the frozen copy was taken.
    *
-   * `previousSitemap()` above is deliberately "sitemap.ts exactly as it read
-   * at d032150". Extending it to carry a route family added afterwards would
-   * destroy the only thing a control is for, and the question here is whether
-   * guide consolidation moved, dropped or reordered an entry -- which the 48
-   * translated URLs have nothing to do with. So they are removed from the
-   * shipped side instead. That they are all present is asserted by
-   * `lib/i18n/i18n.test.ts`, which is where that claim belongs.
+   * The frozen copy above is a control -- "sitemap.ts exactly as it read at
+   * d032150" -- and the note explaining it says editing it to track a later
+   * change destroys the only thing it is for. A route genuinely added since
+   * then is neither a move, a drop nor a reorder, which is what these two tests
+   * are about, so it is subtracted from the live side instead and the control
+   * stays untouched.
+   *
+   * Adding a line here is therefore a deliberate statement that a new address
+   * was published on purpose. It is not a place to silence a surprise: if a
+   * route appears that nobody meant to add, the fix is the route, not this list.
    */
-  const LOCALIZED_URLS = new Set(
-    localizedSitemapRoutes().map((route) => `${origin}${route}`),
-  );
-  const withoutLocalized = (entries: MetadataRoute.Sitemap) =>
-    entries.filter((entry) => !LOCALIZED_URLS.has(String(entry.url)));
+  const ADDED_SINCE_FREEZE = new Set([
+    `${origin}/whats-new`,
+    /*
+      The 48 localised editions. They are routes published since the freeze,
+      which is exactly what this set is for, so they go through the same filter
+      rather than a second one beside it. That all 48 are present is asserted
+      by `lib/i18n/i18n.test.ts`, which is where that claim belongs.
+    */
+    ...localizedSitemapRoutes().map((route) => `${origin}${route}`),
+  ]);
+
+  const asFrozen = (entries: MetadataRoute.Sitemap) =>
+    entries.filter((entry) => !ADDED_SINCE_FREEZE.has(entry.url));
 
   it('produces the same sitemap, entry for entry and in the same order', () => {
-    expect(withoutLastmod(withoutLocalized(buildSitemap(OFF)))).toEqual(
+    expect(withoutLastmod(asFrozen(buildSitemap(OFF)))).toEqual(
       withoutLastmod(previousSitemap()),
     );
   });
@@ -256,7 +308,7 @@ describe('guide consolidation off is the previous behaviour', () => {
         (path) => `${origin}${path}`,
       ),
     );
-    expect(withoutLastmod(withoutLocalized(buildSitemap()))).toEqual(
+    expect(withoutLastmod(asFrozen(buildSitemap()))).toEqual(
       withoutLastmod(
         previousSitemap().filter((entry) => !consolidated.has(entry.url)),
       ),
@@ -264,9 +316,9 @@ describe('guide consolidation off is the previous behaviour', () => {
     expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
       kept.size,
     );
-    expect(
-      previousSitemap().length - withoutLocalized(buildSitemap()).length,
-    ).toBe(consolidated.size);
+    expect(previousSitemap().length - asFrozen(buildSitemap()).length).toBe(
+      consolidated.size,
+    );
   });
 
   it('publishes every live guide and redirects none', () => {
@@ -319,11 +371,15 @@ describe('guide consolidation off is the previous behaviour', () => {
   it('keeps every guide link in llms.txt and llms-full.txt', () => {
     const full = buildLlmsFullTxt(OFF);
     for (const tool of LIVE_TOOL_CATALOG) {
+      // The tool URL is the canonical one, not the raw `destinationUrl`: 44
+      // entries still carry an inert `?tool=` query and `llms-text.ts`
+      // resolves those to the dedicated page. What this test is about is the
+      // guide beside it, which consolidation must not drop while it is off.
       expect(full).toContain(
-        `${origin}${tool.destinationUrl} | ${origin}/guides/${tool.slug} | `,
+        `${origin}${canonicalToolUrl(tool.destinationUrl)} | ${origin}/guides/${tool.slug} | `,
       );
     }
-    expect(full).not.toContain('| none |');
+    expect(catalogRowsWithoutGuide(full)).toEqual([]);
     const txt = buildLlmsTxt(OFF);
     expect(guideLinksIn(txt).length).toBeGreaterThan(0);
     for (const slug of guideLinksIn(txt)) {
@@ -489,9 +545,7 @@ describe('guide consolidation on', () => {
     expect(guideLinksIn(buildLlmsTxt(ON)).filter(isRedirected)).toEqual([]);
     const full = buildLlmsFullTxt(ON);
     expect(guideLinksIn(full).sort()).toEqual([...KEPT].sort());
-    expect(
-      full.split('\n').filter((line) => line.includes('| none |')),
-    ).toHaveLength(redirects.size);
+    expect(catalogRowsWithoutGuide(full)).toHaveLength(redirects.size);
   });
 });
 
@@ -546,9 +600,7 @@ describe('the shipped state', () => {
 
   it('names a tool page, not a redirect, in llms-full.txt', () => {
     const full = buildLlmsFullTxt();
-    expect(
-      full.split('\n').filter((line) => line.includes('| none |')),
-    ).toHaveLength(redirects.size);
+    expect(catalogRowsWithoutGuide(full)).toHaveLength(redirects.size);
     expect(new Set(guideLinksIn(full))).toEqual(
       new Set(getPublishedGuideTools().map((tool) => tool.slug)),
     );

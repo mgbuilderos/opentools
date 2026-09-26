@@ -180,7 +180,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(707);
+    expect(everyDestination).toBe(713);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -238,6 +238,7 @@ describe('public canary catalog', () => {
       'OCR PDF',
       'PDF to Excel',
       'Sign and fill PDF',
+      'Unlock and protect PDF',
       'Extract PDF pages',
       'Images to PDF',
       'Rotate PDF',
@@ -254,12 +255,13 @@ describe('public canary catalog', () => {
       'PDF Print Preflight Checker',
       'Burst PDF by Rule and Dynamic Naming',
       'Convert Excel to PDF',
+      'Fill PDF forms',
     ]);
-    expect(pdf).toHaveLength(22);
+    expect(pdf).toHaveLength(24);
     expect(
       pdf.some((destination) => destination.name === 'PDF page tools'),
     ).toBe(false);
-    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(22);
+    expect(new Set(pdf.map((destination) => destination.href)).size).toBe(24);
   });
 
   it('keeps operation-level search destinations explicit and unique', () => {

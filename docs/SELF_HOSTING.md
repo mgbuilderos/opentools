@@ -4,6 +4,26 @@ OpenTools is MIT licensed. This describes how to run the whole site on your own
 machine, from a container that needs no Cloudflare account and no network access
 once it is built.
 
+## Pull
+
+Every release tag publishes a multi-arch image (`linux/amd64`, `linux/arm64`)
+with build provenance attestations to GitHub Container Registry, so the shortest
+path needs no clone and no toolchain:
+
+```bash
+docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:latest
+```
+
+`latest` follows the most recent release tag and therefore moves. Where an
+approval is granted against a fixed artefact, pin the digest instead:
+
+```bash
+docker image inspect ghcr.io/mgbuilderos/opentools:latest --format '{{index .RepoDigests 0}}'
+```
+
+Pushes to `main` do not publish, so the image trails the branch by design.
+Build from source if you need something newer than the last release.
+
 ## Build
 
 ```bash
@@ -119,6 +139,7 @@ It is not a claim about what a browser does with the pages it is given.
   credential for the whole instance.
 - One container, one process. There is no clustering and no shared cache
   between replicas.
-- No published image. `.github/workflows/selfhost-image.yml` builds the image on
-  every pull request without pushing it; only a `v*` tag publishes to GitHub
-  Container Registry. Pushes to `main` never publish.
+- No image of the latest commit. `.github/workflows/selfhost-image.yml` builds
+  the image on every pull request without pushing it; only a `v*` tag publishes
+  to GitHub Container Registry, and pushes to `main` never publish. The
+  published image is therefore always a release, never the branch head.

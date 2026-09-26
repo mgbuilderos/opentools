@@ -4,6 +4,7 @@ import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { MATH_OPERATIONS } from '@/lib/tools/math-workbench';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
 import { toolSearchCopy } from '@/lib/seo/tool-search-copy';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -68,7 +69,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
+async function renderToolPage({
   params,
 }: {
   params: Promise<{ tool: string }>;
@@ -76,4 +77,34 @@ export default async function Page({
   const { tool } = await params;
   const related = relatedToolsFor(`/math/${tool}`);
   return <MathWorkbenchTool initialOperationId={tool} relatedTools={related} />;
+}
+
+/*
+  The structured data and the page, in that order.
+
+  The body above is unchanged apart from its name: it has several returns and
+  one of them is `null`, so rather than threading a script tag through every
+  branch it is rendered once here and the JSON-LD placed beside whatever it
+  produced. A branch that renders nothing gets no structured data either, which
+  is the right answer -- there is no tool at that URL to describe. Lowercase
+  because `react-compiler` reserves capitalised calls for JSX components.
+
+  `generateMetadata` above is the single source of the name and description, so
+  the sentence a machine reads is the sentence the search result shows.
+*/
+export default async function Page(props: {
+  params: Promise<{ tool: string }>;
+}) {
+  const rendered = await renderToolPage(props);
+  if (rendered === null) return null;
+  const { tool } = await props.params;
+  return (
+    <>
+      <ToolJsonLd
+        route={`/math/${tool}`}
+        meta={await generateMetadata(props)}
+      />
+      {rendered}
+    </>
+  );
 }

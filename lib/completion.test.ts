@@ -128,8 +128,11 @@ describe('completion value receipt', () => {
     expect(event.detail.durationMs).toBe(0);
     expect(event.detail.summary).not.toContain('\n');
     expect(event.detail.summary.length).toBeLessThanOrEqual(180);
+    // Every receipt also carries the measured egress reading, appended by
+    // `announceCompletion` itself so no individual tool has to remember it.
     expect(event.detail.metrics).toEqual([
       { label: 'Rows counted', value: '12' },
+      { label: 'Sent from this page', value: '0 bytes' },
     ]);
     vi.unstubAllGlobals();
   });

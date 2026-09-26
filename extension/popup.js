@@ -59,6 +59,9 @@ document.getElementById('caveat').textContent = state?.reportOnly
 
 if (state?.connectSrc) {
   const policy = document.getElementById('policy');
-  policy.textContent = `connect-src ${state.connectSrc}`;
+  // Name the directive the verdict actually came from. `connect-src` falls
+  // back to `default-src`, and labelling an inherited list `connect-src` would
+  // show the reader a directive their policy does not contain.
+  policy.textContent = `${state.viaDefaultSrc ? 'default-src' : 'connect-src'} ${state.connectSrc}`;
   policy.hidden = false;
 }

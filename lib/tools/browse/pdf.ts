@@ -73,6 +73,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-to-excel',
       },
       {
+        id: 'pdf-password',
+        name: 'Unlock and protect PDF',
+        description:
+          'Unlock encrypted PDFs with password or protect documents with AES-256.',
+        href: '/pdf/password',
+        workspaceId: 'pdf-password',
+      },
+      {
         id: 'pdf-bates',
         name: 'Bates numbering for PDFs',
         description:
@@ -135,6 +143,14 @@ export const SECTIONS: readonly BrowseSection[] = [
           'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
         href: '/pdf/excel-to-pdf',
         workspaceId: 'excel-to-pdf',
+      },
+      {
+        id: 'pdf-form-filler',
+        name: 'Fill PDF forms',
+        description:
+          'Fill interactive PDF form fields and flatten widgets locally.',
+        href: '/pdf/form-filler',
+        workspaceId: 'pdf-form-filler',
       },
     ],
   },

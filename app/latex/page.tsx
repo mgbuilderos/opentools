@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { LatexHubTool } from '@/components/latex-hub-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 
 export default function LatexHubPage() {
   const related = relatedToolsFor('/latex');
-  return <LatexHubTool initialTab="table-generator" relatedTools={related} />;
+  return (
+    <>
+      <ToolJsonLd route="/latex" meta={metadata} />
+      <LatexHubTool initialTab="table-generator" relatedTools={related} />
+    </>
+  );
 }

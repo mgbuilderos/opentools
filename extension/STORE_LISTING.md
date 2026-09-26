@@ -25,6 +25,13 @@ which is also how they search.
 Before you upload a file, see whether the page is able to send it anywhere. Reads the site's own security policy.
 ```
 
+This is also the `description` field in `manifest.json`, and the two have to stay
+identical — whichever one you read, the other is what users see. They had
+drifted: the manifest carried different copy at 152 characters, over Chrome's
+limit of 132, so the upload would have been rejected. `npm run extension:package`
+now checks the length, and `scripts/package-extension.test.ts` checks that the
+manifest still matches this block.
+
 ## Category
 
 ```
@@ -61,7 +68,7 @@ PRIVACY
 
 The extension makes no network requests of its own. It reads one response header the browser was already receiving, keeps the verdict in memory for the open tab, and discards it when you close the tab. It does not request permission to store anything on disk. There is no account, no analytics, no third party, and no remote code.
 
-The whole thing is 179 lines of JavaScript and it is public. Every claim above can be checked:
+The whole thing is 254 lines of JavaScript and it is public. Every claim above can be checked:
 https://github.com/mgbuilderos/opentools/tree/main/extension
 
 WHO MADE IT
@@ -158,9 +165,30 @@ unnecessary.
 
 ## Before you submit
 
+**Build the archive first.** The stores take a ZIP, not a folder, and
+`zip -r` produces one all three reject or mis-ship — it nests `manifest.json`
+under `extension/`, and it puts this file and `PRIVACY.md` inside the add-on
+users download:
+
+```bash
+npm run extension:package
+```
+
+That writes `dist/extension/opentools-extension-<version>.zip` and refuses to
+write anything if the manifest would be rejected. It is also what checks the two
+ticked items below, so those are no longer yours to remember:
+
 - [ ] Load the unpacked extension and confirm all four verdicts still render
-- [ ] Screenshots taken at 1280×800
+- [ ] Screenshots taken at 1280×800 — **the one thing nothing here can do**
 - [ ] `PRIVACY.md` is pushed to `main` so its URL resolves publicly
-- [ ] Bump `version` in `manifest.json` from `0.1.0` if anything changed since
-- [ ] Confirm the manifest declares only `webRequest` — the unused `storage`
-      permission was removed on 2026-09-19 and must not come back without a use
+- [ ] Bump `version` in `manifest.json` if this is not the first upload — it is
+      still `0.1.0`, which is correct until something has actually shipped. The
+      packaging step only checks the shape is one the stores parse, not that you
+      remembered to raise it
+- [x] The description fits Chrome's 132 characters and matches the block above —
+      checked
+- [x] The manifest declares only `webRequest` — checked against
+      `DECLARED_PERMISSIONS` in `scripts/package-extension.mjs`. The unused
+      `storage` permission was removed on 2026-09-19; adding any permission
+      means updating that list, the justification section above and the
+      disclosures together, which is the point of checking it there

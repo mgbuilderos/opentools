@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <Placemark>
+      <name>Synthetic ridge</name>
+      <LineString>
+        <coordinates>-122.0822035425683,37.42228990140251,12 -122.085,37.422,18 -122.086,37.421,21</coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>

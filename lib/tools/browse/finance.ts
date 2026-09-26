@@ -448,6 +448,22 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/finance/workbench?tool=timesheet-calculator',
         workspaceId: 'finance-business-workbench',
       },
+      {
+        id: 'ofx-qif-converter',
+        name: 'OFX & QIF statement converter',
+        description:
+          'Convert OFX and QIF bank statements to CSV or Excel with transaction preview and balance reconciliation.',
+        href: '/finance/ofx-qif',
+        workspaceId: 'ofx-qif-converter',
+      },
+      {
+        id: 'bank-statement',
+        name: 'Bank statement converter',
+        description:
+          'Convert bank statement PDFs to Excel and CSV with balance reconciliation.',
+        href: '/finance/bank-statement',
+        workspaceId: 'bank-statement',
+      },
     ],
   },
 ];

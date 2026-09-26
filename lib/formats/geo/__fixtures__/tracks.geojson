@@ -1,0 +1,20 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Synthetic walk",
+        "timestamps": ["2026-09-26T07:00:00Z", "2026-09-26T07:01:00Z", null]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [72.8777, 19.076, 8],
+          [72.878, 19.0764, 9],
+          [72.8784, 19.0768, 10]
+        ]
+      }
+    }
+  ]
+}

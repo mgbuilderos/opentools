@@ -166,6 +166,47 @@ const HELD_BACK: ReadonlyMap<string, string> = new Map([
   ],
 ]);
 
+/**
+ * Pages that render an interactive component but are not a destination for a
+ * file, and must therefore stay out of `LIVE_TOOL_ROUTES`.
+ *
+ * Registration is what lets every CTA and the smart dropzone offer a route as
+ * somewhere to send a file. For a page that accepts no file, registering it
+ * would put it in front of someone holding a document with nothing to do with
+ * it -- so the fix the failure suggests is the wrong one, exactly as it is for
+ * `HELD_BACK` above, and the decision is written down here instead.
+ *
+ * The bar for an entry is narrow: the page must take no file input at all.
+ * Anything that accepts a file belongs in `LIVE_TOOL_ROUTES`, and this list is
+ * not a way to keep one out of the sitemap. Each of these is in the sitemap
+ * through `lib/seo/sitemap-entries.ts`, beside the comparison pages and the
+ * category hubs, which stay out of `LIVE_TOOL_ROUTES` for the same reason.
+ */
+const NOT_A_FILE_TOOL: ReadonlyMap<string, string> = new Map([
+  [
+    '/proof/check',
+    'Takes a URL and a pasted header, never a file. Listed in the sitemap via sitemap-entries.ts.',
+  ],
+]);
+
+/**
+ * Localised editions of a tool already in `LIVE_TOOL_ROUTES`.
+ *
+ * `/es/pdf/merge` is the same tool at another address, registered by
+ * `lib/i18n/routes.ts` and listed in the sitemap from there. It is kept out of
+ * `LIVE_TOOL_ROUTES` on purpose: that list is what every CTA and the smart
+ * dropzone offer as a place to send a file, and nine copies of "Merge PDF" in
+ * one menu is a worse menu. Absent from BOTH registries is still an accident,
+ * which is why the localised routes are checked below rather than skipped.
+ */
+const LOCALIZED_EDITIONS = new Set(localizedSitemapRoutes());
+
+/** Held back, deliberately unregistered, or a translation: not an accident. */
+const registrationExempt = (route: string) =>
+  HELD_BACK.has(route) ||
+  NOT_A_FILE_TOOL.has(route) ||
+  LOCALIZED_EDITIONS.has(route);
+
 describe('every tool page in app/ is reachable by something other than the URL bar', () => {
   it('finds the tool pages at all, so a passing run means something', () => {
     // If the convention above ever stops holding, this test would silently
@@ -190,23 +231,13 @@ describe('every tool page in app/ is reachable by something other than the URL b
     // `LIVE_TOOL_ROUTES` is what `app/sitemap.ts` submits and what
     // `isLiveToolUrl` answers from, so this is the single fact that decides
     // whether a finished tool is findable.
-    /*
-      A localised edition is registered by `lib/i18n/routes.ts` instead, and
-      the next assertion holds it to that. It is deliberately NOT in
-      `LIVE_TOOL_ROUTES`: that list is what every CTA and the smart dropzone
-      offer as a place to send a file, and listing the same tool nine times
-      would put nine copies of "Merge PDF" in one menu. Being absent from it
-      is therefore a decision, not the accident this check hunts for -- but
-      absent from BOTH registries is still an accident, which is why the
-      localised routes are checked rather than skipped.
-    */
-    const localized = new Set(localizedSitemapRoutes());
+    // Localised editions are exempt via `registrationExempt`; the next
+    // assertion is what holds them to the sitemap instead.
     const missing = toolPages
       .filter(
         (page) =>
           !LIVE_TOOL_ROUTES.includes(page.route) &&
-          !HELD_BACK.has(page.route) &&
-          !localized.has(page.route),
+          !registrationExempt(page.route),
       )
       .map((page) => page.route);
 
@@ -234,6 +265,44 @@ describe('every tool page in app/ is reachable by something other than the URL b
     ).toEqual([]);
   });
 
+  it('exempts nothing that has since been registered or deleted', () => {
+    const pages = new Set(toolPages.map((page) => page.route));
+    const stale = [...NOT_A_FILE_TOOL.keys()].filter(
+      (route) => LIVE_TOOL_ROUTES.includes(route) || !pages.has(route),
+    );
+
+    expect(
+      stale,
+      `listed as not-a-file-tool but registered or gone — remove them so the ` +
+        `list stays a true record: ${stale.join(', ')}`,
+    ).toEqual([]);
+  });
+
+  it('exempts no page that actually accepts a file', () => {
+    /*
+     * The exemption above is narrow on purpose, and this is what keeps it
+     * narrow: a page listed there that renders a dropzone or a file input is
+     * a real tool being kept out of the sitemap, which is the failure this
+     * whole file exists to catch.
+     */
+    const accepting = [...NOT_A_FILE_TOOL.keys()].filter((route) => {
+      const page = toolPages.find((candidate) => candidate.route === route);
+      if (!page) return false;
+      const component = path.join(
+        projectRoot,
+        'components',
+        `${page.component}.tsx`,
+      );
+      const source = readFileSync(component, 'utf8');
+      return /type="file"|SmartDropzone|useFileHandoff|accept=\{/u.test(source);
+    });
+
+    expect(
+      accepting,
+      `exempted from registration but takes a file: ${accepting.join(', ')}`,
+    ).toEqual([]);
+  });
+
   it('holds back nothing that has since been registered or deleted', () => {
     const pages = new Set(toolPages.map((page) => page.route));
     const stale = [...HELD_BACK.keys()].filter(
@@ -250,13 +319,10 @@ describe('every tool page in app/ is reachable by something other than the URL b
   it('answers isLiveToolUrl for each of them', () => {
     // Belt and braces: a route can be in the list and still be refused by the
     // gate, because the gate also checks the `?tool=` operation for workbenches.
-    // Localised editions are exempt for the reason given above: they are not
-    // in `LIVE_TOOL_ROUTES`, so the gate refusing them is the intended
-    // behaviour -- a CTA must offer one address per tool, in one language.
-    const localized = new Set(localizedSitemapRoutes());
+    // Localised editions are exempt for the reason on `LOCALIZED_EDITIONS`: a
+    // CTA must offer one address per tool, in one language.
     const refused = toolPages
-      .filter((page) => !HELD_BACK.has(page.route))
-      .filter((page) => !localized.has(page.route))
+      .filter((page) => !registrationExempt(page.route))
       .filter((page) => !isLiveToolUrl(page.route))
       .map((page) => page.route);
 
@@ -287,7 +353,7 @@ describe('every tool page in app/ is reachable by something other than the URL b
     const workbench = /\/workbench$|\/advanced$|\/writing$/;
 
     const unlisted = toolPages
-      .filter((page) => !HELD_BACK.has(page.route))
+      .filter((page) => !registrationExempt(page.route))
       .filter((page) => !workbench.test(page.route))
       .filter((page) => !registeredComponents.has(page.component))
       .map((page) => page.route);

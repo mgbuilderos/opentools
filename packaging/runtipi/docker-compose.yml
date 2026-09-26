@@ -1,0 +1,49 @@
+# Runtipi app package. Submitted as a pull request to
+# https://github.com/runtipi/runtipi-appstore under apps/opentools/.
+#
+# The traefik labels and the ${APP_PORT} / ${APP_DATA_DIR} / ${APP_DOMAIN} /
+# ${LOCAL_DOMAIN} substitutions are Runtipi's convention, copied from the shape
+# the store's own packages use rather than from the newer `x-runtipi` form, so
+# that Runtipi's router picks the app up. Runtipi terminates TLS itself, which
+# is why the access gate here is optional rather than recommended.
+version: '3.9'
+services:
+  opentools:
+    image: ghcr.io/mgbuilderos/opentools:0.2.0
+    container_name: opentools
+    restart: unless-stopped
+    ports:
+      - ${APP_PORT}:8796
+    environment:
+      - PORT=8796
+      - OPENTOOLS_STATE_DIR=/var/lib/opentools
+      - WRANGLER_LOG_LEVEL=info
+      - OPENTOOLS_AUTH_USER=${OPENTOOLS_AUTH_USER-}
+      - OPENTOOLS_AUTH_PASSWORD=${OPENTOOLS_AUTH_PASSWORD-}
+    volumes:
+      # Page cache only. Nothing a visitor opens in a tool is written here,
+      # because nothing a visitor opens reaches this container.
+      - ${APP_DATA_DIR}/data/state:/var/lib/opentools
+    networks:
+      - tipi_main_network
+    labels:
+      traefik.enable: true
+      traefik.http.middlewares.opentools-web-redirect.redirectscheme.scheme: https
+      traefik.http.services.opentools.loadbalancer.server.port: 8796
+      traefik.http.routers.opentools-insecure.rule: Host(`${APP_DOMAIN}`)
+      traefik.http.routers.opentools-insecure.entrypoints: web
+      traefik.http.routers.opentools-insecure.service: opentools
+      traefik.http.routers.opentools-insecure.middlewares: opentools-web-redirect
+      traefik.http.routers.opentools.rule: Host(`${APP_DOMAIN}`)
+      traefik.http.routers.opentools.entrypoints: websecure
+      traefik.http.routers.opentools.service: opentools
+      traefik.http.routers.opentools.tls.certresolver: myresolver
+      traefik.http.routers.opentools-local-insecure.rule: Host(`opentools.${LOCAL_DOMAIN}`)
+      traefik.http.routers.opentools-local-insecure.entrypoints: web
+      traefik.http.routers.opentools-local-insecure.service: opentools
+      traefik.http.routers.opentools-local-insecure.middlewares: opentools-web-redirect
+      traefik.http.routers.opentools-local.rule: Host(`opentools.${LOCAL_DOMAIN}`)
+      traefik.http.routers.opentools-local.entrypoints: websecure
+      traefik.http.routers.opentools-local.service: opentools
+      traefik.http.routers.opentools-local.tls: true
+      runtipi.managed: true

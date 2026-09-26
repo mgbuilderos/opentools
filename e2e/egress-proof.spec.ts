@@ -229,6 +229,105 @@ test.describe('egress proof', () => {
     expect(sendingInitiators, 'a data-sending request ran').toEqual([]);
   });
   /**
+   * The checker is held to the standard it reports on.
+   *
+   * `/proof/check` asks a visitor to paste a page address and a set of response
+   * headers, and then tells them whether *that* page can transmit what they
+   * give it. The first question any reader should ask is the obvious one: does
+   * this page send what I paste into it anywhere?
+   *
+   * A tool that measured other people's egress while leaking its own input
+   * would be worse than not shipping one, so the answer cannot be a paragraph
+   * of copy on the page. It is this test, run in both engines on every
+   * release, against the built artifact.
+   *
+   * The probe token goes into both inputs and is then searched for in every
+   * request URL — the same check the sweep runs on a filename, because a
+   * same-origin `<img src="/og.png?q=...">` is permitted by `default-src
+   * 'self'` and is a real exfiltration shape.
+   *
+   * It also asserts the verdict actually rendered. Without that, a page that
+   * failed to hydrate would pass every leak assertion by doing nothing at all,
+   * which is precisely the vacuous detector this protocol keeps catching in
+   * itself.
+   */
+  test('the checker does not transmit the address or headers pasted into it', async ({
+    page,
+    request,
+  }) => {
+    const response = await request.get('/proof/check');
+    expect(response.status()).toBe(200);
+    const csp = response.headers()['content-security-policy'] ?? '';
+    expect(csp).toContain("connect-src 'none'");
+    expect(csp).toContain("form-action 'none'");
+
+    const watcher = watchOffOrigin(page);
+    const withBody: string[] = [];
+    page.on('request', (sent) => {
+      if (sent.method() !== 'GET' || sent.postData())
+        withBody.push(`${sent.method()} ${sent.url()}`);
+    });
+
+    await page.goto('/proof/check');
+    await page.waitForLoadState('networkidle');
+
+    /*
+     * Distinctive enough to find anywhere, and present in neither the source
+     * nor any fixture, so a match can only have come from what was typed.
+     *
+     * Lowercase on purpose. `new URL()` lowercases a hostname, so an uppercase
+     * token goes into the box in one case and comes out of the page in
+     * another -- which would make the visible assertion fail (it did) and,
+     * worse, would make a case-sensitive scan of request URLs miss the
+     * normalised form. The scans below are case-insensitive for the same
+     * reason: a leak that arrived re-cased is still a leak.
+     */
+    const token = 'egressprobe-c41d8f7b';
+
+    await page
+      .getByLabel('Page address')
+      .fill(`https://${token}.example/upload`);
+    await page
+      .getByLabel('Paste response headers, or a content-security-policy')
+      .fill(`content-security-policy: default-src 'self'; connect-src 'none'; report-uri /${token}`);
+
+    /*
+     * The tool must have actually answered. A blank page leaks nothing either,
+     * so without this the whole test would pass on a page that failed to
+     * hydrate.
+     *
+     * Scoped to the verdict card rather than the document: the snippet this
+     * page hands out quotes its own title and the address that was typed, so
+     * an unscoped match finds the textarea as well and cannot tell a rendered
+     * verdict from a copy of the instructions.
+     */
+    const verdict = page.locator('figure');
+    await expect(verdict).toBeVisible({ timeout: 15_000 });
+    await expect(verdict).toContainText('Cannot send your file anywhere');
+    await expect(verdict).toContainText(`${token}.example`);
+
+    watcher.assertNothingLeft('the egress checker');
+    await watcher.assertZeroBytesOffOrigin(page);
+    watcher.assertNothingCarriedAFile('the egress checker', token);
+    expect(withBody, 'the checker sent a request with a body').toEqual([]);
+
+    const leakedInUrl = await page.evaluate(
+      (probe) =>
+        performance
+          .getEntriesByType('resource')
+          .map((entry) => entry.name)
+          .filter((url) =>
+            decodeURIComponent(url).toLowerCase().includes(probe),
+          ),
+      token,
+    );
+    expect(
+      leakedInUrl,
+      'what was pasted appeared in a request URL',
+    ).toEqual([]);
+  });
+
+  /**
    * The HEIC pages hold the site's one relaxation of `connect-src`, so they are
    * the one place where "no connections at all" is not the proof. What has to
    * be true here is narrower and more useful: the origin is the only thing

@@ -74,6 +74,26 @@ cookies, files, file names, pasted text, or results — tools run in the browser
 so the server never receives them. Logs are retained under Cloudflare's Workers Logs retention.
 Cloudflare may also record standard request metadata for its platform logs.
 
+## Say What You Need Done
+
+There is one text box on the home page. You type the job in your own words —
+"make this under 2MB and strip my name out of it" — and it answers with the
+tools that do it, in order, or tells you this site cannot. Where the steps are
+operations the batch runner can take, it offers to run the whole chain over your
+files in one pass.
+
+It reads the sentence **on your device**, and that is structural rather than
+promised: these pages ship `connect-src 'none'`, so the tab cannot open a
+connection, and the test suite fails on a network primitive anywhere in
+`lib/command/`. There is no model and no API key, which is also why it can say
+what it cannot do — a language translation, an email, today's exchange rate —
+instead of answering with whichever tool shares a word with the question. A gap
+that is just a missing tool offers to file itself as an issue, with your words
+already in the form and nothing sent until you submit it.
+
+See [docs/COMMAND_BAR.md](docs/COMMAND_BAR.md) for how it reads a sentence, why
+the index is 35 KB, and what it still cannot do.
+
 ## Core Tool Suite
 
 691 live tool routes, 679 of them browsable from the 17 sidebar groups. Those
@@ -101,6 +121,40 @@ The route list is not hand-maintained prose: `LIVE_TOOL_ROUTES` in
 [`lib/seo/live-tools.ts`](lib/seo/live-tools.ts) is the single source of truth,
 and a route only counts as live when the code that renders it really runs the
 operation.
+
+## Run It Yourself
+
+The whole site ships as a container, so you can run it on your own machine or
+inside your own network:
+
+```bash
+docker compose up -d      # then open http://localhost:8796
+```
+
+That pulls a published multi-arch image — `linux/amd64` and `linux/arm64`, so a
+Raspberry Pi works — and needs no Cloudflare account, no build toolchain and no
+network access at runtime. You can check that last claim rather than take it:
+
+```bash
+docker run --rm -d --network none --name opentools ghcr.io/mgbuilderos/opentools:latest
+docker exec opentools node -e "fetch('http://127.0.0.1:8796/').then(r=>console.log(r.status))"
+```
+
+Worth knowing before you compare it to anything else you self-host: **this
+server does no work and never receives a file.** Other file tools you can host
+accept an upload, convert it on the server, and hand the result back. This one
+serves a page and stops — the conversion happens in the browser that opened it.
+So your hardware only serves static pages however many people use it, and
+handing the URL to someone else never makes you the custodian of their
+documents.
+
+The image ships no TLS and no authentication, which is why the compose file
+binds to loopback. To go beyond that, put a reverse proxy in front and turn on
+the optional access gate. [`/self-host`](https://getopentools.com/self-host) is
+the page for an administrator deciding; [`docs/SELF_HOSTING.md`](docs/SELF_HOSTING.md)
+has the measured no-network results and what self-hosting deliberately does not
+include; [`docs/APP_CATALOGUES.md`](docs/APP_CATALOGUES.md) covers installing it
+from a home-server app store.
 
 ## Sponsorship & Patronage
 
@@ -167,6 +221,7 @@ Cloudflare Workers.
 app/          routes (one folder per tool)
 components/   shared workbench UI and tool components
 lib/tools/    pure tool logic, manifests (catalog.ts), and tests
+lib/command/  the home page's command bar: reads a request, plans the steps
 workers/      Web Workers for heavy processing
 scripts/      QC, design-system, and SBOM scripts
 release/      checked-in SBOM

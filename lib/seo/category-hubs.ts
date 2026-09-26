@@ -48,7 +48,7 @@ export interface CategoryHub {
  * folded onto twelve system hubs, so a hub listing them today would list
  * pages that are about to become redirects. It is added with that change.
  *
- * `/bench` is absent because it is one page, not a prefix. `/latex` and
+ * `/batch` is absent because it is one page, not a prefix. `/latex` and
  * `/schema` are absent because those two addresses already hold a
  * hand-written tool page — a literal folder beats anything this file could
  * add there. They are linked from the homepage all the same, through

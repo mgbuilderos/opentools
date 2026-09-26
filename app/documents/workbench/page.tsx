@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { DocumentWorkbenchTool } from '@/components/document-workbench-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -12,5 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <DocumentWorkbenchTool />;
+  return (
+    <>
+      <ToolJsonLd route="/documents/workbench" meta={metadata} />
+      <DocumentWorkbenchTool />
+    </>
+  );
 }

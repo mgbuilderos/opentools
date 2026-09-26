@@ -302,6 +302,12 @@ describe('the suggestions reach the page', () => {
     // fifteenth workbench and forgetting the prop fails here rather than being
     // noticed by somebody reading a report.
     const components = new Set<string>();
+    /*
+      Matched by the naming convention below but not a tool: `tool-json-ld`
+      emits this page's structured data and renders no markup a reader sees,
+      so a link strip inside it would be a link strip inside a `<script>`.
+    */
+    const notATool = new Set(['tool-json-ld']);
     for (const file of routePages) {
       for (const match of readFileSync(file, 'utf8').matchAll(
         // The component that renders the tool, by the naming convention
@@ -311,7 +317,7 @@ describe('the suggestions reach the page', () => {
         // page's written half and has no business rendering a link strip.
         /from '@\/components\/([\w-]*tool[\w-]*)'/gu,
       )) {
-        components.add(match[1]!);
+        if (!notATool.has(match[1]!)) components.add(match[1]!);
       }
     }
     expect(components.size).toBeGreaterThanOrEqual(15);

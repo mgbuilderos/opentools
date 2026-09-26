@@ -36,7 +36,9 @@
  * **Where the lock lives.** Beside `AGENT_BOARD.md` at the blueprint root, found
  * by walking up from this script. Worktrees each have their own checkout, so a
  * lock inside one of them would be invisible to the others — which is the same
- * mistake in a different place.
+ * mistake in a different place. A checkout with no blueprint root above it
+ * falls back to a machine-wide directory; `deploy-lock-root.mjs` explains why
+ * that is machine-wide and not local, and what it still cannot do.
  *
  * Usage:
  *   node scripts/deploy-lock.mjs acquire --owner "<session>" [--note "..."] [--steal]
@@ -50,13 +52,16 @@ import { createHash, randomBytes } from 'node:crypto';
 import {
   closeSync,
   existsSync,
+  mkdirSync,
   openSync,
   readFileSync,
   unlinkSync,
   writeSync,
 } from 'node:fs';
+import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveLockDir } from './deploy-lock-root.mjs';
 
 /**
  * A lock older than this is treated as abandoned and may be taken with
@@ -77,19 +82,24 @@ const value = (name) => {
   return index === -1 ? null : (argv[index + 1] ?? null);
 };
 
-/** The blueprint root: the directory holding `AGENT_BOARD.md`. */
+/**
+ * The directory the lock lives in. See `deploy-lock-root.mjs` for which of the
+ * two locations is chosen and why.
+ *
+ * The directory is created when the machine-wide fallback is used, because
+ * `acquire` opens the lock with O_EXCL and would otherwise fail on a path whose
+ * parent does not exist yet. It is created on any command rather than only on
+ * write: an empty state directory costs nothing, and making `status` and
+ * `acquire` disagree about whether a path exists is how this kind of code goes
+ * wrong.
+ */
 function sharedRoot() {
-  let dir = path.dirname(fileURLToPath(import.meta.url));
-  for (let up = 0; up < 8; up += 1) {
-    if (existsSync(path.join(dir, 'AGENT_BOARD.md'))) return dir;
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  throw new Error(
-    'Could not find AGENT_BOARD.md above this script, so there is no shared ' +
-      'root to put the lock in. Run this from inside a worktree.',
-  );
+  const { dir, kind } = resolveLockDir({
+    startDir: path.dirname(fileURLToPath(import.meta.url)),
+    home: homedir(),
+  });
+  if (kind === 'machine') mkdirSync(dir, { recursive: true });
+  return dir;
 }
 
 const worktree = path.resolve(
@@ -302,16 +312,23 @@ function release() {
 
 function status() {
   const lock = readLock();
+  // The path is printed on every status, held or free. Two checkouts can
+  // resolve to different lock files -- a worktree lane and a standalone clone
+  // will -- and "we both ran status and it said FREE" is exactly the
+  // conversation that precedes deploying over each other.
+  const where = `  file     ${lockPath}`;
   if (!lock) {
     console.log('\n  deploy lock: FREE\n');
+    console.log(where);
     console.log(
-      '    node scripts/deploy-lock.mjs acquire --owner "<you>" --note "<what>"\n',
+      '\n    node scripts/deploy-lock.mjs acquire --owner "<you>" --note "<what>"\n',
     );
     return;
   }
   const { ok } = heldByMe();
   console.log(`\n  deploy lock: HELD${ok ? ' — BY YOU' : ''}\n`);
   console.log(describe(lock));
+  console.log(where);
   if (isStale(lock)) {
     console.log(
       `\n  Older than ${minutes(STALE_AFTER_MS)}. If that session is gone:\n` +

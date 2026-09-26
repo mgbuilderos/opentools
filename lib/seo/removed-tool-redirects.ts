@@ -10,6 +10,11 @@
  * article; the topic differs and that would be a soft 404.
  */
 const EXACT_REDIRECTS: Readonly<Record<string, string>> = {
+  // Renamed, not removed. `/bench` was a word nobody searches for: the page
+  // runs an operation over a whole folder, and the people who need that type
+  // "batch" — batch compress pdf, batch rename, bulk convert. The page is
+  // unchanged; only the address people can guess is.
+  '/bench': '/batch',
   '/audio/transcribe': '/guides/category/audio',
   '/image/upscaler': '/image/optimize',
   '/developer/sql-visualizer': '/developer/advanced?tool=sql-to-er-diagram',

@@ -1,0 +1,33 @@
+{
+  "$schema": "../app-info-schema.json",
+  "name": "OpenTools",
+  "port": 8796,
+  "available": true,
+  "exposable": true,
+  "id": "opentools",
+  "tipi_version": 1,
+  "version": "0.2.0",
+  "categories": ["utilities", "data"],
+  "description": "OpenTools is a collection of PDF, image, audio, video, subtitle, data, text and QR utilities. Every conversion runs in the browser tab that opened it, using Web Workers and WebAssembly, so files are never sent to this container. Your hardware serves pages and does none of the work, and handing the URL to somebody else does not make you the custodian of their documents.",
+  "short_desc": "File tools that run in your browser, not on your server.",
+  "author": "OpenTools",
+  "source": "https://github.com/mgbuilderos/opentools",
+  "website": "https://getopentools.com",
+  "form_fields": [
+    {
+      "type": "text",
+      "label": "Optional access gate username (leave empty for no prompt)",
+      "env_variable": "OPENTOOLS_AUTH_USER",
+      "required": false
+    },
+    {
+      "type": "password",
+      "label": "Optional access gate password (required if a username is set)",
+      "env_variable": "OPENTOOLS_AUTH_PASSWORD",
+      "required": false
+    }
+  ],
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1790640000000,
+  "updated_at": 1790640000000
+}

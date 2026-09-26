@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+  Required beside the templates: Community Applications reads this for the
+  repository overview and the support links shown next to every app from it.
+-->
+<Profile>
+  <Repo>OpenTools</Repo>
+  <Project>https://getopentools.com</Project>
+  <Support>https://github.com/mgbuilderos/opentools/issues</Support>
+  <Profile>https://github.com/mgbuilderos</Profile>
+  <Overview>
+    Browser-side file tools, self-hostable as one container. Processing happens
+    in the visitor's own tab, so the server never receives the file. MIT
+    licensed.
+  </Overview>
+</Profile>

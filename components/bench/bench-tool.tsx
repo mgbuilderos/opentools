@@ -24,6 +24,7 @@ import type { KernelOperation } from '@/lib/kernel/types';
 import { runPipeline } from '@/lib/pipeline/run';
 import type { Pipeline } from '@/lib/pipeline/types';
 import { validate } from '@/lib/pipeline/validate';
+import { BATCH_LANDINGS } from '@/lib/seo/audience-pages';
 import { searchTools } from '@/lib/tools/catalog';
 import {
   buildReceipt,
@@ -328,7 +329,7 @@ export function BenchTool() {
           ? `Bench pipeline: ${pipeline.name}`
           : `Bench: ${operation.name}`,
         durationMs: completedReceipt.durationMs,
-        summary: `${outputs.length} outputs from ${inputs.length} inputs; nothing uploaded.`,
+        summary: `${outputs.length} outputs from ${inputs.length} inputs.`,
         metrics: [
           { label: 'Files', value: String(inputs.length) },
           {
@@ -337,7 +338,6 @@ export function BenchTool() {
               result.filter((item) => item.status === 'done').length,
             ),
           },
-          { label: 'Uploaded', value: '0 bytes' },
         ],
       });
     } catch (cause) {
@@ -371,14 +371,36 @@ export function BenchTool() {
       >
         <header className="space-y-2">
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Private folder automation
+            Batch processing
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight">The Bench</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Run one operation over a whole folder
+          </h1>
           <p className="max-w-3xl text-muted-foreground">
-            Drop a folder, pick an operation, preview the first real result,
-            then run every file locally. Nothing leaves this browser.
+            Point it at a folder of 4,000 files and come back in ten minutes.
+            Every upload site on the internet is one file at a time, because
+            asking you to upload four thousand scanned invoices is unthinkable
+            for them. Here there is nothing to upload: pick an operation,
+            preview the first real result, then let it run. No file limit, no
+            size limit — your machine is the limit.
           </p>
         </header>
+
+        {/*
+          The three jobs people arrive with, named as jobs. Also the inbound
+          links that keep those pages out of the orphan sweep.
+        */}
+        <nav aria-label="Common batch jobs" className="flex flex-wrap gap-2">
+          {BATCH_LANDINGS.map((page) => (
+            <a
+              key={page.route}
+              href={page.route}
+              className="focus-ring rounded-lg border bg-card px-3 py-2 text-sm font-medium transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30"
+            >
+              {page.name}
+            </a>
+          ))}
+        </nav>
 
         <section
           className="grid gap-4 rounded-xl border bg-card p-5 lg:grid-cols-3"
@@ -459,6 +481,26 @@ export function BenchTool() {
             {inputs.length
               ? `${inputs.length} files ready (${inputMode.replace('-', ' ')})`
               : 'No files selected.'}
+          </p>
+        </section>
+
+        {/*
+          The chaining was built and never sold.
+
+          lib/pipeline/ has run, validate, serialise and store, and the editor
+          below saves, loads, imports, exports and shares a multi-step
+          pipeline. None of that was stated anywhere, so the one sentence that
+          explains why it matters — the file is never handed back and re-taken
+          between steps — went unsaid on the page that does it.
+        */}
+        <section className="rounded-xl border bg-card p-5">
+          <h2 className="text-lg font-semibold">Chain steps (optional)</h2>
+          <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
+            Scan, deskew, OCR, redact, compress, sign — one drop, every step, in
+            order. A hosted tool makes you download the result and pick it up
+            again between each step, because each step is a separate job on
+            someone else&rsquo;s machine that someone has to bill for. Here the
+            file simply stays in memory from one step to the next.
           </p>
         </section>
 

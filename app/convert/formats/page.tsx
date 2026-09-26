@@ -9,6 +9,7 @@ import {
   formatPairIndex,
 } from '@/lib/seo/format-pairs';
 import { formatHubMeta } from '@/lib/seo/format-pairs';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 /*
   The hub the 103 pair pages hang off.
@@ -39,21 +40,24 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <FormatConverterTool
-      relatedTools={relatedToolsFor('/convert/formats')}
-      index={formatPairIndex()}
-      pair={{
-        title: 'File format converter',
-        summary: `One parser and one emitter per format, so every pair works the same way. Pick the two formats and the page for that conversion opens — ${FORMAT_PAIRS.length} of them, plus the seven with a tool of their own.`,
-        measured: facts.measured,
-        sample: facts.sample,
-        output: facts.output,
-        from: pair.from,
-        to: pair.to,
-        formats: facts.formats,
-        routes: facts.routes,
-        extension: facts.extension,
-      }}
-    />
+    <>
+      <ToolJsonLd route="/convert/formats" meta={metadata} />
+      <FormatConverterTool
+        relatedTools={relatedToolsFor('/convert/formats')}
+        index={formatPairIndex()}
+        pair={{
+          title: 'File format converter',
+          summary: `One parser and one emitter per format, so every pair works the same way. Pick the two formats and the page for that conversion opens — ${FORMAT_PAIRS.length} of them, plus the seven with a tool of their own.`,
+          measured: facts.measured,
+          sample: facts.sample,
+          output: facts.output,
+          from: pair.from,
+          to: pair.to,
+          formats: facts.formats,
+          routes: facts.routes,
+          extension: facts.extension,
+        }}
+      />
+    </>
   );
 }

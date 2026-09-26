@@ -1,0 +1,22 @@
+From first@example.invalid Sat Sep 26 00:00:00 2026
+From: first@example.invalid
+To: archive@example.invalid
+Subject: First
+Content-Type: text/plain; charset=UTF-8
+
+Line one
+>From this body line was escaped
+From second@example.invalid Sat Sep 26 00:01:00 2026
+From: second@example.invalid
+To: archive@example.invalid
+Subject: Second
+Content-Type: text/plain; charset=UTF-8
+
+Second body
+From third@example.invalid Sat Sep 26 00:02:00 2026
+From: third@example.invalid
+To: archive@example.invalid
+Subject: Third
+Content-Type: text/plain; charset=UTF-8
+
+Third body

@@ -314,7 +314,7 @@ terms belong to iLovePDF and SmallPDF with millions of backlinks.
 | Channel | Realistic first hit | Why it fits | Effort |
 | :--- | :--- | :--- | :--- |
 | **Show HN** | 10k–60k in 24h | Highest free single-day ceiling. **One shot** — do not fire before §3 is fixed. | One post |
-| **awesome-selfhosted** | steady + backlinks | Durable, and the only realistic fix for the authority problem. **Blocked:** requires a genuine self-host release; `claude/selfhost` is unmerged and Docker Hub 404s for `mgbuilderos/opentools`. | ship self-host first |
+| **awesome-selfhosted** | steady + backlinks | Durable, and the only realistic fix for the authority problem. Requires a first release over four months old. **No longer blocked on the image:** `ghcr.io/mgbuilderos/opentools` is published and public — it was never going to Docker Hub. `v0.1.0` was tagged 2026-09-18, so the gate lifts 2027-01-18. | ship self-host first |
 | ~~free-for-dev~~ | — | **Ruled out 2026-09-18.** Its contributing guide scopes the list to SaaS with free tiers for DevOps practitioners. Browser utilities are out of scope; a PR would be rejected. | don't |
 | **r/selfhosted, r/privacy, r/degoogle** | 2k–15k per post | Ideologically aligned and donation-friendly. | One post each |
 | **AlternativeTo, Product Hunt** | steady | Listed as the local alternative to SmallPDF. Compounds for years. | A listing each |

@@ -80,8 +80,32 @@ deploys of 2026-09-18 would cost nothing today.
 **Cost is demand-paced, not billed on deploy.** A page costs its two writes only
 when someone actually requests it, so 306 is a ceiling reached only if every
 opted-in page is visited in a day. `npm run predeploy` reads the real figure from
-Cloudflare before each deploy; its `FULL_REWARM` constant must be kept in step
-with this table.
+Cloudflare before each deploy, and counts what a deploy will cost from the build
+itself — the public URLs with no file in `dist/client`, which are the only ones
+that still have to render.
+
+**`FULL_REWARM` is the fallback for when there is no build to count**, and it is
+a ceiling rather than a figure to keep in step with this table. That distinction
+is the whole point, and getting it wrong cost real time: the constant was
+documented as a ceiling from the day it was written while `cache-budget.test.ts`
+asserted it *exactly* equalled the measured cost. Exactness made one line a
+shared mutex — every branch that added a route had to edit it, so any two such
+branches conflicted there, and whoever merged second resolved a conflict over a
+number neither side had computed for the union. It was repriced seven times in
+one day (420, 422, 424, 438, 440, 442, 444), each one a merge someone had to
+stop and fix.
+
+The test now checks a band instead, which catches both ways of being wrong:
+
+| Bound | Catches |
+| :--- | :--- |
+| never below the measured cost | an optimistic verdict — says GO when the deploy cannot afford itself |
+| never more than 200 writes above it | an inflated one — says WAIT on every deploy, which happened when this constant priced 163 ISR pages that had already become static files, and was overridden by hand three times in a day |
+| at least one page of headroom | the band collapsing back into a mutex |
+
+Inside the band, adding a route changes nothing. Raise it — to a round number,
+not to the measured figure — only when the test says the ceiling has been
+crossed.
 
 ## What is deliberately not cached, and why
 

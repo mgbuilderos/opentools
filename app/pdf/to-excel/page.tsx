@@ -5,6 +5,7 @@ import {
   requireToolPageDepth,
   toolPageMetadata,
 } from '@/lib/seo/tool-page-depth';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -29,8 +30,11 @@ export const metadata = toolPageMetadata(ROUTE);
 
 export default function Page() {
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <PdfToExcelTool brief={BRIEF} />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route="/pdf/to-excel" meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <PdfToExcelTool brief={BRIEF} />
+      </PageDepthProvider>
+    </>
   );
 }
