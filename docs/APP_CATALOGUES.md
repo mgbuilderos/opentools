@@ -104,13 +104,19 @@ rather than taking a pull request.
 - **The image must carry its digest, and this is the one store that needs it.**
   Umbrel's packaging guidance requires `registry/repo:tag@sha256:<digest>`, the
   multi-arch manifest digest rather than a per-architecture one, and rejects a
-  moving tag outright. `packaging/umbrel/docker-compose.yml` carries a
-  placeholder until the release exists; fill it in with:
+  moving tag outright. `packaging/umbrel/docker-compose.yml` therefore ships a
+  placeholder, because the digest cannot exist until the release does. After
+  the image is published:
 
   ```bash
-  docker buildx imagetools inspect ghcr.io/mgbuilderos/opentools:0.2.0 \
-    --format '{{json .Manifest.Digest}}'
+  npm run release:digest          # the version CHANGELOG.md names
+  npm test                        # confirms the manifest agrees with it
   ```
+
+  It reads the digest from the registry, checks the image really carries both
+  architectures, and refuses rather than guessing if the tag is not published
+  yet — which is the failure that would otherwise ship a manifest that looks
+  fine and installs for nobody. `--check` prints without writing.
 - **The compose file sets `user: "1000:1000"`,** which is not decoration. The
   image runs as `node`, uid 1000; without it Umbrel creates the bind mount
   root-owned and the page cache cannot be written.
