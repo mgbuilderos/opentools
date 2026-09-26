@@ -1,6 +1,8 @@
 # The playbook — five plays, each drawn from a tool that won
 
-**Date:** 2026-09-25 · **Status:** proposal for the owner. Nothing here is built.
+**Date:** 2026-09-25, corrected by the owner 2026-09-26 · **Status:** proposal.
+Nothing here is built. **§0 records an owner decision that withdraws Play 5,
+demotes Play 3 and narrows §7 — read it first; it overrides what follows.**
 **Companions:** `docs/DISTRIBUTION_PLAYBOOK.md` (what is built and unshipped),
 `docs/ORGANIC_GROWTH_PLAYBOOK_CORRECTED.md` (the constraint set C1–C9),
 `docs/GROWTH_IDEAS.md`, `docs/REVENUE_OPERATIONS.md` (the measured baseline).
@@ -12,6 +14,96 @@
 > rule is that a number carries a source and a date or it does not go in
 > (`ORGANIC_GROWTH_PLAYBOOK_CORRECTED.md` §6). Every number below is from this
 > repository's own measurements.
+
+---
+
+## 0. Owner correction, 2026-09-26 — read this before §5 and §6
+
+**The owner rejected two of the five plays, and the reasoning is recorded here
+because it is a product decision, not a preference.**
+
+> *"our idea is they get all tools in one place, it is free and it is private —
+> that is our USP. We need to serve humanity and make everyone productive...
+> we have multiple entry points."*
+>
+> *"once they use it and know it has lots of tools, and we will continue
+> building more daily, they will come back — maybe daily or weekly or whenever
+> they want. It is like this tool sits in their computer and gets things done.
+> Also we have a PWA."*
+
+**What this overrides.**
+
+- **Play 5 (pick one tribe) is withdrawn.** It proposed narrowing to paralegals.
+  Breadth is the product promise, so narrowing the product contradicts it.
+- **Play 3 (jobs not capabilities) is demoted** from a reframe of the catalogue
+  to an optional additional entry point. Job pages may still be worth building
+  as *doors*, but not at the cost of the capability catalogue.
+- **§7 ("stop adding tool routes") is narrowed.** It conflated two decisions.
+  Which URLs the *sitemap* asks Google to crawl is a distribution question, and
+  the focus change stands on its own evidence — 534 URLs declined as
+  "Discovered – currently not indexed". How many *tools* the product has is a
+  product question, and the answer is as many as possible. Adding a tool without
+  adding a sitemap entry costs no crawl budget.
+
+**What the author of §5–§7 got wrong**, stated plainly so it is not repeated:
+a concentration tactic that is right for *distribution* was applied to the
+*product*. Those are separate decisions and only the first was supported by the
+measurements.
+
+### The corrected thesis
+
+The precedent to study is not ChatGPT and not Canva. It is **CyberChef**:
+hundreds of client-side operations in one place, free, open source, no sign-up,
+chainable, and downloadable as a single portable file that works offline
+forever. It owns its category on exactly the proposition this project holds —
+all tools in one place, free, private, portable.
+
+And the two USPs are one mechanism rather than two features:
+
+> A server-side product **cannot** offer all-tools-in-one-place as a continuous
+> workspace, because keeping a file available across several tools means storing
+> it. This project can, precisely because the file never leaves the tab.
+> **Privacy is what makes breadth deliverable.**
+
+### The retention model, and the one thing it turns on
+
+The owner's model is an install base, not session depth: the tool sits on the
+machine and is there for the next problem.
+
+That model has a single point of failure, and naming it correctly decides the
+roadmap: **people do not return for tools they do not need yet.** The return
+trigger is their next file problem, which may be weeks away. What decides
+whether they choose this site then is whether it is **installed, associated, or
+remembered**.
+
+So **install is the retention mechanism**, and it is the number the product
+should be built around:
+
+1. Fire the PWA prompt **after a completed task**, never on arrival.
+2. Pitch it as *"keep it — works with no internet"*, not "install our app".
+3. Push the OS file association already declared in `public/site.webmanifest` —
+   a one-time action that creates permanent re-entry.
+4. Ship the portable single file (`scripts/build-portable.mjs`, landed in #19).
+5. Publish what is new each week, with a feed and no account. This is the only
+   honest reason to return *before* the next problem, and it is the payoff for
+   building daily. Nobody returns for tools they were never told about.
+
+### The demo this product should lead with
+
+**"Turn off your internet. Now use any tool."**
+
+It is a dare, it takes ten seconds, every server-side competitor fails it
+instantly, and it proves the privacy claim without an argument.
+`e2e/share-target.spec.ts` already disconnects the browser and loads
+`/pdf/merge`, so the claim is tested rather than asserted — which is the
+standard C2 sets for it.
+
+### What survives unchanged
+
+Plays 1 (the shock report), 2 (one input over the whole catalogue) and 4 (live
+inside other products) all *depend* on breadth rather than fighting it, and Play
+2 in particular is how a 1,356-operation catalogue becomes reachable. They
+stand. Read §2, §3 and §5 with this section's corrections applied.
 
 ---
 
