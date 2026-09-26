@@ -42,7 +42,11 @@ import {
   subscribeInstall,
 } from '@/lib/pwa-install';
 import { LanguageSwitcher } from '@/components/language-switcher';
-import { useLocaleEdition } from '@/components/locale-edition-provider';
+import {
+  useLocaleEdition,
+  useToolUi,
+} from '@/components/locale-edition-provider';
+import { navGroupName, navSectionTitle } from '@/lib/i18n/tool-ui';
 import { PageDepthContent } from '@/components/page-depth-content';
 import { usePageDepth } from '@/components/page-depth-provider';
 import { MilestoneModal } from './milestone-modal';
@@ -87,6 +91,12 @@ export function AppShell({
    * See `components/page-depth-provider.tsx` for why it arrives this way.
    */
   const toolDepth = usePageDepth();
+  /*
+    The shell's own labels: the menu, the categories and the trust strip. On an
+    English page this is the English bundle, so all 1,478 of them render exactly
+    what they rendered before.
+  */
+  const t = useToolUi();
   /** Non-null only on a localised edition; see locale-edition-provider.tsx. */
   const localeEdition = useLocaleEdition();
 
@@ -208,11 +218,9 @@ export function AppShell({
       <div className="flex min-h-screen items-center justify-center bg-background p-4 text-center">
         <div>
           <h1 className="text-xl font-semibold mb-2 text-destructive">
-            Unauthorized Domain
+            {t.navUnauthorizedDomain}
           </h1>
-          <p className="text-muted-foreground">
-            This tool is only authorized to run on getopentools.com.
-          </p>
+          <p className="text-muted-foreground">{t.navUnauthorizedNote}</p>
         </div>
       </div>
     );
@@ -234,7 +242,7 @@ export function AppShell({
     }, 450);
   };
   const categoryNavigation = (
-    <nav aria-label="Tool categories" className="space-y-2 p-2">
+    <nav aria-label={t.navToolCategories} className="space-y-2 p-2">
       {NAVIGATION_MAJOR_SECTIONS.map((section, sectionIdx) => {
         const groups = section.groupCategoryIds
           .map((id) => NAV_GROUPS.find((g) => g.id === id))
@@ -249,7 +257,7 @@ export function AppShell({
               />
             )}
             <div className="category-section-header px-2.5 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
-              {section.title}
+              {navSectionTitle(t, section.id) ?? section.title}
             </div>
             {groups.map((group) => {
               const Icon = groupIcons[group.id];
@@ -258,7 +266,7 @@ export function AppShell({
                 <a
                   key={group.id}
                   href={`/?category=${group.id}`}
-                  title={`${group.name} (${count} tools)`}
+                  title={`${navGroupName(t, group.id) ?? group.name} (${count} tools)`}
                   aria-current={group.id === activeGroupId ? 'page' : undefined}
                   onClick={(event) => {
                     if (
@@ -281,7 +289,9 @@ export function AppShell({
                     className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-aria-[current=page]:scale-100"
                   />
                   <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-                    <span className="truncate">{group.name}</span>
+                    <span className="truncate">
+                      {navGroupName(t, group.id) ?? group.name}
+                    </span>
                     <span className="tabular rounded bg-muted/70 px-1.5 py-0.5 text-[11px] font-mono opacity-70 transition-opacity duration-[var(--motion-standard)] group-hover:opacity-100 group-aria-[current=page]:bg-background/20 group-aria-[current=page]:text-background">
                       {count}
                     </span>
@@ -299,11 +309,11 @@ export function AppShell({
           aria-hidden="true"
         />
         <div className="category-section-header px-2.5 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 select-none">
-          Resources
+          {t.navResources}
         </div>
         <a
           href="/templates"
-          title="Templates & OS Vault (Free Vault)"
+          title={t.navTemplatesVaultTitle}
           className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <FolderGit2
@@ -311,15 +321,15 @@ export function AppShell({
             className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
           <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            <span className="truncate">Templates &amp; Vault</span>
+            <span className="truncate">{t.navTemplatesVault}</span>
             <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
-              Free Vault
+              {t.navFreeVault}
             </span>
           </span>
         </a>
         <a
           href="/guides"
-          title="Guides & Solutions (Interactive)"
+          title={t.navGuidesSolutionsTitle}
           className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <BookOpen
@@ -327,15 +337,15 @@ export function AppShell({
             className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
           <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            <span className="truncate">Guides &amp; Solutions</span>
+            <span className="truncate">{t.navGuidesSolutions}</span>
             <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
-              Interactive
+              {t.navInteractive}
             </span>
           </span>
         </a>
         <a
           href="/blog"
-          title="Engineering Blog (Playbooks)"
+          title={t.navEngineeringBlogTitle}
           className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <Newspaper
@@ -343,15 +353,15 @@ export function AppShell({
             className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
           <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            <span className="truncate">Engineering Blog</span>
+            <span className="truncate">{t.navEngineeringBlog}</span>
             <span className="rounded border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold text-foreground/80">
-              Playbooks
+              {t.navPlaybooks}
             </span>
           </span>
         </a>
         <a
           href="/support"
-          title="Support OpenTools (Free & Open Source)"
+          title={t.navSupportTitle}
           className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
           <HeartHandshake
@@ -359,7 +369,7 @@ export function AppShell({
             className="size-4 shrink-0 text-success transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
           <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
-            <span className="truncate">Support OpenTools</span>
+            <span className="truncate">{t.navSupportOpenTools}</span>
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
               <span className="relative inline-flex size-2 rounded-full bg-success" />
@@ -370,7 +380,7 @@ export function AppShell({
           <button
             type="button"
             onClick={() => void showInstallDialog()}
-            title="Install OpenTools as an app on this device"
+            title={t.navInstallPrompt}
             className="category-link group focus-ring flex h-9 w-full items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
           >
             <Download
@@ -378,7 +388,7 @@ export function AppShell({
               className="size-4 shrink-0 transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
             />
             <span className="category-label min-w-0 flex-1 truncate text-left">
-              Install app
+              {t.navInstallApp}
             </span>
           </button>
         )}
@@ -431,13 +441,13 @@ export function AppShell({
         href="#tool"
         className="focus-ring fixed left-3 top-3 z-[70] -translate-y-20 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background focus:translate-y-0"
       >
-        Skip to tool
+        {t.navSkipToTool}
       </a>
 
       <header className="sticky top-0 z-[60] border-b bg-background/95 backdrop-blur-xl">
         {/* Unified Trust & Privacy Ribbon */}
         <aside
-          aria-label="Trust and privacy guarantees"
+          aria-label={t.navTrustGuarantees}
           className="border-b bg-muted/40 text-[11px] text-muted-foreground"
         >
           <div className="mx-auto flex h-7 max-w-[1440px] items-center overflow-hidden px-3 sm:px-6 lg:px-8">
@@ -449,28 +459,28 @@ export function AppShell({
                 >
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">🔒</span>
-                    <span>Your Files &amp; Inputs Never Touch a Server</span>
+                    <span>{t.navFilesNeverTouchServer}</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">🛡️</span>
-                    <span>No Third-Party Trackers</span>
+                    <span>{t.navNoTrackers}</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">⚡</span>
-                    <span>No Client-Side Analytics</span>
+                    <span>{t.navNoAnalytics}</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true">🚫</span>
-                    <span>No Signups · No Paywalls · No Ads</span>
+                    <span>{t.navNoSignups}</span>
                   </span>
                   <span className="opacity-40" aria-hidden="true">
                     ·
@@ -482,7 +492,7 @@ export function AppShell({
                     className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
                   >
                     <span aria-hidden="true">⚖️</span>
-                    <span>Free &amp; Open Source (MIT)</span>
+                    <span>{t.navFreeOpenSource}</span>
                   </a>
                   <span className="opacity-40" aria-hidden="true">
                     ·
@@ -494,7 +504,7 @@ export function AppShell({
                     className="inline-flex items-center gap-1.5 text-foreground hover:underline"
                   >
                     <Star aria-hidden="true" className="size-3 fill-current" />
-                    <span>Star on GitHub</span>
+                    <span>{t.navStarOnGitHub}</span>
                   </a>
                   <span className="opacity-40" aria-hidden="true">
                     ·
@@ -559,8 +569,8 @@ export function AppShell({
                 setActiveResultIndex(-1);
               }}
               onKeyDown={handleSearchKeyDown}
-              placeholder="What do you need to do?"
-              aria-label="Search tools"
+              placeholder={t.navSearchPrompt}
+              aria-label={t.navSearchTools}
               aria-autocomplete="list"
               aria-controls="tool-search-results"
               aria-expanded={searchOpen}
@@ -578,14 +588,14 @@ export function AppShell({
               <div
                 id="tool-search-results"
                 role="listbox"
-                aria-label="Matching tools"
+                aria-label={t.navMatchingTools}
                 className="absolute inset-x-0 top-[calc(100%+8px)] rounded-xl border bg-popover p-2 shadow-[0_18px_50px_rgb(0_0_0/10%)]"
               >
                 {!resultsReady ? (
                   <div className="px-3 py-4">
                     <p className="text-sm font-medium">Searching…</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Loading the tool index.
+                      {t.navLoadingIndex}
                     </p>
                   </div>
                 ) : results.length ? (
@@ -609,17 +619,15 @@ export function AppShell({
                         </span>
                       </span>
                       <span className="ml-4 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors group-hover:border-foreground/30">
-                        On-device
+                        {t.navOnDevice}
                       </span>
                     </a>
                   ))
                 ) : (
                   <div className="px-3 py-4">
-                    <p className="text-sm font-medium">
-                      No working tool matches yet.
-                    </p>
+                    <p className="text-sm font-medium">{t.navNoMatch}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Only tested canary tools appear in this preview.
+                      {t.navCanaryNote}
                     </p>
                   </div>
                 )}
@@ -637,41 +645,39 @@ export function AppShell({
             target="_blank"
             rel="noopener noreferrer"
             className="group focus-ring hidden h-9 items-center gap-1.5 rounded-lg border bg-muted/50 px-3 text-xs font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-px hover:border-foreground/30 hover:bg-muted hover:text-foreground active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none md:inline-flex"
-            aria-label="Star on GitHub"
+            aria-label={t.navStarOnGitHub}
           >
             <Star
               aria-hidden="true"
               className="size-3.5 fill-current transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-hover:rotate-12 motion-reduce:transform-none"
             />
-            <span>Star on GitHub</span>
+            <span>{t.navStarOnGitHub}</span>
           </a>
 
           <Button
             variant="ghost"
             className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
             render={
-              <a href="/templates" aria-label="Free Templates and OS Vault" />
+              <a href="/templates" aria-label={t.navFreeTemplatesVault} />
             }
           >
-            <span>Templates</span>
+            <span>{t.navTemplates}</span>
           </Button>
 
           <Button
             variant="ghost"
             className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
-            render={<a href="/guides" aria-label="Tool Guides and Solutions" />}
+            render={<a href="/guides" aria-label={t.navToolGuidesSolutions} />}
           >
-            <span>Guides</span>
+            <span>{t.navGuides}</span>
           </Button>
 
           <Button
             variant="ghost"
             className="group hidden h-10 shrink-0 rounded-lg sm:flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98]"
-            render={
-              <a href="/blog" aria-label="Engineering Blog and Playbooks" />
-            }
+            render={<a href="/blog" aria-label={t.navEngineeringBlogAria} />}
           >
-            <span>Blog</span>
+            <span>{t.navBlog}</span>
           </Button>
 
           {/*
@@ -689,13 +695,13 @@ export function AppShell({
           <Button
             variant="ghost"
             className="group flex h-10 shrink-0 items-center gap-2 rounded-lg border border-success/30 bg-success/5 px-2.5 text-sm font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98] sm:border-transparent sm:bg-transparent sm:px-3 sm:text-muted-foreground"
-            render={<a href="/support" aria-label="Support OpenTools" />}
+            render={<a href="/support" aria-label={t.navSupportOpenTools} />}
           >
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
               <span className="relative inline-flex size-2 rounded-full bg-success" />
             </span>
-            <span>Support</span>
+            <span>{t.navSupport}</span>
           </Button>
 
           <Button
@@ -714,7 +720,7 @@ export function AppShell({
         <aside
           ref={drawerRef}
           id="tool-category-rail"
-          aria-label="Categories"
+          aria-label={t.navCategories}
           onPointerEnter={(event) => {
             if (event.pointerType === 'mouse') expandSidebar();
           }}
@@ -735,13 +741,13 @@ export function AppShell({
               variant="ghost"
               size="icon"
               onClick={closeSidebar}
-              aria-label="Collapse categories"
+              aria-label={t.navCollapseCategories}
               className="size-8 shrink-0 mx-auto"
             >
               <PanelLeftClose aria-hidden="true" className="size-4" />
             </Button>
             <span className="category-label whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
-              Categories
+              {t.navCategories}
             </span>
           </div>
           {categoryNavigation}
@@ -756,13 +762,13 @@ export function AppShell({
         >
           <div className="flex min-h-16 items-center justify-between border-b px-4">
             <h2 id="category-menu-title" className="text-sm font-semibold">
-              Categories
+              {t.navCategories}
             </h2>
             <Button
               variant="ghost"
               size="icon"
               onClick={closeSidebar}
-              aria-label="Close categories"
+              aria-label={t.navCloseCategories}
             >
               <X aria-hidden="true" />
             </Button>

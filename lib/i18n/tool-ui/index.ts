@@ -11,6 +11,9 @@ import { RU_TOOL_UI } from './ru';
 export {
   EN_TOOL_UI,
   fillMessage,
+  NAV_KEY_IDS,
+  navGroupName,
+  navSectionTitle,
   subjectNoun,
   type ToolUiMessages,
 } from './messages';

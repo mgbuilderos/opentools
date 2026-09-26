@@ -8,7 +8,15 @@ import { LOCALE_COPY } from './copy';
 import { LOCALE_CODES, LOCALES } from './locales';
 import { practiceBrief } from '../practice-briefs';
 import { localizedBrief } from './practice-brief';
-import { EN_TOOL_UI, fillMessage, TOOL_UI } from './tool-ui';
+import { NAV_GROUPS, NAVIGATION_MAJOR_SECTIONS } from '../tools/navigation';
+import {
+  EN_TOOL_UI,
+  fillMessage,
+  NAV_KEY_IDS,
+  navGroupName,
+  navSectionTitle,
+  TOOL_UI,
+} from './tool-ui';
 import {
   hubLanguageAlternates,
   languageAlternates,
@@ -307,6 +315,33 @@ describe('tool control strings', () => {
     'ja.subjectPdf',
     'ru.subjectPdf',
     'id.subjectPdf',
+    // The shell's labels that really are the same word in a target language.
+    // "PDF" is a format name everywhere; "Blog", "Audio", "Video" were borrowed
+    // wholesale; "Image" and "Guides" are French words English took.
+    'es.navGroupPdf',
+    'pt.navGroupPdf',
+    'fr.navGroupPdf',
+    'de.navGroupPdf',
+    'it.navGroupPdf',
+    'ja.navGroupPdf',
+    'ru.navGroupPdf',
+    'id.navGroupPdf',
+    'es.navBlog',
+    'pt.navBlog',
+    'fr.navBlog',
+    'de.navBlog',
+    'it.navBlog',
+    'id.navBlog',
+    'es.navGroupAudio',
+    'fr.navGroupAudio',
+    'de.navGroupAudio',
+    'it.navGroupAudio',
+    'id.navGroupAudio',
+    'de.navGroupVideo',
+    'it.navGroupVideo',
+    'id.navGroupVideo',
+    'fr.navGroupImages',
+    'fr.navGuides',
     'fr.subjectImage',
     'it.subjectFile',
     'fr.imagesMargin',
@@ -360,6 +395,48 @@ describe('tool control strings', () => {
   it('fills placeholders and leaves unknown ones alone', () => {
     expect(fillMessage('{a} of {b}', { a: 1, b: 2 })).toBe('1 of 2');
     expect(fillMessage('{a} of {b}', { a: 1 })).toBe('1 of {b}');
+  });
+});
+
+describe('the shell navigation', () => {
+  /*
+    The menu wraps all 1,464 pages, and its labels come from
+    `lib/tools/navigation.ts` by id. `navGroupName` falls back to the English
+    `group.name` when an id has no key -- which is the right behaviour for a
+    page with no locale, and a silent hole if a group is added and its key is
+    forgotten. So the ids are checked against the data, in both directions.
+  */
+  it('has a key for every navigation group and section', () => {
+    expect([...NAV_KEY_IDS.groups].sort()).toEqual(
+      NAV_GROUPS.map((group) => group.id).sort(),
+    );
+    expect([...NAV_KEY_IDS.sections].sort()).toEqual(
+      NAVIGATION_MAJOR_SECTIONS.map((section) => section.id).sort(),
+    );
+  });
+
+  it('resolves every group and section in every locale', () => {
+    const missing: string[] = [];
+    for (const code of LOCALE_CODES) {
+      const bundle = TOOL_UI[code];
+      if (!bundle) continue;
+      for (const group of NAV_GROUPS) {
+        if (!navGroupName(bundle, group.id)?.trim()) {
+          missing.push(`${code}: group ${group.id}`);
+        }
+      }
+      for (const section of NAVIGATION_MAJOR_SECTIONS) {
+        if (!navSectionTitle(bundle, section.id)?.trim()) {
+          missing.push(`${code}: section ${section.id}`);
+        }
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('falls back to the English label for an unknown id', () => {
+    expect(navGroupName(EN_TOOL_UI, 'not-a-group')).toBeUndefined();
+    expect(navSectionTitle(EN_TOOL_UI, 'not-a-section')).toBeUndefined();
   });
 });
 

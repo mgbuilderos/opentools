@@ -169,7 +169,14 @@ describe('local tool source policy', () => {
       path.join(projectRoot, 'components/home-workspace.tsx'),
       'utf8',
     );
-    expect(shell).toContain('aria-label="Tool categories"');
+    /*
+      The categories landmark. Its label moved from a literal to the message
+      bundle when the shell was localised (`lib/i18n/tool-ui/`), so the check is
+      on the key rather than the English text -- the landmark is the point, and
+      the text of it is now eight strings. `lib/i18n/i18n.test.ts` is what holds
+      `navToolCategories` to being filled in every locale.
+    */
+    expect(shell).toContain('aria-label={t.navToolCategories}');
     expect(shell).toContain('onCategorySelect(group.id)');
     expect(shell).not.toContain('<ToolLinkCard');
     // Was `toolDestinationsForGroup(selectedGroup)`, whose only remaining use

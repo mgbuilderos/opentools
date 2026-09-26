@@ -250,6 +250,71 @@ export interface ToolUiMessages {
   optimizeNoFormat: string;
   optimizeBadDimensions: string;
   optimizeLarger: string;
+
+  // ---- the shell: navigation, categories and the trust strip
+  navSkipToTool: string;
+  navTemplates: string;
+  navGuides: string;
+  navBlog: string;
+  navSupport: string;
+  navCategories: string;
+  navResources: string;
+  navFreeVault: string;
+  navInteractive: string;
+  navPlaybooks: string;
+  navEngineeringBlog: string;
+  navSupportOpenTools: string;
+  navStarOnGitHub: string;
+  navTemplatesVault: string;
+  navGuidesSolutions: string;
+  navInstallApp: string;
+  navOnDevice: string;
+  navSearchTools: string;
+  navSearchPrompt: string;
+  navMatchingTools: string;
+  navNoMatch: string;
+  navLoadingIndex: string;
+  navCanaryNote: string;
+  navCloseCategories: string;
+  navCollapseCategories: string;
+  navToolCategories: string;
+  navTrustGuarantees: string;
+  navFilesNeverTouchServer: string;
+  navNoTrackers: string;
+  navNoAnalytics: string;
+  navNoSignups: string;
+  navFreeOpenSource: string;
+  navInstallPrompt: string;
+  navFreeTemplatesVault: string;
+  navTemplatesVaultTitle: string;
+  navGuidesSolutionsTitle: string;
+  navToolGuidesSolutions: string;
+  navEngineeringBlogTitle: string;
+  navEngineeringBlogAria: string;
+  navSupportTitle: string;
+  navUnauthorizedDomain: string;
+  navUnauthorizedNote: string;
+  navGroupPdf: string;
+  navGroupImages: string;
+  navGroupAudio: string;
+  navGroupVideo: string;
+  navGroupDocuments: string;
+  navGroupFiles: string;
+  navGroupTextData: string;
+  navGroupSpreadsheets: string;
+  navGroupDeveloper: string;
+  navGroupWebSeo: string;
+  navGroupCalculators: string;
+  navGroupDates: string;
+  navGroupFinance: string;
+  navGroupScience: string;
+  navGroupQr: string;
+  navGroupCreator: string;
+  navGroupLifeAdmin: string;
+  navSectionFilesYouHave: string;
+  navSectionTextDataCode: string;
+  navSectionWorkItOut: string;
+  navSectionEveryday: string;
 }
 
 /** The text the components shipped before this module existed. */
@@ -516,6 +581,72 @@ export const EN_TOOL_UI: ToolUiMessages = {
   optimizeBadDimensions:
     'Width and height must be whole numbers from 1 to 12,000.',
   optimizeLarger: '{percent}% larger',
+
+  // ---- the shell
+  navSkipToTool: 'Skip to tool',
+  navTemplates: 'Templates',
+  navGuides: 'Guides',
+  navBlog: 'Blog',
+  navSupport: 'Support',
+  navCategories: 'Categories',
+  navResources: 'Resources',
+  navFreeVault: 'Free Vault',
+  navInteractive: 'Interactive',
+  navPlaybooks: 'Playbooks',
+  navEngineeringBlog: 'Engineering Blog',
+  navSupportOpenTools: 'Support OpenTools',
+  navStarOnGitHub: 'Star on GitHub',
+  navTemplatesVault: 'Templates & Vault',
+  navGuidesSolutions: 'Guides & Solutions',
+  navInstallApp: 'Install app',
+  navOnDevice: 'On-device',
+  navSearchTools: 'Search tools',
+  navSearchPrompt: 'What do you need to do?',
+  navMatchingTools: 'Matching tools',
+  navNoMatch: 'No working tool matches yet.',
+  navLoadingIndex: 'Loading the tool index.',
+  navCanaryNote: 'Only tested canary tools appear in this preview.',
+  navCloseCategories: 'Close categories',
+  navCollapseCategories: 'Collapse categories',
+  navToolCategories: 'Tool categories',
+  navTrustGuarantees: 'Trust and privacy guarantees',
+  navFilesNeverTouchServer: 'Your Files & Inputs Never Touch a Server',
+  navNoTrackers: 'No Third-Party Trackers',
+  navNoAnalytics: 'No Client-Side Analytics',
+  navNoSignups: 'No Signups · No Paywalls · No Ads',
+  navFreeOpenSource: 'Free & Open Source (MIT)',
+  navInstallPrompt: 'Install OpenTools as an app on this device',
+  navFreeTemplatesVault: 'Free Templates and OS Vault',
+  navTemplatesVaultTitle: 'Templates & OS Vault (Free Vault)',
+  navGuidesSolutionsTitle: 'Guides & Solutions (Interactive)',
+  navToolGuidesSolutions: 'Tool Guides and Solutions',
+  navEngineeringBlogTitle: 'Engineering Blog (Playbooks)',
+  navEngineeringBlogAria: 'Engineering Blog and Playbooks',
+  navSupportTitle: 'Support OpenTools (Free & Open Source)',
+  navUnauthorizedDomain: 'Unauthorized Domain',
+  navUnauthorizedNote:
+    'This tool is only authorized to run on getopentools.com.',
+  navGroupPdf: 'PDF',
+  navGroupImages: 'Image',
+  navGroupAudio: 'Audio',
+  navGroupVideo: 'Video',
+  navGroupDocuments: 'Documents & office',
+  navGroupFiles: 'Files & archives',
+  navGroupTextData: 'Text & writing',
+  navGroupSpreadsheets: 'Spreadsheets & data',
+  navGroupDeveloper: 'Developer',
+  navGroupWebSeo: 'Web & SEO',
+  navGroupCalculators: 'Calculators & units',
+  navGroupDates: 'Dates & planning',
+  navGroupFinance: 'Finance & business',
+  navGroupScience: 'Science & learning',
+  navGroupQr: 'QR & barcodes',
+  navGroupCreator: 'Creator & social',
+  navGroupLifeAdmin: 'India & life admin',
+  navSectionFilesYouHave: 'Files you have',
+  navSectionTextDataCode: 'Text, data & code',
+  navSectionWorkItOut: 'Work it out',
+  navSectionEveryday: 'Everyday',
 };
 
 /**
@@ -529,6 +660,64 @@ export const EN_TOOL_UI: ToolUiMessages = {
  * that no form is needed: Russian says "Перезаписано и проверено страниц: 5",
  * which is right for every number, rather than guessing a case from a count.
  */
+/*
+  The menu's own labels, looked up by the id `lib/tools/navigation.ts` uses.
+
+  The lookup lives here rather than in that module because it deliberately
+  imports nothing: it exists to keep the catalogue out of the shell chunk, which
+  once cost 655 KB on every page view. A caller falls back to the English
+  `group.name` when this returns undefined, so an unmapped or newly added group
+  shows its English label instead of nothing.
+*/
+const NAV_GROUP_KEYS: Readonly<Record<string, keyof ToolUiMessages>> = {
+  pdf: 'navGroupPdf',
+  images: 'navGroupImages',
+  audio: 'navGroupAudio',
+  video: 'navGroupVideo',
+  documents: 'navGroupDocuments',
+  files: 'navGroupFiles',
+  'text-data': 'navGroupTextData',
+  spreadsheets: 'navGroupSpreadsheets',
+  'developer-files': 'navGroupDeveloper',
+  'web-seo': 'navGroupWebSeo',
+  calculators: 'navGroupCalculators',
+  dates: 'navGroupDates',
+  finance: 'navGroupFinance',
+  science: 'navGroupScience',
+  'qr-barcode': 'navGroupQr',
+  creator: 'navGroupCreator',
+  'life-admin': 'navGroupLifeAdmin',
+};
+
+const NAV_SECTION_KEYS: Readonly<Record<string, keyof ToolUiMessages>> = {
+  'files-you-have': 'navSectionFilesYouHave',
+  'text-data-code': 'navSectionTextDataCode',
+  'work-it-out': 'navSectionWorkItOut',
+  everyday: 'navSectionEveryday',
+};
+
+export function navGroupName(
+  t: ToolUiMessages,
+  id: string,
+): string | undefined {
+  const key = NAV_GROUP_KEYS[id];
+  return key ? t[key] : undefined;
+}
+
+export function navSectionTitle(
+  t: ToolUiMessages,
+  id: string,
+): string | undefined {
+  const key = NAV_SECTION_KEYS[id];
+  return key ? t[key] : undefined;
+}
+
+/** Every navigation id the lookups cover, for the test that pins them. */
+export const NAV_KEY_IDS = {
+  groups: Object.keys(NAV_GROUP_KEYS),
+  sections: Object.keys(NAV_SECTION_KEYS),
+};
+
 /** The localised word for a noun the recipe sentence interpolates. */
 export function subjectNoun(t: ToolUiMessages, english: string): string {
   if (english === 'image') return t.subjectImage;
