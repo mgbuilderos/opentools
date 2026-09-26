@@ -1249,4 +1249,85 @@ export const PAGE_DEPTH_CORE: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  // components/ofx-qif-tool.tsx, lib/formats/finance/finance.ts
+  '/finance/ofx-qif': {
+    title: 'Convert OFX & QIF to CSV or Excel — No Upload',
+    description:
+      'Convert OFX and QIF bank statements to CSV or Excel in your browser. Reconcile opening balance and transactions with zero file uploads.',
+    heading: 'About this OFX and QIF statement converter',
+    directAnswer:
+      'Select or drop an OFX (.ofx, .qfx, .sgml, .xml) or QIF (.qif) financial statement file up to 50 MB. The browser engine parses banking, credit card, and investment transactions completely in memory, checks opening and closing balance arithmetic, highlights reconciliation discrepancies, and exports clean CSV or native Excel (.xlsx) spreadsheets.',
+    lead: 'Bank and credit card statements exported in Open Financial Exchange (OFX) or Quicken Interchange Format (QIF) contain structured financial history needed for bookkeeping, tax preparation, audit trails, and expense analysis. Standard desktop accounting applications often enforce proprietary subscription paywalls or require routing personal ledger data through third-party cloud aggregators. This tool provides an offline-capable, in-browser parser that reads SGML and XML OFX variants alongside multi-account QIF files, validates transaction consistency through exact decimal arithmetic, and emits structured tabular files without transmitting a single byte over the network.',
+    steps: [
+      {
+        name: 'Select or drop your statement file',
+        text: 'Choose an OFX, QFX, or QIF statement file up to 50 MB. The document is decoded in memory using standard character decoders without transmitting bytes across the network.',
+      },
+      {
+        name: 'Review parsed accounts and transactions',
+        text: 'Inspect detected accounts, statement date ranges, transaction payees, memos, reference numbers, and split categories in the searchable interactive preview table.',
+      },
+      {
+        name: 'Verify balance reconciliation',
+        text: 'Examine the balance reconciliation card. The engine calculates opening balance plus credits minus debits using exact BigInt decimal scaling and flags any mathematical discrepancies against the reported closing balance.',
+      },
+      {
+        name: 'Export to CSV or Excel',
+        text: 'Click Download CSV or Download Excel (.xlsx) to save structured transaction data formatted with standard column headers ready for spreadsheet modeling or accounting import.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Differences between OFX 1.x, OFX 2.x, and QIF formats',
+        body: [
+          'Financial institutions publish records in three distinct syntax families. OFX 1.x files are based on SGML and feature custom header blocks (such as OFXHEADER:100, DATA:OFXSGML, and ENCODING:USASCII) followed by unclosed leaf tags like <TRNAMT>-125.50 and <NAME>Utility payment without corresponding closing tags. OFX 2.x files replace SGML with strict XML syntax, carrying standard XML declarations and properly closed element hierarchies. QIF files date back to early personal finance software, organizing transactions with single-character line prefixes such as D for date, T for amount, P for payee, M for memo, and ^ as record delimiters. The parsing engine inspects the initial byte sequences to distinguish SGML, XML, and QIF structures automatically without relying on file extensions.',
+        ],
+      },
+      {
+        heading:
+          'Deterministic balance reconciliation and discrepancy auditing',
+        body: [
+          'A key failure mode in statement translation is silent floating-point drift: binary 64-bit floating point math cannot accurately represent base-10 currency cents without rounding artifacts. This tool converts all financial amounts into exact coefficient and scale BigInt representations during calculation. When both opening and closing balances are present in the statement metadata, the engine checks whether opening balance plus the sum of all transaction credits and debits equals the reported closing balance to the exact cent. If bank adjustments, pending holds, or missing statement pages introduce a deviation, a high-visibility alert displays the exact numerical discrepancy so you can resolve records before importing them into accounting software.',
+        ],
+      },
+      {
+        heading: 'Zero upload security and banking privacy guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which statement file extensions and formats are supported?',
+        answer:
+          'This tool accepts OFX 1.02–1.60 SGML files, OFX 2.00–2.20 XML files, Quicken Financial Exchange (.qfx) files, and standard Quicken Interchange Format (.qif) exports up to 50 MB.',
+      },
+      {
+        question:
+          'Are bank account numbers or financial figures sent to any server?',
+        answer:
+          'No. All decoding, XML parsing, reconciliation arithmetic, and spreadsheet formatting execute entirely inside your local browser tab. The page is protected by a Content Security Policy with connect-src none that blocks outbound network connections.',
+      },
+      {
+        question: 'How are multi-currency and multi-account files handled?',
+        answer:
+          'When a file contains multiple bank or credit card accounts, an account selector dropdown appears above the overview cards. You can filter transactions by specific account or view combined statements with respective currency tags.',
+      },
+      {
+        question:
+          'What happens if a statement does not provide an opening balance?',
+        answer:
+          'Certain bank exports provide only a closing balance or list transactions without opening anchors. In this scenario, the tool computes total inflows, total outflows, and net transaction sums, reporting that opening balance was omitted while keeping all records accessible for export.',
+      },
+      {
+        question:
+          'Will visual bank logos, check scans, or letterhead appear in the export?',
+        answer:
+          'No. OFX and QIF are raw data-interchange formats designed for financial numbers and metadata. They do not store graphic logos, page layout fonts, or check image scans.',
+      },
+    ],
+  },
 };

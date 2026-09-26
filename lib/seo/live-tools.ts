@@ -102,6 +102,7 @@ export const DEDICATED_TOOL_ROUTES = [
    */
   '/life-admin/indian-currency-number-to-words',
   '/finance/invoice-generator',
+  '/finance/ofx-qif',
   '/text/case-converter',
   '/developer/base64-encoder',
   '/developer/base64-decoder',

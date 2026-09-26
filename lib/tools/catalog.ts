@@ -2173,6 +2173,43 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'ofx-qif-converter',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'OFX & QIF statement converter',
+    shortDescription:
+      'Convert OFX and QIF bank statements to CSV or Excel with transaction preview and balance reconciliation.',
+    category: 'Finance',
+    aliases: [
+      'ofx to csv',
+      'ofx to excel',
+      'qif to csv',
+      'qif to excel',
+      'ofx converter',
+      'qif converter',
+      'bank statement ofx',
+    ],
+    jobs: [
+      'Convert OFX SGML and XML statements to clean CSV and Excel spreadsheets',
+      'Convert QIF financial exports into tabular data',
+      'Reconcile opening balance and transaction totals against closing balance',
+      'Extract multi-account transactions securely without server uploads',
+    ],
+    href: '/finance/ofx-qif',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'finance.ofx.parse',
+        'finance.qif.parse',
+        'finance.reconcile',
+        'spreadsheet.csv.export',
+        'spreadsheet.xlsx.export',
+      ],
+      offlineReady: false,
+    },
+    owner: 'antigravity',
+  },
+  {
     id: 'science-education-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2529,7 +2566,7 @@ export const toolGroups: ToolGroup[] = [
     id: 'finance',
     name: 'Finance & business',
     shortDescription: 'Loans, tax, invoices, margins, and business maths.',
-    toolIds: ['finance-business-workbench'],
+    toolIds: ['finance-business-workbench', 'ofx-qif-converter'],
   },
   {
     id: 'science',

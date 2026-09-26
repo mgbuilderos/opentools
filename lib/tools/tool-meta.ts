@@ -21,6 +21,11 @@ export interface ToolMeta {
 }
 
 export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
+  'ofx-qif-converter': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert OFX and QIF bank statements to CSV or Excel with transaction preview and balance reconciliation.',
+  },
   'latex-hub': {
     version: '0.1.0-canary',
     shortDescription:
