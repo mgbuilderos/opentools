@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { isLiveToolUrl } from '@/lib/seo/live-tools';
 
@@ -11,6 +11,10 @@ import {
   askDefaults,
   askDestination,
   askField,
+  askRequestedFormat,
+  formatLabel,
+  formatWasSubstituted,
+  probeEncodedFormat,
   askParamNames,
   askRequestPath,
   askSettingLines,
@@ -633,5 +637,107 @@ describe('the existing shared links keep working', () => {
         request.id,
       ).toEqual(validValuesFor(request));
     }
+  });
+});
+
+/**
+ * The browser told us it would make one format and made another.
+ *
+ * Measured in WebKit on 2026-09-27: `canvas.toBlob(cb, 'image/webp')` returns a
+ * blob whose type is `image/png`. It does not refuse and it does not return
+ * null — it substitutes. An ask link saying "Please provide a WebP image" would
+ * therefore have sent a Safari or iOS recipient away with a PNG while the page
+ * they read promised otherwise, and nothing in the first version of this feature
+ * would have noticed.
+ */
+describe('a format the browser cannot actually produce', () => {
+  /** A canvas stub whose `toBlob` answers with whatever type is given here. */
+  const canvasProducing =
+    (type: string | null, mode: 'ok' | 'throw' | 'silent' = 'ok') =>
+    () =>
+      ({
+        width: 0,
+        height: 0,
+        toBlob: (callback: (blob: Blob | null) => void) => {
+          if (mode === 'throw') throw new Error('no encoder');
+          if (mode === 'silent') return;
+          callback(type === null ? null : ({ type } as Blob));
+        },
+      }) as unknown as HTMLCanvasElement;
+
+  it('reports the type the browser really produced', async () => {
+    await expect(
+      probeEncodedFormat('webp', canvasProducing('image/webp')),
+    ).resolves.toBe('image/webp');
+    await expect(
+      probeEncodedFormat('webp', canvasProducing('image/png')),
+    ).resolves.toBe('image/png');
+  });
+
+  it('calls the WebKit substitution a substitution', () => {
+    expect(formatWasSubstituted('webp', 'image/png')).toBe(true);
+    expect(formatWasSubstituted('webp', 'image/webp')).toBe(false);
+    // Case and spelling must not create a false alarm.
+    expect(formatWasSubstituted('webp', 'IMAGE/WEBP')).toBe(false);
+    expect(formatWasSubstituted('JPEG', 'image/jpeg')).toBe(false);
+  });
+
+  /*
+   * THE ONE THAT MATTERS MOST, and it is the conservative direction. Turning
+   * "I could not check" into "this browser cannot do it" would invent a
+   * limitation and send the recipient away for no reason — the same class of
+   * untruth as the defect this guard exists to prevent, pointing the other way.
+   */
+  it('treats an unanswerable probe as unknown, never as a failure', async () => {
+    expect(formatWasSubstituted('webp', null)).toBe(false);
+    expect(formatWasSubstituted('webp', '')).toBe(false);
+
+    await expect(probeEncodedFormat('webp', () => null)).resolves.toBeNull();
+    await expect(
+      probeEncodedFormat('webp', canvasProducing(null)),
+    ).resolves.toBeNull();
+    await expect(
+      probeEncodedFormat('webp', canvasProducing('', 'ok')),
+    ).resolves.toBeNull();
+    await expect(
+      probeEncodedFormat('webp', canvasProducing('image/webp', 'throw')),
+    ).resolves.toBeNull();
+    await expect(
+      probeEncodedFormat('webp', () => ({}) as HTMLCanvasElement),
+    ).resolves.toBeNull();
+  });
+
+  it('gives up rather than hanging when the callback never comes', async () => {
+    // A browser that accepts the call and never answers would otherwise leave
+    // the notice in limbo for the life of the page.
+    vi.useFakeTimers();
+    try {
+      const pending = probeEncodedFormat(
+        'webp',
+        canvasProducing('image/webp', 'silent'),
+      );
+      await vi.advanceTimersByTimeAsync(2500);
+      await expect(pending).resolves.toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('names the format the way a sentence needs it', () => {
+    expect(formatLabel('image/png')).toBe('PNG');
+    expect(formatLabel('image/webp')).toBe('WEBP');
+    expect(formatLabel('nonsense')).toBe('nonsense');
+  });
+
+  it('reads the requested format only through the sanitiser', () => {
+    const image = findAskRequest('image')!;
+    expect(askRequestedFormat(image, { format: 'webp' })).toBe('webp');
+    // A format the definition does not offer is not a format we report.
+    expect(askRequestedFormat(image, { format: 'gif' })).toBeNull();
+    expect(askRequestedFormat(image, {})).toBeNull();
+    // And a request with no format field at all has nothing to probe.
+    expect(
+      askRequestedFormat(findAskRequest('pdf')!, { format: 'webp' }),
+    ).toBeNull();
   });
 });

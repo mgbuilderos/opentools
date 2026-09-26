@@ -656,3 +656,103 @@ export function askField(
 ): RecipeDefinition['fields'][number] | null {
   return request.recipe.fields.find((field) => field.param === param) ?? null;
 }
+
+/**
+ * The format a request asks for, or null when it asks for none.
+ *
+ * Read through the sanitiser, so a format the definition does not offer is not
+ * a format this reports.
+ */
+export function askRequestedFormat(
+  request: AskRequest,
+  values: RecipeValues,
+): string | null {
+  const clean = sanitiseAskValues(request, values);
+  const format = clean.format;
+  return typeof format === 'string' ? format : null;
+}
+
+/**
+ * What a browser will REALLY produce when asked for an image format.
+ *
+ * WHY THIS EXISTS, AND IT IS NOT A THEORETICAL WORRY. Measured 2026-09-27 in
+ * WebKit against the built site: `canvas.toBlob(cb, 'image/webp')` hands back a
+ * blob whose type is `image/png`. It does not refuse, it does not return null,
+ * it substitutes — so an ask link that says *"Please provide a WebP image"*
+ * would send a Safari or iOS recipient away with a PNG while the page they read
+ * promised otherwise. The file on disk is named honestly by the tool; the
+ * broken promise is the sentence, which is this module's to keep.
+ *
+ * WHY A REAL ENCODE AND NOT A FEATURE TEST. There is no reliable flag for WebP
+ * *encoding*. The `canPlayType`-style checks answer the **decode** question,
+ * which Safari does support — which is presumably why the substitution exists
+ * at all. So the only honest test is to encode two pixels and read the type
+ * back.
+ *
+ * It costs one 2x2 canvas and touches no network: nothing here can, and
+ * `lib/tools/local-source-policy.test.ts` is what keeps it that way.
+ *
+ * Returns the media type actually produced, or null where the question cannot
+ * be asked at all — no canvas, no `toBlob`, a browser that returns nothing. A
+ * null is NOT a failure: it means unknown, and the caller must not turn "I could
+ * not check" into "this will not work".
+ */
+export async function probeEncodedFormat(
+  format: string,
+  createCanvas: () => HTMLCanvasElement | null = defaultCanvas,
+): Promise<string | null> {
+  const wanted = `image/${format}`;
+  try {
+    const canvas = createCanvas();
+    if (!canvas || typeof canvas.toBlob !== 'function') return null;
+    canvas.width = 2;
+    canvas.height = 2;
+    const produced = await new Promise<string | null>((resolve) => {
+      // A browser that never calls back must not hang the page.
+      const giveUp = setTimeout(() => resolve(null), 2000);
+      try {
+        canvas.toBlob(
+          (blob) => {
+            clearTimeout(giveUp);
+            resolve(blob ? blob.type : null);
+          },
+          wanted,
+          0.8,
+        );
+      } catch {
+        clearTimeout(giveUp);
+        resolve(null);
+      }
+    });
+    return produced === '' ? null : produced;
+  } catch {
+    return null;
+  }
+}
+
+function defaultCanvas(): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null;
+  return document.createElement('canvas');
+}
+
+/**
+ * Whether a probe result contradicts what the link asked for.
+ *
+ * Deliberately conservative in one direction: an unknown answer (`null`) is not
+ * a substitution. Reporting "this browser cannot do it" because the check
+ * failed would be inventing a limitation, which is the same class of untruth as
+ * the one this whole function exists to prevent.
+ */
+export function formatWasSubstituted(
+  requested: string,
+  produced: string | null,
+): boolean {
+  if (!produced) return false;
+  return produced.toLowerCase() !== `image/${requested.toLowerCase()}`;
+}
+
+/** `image/png` -> `PNG`, for a sentence. Falls back to the raw type. */
+export function formatLabel(mediaType: string): string {
+  const subtype = mediaType.split('/')[1];
+  return subtype ? subtype.toUpperCase() : mediaType;
+}

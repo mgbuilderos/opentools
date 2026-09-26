@@ -472,6 +472,92 @@ test.describe('Ask Link — the recipient', () => {
     expect(errors, `page errors: ${errors.join(' | ')}`).toEqual([]);
   });
 
+  /*
+   * WebP, in both engines, because they disagree and the disagreement is the
+   * whole point.
+   *
+   * Measured 2026-09-27: WebKit's `canvas.toBlob(cb, 'image/webp')` returns a
+   * blob typed `image/png` — it substitutes rather than refusing. So a page
+   * saying "Please provide a WebP image" would send a Safari or iOS recipient
+   * away with a PNG. The first version of this spec never saw it, because the
+   * image test only asked for JPEG.
+   *
+   * The assertion is therefore per engine and reads the saved bytes either way:
+   * where WebP is real, the file must be RIFF/WEBP and no notice may appear;
+   * where it is substituted, the notice must say so BEFORE a file is chosen.
+   * Both halves matter — a notice that showed up everywhere would be inventing
+   * a limitation, which is the same untruth pointing the other way.
+   */
+  test('webp: says so when this browser cannot make the format asked for', async ({
+    page,
+    browserName,
+  }) => {
+    test.setTimeout(180_000);
+    await page.goto(
+      '/ask/image?v=1&format=webp&width=320&height=320&quality=80',
+    );
+    await expect(
+      page.getByText('Please provide a WebP image no wider than 320 px'),
+    ).toBeVisible();
+
+    const notice = page.getByText('This browser cannot make that format.');
+    // What this engine will really encode, asked of the engine itself rather
+    // than hard-coded per browser name.
+    const produced = await page.evaluate(async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2;
+      canvas.height = 2;
+      const blob: Blob | null = await new Promise((resolve) => {
+        canvas.toBlob((value) => resolve(value), 'image/webp', 0.8);
+      });
+      return blob ? blob.type : null;
+    });
+    const substitutes = produced !== null && produced !== 'image/webp';
+
+    if (substitutes) {
+      // Before the file is chosen, not after: it changes what they are about
+      // to make.
+      await expect(notice).toBeVisible({ timeout: 15_000 });
+      await expect(notice.locator('..')).toContainText(
+        produced === 'image/png' ? 'PNG' : 'instead',
+      );
+    } else {
+      await expect(notice).toHaveCount(0);
+    }
+
+    const source = await testDetailedPng(page, 600, 400);
+    await chooseOnAskPage(page, 'image', {
+      name: 'holiday.png',
+      mimeType: 'image/png',
+      buffer: source,
+    });
+    await page.getByRole('button', { name: 'Prepare image' }).click();
+    await page.waitForURL(/\/image\/optimize/u);
+    const run = page.getByRole('button', { name: 'Optimize image' });
+    await expect(run).toBeEnabled({ timeout: 30_000 });
+    await run.click();
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Save image' }).click();
+    const file = await download;
+    const saved = new Uint8Array(await readFile((await file.path())!));
+    const riff = new TextDecoder('ascii').decode(saved.subarray(8, 12));
+
+    if (substitutes) {
+      // The bytes are PNG and the FILENAME says PNG — the tool never
+      // mislabels. That is what makes the sentence the only thing at risk, and
+      // the notice above is what repairs it.
+      expect(
+        file.suggestedFilename(),
+        `${browserName} named it wrongly`,
+      ).toMatch(/\.png$/u);
+      expect([...saved.subarray(0, 4)]).toEqual([0x89, 0x50, 0x4e, 0x47]);
+    } else {
+      expect(riff, `${browserName} did not produce WebP`).toBe('WEBP');
+      expect(file.suggestedFilename()).toMatch(/\.webp$/u);
+    }
+  });
+
   test('a hostile link applies nothing and still works', async ({ page }) => {
     await page.goto(
       '/ask/image?v=1&format=gif&quality=99999&width=abc&height=-5' +

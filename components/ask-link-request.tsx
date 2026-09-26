@@ -1,6 +1,6 @@
 'use client';
 
-import { FileUp, LockKeyhole, ShieldCheck } from 'lucide-react';
+import { FileUp, LockKeyhole, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -8,8 +8,12 @@ import { inputAccepts, offerFile } from '@/lib/file-handoff';
 import { withHandoffFlag } from '@/lib/share-routing';
 import {
   askDestination,
+  askRequestedFormat,
   askSettingLines,
   describeAskRequest,
+  formatLabel,
+  formatWasSubstituted,
+  probeEncodedFormat,
   readAskLink,
   type AskRequest,
 } from '@/lib/tools/ask-link';
@@ -74,6 +78,13 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
   const [handoffFailed, setHandoffFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
+  /**
+   * What this browser really produces for the format the link asked for.
+   *
+   * `null` while unknown, and unknown is the safe reading — see
+   * `probeEncodedFormat`. Only set when it contradicts the request.
+   */
+  const [substituteFormat, setSubstituteFormat] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const noticeRef = useRef<HTMLParagraphElement>(null);
   const inputId = useId();
@@ -101,6 +112,39 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
   useEffect(() => {
     if (problem) noticeRef.current?.focus();
   }, [problem]);
+
+  /*
+   * Ask the browser what it would actually encode, once the link has been read.
+   *
+   * WHY THE PAGE HAS TO DO THIS. The requirement sentence above is a promise —
+   * "Please provide a WebP image" — and on WebKit `canvas.toBlob` answers a
+   * WebP request with a PNG rather than refusing, so the promise would be
+   * broken silently and the recipient would send the requester the wrong
+   * format. Measured, not assumed; see `probeEncodedFormat`. The tool names the
+   * saved file honestly either way, so nothing mislabelled reaches disk — this
+   * is about the sentence, which is the part a person acts on.
+   *
+   * Runs after the arrival effect because it needs the requested format, and it
+   * is cancelled on unmount so a slow answer cannot set state on a dead tree.
+   */
+  /* oxlint-disable react/react-compiler -- probes a browser capability, an
+     external system, once per arrival. */
+  useEffect(() => {
+    if (link.kind !== 'ok') return;
+    const requested = askRequestedFormat(request, link.values);
+    if (!requested) return;
+    let cancelled = false;
+    void probeEncodedFormat(requested).then((produced) => {
+      if (cancelled) return;
+      setSubstituteFormat(
+        formatWasSubstituted(requested, produced) ? produced : null,
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [link, request]);
+  /* oxlint-enable react/react-compiler */
 
   const values = link.kind === 'ok' ? link.values : {};
   const requirement = describeAskRequest(request, values);
@@ -179,6 +223,29 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
     <div className="grid gap-4">
       <div className="rounded-2xl border bg-card p-4 sm:p-5">
         <p className="text-base leading-7 sm:text-lg">{requirement}</p>
+
+        {/*
+          Placed under the sentence it qualifies rather than beside the button,
+          because it changes what the recipient is about to produce and they
+          should read it before choosing a file, not after.
+        */}
+        {substituteFormat ? (
+          <output className="mt-3 flex items-start gap-3 rounded-xl border border-destructive/35 bg-destructive/5 p-3 text-xs leading-5">
+            <TriangleAlert
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0"
+            />
+            <span>
+              <span className="font-semibold">
+                This browser cannot make that format.
+              </span>{' '}
+              It will produce {formatLabel(substituteFormat)} instead, at the
+              sizes asked for. If the person who sent this needs the exact
+              format, open the link in a different browser — or send them the{' '}
+              {formatLabel(substituteFormat)} and ask whether it will do.
+            </span>
+          </output>
+        ) : null}
 
         <div className="mt-4 flex items-start gap-3 rounded-xl border bg-muted/50 p-3 text-xs leading-5">
           <LockKeyhole
