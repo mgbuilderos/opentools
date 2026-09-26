@@ -90,7 +90,21 @@ test.describe('Compare PDF documents (/pdf/compare)', () => {
       page.getByText(/NEW CRITICAL SENTENCE/i).first(),
     ).toBeVisible({ timeout: 60_000 });
 
-    const body = await page.locator('body').innerText();
+    /*
+     * The rule is that the page must not *present* an accuracy score. It may
+     * name one to refuse it, and it now does: the explainer reads "there is no
+     * similarity percentage anywhere on this page. A \"94% match\" is a number
+     * with no defensible definition". Matching the raw body text scored that
+     * sentence as the violation it exists to prevent.
+     *
+     * Quoted spans are therefore removed before matching. A percentage the
+     * page actually reported would be a readout, never wrapped in quotes, so
+     * the guard keeps its teeth -- verified by putting `94% match` into the
+     * results panel unquoted and watching this fail.
+     */
+    const body = (await page.locator('body').innerText())
+      .replace(/"[^"]*"/gu, '')
+      .replace(/\u201c[^\u201d]*\u201d/gu, '');
     expect(body, 'the page must not invent an accuracy score').not.toMatch(
       /\b\d{1,3}\s?% (accurate|match|confidence)\b/iu,
     );
