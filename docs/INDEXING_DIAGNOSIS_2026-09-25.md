@@ -111,9 +111,20 @@ at **6.75**, better than almost anything else on the site.
 comment states why that is insufficient: browsers must ignore HSTS over plain
 HTTP (RFC 6797 §7.2), so the fix is *"the edge's 'Always Use HTTPS' redirect,
 which is a zone setting and not in this repo."*
-**Owner action: Cloudflare → SSL/TLS → Edge Certificates → Always Use HTTPS → on.**
-Same category as the WAF rule named in `app/robots.ts`. There is also an
-**HTTPS report** in Search Console's left nav that will quantify this.
+
+> **DONE — owner turned on Cloudflare "Always Use HTTPS" on 2026-09-26.**
+> Not yet verified from this repository: the session's network policy denies
+> `getopentools.com`, so no live request could confirm the 301. Verify with
+> `curl -I http://getopentools.com/security` and expect `301` with a
+> `location:` of the `https://` URL.
+>
+> **This is a confounder for the 2026-10-21 read and must be held separate**,
+> exactly as the canonical fix was. The nine `http://` URLs should fall out of
+> the index over the weeks after this date. If `http://` impressions go to zero
+> by 2026-10-21, that is this change, not a ranking improvement. Search
+> Console's **HTTPS** report (left nav) tracks it directly.
+
+Same category as the WAF rule named in `app/robots.ts`.
 
 Repo-side and secondary: `Strict-Transport-Security` is in `proxy.ts` but not
 in `public/_headers`, which that file's own header calls *"the only header
@@ -179,7 +190,14 @@ modules.
 
 Numbers to beat, all from Google rather than a local sweep: **335 indexed,
 914 discovered-not-crawled, 791 impressions, 171 ranking pages, position ~66,
-2 clicks.**
+2 clicks**, and **9 `http://` URLs earning 13 impressions**.
+
+Changes made before this read, each of which must be attributed separately:
+
+| Date | Change | Expected effect |
+| --- | --- | --- |
+| 2026-09-23 | Canonical self-exclusion fixed (`9646639`), 59 pages | indexed up |
+| 2026-09-26 | Cloudflare "Always Use HTTPS" on | `http://` URLs leave the index |
 
 The one that matters is **914**. If it falls, the frontier widened and the
 site grows. If it holds while indexed and impressions creep up, the frontier
