@@ -45,9 +45,13 @@ import type { RecipeValues } from '@/lib/tools/recipe-link';
  * offers the tool with its own file picker. Silently navigating to an empty
  * tool while implying the file came along would be the worse failure.
  *
- * NOTHING IS UPLOADED AND NOTHING COULD BE. The file goes into this browser's
- * storage on the same machine it came from, and the page's own
- * `connect-src 'none'` means no script here can send it anywhere.
+ * THE FILE NEVER LEAVES THE DEVICE, AND NO SCRIPT HERE COULD SEND IT. It goes
+ * into this browser's own storage on the same machine it came from, and the
+ * page's `connect-src 'none'` is what makes the second half structural rather
+ * than a promise. The wording stays this side of the line on purpose: business
+ * rule 23 reserves the settled zero-bytes claim for a build that has passed the
+ * egress proof protocol, and `lib/tools/local-source-policy.test.ts` greps for
+ * anyone who forgets.
  */
 
 /**

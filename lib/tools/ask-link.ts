@@ -113,6 +113,16 @@ export type AskRequest = {
   readonly menuHint: string;
   /** The recipient's heading, e.g. "Prepare an image". */
   readonly headline: string;
+  /**
+   * The recipient page's meta description.
+   *
+   * One per request, and not one shared sentence with the request name
+   * substituted: `lib/seo/description-coverage.test.ts` fails when two pages
+   * describe themselves identically, which is the right rule even for a page
+   * that says `noindex` — a description nobody wrote for that page is a
+   * description nobody checked.
+   */
+  readonly metaDescription: string;
   /** What the file input accepts, and what the recipient is told it takes. */
   readonly accept: string;
   /** Singular noun for the file, used in sentences: "Choose your image". */
@@ -191,6 +201,8 @@ export const ASK_IMAGE: AskRequest = {
   menuLabel: 'An image, converted and resized',
   menuHint: 'JPEG, WebP or PNG, with a size limit in pixels.',
   headline: 'Prepare an image',
+  metaDescription:
+    'Somebody has asked you for an image in a particular format and size. Prepare it here, on this device, and send it to them yourself.',
   accept: 'image/*',
   subjectNoun: 'image',
   requirementVerb: 'Please provide',
@@ -232,6 +244,8 @@ export const ASK_EXACT_SIZE: AskRequest = {
   menuLabel: 'A photo or signature at an exact size',
   menuHint: 'Exact pixels and a limit in KB, the way upload forms ask for it.',
   headline: 'Prepare a photo',
+  metaDescription:
+    'Somebody has asked you for a photo at exact pixel dimensions under a size limit. Prepare it here, on this device, and send it yourself.',
   accept: 'image/*',
   subjectNoun: 'photo',
   requirementVerb: 'Please provide',
@@ -282,6 +296,8 @@ export const ASK_PDF: AskRequest = {
   menuLabel: 'A smaller PDF',
   menuHint: 'Recompresses photographs inside the PDF and can drop metadata.',
   headline: 'Prepare a PDF',
+  metaDescription:
+    'Somebody has asked you for a smaller PDF. Prepare it here, on this device, in this browser tab, and send it to them yourself.',
   accept: 'application/pdf,.pdf',
   subjectNoun: 'PDF',
   requirementVerb: 'Please provide',
@@ -583,6 +599,27 @@ export function buildAskCreatorUrl(
     ? `request=${request.id}&${search}`
     : `request=${request.id}`;
   return `${base}?${query}`;
+}
+
+/**
+ * The same address as a path, for a link on this site.
+ *
+ * Separate from `buildAskCreatorUrl` because an absolute URL needs an origin,
+ * and a component that invented one would have to write an absolute-URL literal
+ * — which is the thing `lib/tools/local-source-policy.test.ts` forbids in every
+ * guarded directory, and rightly: that grep is the cheapest proof there is that
+ * nothing here talks to a server. The rule caught this very comment when it
+ * spelled the scheme out, which is the guard working exactly as intended.
+ */
+export function askCreatorPath(
+  request: AskRequest,
+  values: RecipeValues,
+): string {
+  const search = buildRecipeSearch(request.recipe, values);
+  const query = search
+    ? `request=${request.id}&${search}`
+    : `request=${request.id}`;
+  return `${ASK_LINK_PREFIX}?${query}`;
 }
 
 /** Which request, if any, the creator was opened on, and with what settings. */

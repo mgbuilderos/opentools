@@ -4,7 +4,7 @@ import { Send } from 'lucide-react';
 
 import { buttonVariants } from '@/components/ui/button';
 import {
-  buildAskCreatorUrl,
+  askCreatorPath,
   findAskRequest,
   type AskRequest,
 } from '@/lib/tools/ask-link';
@@ -55,7 +55,7 @@ export function AskLinkOffer({
   return (
     <div className="mt-3">
       <a
-        href={creatorHref(request, values)}
+        href={askCreatorPath(request, values)}
         className={buttonVariants({
           variant: 'outline',
           className: 'h-11 w-full',
@@ -70,20 +70,4 @@ export function AskLinkOffer({
       </p>
     </div>
   );
-}
-
-/**
- * The creator's address, built on the client so the origin is the one the
- * visitor is actually on. During server rendering there is no origin to read, so
- * a relative path is emitted and the absolute form is never needed: this is a
- * link on the same site.
- */
-function creatorHref(request: AskRequest, values: RecipeValues): string {
-  const origin =
-    typeof window === 'undefined'
-      ? 'https://getopentools.com'
-      : window.location.origin;
-  const absolute = buildAskCreatorUrl(request, values, origin);
-  const url = new URL(absolute);
-  return `${url.pathname}${url.search}`;
 }

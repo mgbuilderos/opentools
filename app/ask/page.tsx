@@ -10,8 +10,18 @@ import { AskLinkCreator } from '@/components/ask-link-creator';
  * page: it describes something anybody can use and it holds no request. The
  * pages under it are private messages between two people — a college office and
  * a candidate — and a search result leading a stranger into one of those would
- * be a dead end for them and a leak of nothing useful to anyone. So this is in
- * the sitemap and each recipient page says `noindex`.
+ * be a dead end for them and a leak of nothing useful to anyone. So this one is
+ * `index, follow` and each recipient page says `noindex`.
+ *
+ * NOT YET IN `sitemap.xml`, and that is a deliberate hold rather than an
+ * oversight. Adding a route means adding a key to
+ * `lib/seo/sitemap-lastmod.generated.ts`, and regenerating that file on this
+ * machine rewrote 667 unrelated routes' dates — partly a `+00:00` versus `Z`
+ * rendering difference, partly commit dates that differ between lanes. That
+ * churn belongs in its own commit, not in this feature's. Meanwhile the page is
+ * reachable and crawlable: `components/ask-link-offer.tsx` links to it from
+ * `/image/optimize`, `/image/exact-size` and `/pdf/compress`, and every
+ * recipient page links to it too.
  *
  * It is prerendered like every other route. The creator is a client component
  * because it is a form, but it imports no engine: building a URL needs none, and
@@ -23,7 +33,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/ask' },
   title: 'Ask someone for a file — send one link with the settings',
   description:
-    'Say what file you need, copy one link, and send it. Whoever opens it prepares the file on their own device and sends it to you themselves. The link carries the settings, never a file.',
+    'Say what file you need, copy one link, send it. Whoever opens it prepares the file on their own device. The link carries the settings, never a file.',
 };
 
 export default function AskPage() {

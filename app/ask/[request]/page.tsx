@@ -31,9 +31,11 @@ import { ASK_REQUESTS, findAskRequest } from '@/lib/tools/ask-link';
  * path without the query, which is right in its own terms: the settings are
  * somebody's private request and belong in no canonical URL.
  *
- * These pages are NOT in the sitemap. `lib/seo/sitemap-entries.ts` lists `/ask`
- * alone, which is the product page; the generated link variants of a private
- * request are not addresses this site publishes.
+ * These pages are NOT in the sitemap, and must never be: a generated link
+ * variant of a private request is not an address this site publishes. `/ask`
+ * itself is `index, follow` and reachable through the tool pages — see the note
+ * in `app/ask/page.tsx` for why its sitemap entry is held back to a separate
+ * commit.
  */
 export const revalidate = 86400;
 export const dynamicParams = false;
@@ -53,7 +55,7 @@ export async function generateMetadata({
   return {
     alternates: { canonical: `/ask/${request.id}` },
     title: `${request.headline} — a file request`,
-    description: `Somebody asked you to prepare a file. It is prepared on this device, in this browser tab, and nothing is uploaded.`,
+    description: request.metaDescription,
     robots: { index: false, follow: false },
   };
 }
