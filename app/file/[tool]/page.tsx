@@ -3,7 +3,7 @@ import { FileWorkbenchTool } from '@/components/file-workbench-tool';
 import { FILE_WORKBENCH_OPERATIONS } from '@/lib/tools/file-workbench';
 import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
-import { toolSearchCopy } from '@/lib/seo/tool-search-copy';
+import { searchTitle, toolSearchCopy } from '@/lib/seo/tool-search-copy';
 import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
@@ -59,7 +59,7 @@ export async function generateMetadata({
   const route = `${BASE}/${operation.id}`;
   const copy = toolSearchCopy(route);
   return {
-    title: copy?.title ?? operation.name,
+    title: copy?.title ?? searchTitle(route, operation.name),
     description: copy?.description ?? operation.description,
     alternates: { canonical: `${CANONICAL_ORIGIN}${route}` },
   };

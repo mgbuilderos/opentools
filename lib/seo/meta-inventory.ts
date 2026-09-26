@@ -31,10 +31,10 @@ import { getGuideBySlug } from './guide-content';
 import { guidesIndexMeta } from './guides-index-meta';
 import { hubToolMeta } from './hub-tool-meta';
 import { guideCategoryMetaTitle } from './guide-category-meta';
-import { TITLE_SUFFIX } from './title-budget';
+import { asServed, TITLE_SUFFIX } from './title-budget';
 import { getAllCategoryPillars } from './internal-linking-graph';
 import { buildSitemap } from './sitemap-entries';
-import { toolSearchCopy } from './tool-search-copy';
+import { searchTitle, toolSearchCopy } from './tool-search-copy';
 import { type ToolPageDepth, toolPageDepth } from './tool-page-depth';
 
 /*
@@ -418,7 +418,7 @@ export function pageMetaFor(route: string): PageMeta | undefined {
     const copy = toolSearchCopy(route);
     return {
       route,
-      title: copy?.title ?? operation.name,
+      title: copy?.title ?? searchTitle(route, operation.name),
       description: copy?.description ?? operation.description,
       source: copy
         ? `lib/seo/tool-search-copy.ts (${route})`
@@ -450,26 +450,6 @@ export function metaInventory(): MetaInventory {
     else unresolved.push(route || '/');
   }
   return { pages, unresolved };
-}
-
-/**
- * React escapes these when it writes the head, so the bytes a crawler reads
- * are longer than the string a page wrote. `Independent Contractor Agreement
- * & Work-for-Hire Contract` is 57 characters in source and 61 on the wire,
- * and that difference alone was the last four titles over the limit after
- * everything else had been fixed. Measuring the source string would have
- * reported them clean.
- */
-const ESCAPES: ReadonlyArray<readonly [RegExp, string]> = [
-  [/&/g, '&amp;'],
-  [/</g, '&lt;'],
-  [/>/g, '&gt;'],
-  [/"/g, '&quot;'],
-  [/'/g, '&#x27;'],
-];
-
-function asServed(value: string): string {
-  return ESCAPES.reduce((text, [from, to]) => text.replace(from, to), value);
 }
 
 /**
