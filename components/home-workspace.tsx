@@ -4,10 +4,12 @@ import { LockKeyhole, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { destinationIcon } from '@/components/category-icons';
-import { PROFESSION_HUBS } from '@/lib/seo/audience-pages';
+import { CommandBar } from '@/components/command-bar';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
+import { PROFESSION_HUBS } from '@/lib/seo/audience-pages';
 import { CATEGORY_LINKS } from '@/lib/seo/category-hubs';
+import type { SubjectKind } from '@/lib/command/types';
 import {
   INITIAL_GROUP_ID,
   INITIAL_SECTIONS,
@@ -20,6 +22,16 @@ export function HomeWorkspace() {
   const [selectedGroupId, setSelectedGroupId] =
     useState<NavGroupId>(INITIAL_GROUP_ID);
   const [filter, setFilter] = useState('');
+  /*
+    What is on the dropzone, for the box above it.
+
+    "Make this under 2MB" never says what "this" is, and the answer depends
+    entirely on it -- a PDF compressor and an image resizer are different tools.
+    The dropzone already knows, because it read the file to choose which shortcuts
+    to show. This carries that one word between the two, and nothing else: the
+    file itself stays where it was, which is in the tab.
+  */
+  const [dropped, setDropped] = useState<SubjectKind | undefined>(undefined);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const selectedGroup =
     NAV_GROUPS.find((group) => group.id === selectedGroupId) ?? NAV_GROUPS[0]!;
@@ -150,9 +162,25 @@ export function HomeWorkspace() {
             </span>
           </div>
 
-          {/* Smart Universal Auto-Detector Dropzone */}
+          {/*
+            The box you type a sentence into.
+
+            It is first because it is the answer to the problem this page has: 21
+            categories and 1,367 tools, and somebody who knows what they want done
+            but not what it is called here. Everything below it -- the dropzone,
+            the categories, the cards -- is for browsing, which is the other way
+            people arrive at a tool and not the way they describe a job.
+
+            It costs the page nothing until it is used: `components/command-bar.tsx`
+            imports the catalogue on the first keystroke.
+          */}
           <div className="mt-8">
-            <SmartDropzone />
+            <CommandBar subject={dropped} />
+          </div>
+
+          {/* Smart Universal Auto-Detector Dropzone */}
+          <div className="mt-4">
+            <SmartDropzone onSubjectChange={setDropped} />
           </div>
 
           {/*
