@@ -35,22 +35,36 @@ import { fileURLToPath } from 'node:url';
 const ACCOUNT = '00f21e5724f9ebf7b1ab0cb42ae76b1e';
 const DAILY_ALLOWANCE = 1000;
 /**
- * Ceiling, not a bill: a page costs its two writes only when someone actually
- * requests it, so a quiet day spends a fraction of this. 171 opted-in pages x 2
- * keys, by the same rule `lib/seo/cache-budget.test.ts` applies.
+ * The fallback price of a deploy, for the one case that cannot be measured.
  *
- * This number no longer has to be kept in step by hand, and the history is why:
- * it said 326 from 2026-09-19 and was already stale when that was noticed, was
- * corrected to 310 on 2026-09-21, and had drifted again to 342 by 2026-09-23
- * without anyone touching it -- because it moves whenever a route opts into
- * caching, which is a change nobody thinks of as touching the deploy verdict.
- * Every one of those gaps made the verdict optimistic, which is the one
- * direction that costs something.
+ * A page costs two KV writes when it RENDERS, so the honest cost of a deploy
+ * is the number of public URLs with no file in `dist/client` -- which
+ * `staticCoverage()` below counts from the build. This constant is used only
+ * when there is no build to count, and it exists so an unmeasurable tree is
+ * treated as expensive rather than assumed safe.
  *
- * `lib/seo/cache-budget.test.ts` now computes the real figure and fails with
- * the number to put here. Do not edit this by hand; run the test.
+ * ## It is a ceiling, and it is now tested as one
+ *
+ * This said "Ceiling, not a bill" from the day it was written, and
+ * `cache-budget.test.ts` then asserted it EXACTLY equalled the measured cost.
+ * Those two cannot both be true, and the exact assertion is the one that had
+ * to go: it made this line a shared mutex. Every branch that added a route --
+ * a tool page, a guide, a comparison page -- had to edit this single number,
+ * so any two such branches collided here, and the second one to merge resolved
+ * a conflict over a number neither side had computed correctly for the union.
+ * It was repriced 420, 422, 424, 438, 440, 442, 444 in a single day.
+ *
+ * The test now checks the property that actually matters -- that the ceiling
+ * is never below the measured cost, so the verdict is never optimistic -- and
+ * bounds it from above so it cannot drift so high that every deploy reads WAIT.
+ * That second bound is not hypothetical either: when this constant priced 163
+ * ISR pages that had become static files, the verdict read WAIT on every
+ * deploy and was overridden by hand three times in one day.
+ *
+ * So: adding a route no longer touches this line. It changes only when real
+ * growth crosses the ceiling, and the test says so with the number to use.
  */
-const FULL_REWARM = 444;
+const FULL_REWARM = 600;
 const ROOT = path.resolve(import.meta.dirname, '..');
 const STATE = path.join(ROOT, '.predeploy-state.json');
 
