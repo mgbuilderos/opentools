@@ -264,7 +264,6 @@ export interface ToolUiMessages {
   navPlaybooks: string;
   navEngineeringBlog: string;
   navSupportOpenTools: string;
-  navStarOnGitHub: string;
   navTemplatesVault: string;
   navGuidesSolutions: string;
   navInstallApp: string;
@@ -587,15 +586,14 @@ export const EN_TOOL_UI: ToolUiMessages = {
   navTemplates: 'Templates',
   navGuides: 'Guides',
   navBlog: 'Blog',
-  navSupport: 'Support',
+  navSupport: 'Coffee',
   navCategories: 'Categories',
   navResources: 'Resources',
   navFreeVault: 'Free Vault',
   navInteractive: 'Interactive',
   navPlaybooks: 'Playbooks',
   navEngineeringBlog: 'Engineering Blog',
-  navSupportOpenTools: 'Support OpenTools',
-  navStarOnGitHub: 'Star on GitHub',
+  navSupportOpenTools: 'Buy me a coffee',
   navTemplatesVault: 'Templates & Vault',
   navGuidesSolutions: 'Guides & Solutions',
   navInstallApp: 'Install app',
@@ -622,7 +620,7 @@ export const EN_TOOL_UI: ToolUiMessages = {
   navToolGuidesSolutions: 'Tool Guides and Solutions',
   navEngineeringBlogTitle: 'Engineering Blog (Playbooks)',
   navEngineeringBlogAria: 'Engineering Blog and Playbooks',
-  navSupportTitle: 'Support OpenTools (Free & Open Source)',
+  navSupportTitle: 'Buy me a coffee — keep OpenTools free',
   navUnauthorizedDomain: 'Unauthorized Domain',
   navUnauthorizedNote:
     'This tool is only authorized to run on getopentools.com.',

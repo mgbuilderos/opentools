@@ -3,19 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
-import {
-  Check,
-  Clock,
-  Copy,
-  ExternalLink,
-  GitBranch,
-  ShieldCheck,
-  Star,
-  Zap,
-} from 'lucide-react';
+import { Check, Copy, ShieldCheck, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  GITHUB_SPONSORS_PENDING,
+  SHOW_UPI,
   SUPPORT_CONFIG,
   SUPPORT_TIERS,
   coffeesFor,
@@ -24,7 +15,7 @@ import {
   isLikelyIndiaVisitor,
 } from '@/lib/support-config';
 
-type SupportTab = 'upi' | 'international' | 'github';
+type SupportTab = 'upi' | 'international';
 
 /**
  * Amounts, small enough to read at 375px. The label is what the amount buys in
@@ -47,11 +38,14 @@ export function SupportDualView() {
   const [copiedUpi, setCopiedUpi] = useState<boolean>(false);
 
   /**
-   * A channel with no configured id cannot take money, so it is not offered at
-   * all. Showing a dead QR and a link to nowhere is worse than showing one
-   * working option.
+   * Two conditions, and both have to hold. A channel with no configured id
+   * cannot take money, so it is not offered at all — a dead QR and a link to
+   * nowhere are worse than one working option. `SHOW_UPI` is the separate,
+   * deliberate answer to whether the interface offers UPI even when it could:
+   * it is off, so this whole branch renders nothing while the code behind it
+   * stays intact. See `SHOW_UPI` for why.
    */
-  const upiReady = Boolean(SUPPORT_CONFIG.upiId);
+  const upiReady = SHOW_UPI && Boolean(SUPPORT_CONFIG.upiId);
 
   useEffect(() => {
     const isIndia = isLikelyIndiaVisitor();
@@ -128,7 +122,7 @@ export function SupportDualView() {
         One line, not two columns. At 375px the old two-column version wrapped
         into a squashed three-line block above the tabs it was describing.
       */}
-      {detectedRegion && (
+      {upiReady && detectedRegion && (
         <p className="flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
           <span
             aria-hidden="true"
@@ -144,51 +138,43 @@ export function SupportDualView() {
         </p>
       )}
 
-      {/* Navigation Tabs */}
-      <div className="flex rounded-xl border bg-muted/50 p-1">
-        {upiReady && (
+      {/*
+        Navigation tabs, only when there is something to navigate between.
+        With `SHOW_UPI` off there is one channel, and a tab bar holding a single
+        tab is a control that cannot do anything: it renders as a button that
+        reloads the panel already on screen. The markup stays so flipping
+        `SHOW_UPI` back on restores the tabs with it.
+      */}
+      {upiReady && (
+        <div className="flex rounded-xl border bg-muted/50 p-1">
+          {upiReady && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('upi')}
+              className={tabClass('upi')}
+            >
+              <span aria-hidden="true">🇮🇳</span>
+              <span className="sm:hidden">UPI</span>
+              <span className="hidden sm:inline">India (UPI)</span>
+              <span className="hidden lg:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
+                0% fee
+              </span>
+            </button>
+          )}
           <button
             type="button"
-            onClick={() => setActiveTab('upi')}
-            className={tabClass('upi')}
+            onClick={() => setActiveTab('international')}
+            className={tabClass('international')}
           >
-            <span aria-hidden="true">🇮🇳</span>
-            <span className="sm:hidden">UPI</span>
-            <span className="hidden sm:inline">India (UPI)</span>
-            <span className="hidden lg:inline-block rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">
-              0% fee
+            <span aria-hidden="true">☕</span>
+            <span className="sm:hidden">Coffee</span>
+            <span className="hidden sm:inline">Buy Me a Coffee</span>
+            <span className="hidden lg:inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+              Cards &amp; PayPal
             </span>
           </button>
-        )}
-        <button
-          type="button"
-          onClick={() => setActiveTab('international')}
-          className={tabClass('international')}
-        >
-          <span aria-hidden="true">☕</span>
-          <span className="sm:hidden">Coffee</span>
-          <span className="hidden sm:inline">Buy Me a Coffee</span>
-          <span className="hidden lg:inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-            Cards &amp; PayPal
-          </span>
-        </button>
-        {/*
-          Pending, not payable. The tab opens a panel that explains the wait and
-          offers no payment control — see `GITHUB_SPONSORS_PENDING`. It is styled
-          muted rather than disabled so it can still be read.
-        */}
-        <button
-          type="button"
-          onClick={() => setActiveTab('github')}
-          className={tabClass('github')}
-        >
-          <span aria-hidden="true">⏳</span>
-          <span>GitHub</span>
-          <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:px-2">
-            Soon
-          </span>
-        </button>
-      </div>
+        </div>
+      )}
 
       {/* Tab 1: UPI India */}
       {activeTab === 'upi' && upiReady && (
@@ -427,140 +413,6 @@ export function SupportDualView() {
             >
               Choose an amount
             </a>
-          </div>
-
-          {/* Free, works today, and not a payment. */}
-          <div className="mt-3 flex flex-col items-start justify-between gap-3 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground sm:mt-4 sm:flex-row sm:items-center">
-            <p>
-              <span className="font-semibold text-foreground">
-                ⭐ Or star the repo — it's free
-              </span>{' '}
-              and helps other people find it.
-            </p>
-            <Button
-              size="sm"
-              className="w-full shrink-0 text-xs font-semibold sm:w-auto"
-              render={
-                <a
-                  href={SUPPORT_CONFIG.githubRepoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              }
-            >
-              <Star
-                aria-hidden="true"
-                className="mr-1.5 size-3.5 fill-current"
-              />
-              Star on GitHub
-              <ExternalLink aria-hidden="true" className="ml-1.5 size-3" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/*
-        Tab 3: GitHub Sponsors — announced, not open.
-
-        There is no payment control anywhere in this panel and no link to a
-        sponsors URL, because the profile is still under review and that URL
-        currently redirects to a plain profile page. The only actions offered
-        are the two channels that work today and starring the repository, which
-        is free. See `GITHUB_SPONSORS_PENDING`.
-      */}
-      {activeTab === 'github' && (
-        <div className="rounded-2xl border bg-card p-4 sm:p-8">
-          <div className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-6">
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground sm:text-sm">
-                <GitBranch aria-hidden="true" className="size-4 shrink-0" />
-                {GITHUB_SPONSORS_PENDING.name}
-              </div>
-              <h2 className="mt-1 text-lg font-bold sm:text-xl">
-                Not open yet ⏳
-              </h2>
-              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                {GITHUB_SPONSORS_PENDING.description}
-              </p>
-            </div>
-            <div className="shrink-0">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
-                <Clock aria-hidden="true" className="size-3.5" />
-                {GITHUB_SPONSORS_PENDING.status}
-              </span>
-            </div>
-          </div>
-
-          {/* The two channels that can actually take money right now. */}
-          <div className="mt-4 grid gap-2 sm:mt-6 sm:grid-cols-2 sm:gap-3">
-            {upiReady && (
-              <button
-                type="button"
-                onClick={() => setActiveTab('upi')}
-                className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-3.5 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99] sm:p-4"
-              >
-                <span>
-                  <span className="flex items-center gap-2 text-sm font-semibold">
-                    <span aria-hidden="true">🇮🇳</span>
-                    Pay by UPI
-                  </span>
-                  <span className="mt-0.5 block text-xs text-muted-foreground">
-                    Any UPI app, in India. Open now.
-                  </span>
-                </span>
-                <Zap
-                  aria-hidden="true"
-                  className="size-4 shrink-0 text-success"
-                />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setActiveTab('international')}
-              className="focus-ring flex items-center justify-between gap-3 rounded-xl border bg-card p-3.5 text-left transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted/40 active:translate-y-0 active:scale-[0.99] sm:p-4"
-            >
-              <span>
-                <span className="flex items-center gap-2 text-sm font-semibold">
-                  <span aria-hidden="true">☕</span>
-                  Buy Me a Coffee
-                </span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">
-                  Cards, Apple Pay, Google Pay, PayPal.
-                </span>
-              </span>
-              <Zap
-                aria-hidden="true"
-                className="size-4 shrink-0 text-success"
-              />
-            </button>
-          </div>
-
-          {/* Free, works today, and not a payment. */}
-          <div className="mt-3 flex flex-col items-start justify-between gap-3 rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground sm:mt-6 sm:flex-row sm:items-center">
-            <p>
-              <span className="font-semibold text-foreground">
-                ⭐ Or star the repo — it's free
-              </span>{' '}
-              and helps other people find it.
-            </p>
-            <Button
-              size="sm"
-              className="w-full shrink-0 text-xs font-semibold sm:w-auto"
-              render={
-                <a
-                  href={SUPPORT_CONFIG.githubRepoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              }
-            >
-              <Star
-                aria-hidden="true"
-                className="mr-1.5 size-3.5 fill-current"
-              />
-              Star on GitHub
-              <ExternalLink aria-hidden="true" className="ml-1.5 size-3" />
-            </Button>
           </div>
         </div>
       )}
