@@ -86,9 +86,9 @@ test.describe('Compare PDF documents (/pdf/compare)', () => {
 
     // The engine's guarantee, seen from the page: the inserted sentence is
     // found, and the nine untouched pages are not dressed up as changes.
-    await expect(
-      page.getByText(/NEW CRITICAL SENTENCE/i).first(),
-    ).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText(/NEW CRITICAL SENTENCE/i).first()).toBeVisible({
+      timeout: 60_000,
+    });
 
     /*
      * The rule is that the page must not *present* an accuracy score. It may
@@ -97,14 +97,15 @@ test.describe('Compare PDF documents (/pdf/compare)', () => {
      * with no defensible definition". Matching the raw body text scored that
      * sentence as the violation it exists to prevent.
      *
-     * Quoted spans are therefore removed before matching. A percentage the
-     * page actually reported would be a readout, never wrapped in quotes, so
-     * the guard keeps its teeth -- verified by putting `94% match` into the
-     * results panel unquoted and watching this fail.
+     * Quoted spans were removed before matching, so that the explainer could
+     * quote the figure it exists to refuse. That exemption was retired when the
+     * copy was: #64 dropped the quoted `94% match` example on the grounds that
+     * a reader skimming the page for a number finds one either way, and the
+     * sentence's intent reaches neither that reader nor a machine. With nothing
+     * left to excuse, the exemption only hid the next quoted number from this
+     * guard, so the match is back to raw body text.
      */
-    const body = (await page.locator('body').innerText())
-      .replace(/"[^"]*"/gu, '')
-      .replace(/\u201c[^\u201d]*\u201d/gu, '');
+    const body = await page.locator('body').innerText();
     expect(body, 'the page must not invent an accuracy score').not.toMatch(
       /\b\d{1,3}\s?% (accurate|match|confidence)\b/iu,
     );
