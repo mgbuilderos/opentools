@@ -73,6 +73,25 @@ Here are 4 open starter tasks:
   (`feat(pdf): …`, `fix(image): …`).
 - CI must be green.
 
+### If your PR goes red and you did not break anything
+
+Check whether `main` is red first. When it is, there will be an open issue
+titled **"main is red"**, opened automatically the moment CI fails on `main`
+and closed automatically when it passes again. A failure on `main` shows up on
+every open pull request, and it is not yours to fix.
+
+This happens for a reason that is worth knowing, because no amount of care in
+your own branch prevents it: two pull requests can each be correct and still
+break `main` together. One adds a page, the other adds a rule that governs
+pages. They touch no common file, so git reports no conflict, both run CI
+against a `main` that lacks the other, and both are genuinely green. The
+breakage only exists once both are merged — and "both merged" first happens on
+`main`.
+
+So the last commit is where such a failure *surfaced*, not necessarily where it
+came *from*. Read the failing test before assuming the most recent merge is at
+fault.
+
 ## Security
 
 Report privacy or security issues privately — see
