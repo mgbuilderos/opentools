@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { isLiveToolUrl } from '../lib/seo/live-tool-routes';
+import { detectInput } from './smart-dropzone';
 import { SMART_DROPZONE_ACTIONS } from './smart-dropzone-actions';
 
 describe('smart dropzone actions', () => {
@@ -337,6 +338,56 @@ describe('smart dropzone actions', () => {
       );
     } finally {
       spy.mockRestore();
+    }
+  });
+});
+
+describe('what a dropped file is, for the command bar', () => {
+  /**
+   * The subject travels from the dropzone to the box above it, and it is the one
+   * thing that decides whether "make this under 2MB" opens the PDF compressor or
+   * the image resizer. A detection that forgets to set it is not a failure
+   * anybody sees -- the box just goes back to guessing -- so it is checked here.
+   */
+  const file = (name: string, type: string) =>
+    new File([new Uint8Array([1, 2, 3])], name, { type });
+
+  it('names the kind of every file it recognises', () => {
+    const cases: ReadonlyArray<[File, string]> = [
+      [file('a.pdf', 'application/pdf'), 'pdf'],
+      [file('a.png', 'image/png'), 'image'],
+      [file('a.mp4', 'video/mp4'), 'video'],
+      [file('a.csv', 'text/csv'), 'table'],
+      [file('a.json', 'application/json'), 'text'],
+      [file('a.srt', ''), 'text'],
+      [file('a.mp3', 'audio/mpeg'), 'audio'],
+      [file('a.ts', ''), 'text'],
+    ];
+    for (const [input, subject] of cases) {
+      expect(detectInput('', input)?.subject, input.name).toBe(subject);
+    }
+  });
+
+  /** A file it cannot place must not claim to be one kind rather than another. */
+  it('says nothing about a file it cannot place', () => {
+    expect(detectInput('', file('a.bin', ''))?.subject).toBeUndefined();
+  });
+
+  /**
+   * Pasted text is not the file a sentence in the other box is about. Guessing
+   * that it is would be worse than not knowing, so no text detection carries one.
+   */
+  it('claims no subject for pasted text', () => {
+    for (const text of [
+      '{"a":1}',
+      '1726521600',
+      '#ff0000',
+      'SELECT 1',
+      'https://example.com',
+      'aGVsbG8=',
+      'just some words',
+    ]) {
+      expect(detectInput(text)?.subject, text).toBeUndefined();
     }
   });
 });

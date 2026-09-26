@@ -150,6 +150,46 @@ test.describe('the command bar', () => {
     await expect(page.getByText('Line sorter')).toBeVisible();
   });
 
+  /**
+   * The dropzone answers "this".
+   *
+   * The same sentence, with a PNG on the dropzone below: every step has to move
+   * from the PDF tools to the image ones, because "make this under 2MB" depends
+   * entirely on what "this" is. The file does not move -- only the one word
+   * saying what kind it is crosses between the two components.
+   */
+  test('answers "this" with whatever is on the dropzone', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const box = page.getByLabel('What do you need done?');
+    await box.fill(SENTENCE);
+    const steps = page
+      .getByRole('region', { name: 'Say what you need done' })
+      .getByRole('listitem');
+    await expect(steps.first()).toContainText('Compress PDF', {
+      timeout: 15_000,
+    });
+
+    // A 1x1 PNG, dropped the way the page's own file input takes one.
+    await page.setInputFiles('input[type="file"]', {
+      name: 'holiday.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+        'base64',
+      ),
+    });
+
+    await expect(
+      page.getByText('Reading \u201cthis\u201d as the image'),
+    ).toBeVisible();
+    await expect(steps.first()).toContainText('Resize image to exact KB', {
+      timeout: 15_000,
+    });
+    await expect(steps.nth(1)).toContainText('Photo metadata');
+  });
+
   /** The box is in the prerendered HTML, so it is there before any script runs. */
   test('is in the page before hydration', async ({ page }) => {
     await page.route('**/*.js', (route) => route.abort());

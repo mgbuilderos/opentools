@@ -14,12 +14,23 @@ import {
   loadBrowseSections,
   type BrowseSection,
 } from '@/lib/tools/browse';
+import type { SubjectKind } from '@/lib/command/types';
 import { NAV_GROUPS, type NavGroupId } from '@/lib/tools/navigation';
 
 export function HomeWorkspace() {
   const [selectedGroupId, setSelectedGroupId] =
     useState<NavGroupId>(INITIAL_GROUP_ID);
   const [filter, setFilter] = useState('');
+  /*
+    What is on the dropzone, for the box above it.
+
+    "Make this under 2MB" never says what "this" is, and the answer depends
+    entirely on it -- a PDF compressor and an image resizer are different tools.
+    The dropzone already knows, because it read the file to choose which shortcuts
+    to show. This carries that one word between the two, and nothing else: the
+    file itself stays where it was, which is in the tab.
+  */
+  const [dropped, setDropped] = useState<SubjectKind | undefined>(undefined);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const selectedGroup =
     NAV_GROUPS.find((group) => group.id === selectedGroupId) ?? NAV_GROUPS[0]!;
@@ -163,12 +174,12 @@ export function HomeWorkspace() {
             imports the catalogue on the first keystroke.
           */}
           <div className="mt-8">
-            <CommandBar />
+            <CommandBar subject={dropped} />
           </div>
 
           {/* Smart Universal Auto-Detector Dropzone */}
           <div className="mt-4">
-            <SmartDropzone />
+            <SmartDropzone onSubjectChange={setDropped} />
           </div>
 
           {/*

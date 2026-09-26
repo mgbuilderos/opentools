@@ -152,13 +152,31 @@ This is also how ten operations that have **no page at all** became reachable:
 password from this pdf" was answered with the AES-GCM file encryptor: a different
 thing, done backwards.
 
+## What the dropzone tells it
+
+"Make this under 2MB" never says what "this" is, and the answer depends entirely
+on it: the PDF compressor and the image resizer are different tools. The dropzone
+directly below the box already knows, because it read the file to decide which
+shortcuts to offer.
+
+So `DetectionResult` carries a `subject` -- one of `pdf`, `image`, `audio`,
+`video`, `table`, `text` -- `HomeWorkspace` holds it, and the box plans with it.
+Drop a PNG and the same sentence moves from Compress PDF to Resize image to exact
+KB, and the guess note disappears, because it is no longer guessing.
+
+**Only the word travels.** The file stays in the tab, where it already was;
+answering needed to know what kind of file it is and nothing else. The subject is
+set for a dropped FILE only: text pasted into the dropzone is not necessarily
+what a sentence in the other box is about, and `smart-dropzone-actions.test.ts`
+fails if a text detection ever claims one. Typing in the dropzone, dropping text
+on it, or clearing it takes the subject away again.
+
 ## What it does not do yet
 
-- **It does not know what you dropped.** `components/smart-dropzone.tsx` detects a
-  dropped file's kind and the plan accepts a `subject`, but the two are not wired
-  together, because `detectInput` does not return the kind it matched. Until they
-  are, "make this under 2MB" with no words about the file is answered for the kind
-  that ranks first, and says so in a note rather than pretending otherwise.
+- **A sentence with no file and no words about one is still a guess.** The
+  dropzone answers "this" when it has something (below), but "make this under 2MB"
+  typed into an empty page is answered for the kind that ranks first, and says so
+  in a note rather than pretending otherwise.
 - **It reads one language.** Every phrase in `lexicon.ts` and `limits.ts` is
   English.
 - **It cannot resolve a pronoun across a sentence** beyond carrying the last

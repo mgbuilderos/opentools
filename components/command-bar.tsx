@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { CommandPlan } from '@/lib/command';
+import type { SubjectKind } from '@/lib/command/types';
 
 /*
   ONE BOX, INSTEAD OF KNOWING WHICH OF 1,367 PAGES TO OPEN.
@@ -44,7 +45,18 @@ type Module = typeof import('@/lib/command');
 /** How long after a keystroke the answer is worked out. */
 const SETTLE_MS = 140;
 
-export function CommandBar() {
+/** What the box says it is working on, when the dropzone has told it. */
+const SUBJECT_LABEL: Readonly<Record<SubjectKind, string>> = {
+  pdf: 'the PDF',
+  image: 'the image',
+  audio: 'the audio file',
+  video: 'the video',
+  table: 'the spreadsheet',
+  text: 'the text file',
+  archive: 'the archive',
+};
+
+export function CommandBar({ subject }: { subject?: SubjectKind } = {}) {
   const [query, setQuery] = useState('');
   const [plan, setPlan] = useState<CommandPlan | null>(null);
   const [loading, setLoading] = useState(false);
@@ -71,18 +83,20 @@ export function CommandBar() {
         setPlan(null);
         return;
       }
+      // What is on the dropzone answers "this" when the sentence does not.
+      const options = subject ? { subject } : {};
       const ready = commands.current;
       if (ready) {
-        setPlan(ready.plan(text));
+        setPlan(ready.plan(text, options));
         return;
       }
       setLoading(true);
       void load().then((loaded) => {
         setLoading(false);
-        setPlan(loaded.plan(text));
+        setPlan(loaded.plan(text, options));
       });
     },
-    [load],
+    [load, subject],
   );
 
   /*
@@ -98,6 +112,8 @@ export function CommandBar() {
   */
   useEffect(() => {
     if (!query.trim()) return;
+    // `answer` changes when the dropzone does, so dropping a file re-answers the
+    // sentence already in the box rather than waiting for another keystroke.
     const timer = setTimeout(() => answer(query), SETTLE_MS);
     return () => clearTimeout(timer);
   }, [query, answer]);
@@ -153,6 +169,13 @@ export function CommandBar() {
           <CornerDownLeft aria-hidden="true" className="size-3.5" />
         </Button>
       </form>
+
+      {subject ? (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Reading “this” as {SUBJECT_LABEL[subject]} below. It has not moved:
+          answering only needed to know what kind of file it is.
+        </p>
+      ) : null}
 
       <div aria-live="polite" className="mt-4 empty:mt-0">
         {loading && !shown ? (
