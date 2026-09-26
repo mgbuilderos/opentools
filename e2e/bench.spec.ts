@@ -18,7 +18,7 @@ test.describe('The Bench', () => {
 
     await expect(page).toHaveURL(/\/batch$/u);
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
   });
 
@@ -32,7 +32,7 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
@@ -90,7 +90,7 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
@@ -107,15 +107,26 @@ test.describe('The Bench', () => {
         },
       ]);
 
+    // Each step is chosen inside the editor, from the operations that can
+    // take what the step before it produces.
     await page
-      .getByRole('button', { name: 'Add Word counter as step' })
+      .getByLabel('Search operations that can come next')
+      .fill('word counter');
+    await page
+      .getByLabel('Operation for this step')
+      .selectOption('text:word-counter');
+    await page
+      .getByRole('button', { name: 'Add Word counter', exact: true })
       .click();
-    await page.getByLabel('Search operations').fill('text reverser');
+
     await page
-      .getByLabel('Operation', { exact: true })
+      .getByLabel('Search operations that can come next')
+      .fill('text reverser');
+    await page
+      .getByLabel('Operation for this step')
       .selectOption('text:text-reverser');
     await page
-      .getByRole('button', { name: 'Add Text reverser as step' })
+      .getByRole('button', { name: 'Add Text reverser', exact: true })
       .click();
     await expect(
       page.getByTestId('pipeline-steps').getByRole('listitem'),
@@ -151,6 +162,54 @@ test.describe('The Bench', () => {
     expect(external).toEqual([]);
   });
 
+  test('shares a chain as a link that carries the steps and nothing else', async ({
+    page,
+  }) => {
+    await page.goto('/batch');
+
+    await page
+      .getByLabel('Search operations that can come next')
+      .fill('word counter');
+    await page
+      .getByLabel('Operation for this step')
+      .selectOption('text:word-counter');
+    await page
+      .getByRole('button', { name: 'Add Word counter', exact: true })
+      .click();
+
+    await page
+      .getByLabel('Search operations that can come next')
+      .fill('text reverser');
+    await page
+      .getByLabel('Operation for this step')
+      .selectOption('text:text-reverser');
+    await page
+      .getByRole('button', { name: 'Add Text reverser', exact: true })
+      .click();
+
+    await page.getByLabel('Pipeline name').fill('Novak board minutes');
+    await page.getByRole('button', { name: 'Copy recipe link' }).click();
+    const link = await page.getByTestId('recipe-link').inputValue();
+
+    // The steps travel, spelled out. The name the sender typed does not.
+    expect(link).toContain('s1=text.word-counter');
+    expect(link).toContain('s2=text.text-reverser');
+    expect(link.toLowerCase()).not.toContain('novak');
+    expect(link.toLowerCase()).not.toContain('minutes');
+
+    // Opening it shows the steps to read before anything runs.
+    await page.goto(link);
+    const arrival = page.getByTestId('recipe-arrival');
+    await expect(arrival).toContainText('Word counter');
+    await expect(arrival).toContainText('Text reverser');
+    await page.getByRole('button', { name: 'Use these steps' }).click();
+    await expect(
+      page.getByTestId('pipeline-steps').getByRole('listitem'),
+    ).toHaveCount(2);
+    // Answering the link takes its keys out of the address bar.
+    await expect(page).toHaveURL(/\/batch$/u);
+  });
+
   test('names the folder mode available in this browser', async ({ page }) => {
     await page.goto('/batch');
     await expect(
@@ -180,7 +239,7 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
     await page.waitForTimeout(500);
     await page
