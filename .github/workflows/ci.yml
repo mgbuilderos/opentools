@@ -40,6 +40,17 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit
 
+      # `pdftotext`, for e2e/pdf-ocr.spec.ts. That test reads the OCR'd PDF back
+      # with a third-party extractor rather than with our own code, which is the
+      # point of it — our parser agreeing with our writer would prove nothing.
+      # The dependency is not new; nothing had ever run the test to need it.
+      # `apt-get update` first: installing against a stale index 404s on the
+      # exact .deb, which is what happened when this was written.
+      - name: Install poppler-utils
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends poppler-utils
+
       - name: Format check
         run: npm run format:check
 

@@ -90,8 +90,23 @@ test.describe('Compare PDF documents (/pdf/compare)', () => {
       page.getByText(/NEW CRITICAL SENTENCE/i).first(),
     ).toBeVisible({ timeout: 60_000 });
 
-    const body = await page.locator('body').innerText();
-    expect(body, 'the page must not invent an accuracy score').not.toMatch(
+    /*
+     * Scoped to the tool, not the whole body, and the reason is worth knowing.
+     *
+     * The guarantee is that the *comparison* never fabricates a similarity
+     * figure. Reading `body` also swept in the explainer below the tool, which
+     * argues the same point by quoting the thing it refuses to print — «A "94%
+     * match" is a number with no defensible definition» — and even mentions
+     * that an end-to-end test checks for one. So the copy describing this test
+     * is what failed it.
+     *
+     * `#tool` is the tool's own region and the skip-link target, so it is where
+     * a fabricated score would have to appear to mislead anybody. Narrowing to
+     * it keeps the assertion pointed at output under the engine's control
+     * rather than at prose under an editor's.
+     */
+    const output = await page.locator('#tool').innerText();
+    expect(output, 'the tool must not invent an accuracy score').not.toMatch(
       /\b\d{1,3}\s?% (accurate|match|confidence)\b/iu,
     );
   });

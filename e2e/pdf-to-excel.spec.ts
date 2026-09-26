@@ -131,9 +131,11 @@ test.describe('Bank statement PDF to Excel for client books (/pdf/to-excel)', ()
     ).toBeVisible();
 
     // Explains why and what to do instead
-    await expect(page.getByText(/Download the digital PDF/i)).toBeVisible();
     await expect(
-      page.getByText(/Export direct CSV \/ OFX \/ QIF/i),
+      page.getByText('Download the digital PDF:', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Export direct CSV / OFX / QIF:', { exact: true }),
     ).toBeVisible();
 
     // Confirm no download buttons exist (we did NOT produce an empty file)

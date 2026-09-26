@@ -111,8 +111,12 @@ test.describe('Photo Metadata Viewer & Stripper (/image/metadata)', () => {
     await expect(
       page.getByText('Metadata stripped successfully'),
     ).toBeVisible();
-    await expect(page.getByText('Original size')).toBeVisible();
-    await expect(page.getByText('Cleaned size')).toBeVisible();
+    await expect(
+      page.getByText('Original size', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Cleaned size', { exact: true }),
+    ).toBeVisible();
   });
 
   test('clears file when Clear button is clicked', async ({ page }) => {
