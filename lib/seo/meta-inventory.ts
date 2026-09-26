@@ -20,6 +20,8 @@ import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
+import { LOCALE_COPY } from '../i18n/copy';
+import { LOCALE_CODES } from '../i18n/locales';
 import { categoryHub } from './category-hubs';
 import { getAllBlogPosts } from './blog-data';
 import { conversionFacts, conversionPairById } from './conversion-pairs';
@@ -292,8 +294,51 @@ const PILLAR_BY_HREF = new Map(
   getAllCategoryPillars().map((pillar) => [pillar.href, pillar]),
 );
 
+/**
+ * What one localised route serves, or undefined when the route is not one.
+ *
+ * Reads the same `LOCALE_COPY` entry `app/[locale]/...` renders, so a title
+ * measured here is the title that ships. A locale prefix with no copy behind
+ * it returns undefined and is reported as unresolved, which is what should
+ * happen if a code is added to the registry and the copy file is forgotten.
+ */
+function localizedPageMeta(route: string): PageMeta | undefined {
+  const segments = route.split('/');
+  const code = segments[1];
+  if (!code || !LOCALE_CODES.includes(code)) return undefined;
+  const copy = LOCALE_COPY[code];
+  if (!copy) return undefined;
+  const rest = `/${segments.slice(2).join('/')}`;
+  if (rest === '/') {
+    return {
+      route,
+      title: copy.hub.title,
+      description: copy.hub.description,
+      source: `lib/i18n/copy/${code}.ts (hub)`,
+    };
+  }
+  const depth = copy.tools[rest];
+  if (!depth) return undefined;
+  return {
+    route,
+    title: depth.title,
+    description: depth.description,
+    source: `lib/i18n/copy/${code}.ts (${rest})`,
+  };
+}
+
 /** What one sitemap route serves, or undefined when nothing here can say. */
 export function pageMetaFor(route: string): PageMeta | undefined {
+  /*
+    The localised editions, first, because they are the only routes whose
+    first segment is a language and nothing further down would recognise one:
+    `/es/pdf/merge` is not `/pdf/merge`, and letting it fall through to the
+    depth map would measure the English strings and pass while the Spanish
+    page shipped something else entirely. `/es` alone is the locale hub.
+  */
+  const localized = localizedPageMeta(route);
+  if (localized) return localized;
+
   // The category hubs, first, because `handWritten` reads the literal in the
   // page file and these nineteen have none: `categoryHubMetadata` assembles
   // title, description and canonical from the one entry in `CATEGORY_HUBS`, so

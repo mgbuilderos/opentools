@@ -15,6 +15,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { useToolUi } from '@/components/locale-edition-provider';
+import { fillMessage, type ToolUiMessages } from '@/lib/i18n/tool-ui';
 import {
   BatchLocalPromise,
   BatchRunnerPanel,
@@ -73,12 +75,15 @@ type Receipt = {
 
 const MAX_BYTES = 150 * 1024 * 1024;
 
-const DIMENSION_CHOICES = [
-  { value: 4000, label: 'Keep full size' },
-  { value: 2400, label: '2400 px — print' },
-  { value: 1600, label: '1600 px — screen' },
-  { value: 1000, label: '1000 px — email' },
-] as const;
+/* A function of the message bundle, because the labels are translated. */
+function dimensionChoices(t: ToolUiMessages) {
+  return [
+    { value: 4000, label: t.compressKeepFullSize },
+    { value: 2400, label: t.compressEdgePrint },
+    { value: 1600, label: t.compressEdgeScreen },
+    { value: 1000, label: t.compressEdgeEmail },
+  ] as const;
+}
 
 function createWorker() {
   return new Worker(
@@ -203,19 +208,18 @@ function PortalCeilingPanel({
   onPreset: (preset: (typeof PORTAL_PRESETS)[number]) => void;
   onTargetKb: (value: string) => void;
 }) {
+  /* Its own hook call: this panel is a component, not a render helper. */
+  const t = useToolUi();
   const selectedPreset = presetId === '' ? null : findPreset(presetId);
 
   return (
     <div className="rounded-xl border bg-muted/45 p-4">
       <fieldset>
         <legend className="text-sm font-semibold">
-          Fit under a portal ceiling
+          {t.compressFitCeiling}
         </legend>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          Pick the form you are filing into, or type your own ceiling. The page
-          then re-encodes at descending quality until a measured result really
-          is under it — no estimate, and no silent loop: every attempt is a real
-          rewrite and the count is reported.
+          {t.compressCeilingHelp}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {PORTAL_PRESETS.map((preset) => (
@@ -235,7 +239,7 @@ function PortalCeilingPanel({
         {selectedPreset ? (
           <p className="mt-3 text-xs leading-5 text-muted-foreground">
             {selectedPreset.portal}: {selectedPreset.field}.{' '}
-            {selectedPreset.note} Read from{' '}
+            {selectedPreset.note} {t.compressPresetReadFrom}{' '}
             <a
               href={selectedPreset.sourceUrl}
               target="_blank"
@@ -244,12 +248,12 @@ function PortalCeilingPanel({
             >
               {sourceHost(selectedPreset.sourceUrl)}
             </a>{' '}
-            on {selectedPreset.checkedOn}. Portals change limits without
-            announcing it — check yours before you rely on this.
+            {t.compressPresetOn} {selectedPreset.checkedOn}.{' '}
+            {t.compressPresetWarning}
           </p>
         ) : null}
         <label className="mt-3 block max-w-xs text-xs font-semibold">
-          Ceiling (KB)
+          {t.compressCeiling}
           <input
             type="number"
             inputMode="numeric"
@@ -294,6 +298,8 @@ export function PdfCompressTool({
   brief,
   offlineRoute,
 }: { brief?: PracticeBrief; offlineRoute?: string } = {}) {
+  /* Localised control strings; the English bundle everywhere else. */
+  const t = useToolUi();
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -383,7 +389,7 @@ export function PdfCompressTool({
     clearResult();
     setError('');
     if (file.size > MAX_BYTES) {
-      setError('This candidate limits a source PDF to 150 MB.');
+      setError(t.compressLimitNote);
       return;
     }
     const candidate = { id: crypto.randomUUID(), file };
@@ -406,7 +412,7 @@ export function PdfCompressTool({
       };
       worker.onerror = () => {
         setStatus('error');
-        setError('The PDF inspector stopped unexpectedly.');
+        setError(t.compressInspectorStopped);
         worker.terminate();
         workerRef.current = null;
       };
@@ -416,7 +422,7 @@ export function PdfCompressTool({
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('The browser could not read that file.');
+      setError(t.compressReadFailed);
     }
   };
 
@@ -505,7 +511,7 @@ export function PdfCompressTool({
           setReceipt(next);
           setStatus('success');
           announceCompletion({
-            operation: 'PDF compressor',
+            operation: t.compressOperation,
             recipe: {
               id: PDF_COMPRESS_RECIPE.id,
               values: {
@@ -516,12 +522,17 @@ export function PdfCompressTool({
               },
             },
             durationMs,
-            summary: `${message.pageCount} ${message.pageCount === 1 ? 'page' : 'pages'} rewritten and checked in this browser.`,
+            summary: fillMessage(
+              message.pageCount === 1
+                ? t.compressSummaryOne
+                : t.compressSummaryMany,
+              { pages: message.pageCount },
+            ),
             metrics: [
-              { label: 'Before', value: formatBytes(next.originalBytes) },
-              { label: 'After', value: formatBytes(next.compressedBytes) },
+              { label: t.before, value: formatBytes(next.originalBytes) },
+              { label: t.after, value: formatBytes(next.compressedBytes) },
               {
-                label: 'Saved',
+                label: t.saved,
                 value: `${savedPercent(next.originalBytes, next.compressedBytes)}%`,
               },
             ],
@@ -537,9 +548,7 @@ export function PdfCompressTool({
       };
       worker.onerror = () => {
         setStatus('error');
-        setError(
-          'PDF compression stopped unexpectedly. Your original is unchanged.',
-        );
+        setError(t.compressStopped);
         worker.terminate();
         workerRef.current = null;
       };
@@ -556,7 +565,7 @@ export function PdfCompressTool({
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('PDF compression could not start. Your original is unchanged.');
+      setError(t.compressNoStart);
     }
   };
 
@@ -638,12 +647,12 @@ export function PdfCompressTool({
                   ? 'No upload, no installer, and no connection needed once this page has loaded once. The compressing is done by this tab, so the only question left is whether your browser has kept a copy — which the panel below reads and reports.'
                   : brief
                     ? brief.lede
-                    : 'Rewrite a PDF more compactly and re-encode the photos inside it. The file is read by this page and never sent to a server.'}
+                    : t.compressStandfirst}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
-              <LockKeyhole aria-hidden="true" className="size-3.5" /> On-device
-              prototype
+              <LockKeyhole aria-hidden="true" className="size-3.5" />{' '}
+              {t.onDevicePrototype}
             </span>
           </div>
 
@@ -659,13 +668,13 @@ export function PdfCompressTool({
               className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
             >
               <div>
-                <p className="font-semibold">Couldn’t compress this PDF</p>
+                <p className="font-semibold">{t.compressCouldnt}</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setError('')}
-                aria-label="Dismiss error"
+                aria-label={t.dismissError}
                 className="focus-ring rounded-lg border p-1.5"
               >
                 <X aria-hidden="true" className="size-4" />
@@ -682,7 +691,7 @@ export function PdfCompressTool({
               type="file"
               multiple
               accept="application/pdf,.pdf"
-              aria-label="Choose source PDF"
+              aria-label={t.compressChooseSource}
               className="sr-only"
               onChange={(event) => choosePdfs(event.target.files ?? [])}
             />
@@ -704,13 +713,13 @@ export function PdfCompressTool({
                   disabled={batch.running}
                   onClick={() => fileRef.current?.click()}
                 >
-                  Choose another
+                  {t.chooseAnother}
                 </Button>
               </div>
             ) : (
               <button
                 type="button"
-                aria-label="Choose a PDF to compress"
+                aria-label={t.compressChoosePdf}
                 onClick={() => fileRef.current?.click()}
                 disabled={batch.running}
                 className="focus-ring grid min-h-52 w-full place-items-center rounded-xl border border-dashed bg-muted/45 p-6 text-center"
@@ -721,11 +730,11 @@ export function PdfCompressTool({
                   </span>
                   <span className="mt-4 block font-semibold">
                     {status === 'inspecting'
-                      ? 'Inspecting PDF locally…'
-                      : 'Choose a PDF'}
+                      ? t.compressInspecting
+                      : t.chooseAPdf}
                   </span>
                   <span className="mt-1 block text-sm text-muted-foreground">
-                    Up to 150 MB
+                    {t.upTo150Mb}
                   </span>
                 </span>
               </button>
@@ -737,7 +746,7 @@ export function PdfCompressTool({
                 <label className="flex items-start gap-3 text-sm">
                   <input
                     type="checkbox"
-                    aria-label="Re-encode photos inside the PDF"
+                    aria-label={t.compressReEncode}
                     checked={recompressImages}
                     disabled={batch.running}
                     onChange={(event) => {
@@ -747,9 +756,7 @@ export function PdfCompressTool({
                     className="mt-0.5 accent-foreground"
                   />
                   <span>
-                    <span className="font-semibold">
-                      Re-encode photos inside the PDF
-                    </span>
+                    <span className="font-semibold">{t.compressReEncode}</span>
                     <span className="mt-1 block text-muted-foreground">
                       Where most of the size usually is. Turn this off for a
                       lossless rewrite that leaves every image exactly as it is.
@@ -764,7 +771,9 @@ export function PdfCompressTool({
                 >
                   <label className="block text-sm">
                     <span className="font-medium">
-                      Photo quality {imageQuality}%
+                      {fillMessage(t.compressPhotoQualityValue, {
+                        quality: imageQuality,
+                      })}
                     </span>
                     <input
                       type="range"
@@ -772,7 +781,7 @@ export function PdfCompressTool({
                       max="95"
                       value={imageQuality}
                       disabled={batch.running}
-                      aria-label="Photo quality"
+                      aria-label={t.compressPhotoQuality}
                       onChange={(event) => {
                         setImageQuality(Number(event.target.value));
                         clearResult();
@@ -781,18 +790,18 @@ export function PdfCompressTool({
                     />
                   </label>
                   <label className="block text-sm">
-                    <span className="font-medium">Largest photo edge</span>
+                    <span className="font-medium">{t.compressLargestEdge}</span>
                     <select
                       value={maxImageDimension}
                       disabled={batch.running}
-                      aria-label="Largest photo edge"
+                      aria-label={t.compressLargestEdge}
                       onChange={(event) => {
                         setMaxImageDimension(Number(event.target.value));
                         clearResult();
                       }}
                       className="focus-ring mt-3 h-11 w-full rounded-xl border bg-background px-3 text-sm"
                     >
-                      {DIMENSION_CHOICES.map((choice) => (
+                      {dimensionChoices(t).map((choice) => (
                         <option key={choice.value} value={choice.value}>
                           {choice.label}
                         </option>
@@ -804,7 +813,7 @@ export function PdfCompressTool({
                 <label className="flex items-start gap-3 text-sm">
                   <input
                     type="checkbox"
-                    aria-label="Clear title, author and producer"
+                    aria-label={t.compressClearMetadata}
                     checked={removeMetadata}
                     disabled={batch.running}
                     onChange={(event) => {
@@ -815,7 +824,7 @@ export function PdfCompressTool({
                   />
                   <span>
                     <span className="font-semibold">
-                      Clear title, author and producer
+                      {t.compressClearMetadata}
                     </span>
                     <span className="mt-1 block text-muted-foreground">
                       Document metadata often names the person and the software
@@ -847,7 +856,7 @@ export function PdfCompressTool({
                       disabled={status === 'processing'}
                       onClick={clear}
                     >
-                      <Trash2 aria-hidden="true" /> Clear
+                      <Trash2 aria-hidden="true" /> {t.clear}
                     </Button>
                     <Button
                       variant="outline"
@@ -862,7 +871,7 @@ export function PdfCompressTool({
                       <Gauge aria-hidden="true" />
                       {status === 'processing'
                         ? 'Working locally…'
-                        : 'Fit under ceiling'}
+                        : t.compressFitUnderCeiling}
                     </Button>
                     <Button
                       className="h-11 min-w-44"
@@ -892,7 +901,7 @@ export function PdfCompressTool({
                 {status === 'processing' && progress.total > 0 ? (
                   <div aria-live="polite">
                     <div className="flex justify-between text-xs">
-                      <span>Re-encoding photos</span>
+                      <span>{t.compressReEncoding}</span>
                       <span className="tabular">{percent}%</span>
                     </div>
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-border">
@@ -935,10 +944,10 @@ export function PdfCompressTool({
                         ? receipt.fit.outcome === 'over-max'
                           ? `Still over the ceiling — smallest reached was ${formatBytes(receipt.compressedBytes)}`
                           : receipt.fit.outcome === 'already-under'
-                            ? 'Already under the ceiling — your file is unchanged'
+                            ? t.compressAlreadyUnder
                             : `Under the ceiling — ${formatBytes(receipt.compressedBytes)}`
                         : nothingSaved
-                          ? 'Done — this PDF was already as small as we can make it'
+                          ? t.compressDoneAlready
                           : `Done — ${saved}% smaller`}
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -956,33 +965,41 @@ export function PdfCompressTool({
                       data-receipt-download
                       href={receipt.url}
                       download="compressed.pdf"
-                      aria-label="Save compressed PDF"
+                      aria-label={t.compressSave}
                     />
                   }
                 >
-                  <ArrowDownToLine aria-hidden="true" /> Save PDF
+                  <ArrowDownToLine aria-hidden="true" /> {t.savePdf}
                 </Button>
               </div>
               <div className="grid border-t sm:grid-cols-3">
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">
-                  <p className="text-xs text-muted-foreground">Pages</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.compressPages}
+                  </p>
                   <p className="mt-1 text-sm font-semibold">
                     {receipt.pages} kept, unchanged
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">
-                  <p className="text-xs text-muted-foreground">Photos</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.compressPhotos}
+                  </p>
                   <p className="mt-1 text-sm font-semibold">
                     {receipt.imagesRecompressed === 0
-                      ? 'None re-encoded'
-                      : `${receipt.imagesRecompressed} re-encoded`}
+                      ? t.compressNoneReEncoded
+                      : fillMessage(t.compressReEncodedCount, {
+                          count: receipt.imagesRecompressed,
+                        })}
                   </p>
                 </div>
                 <div className="p-4">
-                  <p className="text-xs text-muted-foreground">Where it ran</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.compressWhereItRan}
+                  </p>
                   <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
-                    <ShieldCheck aria-hidden="true" className="size-4" /> In
-                    this browser tab
+                    <ShieldCheck aria-hidden="true" className="size-4" />{' '}
+                    {t.inThisBrowserTab}
                   </p>
                 </div>
               </div>
@@ -1006,7 +1023,7 @@ export function PdfCompressTool({
           ) : null}
 
           <footer className="mt-10 border-t py-6 text-xs text-muted-foreground">
-            Candidate {manifest.version} · pdf-lib · Browser worker
+            Candidate {manifest.version} · pdf-lib · {t.browserWorker}
           </footer>
         </div>
       </section>

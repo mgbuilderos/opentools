@@ -1,6 +1,11 @@
 'use client';
 
 import { Check, Link2, SlidersHorizontal } from 'lucide-react';
+import { useToolUi } from '@/components/locale-edition-provider';
+import {
+  fillMessage,
+  subjectNoun as localizedSubject,
+} from '@/lib/i18n/tool-ui';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -23,7 +28,7 @@ import {
 export function RecipeShareButton({
   definition,
   values,
-  label = 'Copy setup link',
+  label,
   subjectNoun = 'file',
   emphasis = false,
 }: {
@@ -41,6 +46,8 @@ export function RecipeShareButton({
    */
   emphasis?: boolean;
 }) {
+  /* Localised chrome strings; the English bundle on every English page. */
+  const t = useToolUi();
   const [copied, setCopied] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState('');
 
@@ -69,15 +76,16 @@ export function RecipeShareButton({
         onClick={() => void copy()}
       >
         {copied ? <Check aria-hidden="true" /> : <Link2 aria-hidden="true" />}
-        {copied ? 'Setup link copied' : label}
+        {copied ? t.recipeLinkCopied : (label ?? t.recipeCopyLink)}
       </Button>
       <p className="mt-2 text-xs text-muted-foreground">
-        Sends these settings only. Your {subjectNoun} stays on this device and
-        is never part of the link.
+        {fillMessage(t.recipeSettingsOnly, {
+          subject: localizedSubject(t, subjectNoun),
+        })}
       </p>
       {fallbackUrl ? (
         <label className="mt-2 block text-xs font-semibold">
-          Copy this link by hand — the browser blocked the clipboard
+          {t.recipeCopyByHand}
           <input
             readOnly
             value={fallbackUrl}

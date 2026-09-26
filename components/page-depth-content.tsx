@@ -1,6 +1,7 @@
 'use client';
 
 import { HelpCircle, ShieldCheck, WifiOff } from 'lucide-react';
+import { useToolUi } from '@/components/locale-edition-provider';
 
 import type { ToolPageDepth } from '@/lib/seo/tool-page-depth-types';
 
@@ -29,7 +30,25 @@ const schemaContext = ['https:', '//', 'schema.org'].join('');
   it in this directory, and a client-side route change would fetch the next
   page's payload rather than load the page.
 */
-export function PageDepthContent({ content }: { content: ToolPageDepth }) {
+export function PageDepthContent({
+  content,
+  /*
+    The two headings this component owns rather than reads from the depth
+    entry. They default to English so every existing page renders exactly what
+    it rendered before; a localised page is handed its own, because "Step by
+    step" in English directly above Spanish prose is the kind of seam that
+    tells a reader the translation is machinery rather than a page written for
+    them. Supplied by `AppShell` from `useLocaleEdition()`.
+  */
+  stepsHeading = 'Step by step',
+  faqsHeading = 'Questions people ask',
+}: {
+  content: ToolPageDepth;
+  stepsHeading?: string;
+  faqsHeading?: string;
+}) {
+  /* Localised chrome strings; the English bundle on every English page. */
+  const t = useToolUi();
   const howTo =
     content.steps.length > 0
       ? {
@@ -80,10 +99,10 @@ export function PageDepthContent({ content }: { content: ToolPageDepth }) {
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
             <ShieldCheck aria-hidden="true" className="size-3.5 text-success" />
-            Runs in this tab — no upload
+            {t.runsInThisTab}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-            Free, no account, no watermark
+            {t.freeNoAccount}
           </span>
           {content.offlineReady ? (
             <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -95,7 +114,7 @@ export function PageDepthContent({ content }: { content: ToolPageDepth }) {
 
         {content.steps.length > 0 ? (
           <div className="mt-8">
-            <h3 className="text-base font-semibold">Step by step</h3>
+            <h3 className="text-base font-semibold">{stepsHeading}</h3>
             <ol className="mt-4 space-y-3">
               {content.steps.map((step, index) => (
                 <li
@@ -137,7 +156,7 @@ export function PageDepthContent({ content }: { content: ToolPageDepth }) {
           <div className="mt-8">
             <h3 className="flex items-center gap-2 text-base font-semibold">
               <HelpCircle aria-hidden="true" className="size-4" />
-              Questions people ask
+              {faqsHeading}
             </h3>
             <dl className="mt-4 space-y-5">
               {content.faqs.map((faq) => (
