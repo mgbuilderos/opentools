@@ -47,17 +47,24 @@ docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:0.1.0
 It serves the built Worker with `wrangler dev --local`, which runs workerd — the
 same runtime the live site runs — so `_headers` and the KV page cache behave the
 way they do in production rather than approximately. It runs under
-`--network none` with everything still working. An optional access gate is off
-by default; set `OPENTOOLS_AUTH_USER` and `OPENTOOLS_AUTH_PASSWORD` to turn it
-on. Full notes in `docs/SELF_HOSTING.md`.
+`--network none` with everything still working. Full notes in
+`docs/SELF_HOSTING.md`.
 
-`linux/amd64` and `linux/arm64`. Roughly 692 MB, because workerd needs glibc and
+`linux/amd64` and `linux/arm64`. Roughly 681 MB, because workerd needs glibc and
 Alpine is therefore not an option.
 
-**What it deliberately does not include.** No TLS and no authentication unless
-you enable the gate — put it behind your own reverse proxy. Single process, no
-clustering. The page cache lives inside the container and starts empty after a
-restart unless you mount a volume at `OPENTOOLS_STATE_DIR`.
+**What it deliberately does not include, and read this before you expose it.**
+**No authentication of any kind in this release** — anyone who can reach the
+port gets the whole site. No TLS either, so put it behind your own reverse
+proxy and do the access control there. Single process, no clustering. The page
+cache lives inside the container and starts empty after a restart unless you
+mount a volume at `OPENTOOLS_STATE_DIR`.
+
+(An optional username/password gate was added after this release was tagged. It
+is **not** in this image: setting `OPENTOOLS_AUTH_USER` and
+`OPENTOOLS_AUTH_PASSWORD` against `:0.1.0` does nothing, and would leave you
+believing the instance was protected when it is not. It arrives in the next
+release.)
 
 **`latest` is the newest release, not the newest commit.** Pushes to `main` do
 not publish, by design, so the image trails the branch between releases. Build
