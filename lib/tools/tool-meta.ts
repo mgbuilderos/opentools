@@ -246,6 +246,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'See the author, company, editing time, tracked changes and deleted text held inside a .docx, then remove them.',
   },
+  'file-xray': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Drop any file and see what is hidden inside it, from GPS coordinates to text you deleted, then remove it.',
+  },
   'file-to-html': {
     version: '0.1.0-canary',
     shortDescription:
