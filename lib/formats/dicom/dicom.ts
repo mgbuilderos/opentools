@@ -831,6 +831,7 @@ export async function readTags(bytes: Uint8Array): Promise<DicomReadResult> {
 
 function isIdentifying(tag: DicomTag): boolean {
   if (tag.group % 2 === 1) return true;
+  if (tag.name === 'Unknown Tag') return true;
   if (SENSITIVE_TAGS.has(tag.tag)) return true;
   if (
     tag.vr === 'PN' ||
