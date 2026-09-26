@@ -12,11 +12,14 @@ import { LOCALIZED_TOOL_ROUTES, localizedPath } from '@/lib/i18n/routes';
   `/es` reaches all five Spanish tool pages in one hop. A client-rendered list
   would reach none of them.
 
-  `lang` is set on the wrapper rather than on `<html>` because the root layout
-  is shared with the English site and App Router gives a nested route no way to
-  rewrite it. `lang` is valid on any element, and putting it here is what makes
-  a screen reader pronounce this subtree with the right voice. The head still
-  carries `hreflang` for every edition, which is the part search engines read.
+  `lang` here is belt and braces. `<html lang>` is the attribute that matters
+  and it is set correctly for all 48 localised pages by
+  `scripts/localize-html-lang.mjs`, which runs in the build and is checked by
+  `scripts/verify-html-lang.mjs` -- read the first of those for why the
+  attribute is set there and not by a route group. Declaring it on this element
+  too costs nothing, is valid on any element, and means the subtree still
+  announces its language if the page is ever served from somewhere that skipped
+  the build step.
 */
 
 export function LocaleHubPage({ localeCode }: { localeCode: string }) {
