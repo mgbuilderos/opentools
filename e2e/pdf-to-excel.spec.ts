@@ -131,7 +131,10 @@ test.describe('Bank statement PDF to Excel for client books (/pdf/to-excel)', ()
     ).toBeVisible();
 
     // Explains why and what to do instead
-    await expect(page.getByText(/Download the digital PDF/i)).toBeVisible();
+    // The instruction itself, not the FAQ answer quoting it.
+    await expect(
+      page.getByText(/Download the digital PDF/i).first(),
+    ).toBeVisible();
     await expect(
       page.getByText(/Export direct CSV \/ OFX \/ QIF/i),
     ).toBeVisible();

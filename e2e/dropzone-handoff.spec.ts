@@ -27,7 +27,10 @@ test.describe('the file follows you to the tool you picked', () => {
     await page.goto('/');
     await dropPdf(page, await testPdf(3));
 
-    await expect(page.getByText('PDF Document')).toBeVisible();
+    // The badge, not the depth prose that also says "PDF document".
+    await expect(
+      page.getByText('PDF Document', { exact: true }).first(),
+    ).toBeVisible();
     await page.getByRole('link', { name: 'Rotate PDF', exact: true }).click();
 
     await page.waitForURL(/\/pdf\/page-tools/u);
