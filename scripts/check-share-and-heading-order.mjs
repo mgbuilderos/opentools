@@ -136,16 +136,32 @@ export function duplicateOgTitles(pages) {
 }
 
 /**
- * The first place this HTML jumps more than one heading level, or null.
+ * The first thing wrong with this HTML's heading outline, or null.
  *
- * Descending freely is fine -- an `h4` followed by an `h2` closes a subsection
- * and opens a new one, which is exactly what outlines do. Only ascending by
- * more than one is a gap, because it implies a level that was never announced.
+ * Two faults, both of which make a page state no single subject.
+ *
+ * NOT EXACTLY ONE `h1`. A page whose headings start at `h2` skips no level --
+ * `h2` to `h2` is not a jump -- so the level check below cannot see it, and on
+ * 2026-09-26 four tool pages reached production that way: /pdf/form-filler,
+ * /finance/ofx-qif, /finance/bank-statement and /email/reader each shipped with
+ * `h1=0`. `scripts/verify-live.mjs` caught all four, but only after the deploy,
+ * because it was the only check that asked whether an `h1` exists at all. At the
+ * time this was added, 1,477 of 1,481 served pages had exactly one and none had
+ * more, so the rule costs nothing and the four were the whole defect.
+ *
+ * A SKIPPED LEVEL. Descending freely is fine -- an `h4` followed by an `h2`
+ * closes a subsection and opens a new one, which is exactly what outlines do.
+ * Only ascending by more than one is a gap, because it implies a level that was
+ * never announced.
  */
 export function firstHeadingSkip(html) {
   const levels = [...html.matchAll(/<h([1-6])[\s>]/g)].map((match) =>
     Number(match[1]),
   );
+  const h1Count = levels.filter((level) => level === 1).length;
+  if (h1Count !== 1) {
+    return h1Count === 0 ? 'no h1' : `${h1Count} h1 elements`;
+  }
   for (let i = 1; i < levels.length; i += 1) {
     if (levels[i] - levels[i - 1] > 1) {
       return `h${levels[i - 1]} followed by h${levels[i]}`;

@@ -393,6 +393,12 @@ export function OfxQifTool() {
         tabIndex={-1}
         className="mx-auto max-w-5xl space-y-8 px-4 py-8 focus:outline-none sm:px-6 lg:px-8"
       >
+        {/* Header */}
+        <div className="space-y-3">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            OFX & QIF statement converter
+          </h1>
+        </div>
         {/* Caveat & Privacy Notice */}
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-foreground/90">
           <div className="flex items-start gap-3">
