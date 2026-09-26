@@ -1,0 +1,56 @@
+# Umbrel App Store submission.
+#
+# Submitted as a pull request to getumbrel/umbrel-apps, one directory per app
+# holding this file and a docker-compose.yml. Umbrel's requirement is that an
+# app serves a web UI, which this does at /.
+#
+# TWO FIELDS ARE DELIBERATELY LEFT BLANK: `submitter` and `submission`. They
+# name the person making the submission and link to the pull request they
+# opened. Those are statements about a human, and they are the owner's to fill
+# in, not an agent's to invent.
+manifestVersion: 1
+id: opentools
+category: files
+name: OpenTools
+version: "0.1.0"
+tagline: 568 file tools that run in your browser, not on the server
+description: >-
+  Document, image, audio, video, data and developer tools, served from one
+  container.
+
+
+  Every tool runs in the browser tab that opened it. The file is read by the
+  page and never put on the wire, so this container serves the page and never
+  receives the document - what you are hosting is a static site rather than a
+  document processor. There is nothing to encrypt at rest, no retention period
+  to set and no per-file audit trail to design.
+
+
+  It runs with no outbound network at all, which is verified rather than
+  claimed: started with --network none, every page still serves and outbound
+  requests fail to resolve. Tool pages are sent a content-security policy of
+  connect-src 'none', so the browser itself refuses to let the page open a
+  connection anywhere.
+
+
+  An optional access gate can be switched on with two environment variables
+  (OPENTOOLS_AUTH_USER and OPENTOOLS_AUTH_PASSWORD). It is HTTP Basic with one
+  shared credential for the whole instance, not user accounts, and it fails
+  closed if only one variable is set.
+
+
+  No account, no sign-up, no telemetry. MIT licensed.
+releaseNotes: ""
+developer: mgbuilderos
+website: https://getopentools.com
+dependencies: []
+repo: https://github.com/mgbuilderos/opentools
+support: https://github.com/mgbuilderos/opentools/issues
+port: 8796
+gallery:
+  - 1.jpg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: ""
+submission: ""
