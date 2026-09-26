@@ -50,6 +50,10 @@ export function buildSitemap(
     '/proof',
     '/privacy',
     '/security',
+    // The self-hosting page. It is the only route written for an
+    // administrator deciding whether to run this inside their own network,
+    // rather than for someone with a file to convert.
+    '/self-host',
     '/about',
     '/support',
     '/guides',

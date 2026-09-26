@@ -39,7 +39,7 @@ The recipient brings their own file. This is Pillar 3 of
 `lib/pipeline/recipe.ts` encodes:
 
 ```
-/bench?s1=document.pdf-split&s1.pages=1-3&s2=file-workbench.zip
+/batch?s1=document.pdf-split&s1.pages=1-3&s2=file-workbench.zip
 ```
 
 Operation ids, their sources, and the values of parameters whose descriptor

@@ -16,7 +16,7 @@ test.describe('The Bench', () => {
     await expect(benchResult).toBeVisible();
     await benchResult.click();
 
-    await expect(page).toHaveURL(/\/bench$/u);
+    await expect(page).toHaveURL(/\/batch$/u);
     await expect(
       page.getByRole('heading', { name: 'The Bench' }),
     ).toBeVisible();
@@ -30,7 +30,7 @@ test.describe('The Bench', () => {
         external.push(request.url());
     });
 
-    await page.goto('/bench');
+    await page.goto('/batch');
     await expect(
       page.getByRole('heading', { name: 'The Bench' }),
     ).toBeVisible();
@@ -88,7 +88,7 @@ test.describe('The Bench', () => {
         external.push(request.url());
     });
 
-    await page.goto('/bench');
+    await page.goto('/batch');
     await expect(
       page.getByRole('heading', { name: 'The Bench' }),
     ).toBeVisible();
@@ -165,7 +165,7 @@ test.describe('The Bench', () => {
   test('shares a chain as a link that carries the steps and nothing else', async ({
     page,
   }) => {
-    await page.goto('/bench');
+    await page.goto('/batch');
 
     await page
       .getByLabel('Search operations that can come next')
@@ -207,11 +207,11 @@ test.describe('The Bench', () => {
       page.getByTestId('pipeline-steps').getByRole('listitem'),
     ).toHaveCount(2);
     // Answering the link takes its keys out of the address bar.
-    await expect(page).toHaveURL(/\/bench$/u);
+    await expect(page).toHaveURL(/\/batch$/u);
   });
 
   test('names the folder mode available in this browser', async ({ page }) => {
-    await page.goto('/bench');
+    await page.goto('/batch');
     await expect(
       page.getByText(/browser can read a folder|folders read-only/u),
     ).toBeVisible();
@@ -237,7 +237,7 @@ test.describe('The Bench', () => {
     await expect(page.getByRole('heading', { name: /Done/u })).toBeVisible();
     const dedicatedMs = performance.now() - dedicatedStarted;
 
-    await page.goto('/bench');
+    await page.goto('/batch');
     await expect(
       page.getByRole('heading', { name: 'The Bench' }),
     ).toBeVisible();

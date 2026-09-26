@@ -148,6 +148,12 @@ describe('guide consolidation off is the previous behaviour', () => {
       '/proof',
       '/privacy',
       '/security',
+      // Added 2026-09-25 and mirrored here for the same reason `/embed` and the
+      // category hubs are: this function rebuilds the shipped sitemap minus
+      // consolidation, so a core route missing from it would be scored as a
+      // guide the switch dropped. `/self-host` is a content page written for an
+      // administrator, and the switch has nothing to do with it.
+      '/self-host',
       '/about',
       '/support',
       '/guides',

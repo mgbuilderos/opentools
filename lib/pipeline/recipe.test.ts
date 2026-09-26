@@ -213,11 +213,11 @@ describe('round trip', () => {
     expect(
       buildRecipeUrl(
         'https://example.com',
-        '/bench',
+        '/batch',
         pipeline([{ op: 'zip' }]),
         resolve,
       ),
-    ).toBe('https://example.com/bench?s1=document.zip');
+    ).toBe('https://example.com/batch?s1=document.zip');
   });
 });
 

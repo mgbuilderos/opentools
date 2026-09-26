@@ -155,6 +155,36 @@ export function HomeWorkspace() {
           </div>
 
           {/*
+            The folder runner, on the front page.
+
+            This is the one thing on the site that no hosted competitor can
+            offer at any price, and until now it lived on a side route called
+            /bench with a generic description — a word nobody types, one click
+            from nowhere. Every upload site is one file at a time because
+            "upload your folder of 4,000 scanned invoices" is unthinkable when
+            someone is paying for the bytes. Nobody is paying for these.
+          */}
+          <a
+            href="/batch"
+            className="focus-ring mt-4 flex flex-col gap-3 rounded-xl border bg-card p-5 transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span>
+              <span className="block text-lg font-semibold tracking-tight">
+                Got a whole folder?
+              </span>
+              <span className="mt-1 block max-w-2xl text-sm leading-6 text-muted-foreground">
+                Point it at a folder of 4,000 files and come back in ten
+                minutes. Compress, convert, rename or strip metadata across
+                every file at once. No file limit, no size limit — your machine
+                is the limit.
+              </span>
+            </span>
+            <span className="shrink-0 rounded-lg border px-3 py-2 text-sm font-semibold">
+              Open batch
+            </span>
+          </a>
+
+          {/*
             The crawlable twin of the category switcher in the top bar.
 
             That switcher calls `selectCategory`, which is
@@ -308,6 +338,12 @@ export function HomeWorkspace() {
                 className="focus-ring underline underline-offset-4 hover:text-foreground"
               >
                 Security
+              </a>
+              <a
+                href="/self-host"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Self-host
               </a>
               <a
                 href="/about"

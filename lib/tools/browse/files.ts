@@ -272,7 +272,7 @@ export const SECTIONS: readonly BrowseSection[] = [
         name: 'The Bench',
         description:
           'Run any of 631 operations over a whole folder, on this machine.',
-        href: '/bench',
+        href: '/batch',
         workspaceId: 'bench',
       },
     ],
