@@ -21,6 +21,11 @@ export interface ToolMeta {
 }
 
 export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
+  'ofx-qif-converter': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert OFX and QIF bank statements to CSV or Excel with transaction preview and balance reconciliation.',
+  },
   'latex-hub': {
     version: '0.1.0-canary',
     shortDescription:
@@ -56,15 +61,20 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
   },
-  'pdf-form-filler': {
+  'pdf-password': {
     version: '0.1.0-canary',
     shortDescription:
-      'Fill interactive PDF form fields and flatten widgets locally.',
+      'Unlock encrypted PDFs with password or protect documents with AES-256.',
   },
   bench: {
     version: '0.1.0-canary',
     shortDescription:
       'Run any of 631 operations over a whole folder, on this machine.',
+  },
+  'email-reader': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
   },
   'aadhaar-pan-masker': {
     version: '0.1.0-canary',
@@ -405,6 +415,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     version: '0.1.0-canary',
     shortDescription:
       'Create QR payloads, printable sheets, and common linear barcodes locally.',
+  },
+  'pdf-form-filler': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Fill interactive PDF form fields and flatten widgets locally.',
   },
 };
 

@@ -15,7 +15,15 @@
 /** Appears in every probe filename and nowhere else in the codebase. */
 export const PROBE_TOKEN = 'egressweep-4c1d8e';
 
-export type ProbeKind = 'png' | 'pdf' | 'wav' | 'webm' | 'text' | 'csv' | 'none';
+export type ProbeKind =
+  | 'png'
+  | 'pdf'
+  | 'wav'
+  | 'webm'
+  | 'text'
+  | 'csv'
+  | 'eml'
+  | 'none';
 
 /**
  * Which probe a route section can accept.
@@ -45,12 +53,24 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
   file: 'png',
   'life-admin': 'png',
   finance: 'csv',
+  /*
+   * Declared before `/email/reader` exists, deliberately. A new section
+   * defaults to `none` and would get a page-load proof while looking, in the
+   * report, exactly like a section somebody decided to leave load-only. An
+   * email is the most sensitive document most people own, so the decision is
+   * recorded here in advance rather than discovered when the route lands.
+   */
+  email: 'eml',
   subtitles: 'text',
   schema: 'text',
   latex: 'text',
   math: 'none',
   date: 'none',
   bench: 'none',
+  // `/batch` runs saved pipelines over whatever you give it, so any real file
+  // exercises the intake. Landed after this file was written and caught by the
+  // explicit-decision test, which is what that test is for.
+  batch: 'png',
 };
 
 /**
@@ -64,6 +84,7 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
   const extensionFor: Record<string, string> = {
     text: 'txt',
     webm: 'webm',
+    eml: 'eml',
   };
   let name = `${token}.${extensionFor[kind] ?? kind}`;
 
@@ -212,6 +233,25 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
       // WebKit records MP4, Chromium WebM. A name that disagrees with the bytes
       // is refused by an `accept` filter before the tool ever runs.
       name = `${token}.${clip.mime.startsWith('video/mp4') ? 'mp4' : 'webm'}`;
+    } else if (kind === 'eml') {
+      // A real RFC 5322 message with a remote image in it. The sweep only
+      // asserts that nothing left the device; `email-tracker.spec.ts` is what
+      // exercises the full vector list against the rendered document.
+      bytes = new TextEncoder().encode(
+        [
+          'From: sender@example.com',
+          'To: reader@example.com',
+          `Subject: ${token}`,
+          'MIME-Version: 1.0',
+          'Content-Type: text/html; charset=utf-8',
+          '',
+          `<html><body><p>${token}</p>`,
+          '<img src="http://tracker.invalid/pixel.png">',
+          '</body></html>',
+          '',
+        ].join('\r\n'),
+      );
+      mime = 'message/rfc822';
     } else if (kind === 'csv') {
       bytes = new TextEncoder().encode(
         `name,amount\n${token},1234.56\nsecond,7,89\n`,

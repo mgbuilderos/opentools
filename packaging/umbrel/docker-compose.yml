@@ -1,0 +1,14 @@
+# Umbrel runs apps behind its own proxy; app_proxy is the standard front for an
+# app that serves a plain web UI on one port.
+version: "3.7"
+services:
+  app_proxy:
+    environment:
+      APP_HOST: opentools_web_1
+      APP_PORT: 8796
+  web:
+    image: ghcr.io/mgbuilderos/opentools:0.1.0
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/data:/tmp/opentools-state

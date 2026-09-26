@@ -27,6 +27,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-compress',
       },
       {
+        id: 'pdf-form-filler',
+        name: 'Fill PDF forms',
+        description:
+          'Fill interactive PDF form fields and flatten widgets locally.',
+        href: '/pdf/form-filler',
+        workspaceId: 'pdf-form-filler',
+      },
+      {
         id: 'pdf-sign',
         name: 'Sign and fill PDF',
         description: 'Complete a PDF form and draw a signature onto the page.',
@@ -73,12 +81,12 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-to-excel',
       },
       {
-        id: 'pdf-form-filler',
-        name: 'Fill PDF forms',
+        id: 'pdf-password',
+        name: 'Unlock and protect PDF',
         description:
-          'Fill interactive PDF form fields and flatten widgets locally.',
-        href: '/pdf/form-filler',
-        workspaceId: 'pdf-form-filler',
+          'Unlock encrypted PDFs with password or protect documents with AES-256.',
+        href: '/pdf/password',
+        workspaceId: 'pdf-password',
       },
       {
         id: 'pdf-bates',

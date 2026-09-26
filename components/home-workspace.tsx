@@ -4,6 +4,7 @@ import { LockKeyhole, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { destinationIcon } from '@/components/category-icons';
+import { PROFESSION_HUBS } from '@/lib/seo/audience-pages';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
 import { CATEGORY_LINKS } from '@/lib/seo/category-hubs';
@@ -153,6 +154,68 @@ export function HomeWorkspace() {
           <div className="mt-8">
             <SmartDropzone />
           </div>
+
+          {/*
+            The folder runner, on the front page.
+
+            This is the one thing on the site that no hosted competitor can
+            offer at any price, and until now it lived on a side route called
+            /bench with a generic description — a word nobody types, one click
+            from nowhere. Every upload site is one file at a time because
+            "upload your folder of 4,000 scanned invoices" is unthinkable when
+            someone is paying for the bytes. Nobody is paying for these.
+          */}
+          <a
+            href="/batch"
+            className="focus-ring mt-4 flex flex-col gap-3 rounded-xl border bg-card p-5 transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span>
+              <span className="block text-lg font-semibold tracking-tight">
+                Got a whole folder?
+              </span>
+              <span className="mt-1 block max-w-2xl text-sm leading-6 text-muted-foreground">
+                Point it at a folder of 4,000 files and come back in ten
+                minutes. Compress, convert, rename or strip metadata across
+                every file at once. No file limit, no size limit — your machine
+                is the limit.
+              </span>
+            </span>
+            <span className="shrink-0 rounded-lg border px-3 py-2 text-sm font-semibold">
+              Open batch
+            </span>
+          </a>
+
+          {/*
+            Pages addressed to a job rather than a file format. Owner decision
+            2026-09-25, overriding C4; see lib/seo/audience-pages.ts for what
+            makes these defensible rather than a doorway family.
+
+            They are linked from here because a page reachable only from the
+            sitemap gets minimal crawl priority and no internal authority —
+            the exact failure lib/seo/orphan-coverage.test.ts exists to catch.
+          */}
+          <nav aria-label="Pages for your profession" className="mt-8">
+            <h2 className="text-sm font-semibold text-foreground">
+              Built for your work
+            </h2>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {PROFESSION_HUBS.map((page) => (
+                <li key={page.route}>
+                  <a
+                    href={page.route}
+                    className="focus-ring block h-full rounded-xl border bg-card p-4 transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30"
+                  >
+                    <span className="block text-sm font-semibold">
+                      {page.name}
+                    </span>
+                    <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                      {page.blurb}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
           {/*
             The crawlable twin of the category switcher in the top bar.
@@ -308,6 +371,12 @@ export function HomeWorkspace() {
                 className="focus-ring underline underline-offset-4 hover:text-foreground"
               >
                 Security
+              </a>
+              <a
+                href="/self-host"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Self-host
               </a>
               <a
                 href="/about"

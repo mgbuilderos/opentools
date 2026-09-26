@@ -1,5 +1,6 @@
 import { getOperation } from '@/lib/kernel';
 import type { KernelOperation } from '@/lib/kernel/types';
+import { chainVerdict } from './chain';
 import type { Pipeline } from './types';
 
 export type PipelineOperationResolver = (
@@ -49,6 +50,9 @@ export function validate(
     const current = operations[index];
     const next = operations[index + 1];
     if (!current || !next) continue;
+    const verdict = chainVerdict(current, next);
+    if (verdict.ok) continue;
+
     const currentLabel = stepLabel(
       index,
       current,
@@ -62,26 +66,11 @@ export function validate(
       pipeline.steps[index + 1]!.source,
     );
 
-    if (next.input === 'none') {
-      errors.push(
-        `${currentLabel} cannot feed ${nextLabel}: ${nextLabel} accepts no input and may only be first.`,
-      );
-      continue;
-    }
-    if (current.output.kind === 'text' && next.input !== 'text') {
-      errors.push(
-        `${currentLabel} outputs text, but ${nextLabel} accepts ${next.input}; both operations cannot be chained.`,
-      );
-    }
-    if (
-      current.output.kind === 'files' &&
-      next.input !== 'file' &&
-      next.input !== 'files'
-    ) {
-      errors.push(
-        `${currentLabel} outputs files, but ${nextLabel} accepts ${next.input}; both operations cannot be chained.`,
-      );
-    }
+    errors.push(
+      verdict.code === 'input-none'
+        ? `${currentLabel} cannot feed ${nextLabel}: ${nextLabel} accepts no input and may only be first.`
+        : `${currentLabel} outputs ${verdict.produced}, but ${nextLabel} accepts ${verdict.accepts}; both operations cannot be chained.`,
+    );
   }
 
   return errors;

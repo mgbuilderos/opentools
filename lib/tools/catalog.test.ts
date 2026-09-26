@@ -180,7 +180,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(708);
+    expect(everyDestination).toBe(710);
     expect(reachable).toBe(everyDestination);
   });
 
@@ -238,7 +238,7 @@ describe('public canary catalog', () => {
       'OCR PDF',
       'PDF to Excel',
       'Sign and fill PDF',
-      'Fill PDF forms',
+      'Unlock and protect PDF',
       'Extract PDF pages',
       'Images to PDF',
       'Rotate PDF',
