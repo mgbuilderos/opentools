@@ -8,7 +8,12 @@ import { EN_TOOL_UI, type ToolUiMessages } from './messages';
 import { PT_TOOL_UI } from './pt';
 import { RU_TOOL_UI } from './ru';
 
-export { EN_TOOL_UI, fillMessage, type ToolUiMessages } from './messages';
+export {
+  EN_TOOL_UI,
+  fillMessage,
+  subjectNoun,
+  type ToolUiMessages,
+} from './messages';
 
 /**
  * A locale's tool-control strings, keyed by the code in `LOCALES`.

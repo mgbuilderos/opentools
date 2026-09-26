@@ -10,7 +10,10 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
-import { useToolUi } from '@/components/locale-edition-provider';
+import {
+  useLocaleEdition,
+  useToolUi,
+} from '@/components/locale-edition-provider';
 import { fillMessage } from '@/lib/i18n/tool-ui';
 import {
   BatchLocalPromise,
@@ -71,6 +74,7 @@ function docxBlob(bytes: Uint8Array) {
 export function PdfToWordTool() {
   /* Localised control strings; the English bundle everywhere else. */
   const t = useToolUi();
+  const edition = useLocaleEdition();
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -112,7 +116,11 @@ export function PdfToWordTool() {
     setCanOpenOcr(false);
     if (next.size > MAX_BYTES) {
       setError(
-        `${next.name} is ${formatBytes(next.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}.`,
+        fillMessage(t.toWordTooLarge, {
+          name: next.name,
+          size: formatBytes(next.size),
+          max: formatBytes(MAX_BYTES),
+        }),
       );
       return;
     }
@@ -185,11 +193,7 @@ export function PdfToWordTool() {
       setCanOpenOcr(
         cause instanceof PdfToWordError && cause.code === 'NO_TEXT_LAYER',
       );
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : 'This PDF could not be converted.',
-      );
+      setError(cause instanceof Error ? cause.message : t.toWordFailed);
     } finally {
       setBusy(false);
     }
@@ -254,29 +258,41 @@ export function PdfToWordTool() {
                 {t.toWordTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Pull the text out of a PDF into an editable{' '}
+                {t.toWordStandfirstLead}{' '}
                 <code className="rounded bg-muted px-1 py-0.5 text-sm">
                   .docx
                 </code>{' '}
-                file. The PDF is read by this page and never sent to a server.
+                {t.toWordStandfirstTail}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
-              <LockKeyhole aria-hidden="true" className="size-3.5" /> On-device
-              prototype
+              <LockKeyhole aria-hidden="true" className="size-3.5" />{' '}
+              {t.onDevicePrototype}
             </span>
           </div>
 
           <div className="mt-6 rounded-xl border bg-muted/40 p-4 text-sm leading-6">
             <p className="font-semibold">{t.toWordScope}</p>
             <p className="mt-1 text-muted-foreground">
-              It recovers the <strong>text</strong>: reading order, paragraphs,
-              page breaks, and headings where the PDF sets them in larger type.
-              It does <strong>not</strong> rebuild the page layout — columns,
-              tables as real tables, images, and fonts are not carried across.
-              If your PDF is a scan or a photo of paper it holds no text at all,
-              and this page will tell you so rather than hand you an empty
-              document.
+              {/*
+                English keeps its own markup, with the two words in bold. A
+                translation cannot reuse that shape -- the emphasised words sit
+                elsewhere in other languages -- so a localised page renders one
+                plain paragraph from the bundle instead.
+              */}
+              {edition ? (
+                t.toWordScopeProse
+              ) : (
+                <>
+                  It recovers the <strong>text</strong>: reading order,
+                  paragraphs, page breaks, and headings where the PDF sets them
+                  in larger type. It does <strong>not</strong> rebuild the page
+                  layout — columns, tables as real tables, images, and fonts are
+                  not carried across. If your PDF is a scan or a photo of paper
+                  it holds no text at all, and this page will tell you so rather
+                  than hand you an empty document.
+                </>
+              )}
             </p>
           </div>
 

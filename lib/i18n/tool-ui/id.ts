@@ -164,4 +164,109 @@ export const ID_TOOL_UI: ToolUiMessages = {
   optimizeAll: 'Optimalkan semua',
   optimizePreviewAlt: 'Pratinjau hasil optimasi',
   optimizeNextMerge: 'Berikutnya: gabungkan PDF →',
+  runsInThisTab: 'Berjalan di tab ini, tanpa unggah',
+  freeNoAccount: 'Gratis, tanpa akun, tanpa tanda air',
+  batchLocalPromise:
+    'Tidak ada batas jumlah berkas, tidak ada batas harian, dan tidak ada antrean: pekerjaannya terjadi di mesin ini. Pilih satu berkas untuk alur biasa, atau pilih banyak untuk hasil sekaligus dalam satu berkas ZIP.',
+  recipeCopyLink: 'Salin tautan pengaturan',
+  recipeLinkCopied: 'Tautan pengaturan tersalin',
+  recipeSettingsOnly:
+    'Hanya pengaturan ini yang dikirim. {subject} Anda tetap di perangkat ini dan tidak pernah menjadi bagian dari tautan.',
+  recipeCopyByHand:
+    'Salin tautan ini secara manual: peramban memblokir papan klip',
+  noClientAnalytics: 'Tanpa analitik di peramban pada pratinjau ini',
+  browserCanvasNote: 'Canvas peramban · Keluaran raster statis',
+  mergeCapacity: 'Hingga {max} berkas · total 150 MB pada versi canary ini',
+  mergeInspecting: 'Memeriksa berkas PDF di perangkat Anda…',
+  mergeDropHere: 'Seret berkas PDF ke sini',
+  mergeCanaryScope:
+    'Cakupan versi canary ini: menggabungkan isi dan urutan halaman. Markah buku, tanda tangan, formulir, lampiran, dan metadata dokumen belum dijamin.',
+  mergeAddAtLeastTwo: 'Tambahkan minimal 2 berkas PDF',
+  mergeReady: 'Siap digabungkan',
+  mergeTryingSettings: 'Mencoba pengaturan kompresi',
+  compressStandfirst:
+    'Tulis ulang PDF agar lebih padat dan sandikan ulang foto di dalamnya. Berkas dibaca oleh halaman ini dan tidak pernah dikirim ke server.',
+  compressFitUnderCeiling: 'Turunkan di bawah batas',
+  compressLimitNote: 'Versi ini menerima PDF sumber hingga 150 MB.',
+  compressCeilingHelp:
+    'Pilih formulir yang Anda ajukan, atau tulis batas Anda sendiri. Halaman ini lalu menyandikan ulang dengan mutu menurun sampai hasil yang terukur benar-benar berada di bawahnya: tanpa perkiraan dan tanpa pengulangan diam-diam — setiap percobaan adalah penulisan ulang yang nyata, dan jumlahnya dilaporkan.',
+  compressPresetReadFrom: 'Dibaca dari',
+  compressPresetOn: 'pada',
+  compressPresetWarning:
+    'Portal mengubah batasnya tanpa pemberitahuan: periksa batas Anda sebelum mengandalkan ini.',
+  imagesStandfirst:
+    'Atur gambar JPEG dan PNG, pilih tata letak kertas, lalu buat satu berkas PDF di worker khusus di dalam peramban.',
+  imagesAcceptHint: 'JPEG atau PNG · 40 berkas · total 100 MB',
+  toWordStandfirstLead: 'Tarik teks dari PDF ke berkas',
+  toWordStandfirstTail:
+    'yang bisa disunting. PDF dibaca oleh halaman ini dan tidak pernah dikirim ke server.',
+  optimizeStandfirst:
+    'Ubah ukuran, kompres, dan konversi satu gambar JPEG, PNG, atau WebP statis tanpa mengunggahnya.',
+  optimizeAcceptHint: 'JPEG, PNG, atau WebP · maksimum 25 MB',
+  optimizeLimitNote: 'Versi ini menerima gambar sumber hingga 25 MB.',
+  subjectFile: 'berkas',
+  subjectImage: 'gambar',
+  subjectText: 'teks',
+  subjectPdf: 'PDF',
+  mergeTooLarge:
+    'Berkas-berkas ini melewati batas aman saat ini, yaitu total 150 MB.',
+  mergeTooMany:
+    'Pada versi ini Anda bisa menggabungkan hingga {max} berkas PDF sekaligus.',
+  mergeMoveEarlier: 'Majukan {name}',
+  mergeMoveLater: 'Mundurkan {name}',
+  mergeRemoveFile: 'Keluarkan {name}',
+  mergeInspectorNoStart:
+    'Pemeriksa PDF tidak bisa dijalankan. Berkas Anda tidak berubah.',
+  mergeInspectorStopped:
+    'Pemeriksa PDF berhenti tanpa diduga. Berkas Anda tidak berubah.',
+  mergeReadFailed:
+    'Peramban tidak bisa membaca salah satu berkas ini. Berkas asli Anda tidak berubah.',
+  mergeNoStart:
+    'Penggabungan tidak bisa dijalankan. Berkas PDF asli Anda tidak berubah.',
+  mergeStopped:
+    'Penggabungan berhenti tanpa diduga. Berkas PDF asli Anda tidak berubah.',
+  compressReadFailed: 'Peramban tidak bisa membaca berkas itu.',
+  compressNoStart:
+    'Kompresi PDF tidak bisa dijalankan. Berkas asli Anda tidak berubah.',
+  compressStopped:
+    'Kompresi PDF berhenti tanpa diduga. Berkas asli Anda tidak berubah.',
+  compressInspectorStopped: 'Pemeriksa PDF berhenti tanpa diduga.',
+  compressDoneSmaller: 'Selesai — {percent}% lebih kecil',
+  compressDoneAlready: 'Selesai — PDF ini sudah sekecil yang bisa kami buat',
+  compressAlreadyUnder: 'Sudah di bawah batas — berkas Anda tidak berubah',
+  compressUnderCeiling: 'Di bawah batas — {size}',
+  compressStillOver:
+    'Masih di atas batas — terkecil yang tercapai adalah {size}',
+  imagesTooLarge:
+    'Gambar-gambar ini melewati batas aman saat ini, yaitu total 100 MB.',
+  imagesTooMany: 'Pilih tidak lebih dari {max} gambar per PDF.',
+  imagesMoveUp: 'Naikkan {name}',
+  imagesMoveDown: 'Turunkan {name}',
+  imagesRemove: 'Keluarkan {name}',
+  imagesNoStart:
+    'Peramban tidak bisa memulai pembuatan PDF. Gambar Anda tidak berubah.',
+  imagesStopped:
+    'Pembuatan PDF berhenti tanpa diduga. Gambar Anda tidak berubah.',
+  toWordFailed: 'PDF ini tidak bisa diubah.',
+  toWordTooLarge:
+    '{name} berukuran {size}. Halaman ini menangani berkas hingga {max}.',
+  optimizeWrongType:
+    'Pilih gambar JPEG, PNG, atau WebP. Keluaran beranimasi tidak didukung.',
+  optimizeTooLarge: 'Batas 25 MB per berkas terlampaui.',
+  optimizeCanvasUnavailable:
+    'Pemrosesan canvas tidak tersedia di peramban ini.',
+  optimizeDecodeFailed: 'Peramban tidak bisa menguraikan gambar ini.',
+  optimizeEncodeFailed: 'Peramban tidak bisa menyandikan gambar ini.',
+  optimizeFailed: 'Gambar tidak bisa dioptimalkan.',
+  optimizeDimensionCheckFailed:
+    'Gambar hasil optimasi tidak lulus pemeriksaan dimensi.',
+  optimizeNoFormat:
+    'Peramban ini tidak menghasilkan format gambar yang bisa dipakai.',
+  optimizeBadDimensions:
+    'Lebar dan tinggi harus bilangan bulat dari 1 sampai 12.000.',
+  optimizeLarger: '{percent}% lebih besar',
+  briefStepsHeading: 'Apa yang terjadi pada pekerjaan ini',
+  briefLimitsHeading: 'Apa yang tidak akan dilakukan',
+  toWordScopeProse:
+    'Alat ini mengembalikan teksnya: urutan baca, paragraf, pemisah halaman, dan judul di tempat PDF menatanya dengan huruf lebih besar. Alat ini tidak menyusun ulang tata letak halaman: kolom, tabel sebagai tabel sungguhan, gambar, dan huruf tidak dibawa serta. Bila PDF Anda hasil pindai atau foto selembar kertas, di dalamnya tidak ada teks sama sekali, dan halaman ini akan mengatakannya daripada menyerahkan dokumen kosong.',
 };

@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { useToolUi } from '@/components/locale-edition-provider';
-import { fillMessage } from '@/lib/i18n/tool-ui';
+import { fillMessage, type ToolUiMessages } from '@/lib/i18n/tool-ui';
 import {
   BatchLocalPromise,
   BatchRunnerPanel,
@@ -65,12 +65,16 @@ function formatDuration(durationMs: number) {
     : `${(durationMs / 1000).toFixed(2)} s`;
 }
 
-function loadImage(url: string) {
+/*
+  The bundle is a parameter, not a hook call: these three are plain helpers
+  outside the component, and the message a thrown Error carries is shown to the
+  reader, so it has to be in the reader's language.
+*/
+function loadImage(url: string, t: ToolUiMessages) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () =>
-      reject(new Error('The browser could not decode this image.'));
+    image.onerror = () => reject(new Error(t.optimizeDecodeFailed));
     image.src = url;
   });
 }
@@ -79,13 +83,12 @@ function encodeCanvas(
   canvas: HTMLCanvasElement,
   format: RasterFormat,
   quality: number,
+  t: ToolUiMessages,
 ) {
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
       (blob) =>
-        blob
-          ? resolve(blob)
-          : reject(new Error('The browser could not encode this image.')),
+        blob ? resolve(blob) : reject(new Error(t.optimizeEncodeFailed)),
       format,
       quality,
     );
@@ -93,6 +96,7 @@ function encodeCanvas(
 }
 
 async function optimizeImage({
+  t,
   url,
   width,
   height,
@@ -101,6 +105,7 @@ async function optimizeImage({
   format,
   quality,
 }: {
+  t: ToolUiMessages;
   url: string;
   width: number;
   height: number;
@@ -109,7 +114,7 @@ async function optimizeImage({
   format: RasterFormat;
   quality: number;
 }) {
-  const decoded = await loadImage(url);
+  const decoded = await loadImage(url, t);
   const dimensions = calculateContainDimensions(
     width,
     height,
@@ -122,8 +127,7 @@ async function optimizeImage({
   const context = canvas.getContext('2d', {
     alpha: format !== 'image/jpeg',
   });
-  if (!context)
-    throw new Error('Canvas processing is unavailable in this browser.');
+  if (!context) throw new Error(t.optimizeCanvasUnavailable);
   if (format === 'image/jpeg') {
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -131,21 +135,21 @@ async function optimizeImage({
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
   context.drawImage(decoded, 0, 0, canvas.width, canvas.height);
-  const blob = await encodeCanvas(canvas, format, quality / 100);
+  const blob = await encodeCanvas(canvas, format, quality / 100, t);
   // WebKit answers a WebP request with a PNG rather than failing. Keep what the
   // browser produced and name the file for the format it actually is.
   const encodedFormat = blob.type as RasterFormat;
   if (!supportedRasterTypes.has(encodedFormat)) {
-    throw new Error('This browser did not produce a usable image format.');
+    throw new Error(t.optimizeNoFormat);
   }
   const validationUrl = URL.createObjectURL(blob);
   try {
-    const validationImage = await loadImage(validationUrl);
+    const validationImage = await loadImage(validationUrl, t);
     if (
       validationImage.naturalWidth !== dimensions.width ||
       validationImage.naturalHeight !== dimensions.height
     ) {
-      throw new Error('The optimized image failed its dimension check.');
+      throw new Error(t.optimizeDimensionCheckFailed);
     }
   } finally {
     URL.revokeObjectURL(validationUrl);
@@ -265,18 +269,16 @@ export function ImageOptimizeTool() {
     clearResult();
     setError('');
     if (!supportedRasterTypes.has(file.type as RasterFormat)) {
-      setError(
-        'Choose a JPEG, PNG, or WebP image. Animated output is not supported.',
-      );
+      setError(t.optimizeWrongType);
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      setError('This candidate limits source images to 25 MB.');
+      setError(t.optimizeLimitNote);
       return;
     }
     const url = URL.createObjectURL(file);
     try {
-      const decoded = await loadImage(url);
+      const decoded = await loadImage(url, t);
       if (sourceRef.current) URL.revokeObjectURL(sourceRef.current.url);
       const next = {
         file,
@@ -294,9 +296,7 @@ export function ImageOptimizeTool() {
     } catch (caught) {
       URL.revokeObjectURL(url);
       setError(
-        caught instanceof Error
-          ? caught.message
-          : 'The browser could not decode this image.',
+        caught instanceof Error ? caught.message : t.optimizeDecodeFailed,
       );
     }
   };
@@ -329,7 +329,7 @@ export function ImageOptimizeTool() {
       maxWidth > 12000 ||
       maxHeight > 12000
     ) {
-      setError('Width and height must be whole numbers from 1 to 12,000.');
+      setError(t.optimizeBadDimensions);
       return;
     }
     const targetMaxWidth = Math.floor(maxWidth);
@@ -342,6 +342,7 @@ export function ImageOptimizeTool() {
     const started = performance.now();
     try {
       const optimized = await optimizeImage({
+        t,
         url: source.url,
         width: source.width,
         height: source.height,
@@ -385,11 +386,7 @@ export function ImageOptimizeTool() {
         ],
       });
     } catch (caught) {
-      setError(
-        caught instanceof Error
-          ? caught.message
-          : 'The image could not be optimized.',
-      );
+      setError(caught instanceof Error ? caught.message : t.optimizeFailed);
     } finally {
       setBusy(false);
     }
@@ -404,7 +401,7 @@ export function ImageOptimizeTool() {
       maxWidth > 12000 ||
       maxHeight > 12000
     ) {
-      setError('Width and height must be whole numbers from 1 to 12,000.');
+      setError(t.optimizeBadDimensions);
       return;
     }
     setError('');
@@ -424,7 +421,7 @@ export function ImageOptimizeTool() {
       if (file.size > MAX_IMAGE_BYTES) {
         return {
           status: 'skipped',
-          reason: 'The 25 MB file limit was exceeded.',
+          reason: t.optimizeTooLarge,
         };
       }
       if (signal.aborted) {
@@ -432,8 +429,9 @@ export function ImageOptimizeTool() {
       }
       const url = URL.createObjectURL(file);
       try {
-        const decoded = await loadImage(url);
+        const decoded = await loadImage(url, t);
         const optimized = await optimizeImage({
+          t,
           url,
           width: decoded.naturalWidth,
           height: decoded.naturalHeight,
@@ -493,8 +491,7 @@ export function ImageOptimizeTool() {
                 {t.optimizeTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Resize, compress, and convert one static JPEG, PNG, or WebP
-                without uploading it.
+                {t.optimizeStandfirst}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
@@ -533,7 +530,7 @@ export function ImageOptimizeTool() {
                   {t.optimizeSourceImage}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  JPEG, PNG, or WebP · 25 MB maximum
+                  {t.optimizeAcceptHint}
                 </p>
               </div>
               {source ? (
@@ -789,8 +786,7 @@ export function ImageOptimizeTool() {
           ) : null}
           <footer className="mt-10 flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Candidate {manifest.version} · Browser Canvas · Static raster
-              output
+              Candidate {manifest.version} · {t.browserCanvasNote}
             </p>
             <a
               href="/pdf/merge"

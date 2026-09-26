@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { PdfCompressTool } from '@/components/pdf-compress-tool';
 import { LocaleEditionProvider } from '@/components/locale-edition-provider';
 import { PageDepthProvider } from '@/components/page-depth-provider';
+import { localizedBrief } from '@/lib/i18n/practice-brief';
 import { practiceBrief } from '@/lib/practice-briefs';
 import { LOCALE_COPY } from '@/lib/i18n/copy';
 import { toolUiFor } from '@/lib/i18n/tool-ui';
@@ -35,6 +36,19 @@ import {
 */
 
 const ROUTE = '/pdf/compress';
+const BRIEF_ID = 'filing-bundle-under-portal-ceiling';
+
+/*
+  The brief in the reader's language, keeping the English one's `id` and
+  `route`: those are keys the registry and the tests match on, not prose.
+  Falling back to the English brief means a locale added without its
+  translation shows English content rather than crashing the page.
+*/
+function localizedPracticeBrief(locale: string) {
+  const english = practiceBrief(BRIEF_ID);
+  const translated = localizedBrief(locale, BRIEF_ID);
+  return translated ? { ...english, ...translated } : english;
+}
 
 export const dynamicParams = false;
 
@@ -72,9 +86,7 @@ export default async function Page({
       }}
     >
       <PageDepthProvider content={requireLocalizedDepth(locale, ROUTE)}>
-        <PdfCompressTool
-          brief={practiceBrief('filing-bundle-under-portal-ceiling')}
-        />
+        <PdfCompressTool brief={localizedPracticeBrief(locale)} />
       </PageDepthProvider>
     </LocaleEditionProvider>
   );

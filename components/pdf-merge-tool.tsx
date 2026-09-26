@@ -135,9 +135,7 @@ export function PdfMergeTool() {
     const availableSlots = MAX_FILES - files.length;
     const selected = incoming.slice(0, availableSlots);
     if (!selected.length) {
-      setError(
-        `You can merge up to ${MAX_FILES} PDFs at a time in this canary.`,
-      );
+      setError(fillMessage(t.mergeTooMany, { max: MAX_FILES }));
       return;
     }
 
@@ -150,7 +148,7 @@ export function PdfMergeTool() {
       0,
     );
     if (existingBytes + selectedBytes > MAX_TOTAL_BYTES) {
-      setError('These files exceed the current 150 MB total safety limit.');
+      setError(t.mergeTooLarge);
       return;
     }
 
@@ -170,9 +168,7 @@ export function PdfMergeTool() {
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError(
-        'The browser could not read one of these files. Your originals are unchanged.',
-      );
+      setError(t.mergeReadFailed);
       return;
     }
     if (workerRef.current !== worker) {
@@ -210,9 +206,7 @@ export function PdfMergeTool() {
     };
 
     worker.onerror = () => {
-      setError(
-        'The PDF inspector stopped unexpectedly. Your files are unchanged.',
-      );
+      setError(t.mergeInspectorStopped);
       setStatus('error');
       worker.terminate();
       workerRef.current = null;
@@ -228,7 +222,7 @@ export function PdfMergeTool() {
       worker.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('The PDF inspector could not start. Your files are unchanged.');
+      setError(t.mergeInspectorNoStart);
     }
   };
 
@@ -254,9 +248,7 @@ export function PdfMergeTool() {
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError(
-        'The browser could not read one of these files. Your originals are unchanged.',
-      );
+      setError(t.mergeReadFailed);
       return;
     }
     if (workerRef.current !== worker) {
@@ -274,7 +266,7 @@ export function PdfMergeTool() {
           // Fit-to-size reports one of these per compression attempt, and the
           // attempt count is not known ahead of time, so it arrives with no
           // total to count towards.
-          fitting: 'Trying compression settings',
+          fitting: t.mergeTryingSettings,
         };
         setProgress({
           phase: labels[message.phase],
@@ -331,9 +323,7 @@ export function PdfMergeTool() {
     };
 
     worker.onerror = () => {
-      setError(
-        'The merge stopped unexpectedly. Your original PDFs are unchanged.',
-      );
+      setError(t.mergeStopped);
       setStatus('error');
       worker.terminate();
       workerRef.current = null;
@@ -349,7 +339,7 @@ export function PdfMergeTool() {
       worker.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('The merge could not start. Your original PDFs are unchanged.');
+      setError(t.mergeNoStart);
     }
   };
 
@@ -459,7 +449,7 @@ export function PdfMergeTool() {
                   {t.mergePdfsToMerge}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Up to {MAX_FILES} files · 150 MB total in this canary
+                  {fillMessage(t.mergeCapacity, { max: MAX_FILES })}
                 </p>
               </div>
               {files.length ? (
@@ -487,8 +477,8 @@ export function PdfMergeTool() {
                 </span>
                 <p className="mt-4 text-base font-semibold">
                   {status === 'inspecting'
-                    ? 'Inspecting PDFs locally…'
-                    : 'Drop PDFs here'}
+                    ? t.mergeInspecting
+                    : t.mergeDropHere}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {t.mergeSignatureNote}
@@ -546,7 +536,9 @@ export function PdfMergeTool() {
                         className="h-9 w-9"
                         disabled={index === 0 || status === 'processing'}
                         onClick={() => moveFile(index, -1)}
-                        aria-label={`Move ${item.file.name} earlier`}
+                        aria-label={fillMessage(t.mergeMoveEarlier, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowUp aria-hidden="true" />
                       </Button>
@@ -559,7 +551,9 @@ export function PdfMergeTool() {
                           index === files.length - 1 || status === 'processing'
                         }
                         onClick={() => moveFile(index, 1)}
-                        aria-label={`Move ${item.file.name} later`}
+                        aria-label={fillMessage(t.mergeMoveLater, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowDown aria-hidden="true" />
                       </Button>
@@ -570,7 +564,9 @@ export function PdfMergeTool() {
                         className="h-9 w-9"
                         disabled={status === 'processing'}
                         onClick={() => removeFile(item.id)}
-                        aria-label={`Remove ${item.file.name}`}
+                        aria-label={fillMessage(t.mergeRemoveFile, {
+                          name: item.file.name,
+                        })}
                       >
                         <Trash2 aria-hidden="true" />
                       </Button>
@@ -580,9 +576,7 @@ export function PdfMergeTool() {
               </ol>
             ) : null}
             <div className="border-t bg-muted/35 px-4 py-3 text-xs leading-5 text-muted-foreground sm:px-5">
-              Canary scope: combines page content and order. Bookmarks,
-              signatures, forms, attachments, and document-level metadata are
-              not yet guaranteed.
+              {t.mergeCanaryScope}
             </div>
           </section>
 
@@ -616,9 +610,7 @@ export function PdfMergeTool() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold">
-                    {files.length < 2
-                      ? 'Add at least 2 PDFs'
-                      : 'Ready to merge'}
+                    {files.length < 2 ? t.mergeAddAtLeastTwo : t.mergeReady}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {t.mergeOriginalsNote}
@@ -755,8 +747,7 @@ export function PdfMergeTool() {
 
           <footer className="mt-10 flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Canary {manifest.version} · pdf-lib 1.17.1 · No client-side
-              analytics in this preview
+              Canary {manifest.version} · pdf-lib 1.17.1 · {t.noClientAnalytics}
             </p>
             <a
               href="/"

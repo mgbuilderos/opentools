@@ -6,6 +6,8 @@ import { toolPageDepth, toolPageMetadata } from '../seo/tool-page-depth';
 import type { ToolPageDepth } from '../seo/tool-page-depth-types';
 import { LOCALE_COPY } from './copy';
 import { LOCALE_CODES, LOCALES } from './locales';
+import { practiceBrief } from '../practice-briefs';
+import { localizedBrief } from './practice-brief';
 import { EN_TOOL_UI, fillMessage, TOOL_UI } from './tool-ui';
 import {
   hubLanguageAlternates,
@@ -296,6 +298,17 @@ describe('tool control strings', () => {
     'ru.imagesUsLetter',
     'id.imagesUsLetter',
     'fr.imagesPortrait',
+    // "PDF" is PDF everywhere; "image" is the French word; "file" the Italian.
+    'es.subjectPdf',
+    'pt.subjectPdf',
+    'fr.subjectPdf',
+    'de.subjectPdf',
+    'it.subjectPdf',
+    'ja.subjectPdf',
+    'ru.subjectPdf',
+    'id.subjectPdf',
+    'fr.subjectImage',
+    'it.subjectFile',
     'fr.imagesMargin',
     'id.imagesMargin',
   ]);
@@ -347,6 +360,38 @@ describe('tool control strings', () => {
   it('fills placeholders and leaves unknown ones alone', () => {
     expect(fillMessage('{a} of {b}', { a: 1, b: 2 })).toBe('1 of 2');
     expect(fillMessage('{a} of {b}', { a: 1 })).toBe('1 of {b}');
+  });
+});
+
+describe('the localised practice brief', () => {
+  /*
+    `/pdf/compress` is the only one of the five that carries a brief, and it is
+    the longest block of prose on the page. A locale without it would show a
+    fully translated tool sitting under an English panel.
+  */
+  it('translates the compress brief into every locale', () => {
+    const missing: string[] = [];
+    for (const code of LOCALE_CODES) {
+      const brief = localizedBrief(code, 'filing-bundle-under-portal-ceiling');
+      if (!brief) {
+        missing.push(code);
+        continue;
+      }
+      const english = practiceBrief('filing-bundle-under-portal-ceiling');
+      // Same shape as the English brief: the component renders both.
+      expect(brief.steps.length, code).toBe(english.steps.length);
+      expect(brief.limits.length, code).toBe(english.limits.length);
+      for (const field of [brief.eyebrow, brief.heading, brief.lede]) {
+        expect(field.trim(), code).not.toBe('');
+      }
+      expect(brief.heading, code).not.toBe(english.heading);
+      expect(brief.lede, code).not.toBe(english.lede);
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('has no brief for a route that carries none', () => {
+    expect(localizedBrief('es', 'bank-statement-to-books')).toBeUndefined();
   });
 });
 

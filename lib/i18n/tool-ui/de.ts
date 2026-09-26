@@ -162,4 +162,110 @@ export const DE_TOOL_UI: ToolUiMessages = {
   optimizeAll: 'Alle optimieren',
   optimizePreviewAlt: 'Optimierte Vorschau',
   optimizeNextMerge: 'Weiter: PDF zusammenfügen →',
+  runsInThisTab: 'Läuft in diesem Tab — kein Upload',
+  freeNoAccount: 'Kostenlos, ohne Konto, ohne Wasserzeichen',
+  batchLocalPromise:
+    'Keine Begrenzung der Dateianzahl, kein Tageslimit, keine Warteschlange — die Arbeit passiert auf diesem Rechner. Wählen Sie eine Datei für den üblichen Ablauf, oder mehrere für Stapelergebnisse und ein einzelnes ZIP.',
+  recipeCopyLink: 'Einstellungs-Link kopieren',
+  recipeLinkCopied: 'Einstellungs-Link kopiert',
+  recipeSettingsOnly:
+    'Übertragen werden nur diese Einstellungen. Ihre {subject} bleibt auf diesem Gerät und ist nie Teil des Links.',
+  recipeCopyByHand:
+    'Kopieren Sie diesen Link von Hand — der Browser hat die Zwischenablage blockiert',
+  noClientAnalytics: 'Keine Analyse im Browser in dieser Vorschau',
+  browserCanvasNote: 'Browser-Canvas · Statische Rasterausgabe',
+  mergeCapacity:
+    'Bis zu {max} Dateien · 150 MB insgesamt in dieser Canary-Version',
+  mergeInspecting: 'PDFs werden auf Ihrem Gerät geprüft…',
+  mergeDropHere: 'PDFs hier ablegen',
+  mergeCanaryScope:
+    'Umfang dieser Canary-Version: fügt Seiteninhalt und Seitenreihenfolge zusammen. Lesezeichen, Signaturen, Formulare, Anhänge und Dokument-Metadaten sind noch nicht garantiert.',
+  mergeAddAtLeastTwo: 'Fügen Sie mindestens 2 PDFs hinzu',
+  mergeReady: 'Bereit zum Zusammenfügen',
+  mergeTryingSettings: 'Kompressionseinstellungen werden probiert',
+  compressStandfirst:
+    'Schreiben Sie ein PDF kompakter neu und kodieren Sie die enthaltenen Fotos neu. Die Datei wird von dieser Seite gelesen und nie an einen Server gesendet.',
+  compressFitUnderCeiling: 'Unter die Obergrenze bringen',
+  compressLimitNote: 'Diese Version nimmt ein Quell-PDF bis 150 MB an.',
+  compressCeilingHelp:
+    'Wählen Sie das Formular, bei dem Sie einreichen, oder tragen Sie Ihre eigene Obergrenze ein. Die Seite kodiert dann mit fallender Qualität neu, bis ein gemessenes Ergebnis wirklich darunter liegt — keine Schätzung und keine stille Schleife: jeder Versuch ist ein echter Durchlauf, und ihre Zahl wird genannt.',
+  compressPresetReadFrom: 'Gelesen von',
+  compressPresetOn: 'am',
+  compressPresetWarning:
+    'Portale ändern ihre Grenzen ohne Ankündigung — prüfen Sie Ihre, bevor Sie sich darauf verlassen.',
+  imagesStandfirst:
+    'Ordnen Sie JPEG- und PNG-Bilder, wählen Sie ein Papierformat und erzeugen Sie ein einziges PDF in einem eigenen Browser-Worker.',
+  imagesAcceptHint: 'JPEG oder PNG · 40 Dateien · 100 MB insgesamt',
+  toWordStandfirstLead: 'Holen Sie den Text eines PDFs in eine bearbeitbare',
+  toWordStandfirstTail:
+    'Datei. Das PDF wird von dieser Seite gelesen und nie an einen Server gesendet.',
+  optimizeStandfirst:
+    'Skalieren, komprimieren und wandeln Sie ein einzelnes statisches JPEG, PNG oder WebP um, ohne es hochzuladen.',
+  optimizeAcceptHint: 'JPEG, PNG oder WebP · maximal 25 MB',
+  optimizeLimitNote: 'Diese Version nimmt Ausgangsbilder bis 25 MB an.',
+  subjectFile: 'Datei',
+  subjectImage: 'Bild',
+  subjectText: 'Text',
+  subjectPdf: 'PDF',
+  mergeTooLarge:
+    'Diese Dateien überschreiten die derzeitige Sicherheitsgrenze von 150 MB insgesamt.',
+  mergeTooMany:
+    'In dieser Version können Sie bis zu {max} PDFs auf einmal zusammenfügen.',
+  mergeMoveEarlier: '{name} nach vorn',
+  mergeMoveLater: '{name} nach hinten',
+  mergeRemoveFile: '{name} entfernen',
+  mergeInspectorNoStart:
+    'Die PDF-Prüfung konnte nicht starten. Ihre Dateien sind unverändert.',
+  mergeInspectorStopped:
+    'Die PDF-Prüfung wurde unerwartet beendet. Ihre Dateien sind unverändert.',
+  mergeReadFailed:
+    'Der Browser konnte eine dieser Dateien nicht lesen. Ihre Originale sind unverändert.',
+  mergeNoStart:
+    'Das Zusammenfügen konnte nicht starten. Ihre Original-PDFs sind unverändert.',
+  mergeStopped:
+    'Das Zusammenfügen wurde unerwartet beendet. Ihre Original-PDFs sind unverändert.',
+  compressReadFailed: 'Der Browser konnte diese Datei nicht lesen.',
+  compressNoStart:
+    'Das Verkleinern konnte nicht starten. Ihr Original ist unverändert.',
+  compressStopped:
+    'Das Verkleinern wurde unerwartet beendet. Ihr Original ist unverändert.',
+  compressInspectorStopped: 'Die PDF-Prüfung wurde unerwartet beendet.',
+  compressDoneSmaller: 'Fertig — {percent} % kleiner',
+  compressDoneAlready:
+    'Fertig — dieses PDF war schon so klein, wie wir es machen können',
+  compressAlreadyUnder:
+    'Lag bereits unter der Obergrenze — Ihre Datei ist unverändert',
+  compressUnderCeiling: 'Unter der Obergrenze — {size}',
+  compressStillOver: 'Noch über der Obergrenze — am kleinsten erreicht: {size}',
+  imagesTooLarge:
+    'Diese Bilder überschreiten die derzeitige Sicherheitsgrenze von 100 MB insgesamt.',
+  imagesTooMany: 'Wählen Sie höchstens {max} Bilder pro PDF.',
+  imagesMoveUp: '{name} nach oben',
+  imagesMoveDown: '{name} nach unten',
+  imagesRemove: '{name} entfernen',
+  imagesNoStart:
+    'Der Browser konnte die PDF-Erzeugung nicht starten. Ihre Bilder sind unverändert.',
+  imagesStopped:
+    'Die PDF-Erzeugung wurde unerwartet beendet. Ihre Bilder sind unverändert.',
+  toWordFailed: 'Dieses PDF konnte nicht umgewandelt werden.',
+  toWordTooLarge:
+    '{name} ist {size} groß. Diese Seite arbeitet mit Dateien bis {max}.',
+  optimizeWrongType:
+    'Wählen Sie ein JPEG-, PNG- oder WebP-Bild. Animierte Ausgabe wird nicht unterstützt.',
+  optimizeTooLarge: 'Die Grenze von 25 MB je Datei wurde überschritten.',
+  optimizeCanvasUnavailable:
+    'Die Canvas-Verarbeitung ist in diesem Browser nicht verfügbar.',
+  optimizeDecodeFailed: 'Der Browser konnte dieses Bild nicht dekodieren.',
+  optimizeEncodeFailed: 'Der Browser konnte dieses Bild nicht kodieren.',
+  optimizeFailed: 'Das Bild konnte nicht optimiert werden.',
+  optimizeDimensionCheckFailed:
+    'Das optimierte Bild hat die Prüfung seiner Abmessungen nicht bestanden.',
+  optimizeNoFormat: 'Dieser Browser hat kein brauchbares Bildformat erzeugt.',
+  optimizeBadDimensions:
+    'Breite und Höhe müssen ganze Zahlen von 1 bis 12.000 sein.',
+  optimizeLarger: '{percent} % größer',
+  briefStepsHeading: 'Was bei dieser Aufgabe passiert',
+  briefLimitsHeading: 'Was es nicht tun wird',
+  toWordScopeProse:
+    'Es holt den Text zurück: die Lesereihenfolge, die Absätze, die Seitenumbrüche und die Überschriften, wo das PDF sie größer setzt. Es baut das Seitenlayout nicht nach: Spalten, Tabellen als echte Tabellen, Bilder und Schriften werden nicht übernommen. Ist Ihr PDF ein Scan oder das Foto eines Blattes, enthält es überhaupt keinen Text, und diese Seite sagt Ihnen das, statt Ihnen ein leeres Dokument zu geben.',
 };

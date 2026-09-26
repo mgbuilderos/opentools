@@ -162,4 +162,114 @@ export const IT_TOOL_UI: ToolUiMessages = {
   optimizeAll: 'Ottimizza tutte',
   optimizePreviewAlt: 'Anteprima ottimizzata',
   optimizeNextMerge: 'Avanti: unire PDF →',
+  runsInThisTab: 'Gira in questa scheda, senza caricare nulla',
+  freeNoAccount: 'Gratis, senza account e senza filigrana',
+  batchLocalPromise:
+    'Nessun limite al numero di file, nessun limite giornaliero e nessuna coda: il lavoro avviene su questa macchina. Scegli un file per il flusso normale, oppure molti per i risultati in blocco e un unico ZIP.',
+  recipeCopyLink: 'Copia il link delle impostazioni',
+  recipeLinkCopied: 'Link delle impostazioni copiato',
+  recipeSettingsOnly:
+    'Vengono inviate solo queste impostazioni. Il tuo {subject} resta su questo dispositivo e non fa mai parte del link.',
+  recipeCopyByHand:
+    'Copia questo link a mano: il browser ha bloccato gli appunti',
+  noClientAnalytics: 'Nessuna analisi nel browser in questa anteprima',
+  browserCanvasNote: 'Canvas del browser · Output raster statico',
+  mergeCapacity:
+    'Fino a {max} file · 150 MB in totale in questa versione canary',
+  mergeInspecting: 'Analisi dei PDF sul tuo dispositivo…',
+  mergeDropHere: 'Trascina qui i PDF',
+  mergeCanaryScope:
+    'Ambito di questa versione canary: unisce il contenuto e l’ordine delle pagine. Segnalibri, firme, moduli, allegati e metadati del documento non sono ancora garantiti.',
+  mergeAddAtLeastTwo: 'Aggiungi almeno 2 PDF',
+  mergeReady: 'Pronto per unire',
+  mergeTryingSettings: 'Prova delle impostazioni di compressione',
+  compressStandfirst:
+    'Riscrivi un PDF in modo più compatto e ricodifica le foto al suo interno. Il file viene letto da questa pagina e non viene mai inviato a un server.',
+  compressFitUnderCeiling: 'Scendi sotto il tetto',
+  compressLimitNote:
+    'Questa versione accetta un PDF di partenza fino a 150 MB.',
+  compressCeilingHelp:
+    'Scegli il modulo con cui stai presentando, oppure scrivi il tuo tetto. La pagina ricodifica poi a qualità decrescente finché un risultato misurato scende davvero sotto: nessuna stima e nessun ciclo silenzioso — ogni tentativo è una riscrittura vera e il numero viene riportato.',
+  compressPresetReadFrom: 'Letto da',
+  compressPresetOn: 'il',
+  compressPresetWarning:
+    'I portali cambiano i limiti senza annunciarlo: verifica il tuo prima di farci affidamento.',
+  imagesStandfirst:
+    'Ordina immagini JPEG e PNG, scegli un formato di carta e crea un unico PDF in un worker dedicato del browser.',
+  imagesAcceptHint: 'JPEG o PNG · 40 file · 100 MB in totale',
+  toWordStandfirstLead: 'Estrai il testo di un PDF in un file',
+  toWordStandfirstTail:
+    'modificabile. Il PDF viene letto da questa pagina e non viene mai inviato a un server.',
+  optimizeStandfirst:
+    'Ridimensiona, comprimi e converti una singola immagine JPEG, PNG o WebP statica senza caricarla.',
+  optimizeAcceptHint: 'JPEG, PNG o WebP · massimo 25 MB',
+  optimizeLimitNote:
+    'Questa versione accetta immagini di partenza fino a 25 MB.',
+  subjectFile: 'file',
+  subjectImage: 'immagine',
+  subjectText: 'testo',
+  subjectPdf: 'PDF',
+  mergeTooLarge:
+    'Questi file superano l’attuale limite di sicurezza di 150 MB in totale.',
+  mergeTooMany: 'In questa versione puoi unire fino a {max} PDF per volta.',
+  mergeMoveEarlier: 'Sposta {name} prima',
+  mergeMoveLater: 'Sposta {name} dopo',
+  mergeRemoveFile: 'Togli {name}',
+  mergeInspectorNoStart:
+    'L’ispettore PDF non è riuscito ad avviarsi. I tuoi file sono invariati.',
+  mergeInspectorStopped:
+    'L’ispettore PDF si è fermato in modo inatteso. I tuoi file sono invariati.',
+  mergeReadFailed:
+    'Il browser non è riuscito a leggere uno di questi file. I tuoi originali sono invariati.',
+  mergeNoStart:
+    'L’unione non è riuscita ad avviarsi. I tuoi PDF originali sono invariati.',
+  mergeStopped:
+    'L’unione si è fermata in modo inatteso. I tuoi PDF originali sono invariati.',
+  compressReadFailed: 'Il browser non è riuscito a leggere quel file.',
+  compressNoStart:
+    'La compressione del PDF non è riuscita ad avviarsi. Il tuo originale è invariato.',
+  compressStopped:
+    'La compressione del PDF si è fermata in modo inatteso. Il tuo originale è invariato.',
+  compressInspectorStopped: 'L’ispettore PDF si è fermato in modo inatteso.',
+  compressDoneSmaller: 'Fatto — {percent}% più piccolo',
+  compressDoneAlready:
+    'Fatto — questo PDF era già il più piccolo che possiamo ottenere',
+  compressAlreadyUnder: 'Era già sotto il tetto — il tuo file è invariato',
+  compressUnderCeiling: 'Sotto il tetto — {size}',
+  compressStillOver:
+    'Ancora sopra il tetto — il più piccolo raggiunto è stato {size}',
+  imagesTooLarge:
+    'Queste immagini superano l’attuale limite di sicurezza di 100 MB in totale.',
+  imagesTooMany: 'Scegli non più di {max} immagini per PDF.',
+  imagesMoveUp: 'Sposta {name} in alto',
+  imagesMoveDown: 'Sposta {name} in basso',
+  imagesRemove: 'Togli {name}',
+  imagesNoStart:
+    'Il browser non è riuscito ad avviare la creazione del PDF. Le tue immagini sono invariate.',
+  imagesStopped:
+    'La creazione del PDF si è fermata in modo inatteso. Le tue immagini sono invariate.',
+  toWordFailed: 'Non è stato possibile convertire questo PDF.',
+  toWordTooLarge:
+    '{name} pesa {size}. Questa pagina lavora su file fino a {max}.',
+  optimizeWrongType:
+    'Scegli un’immagine JPEG, PNG o WebP. L’output animato non è supportato.',
+  optimizeTooLarge: 'Il limite di 25 MB per file è stato superato.',
+  optimizeCanvasUnavailable:
+    'L’elaborazione con canvas non è disponibile in questo browser.',
+  optimizeDecodeFailed:
+    'Il browser non è riuscito a decodificare questa immagine.',
+  optimizeEncodeFailed:
+    'Il browser non è riuscito a codificare questa immagine.',
+  optimizeFailed: 'Non è stato possibile ottimizzare l’immagine.',
+  optimizeDimensionCheckFailed:
+    'L’immagine ottimizzata non ha superato il controllo delle dimensioni.',
+  optimizeNoFormat:
+    'Questo browser non ha prodotto un formato di immagine utilizzabile.',
+  optimizeBadDimensions:
+    'Larghezza e altezza devono essere numeri interi da 1 a 12.000.',
+  optimizeLarger: '{percent}% più grande',
+  briefStepsHeading: 'Cosa succede in questo lavoro',
+  briefLimitsHeading: 'Cosa non farà',
+  toWordScopeProse:
+    'Recupera il testo: l’ordine di lettura, i paragrafi, le interruzioni di pagina e i titoli dove il PDF li compone in corpo maggiore. Non ricostruisce l’impaginazione: colonne, tabelle come tabelle vere, immagini e caratteri non vengono riportati. Se il tuo PDF è una scansione o la foto di un foglio non contiene alcun testo, e questa pagina te lo dirà invece di consegnarti un documento vuoto.',
 };

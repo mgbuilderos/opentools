@@ -121,7 +121,7 @@ export function ImagesToPdfTool() {
       return;
     }
     if (images.length + valid.length > MAX_FILES) {
-      setError(`Choose no more than ${MAX_FILES} images per PDF.`);
+      setError(fillMessage(t.imagesTooMany, { max: MAX_FILES }));
       return;
     }
     const totalBytes = [...images.map(({ file }) => file), ...valid].reduce(
@@ -129,7 +129,7 @@ export function ImagesToPdfTool() {
       0,
     );
     if (totalBytes > MAX_TOTAL_BYTES) {
-      setError('These images exceed the current 100 MB total safety limit.');
+      setError(t.imagesTooLarge);
       return;
     }
     setImages((current) => [
@@ -213,9 +213,7 @@ export function ImagesToPdfTool() {
         }
       };
       worker.onerror = () => {
-        setError(
-          'PDF creation stopped unexpectedly. Your images are unchanged.',
-        );
+        setError(t.imagesStopped);
         setBusy(false);
         worker.terminate();
         workerRef.current = null;
@@ -234,9 +232,7 @@ export function ImagesToPdfTool() {
       workerRef.current?.terminate();
       workerRef.current = null;
       setBusy(false);
-      setError(
-        'The browser could not start PDF creation. Your images are unchanged.',
-      );
+      setError(t.imagesNoStart);
     }
   };
 
@@ -273,13 +269,12 @@ export function ImagesToPdfTool() {
                 {t.imagesTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Arrange JPEG and PNG images, choose a paper layout, and create
-                one PDF in a dedicated browser worker.
+                {t.imagesStandfirst}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
-              <LockKeyhole aria-hidden="true" className="size-3.5" /> On-device
-              prototype
+              <LockKeyhole aria-hidden="true" className="size-3.5" />{' '}
+              {t.onDevicePrototype}
             </span>
           </div>
 
@@ -312,7 +307,7 @@ export function ImagesToPdfTool() {
                   {t.imagesSourceImages}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  JPEG or PNG · 40 files · 100 MB total
+                  {t.imagesAcceptHint}
                 </p>
               </div>
               {images.length ? (
@@ -378,7 +373,9 @@ export function ImagesToPdfTool() {
                         size="icon"
                         disabled={index === 0 || busy}
                         onClick={() => move(index, -1)}
-                        aria-label={`Move ${item.file.name} up`}
+                        aria-label={fillMessage(t.imagesMoveUp, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowUp aria-hidden="true" />
                       </Button>
@@ -387,7 +384,9 @@ export function ImagesToPdfTool() {
                         size="icon"
                         disabled={index === images.length - 1 || busy}
                         onClick={() => move(index, 1)}
-                        aria-label={`Move ${item.file.name} down`}
+                        aria-label={fillMessage(t.imagesMoveDown, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowDown aria-hidden="true" />
                       </Button>
@@ -401,7 +400,9 @@ export function ImagesToPdfTool() {
                             current.filter(({ id }) => id !== item.id),
                           );
                         }}
-                        aria-label={`Remove ${item.file.name}`}
+                        aria-label={fillMessage(t.imagesRemove, {
+                          name: item.file.name,
+                        })}
                       >
                         <Trash2 aria-hidden="true" />
                       </Button>

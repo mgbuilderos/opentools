@@ -219,10 +219,7 @@ function PortalCeilingPanel({
           {t.compressFitCeiling}
         </legend>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          Pick the form you are filing into, or type your own ceiling. The page
-          then re-encodes at descending quality until a measured result really
-          is under it — no estimate, and no silent loop: every attempt is a real
-          rewrite and the count is reported.
+          {t.compressCeilingHelp}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {PORTAL_PRESETS.map((preset) => (
@@ -242,7 +239,7 @@ function PortalCeilingPanel({
         {selectedPreset ? (
           <p className="mt-3 text-xs leading-5 text-muted-foreground">
             {selectedPreset.portal}: {selectedPreset.field}.{' '}
-            {selectedPreset.note} Read from{' '}
+            {selectedPreset.note} {t.compressPresetReadFrom}{' '}
             <a
               href={selectedPreset.sourceUrl}
               target="_blank"
@@ -251,8 +248,8 @@ function PortalCeilingPanel({
             >
               {sourceHost(selectedPreset.sourceUrl)}
             </a>{' '}
-            on {selectedPreset.checkedOn}. Portals change limits without
-            announcing it — check yours before you rely on this.
+            {t.compressPresetOn} {selectedPreset.checkedOn}.{' '}
+            {t.compressPresetWarning}
           </p>
         ) : null}
         <label className="mt-3 block max-w-xs text-xs font-semibold">
@@ -392,7 +389,7 @@ export function PdfCompressTool({
     clearResult();
     setError('');
     if (file.size > MAX_BYTES) {
-      setError('This candidate limits a source PDF to 150 MB.');
+      setError(t.compressLimitNote);
       return;
     }
     const candidate = { id: crypto.randomUUID(), file };
@@ -415,7 +412,7 @@ export function PdfCompressTool({
       };
       worker.onerror = () => {
         setStatus('error');
-        setError('The PDF inspector stopped unexpectedly.');
+        setError(t.compressInspectorStopped);
         worker.terminate();
         workerRef.current = null;
       };
@@ -425,7 +422,7 @@ export function PdfCompressTool({
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('The browser could not read that file.');
+      setError(t.compressReadFailed);
     }
   };
 
@@ -551,9 +548,7 @@ export function PdfCompressTool({
       };
       worker.onerror = () => {
         setStatus('error');
-        setError(
-          'PDF compression stopped unexpectedly. Your original is unchanged.',
-        );
+        setError(t.compressStopped);
         worker.terminate();
         workerRef.current = null;
       };
@@ -570,7 +565,7 @@ export function PdfCompressTool({
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('PDF compression could not start. Your original is unchanged.');
+      setError(t.compressNoStart);
     }
   };
 
@@ -652,12 +647,12 @@ export function PdfCompressTool({
                   ? 'No upload, no installer, and no connection needed once this page has loaded once. The compressing is done by this tab, so the only question left is whether your browser has kept a copy — which the panel below reads and reports.'
                   : brief
                     ? brief.lede
-                    : 'Rewrite a PDF more compactly and re-encode the photos inside it. The file is read by this page and never sent to a server.'}
+                    : t.compressStandfirst}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
-              <LockKeyhole aria-hidden="true" className="size-3.5" /> On-device
-              prototype
+              <LockKeyhole aria-hidden="true" className="size-3.5" />{' '}
+              {t.onDevicePrototype}
             </span>
           </div>
 
@@ -736,7 +731,7 @@ export function PdfCompressTool({
                   <span className="mt-4 block font-semibold">
                     {status === 'inspecting'
                       ? t.compressInspecting
-                      : 'Choose a PDF'}
+                      : t.chooseAPdf}
                   </span>
                   <span className="mt-1 block text-sm text-muted-foreground">
                     {t.upTo150Mb}
@@ -876,7 +871,7 @@ export function PdfCompressTool({
                       <Gauge aria-hidden="true" />
                       {status === 'processing'
                         ? 'Working locally…'
-                        : 'Fit under ceiling'}
+                        : t.compressFitUnderCeiling}
                     </Button>
                     <Button
                       className="h-11 min-w-44"
@@ -949,10 +944,10 @@ export function PdfCompressTool({
                         ? receipt.fit.outcome === 'over-max'
                           ? `Still over the ceiling — smallest reached was ${formatBytes(receipt.compressedBytes)}`
                           : receipt.fit.outcome === 'already-under'
-                            ? 'Already under the ceiling — your file is unchanged'
+                            ? t.compressAlreadyUnder
                             : `Under the ceiling — ${formatBytes(receipt.compressedBytes)}`
                         : nothingSaved
-                          ? 'Done — this PDF was already as small as we can make it'
+                          ? t.compressDoneAlready
                           : `Done — ${saved}% smaller`}
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">

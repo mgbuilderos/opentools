@@ -161,4 +161,104 @@ export const JA_TOOL_UI: ToolUiMessages = {
   optimizeAll: 'すべて最適化',
   optimizePreviewAlt: '最適化後のプレビュー',
   optimizeNextMerge: '次へ: PDFを結合 →',
+  runsInThisTab: 'このタブ内で動作 —— アップロードなし',
+  freeNoAccount: '無料・アカウント不要・透かしなし',
+  batchLocalPromise:
+    'ファイル数の制限、1日あたりの制限、待ち行列はありません。処理はこの端末で行われます。通常の1ファイル処理なら1つ選び、まとめて処理してZIPで受け取るなら複数選んでください。',
+  recipeCopyLink: '設定リンクをコピー',
+  recipeLinkCopied: '設定リンクをコピーしました',
+  recipeSettingsOnly:
+    '送られるのはこの設定だけです。あなたの{subject}はこの端末に残り、リンクに含まれることはありません。',
+  recipeCopyByHand:
+    'このリンクは手でコピーしてください —— ブラウザがクリップボードを拒否しました',
+  noClientAnalytics: 'このプレビューではブラウザ側の解析なし',
+  browserCanvasNote: 'ブラウザのCanvas · 静止ラスター出力',
+  mergeCapacity: '最大 {max} ファイル · この試験版では合計150 MBまで',
+  mergeInspecting: 'PDFを端末内で確認しています…',
+  mergeDropHere: 'ここにPDFをドロップ',
+  mergeCanaryScope:
+    'この試験版の対象範囲: ページの内容と順序を結合します。しおり、署名、フォーム、添付ファイル、文書メタデータはまだ保証されていません。',
+  mergeAddAtLeastTwo: 'PDFを2つ以上追加してください',
+  mergeReady: '結合の準備ができました',
+  mergeTryingSettings: '圧縮設定を試しています',
+  compressStandfirst:
+    'PDFをより小さく書き直し、中の写真を再エンコードします。ファイルはこのページが読み取り、サーバーへ送られることはありません。',
+  compressFitUnderCeiling: '上限以下に収める',
+  compressLimitNote: 'この試験版では元のPDFは150 MBまでです。',
+  compressCeilingHelp:
+    '提出する書式を選ぶか、上限をご自身で入力してください。その後、実測した結果が本当に上限を下回るまで画質を段階的に下げて再エンコードします。推定はせず、裏側で黙って繰り返すこともしません。どの試行も実際の書き直しであり、その回数を表示します。',
+  compressPresetReadFrom: '出典',
+  compressPresetOn: '確認日',
+  compressPresetWarning:
+    '提出先は予告なく上限を変更します。頼る前にご自身で確認してください。',
+  imagesStandfirst:
+    'JPEGとPNGの画像を並べ替え、用紙サイズを選んで、専用のブラウザWorkerで1つのPDFを作成します。',
+  imagesAcceptHint: 'JPEGまたはPNG · 40ファイル · 合計100 MB',
+  toWordStandfirstLead: 'PDFから文字を取り出して編集できる',
+  toWordStandfirstTail:
+    'ファイルにします。PDFはこのページが読み取り、サーバーへ送られることはありません。',
+  optimizeStandfirst:
+    '静止画のJPEG・PNG・WebPを1枚、アップロードせずにリサイズ・圧縮・変換します。',
+  optimizeAcceptHint: 'JPEG・PNG・WebP · 最大25 MB',
+  optimizeLimitNote: 'この試験版では元の画像は25 MBまでです。',
+  subjectFile: 'ファイル',
+  subjectImage: '画像',
+  subjectText: 'テキスト',
+  subjectPdf: 'PDF',
+  mergeTooLarge:
+    'これらのファイルは現在の安全上の上限、合計150 MBを超えています。',
+  mergeTooMany: 'この試験版では一度に最大 {max} 個のPDFまで結合できます。',
+  mergeMoveEarlier: '{name} を前に移動',
+  mergeMoveLater: '{name} を後に移動',
+  mergeRemoveFile: '{name} を外す',
+  mergeInspectorNoStart:
+    'PDFの検査を開始できませんでした。ファイルは変更されていません。',
+  mergeInspectorStopped:
+    'PDFの検査が予期せず停止しました。ファイルは変更されていません。',
+  mergeReadFailed:
+    'ブラウザがこれらのファイルのいずれかを読み取れませんでした。元のファイルは変更されていません。',
+  mergeNoStart: '結合を開始できませんでした。元のPDFは変更されていません。',
+  mergeStopped: '結合が予期せず停止しました。元のPDFは変更されていません。',
+  compressReadFailed: 'ブラウザがそのファイルを読み取れませんでした。',
+  compressNoStart:
+    'PDFの圧縮を開始できませんでした。元のファイルは変更されていません。',
+  compressStopped:
+    'PDFの圧縮が予期せず停止しました。元のファイルは変更されていません。',
+  compressInspectorStopped: 'PDFの検査が予期せず停止しました。',
+  compressDoneSmaller: '完了 —— {percent}% 小さくなりました',
+  compressDoneAlready:
+    '完了 —— このPDFはすでにこれ以上小さくできない状態でした',
+  compressAlreadyUnder:
+    'もともと上限を下回っていました —— ファイルは変更されていません',
+  compressUnderCeiling: '上限を下回りました —— {size}',
+  compressStillOver: 'まだ上限を超えています —— 到達した最小は {size}',
+  imagesTooLarge:
+    'これらの画像は現在の安全上の上限、合計100 MBを超えています。',
+  imagesTooMany: '1つのPDFにつき画像は最大 {max} 枚までにしてください。',
+  imagesMoveUp: '{name} を上に移動',
+  imagesMoveDown: '{name} を下に移動',
+  imagesRemove: '{name} を外す',
+  imagesNoStart:
+    'ブラウザがPDFの作成を開始できませんでした。画像は変更されていません。',
+  imagesStopped: 'PDFの作成が予期せず停止しました。画像は変更されていません。',
+  toWordFailed: 'このPDFは変換できませんでした。',
+  toWordTooLarge:
+    '{name} は {size} です。このページは {max} までのファイルを扱います。',
+  optimizeWrongType:
+    'JPEG・PNG・WebPの画像を選んでください。アニメーションの出力には対応していません。',
+  optimizeTooLarge: '1ファイル25 MBの上限を超えました。',
+  optimizeCanvasUnavailable:
+    'このブラウザではcanvasによる処理を利用できません。',
+  optimizeDecodeFailed: 'ブラウザがこの画像をデコードできませんでした。',
+  optimizeEncodeFailed: 'ブラウザがこの画像をエンコードできませんでした。',
+  optimizeFailed: '画像を最適化できませんでした。',
+  optimizeDimensionCheckFailed:
+    '最適化した画像が寸法の検証に通りませんでした。',
+  optimizeNoFormat: 'このブラウザは利用できる画像形式を出力しませんでした。',
+  optimizeBadDimensions: '幅と高さは1から12,000までの整数で指定してください。',
+  optimizeLarger: '{percent}% 大きくなりました',
+  briefStepsHeading: 'この作業で行われること',
+  briefLimitsHeading: '行わないこと',
+  toWordScopeProse:
+    '取り出せるのは文字です。読み順、段落、改ページ、そしてPDFが大きな文字で組んでいる見出しが対象になります。ページのレイアウトは組み直しません。段組み、表としての表、画像、書体は引き継がれません。PDFがスキャンや紙の写真であれば文字は一切含まれておらず、このページは空の文書を渡すのではなく、その旨をお伝えします。',
 };

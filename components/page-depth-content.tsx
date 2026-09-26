@@ -1,6 +1,7 @@
 'use client';
 
 import { HelpCircle, ShieldCheck, WifiOff } from 'lucide-react';
+import { useToolUi } from '@/components/locale-edition-provider';
 
 import type { ToolPageDepth } from '@/lib/seo/tool-page-depth-types';
 
@@ -46,6 +47,8 @@ export function PageDepthContent({
   stepsHeading?: string;
   faqsHeading?: string;
 }) {
+  /* Localised chrome strings; the English bundle on every English page. */
+  const t = useToolUi();
   const howTo =
     content.steps.length > 0
       ? {
@@ -96,10 +99,10 @@ export function PageDepthContent({
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
             <ShieldCheck aria-hidden="true" className="size-3.5 text-success" />
-            Runs in this tab — no upload
+            {t.runsInThisTab}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-            Free, no account, no watermark
+            {t.freeNoAccount}
           </span>
           {content.offlineReady ? (
             <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
