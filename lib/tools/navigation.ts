@@ -208,7 +208,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'finance',
     name: 'Finance & business',
     shortDescription: 'Loans, tax, invoices, margins, and business maths.',
-    destinationCount: 57,
+    destinationCount: 58,
     toolIds: [
       'finance-business-workbench',
       'ofx-qif-converter',
