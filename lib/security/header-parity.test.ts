@@ -115,4 +115,64 @@ describe('next.config.ts and public/_headers ship the same security headers', ()
     );
     expect(served.get('X-Frame-Options')).toBe('DENY');
   });
+
+  /**
+   * `proxy.ts` is the third header source, and it was outside this guard.
+   *
+   * It sets headers on the responses it builds, which made it look like a
+   * belt-and-braces copy of the other two. It is not, because of how this site
+   * is served: `scripts/prerender-to-assets.mjs` writes every public URL to a
+   * file in `dist/client/`, and a request that a file answers never reaches the
+   * Worker. Every real page is such a file, so a header that lives only in
+   * `proxy.ts` reaches almost nobody.
+   *
+   * Measured against production on 2026-09-26, before the fix:
+   *
+   *   curl -I https://getopentools.com/                          -> no HSTS
+   *   curl -I https://getopentools.com/pdf/merge                 -> no HSTS
+   *   curl -I https://getopentools.com/convert/kilograms-to-pounds -> no HSTS
+   *
+   * while `Strict-Transport-Security` had been declared in `proxy.ts` all
+   * along. Same shape as `X-Frame-Options` on 2026-09-19 — declared somewhere,
+   * absent from the file the visitor's response is actually built from.
+   *
+   * The same mechanism is why `proxy.ts`'s plaintext redirect does not protect
+   * real pages either: over HTTP, `/guides/pdf-merge-pdf` (no static file)
+   * 301s to HTTPS, while `/security` and `/` (static files) answered 200.
+   * That half cannot be fixed here — it needs the edge's "Always Use HTTPS".
+   */
+  it('ships every security header proxy.ts sets, because static pages never reach it', () => {
+    const proxySource = readFileSync(
+      path.join(projectRoot, 'proxy.ts'),
+      'utf8',
+    );
+    const block = /const responseHeaders = \{([\s\S]*?)\n\} as const;/u.exec(
+      proxySource,
+    );
+    expect(
+      block,
+      'responseHeaders literal not found in proxy.ts',
+    ).not.toBeNull();
+
+    const names = [...block![1]!.matchAll(/^\s*'([A-Za-z-]+)':/gmu)].map(
+      (match) => match[1]!,
+    );
+    expect(
+      names.length,
+      'parsed no header names from proxy.ts',
+    ).toBeGreaterThan(3);
+
+    const served = new Map(
+      catchAllRule!.lines
+        .filter((line) => line.kind === 'set')
+        .map((line) => [line.name, line.value]),
+    );
+    const missing = names.filter((name) => !served.has(name));
+    expect(
+      missing,
+      `${missing.join(', ')} set in proxy.ts but absent from public/_headers. ` +
+        'Static pages are served from dist/client/ without running the Worker, ' +
+        'so these reach almost nobody on getopentools.com.',
+    ).toEqual([]);
+  });
 });

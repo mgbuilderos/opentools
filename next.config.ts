@@ -75,6 +75,23 @@ const nextConfig: NextConfig = {
           { key: 'Referrer-Policy', value: 'no-referrer' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
+          /*
+           * Declared in `proxy.ts` since that file was written, and reaching
+           * nobody on getopentools.com: verified 2026-09-26 with
+           * `curl -I` against `/`, `/pdf/merge` and
+           * `/convert/kilograms-to-pounds`, none of which carried it. Same
+           * shape of fault as `X-Frame-Options` on 2026-09-19 — declared in
+           * one place, absent from the file the Worker actually serves.
+           *
+           * It matters here beyond the usual reason: `proxy.ts` records that
+           * `connect-src 'none'` is only as strong as the transport, because a
+           * network attacker who can serve plaintext can strip the CSP. HSTS
+           * is what stops that on every visit after the first.
+           */
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
           {
             key: 'X-Robots-Tag',
             value:

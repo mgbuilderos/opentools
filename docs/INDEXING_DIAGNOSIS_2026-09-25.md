@@ -112,39 +112,83 @@ comment states why that is insufficient: browsers must ignore HSTS over plain
 HTTP (RFC 6797 §7.2), so the fix is *"the edge's 'Always Use HTTPS' redirect,
 which is a zone setting and not in this repo."*
 
-> **DONE — owner turned on Cloudflare "Always Use HTTPS" on 2026-09-26.**
-> Not yet verified from this repository: the session's network policy denies
-> `getopentools.com`, so no live request could confirm the 301. Verify with
-> `curl -I http://getopentools.com/security` and expect `301` with a
-> `location:` of the `https://` URL.
+> **STILL BROKEN — measured live 2026-09-26, after the owner turned on
+> Cloudflare "Always Use HTTPS".** Fresh, cache-busted requests over plain
+> HTTP still answer `200` with the full page body:
 >
-> **This is a confounder for the 2026-10-21 read and must be held separate**,
-> exactly as the canonical fix was. The nine `http://` URLs should fall out of
-> the index over the weeks after this date. If `http://` impressions go to zero
-> by 2026-10-21, that is this change, not a ranking improvement. Search
-> Console's **HTTPS** report (left nav) tracks it directly.
+> ```
+> http://getopentools.com/security?cb=…   -> 200   (56,973 bytes, same etag as https)
+> http://getopentools.com/?cb=…           -> 200
+> http://getopentools.com/pdf/merge?cb=…  -> 200
+> ```
+>
+> **Owner: re-check that the setting saved, and allow time to propagate.**
+> Search Console's **HTTPS** report (left nav) tracks it independently.
+
+#### Why `proxy.ts` does not fix this, and could not
+
+`proxy.ts` has held a plaintext→HTTPS 301 since 2026-09-24 and it *does* run in
+production. Both facts are measured:
+
+```
+http://getopentools.com/guides/pdf-merge-pdf -> 301 https://…/guides/pdf-merge-pdf   (Worker ran)
+http://getopentools.com/security             -> 200                                  (Worker skipped)
+https://getopentools.com/guides/pdf-merge-pdf -> 301 https://…/pdf/merge             (Worker ran)
+```
+
+The difference is the static file. `scripts/prerender-to-assets.mjs` writes
+every public URL into `dist/client/` precisely so that "no page request renders
+anything" — and **a request a file answers never reaches the Worker**. Paths
+with no file (redirects like `/guides/pdf-merge-pdf`) do reach it and are
+protected; every real page does not.
+
+So the site's own static-first architecture is what disables `proxy.ts` for the
+pages that matter. The redirect half can only be fixed at the edge. The header
+half is fixed in `public/_headers`, below.
 
 Same category as the WAF rule named in `app/robots.ts`.
 
-Repo-side and secondary: `Strict-Transport-Security` is in `proxy.ts` but not
-in `public/_headers`, which that file's own header calls *"the only header
-source the Cloudflare deploy ships."* `lib/security/header-parity.test.ts`
-compares `_headers` against `next.config.ts` only, so a header living in
-`proxy.ts` alone sits outside the guard. Confirm against production response
-headers before changing anything.
+### 1b. HSTS was reaching nobody — confirmed and fixed
 
-### 2. Query-string URLs indexed
+Predicted from the source, then measured against production on 2026-09-26:
 
-`/file/workbench?tool=data-uri-file-extractor` and
-`/text/workbench?tool=paragraph-counter` both earn impressions. Confirm each
-carries a self-canonical to the bare workbench route.
+```
+curl -I https://getopentools.com/                            -> no Strict-Transport-Security
+curl -I https://getopentools.com/pdf/merge                   -> no Strict-Transport-Security
+curl -I https://getopentools.com/convert/kilograms-to-pounds -> no Strict-Transport-Security
+```
 
-### 3. 3,966 crawl requests spent on JavaScript (42.9%)
+`Strict-Transport-Security` was declared in `proxy.ts` alone, and by the
+mechanism above that meant it shipped to almost nobody. This is not cosmetic:
+`proxy.ts` records that `connect-src 'none'` is only as strong as the
+transport, because an attacker who can serve plaintext can strip the CSP. The
+zero-egress promise was resting on a header that was not being sent.
 
-Nearly half the crawl allocation fetches JS on a site that prerenders every URL
-to static HTML (`scripts/prerender-to-assets.mjs`). Some JS fetching is normal
-for Googlebot rendering; 42.9% against a narrow crawl frontier is worth one
-measurement. **Not investigated — do not act on this line until it is.**
+**Fixed on this branch**: added to `public/_headers` *and* `next.config.ts`, and
+`lib/security/header-parity.test.ts` gained a third check — every header in
+`proxy.ts`'s `responseHeaders` must appear in `public/_headers`, with the
+static-file reasoning written into the test. Verified the guard fails when the
+line is removed and passes when restored. **Ships on the next deploy.**
+
+### 2. ~~Query-string URLs indexed~~ — RESOLVED, not a fault
+
+Checked live 2026-09-26: `/text/workbench?tool=paragraph-counter` serves
+`<link rel="canonical" href="https://getopentools.com/text/workbench"/>`.
+Correct. No action.
+
+### 3. ~~3,966 crawl requests spent on JavaScript (42.9%)~~ — RULED OUT
+
+The hypothesis was that pages need JavaScript to show content, which would
+explain a narrow crawl frontier. **It is false.** `/convert/kilograms-to-pounds`
+fetched raw on 2026-09-26 carries **1,128 words of visible text with all
+script and style blocks stripped**, the correct `<title>`, and a correct
+self-canonical. Googlebot gets the whole page without executing anything.
+
+The JS fetching is ordinary Googlebot rendering behaviour, not a dependency.
+**Closed. Do not reopen without new evidence.**
+
+Also verified live the same day: `robots.txt` serves the expected rules, and
+`sitemap.xml` serves **1,464** URLs, matching `buildSitemap()` exactly.
 
 ### 4. 707 crawl requests spent on 404s (7.6%)
 
