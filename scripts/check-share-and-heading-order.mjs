@@ -162,27 +162,55 @@ function candidates(urlPath) {
 }
 
 /**
- * Every sitemap URL paired with the HTML the build produced for it.
+ * Every URL paired with the HTML the build produced for it.
  *
  * A URL with no file is not reported here. `scripts/verify-static-coverage.mjs`
  * already fails the build for that, and repeating it would report one fault as
  * three.
+ *
+ * WHICH URLS, AND WHY THE CALLER MAY CHOOSE. By default the served
+ * `sitemap.xml`, which is the right set for the build gate: those are the URLs
+ * this deploy asks a crawler to take, and shipping one without a share card is
+ * a release fault.
+ *
+ * It is the wrong set for the test suites that call this. Since 2026-09-25 the
+ * sitemap lists about a seventh of the live routes (`lib/seo/sitemap-focus.ts`),
+ * and a heading that skips a level or a missing `og:title` is a fault on any
+ * page a reader can open, listed or not. Those suites pass `urlPaths`
+ * explicitly, built from `buildSitemap(undefined, 'full')`, so their coverage
+ * is unchanged by which URLs the sitemap currently asks for. Without that,
+ * focusing the sitemap would have silently retired ~1,260 pages' worth of
+ * accessibility and share-card checking, which is a worse outcome than the
+ * crawl budget it buys.
+ *
+ * @param {string} [clientDir] the built client directory to read pages from
+ * @param {readonly string[]} [urlPaths] URL paths to sweep, instead of the
+ *   served sitemap's. The JSDoc is load-bearing: this file is `.mjs`, so
+ *   without it TypeScript infers the parameter's type from its `undefined`
+ *   default and rejects every real argument at the call site.
  */
-export function renderedPages(clientDir = CLIENT_DIR) {
-  const sitemap = path.join(clientDir, 'sitemap.xml');
-  if (!existsSync(sitemap)) return null;
-  return [...readFileSync(sitemap, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
-    .map((match) => new URL(match[1]).pathname)
-    .flatMap((urlPath) => {
-      const file = candidates(urlPath)
-        .map((candidate) => path.join(clientDir, candidate))
-        .find((candidate) => existsSync(candidate));
-      return file ? [{ urlPath, html: readFileSync(file, 'utf8') }] : [];
-    });
+export function renderedPages(
+  clientDir = CLIENT_DIR,
+  urlPaths = /** @type {readonly string[] | undefined} */ (undefined),
+) {
+  let paths = urlPaths;
+  if (paths === undefined) {
+    const sitemap = path.join(clientDir, 'sitemap.xml');
+    if (!existsSync(sitemap)) return null;
+    paths = [
+      ...readFileSync(sitemap, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g),
+    ].map((match) => new URL(match[1]).pathname);
+  }
+  return paths.flatMap((urlPath) => {
+    const file = candidates(urlPath)
+      .map((candidate) => path.join(clientDir, candidate))
+      .find((candidate) => existsSync(candidate));
+    return file ? [{ urlPath, html: readFileSync(file, 'utf8') }] : [];
+  });
 }
 
 /**
- * Every fault of all four classes, over every sitemap URL that has a file.
+ * Every fault of all four classes, over every URL that has a file.
  *
  * COSTS ~280MB, AND A PER-PAGE RULE MUST NOT CALL THIS. `renderedPages` returns
  * every page's markup in one array, because `duplicateOgTitles` is a population
@@ -197,9 +225,33 @@ export function renderedPages(clientDir = CLIENT_DIR) {
  * canonical rule and deliberately does NOT come through here: it reads one file,
  * checks it with `canonicalFault`, and drops it. Do the same for any new
  * per-page rule, and reach for this function only when you need the population.
+ *
+ * ON `urlPaths`, AND WHY IT DOES NOT CHANGE THAT COST. Since 2026-09-25 the
+ * served sitemap lists about a seventh of the live routes
+ * (`lib/seo/sitemap-focus.ts`). The default is still the sitemap, which is the
+ * right set for the build gate — those are the URLs this deploy asks a crawler
+ * to take, and shipping one without a share card is a release fault. The test
+ * suites pass the full list from `buildSitemap(undefined, 'full')` instead,
+ * because a skipped heading level or a missing `og:title` is a fault on any page
+ * a reader can open, listed or not; letting focus narrow them would have
+ * silently retired ~1,260 pages' worth of checking.
+ *
+ * So the population those suites load is the same ~1,464 it was before focus,
+ * and the 280MB above is unchanged rather than newly introduced — passing the
+ * focused sitemap would have made this function cheaper only by making it
+ * check almost nothing.
+ *
+ * @param {string} [clientDir] the built client directory to read pages from
+ * @param {readonly string[]} [urlPaths] URL paths to sweep, instead of the
+ *   served sitemap's. The cast on the default is load-bearing: this file is
+ *   `.mjs`, so without it TypeScript infers the parameter type from `undefined`
+ *   and rejects every real argument at the call site.
  */
-export function auditRenderedPages(clientDir = CLIENT_DIR) {
-  const pages = renderedPages(clientDir);
+export function auditRenderedPages(
+  clientDir = CLIENT_DIR,
+  urlPaths = /** @type {readonly string[] | undefined} */ (undefined),
+) {
+  const pages = renderedPages(clientDir, urlPaths);
   if (pages === null) return null;
   const faults = [];
   for (const { urlPath, html } of pages) {

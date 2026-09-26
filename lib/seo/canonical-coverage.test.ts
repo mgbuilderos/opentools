@@ -13,6 +13,7 @@ import path from 'node:path';
 
 import { auditRenderedPages } from '../../scripts/check-share-and-heading-order.mjs';
 import { canonicalFault } from '../../scripts/lib/site-checks.mjs';
+import { buildSitemap } from './sitemap-entries';
 
 /**
  * Every page must state its own canonical URL.
@@ -404,10 +405,22 @@ ${canonicalTags}
      * QC moves BUILD to the front when `dist/` is missing, so this is NOT a
      * test that quietly skips in CI: `dist/client` is there by the time UNIT
      * runs, and this assertion does execute. */
+    /* The full route list, not the served sitemap's.
+     *
+     * Since 2026-09-25 the sitemap lists about a seventh of the live routes
+     * (`lib/seo/sitemap-focus.ts`). A canonical that points at the wrong page
+     * is a fault on any page a reader can open, listed or not -- and an
+     * unlisted page is if anything the likelier place for one to go unnoticed,
+     * since nothing is asking a crawler to look at it. Reading the served
+     * sitemap here would have narrowed this sweep from ~1,464 pages to 203 the
+     * moment the sitemap was focused.
+     *
+     * `existsSync(sitemap)` above still gates the test on a build being
+     * present, which is the thing it was really checking for. */
     const origin = ['https:', '//', 'getopentools.com'].join('');
-    const routes = [
-      ...readFileSync(sitemap, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g),
-    ].map((match) => new URL(match[1]).pathname);
+    const routes = buildSitemap(undefined, 'full').map((entry) =>
+      String(entry.url).slice(origin.length),
+    );
     expect(routes.length).toBeGreaterThan(1000);
 
     const faults: string[] = [];

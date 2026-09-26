@@ -14,6 +14,7 @@ import {
   SHARE_CARD_HEIGHT,
   SHARE_CARD_WIDTH,
 } from './share-images';
+import { buildSitemap } from './sitemap-entries';
 
 /**
  * Every URL this site publishes ships a full share card.
@@ -99,6 +100,22 @@ function pngSize(file: string) {
   };
 }
 
+/**
+ * Every route the build could serve, as a path.
+ *
+ * `'full'`, not the shipped focus state. Since 2026-09-25 the served sitemap
+ * lists about a seventh of the live routes (`lib/seo/sitemap-focus.ts`), and
+ * this sweep is about pages a reader can open, not pages a crawler was asked
+ * to take. Reading the served sitemap here would have quietly retired ~1,260
+ * pages' worth of checking the moment the sitemap was focused.
+ */
+function sweepPaths(): string[] {
+  const origin = ['https:', '//', 'getopentools.com'].join('');
+  return buildSitemap(undefined, 'full').map((entry) =>
+    String(entry.url).slice(origin.length),
+  );
+}
+
 describe('share card coverage', () => {
   /**
    * The guard's own eyes. If `missingShareTags` ever stops matching what
@@ -177,7 +194,7 @@ describe('share card coverage', () => {
   it.skipIf(!existsSync(path.join(CLIENT_DIR, 'sitemap.xml')))(
     'ships og:title, og:description and og:image on every sitemap URL',
     () => {
-      const result = auditRenderedPages(CLIENT_DIR)!;
+      const result = auditRenderedPages(CLIENT_DIR, sweepPaths())!;
       expect(result.checked).toBeGreaterThan(1000);
       expect(
         result.faults.filter((fault) => fault.check === 'share-tags'),
@@ -297,7 +314,7 @@ describe('share card titles name their own page', () => {
   it.skipIf(!existsSync(path.join(CLIENT_DIR, 'sitemap.xml')))(
     'gives no two sitemap URLs the same og:title',
     () => {
-      const result = auditRenderedPages(CLIENT_DIR)!;
+      const result = auditRenderedPages(CLIENT_DIR, sweepPaths())!;
       expect(result.checked).toBeGreaterThan(1000);
       expect(
         result.faults

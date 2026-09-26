@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LIVE_TOOL_ROUTES } from './live-tools';
 import { buildSitemap } from './sitemap-entries';
+import { focusedToolRoutes } from './sitemap-focus';
 
 /**
  * Sweeps all live tool routes to prove nothing is blocking indexation.
@@ -52,7 +53,23 @@ function auditRoutes(): {
     description?: string;
   }[];
 } {
-  const sitemapUrls = new Set(buildSitemap().map((entry) => String(entry.url)));
+  /*
+    `'full'`, because of what the four other assertions in this file are for.
+
+    This sweep proves nothing is *blocking* indexation of a live tool route --
+    self-canonical, built, uniquely titled, honestly described. Those are
+    properties of a page a reader can reach, and every route in
+    `LIVE_TOOL_ROUTES` still answers 200 whether or not the sitemap currently
+    asks for it. Narrowing the sweep to the focused list would have quietly
+    stopped checking 1,261 pages that are still served.
+
+    Which routes the sitemap asks for is a separate question with its own file
+    and its own test (`sitemap-focus.test.ts`), and the assertion below keeps
+    the two honest about each other.
+  */
+  const sitemapUrls = new Set(
+    buildSitemap(undefined, 'full').map((entry) => String(entry.url)),
+  );
   const titleToRoutes = new Map<string, string[]>();
 
   const audits: RouteAudit[] = [];
@@ -193,12 +210,34 @@ describe('indexability sweep across all LIVE_TOOL_ROUTES', () => {
     expect(existsSync(CLIENT_DIR)).toBe(true);
   });
 
-  it('guarantees every live tool route is present in sitemap', () => {
+  it('guarantees every live tool route is listable in the sitemap', () => {
+    // Listable, not listed. See the note on `sitemapUrls` above: the shipped
+    // sitemap is a chosen subset, and a route that could never appear in it
+    // even with focus off is the bug this catches.
     const { missingSitemap } = auditRoutes();
     expect(
       missingSitemap,
       `Routes missing from sitemap (${missingSitemap.length}):\n${missingSitemap.join('\n')}`,
     ).toEqual([]);
+  });
+
+  it('lists exactly the focused tool routes, and no tool URL beyond them', () => {
+    /*
+      The other direction, and the one that matters after the 2026-09-25 focus
+      change: what the shipped sitemap actually asks for must be exactly the
+      set `sitemap-focus.ts` chose -- no route leaking back in from another
+      spread in `buildSitemap`, and none of the chosen ones quietly dropping
+      out. Board protocol 1.7 in sitemap form: a URL this loud must run a tool.
+    */
+    const liveUrl = (route: string) => `${CANONICAL_ORIGIN}${route}`;
+    const expected = new Set(focusedToolRoutes(LIVE_TOOL_ROUTES).map(liveUrl));
+    const live = new Set(LIVE_TOOL_ROUTES.map(liveUrl));
+    const listedTools = buildSitemap()
+      .map((entry) => String(entry.url))
+      .filter((url) => live.has(url));
+
+    expect(new Set(listedTools)).toEqual(expected);
+    expect(listedTools.length).toBe(expected.size);
   });
 
   it('guarantees every live tool route has a built static file in dist/client/', () => {
