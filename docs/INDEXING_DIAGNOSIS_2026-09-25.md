@@ -57,10 +57,43 @@ date; it is wrong to reason from.
 
 ### Links
 
-**Unknown.** The Links report reads "Processing data, please check again in a
-day or so" as of 2026-09-25. The claim that this site has no inbound links is
-**unverified** and was asserted too confidently in earlier versions of this
-file. Re-check.
+Search Console's Links report still reads "Processing data" on 2026-09-26, so
+the direct number is still unknown. Measured independently the same day:
+
+| Measure | Value | Source |
+| --- | --- | --- |
+| GitHub stars | **1** | GitHub API, `mgbuilderos/opentools` |
+| Forks / watchers | **0 / 1** | same |
+| Repository created | **2026-09-15** (11 days) | same |
+| Pages a web search can find linking to `getopentools.com` | **the repo and its own PRs** | web search, 2026-09-26 |
+
+Two searches — one on the site's own positioning, one on the domain name —
+returned no third-party page linking to `getopentools.com`. The inbound-link
+figure is therefore approximately zero, now on evidence rather than assertion.
+That is the expected state for an 11-day-old repository and it is consistent
+with 914 URLs sitting in "Discovered – currently not indexed".
+
+### The name is contested, which the brand queries already showed
+
+Searching this site's own positioning surfaces other projects, not this one:
+
+| Domain | What it is |
+| --- | --- |
+| `opentools.com` | "The API for LLM tool use" — established, holds the .com |
+| `theopentools.com` | **"Privacy-First Web Utilities"** — near-identical name *and* pitch |
+| `openbrowsertools.com` | "Private Browser Tools" |
+| `github.com/opentools` | a GitHub organisation of that name |
+| `@opentools_` | an X account |
+
+This is visible in the 2026-09-23 baseline and was not read at the time: the
+brand cluster — `opentools`, `open tools`, `open tool`, `opentools.fun` — took
+**6 impressions and 0 clicks**. Someone searching the brand is being shown
+somebody else. `opentools.fun` in that list is not even this domain.
+
+Recorded as a measurement, not a recommendation. A rename is an owner decision
+with costs this file is not positioned to weigh, and it is **not** the cause of
+the 914 — that is the link count above. But it caps what brand search can ever
+return, and it should be a known fact rather than a surprise later.
 
 ## The finding
 
