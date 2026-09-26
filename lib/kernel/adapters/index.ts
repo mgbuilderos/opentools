@@ -15,6 +15,7 @@ import { subtitleOperations } from './subtitle';
 import { textOperations } from './text';
 import { webOperations } from './web';
 import { writingOperations } from './writing';
+import { dicomOperations } from '../../formats/dicom/kernel';
 import { emailOperations } from '../../formats/email/kernel';
 import { financeOperations } from '../../formats/finance/kernel';
 import { geoOperations } from '../../formats/geo/kernel';
@@ -38,6 +39,7 @@ export const ALL_ADAPTER_OPERATIONS = [
   ...textOperations,
   ...webOperations,
   ...writingOperations,
+  ...dicomOperations,
   ...emailOperations,
   ...financeOperations,
   ...geoOperations,

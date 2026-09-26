@@ -22864,6 +22864,60 @@ export const KERNEL_MANIFEST = [
     streamable: false,
   },
   {
+    id: 'dicom-read-tags',
+    source: 'formats-dicom',
+    name: 'Read DICOM tags',
+    description:
+      'Read DICOM metadata and identify fields that require privacy review.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+    notice:
+      'Tag anonymisation does not remove identifying information burned into pixel data. Review pixels separately.',
+  },
+  {
+    id: 'dicom-anonymise-basic',
+    source: 'formats-dicom',
+    name: 'Anonymise DICOM tags',
+    description:
+      'Apply the Basic Application Level Confidentiality Profile to DICOM tags.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'dcm',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+    notice:
+      'Tag anonymisation does not remove identifying information burned into pixel data. Review pixels separately.',
+  },
+  {
+    id: 'dicom-extract-pixels',
+    source: 'formats-dicom',
+    name: 'Extract DICOM pixels',
+    description:
+      'Extract uncompressed or RLE Lossless DICOM pixel bytes without interpretation.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'raw',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+    notice:
+      'Raw pixel extraction performs no diagnostic interpretation, windowing, or measurement.',
+  },
+  {
     id: 'email-parse-eml',
     source: 'formats-email',
     name: 'Parse EML',
