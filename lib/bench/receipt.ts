@@ -1,6 +1,24 @@
 import type { BatchOutcome } from '@/lib/batch/run';
 import type { KernelOperation } from '@/lib/kernel/types';
+import type { PipelineTrace } from '@/lib/pipeline/types';
 import type { BenchInput, BenchOutput } from './run';
+
+/**
+ * What a step actually did, totalled over every input that reached it.
+ *
+ * The rest of a receipt's step list is the run's *intent* — which operations
+ * were asked for, with which settings. This is the only part measured while
+ * they ran, and it is where a chain stops being a claim: `inputs` falling off
+ * between one step and the next is exactly how many files the step before it
+ * lost, and bytes in against bytes out is whether a compress step compressed.
+ */
+export interface ReceiptStepMeasurement {
+  inputs: number;
+  failed: number;
+  bytesIn: number;
+  bytesOut: number;
+  ms: number;
+}
 
 export interface BenchReceipt {
   generatedAt: string;
@@ -11,6 +29,8 @@ export interface BenchReceipt {
     source: string;
     name: string;
     params: Readonly<Record<string, string>>;
+    /** Absent when the run recorded no trace, e.g. a single-operation run. */
+    measured?: ReceiptStepMeasurement;
   }[];
   counts: {
     inputs: number;
@@ -35,12 +55,35 @@ export interface BuildReceiptArgs {
     operation: Pick<KernelOperation, 'id' | 'source' | 'name' | 'params'>;
     params: Readonly<Record<string, string>>;
   }[];
+  /** One per input the pipeline ran, failures included. */
+  traces?: readonly PipelineTrace[];
 }
 
 type UnsuccessfulOutcome = Extract<
   BuildReceiptArgs['outcomes'][number],
   { status: 'failed' | 'skipped' }
 >;
+
+/** Totals for one step, over the traces of every input that reached it. */
+function measure(
+  traces: readonly PipelineTrace[],
+  stepNumber: number,
+): ReceiptStepMeasurement | undefined {
+  const entries = traces.flatMap((trace) =>
+    trace.steps.filter((step) => step.step === stepNumber),
+  );
+  if (!entries.length) return undefined;
+  return {
+    inputs: entries.length,
+    failed: entries.filter((entry) => entry.status === 'failed').length,
+    bytesIn: entries.reduce((total, entry) => total + entry.inputBytes, 0),
+    bytesOut: entries.reduce(
+      (total, entry) => total + (entry.outputBytes ?? 0),
+      0,
+    ),
+    ms: Math.round(entries.reduce((total, entry) => total + entry.ms, 0)),
+  };
+}
 
 function serialisableParams(
   operation: BuildReceiptArgs['operation'],
@@ -77,12 +120,16 @@ export function buildReceipt(args: BuildReceiptArgs): BenchReceipt {
     params: serialisableParams(args.operation, args.params),
     ...(args.steps
       ? {
-          steps: args.steps.map((step) => ({
-            op: step.operation.id,
-            source: step.operation.source,
-            name: step.operation.name,
-            params: serialisableParams(step.operation, step.params),
-          })),
+          steps: args.steps.map((step, index) => {
+            const measured = measure(args.traces ?? [], index + 1);
+            return {
+              op: step.operation.id,
+              source: step.operation.source,
+              name: step.operation.name,
+              params: serialisableParams(step.operation, step.params),
+              ...(measured ? { measured } : {}),
+            };
+          }),
         }
       : {}),
     counts: {
@@ -144,6 +191,12 @@ export function receiptToText(receipt: BenchReceipt): string {
       lines.push(`${index + 1}. ${step.name} (${step.op} @ ${step.source})`);
       for (const [id, value] of Object.entries(step.params))
         lines.push(`   - ${id}: ${value}`);
+      if (step.measured) {
+        const { inputs, failed, bytesIn, bytesOut, ms } = step.measured;
+        lines.push(
+          `   - measured: ${inputs} reached, ${failed} failed, ${bytesIn} bytes in, ${bytesOut} bytes out, ${ms} ms`,
+        );
+      }
     }
   }
 

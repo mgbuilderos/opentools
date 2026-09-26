@@ -1,6 +1,30 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { extractEntry, readZip } from '@/lib/tools/archive/zip-reader';
+
+/**
+ * Choose one pipeline step, waiting for the picker to actually offer it.
+ *
+ * The search box is server-rendered, so `fill` can land before React has
+ * hydrated its change handler: the text appears, `setQuery` never fires, and
+ * the option list stays unfiltered. `selectOption` then spends its whole
+ * timeout reporting "did not find some options". WebKit lost that race on
+ * 2026-09-26 while Chromium won it, which is exactly the shape of bug a
+ * one-browser gate cannot see. Retrying the fill until the option appears
+ * waits for the state the test needs rather than for a fixed number of
+ * milliseconds.
+ */
+async function pickStep(page: Page, query: string, value: string) {
+  const search = page.getByLabel('Search operations that can come next');
+  const picker = page.getByLabel('Operation for this step');
+  await expect(async () => {
+    await search.fill(query);
+    await expect(picker.locator(`option[value="${value}"]`)).toBeAttached({
+      timeout: 1_000,
+    });
+  }).toPass({ timeout: 15_000 });
+  await picker.selectOption(value);
+}
 
 test.describe('The Bench', () => {
   test('is discoverable from the home page and opens from search', async ({
@@ -109,22 +133,12 @@ test.describe('The Bench', () => {
 
     // Each step is chosen inside the editor, from the operations that can
     // take what the step before it produces.
-    await page
-      .getByLabel('Search operations that can come next')
-      .fill('word counter');
-    await page
-      .getByLabel('Operation for this step')
-      .selectOption('text:word-counter');
+    await pickStep(page, 'word counter', 'text:word-counter');
     await page
       .getByRole('button', { name: 'Add Word counter', exact: true })
       .click();
 
-    await page
-      .getByLabel('Search operations that can come next')
-      .fill('text reverser');
-    await page
-      .getByLabel('Operation for this step')
-      .selectOption('text:text-reverser');
+    await pickStep(page, 'text reverser', 'text:text-reverser');
     await page
       .getByRole('button', { name: 'Add Text reverser', exact: true })
       .click();
@@ -167,22 +181,12 @@ test.describe('The Bench', () => {
   }) => {
     await page.goto('/batch');
 
-    await page
-      .getByLabel('Search operations that can come next')
-      .fill('word counter');
-    await page
-      .getByLabel('Operation for this step')
-      .selectOption('text:word-counter');
+    await pickStep(page, 'word counter', 'text:word-counter');
     await page
       .getByRole('button', { name: 'Add Word counter', exact: true })
       .click();
 
-    await page
-      .getByLabel('Search operations that can come next')
-      .fill('text reverser');
-    await page
-      .getByLabel('Operation for this step')
-      .selectOption('text:text-reverser');
+    await pickStep(page, 'text reverser', 'text:text-reverser');
     await page
       .getByRole('button', { name: 'Add Text reverser', exact: true })
       .click();

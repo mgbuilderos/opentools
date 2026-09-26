@@ -154,3 +154,118 @@ describe('runPipeline', () => {
     );
   });
 });
+
+describe('runPipeline runs on the streaming executor', () => {
+  /**
+   * The reason the bench delegates to `executePipeline` at all. Before it did,
+   * a `streamable` operation still got its whole input buffered, on the page
+   * whose offer is a folder of four thousand files.
+   */
+  function streamingOperation(): KernelOperation & { seen: string[] } {
+    const seen: string[] = [];
+    return {
+      id: 'streamer',
+      source: 'test',
+      name: 'Streaming step',
+      description: 'Streaming step',
+      input: 'file',
+      params: [],
+      output: { kind: 'files', extension: 'bin' },
+      runtime: 'pure',
+      deterministic: true,
+      streamable: true,
+      seen,
+      async run(context) {
+        // A streamable operation is handed streams and no buffered files.
+        seen.push(
+          `streams=${context.streams?.length ?? 0} files=${context.files.length}`,
+        );
+        const stream = context.streams![0]!;
+        const chunks: Uint8Array[] = [];
+        const reader = stream.stream(context.signal).getReader();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+        }
+        const total = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+        const bytes = new Uint8Array(total);
+        let offset = 0;
+        for (const chunk of chunks) {
+          bytes.set(chunk, offset);
+          offset += chunk.byteLength;
+        }
+        return {
+          kind: 'files',
+          files: [
+            { name: stream.name, type: 'application/octet-stream', bytes },
+          ],
+          summary: `${total} bytes streamed`,
+        };
+      },
+    };
+  }
+
+  it('hands a streamable step streams rather than buffered files', async () => {
+    const operation = streamingOperation();
+    const resolve = (id: string, source: string) =>
+      id === operation.id && source === 'test' ? operation : undefined;
+    const pipeline: Pipeline = {
+      version: 1,
+      name: 'Streaming pipeline',
+      steps: [{ op: 'streamer', source: 'test', params: {} }],
+    };
+
+    const outcomes = await runPipeline({
+      inputs: [input('alpha.bin', 'hello world')],
+      pipeline,
+      template,
+      signal: new AbortController().signal,
+      resolveOperation: resolve,
+    });
+
+    expect(outcomes[0]!.status).toBe('done');
+    expect(operation.seen).toEqual(['streams=1 files=0']);
+  });
+
+  it('reports a per-step trace for every input, failures included', async () => {
+    const operations = [
+      fakeTextOperation('one', 'First step', (text) => `${text}|one`),
+      fakeTextOperation('two', 'Second step', (text) => {
+        if (text.startsWith('bad')) throw new Error('deliberate failure');
+        return `${text}|two`;
+      }),
+    ];
+    const resolve = (id: string, source: string) =>
+      source === 'test' ? operations.find((item) => item.id === id) : undefined;
+    const pipeline: Pipeline = {
+      version: 1,
+      name: 'Traced pipeline',
+      steps: [
+        { op: 'one', source: 'test', params: {} },
+        { op: 'two', source: 'test', params: {} },
+      ],
+    };
+
+    const traces: { steps: readonly { step: number; status: string }[] }[] = [];
+    await runPipeline({
+      inputs: [input('good.txt', 'good'), input('bad.txt', 'bad')],
+      pipeline,
+      template,
+      signal: new AbortController().signal,
+      resolveOperation: resolve,
+      onTrace: (trace) => traces.push(trace),
+    });
+
+    expect(traces).toHaveLength(2);
+    expect(traces[0]!.steps.map((step) => step.status)).toEqual([
+      'done',
+      'done',
+    ]);
+    // The failing input still reports what it managed before it stopped.
+    expect(traces[1]!.steps.map((step) => step.status)).toEqual([
+      'done',
+      'failed',
+    ]);
+  });
+});
