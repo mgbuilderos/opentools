@@ -26,6 +26,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'archive-toolkit',
       },
       {
+        id: 'email-reader',
+        name: 'Offline email reader',
+        description:
+          'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
+        href: '/email/reader',
+        workspaceId: 'email-reader',
+      },
+      {
         id: 'file-workbench:file-compressor',
         name: 'Gzip file compressor',
         description:
@@ -272,7 +280,7 @@ export const SECTIONS: readonly BrowseSection[] = [
         name: 'The Bench',
         description:
           'Run any of 631 operations over a whole folder, on this machine.',
-        href: '/bench',
+        href: '/batch',
         workspaceId: 'bench',
       },
     ],

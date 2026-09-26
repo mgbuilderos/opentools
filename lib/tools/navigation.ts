@@ -131,8 +131,14 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'files',
     name: 'Files & archives',
     shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
-    destinationCount: 34,
-    toolIds: ['file-hash', 'archive-toolkit', 'file-workbench', 'bench'],
+    destinationCount: 35,
+    toolIds: [
+      'file-hash',
+      'archive-toolkit',
+      'email-reader',
+      'file-workbench',
+      'bench',
+    ],
   },
   {
     id: 'text-data',
@@ -201,8 +207,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'finance',
     name: 'Finance & business',
     shortDescription: 'Loans, tax, invoices, margins, and business maths.',
-    destinationCount: 56,
-    toolIds: ['finance-business-workbench'],
+    destinationCount: 57,
+    toolIds: ['finance-business-workbench', 'ofx-qif-converter'],
   },
   {
     id: 'science',

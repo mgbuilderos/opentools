@@ -21,6 +21,11 @@ export interface ToolMeta {
 }
 
 export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
+  'ofx-qif-converter': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert OFX and QIF bank statements to CSV or Excel with transaction preview and balance reconciliation.',
+  },
   'latex-hub': {
     version: '0.1.0-canary',
     shortDescription:
@@ -65,6 +70,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     version: '0.1.0-canary',
     shortDescription:
       'Run any of 631 operations over a whole folder, on this machine.',
+  },
+  'email-reader': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
   },
   'aadhaar-pan-masker': {
     version: '0.1.0-canary',
