@@ -13,6 +13,58 @@ name.
 
 The dates are release dates in UTC.
 
+## 0.2.0 — 2026-09-26
+
+Everything merged since `v0.1.0` — 203 commits. The two that matter most if you
+run this yourself are the access gate and the prerendering.
+
+**The instance can be locked now.** 0.1.0 had no authentication of any kind;
+anyone who could reach the port got the whole site. Set `OPENTOOLS_AUTH_USER`
+and `OPENTOOLS_AUTH_PASSWORD` and the container asks for them before serving
+anything. `docker/start.sh` forwards both to Wrangler as `--var`, and
+`proxy.ts` checks them through `lib/security/self-host-auth.ts` before anything
+else runs — so a refused request never reaches the visit log either. Still off
+by default, and still no TLS: put it behind your reverse proxy.
+
+**Pages are prerendered.** In 0.1.0 every page rendered in the Worker on every
+request, which on the heaviest pages exceeded the CPU budget and returned 503.
+The build now emits static HTML for the whole route set and ships edge caching
+for HTML and immutable assets, so a cold request serves a file instead of
+running a render. Responses also carry
+`Strict-Transport-Security: max-age=31536000; includeSubDomains`.
+
+**New work the tools can do.** Five format families that did not exist in
+0.1.0 — finance, email, DICOM, geographic, and encrypted PDF. The
+self-imposed file size and count caps are gone; what you can process is now
+bounded by your own machine rather than by a number chosen in advance.
+
+**New ways in.** `/batch` runs a whole folder through a pipeline. Paste works
+on every page rather than only the home-page box. The manifest declares a share
+target and a file handler, so an installed copy can receive files from the
+share sheet and be opened from the file manager. Every result now prints what
+left the page beside it — which for this site is nothing, and the point is that
+you can see it rather than be told.
+
+**New pages.** `/self-host` states the case for running it inside your own
+building, and `/proof` shows the offline demonstration next to the devtools
+one.
+
+**Also.** `npm run portable` produces a copy of the site you can keep and open
+without a server. `llms.txt` now says what each tool does rather than which
+category it sits in.
+
+**Fixed.** Canonical tags are checked in the prerendered HTML before the
+deploy, rather than after. Four pages that attributed prices to companies this
+project never measured no longer do. Bank statement imports report a missing
+opening balance instead of silently assuming zero.
+
+**Unchanged, and worth repeating.** No TLS. Single process, no clustering. The
+page cache lives inside the container and starts empty after a restart unless
+you mount a volume at `OPENTOOLS_STATE_DIR`. It still runs under
+`--network none` with everything working, and the pages are still served
+`connect-src 'none'`. The image grows as pages are added, so take its size from
+`docs/SELF_HOSTING.md` rather than from a number quoted here.
+
 ## 0.1.0 — 2026-09-18
 
 The first tagged release, and the first version of OpenTools you can pin, pull
