@@ -390,7 +390,7 @@ The objective requirements, checked:
 
 | Requirement | Status |
 | :--- | :--- |
-| First release > 4 months old | **FAILS until 2026-01-18** — `v0.1.0` was tagged 2026-09-18 |
+| First release > 4 months old | **FAILS until 2027-01-18** — `v0.1.0` was tagged 2026-09-18 |
 | Actively maintained | Passes |
 | Working installation instructions | Passes (`Dockerfile`, `docs/SELF_HOSTING.md`, `/self-host`) |
 | Not already listed | Passes |
@@ -405,7 +405,7 @@ earliest honest submission date is **18 January 2027**.
 That also unblocks a whole channel this kit does not cover: the app catalogues
 that ship with home and small-office servers, which have no waiting period and
 take a template file rather than a written pitch. `docs/APP_CATALOGUES.md` has
-the three that are submittable today, with the artifacts in `packaging/`.
+the five that are submittable today, with the artifacts in `packaging/`.
 
 **Both steps below were done on 2026-09-18 and are kept for the next release,
 not as a to-do.** Tagging is what starts the four-month clock, so it is worth
