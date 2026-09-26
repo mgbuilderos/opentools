@@ -421,6 +421,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Fill interactive PDF form fields and flatten widgets locally.',
   },
+  'bank-statement': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Convert bank statement PDFs to Excel and CSV with balance reconciliation.',
+  },
 };
 
 /** Throws on an unknown id, the same way the `.find(...)!` it replaces would. */

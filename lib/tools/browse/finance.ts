@@ -456,6 +456,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/finance/ofx-qif',
         workspaceId: 'ofx-qif-converter',
       },
+      {
+        id: 'bank-statement',
+        name: 'Bank statement converter',
+        description:
+          'Convert bank statement PDFs to Excel and CSV with balance reconciliation.',
+        href: '/finance/bank-statement',
+        workspaceId: 'bank-statement',
+      },
     ],
   },
 ];

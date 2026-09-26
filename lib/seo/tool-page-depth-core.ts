@@ -1330,4 +1330,90 @@ export const PAGE_DEPTH_CORE: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  '/finance/bank-statement': {
+    title: 'Bank Statement to Excel & CSV — Private Converter',
+    description:
+      'Convert PDF bank statements to Excel (XLSX) and CSV with automatic table extraction, number formatting, and running balance reconciliation. 100% private.',
+    heading: 'About this bank statement converter',
+    directAnswer:
+      'To convert a bank statement PDF to Excel or CSV: upload or drag your statement file into the converter, review the extracted table preview and detected number formatting conventions, inspect the automatic running balance reconciliation report, and click Export Excel (.xlsx) or Export CSV. All computations run 100% inside your browser memory with zero server uploads.',
+    lead: 'Bank and credit card statements are among the most sensitive personal and commercial documents individuals and businesses handle. Standard online converters require uploading raw account numbers, transaction histories, employer payroll records, and vendor payments to unknown third-party cloud servers. This tool executes the entire table extraction, coordinate parsing, date resolution, and running balance reconciliation directly in your local browser tab. Whether your statement uses standard US decimal formatting, European comma decimals, or Indian Lakh and Crore notation, the engine extracts structured tabular data and validates the mathematical consistency of opening balances, debits, credits, and closing balances before export.',
+    steps: [
+      {
+        name: 'Upload your statement PDF',
+        text: 'Select or drag your PDF bank statement into the dropzone. The document is parsed in memory to extract text glyph coordinates, detect ruled or unruled gridlines, and construct structured transaction columns without transmitting any data over the internet.',
+      },
+      {
+        name: 'Review detected conventions & columns',
+        text: 'The engine automatically detects the monetary grouping format (such as US standard 1,234.56, European 1.234,56, or Indian Lakh 1,23,456.78) and identifies date formatting conventions. Columns for transaction dates, narratives, withdrawals, deposits, and balances are organized into a clear interactive preview.',
+      },
+      {
+        name: 'Verify running balance reconciliation',
+        text: 'The mathematical reconciliation engine checks that each transaction debit and credit correctly balances against the preceding and succeeding running balance. A green confirmation badge indicates mathematical verification, while any layout discrepancy or missed transaction triggers an alert with exact row numbers.',
+      },
+      {
+        name: 'Export to Excel or CSV',
+        text: 'Click Export Excel (.xlsx) to download a formatted spreadsheet ready for accounting software, spreadsheet analysis, or tax filings, or click Export CSV for universal database and bookkeeping system compatibility.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Global Number and Currency Format Detection',
+        body: [
+          'Financial institutions across different countries format monetary transactions and dates with widely varying conventions. This parser accommodates US/UK standards with comma thousand separators, European formats utilizing decimal commas and period thousand separators, and Indian numbering systems based on Lakhs and Crores (1,23,456.78).',
+          'Negative values indicated by leading minus signs, trailing minus signs, bracketed bookkeeping enclosures (1,234.56), or trailing DR and CR accounting notation are normalized into consistent numerical values, ensuring formulas in your downloaded spreadsheet compute correctly.',
+        ],
+      },
+      {
+        heading: 'Running Balance Verification and Integrity Guarantees',
+        body: [
+          'Extracting tables from complex multi-page PDF statements frequently suffers from line wrapping errors, merged transaction descriptions, or missed row items in traditional tools. A silently incorrect financial export can cause serious errors in accounting and tax preparation.',
+          'To guarantee integrity, this converter performs row-by-row mathematical reconciliation: verifying that opening balance plus total credits minus total debits exactly equals the closing balance across both downward and upward chronological orders. If a discrepancy exists, the tool alerts you immediately before you export.',
+        ],
+      },
+      {
+        heading: 'Zero Data Egress & Absolute Financial Privacy',
+        body: [
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+          LOCAL_EXECUTION_ENGINE,
+          'Your bank name, account balances, payee names, salary details, and transaction amounts never enter a telemetry payload, server log, or external database. When the browser tab closes, all parsed data is erased from local memory.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which bank and card statement layouts are supported?',
+        answer:
+          'The parser handles statements from major global and national banks including Chase, Bank of America, Wells Fargo, Barclays, HSBC, Deutsche Bank, HDFC, ICICI, SBI, and credit card issuers. It supports single-column signed amounts as well as separate Debit and Credit column structures across multi-page files.',
+      },
+      {
+        question: 'How does running balance reconciliation work?',
+        answer:
+          'The reconciliation engine checks the running balance column against individual debits and credits across successive rows in both chronological directions. If opening balance plus credits minus debits equals the closing balance with zero mismatched rows, the statement is verified. If any row fails to balance, the exact row index and delta error are displayed.',
+      },
+      {
+        question: 'Can this tool process scanned or photographed statements?',
+        answer:
+          'This tool requires a digital PDF with an embedded text layer. If a scanned or image-only PDF without selectable text is uploaded, the tool refuses the file by name, explains that scanned documents lack readable coordinate layers, and advises running OCR on the document before converting.',
+      },
+      {
+        question: 'How are multi-line transaction descriptions handled?',
+        answer:
+          'Many bank statements wrap long vendor details, wire transfer references, or billing codes across multiple visual lines. The engine groups continuation lines using font metrics and baseline tolerances into a single cohesive description cell, preventing fragmented rows.',
+      },
+      {
+        question:
+          'Is my financial data uploaded to any server or shared with third parties?',
+        answer:
+          'No. The converter operates entirely inside your local browser under a strict Content Security Policy (connect-src none). No bank names, transaction amounts, account numbers, or document bytes are transmitted across the internet.',
+      },
+      {
+        question:
+          'Is there a limit on file size or the number of statement pages?',
+        answer:
+          'You can convert statement PDFs up to 100 MB containing dozens of pages and thousands of transactions. All extraction and Excel workbook compilation run in local memory without artificial page caps or paywalls.',
+      },
+    ],
+  },
 };
