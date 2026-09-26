@@ -15,7 +15,14 @@
 /** Appears in every probe filename and nowhere else in the codebase. */
 export const PROBE_TOKEN = 'egressweep-4c1d8e';
 
-export type ProbeKind = 'png' | 'pdf' | 'wav' | 'webm' | 'text' | 'csv' | 'none';
+export type ProbeKind =
+  | 'png'
+  | 'pdf'
+  | 'wav'
+  | 'webm'
+  | 'text'
+  | 'csv'
+  | 'none';
 
 /**
  * Which probe a route section can accept.
@@ -50,7 +57,16 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
   latex: 'text',
   math: 'none',
   date: 'none',
-  bench: 'none',
+  /*
+    The folder runner. Load-only here, and covered with real files by
+    `bench.spec.ts`, which watches its egress while running a two-step pipeline.
+
+    The key said `bench` until now, and `/bench` became `/batch` some time ago --
+    so the section was undeclared, fell back to 'none' by accident rather than by
+    decision, and the test that exists to catch exactly that had been failing ever
+    since. Same rename, same casualty as the heading in `bench.spec.ts`.
+  */
+  batch: 'none',
 };
 
 /**
@@ -60,7 +76,10 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
  * is a fact about the route, not a failure. Several workbench routes take typed
  * text rather than a file.
  */
-export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: string) => {
+export const HAND_PROBE_TO_PAGE = (
+  kind: Exclude<ProbeKind, 'none'>,
+  token: string,
+) => {
   const extensionFor: Record<string, string> = {
     text: 'txt',
     webm: 'webm',
@@ -145,11 +164,7 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
     canvas.width = 160;
     canvas.height = 120;
     const context = canvas.getContext('2d')!;
-    const candidates = [
-      'video/mp4',
-      'video/webm;codecs=vp8',
-      'video/webm',
-    ];
+    const candidates = ['video/mp4', 'video/webm;codecs=vp8', 'video/webm'];
     const type =
       candidates.find((candidate) =>
         typeof MediaRecorder !== 'undefined' &&
