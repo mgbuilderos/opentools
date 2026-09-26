@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { isLocalizedRoute, languageAlternates } from '../i18n/routes';
 import { PAGE_DEPTH_CORE } from './tool-page-depth-core';
 import { PAGE_DEPTH_IMAGE } from './tool-page-depth-image';
 import { PAGE_DEPTH_PDF } from './tool-page-depth-pdf';
@@ -88,9 +89,21 @@ export function toolPageMetadata(route: string): Metadata {
   if (!depth) {
     throw new Error(`No tool page depth content is registered for ${route}`);
   }
+  /*
+    An English page that has translations must name them, and name itself, or
+    the cluster is one-way and Google ignores it. `languageAlternates` emits
+    `en`, `x-default` and all eight locales; the localised pages emit the same
+    map, which is what makes the annotation reciprocal. Routes with no
+    translation are untouched and keep exactly the metadata they had.
+  */
   return {
     title: depth.title,
     description: depth.description,
-    alternates: { canonical: `${CANONICAL_ORIGIN}${route}` },
+    alternates: {
+      canonical: `${CANONICAL_ORIGIN}${route}`,
+      ...(isLocalizedRoute(route)
+        ? { languages: languageAlternates(route) }
+        : {}),
+    },
   };
 }

@@ -34,6 +34,7 @@ import {
 import { buildLlmsFullTxt, buildLlmsTxt } from './llms-text';
 import { removedToolRedirect } from './removed-tool-redirects';
 import { siteRedirect } from './site-redirects';
+import { localizedSitemapRoutes } from '../i18n/routes';
 import { buildSitemap } from './sitemap-entries';
 import { TOOL_CATALOG } from './tool-catalog-data';
 
@@ -220,8 +221,25 @@ describe('guide consolidation off is the previous behaviour', () => {
   const withoutLastmod = (entries: MetadataRoute.Sitemap) =>
     entries.map(({ lastModified: _lastModified, ...rest }) => rest);
 
+  /**
+   * The localised editions are not part of the question this file asks.
+   *
+   * `previousSitemap()` above is deliberately "sitemap.ts exactly as it read
+   * at d032150". Extending it to carry a route family added afterwards would
+   * destroy the only thing a control is for, and the question here is whether
+   * guide consolidation moved, dropped or reordered an entry -- which the 48
+   * translated URLs have nothing to do with. So they are removed from the
+   * shipped side instead. That they are all present is asserted by
+   * `lib/i18n/i18n.test.ts`, which is where that claim belongs.
+   */
+  const LOCALIZED_URLS = new Set(
+    localizedSitemapRoutes().map((route) => `${origin}${route}`),
+  );
+  const withoutLocalized = (entries: MetadataRoute.Sitemap) =>
+    entries.filter((entry) => !LOCALIZED_URLS.has(String(entry.url)));
+
   it('produces the same sitemap, entry for entry and in the same order', () => {
-    expect(withoutLastmod(buildSitemap(OFF))).toEqual(
+    expect(withoutLastmod(withoutLocalized(buildSitemap(OFF)))).toEqual(
       withoutLastmod(previousSitemap()),
     );
   });
@@ -238,7 +256,7 @@ describe('guide consolidation off is the previous behaviour', () => {
         (path) => `${origin}${path}`,
       ),
     );
-    expect(withoutLastmod(buildSitemap())).toEqual(
+    expect(withoutLastmod(withoutLocalized(buildSitemap()))).toEqual(
       withoutLastmod(
         previousSitemap().filter((entry) => !consolidated.has(entry.url)),
       ),
@@ -246,9 +264,9 @@ describe('guide consolidation off is the previous behaviour', () => {
     expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
       kept.size,
     );
-    expect(previousSitemap().length - buildSitemap().length).toBe(
-      consolidated.size,
-    );
+    expect(
+      previousSitemap().length - withoutLocalized(buildSitemap()).length,
+    ).toBe(consolidated.size);
   });
 
   it('publishes every live guide and redirects none', () => {

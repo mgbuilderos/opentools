@@ -41,6 +41,8 @@ import {
   showInstallDialog,
   subscribeInstall,
 } from '@/lib/pwa-install';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { useLocaleEdition } from '@/components/locale-edition-provider';
 import { PageDepthContent } from '@/components/page-depth-content';
 import { usePageDepth } from '@/components/page-depth-provider';
 import { MilestoneModal } from './milestone-modal';
@@ -85,6 +87,8 @@ export function AppShell({
    * See `components/page-depth-provider.tsx` for why it arrives this way.
    */
   const toolDepth = usePageDepth();
+  /** Non-null only on a localised edition; see locale-edition-provider.tsx. */
+  const localeEdition = useLocaleEdition();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -774,6 +778,16 @@ export function AppShell({
       >
         {children}
         {toolDepth ? <PageDepthContent content={toolDepth} /> : null}
+        {localeEdition ? (
+          <div className="mx-auto w-full max-w-3xl px-4 pb-10">
+            <LanguageSwitcher
+              currentCode={localeEdition.localeCode}
+              route={localeEdition.route}
+              label={localeEdition.label}
+              englishLabel={localeEdition.englishLabel}
+            />
+          </div>
+        ) : null}
       </main>
 
       <MilestoneModal />

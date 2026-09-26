@@ -95,6 +95,13 @@ const CANONICAL_HELPERS: ReadonlyArray<
   // helper, which is the point: one place states the canonical, so it cannot
   // be right on eighteen pages and missing on the nineteenth.
   ['categoryHubMetadata', 'lib/seo/category-hub-metadata.ts'],
+  // The localised editions. `app/[locale]/**` states no canonical of its own
+  // for the same reason the category hubs do not: one helper builds the
+  // self-canonical AND the `hreflang` cluster together, because a translated
+  // page that self-canonicalises without naming its siblings is a page Google
+  // reads as a duplicate of nothing.
+  ['localizedToolMetadata', 'lib/i18n/routes.ts'],
+  ['localizedHubMetadata', 'lib/i18n/routes.ts'],
 ];
 
 function declaresIn(file: string): boolean {
