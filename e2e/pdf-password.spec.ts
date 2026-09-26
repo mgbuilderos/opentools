@@ -46,7 +46,7 @@ test.describe('pdf password tool', () => {
     await page.goto(ROUTE);
     await page.waitForLoadState('networkidle');
 
-    await page.evaluate((data) => {
+    await page.evaluate(async (data) => {
       const binary = atob(data);
       const bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
@@ -59,7 +59,7 @@ test.describe('pdf password tool', () => {
       if (!input) throw new Error('no file input on the password tool');
       input.files = transfer.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));
-    }, readFileSync(FIXTURE).toString('base64'));
+    }, readFileSync(FIXTURE, 'base64'));
 
     // The tool reads the encryption dictionary before asking for anything.
     await expect(page.getByText(/AES-256/i).first()).toBeVisible({
