@@ -112,18 +112,33 @@ comment states why that is insufficient: browsers must ignore HSTS over plain
 HTTP (RFC 6797 §7.2), so the fix is *"the edge's 'Always Use HTTPS' redirect,
 which is a zone setting and not in this repo."*
 
-> **STILL BROKEN — measured live 2026-09-26, after the owner turned on
-> Cloudflare "Always Use HTTPS".** Fresh, cache-busted requests over plain
-> HTTP still answer `200` with the full page body:
+> **FIXED and verified live, 2026-09-26.** The setting had **not** been on:
+> the Cloudflare toggle read off when the owner opened the page, despite an
+> earlier belief that it had been switched. Turned on, then measured:
 >
 > ```
-> http://getopentools.com/security?cb=…   -> 200   (56,973 bytes, same etag as https)
-> http://getopentools.com/?cb=…           -> 200
-> http://getopentools.com/pdf/merge?cb=…  -> 200
+> http://getopentools.com/security  -> 301 https://getopentools.com/security
+> http://getopentools.com/          -> 301 https://getopentools.com/
+> http://getopentools.com/pdf/merge -> 301 https://getopentools.com/pdf/merge
 > ```
 >
-> **Owner: re-check that the setting saved, and allow time to propagate.**
-> Search Console's **HTTPS** report (left nav) tracks it independently.
+> All nine previously-indexed `http://` URLs now 301, each resolving `200` in
+> one hop (two for the consolidated guides, which then 301 again to their tool
+> page — correct). **No redirect loop**, which was the documented risk of
+> enabling this while the origin also redirects. Verified afterwards that
+> `/`, `/pdf/merge`, `/convert/kilograms-to-pounds`, `/sitemap.xml` and
+> `/robots.txt` all still answer 200, and the guide consolidation chain still
+> lands on `/pdf/merge` in one hop.
+>
+> **This is a confounder for the 2026-10-21 read.** The nine `http://` URLs
+> should leave the index over the following weeks. If `http://` impressions go
+> to zero, that is this switch, not a ranking improvement. Search Console's
+> **HTTPS** report tracks it directly.
+>
+> Worth recording as process rather than as trivia: this was reported as done
+> on 2026-09-25 and was not, and only a live request caught it. Do not mark an
+> edge setting fixed on the strength of anyone's recollection, including the
+> owner's.
 
 #### Why `proxy.ts` does not fix this, and could not
 
