@@ -1,16 +1,33 @@
 name: CI
 
+# `merge_group` is the one that stops PRs breaking each other.
+#
+# A `pull_request` run tests the branch merged with the base *as it was when
+# the run started*, and GitHub never recomputes it when the base moves. So two
+# branches that are each green can still break main together: on 2026-09-26 one
+# added a guard requiring every live tool page to render `<ToolJsonLd`, another
+# added `/file/xray` without it, both were green, and main went red on the
+# second merge. A merge queue re-runs these checks against the actual
+# post-merge tree, which is the only place that interaction is visible.
+#
+# This trigger is inert until the queue is switched on in branch protection —
+# but it has to land first, because a required check that never runs on
+# `merge_group` stalls every merge. See CONTRIBUTING.md.
 on:
   push:
     branches: [main]
   pull_request:
+  merge_group:
 
 permissions:
   contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a merge-queue run. The queue is blocking on this check, and a
+  # cancelled check is not a failed one — it leaves the entry stuck rather than
+  # ejecting it, which is worse than the red build it was trying to save.
+  cancel-in-progress: ${{ github.event_name != 'merge_group' }}
 
 jobs:
   qc:

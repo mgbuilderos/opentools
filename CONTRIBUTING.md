@@ -73,6 +73,52 @@ Here are 4 open starter tasks:
   (`feat(pdf): …`, `fix(image): …`).
 - CI must be green.
 
+### Green is not the same as safe to merge
+
+A `pull_request` run tests your branch merged with the base **as it stood when
+the run started**. GitHub does not recompute it when the base moves on, so a
+green tick can be an answer to a question nobody is asking any more.
+
+That is not theoretical here. On 2026-09-26 one pull request added a guard
+requiring every live tool page to render `<ToolJsonLd`, another added
+`/file/xray` without one. Neither could see the other, both were green, and
+`main` went red on the second merge. The same shape had already happened when
+`/bench` was renamed `/batch` under a branch that still listed the old route.
+
+Until the merge queue below is switched on, the practical defence is: if your
+branch has been open while several things landed, merge `main` in and let CI
+run again before merging — particularly if your change **adds a route, adds a
+page, or adds a guard that every page must satisfy**, which is the combination
+that has broken it twice.
+
+### Enabling the merge queue
+
+A merge queue re-runs the checks against the tree that will actually exist
+after the merge, which is the only place these interactions are visible. Both
+workflows already listen on `merge_group`, so the repository side is done and
+`scripts/merge-queue-guards.test.ts` keeps it that way. What remains is one
+setting, and **the order matters**:
+
+1. Confirm `merge_group` is still in `.github/workflows/ci.yml` and
+   `.github/workflows/selfhost-image.yml`. It is, and the test above fails if
+   it stops being — but check, because step 3 is what goes wrong if it is not.
+2. In **Settings → Branches → branch protection for `main`**, require status
+   checks and name exactly the checks that run on `merge_group`:
+   `Quality control (Node 22.x)` and `Build image (pull request)`.
+   Those names are strings; the second one keeps its slightly wrong name
+   deliberately, because renaming a required check stops the requirement
+   matching anything.
+3. Turn on **Require merge queue** on the same rule.
+
+The failure to avoid is naming a required check that never runs on
+`merge_group`: the queue then waits on a report that will never arrive, and
+every merge in the repository stops. That is why step 1 comes first.
+
+Two costs worth knowing before you turn it on. Merges become serial, which at
+this repository's current rate is a real slowdown; and every change is tested
+twice, once on the pull request and once in the queue. Both are cheaper than
+the third red `main`.
+
 ## Security
 
 Report privacy or security issues privately — see
