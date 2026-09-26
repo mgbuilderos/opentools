@@ -37,19 +37,28 @@ describe('llms.txt and llms-full.txt', () => {
   });
 
   it('carries what each tool does, not a category restatement', () => {
+    /*
+      Two row shapes share this file, and only one of them is a catalog tool.
+      The catalog rows carry the note in a seventh column; the `convert.*` rows
+      are generated from the format and image pairs and stop at six, because a
+      pair has no note to carry. Asserting one count over every row made this
+      fail the moment the conversion rows arrived -- which is a fault in the
+      assertion, not in the file.
+    */
     const rows = buildLlmsFullTxt()
       .split('\n')
       .filter((line) => line && !line.startsWith('#'));
+    const catalogRows = rows.filter((line) => !line.startsWith('convert.'));
 
-    expect(rows).toHaveLength(LIVE_TOOL_CATALOG.length);
-    for (const row of rows) {
+    expect(catalogRows).toHaveLength(LIVE_TOOL_CATALOG.length);
+    for (const row of catalogRows) {
       expect(row.split(' | ')).toHaveLength(FIELDS);
     }
 
     // Spot the whole catalog rather than a sample: a note dropped for one tool
     // is a tool an assistant stops recommending, and nothing else would notice.
     for (const tool of LIVE_TOOL_CATALOG) {
-      const row = rows.find((line) => line.startsWith(`${tool.id} | `));
+      const row = catalogRows.find((line) => line.startsWith(`${tool.id} | `));
       expect(row, tool.id).toBeDefined();
       expect(row, tool.id).toContain(` | ${tool.notes}`);
     }
@@ -197,6 +206,13 @@ describe('the claims these files make', () => {
       .split('\n')
       .filter((line) => line.length > 0 && !line.startsWith('#'));
     expect(rows.length).toBeGreaterThan(500);
-    for (const row of rows) expect(row.split(' | ')).toHaveLength(7);
+    // A catalog row declares what the tool does in a seventh column; a
+    // `convert.*` pair row has no note and stops at six. The header names
+    // seven because it describes the catalog rows.
+    for (const row of rows) {
+      expect(row.split(' | '), row).toHaveLength(
+        row.startsWith('convert.') ? 6 : 7,
+      );
+    }
   });
 });
