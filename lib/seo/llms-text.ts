@@ -82,10 +82,18 @@ export function buildLlmsTxt(
       (b) => `- [${b.title}](${baseUrl}/blog/${b.slug}): ${b.summary}`,
     ),
     ``,
+    // Each line carries the catalog's own one-line note rather than the
+    // phrase "in-browser <category> utility", which every tool used to get.
+    // The reader here is an assistant deciding whether one of these answers
+    // the question in front of it, and it can only decide that from a
+    // description of the job the tool does. `notes` is written per tool and
+    // says what the tool is for, so it is the field that belongs here; the
+    // category still appears, because "PDF" or "Subtitles" is often the word
+    // the question used.
     `## Featured tools`,
     ...topTools.map(
       (t) =>
-        `- [${t.name}](${baseUrl}${t.destinationUrl}): in-browser ${t.category.toLowerCase()} utility.${guideSuffix(t, consolidation)}`,
+        `- [${t.name}](${baseUrl}${t.destinationUrl}) — ${t.category}: ${t.notes}${guideSuffix(t, consolidation)}`,
     ),
     ``,
     `## Full catalog`,
@@ -104,16 +112,22 @@ export function buildLlmsFullTxt(
     `# Canonical URL: ${baseUrl}`,
     `# Every tool below runs in the visitor's own browser tab. Files and inputs`,
     `# are not sent to a server. Only tools that work are listed.`,
-    `# Format: ID | Name | Category | Tool URL | Guide URL | Execution mode`,
+    `# Format: ID | Name | Category | Tool URL | Guide URL | Execution mode | What it does`,
     ...(consolidation.enabled
       ? [
           `# Guide URL is "none" where the tool page is the only page for that tool.`,
         ]
       : []),
     ``,
+    // The last column is the catalog's own note on what the tool does. Without
+    // it this file was six columns of identifiers: an assistant could read that
+    // a route exists and what it is called, but not whether it answers the
+    // question being asked, which is the only reason to fetch this file.
+    // `lib/seo/llms-text.test.ts` holds the column count and the rule that no
+    // note may contain the pipe separator.
     ...LIVE_TOOL_CATALOG.map(
       (t) =>
-        `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${fullGuideUrl(t, consolidation)} | ${t.executionMode}`,
+        `${t.id} | ${t.name} | ${t.category} | ${baseUrl}${t.destinationUrl} | ${fullGuideUrl(t, consolidation)} | ${t.executionMode} | ${t.notes}`,
     ),
   ];
 
