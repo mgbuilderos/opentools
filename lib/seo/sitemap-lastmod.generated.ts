@@ -1213,6 +1213,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/pdf/drawing-register': '2026-09-25T23:41:43+05:30',
   '/pdf/excel-to-pdf': '2026-09-24T12:13:22+05:30',
   '/pdf/extract-pages': '2026-09-23T16:36:56+05:30',
+  '/pdf/form-filler': '2026-09-26T02:57:17+05:30',
   '/pdf/images-to-pdf': '2026-09-23T16:36:56+05:30',
   '/pdf/merge': '2026-09-23T16:36:56+05:30',
   '/pdf/metadata': '2026-09-23T16:36:56+05:30',

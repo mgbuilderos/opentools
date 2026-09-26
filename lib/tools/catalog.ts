@@ -2499,6 +2499,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-burst',
       'excel-to-pdf',
       'pdf-password',
+      'pdf-form-filler',
     ],
   },
   {

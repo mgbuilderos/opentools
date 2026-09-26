@@ -27,14 +27,6 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'pdf-compress',
       },
       {
-        id: 'pdf-form-filler',
-        name: 'Fill PDF forms',
-        description:
-          'Fill interactive PDF form fields and flatten widgets locally.',
-        href: '/pdf/form-filler',
-        workspaceId: 'pdf-form-filler',
-      },
-      {
         id: 'pdf-sign',
         name: 'Sign and fill PDF',
         description: 'Complete a PDF form and draw a signature onto the page.',
@@ -151,6 +143,14 @@ export const SECTIONS: readonly BrowseSection[] = [
           'Convert Excel spreadsheets (.xlsx) to printable vector PDF documents with gridlines, headers, and multi-sheet support.',
         href: '/pdf/excel-to-pdf',
         workspaceId: 'excel-to-pdf',
+      },
+      {
+        id: 'pdf-form-filler',
+        name: 'Fill PDF forms',
+        description:
+          'Fill interactive PDF form fields and flatten widgets locally.',
+        href: '/pdf/form-filler',
+        workspaceId: 'pdf-form-filler',
       },
     ],
   },
