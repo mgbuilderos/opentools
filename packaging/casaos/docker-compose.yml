@@ -49,7 +49,8 @@ x-casaos:
   category: Utilities
   icon: https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png
   screenshot_link:
-    - https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/og.png
+    - https://raw.githubusercontent.com/mgbuilderos/opentools/main/packaging/screenshots/1-home.png
+    - https://raw.githubusercontent.com/mgbuilderos/opentools/main/packaging/screenshots/2-text-case-converter.png
   thumbnail: https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png
   title:
     en_us: OpenTools

@@ -471,6 +471,35 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'pdf-password',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Unlock and protect PDF',
+    shortDescription:
+      'Unlock encrypted PDFs with password or protect documents with AES-256.',
+    category: 'PDF',
+    aliases: [
+      'unlock pdf',
+      'protect pdf',
+      'remove pdf password',
+      'pdf password remover',
+      'encrypt pdf',
+      'add password to pdf',
+    ],
+    jobs: [
+      'unlock password protected pdf files',
+      'encrypt and protect pdf documents with aes 256',
+      'remove owner password restrictions from pdf',
+    ],
+    href: '/pdf/password',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.crypto.decrypt', 'pdf.crypto.encrypt'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'pdf-extract',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2173,6 +2202,43 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'ofx-qif-converter',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'OFX & QIF statement converter',
+    shortDescription:
+      'Convert OFX and QIF bank statements to CSV or Excel with transaction preview and balance reconciliation.',
+    category: 'Finance',
+    aliases: [
+      'ofx to csv',
+      'ofx to excel',
+      'qif to csv',
+      'qif to excel',
+      'ofx converter',
+      'qif converter',
+      'bank statement ofx',
+    ],
+    jobs: [
+      'Convert OFX SGML and XML statements to clean CSV and Excel spreadsheets',
+      'Convert QIF financial exports into tabular data',
+      'Reconcile opening balance and transaction totals against closing balance',
+      'Extract multi-account transactions securely without server uploads',
+    ],
+    href: '/finance/ofx-qif',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'finance.ofx.parse',
+        'finance.qif.parse',
+        'finance.reconcile',
+        'spreadsheet.csv.export',
+        'spreadsheet.xlsx.export',
+      ],
+      offlineReady: false,
+    },
+    owner: 'antigravity',
+  },
+  {
     id: 'science-education-workbench',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2357,6 +2423,60 @@ export const publicTools: ToolManifest[] = [
     },
     owner: 'platform-foundation',
   },
+  {
+    id: 'pdf-form-filler',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Fill PDF forms',
+    shortDescription:
+      'Fill interactive PDF form fields and flatten widgets locally.',
+    category: 'PDF',
+    aliases: [
+      'fill pdf form',
+      'pdf form filler',
+      'flatten pdf form',
+      'edit pdf form fields',
+    ],
+    jobs: [
+      'fill interactive pdf forms',
+      'flatten pdf form fields so values cannot be changed',
+      'complete pdf tax and legal forms in browser',
+    ],
+    href: '/pdf/form-filler',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.acroform.fill', 'pdf.acroform.flatten'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
+    id: 'bank-statement',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Bank statement converter',
+    shortDescription:
+      'Convert bank statement PDFs to Excel and CSV with balance reconciliation.',
+    category: 'Finance',
+    aliases: [
+      'bank statement to excel',
+      'bank statement to csv',
+      'statement converter',
+      'pdf statement parser',
+    ],
+    jobs: [
+      'convert bank statement pdf to excel spreadsheets',
+      'convert statement to csv without uploading',
+      'reconcile running balance and extract transactions',
+    ],
+    href: '/finance/bank-statement',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['finance.statement.parse', 'finance.statement.reconcile'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
 ];
 
 export interface ToolGroup {
@@ -2405,6 +2525,8 @@ export const toolGroups: ToolGroup[] = [
       'pdf-preflight',
       'pdf-burst',
       'excel-to-pdf',
+      'pdf-password',
+      'pdf-form-filler',
     ],
   },
   {
@@ -2529,7 +2651,11 @@ export const toolGroups: ToolGroup[] = [
     id: 'finance',
     name: 'Finance & business',
     shortDescription: 'Loans, tax, invoices, margins, and business maths.',
-    toolIds: ['finance-business-workbench'],
+    toolIds: [
+      'finance-business-workbench',
+      'ofx-qif-converter',
+      'bank-statement',
+    ],
   },
   {
     id: 'science',

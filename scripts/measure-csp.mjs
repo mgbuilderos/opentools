@@ -32,6 +32,8 @@
  * failure.
  */
 
+import { verdictFromCsp } from '../extension/verdict.js';
+
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36';
 
@@ -67,30 +69,52 @@ async function measure(url) {
       !response.headers.get('content-security-policy') &&
       Boolean(response.headers.get('content-security-policy-report-only'));
 
-    const directive = csp
-      .split(';')
-      .map((part) => part.trim())
-      .find((part) => part.toLowerCase().startsWith('connect-src'));
-    const value = directive
-      ? directive.slice('connect-src'.length).trim()
-      : null;
+    /*
+     * The verdict comes from `extension/verdict.js` rather than from a copy
+     * here. It used to be a copy, kept in step with the extension's by a
+     * comment asking whoever changed one to change the other -- and that
+     * instruction outlived a bug both of them had, which is the argument
+     * against comments as a synchronisation mechanism.
+     *
+     * `lib/egress/verdict-parity.test.ts` holds that module to the site's
+     * implementation, so this script, the extension and getopentools.com now
+     * cannot give three different answers about the same page.
+     */
+    /*
+     * A refusal is not a finding.
+     *
+     * This header says UNKNOWN exists because "some sites refuse automated
+     * requests; that says nothing about their CSP" -- and then scored exactly
+     * that case as CAPABLE, because a 403 carries no policy and no policy read
+     * as no restriction. So the one outcome the script was written to avoid
+     * was the one it produced against any site with a bot filter, which is
+     * most of the sites anybody would want to measure.
+     *
+     * A verdict is only claimed when a page actually answered. A non-OK
+     * response that still carries a policy is judged on it; a non-OK response
+     * without one is reported as unread.
+     */
+    if (!response.ok && !csp) {
+      return {
+        url,
+        status: response.status,
+        verdict: 'UNKNOWN',
+        reason: `HTTP ${response.status} — no page was served to measure`,
+        ms: Date.now() - started,
+      };
+    }
 
-    let verdict;
-    if (!csp) verdict = 'CAPABLE';
-    else if (!value) verdict = 'CAPABLE';
-    else if (/^'none'$/iu.test(value)) verdict = 'BLOCKED';
-    else verdict = 'RESTRICTED';
-
-    // A report-only policy is not enforced by the browser, so it cannot block
-    // anything. Treating it as protection would be exactly the kind of error
-    // this script exists to avoid making about someone else.
-    if (reportOnly && verdict === 'BLOCKED') verdict = 'CAPABLE';
+    const { verdict, connectSrc, viaDefaultSrc } = verdictFromCsp(
+      csp,
+      reportOnly,
+    );
 
     return {
       url,
       status: response.status,
       verdict,
-      connectSrc: value,
+      connectSrc,
+      viaDefaultSrc,
       reportOnly,
       hasCsp: Boolean(csp),
       ms: Date.now() - started,
@@ -128,7 +152,7 @@ if (asJson) {
   };
   console.log(`Measured ${new Date().toISOString().slice(0, 10)}\n`);
   console.log(
-    `${'SITE'.padEnd(26)}${'VERDICT'.padEnd(12)}${'connect-src'.padEnd(20)}NOTE`,
+    `${'SITE'.padEnd(26)}${'VERDICT'.padEnd(12)}${'SOURCE LIST'.padEnd(20)}NOTE`,
   );
   for (const r of results) {
     const note =
@@ -136,7 +160,9 @@ if (asJson) {
         ? `unreachable from here — not a finding (${r.reason})`
         : r.reportOnly
           ? 'report-only policy; not enforced'
-          : '';
+          : r.viaDefaultSrc
+            ? 'inherited from default-src'
+            : '';
     console.log(
       host(r.url).padEnd(26) +
         r.verdict.padEnd(12) +

@@ -1249,4 +1249,171 @@ export const PAGE_DEPTH_CORE: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  // components/ofx-qif-tool.tsx, lib/formats/finance/finance.ts
+  '/finance/ofx-qif': {
+    title: 'Convert OFX & QIF to CSV or Excel — No Upload',
+    description:
+      'Convert OFX and QIF bank statements to CSV or Excel in your browser. Reconcile opening balance and transactions with zero file uploads.',
+    heading: 'About this OFX and QIF statement converter',
+    directAnswer:
+      'Select or drop an OFX (.ofx, .qfx, .sgml, .xml) or QIF (.qif) financial statement file up to 50 MB. The browser engine parses banking, credit card, and investment transactions completely in memory, checks opening and closing balance arithmetic, highlights reconciliation discrepancies, and exports clean CSV or native Excel (.xlsx) spreadsheets.',
+    lead: 'Bank and credit card statements exported in Open Financial Exchange (OFX) or Quicken Interchange Format (QIF) contain structured financial history needed for bookkeeping, tax preparation, audit trails, and expense analysis. Standard desktop accounting applications often enforce proprietary subscription paywalls or require routing personal ledger data through third-party cloud aggregators. This tool provides an offline-capable, in-browser parser that reads SGML and XML OFX variants alongside multi-account QIF files, validates transaction consistency through exact decimal arithmetic, and emits structured tabular files without transmitting a single byte over the network.',
+    steps: [
+      {
+        name: 'Select or drop your statement file',
+        text: 'Choose an OFX, QFX, or QIF statement file up to 50 MB. The document is decoded in memory using standard character decoders without transmitting bytes across the network.',
+      },
+      {
+        name: 'Review parsed accounts and transactions',
+        text: 'Inspect detected accounts, statement date ranges, transaction payees, memos, reference numbers, and split categories in the searchable interactive preview table.',
+      },
+      {
+        name: 'Verify balance reconciliation',
+        text: 'Examine the balance reconciliation card. The engine calculates opening balance plus credits minus debits using exact BigInt decimal scaling and flags any mathematical discrepancies against the reported closing balance.',
+      },
+      {
+        name: 'Export to CSV or Excel',
+        text: 'Click Download CSV or Download Excel (.xlsx) to save structured transaction data formatted with standard column headers ready for spreadsheet modeling or accounting import.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Differences between OFX 1.x, OFX 2.x, and QIF formats',
+        body: [
+          'Financial institutions publish records in three distinct syntax families. OFX 1.x files are based on SGML and feature custom header blocks (such as OFXHEADER:100, DATA:OFXSGML, and ENCODING:USASCII) followed by unclosed leaf tags like <TRNAMT>-125.50 and <NAME>Utility payment without corresponding closing tags. OFX 2.x files replace SGML with strict XML syntax, carrying standard XML declarations and properly closed element hierarchies. QIF files date back to early personal finance software, organizing transactions with single-character line prefixes such as D for date, T for amount, P for payee, M for memo, and ^ as record delimiters. The parsing engine inspects the initial byte sequences to distinguish SGML, XML, and QIF structures automatically without relying on file extensions.',
+        ],
+      },
+      {
+        heading:
+          'Deterministic balance reconciliation and discrepancy auditing',
+        body: [
+          'A key failure mode in statement translation is silent floating-point drift: binary 64-bit floating point math cannot accurately represent base-10 currency cents without rounding artifacts. This tool converts all financial amounts into exact coefficient and scale BigInt representations during calculation. When both opening and closing balances are present in the statement metadata, the engine checks whether opening balance plus the sum of all transaction credits and debits equals the reported closing balance to the exact cent. If bank adjustments, pending holds, or missing statement pages introduce a deviation, a high-visibility alert displays the exact numerical discrepancy so you can resolve records before importing them into accounting software.',
+        ],
+      },
+      {
+        heading: 'Zero upload security and banking privacy guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which statement file extensions and formats are supported?',
+        answer:
+          'This tool accepts OFX 1.02–1.60 SGML files, OFX 2.00–2.20 XML files, Quicken Financial Exchange (.qfx) files, and standard Quicken Interchange Format (.qif) exports up to 50 MB.',
+      },
+      {
+        question:
+          'Are bank account numbers or financial figures sent to any server?',
+        answer:
+          'No. All decoding, XML parsing, reconciliation arithmetic, and spreadsheet formatting execute entirely inside your local browser tab. The page is protected by a Content Security Policy with connect-src none that blocks outbound network connections.',
+      },
+      {
+        question: 'How are multi-currency and multi-account files handled?',
+        answer:
+          'When a file contains multiple bank or credit card accounts, an account selector dropdown appears above the overview cards. You can filter transactions by specific account or view combined statements with respective currency tags.',
+      },
+      {
+        question:
+          'What happens if a statement does not provide an opening balance?',
+        answer:
+          'Certain bank exports provide only a closing balance or list transactions without opening anchors. In this scenario, the tool computes total inflows, total outflows, and net transaction sums, reporting that opening balance was omitted while keeping all records accessible for export.',
+      },
+      {
+        question:
+          'Will visual bank logos, check scans, or letterhead appear in the export?',
+        answer:
+          'No. OFX and QIF are raw data-interchange formats designed for financial numbers and metadata. They do not store graphic logos, page layout fonts, or check image scans.',
+      },
+    ],
+  },
+  '/finance/bank-statement': {
+    title: 'Bank Statement to Excel & CSV — Private Converter',
+    description:
+      'Convert PDF bank statements to Excel (XLSX) and CSV with automatic table extraction, number formatting, and running balance reconciliation. 100% private.',
+    heading: 'About this bank statement converter',
+    directAnswer:
+      'To convert a bank statement PDF to Excel or CSV: upload or drag your statement file into the converter, review the extracted table preview and detected number formatting conventions, inspect the automatic running balance reconciliation report, and click Export Excel (.xlsx) or Export CSV. All computations run 100% inside your browser memory with zero server uploads.',
+    lead: 'Bank and credit card statements are among the most sensitive personal and commercial documents individuals and businesses handle. Standard online converters require uploading raw account numbers, transaction histories, employer payroll records, and vendor payments to unknown third-party cloud servers. This tool executes the entire table extraction, coordinate parsing, date resolution, and running balance reconciliation directly in your local browser tab. Whether your statement uses standard US decimal formatting, European comma decimals, or Indian Lakh and Crore notation, the engine extracts structured tabular data and validates the mathematical consistency of opening balances, debits, credits, and closing balances before export.',
+    steps: [
+      {
+        name: 'Upload your statement PDF',
+        text: 'Select or drag your PDF bank statement into the dropzone. The document is parsed in memory to extract text glyph coordinates, detect ruled or unruled gridlines, and construct structured transaction columns without transmitting any data over the internet.',
+      },
+      {
+        name: 'Review detected conventions & columns',
+        text: 'The engine automatically detects the monetary grouping format (such as US standard 1,234.56, European 1.234,56, or Indian Lakh 1,23,456.78) and identifies date formatting conventions. Columns for transaction dates, narratives, withdrawals, deposits, and balances are organized into a clear interactive preview.',
+      },
+      {
+        name: 'Verify running balance reconciliation',
+        text: 'The mathematical reconciliation engine checks that each transaction debit and credit correctly balances against the preceding and succeeding running balance. A green confirmation badge indicates mathematical verification, while any layout discrepancy or missed transaction triggers an alert with exact row numbers.',
+      },
+      {
+        name: 'Export to Excel or CSV',
+        text: 'Click Export Excel (.xlsx) to download a formatted spreadsheet ready for accounting software, spreadsheet analysis, or tax filings, or click Export CSV for universal database and bookkeeping system compatibility.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Global Number and Currency Format Detection',
+        body: [
+          'Financial institutions across different countries format monetary transactions and dates with widely varying conventions. This parser accommodates US/UK standards with comma thousand separators, European formats utilizing decimal commas and period thousand separators, and Indian numbering systems based on Lakhs and Crores (1,23,456.78).',
+          'Negative values indicated by leading minus signs, trailing minus signs, bracketed bookkeeping enclosures (1,234.56), or trailing DR and CR accounting notation are normalized into consistent numerical values, ensuring formulas in your downloaded spreadsheet compute correctly.',
+        ],
+      },
+      {
+        heading: 'Running Balance Verification and Integrity Guarantees',
+        body: [
+          'Extracting tables from complex multi-page PDF statements frequently suffers from line wrapping errors, merged transaction descriptions, or missed row items in traditional tools. A silently incorrect financial export can cause serious errors in accounting and tax preparation.',
+          'To guarantee integrity, this converter performs row-by-row mathematical reconciliation: verifying that opening balance plus total credits minus total debits exactly equals the closing balance across both downward and upward chronological orders. If a discrepancy exists, the tool alerts you immediately before you export.',
+        ],
+      },
+      {
+        heading: 'Zero Data Egress & Absolute Financial Privacy',
+        body: [
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+          LOCAL_EXECUTION_ENGINE,
+          'Your bank name, account balances, payee names, salary details, and transaction amounts never enter a telemetry payload, server log, or external database. When the browser tab closes, all parsed data is erased from local memory.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which bank and card statement layouts are supported?',
+        answer:
+          'The parser handles statements from major global and national banks including Chase, Bank of America, Wells Fargo, Barclays, HSBC, Deutsche Bank, HDFC, ICICI, SBI, and credit card issuers. It supports single-column signed amounts as well as separate Debit and Credit column structures across multi-page files.',
+      },
+      {
+        question: 'How does running balance reconciliation work?',
+        answer:
+          'The reconciliation engine checks the running balance column against individual debits and credits across successive rows in both chronological directions. If opening balance plus credits minus debits equals the closing balance with zero mismatched rows, the statement is verified. If any row fails to balance, the exact row index and delta error are displayed.',
+      },
+      {
+        question: 'Can this tool process scanned or photographed statements?',
+        answer:
+          'This tool requires a digital PDF with an embedded text layer. If a scanned or image-only PDF without selectable text is uploaded, the tool refuses the file by name, explains that scanned documents lack readable coordinate layers, and advises running OCR on the document before converting.',
+      },
+      {
+        question: 'How are multi-line transaction descriptions handled?',
+        answer:
+          'Many bank statements wrap long vendor details, wire transfer references, or billing codes across multiple visual lines. The engine groups continuation lines using font metrics and baseline tolerances into a single cohesive description cell, preventing fragmented rows.',
+      },
+      {
+        question:
+          'Is my financial data uploaded to any server or shared with third parties?',
+        answer:
+          'No. The converter operates entirely inside your local browser under a strict Content Security Policy (connect-src none). No bank names, transaction amounts, account numbers, or document bytes are transmitted across the internet.',
+      },
+      {
+        question:
+          'Is there a limit on file size or the number of statement pages?',
+        answer:
+          'You can convert statement PDFs up to 100 MB containing dozens of pages and thousands of transactions. All extraction and Excel workbook compilation run in local memory without artificial page caps or paywalls.',
+      },
+    ],
+  },
 };
