@@ -27,7 +27,13 @@ test.describe('the file follows you to the tool you picked', () => {
     await page.goto('/');
     await dropPdf(page, await testPdf(3));
 
-    // The badge, not the depth prose that also says "PDF document".
+    /*
+     * Both `exact` and `.first()`, because there were two separate collisions
+     * and each fix alone leaves the other: the home page lists a tool called
+     * "Compare PDF Documents Online" (substring), and the depth prose also
+     * says "PDF document" (case). Resolved from two branches that each caught
+     * one of them.
+     */
     await expect(
       page.getByText('PDF Document', { exact: true }).first(),
     ).toBeVisible();

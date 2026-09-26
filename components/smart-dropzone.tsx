@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 import { buttonVariants } from '@/components/ui/button';
+import type { SubjectKind } from '@/lib/command/types';
 import { offerFile } from '@/lib/file-handoff';
 import { isLiveToolUrl } from '@/lib/seo/live-tool-routes';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,18 @@ export interface DetectionResult {
   details?: string;
   icon: React.ReactNode;
   actions: readonly DetectedAction[];
+  /**
+   * What kind of thing this is, for the command bar above.
+   *
+   * "Make this under 2MB" never says what "this" is, and the answer depends
+   * entirely on it: a PDF compressor and an image resizer are different tools.
+   * The file on this dropzone is the answer, and it is already known here.
+   *
+   * Set for a dropped FILE only. Text pasted into this box is not necessarily
+   * what a sentence typed in the other box is about, and guessing that it is
+   * would be worse than not knowing.
+   */
+  subject?: SubjectKind;
 }
 
 export function detectInput(text: string, file?: File): DetectionResult | null {
@@ -50,6 +63,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Ready for on-device page manipulation, reordering, numbering, and merging.',
         icon: <FileText className="size-5 text-foreground" />,
+        subject: 'pdf',
         actions: SMART_DROPZONE_ACTIONS.pdf,
       };
     }
@@ -75,6 +89,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Ready for client-side compression, background removal, and dimensions editing.',
         icon: <ImageIcon className="size-5 text-foreground" />,
+        subject: 'image',
         actions,
       };
     }
@@ -96,6 +111,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
           details:
             'Ready for client-side trimming, muting, and audio extraction.',
           icon: <Video className="size-5 text-foreground" />,
+          subject: 'video',
           actions,
         };
       }
@@ -109,6 +125,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Ready for in-browser spreadsheet viewing, filtering, and JSON conversion.',
         icon: <FileSpreadsheet className="size-5 text-foreground" />,
+        subject: 'table',
         actions: SMART_DROPZONE_ACTIONS.csv,
       };
     }
@@ -121,6 +138,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Format and check the JSON, or generate TypeScript types or a Zod schema from it.',
         icon: <Code2 className="size-5 text-foreground" />,
+        subject: 'text',
         actions: SMART_DROPZONE_ACTIONS.json,
       };
     }
@@ -136,6 +154,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         details:
           'Ready for subtitle conversion, two-point sync, retiming, and caption validation.',
         icon: <FileText className="size-5 text-foreground" />,
+        subject: 'text',
         actions: [
           {
             label: 'Subtitle workbench',
@@ -170,6 +189,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
           details:
             'Ready for lossless cutting, joining, ID3 tagging, and frame-accurate inspection.',
           icon: <FileText className="size-5 text-foreground" />,
+          subject: 'audio',
           actions,
         };
       }
@@ -195,6 +215,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
           details:
             'Ready for in-browser decoding, trimming, and WAV conversion.',
           icon: <FileText className="size-5 text-foreground" />,
+          subject: 'audio',
           actions,
         };
       }
@@ -211,6 +232,7 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
         summary: `${file.name} (${sizeKb} KB)`,
         details: 'Inspect, calculate checksums, or edit in writing workbench.',
         icon: <FileCode className="size-5 text-foreground" />,
+        subject: 'text',
         actions: SMART_DROPZONE_ACTIONS.code,
       };
     }
@@ -346,9 +368,12 @@ export function detectInput(text: string, file?: File): DetectionResult | null {
 
 export function SmartDropzone({
   onFilesSelected,
+  onSubjectChange,
   multiple = false,
 }: {
   onFilesSelected?: (files: readonly File[]) => void;
+  /** What was dropped, so the command bar can answer "this". */
+  onSubjectChange?: (subject: SubjectKind | undefined) => void;
   multiple?: boolean;
 } = {}) {
   const [dragOver, setDragOver] = useState(false);
@@ -372,14 +397,18 @@ export function SmartDropzone({
     setDragOver(false);
   }, []);
 
-  const handleProcessFile = useCallback((file: File) => {
-    const detection = detectInput('', file);
-    if (detection) {
-      setResult(detection);
-      setInputText(file.name);
-      setDroppedFile(file);
-    }
-  }, []);
+  const handleProcessFile = useCallback(
+    (file: File) => {
+      const detection = detectInput('', file);
+      if (detection) {
+        setResult(detection);
+        setInputText(file.name);
+        setDroppedFile(file);
+        onSubjectChange?.(detection.subject);
+      }
+    },
+    [onSubjectChange],
+  );
 
   /**
    * Hands the file to the tool page before going there. Every link in this app
@@ -423,14 +452,16 @@ export function SmartDropzone({
       if (text) {
         setInputText(text.slice(0, 100));
         setDroppedFile(null);
-        setDroppedFile(null);
+        // Text is not the file the sentence upstairs is about, so whatever was
+        // dropped before stops answering for it.
+        onSubjectChange?.(undefined);
         const detection = detectInput(text);
         if (detection) {
           setResult(detection);
         }
       }
     },
-    [handleProcessFile, onFilesSelected],
+    [handleProcessFile, onFilesSelected, onSubjectChange],
   );
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -441,23 +472,30 @@ export function SmartDropzone({
     }
   };
 
-  const handlePaste = useCallback((e: React.ClipboardEvent) => {
-    const text = e.clipboardData.getData('text');
-    if (text) {
-      setInputText(text.slice(0, 100));
-      setDroppedFile(null);
-      const detection = detectInput(text);
-      if (detection) {
-        setResult(detection);
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent) => {
+      const text = e.clipboardData.getData('text');
+      if (text) {
+        setInputText(text.slice(0, 100));
+        setDroppedFile(null);
+        onSubjectChange?.(undefined);
+        const detection = detectInput(text);
+        if (detection) {
+          setResult(detection);
+        }
       }
-    }
-  }, []);
+    },
+    [onSubjectChange],
+  );
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInputText(val);
     const detection = detectInput(val);
     setResult(detection);
+    // Typing in here replaces whatever was dropped, so it stops answering for
+    // "this" upstairs too.
+    onSubjectChange?.(undefined);
   };
 
   const sampleInputs = [
@@ -583,6 +621,7 @@ export function SmartDropzone({
                 setResult(null);
                 setInputText('');
                 setDroppedFile(null);
+                onSubjectChange?.(undefined);
               }}
               className="flex size-7 items-center justify-center rounded-md border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Clear detection result"
