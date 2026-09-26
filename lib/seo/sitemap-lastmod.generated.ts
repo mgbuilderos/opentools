@@ -1218,6 +1218,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/pdf/metadata': '2026-09-23T16:36:56+05:30',
   '/pdf/ocr': '2026-09-23T16:36:56+05:30',
   '/pdf/page-tools': '2026-09-23T17:00:49+05:30',
+  '/pdf/password': '2026-09-26T03:07:37+05:30',
   '/pdf/pdf-metadata-editor': '2026-09-26T04:02:42+05:30',
   '/pdf/pdf-page-numbers': '2026-09-26T04:02:42+05:30',
   '/pdf/pdf-watermark': '2026-09-26T04:02:42+05:30',

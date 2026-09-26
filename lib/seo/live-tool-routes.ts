@@ -27,6 +27,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/pdf/to-word',
   '/pdf/to-excel',
   '/pdf/sign',
+  '/pdf/password',
   '/image/editor',
   '/image/background-remover',
   '/image/optimize',

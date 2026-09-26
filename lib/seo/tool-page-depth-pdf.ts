@@ -2356,4 +2356,90 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  '/pdf/password': {
+    title: 'Unlock and Protect PDF — In-Browser PDF Encryption',
+    description:
+      'Unlock encrypted PDFs or add AES-256 password protection to PDF documents locally in your browser. Fast, private, with zero file uploads.',
+    heading: 'About this PDF password and encryption tool',
+    directAnswer:
+      'To unlock an encrypted PDF or protect a plain document: choose or drop the file onto the page. The built-in Standard security handler inspects whether the file has a user password, owner restrictions, or no encryption. For encrypted files, enter the password to decrypt the document. For unencrypted files, enter a password to protect the file using AES-256 encryption. The entire process runs locally on your machine with zero server communication.',
+    lead: 'Protecting confidential records and accessing encrypted documents should not require uploading sensitive files or personal passwords to external third-party servers. This tool provides comprehensive PDF cryptography directly inside your browser tab using the ISO 32000-2 Standard security handler specification. Whether removing restrictions from an owner-password-only file or securing sensitive legal agreements with military-grade AES-256 bit encryption, all mathematical operations execute locally in client-side JavaScript. Your passwords and file contents are never transmitted across the network, stored in browser cookies, or captured in application logs.',
+    steps: [
+      {
+        name: 'Select your PDF document',
+        text: 'Drag and drop your PDF into the upload area or click to browse files from your computer. The engine reads the PDF trailer dictionaries to inspect whether encryption dictionaries exist and classifies the security revision without sending bytes off your device.',
+      },
+      {
+        name: 'Inspect encryption status',
+        text: 'The tool determines if the document is unencrypted, locked with a user password, or protected only by owner permissions. If the file has owner-only restrictions, it can be unlocked immediately because the open password is empty.',
+      },
+      {
+        name: 'Enter password or configure protection',
+        text: 'To unlock a password-protected PDF, enter the document password. To encrypt a document, enter your desired open password and optional owner management password. The tool applies modern Revision 6 (AES-256) encryption with authenticated permission blocks.',
+      },
+      {
+        name: 'Save the processed PDF',
+        text: 'Click Unlock PDF or Protect PDF. The engine performs an incremental update directly in memory and provides an immediate download link for your decrypted or newly secured document.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Understanding User Passwords versus Owner Passwords',
+        body: [
+          'The PDF standard defines two distinct credentials under its Standard security handler. A User Password (also called an Open Password) is required to decrypt the content streams and view the document in any PDF reader. Without this password, the underlying text and image objects remain encrypted ciphertext.',
+          'An Owner Password (also called a Permissions Password) sets administrative limits such as restricting printing, text extraction, page insertion, or form editing. A PDF protected solely with an owner password has an empty user password string, allowing standard viewers to display it freely. This tool identifies owner-restricted files automatically and can strip those restrictions cleanly.',
+        ],
+      },
+      {
+        heading: 'AES-256 Standard Security Handler (Revision 6)',
+        body: [
+          'When protecting documents with this tool, files are encrypted using ISO 32000-2 Standard security handler Revision 6. This represents modern PDF cryptography, combining 256-bit AES encryption in Cipher Block Chaining (CBC) mode with SHA-256, SHA-384, and SHA-512 multi-round key derivation algorithms.',
+          'Unlike legacy 40-bit or 128-bit RC4 encryption from older PDF specifications, AES-256 provides mathematically robust protection against brute-force attacks and dictionary matching, making it compliant with strict enterprise data protection mandates.',
+        ],
+      },
+      {
+        heading: 'Strict Local Security and Zero Telemetry Invariant',
+        body: [
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+          'Passwords represent highly sensitive credentials. Under our architectural rules, any password entered into this tool is kept solely in component memory during processing, cleared immediately upon execution, and never written to telemetry, error messages, browser storage, or console outputs.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can this tool break or recover a lost PDF password without the password?',
+        answer:
+          'No. Unlocking requires the correct password. This tool cannot break, crack, or recover a password it was not given, and it will never attempt to do so. If you have forgotten the password to an AES-encrypted PDF, the cryptographic mathematical keys cannot be bypassed.',
+      },
+      {
+        question:
+          'Why does an owner-restricted PDF open without asking for a password?',
+        answer:
+          'Under the PDF specification, a file with only an owner password uses an empty string as its user password. Because the user password is empty, standard PDF readers can decrypt and display the pages immediately, but enforce software restrictions against printing or copying. Our tool detects this condition and can permanently remove the restriction dictionary.',
+      },
+      {
+        question: 'What encryption algorithms and revisions are supported?',
+        answer:
+          'The decryption engine supports PDF Standard security handler revisions 2 (RC4 40-bit), 3 (RC4 128-bit), 4 (AES 128-bit), 5, and 6 (AES 256-bit). For protecting new files, the tool strictly applies modern AES-256 bit Revision 6 encryption.',
+      },
+      {
+        question: 'Are my passwords or files sent to any server?',
+        answer:
+          'No. All cryptographic operations run 100% locally inside your browser tab under a strict Content Security Policy (connect-src none). Neither your files nor your passwords ever leave your machine.',
+      },
+      {
+        question:
+          'Will unlocking a PDF damage or alter the visual document contents?',
+        answer:
+          'No. The decryption engine decrypts object streams and removes the encryption dictionary via standard incremental updates without recompressing or rasterizing vector text or layout elements.',
+      },
+      {
+        question: 'Is there a limit on PDF file size?',
+        answer:
+          'You can unlock and protect documents up to 150 MB depending on available device memory. Processing occurs locally in memory without artificial file limits or paywalls.',
+      },
+    ],
+  },
 };
