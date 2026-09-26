@@ -282,3 +282,138 @@ describe('Bench run receipts', () => {
     expect(text).not.toContain('sk_private');
   });
 });
+
+describe('a receipt reports what each step measured, not only what was asked for', () => {
+  const steps: NonNullable<BuildReceiptArgs['steps']> = [
+    { operation, params: { mode: 'strict' } },
+    {
+      operation: { ...operation, id: 'reverser', name: 'Text reverser' },
+      params: {},
+    },
+  ];
+
+  const traces = [
+    {
+      steps: [
+        {
+          step: 1,
+          id: 'word-counter',
+          source: 'text',
+          inputBytes: 100,
+          outputBytes: 10,
+          ms: 4.4,
+          status: 'done' as const,
+          engineDownloads: [],
+        },
+        {
+          step: 2,
+          id: 'reverser',
+          source: 'text',
+          inputBytes: 10,
+          outputBytes: 10,
+          ms: 1.2,
+          status: 'done' as const,
+          engineDownloads: [],
+        },
+      ],
+      engineDownloads: [],
+    },
+    {
+      // This input died at step 2, so step 2 counts one fewer success.
+      steps: [
+        {
+          step: 1,
+          id: 'word-counter',
+          source: 'text',
+          inputBytes: 50,
+          outputBytes: 5,
+          ms: 2.4,
+          status: 'done' as const,
+          engineDownloads: [],
+        },
+        {
+          step: 2,
+          id: 'reverser',
+          source: 'text',
+          inputBytes: 5,
+          outputBytes: null,
+          ms: 0.6,
+          status: 'failed' as const,
+          engineDownloads: [],
+          error: 'nope',
+        },
+      ],
+      engineDownloads: [],
+    },
+  ];
+
+  function receiptWithTraces() {
+    return buildReceipt({
+      generatedAt: '2026-09-26T00:00:00.000Z',
+      operation,
+      params: { mode: 'strict' },
+      inputs: [] as readonly BenchInput[],
+      outcomes: [] as readonly BatchOutcome<BenchInput, BenchOutput[]>[],
+      environment: 'test',
+      steps,
+      traces,
+    } satisfies BuildReceiptArgs);
+  }
+
+  it('totals bytes and time per step across every input that reached it', () => {
+    const receipt = receiptWithTraces();
+    expect(receipt.steps?.[0]?.measured).toEqual({
+      inputs: 2,
+      failed: 0,
+      bytesIn: 150,
+      bytesOut: 15,
+      ms: 7,
+    });
+  });
+
+  it('counts the input that failed at a step, and stops counting its output', () => {
+    const receipt = receiptWithTraces();
+    expect(receipt.steps?.[1]?.measured).toEqual({
+      inputs: 2,
+      failed: 1,
+      bytesIn: 15,
+      bytesOut: 10,
+      ms: 2,
+    });
+  });
+
+  it('writes the measurement into the text receipt', () => {
+    const text = receiptToText(receiptWithTraces());
+    expect(text).toContain(
+      '   - measured: 2 reached, 0 failed, 150 bytes in, 15 bytes out, 7 ms',
+    );
+    expect(text).toContain(
+      '   - measured: 2 reached, 1 failed, 15 bytes in, 10 bytes out, 2 ms',
+    );
+  });
+
+  it('leaves the measurement out when the run recorded no trace', () => {
+    const receipt = buildReceipt({
+      generatedAt: '2026-09-26T00:00:00.000Z',
+      operation,
+      params: { mode: 'strict' },
+      inputs: [] as readonly BenchInput[],
+      outcomes: [] as readonly BatchOutcome<BenchInput, BenchOutput[]>[],
+      environment: 'test',
+      steps,
+    } satisfies BuildReceiptArgs);
+
+    expect(receipt.steps?.[0]?.measured).toBeUndefined();
+    expect(receiptToText(receipt)).not.toContain('measured:');
+    expect(receiptToJson(receipt)).not.toContain('measured');
+  });
+
+  // The upload line is founded on the served CSP (`connect-src 'none'`) and the
+  // local-source policy tests, not on per-operation metadata, so it holds
+  // whether or not a run recorded a trace.
+  it('still states the upload claim the CSP backs', () => {
+    expect(receiptToText(receiptWithTraces())).toContain(
+      'Bytes uploaded: 0 - this page cannot make a network request.',
+    );
+  });
+});

@@ -22,7 +22,7 @@ import { announceCompletion } from '@/lib/completion';
 import { getOperation, KERNEL_OPERATIONS } from '@/lib/kernel/registry';
 import type { KernelOperation } from '@/lib/kernel/types';
 import { runPipeline } from '@/lib/pipeline/run';
-import type { Pipeline } from '@/lib/pipeline/types';
+import type { Pipeline, PipelineTrace } from '@/lib/pipeline/types';
 import { validate } from '@/lib/pipeline/validate';
 import { BATCH_LANDINGS } from '@/lib/seo/audience-pages';
 import { searchTools } from '@/lib/tools/catalog';
@@ -273,6 +273,9 @@ export function BenchTool() {
         completed,
         total,
       }) => setProgress({ completed, total });
+      // Measured while the steps ran, so the receipt can report what each one
+      // actually did rather than only which operation was asked for.
+      const traces: PipelineTrace[] = [];
       const result = pipelineActive
         ? await runPipeline({
             inputs,
@@ -280,6 +283,7 @@ export function BenchTool() {
             template,
             signal: abort.signal,
             onProgress: progressHandler,
+            onTrace: (trace) => traces.push(trace),
           })
         : await runBench({
             inputs,
@@ -311,6 +315,7 @@ export function BenchTool() {
         outcomes: result,
         environment: navigator.userAgent,
         ...(receiptSteps ? { steps: receiptSteps } : {}),
+        ...(traces.length ? { traces } : {}),
       });
       setReceipt(completedReceipt);
       const outputs = flatten(result);
