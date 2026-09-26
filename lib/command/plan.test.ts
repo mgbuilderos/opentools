@@ -106,6 +106,16 @@ describe('planning a typed request', () => {
     );
   });
 
+  /** One sentence is about one thing, so the admission belongs to the sentence. */
+  it('admits to guessing the kind of file once, not once per step', () => {
+    const answer = plan('make this under 2MB and strip my name out of it');
+    const admissions = answer.steps.filter((step) =>
+      step.notes.some((note) => note.includes('best guess')),
+    );
+    expect(answer.steps).toHaveLength(2);
+    expect(admissions).toHaveLength(1);
+  });
+
   it('says why steps cannot be chained, when they cannot', () => {
     const answer = plan('sort these lines and remove duplicates');
     expect(answer.chain).toBeUndefined();

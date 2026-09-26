@@ -145,12 +145,15 @@ function alternativesOf(matches: readonly ToolMatch[]) {
  * something -- so it is the compressor for whichever kind ranked first. Saying
  * that out loud, with the other kinds one click away, is the difference between a
  * guess and a wrong answer.
+ *
+ * Once per plan, not once per step. One sentence is about one thing, so a
+ * two-step answer to it was carrying the same paragraph twice.
  */
 function guessNote(
   clause: ParsedClause,
   best: ToolMatch,
   alternatives: readonly { href: string }[],
-) {
+): readonly string[] {
   if (clause.subject) return [];
   const area = (href: string) => href.split('/')[1];
   const elsewhere = alternatives.some(
@@ -250,6 +253,7 @@ export function planRequest(
     is one and behind anything the clause says for itself.
   */
   let carried = options.subject;
+  let admitted = false;
 
   for (const parsed of clauses) {
     const subject = parsed.subject ?? carried;
@@ -280,6 +284,10 @@ export function planRequest(
           : [],
       );
       const alternatives = alternativesOf(found.matches);
+      const admission: readonly string[] = admitted
+        ? []
+        : guessNote(clause, best, alternatives);
+      admitted ||= admission.length > 0;
       steps.push({
         clause: clause.text,
         name: best.entry.name,
@@ -294,10 +302,7 @@ export function planRequest(
             : best.entry.href,
         ...(best.op ? { op: best.op } : {}),
         alternatives,
-        notes: [
-          ...notesFor(clause, caveats),
-          ...guessNote(clause, best, alternatives),
-        ],
+        notes: [...notesFor(clause, caveats), ...admission],
       });
       continue;
     }
