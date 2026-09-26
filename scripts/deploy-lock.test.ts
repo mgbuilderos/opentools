@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -11,6 +12,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {
+  BLUEPRINT_MARKER,
+  findBlueprintRoot,
+  resolveLockDir,
+} from './deploy-lock-root.mjs';
 
 const run = promisify(execFile);
 
@@ -172,5 +178,84 @@ describe('the deploy lock', () => {
     const status = await lock('status');
     expect(status.code).toBe(0);
     expect(status.out).toContain('FREE');
+  });
+});
+
+/**
+ * Where the lock file goes.
+ *
+ * This is the part that had no test, and it is the part that broke: a checkout
+ * with no `AGENT_BOARD.md` above it threw, and because `npm run deploy` runs
+ * `assert` first, the lock made deploying impossible from a plain clone rather
+ * than merely unguarded. Every test above passes `DEPLOY_LOCK_FILE`, so none of
+ * them ever reached this code.
+ *
+ * The resolution is tested as a pure function against a synthetic directory
+ * tree. Running the real script would decide the answer from whatever is above
+ * the repository on the machine running the suite, which is the owner's laptop
+ * in one case and a container in the other — a test whose result depends on the
+ * checkout is not a test.
+ */
+describe('where the lock file goes', () => {
+  it('prefers the blueprint root, however deep the checkout is', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'blueprint-'));
+    const deep = path.join(root, 'lanes', 'lane-a', 'scripts');
+    mkdirSync(deep, { recursive: true });
+    writeFileSync(path.join(root, BLUEPRINT_MARKER), 'board');
+
+    expect(findBlueprintRoot(deep)).toBe(root);
+    expect(
+      resolveLockDir({ startDir: deep, env: {}, home: '/home/nobody' }),
+    ).toEqual({
+      dir: root,
+      kind: 'blueprint',
+    });
+
+    rmSync(root, { recursive: true, force: true });
+  });
+
+  it('falls back to a machine-wide directory when there is no blueprint root', () => {
+    const lonely = mkdtempSync(path.join(tmpdir(), 'standalone-'));
+
+    expect(findBlueprintRoot(lonely)).toBeNull();
+    // Machine-wide, not inside the checkout: two clones on one machine deploy
+    // to the same Worker, so a lock inside one is invisible to the other.
+    const resolved = resolveLockDir({
+      startDir: lonely,
+      env: {},
+      home: '/home/nobody',
+    });
+    expect(resolved.kind).toBe('machine');
+    expect(resolved.dir).toBe('/home/nobody/.local/state/opentools');
+    expect(resolved.dir.startsWith(lonely)).toBe(false);
+
+    rmSync(lonely, { recursive: true, force: true });
+  });
+
+  it('honours XDG_STATE_HOME for the fallback', () => {
+    const lonely = mkdtempSync(path.join(tmpdir(), 'standalone-'));
+
+    expect(
+      resolveLockDir({
+        startDir: lonely,
+        env: { XDG_STATE_HOME: '/var/state' },
+        home: '/home/nobody',
+      }).dir,
+    ).toBe('/var/state/opentools');
+
+    rmSync(lonely, { recursive: true, force: true });
+  });
+
+  it('does not stop searching at the first directory', () => {
+    // A marker directly beside the script would have worked under the old code
+    // too. The regression was about depth, so the walk is what matters.
+    const root = mkdtempSync(path.join(tmpdir(), 'blueprint-'));
+    const deep = path.join(root, 'a', 'b', 'c', 'd');
+    mkdirSync(deep, { recursive: true });
+    writeFileSync(path.join(root, BLUEPRINT_MARKER), 'board');
+
+    expect(findBlueprintRoot(deep)).toBe(root);
+
+    rmSync(root, { recursive: true, force: true });
   });
 });
