@@ -153,3 +153,78 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   itself is proved by `e2e/share-target.spec.ts`, which disconnects the browser
   and loads `/pdf/merge`.
 - **Not verified:** anything on getopentools.com. This has not been deployed.
+
+### 9. One box on the home page reads a typed request, and says when it cannot
+
+- **Date:** 2026-09-26. **Status:** implemented on a branch, not deployed.
+- **The problem, measured.** 1,362 live tool routes in 21 categories. Somebody
+  who knows what they want done and not what this site calls it has to guess a
+  category first; the note in `home-workspace.tsx` records the same shape from
+  the crawl side, where every tool outside `/pdf` sat four clicks from the front
+  page until the category links were added.
+- **What changed.** `components/command-bar.tsx`, above the dropzone on `/`. You
+  type "make this under 2MB and strip my name out of it" and it answers with the
+  steps, in order, each a link to the page that does it. Where the steps are
+  operations the kernel can run, it offers to run the chain in one pass by
+  handing a `lib/pipeline` pipeline to `/batch?pipeline=…`, which the pipeline
+  editor already reads.
+- **It is read on the device, and that is checkable rather than claimed.** Every
+  page here ships `connect-src 'none'`, `e2e/egress-proof.spec.ts` fails if a
+  page opens a connection, and `lib/tools/local-source-policy.test.ts` now
+  guards `lib/command/` as well as `lib/tools`, so a `fetch(` or an `https://`
+  literal in it fails the build. `e2e/command-bar.spec.ts` types a whole request
+  and asserts nothing off-origin answered, no request carried a body, and none of
+  the typed words reached any URL — including a same-origin one.
+- **No model, and the refusals are the point.** A catalogue this size can look
+  confident about anything: there are four translators here and not one of them
+  is a language, so "translate this to Spanish" had four confident matches.
+  `lib/command/limits.ts` holds what this site cannot do — anything needing a
+  server, anything needing a language model, and plain gaps — and answers
+  instead. A gap that is only a gap offers a prefilled `tool_request.yml` issue;
+  a rule of the place does not, because asking somebody to file the point of the
+  site as a bug is not a report.
+- **Held to tests that found real defects.** 61 unit tests and 5 browser tests.
+  The one worth naming ran every non-decisive refusal phrase through the matcher
+  and failed if the catalogue already answered it: eight did, and every answer
+  was wrong — "explain this" was being answered with the cron expression parser
+  and "what does this mean" with the average calculator. Another fails if a
+  decisive phrase is ever a tool's name, which is what caught "to pound" (a unit
+  of mass) and "bitcoin" (a QR code generator here).
+- **The index is generated, and small.** `lib/command/catalogue.generated.ts` is
+  1,390 entries in 197 KB of JSON, about 35 KB of Brotli, in its own chunk that
+  the home page does not load until somebody types. `catalogue.test.ts` fails if
+  it drifts from the registries it was built from, and if any live tool route is
+  missing from it.
+- **Not verified:** anything on getopentools.com. This has not been deployed.
+
+## 2026-09-26 — Tools must be evergreen: never encode another system's rules
+
+Decided by: project owner. Recorded by: Claude Code at the owner's request.
+Full reasoning, evidence and design patterns: **`docs/EVERGREEN_PRINCIPLE.md`**.
+
+### 10. The requirement is an input, not a constant
+
+- The owner's words, rejecting a proposal to build pages around named exam and
+  government form requirements: *"we need to make evergreen tool — suppose a
+  form changes then we dont know that what is the new image size. so we want to
+  have evergreen tool that stays the test of the time."*
+- **The rule:** a tool asks the user for the size, format or limit they have
+  been given. It does not store what some portal, exam board or employer
+  requires. A page that states another system's rule is a claim nobody here is
+  watching, and when it goes stale it does not throw, fail a test or appear in
+  a log — it renders perfectly and quietly misleads. There is no instrument on
+  this site that can detect that, by design.
+- **The test before building anything:** *if the external system changes
+  tomorrow and nobody tells us, does this become wrong?* If yes, redesign so
+  the requirement arrives as input.
+- **This does not reverse decision 16**, which stays in force for the cases
+  where a preset genuinely helps: sourced, dated, 90-day expiry, in-app only,
+  editable, never in cached metadata. Decision 16 is the mitigation for
+  encoding a rule; this decision is the avoidance. Prefer the avoidance —
+  an expiry gate needs a person to re-open every source four times a year,
+  forever, and that does not scale.
+- Recorded because it was paid for once already: sourcing the six original
+  preset rows found four of them wrong or unsourceable, including two invented
+  USCIS ceilings for a portal that publishes one.
+- Be precise about what this software does; silent about everyone else's rules.
+

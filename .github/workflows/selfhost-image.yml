@@ -3,8 +3,13 @@ name: Self-host image
 # Pull requests build the image without pushing it. Only a `v*` tag publishes
 # it to GitHub Container Registry, and then creates the GitHub release for that
 # tag from `CHANGELOG.md`. Pushes to main never publish.
+#
+# `merge_group` is here for the same reason as in `ci.yml`: whichever checks
+# branch protection requires must also run inside the queue, or the queue waits
+# forever on one that never starts.
 on:
   pull_request:
+  merge_group:
   push:
     tags: ['v*']
 
@@ -13,12 +18,17 @@ permissions:
 
 concurrency:
   group: selfhost-image-${{ github.ref }}
-  cancel-in-progress: true
+  # See ci.yml — cancelling a merge-queue check stalls the entry.
+  cancel-in-progress: ${{ github.event_name != 'merge_group' }}
 
 jobs:
   build:
+    # The name stays as it is on purpose. A check name is an interface: branch
+    # protection and the merge queue reference it as a string, and renaming it
+    # while it may be listed as required would silently stop that requirement
+    # matching anything. It now covers the merge queue too.
     name: Build image (pull request)
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

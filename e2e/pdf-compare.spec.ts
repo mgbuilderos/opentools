@@ -86,27 +86,27 @@ test.describe('Compare PDF documents (/pdf/compare)', () => {
 
     // The engine's guarantee, seen from the page: the inserted sentence is
     // found, and the nine untouched pages are not dressed up as changes.
-    await expect(
-      page.getByText(/NEW CRITICAL SENTENCE/i).first(),
-    ).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText(/NEW CRITICAL SENTENCE/i).first()).toBeVisible({
+      timeout: 60_000,
+    });
 
     /*
-     * Scoped to the tool, not the whole body, and the reason is worth knowing.
+     * The rule is that the page must not *present* an accuracy score. It may
+     * name one to refuse it, and it now does: the explainer reads "there is no
+     * similarity percentage anywhere on this page. A \"94% match\" is a number
+     * with no defensible definition". Matching the raw body text scored that
+     * sentence as the violation it exists to prevent.
      *
-     * The guarantee is that the *comparison* never fabricates a similarity
-     * figure. Reading `body` also swept in the explainer below the tool, which
-     * argues the same point by quoting the thing it refuses to print — «A "94%
-     * match" is a number with no defensible definition» — and even mentions
-     * that an end-to-end test checks for one. So the copy describing this test
-     * is what failed it.
-     *
-     * `#tool` is the tool's own region and the skip-link target, so it is where
-     * a fabricated score would have to appear to mislead anybody. Narrowing to
-     * it keeps the assertion pointed at output under the engine's control
-     * rather than at prose under an editor's.
+     * Quoted spans were removed before matching, so that the explainer could
+     * quote the figure it exists to refuse. That exemption was retired when the
+     * copy was: #64 dropped the quoted `94% match` example on the grounds that
+     * a reader skimming the page for a number finds one either way, and the
+     * sentence's intent reaches neither that reader nor a machine. With nothing
+     * left to excuse, the exemption only hid the next quoted number from this
+     * guard, so the match is back to raw body text.
      */
-    const output = await page.locator('#tool').innerText();
-    expect(output, 'the tool must not invent an accuracy score').not.toMatch(
+    const body = await page.locator('body').innerText();
+    expect(body, 'the page must not invent an accuracy score').not.toMatch(
       /\b\d{1,3}\s?% (accurate|match|confidence)\b/iu,
     );
   });
