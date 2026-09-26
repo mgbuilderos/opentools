@@ -85,8 +85,8 @@ repository rather than taking a pull request.
 - **Artifact:** `packaging/casaos/docker-compose.yml`.
 - **Their requirements, checked:** `docker-compose.yml` ✓, lower-case app name ✓
   (`opentools`), a specific image tag rather than `:latest` ✓, `icon.png`
-  ✓ (points at `public/icon-512.png` in this repo), and **at least one
-  screenshot — see the gap below**.
+  ✓ (points at `public/icon-512.png` in this repo), and at least one screenshot
+  ✓ (two, in `packaging/screenshots/`).
 
 ### 3. Umbrel App Store
 
@@ -105,21 +105,33 @@ repository rather than taking a pull request.
 
 ---
 
-## The gap that needs a person, and it is small
+## Screenshots — done
 
-**A screenshot.** CasaOS requires at least one and Umbrel wants a gallery image;
-both are the shop-window picture, and right now the manifests point at
-`public/og.png`, which is a social-sharing card rather than a picture of the
-product. It is enough to submit with and worse than what you could take in two
-minutes: run the container, open `http://localhost:8796`, and capture the home
-page and one tool mid-use.
+`packaging/screenshots/` holds the two shop-window images, and both manifests
+point at them:
+
+| File | What it shows |
+| :--- | :--- |
+| `1-home.png` | The home page: the drop zone, the category rail, the breadth |
+| `2-text-case-converter.png` | A tool mid-use, with real input and its real output |
+
+Taken 2026-09-26 against the built site at 1280x800 on a 2x display, so they are
+2560x1600 and stay sharp on a retina screen. The marquee across the top is
+frozen at its start rather than caught mid-scroll with half a word against the
+edge — `animations: 'disabled'` in the capture.
+
+To retake them after a redesign, run the container and capture the same two
+pages:
 
 ```bash
 docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:0.1.0
 ```
 
-Drop them in `packaging/` and point the manifests at them. Nothing else in this
-file is waiting on anything.
+**The Umbrel gallery is the one thing that is not simply a path.** Its manifest
+lists `1.jpg` and `2.jpg`, which Umbrel serves from the app directory inside
+*their* repository rather than from a URL. Copy the two files from
+`packaging/screenshots/` into the app directory of the pull request under those
+names.
 
 ---
 
