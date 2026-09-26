@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Can this page upload your file?",
   "version": "0.1.0",
-  "description": "Tells you whether the page you are on is capable of transmitting the files you give it. Reads the site's own security policy — nothing is sent anywhere.",
+  "description": "Before you upload a file, see whether the page is able to send it anywhere. Reads the site's own security policy.",
   "permissions": [
     "webRequest"
   ],
