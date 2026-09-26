@@ -431,11 +431,11 @@ export function PipelineEditor({
     >
       <div className="space-y-1">
         <h2 id="pipeline-heading" className="text-lg font-semibold">
-          Pipeline (optional)
+          Build the chain
         </h2>
         <p className="text-sm text-muted-foreground">
-          Chain operations so each one runs on what the last produced. Until you
-          add a step, the single-operation run below stays unchanged.
+          Each step runs on whatever the one before it produced. Until you add a
+          step, the single-operation run below stays unchanged.
         </p>
       </div>
 

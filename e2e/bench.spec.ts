@@ -18,7 +18,7 @@ test.describe('The Bench', () => {
 
     await expect(page).toHaveURL(/\/batch$/u);
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
   });
 
@@ -32,7 +32,7 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
@@ -90,7 +90,7 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
@@ -239,7 +239,7 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
+      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
     ).toBeVisible();
     await page.waitForTimeout(500);
     await page
