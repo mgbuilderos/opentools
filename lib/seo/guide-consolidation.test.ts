@@ -35,6 +35,7 @@ import {
 import { buildLlmsFullTxt, buildLlmsTxt, canonicalToolUrl } from './llms-text';
 import { removedToolRedirect } from './removed-tool-redirects';
 import { siteRedirect } from './site-redirects';
+import { localizedSitemapRoutes } from '../i18n/routes';
 import { buildSitemap } from './sitemap-entries';
 import { TOOL_CATALOG } from './tool-catalog-data';
 
@@ -275,7 +276,16 @@ describe('guide consolidation off is the previous behaviour', () => {
    * was published on purpose. It is not a place to silence a surprise: if a
    * route appears that nobody meant to add, the fix is the route, not this list.
    */
-  const ADDED_SINCE_FREEZE = new Set([`${origin}/whats-new`]);
+  const ADDED_SINCE_FREEZE = new Set([
+    `${origin}/whats-new`,
+    /*
+      The 48 localised editions. They are routes published since the freeze,
+      which is exactly what this set is for, so they go through the same filter
+      rather than a second one beside it. That all 48 are present is asserted
+      by `lib/i18n/i18n.test.ts`, which is where that claim belongs.
+    */
+    ...localizedSitemapRoutes().map((route) => `${origin}${route}`),
+  ]);
 
   const asFrozen = (entries: MetadataRoute.Sitemap) =>
     entries.filter((entry) => !ADDED_SINCE_FREEZE.has(entry.url));

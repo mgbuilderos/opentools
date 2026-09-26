@@ -1,6 +1,7 @@
 'use client';
 
 import { Archive, ArrowDownToLine, CheckCircle2, XCircle } from 'lucide-react';
+import { useToolUi } from '@/components/locale-edition-provider';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -115,11 +116,11 @@ export function useFileBatchRunner(): FileBatchRunner {
 }
 
 export function BatchLocalPromise() {
+  /* Localised chrome strings; the English bundle on every English page. */
+  const t = useToolUi();
   return (
     <p className="mt-2 text-xs leading-5 text-muted-foreground">
-      No file-count limit, no daily limit, no queue — the work happens on this
-      machine. Choose one file for the usual single-file flow, or select many
-      for batch results and one ZIP.
+      {t.batchLocalPromise}
     </p>
   );
 }

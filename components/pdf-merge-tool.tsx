@@ -16,6 +16,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { useToolUi } from '@/components/locale-edition-provider';
+import { fillMessage } from '@/lib/i18n/tool-ui';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { toolMeta } from '@/lib/tools/tool-meta';
@@ -90,6 +92,8 @@ async function toWorkerInputs(items: Array<{ id: string; file: File }>) {
 }
 
 export function PdfMergeTool() {
+  /* Localised control strings; the English bundle everywhere else. */
+  const t = useToolUi();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -131,9 +135,7 @@ export function PdfMergeTool() {
     const availableSlots = MAX_FILES - files.length;
     const selected = incoming.slice(0, availableSlots);
     if (!selected.length) {
-      setError(
-        `You can merge up to ${MAX_FILES} PDFs at a time in this canary.`,
-      );
+      setError(fillMessage(t.mergeTooMany, { max: MAX_FILES }));
       return;
     }
 
@@ -146,7 +148,7 @@ export function PdfMergeTool() {
       0,
     );
     if (existingBytes + selectedBytes > MAX_TOTAL_BYTES) {
-      setError('These files exceed the current 150 MB total safety limit.');
+      setError(t.mergeTooLarge);
       return;
     }
 
@@ -166,9 +168,7 @@ export function PdfMergeTool() {
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError(
-        'The browser could not read one of these files. Your originals are unchanged.',
-      );
+      setError(t.mergeReadFailed);
       return;
     }
     if (workerRef.current !== worker) {
@@ -206,9 +206,7 @@ export function PdfMergeTool() {
     };
 
     worker.onerror = () => {
-      setError(
-        'The PDF inspector stopped unexpectedly. Your files are unchanged.',
-      );
+      setError(t.mergeInspectorStopped);
       setStatus('error');
       worker.terminate();
       workerRef.current = null;
@@ -224,7 +222,7 @@ export function PdfMergeTool() {
       worker.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('The PDF inspector could not start. Your files are unchanged.');
+      setError(t.mergeInspectorNoStart);
     }
   };
 
@@ -250,9 +248,7 @@ export function PdfMergeTool() {
       workerRef.current?.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError(
-        'The browser could not read one of these files. Your originals are unchanged.',
-      );
+      setError(t.mergeReadFailed);
       return;
     }
     if (workerRef.current !== worker) {
@@ -270,7 +266,7 @@ export function PdfMergeTool() {
           // Fit-to-size reports one of these per compression attempt, and the
           // attempt count is not known ahead of time, so it arrives with no
           // total to count towards.
-          fitting: 'Trying compression settings',
+          fitting: t.mergeTryingSettings,
         };
         setProgress({
           phase: labels[message.phase],
@@ -297,18 +293,21 @@ export function PdfMergeTool() {
         worker.terminate();
         workerRef.current = null;
         announceCompletion({
-          operation: 'PDF merge',
+          operation: t.mergeOperation,
           durationMs: completedIn,
-          summary: `${files.length.toLocaleString()} PDF files merged into ${message.pageCount.toLocaleString()} pages.`,
+          summary: fillMessage(t.mergeSummary, {
+            files: files.length.toLocaleString(),
+            pages: message.pageCount.toLocaleString(),
+          }),
           metrics: [
-            { label: 'Files', value: files.length.toLocaleString() },
+            { label: t.files, value: files.length.toLocaleString() },
             {
-              label: 'Input',
+              label: t.input,
               value: formatBytes(
                 files.reduce((total, item) => total + item.file.size, 0),
               ),
             },
-            { label: 'Output', value: formatBytes(blob.size) },
+            { label: t.output, value: formatBytes(blob.size) },
           ],
         });
         return;
@@ -324,9 +323,7 @@ export function PdfMergeTool() {
     };
 
     worker.onerror = () => {
-      setError(
-        'The merge stopped unexpectedly. Your original PDFs are unchanged.',
-      );
+      setError(t.mergeStopped);
       setStatus('error');
       worker.terminate();
       workerRef.current = null;
@@ -342,7 +339,7 @@ export function PdfMergeTool() {
       worker.terminate();
       workerRef.current = null;
       setStatus('error');
-      setError('The merge could not start. Your original PDFs are unchanged.');
+      setError(t.mergeNoStart);
     }
   };
 
@@ -401,23 +398,22 @@ export function PdfMergeTool() {
               <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground">
                 <span>PDF</span>
                 <span aria-hidden="true">/</span>
-                <span>Page management</span>
+                <span>{t.mergePageManagement}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Merge PDF
+                {t.mergeTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Combine PDFs in your chosen order. Processing happens in a
-                dedicated browser worker.
+                {t.mergeStandfirst}
               </p>
             </div>
             <button
               type="button"
               className="focus-ring flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold"
-              aria-label="Local processing status. Release proof is pending."
+              aria-label={t.mergeStatusAria}
             >
               <LockKeyhole aria-hidden="true" className="size-3.5" />
-              On-device prototype
+              {t.onDevicePrototype}
             </button>
           </div>
 
@@ -429,14 +425,14 @@ export function PdfMergeTool() {
               className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
             >
               <div>
-                <p className="font-semibold">Couldn’t use that PDF</p>
+                <p className="font-semibold">{t.mergeCouldntUse}</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setError(null)}
                 className="focus-ring rounded-md p-1"
-                aria-label="Dismiss error"
+                aria-label={t.dismissError}
               >
                 <X aria-hidden="true" className="size-4" />
               </button>
@@ -450,16 +446,19 @@ export function PdfMergeTool() {
             <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
               <div>
                 <h2 id="pdf-input-heading" className="text-sm font-semibold">
-                  PDFs to merge
+                  {t.mergePdfsToMerge}
                 </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Up to {MAX_FILES} files · 150 MB total in this canary
+                  {fillMessage(t.mergeCapacity, { max: MAX_FILES })}
                 </p>
               </div>
               {files.length ? (
                 <span className="tabular text-xs text-muted-foreground">
-                  {files.length} files · {totalPages} pages ·{' '}
-                  {formatBytes(totalBytes)}
+                  {fillMessage(t.mergeCounts, {
+                    files: files.length,
+                    pages: totalPages,
+                  })}{' '}
+                  · {formatBytes(totalBytes)}
                 </span>
               ) : null}
             </div>
@@ -478,11 +477,11 @@ export function PdfMergeTool() {
                 </span>
                 <p className="mt-4 text-base font-semibold">
                   {status === 'inspecting'
-                    ? 'Inspecting PDFs locally…'
-                    : 'Drop PDFs here'}
+                    ? t.mergeInspecting
+                    : t.mergeDropHere}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  File signatures and page counts are checked in your browser.
+                  {t.mergeSignatureNote}
                 </p>
                 <input
                   ref={fileInputRef}
@@ -502,13 +501,13 @@ export function PdfMergeTool() {
                   disabled={status === 'inspecting' || status === 'processing'}
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  Choose PDFs
+                  {t.mergeChoosePdfs}
                 </Button>
               </div>
             </div>
 
             {files.length ? (
-              <ol className="border-t" aria-label="PDF merge order">
+              <ol className="border-t" aria-label={t.mergeOrderAria}>
                 {files.map((item, index) => (
                   <li
                     key={item.id}
@@ -537,7 +536,9 @@ export function PdfMergeTool() {
                         className="h-9 w-9"
                         disabled={index === 0 || status === 'processing'}
                         onClick={() => moveFile(index, -1)}
-                        aria-label={`Move ${item.file.name} earlier`}
+                        aria-label={fillMessage(t.mergeMoveEarlier, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowUp aria-hidden="true" />
                       </Button>
@@ -550,7 +551,9 @@ export function PdfMergeTool() {
                           index === files.length - 1 || status === 'processing'
                         }
                         onClick={() => moveFile(index, 1)}
-                        aria-label={`Move ${item.file.name} later`}
+                        aria-label={fillMessage(t.mergeMoveLater, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowDown aria-hidden="true" />
                       </Button>
@@ -561,7 +564,9 @@ export function PdfMergeTool() {
                         className="h-9 w-9"
                         disabled={status === 'processing'}
                         onClick={() => removeFile(item.id)}
-                        aria-label={`Remove ${item.file.name}`}
+                        aria-label={fillMessage(t.mergeRemoveFile, {
+                          name: item.file.name,
+                        })}
                       >
                         <Trash2 aria-hidden="true" />
                       </Button>
@@ -571,9 +576,7 @@ export function PdfMergeTool() {
               </ol>
             ) : null}
             <div className="border-t bg-muted/35 px-4 py-3 text-xs leading-5 text-muted-foreground sm:px-5">
-              Canary scope: combines page content and order. Bookmarks,
-              signatures, forms, attachments, and document-level metadata are
-              not yet guaranteed.
+              {t.mergeCanaryScope}
             </div>
           </section>
 
@@ -593,7 +596,7 @@ export function PdfMergeTool() {
                     className="h-11 px-5"
                     onClick={cancelMerge}
                   >
-                    Cancel
+                    {t.cancel}
                   </Button>
                 </div>
                 <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-border">
@@ -607,12 +610,10 @@ export function PdfMergeTool() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold">
-                    {files.length < 2
-                      ? 'Add at least 2 PDFs'
-                      : 'Ready to merge'}
+                    {files.length < 2 ? t.mergeAddAtLeastTwo : t.mergeReady}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    The originals will not be modified.
+                    {t.mergeOriginalsNote}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -622,7 +623,7 @@ export function PdfMergeTool() {
                       className="h-11 px-4"
                       onClick={clearAll}
                     >
-                      Clear all
+                      {t.clearAll}
                     </Button>
                   ) : null}
                   <Button
@@ -639,7 +640,7 @@ export function PdfMergeTool() {
 
           {status === 'cancelled' ? (
             <output className="mt-4 block text-sm text-muted-foreground">
-              Merge cancelled. Your selected PDFs are still here and unchanged.
+              {t.mergeCancelled}
             </output>
           ) : null}
 
@@ -673,35 +674,41 @@ export function PdfMergeTool() {
                   data-receipt-download
                   href={receipt.outputUrl}
                   download="merged.pdf"
-                  aria-label="Download merged PDF"
+                  aria-label={t.mergeDownloadAria}
                   onClick={() =>
                     window.dispatchEvent(new CustomEvent('tool-downloaded'))
                   }
                   className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-transparent bg-primary px-5 text-sm font-medium text-primary-foreground outline-none transition-all hover:bg-primary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <ArrowDownToLine aria-hidden="true" className="size-4" />
-                  Download merged.pdf
+                  {t.mergeDownloadLabel}
                 </a>
               </div>
               <div className="grid border-t sm:grid-cols-3">
                 <div className="border-b p-4 sm:border-b-0 sm:border-r sm:p-5">
-                  <p className="text-xs text-muted-foreground">Processing</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.processing}
+                  </p>
                   <p className="mt-1 flex items-center gap-2 text-sm font-semibold">
                     <ShieldCheck
                       aria-hidden="true"
                       className="size-4 text-success"
                     />
-                    Browser worker
+                    {t.browserWorker}
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r sm:p-5">
-                  <p className="text-xs text-muted-foreground">Output check</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.outputCheck}
+                  </p>
                   <p className="mt-1 text-sm font-semibold">
                     Reopened · {receipt.pageCount} pages
                   </p>
                 </div>
                 <div className="p-4 sm:p-5">
-                  <p className="text-xs text-muted-foreground">Phase timing</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.mergePhaseTiming}
+                  </p>
                   <p className="tabular mt-1 text-sm font-semibold">
                     Merge {formatDuration(receipt.computeDurationMs)} · check{' '}
                     {formatDuration(receipt.validationDurationMs)}
@@ -740,8 +747,7 @@ export function PdfMergeTool() {
 
           <footer className="mt-10 flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Canary {manifest.version} · pdf-lib 1.17.1 · No client-side
-              analytics in this preview
+              Canary {manifest.version} · pdf-lib 1.17.1 · {t.noClientAnalytics}
             </p>
             <a
               href="/"

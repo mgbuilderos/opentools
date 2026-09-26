@@ -16,6 +16,8 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { useToolUi } from '@/components/locale-edition-provider';
+import { fillMessage } from '@/lib/i18n/tool-ui';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { toolMeta } from '@/lib/tools/tool-meta';
@@ -74,6 +76,8 @@ async function toWorkerInputs(items: ImageItem[]): Promise<PdfImageInput[]> {
 }
 
 export function ImagesToPdfTool() {
+  /* Localised control strings; the English bundle everywhere else. */
+  const t = useToolUi();
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -113,13 +117,11 @@ export function ImagesToPdfTool() {
     clearResult();
     const valid = incoming.filter((file) => supportedTypes.has(file.type));
     if (valid.length !== incoming.length) {
-      setError(
-        'Choose JPEG or PNG images. Animated and vector images are not supported here.',
-      );
+      setError(t.imagesUnsupported);
       return;
     }
     if (images.length + valid.length > MAX_FILES) {
-      setError(`Choose no more than ${MAX_FILES} images per PDF.`);
+      setError(fillMessage(t.imagesTooMany, { max: MAX_FILES }));
       return;
     }
     const totalBytes = [...images.map(({ file }) => file), ...valid].reduce(
@@ -127,7 +129,7 @@ export function ImagesToPdfTool() {
       0,
     );
     if (totalBytes > MAX_TOTAL_BYTES) {
-      setError('These images exceed the current 100 MB total safety limit.');
+      setError(t.imagesTooLarge);
       return;
     }
     setImages((current) => [
@@ -178,16 +180,23 @@ export function ImagesToPdfTool() {
           });
           setBusy(false);
           announceCompletion({
-            operation: 'Images to PDF',
+            operation: t.imagesTitle,
             durationMs,
-            summary: `${message.pageCount} ${message.pageCount === 1 ? 'image' : 'images'} arranged into one checked PDF.`,
+            summary: fillMessage(
+              message.pageCount === 1
+                ? t.imagesSummaryOne
+                : t.imagesSummaryMany,
+              { count: message.pageCount },
+            ),
             metrics: [
-              { label: 'Images', value: String(message.pageCount) },
-              { label: 'Output', value: formatBytes(blob.size) },
+              { label: t.imagesLabel, value: String(message.pageCount) },
+              { label: t.output, value: formatBytes(blob.size) },
               {
-                label: 'Page size',
+                label: t.imagesPageSize,
                 value:
-                  pageSize === 'image' ? 'Fit image' : pageSize.toUpperCase(),
+                  pageSize === 'image'
+                    ? t.imagesFitImage
+                    : pageSize.toUpperCase(),
               },
             ],
           });
@@ -204,9 +213,7 @@ export function ImagesToPdfTool() {
         }
       };
       worker.onerror = () => {
-        setError(
-          'PDF creation stopped unexpectedly. Your images are unchanged.',
-        );
+        setError(t.imagesStopped);
         setBusy(false);
         worker.terminate();
         workerRef.current = null;
@@ -225,9 +232,7 @@ export function ImagesToPdfTool() {
       workerRef.current?.terminate();
       workerRef.current = null;
       setBusy(false);
-      setError(
-        'The browser could not start PDF creation. Your images are unchanged.',
-      );
+      setError(t.imagesNoStart);
     }
   };
 
@@ -258,19 +263,18 @@ export function ImagesToPdfTool() {
               <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                 <span>PDF</span>
                 <span aria-hidden="true">/</span>
-                <span>Create</span>
+                <span>{t.imagesCreate}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Images to PDF
+                {t.imagesTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Arrange JPEG and PNG images, choose a paper layout, and create
-                one PDF in a dedicated browser worker.
+                {t.imagesStandfirst}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
-              <LockKeyhole aria-hidden="true" className="size-3.5" /> On-device
-              prototype
+              <LockKeyhole aria-hidden="true" className="size-3.5" />{' '}
+              {t.onDevicePrototype}
             </span>
           </div>
 
@@ -282,14 +286,14 @@ export function ImagesToPdfTool() {
               className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
             >
               <div>
-                <p className="font-semibold">Couldn’t create this PDF</p>
+                <p className="font-semibold">{t.imagesCouldnt}</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setError('')}
                 className="focus-ring rounded p-1"
-                aria-label="Dismiss error"
+                aria-label={t.dismissError}
               >
                 <X aria-hidden="true" className="size-4" />
               </button>
@@ -299,9 +303,11 @@ export function ImagesToPdfTool() {
           <section className="mt-8 overflow-hidden rounded-2xl border bg-card">
             <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
               <div>
-                <h2 className="text-sm font-semibold">Source images</h2>
+                <h2 className="text-sm font-semibold">
+                  {t.imagesSourceImages}
+                </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  JPEG or PNG · 40 files · 100 MB total
+                  {t.imagesAcceptHint}
                 </p>
               </div>
               {images.length ? (
@@ -316,7 +322,7 @@ export function ImagesToPdfTool() {
                 type="file"
                 multiple
                 accept="image/jpeg,image/png,.jpg,.jpeg,.png"
-                aria-label="Choose JPEG or PNG images"
+                aria-label={t.imagesChooseAria}
                 className="sr-only"
                 onChange={(event) =>
                   addImages(Array.from(event.target.files ?? []))
@@ -325,7 +331,7 @@ export function ImagesToPdfTool() {
               {!images.length ? (
                 <button
                   type="button"
-                  aria-label="Choose JPEG or PNG images to convert to PDF"
+                  aria-label={t.imagesChooseHint}
                   onClick={() => fileRef.current?.click()}
                   className="focus-ring grid min-h-52 w-full place-items-center rounded-xl border border-dashed bg-muted/45 p-6 text-center"
                 >
@@ -334,10 +340,10 @@ export function ImagesToPdfTool() {
                       <FilePlus2 aria-hidden="true" className="size-5" />
                     </span>
                     <span className="mt-4 block font-semibold">
-                      Choose images
+                      {t.imagesChoose}
                     </span>
                     <span className="mt-1 block text-sm text-muted-foreground">
-                      One PDF page is created for each image.
+                      {t.imagesOnePerImage}
                     </span>
                   </span>
                 </button>
@@ -367,7 +373,9 @@ export function ImagesToPdfTool() {
                         size="icon"
                         disabled={index === 0 || busy}
                         onClick={() => move(index, -1)}
-                        aria-label={`Move ${item.file.name} up`}
+                        aria-label={fillMessage(t.imagesMoveUp, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowUp aria-hidden="true" />
                       </Button>
@@ -376,7 +384,9 @@ export function ImagesToPdfTool() {
                         size="icon"
                         disabled={index === images.length - 1 || busy}
                         onClick={() => move(index, 1)}
-                        aria-label={`Move ${item.file.name} down`}
+                        aria-label={fillMessage(t.imagesMoveDown, {
+                          name: item.file.name,
+                        })}
                       >
                         <ArrowDown aria-hidden="true" />
                       </Button>
@@ -390,7 +400,9 @@ export function ImagesToPdfTool() {
                             current.filter(({ id }) => id !== item.id),
                           );
                         }}
-                        aria-label={`Remove ${item.file.name}`}
+                        aria-label={fillMessage(t.imagesRemove, {
+                          name: item.file.name,
+                        })}
                       >
                         <Trash2 aria-hidden="true" />
                       </Button>
@@ -402,7 +414,7 @@ export function ImagesToPdfTool() {
                     disabled={busy || images.length >= MAX_FILES}
                     onClick={() => fileRef.current?.click()}
                   >
-                    <FilePlus2 aria-hidden="true" /> Add images
+                    <FilePlus2 aria-hidden="true" /> {t.imagesAdd}
                   </Button>
                 </div>
               )}
@@ -413,7 +425,7 @@ export function ImagesToPdfTool() {
             <section className="mt-5 rounded-2xl border bg-card p-4 sm:p-6">
               <div className="grid gap-4 sm:grid-cols-3">
                 <label className="text-sm font-semibold">
-                  Page size
+                  {t.imagesPageSize}
                   <select
                     value={pageSize}
                     onChange={(event) => {
@@ -425,12 +437,12 @@ export function ImagesToPdfTool() {
                     className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm"
                   >
                     <option value="a4">A4</option>
-                    <option value="letter">US Letter</option>
-                    <option value="image">Fit each image</option>
+                    <option value="letter">{t.imagesUsLetter}</option>
+                    <option value="image">{t.imagesFitEach}</option>
                   </select>
                 </label>
                 <label className="text-sm font-semibold">
-                  Orientation
+                  {t.imagesOrientation}
                   <select
                     value={orientation}
                     disabled={pageSize === 'image'}
@@ -442,13 +454,13 @@ export function ImagesToPdfTool() {
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm disabled:opacity-50"
                   >
-                    <option value="auto">Match each image</option>
-                    <option value="portrait">Portrait</option>
-                    <option value="landscape">Landscape</option>
+                    <option value="auto">{t.imagesMatchEach}</option>
+                    <option value="portrait">{t.imagesPortrait}</option>
+                    <option value="landscape">{t.imagesLandscape}</option>
                   </select>
                 </label>
                 <label className="text-sm font-semibold">
-                  Margin
+                  {t.imagesMargin}
                   <select
                     value={margin}
                     onChange={(event) => {
@@ -461,10 +473,10 @@ export function ImagesToPdfTool() {
                     }}
                     className="focus-ring mt-2 h-11 w-full rounded-xl border bg-background px-3 text-sm"
                   >
-                    <option value="0">None</option>
-                    <option value="12">Small</option>
-                    <option value="24">Medium</option>
-                    <option value="36">Large</option>
+                    <option value="0">{t.imagesMarginNone}</option>
+                    <option value="12">{t.imagesMarginSmall}</option>
+                    <option value="24">{t.imagesMarginMedium}</option>
+                    <option value="36">{t.imagesMarginLarge}</option>
                   </select>
                 </label>
               </div>
@@ -475,7 +487,7 @@ export function ImagesToPdfTool() {
                   disabled={busy}
                   onClick={clear}
                 >
-                  <Trash2 aria-hidden="true" /> Clear
+                  <Trash2 aria-hidden="true" /> {t.clear}
                 </Button>
                 <Button
                   className="h-11 min-w-44"
@@ -483,13 +495,13 @@ export function ImagesToPdfTool() {
                   onClick={() => void run()}
                 >
                   <FileText aria-hidden="true" />{' '}
-                  {busy ? 'Building locally…' : 'Create PDF'}
+                  {busy ? t.imagesBuilding : t.imagesCreatePdf}
                 </Button>
               </div>
               {busy ? (
                 <div className="mt-5" aria-live="polite">
                   <div className="flex justify-between text-xs">
-                    <span>Embedding images</span>
+                    <span>{t.imagesEmbedding}</span>
                     <span className="tabular">{percent}%</span>
                   </div>
                   <div className="mt-2 h-2 overflow-hidden rounded-full bg-border">
@@ -529,40 +541,44 @@ export function ImagesToPdfTool() {
                       data-receipt-download
                       href={receipt.url}
                       download="images.pdf"
-                      aria-label="Save generated PDF"
+                      aria-label={t.imagesSave}
                     />
                   }
                 >
-                  <ArrowDownToLine aria-hidden="true" /> Save PDF
+                  <ArrowDownToLine aria-hidden="true" /> {t.savePdf}
                 </Button>
               </div>
               <div className="grid border-t sm:grid-cols-3">
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">
-                  <p className="text-xs text-muted-foreground">Processing</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.processing}
+                  </p>
                   <p className="mt-1 flex items-center gap-2 text-sm font-semibold">
                     <ShieldCheck aria-hidden="true" className="size-4" />{' '}
-                    Browser worker
+                    {t.browserWorker}
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r">
-                  <p className="text-xs text-muted-foreground">Output check</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.outputCheck}
+                  </p>
                   <p className="mt-1 text-sm font-semibold">
                     Reopened · {formatDuration(receipt.validationDurationMs)}
                   </p>
                 </div>
                 <div className="p-4">
                   <p className="text-xs text-muted-foreground">
-                    Privacy boundary
+                    {t.imagesPrivacyBoundary}
                   </p>
                   <p className="mt-1 text-sm font-semibold">
-                    No file network primitive
+                    {t.imagesNoNetwork}
                   </p>
                 </div>
               </div>
             </section>
           ) : null}
           <footer className="mt-10 border-t py-6 text-xs text-muted-foreground">
-            Candidate {manifest.version} · pdf-lib · Browser worker
+            Candidate {manifest.version} · pdf-lib · {t.browserWorker}
           </footer>
         </div>
       </section>
