@@ -416,6 +416,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Create QR payloads, printable sheets, and common linear barcodes locally.',
   },
+  'pdf-form-filler': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Fill interactive PDF form fields and flatten widgets locally.',
+  },
 };
 
 /** Throws on an unknown id, the same way the `.find(...)!` it replaces would. */

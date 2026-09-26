@@ -144,6 +144,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/pdf/excel-to-pdf',
         workspaceId: 'excel-to-pdf',
       },
+      {
+        id: 'pdf-form-filler',
+        name: 'Fill PDF forms',
+        description:
+          'Fill interactive PDF form fields and flatten widgets locally.',
+        href: '/pdf/form-filler',
+        workspaceId: 'pdf-form-filler',
+      },
     ],
   },
   {

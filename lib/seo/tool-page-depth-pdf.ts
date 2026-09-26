@@ -2442,4 +2442,93 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
       },
     ],
   },
+  '/pdf/form-filler': {
+    title: 'Fill PDF Forms Online — Free AcroForm Editor',
+    description:
+      'Fill interactive PDF forms in your browser. Edit text fields, checkboxes, radios, and dropdowns, then flatten to lock values permanently. 100% private.',
+    heading: 'About this PDF form filler',
+    directAnswer:
+      'To fill an interactive PDF form: choose or drop the file onto the page, inspect the detected form fields, enter your values or toggle choices across any page, optionally choose whether to flatten the form to make the values permanent, and download the finished document. All processing takes place locally inside your browser memory with zero file upload.',
+    lead: 'This tool reads interactive PDF form fields across all pages of your document, presents clean controls for text inputs, checkboxes, radio groups, dropdown selections, and multi-select lists, and writes your updated values directly into the PDF structures. Once completed, you can either keep the form fields interactive for further downstream review or flatten the widgets so the rendered text and graphics become a permanent, unchangeable part of the page canvas. Because every operation executes inside a Web Worker in your local browser tab, confidential forms such as tax returns, medical questionnaires, loan applications, and employment contracts are never transmitted across a network.',
+    steps: [
+      {
+        name: 'Select your PDF form',
+        text: 'Drag and drop your PDF into the upload area or click to select it from your device. The document is inspected immediately in memory to identify interactive AcroForm widgets, page dimensions, and existing field entries without transmitting bytes to any external server.',
+      },
+      {
+        name: 'Review and complete form fields',
+        text: 'Browse the extracted fields arranged by page or filter them with the real-time search box. Enter text into single-line or multi-line boxes, tick checkboxes, pick radio choices, and select dropdown options. Required fields are clearly highlighted so you do not miss mandatory inputs.',
+      },
+      {
+        name: 'Choose whether to flatten the form',
+        text: 'Keep the Flatten form option enabled to permanently bake your entered values into the visual page layout, removing all interactive form widgets. Uncheck this option if you need the generated PDF to remain fillable and editable by subsequent recipients.',
+      },
+      {
+        name: 'Download the completed document',
+        text: 'Click Fill & Download PDF. The Web Worker applies your changes, recalculates internal PDF object references, validates that all mandatory entries are populated if flattening, and saves the finished document directly to your device downloads folder.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Supported PDF Form Field Types and Features',
+        body: [
+          'PDF forms (standardized under the ISO 32000 specification as AcroForms) contain diverse interactive field types designed for data collection. This editor provides full support for text fields (including multiline narrative sections and character-limited entries), single checkboxes, grouped checkboxes sharing common keys, radio button groups with mutually exclusive choices, single-choice dropdown pickers, and multi-select option lists.',
+          'Each field is automatically categorized and rendered with its corresponding native input control. If a field in the original file is designated as read-only by the document author, contains rich text formatting, or shares an identifier with another field, the editor indicates its exact status and preserves its current value without corruption.',
+        ],
+      },
+      {
+        heading: 'The Purpose and Security of Form Flattening',
+        body: [
+          'When an interactive form is shared in its raw editable state, recipients can alter typed entries, change checked boxes, or modify crucial numbers before forwarding the document. Form flattening takes every form widget annotation, renders its exact visual representation onto the underlying PDF content stream, and deletes the interactive AcroForm dictionary completely.',
+          'Flattening transforms the dynamic document into an immutable vector rendering. This guarantees that print shops, government portals, legal filing systems, and mobile PDF viewers display the exact values you entered without font mismatches, hidden widget artifacts, or unintended edits.',
+        ],
+      },
+      {
+        heading: 'Guaranteed Client-Side Confidentiality',
+        body: [
+          SEALED_PAGE,
+          NO_NETWORK_CODE,
+          'Bank details, government identification numbers, personal contact records, and legal declarations are precisely the data types commonly entered into PDF forms. By executing the entire parsing and document reconstruction pipeline in pure WebAssembly and client-side JavaScript, your private data remains strictly on your device.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          'Can this tool fill password-protected or encrypted PDF forms?',
+        answer:
+          'No. An encrypted form cannot be filled without first removing its encryption using the correct password. If you upload a password-protected PDF, the tool inspects the Standard security handler to determine whether it has a user password or owner restrictions, and directs you to unlock the document first. The tool will never attempt to guess or brute-force passwords.',
+      },
+      {
+        question:
+          'What is the difference between saving an editable form and flattening it?',
+        answer:
+          'Saving an editable form keeps interactive form fields intact, allowing anyone who opens the PDF in desktop viewers, Apple Preview, or a web browser to continue modifying the values. Flattening bakes the text and markings permanently into the page canvas and strips the form widgets, ensuring the values cannot be changed or edited by recipients.',
+      },
+      {
+        question:
+          'Can this tool fill dynamic XFA forms created with proprietary software?',
+        answer:
+          'Dynamic XFA (XML Forms Architecture) forms use proprietary XML data packets that require dedicated desktop reader software. Standard PDF AcroForm engines cannot reliably render or fill dynamic XFA structures. Static XFA forms that contain standard AcroForm fallbacks can be edited, while purely dynamic XFA files are rejected with a clear informative notice.',
+      },
+      {
+        question:
+          'Will digital signatures already on the document be preserved?',
+        answer:
+          'If a PDF already contains a cryptographic digital signature, modifying any form fields would break the mathematical signature hash and cause verification alerts in PDF viewers. For this reason, documents with existing cryptographic digital signatures are refused before changes are made to protect document integrity.',
+      },
+      {
+        question:
+          'Is there a limit on file size or the number of fields I can fill?',
+        answer:
+          'You can upload PDF files up to 150 MB containing hundreds of pages and form fields. Because all processing is handled by your browser hardware via a background Web Worker, there are no artificial limits, no subscription fees, and no daily usage quotas.',
+      },
+      {
+        question:
+          'Are my entered form values stored on your servers or logged anywhere?',
+        answer:
+          'Zero data is sent to any server. Neither the file bytes, the field names, nor the text you type into the form ever leave your local computer or mobile device. When you close the browser tab or click Reset, all form data is immediately erased from browser memory.',
+      },
+    ],
+  },
 };

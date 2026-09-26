@@ -2423,6 +2423,33 @@ export const publicTools: ToolManifest[] = [
     },
     owner: 'platform-foundation',
   },
+  {
+    id: 'pdf-form-filler',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Fill PDF forms',
+    shortDescription:
+      'Fill interactive PDF form fields and flatten widgets locally.',
+    category: 'PDF',
+    aliases: [
+      'fill pdf form',
+      'pdf form filler',
+      'flatten pdf form',
+      'edit pdf form fields',
+    ],
+    jobs: [
+      'fill interactive pdf forms',
+      'flatten pdf form fields so values cannot be changed',
+      'complete pdf tax and legal forms in browser',
+    ],
+    href: '/pdf/form-filler',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['pdf.acroform.fill', 'pdf.acroform.flatten'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
 ];
 
 export interface ToolGroup {
@@ -2472,6 +2499,7 @@ export const toolGroups: ToolGroup[] = [
       'pdf-burst',
       'excel-to-pdf',
       'pdf-password',
+      'pdf-form-filler',
     ],
   },
   {
