@@ -17,6 +17,7 @@ import { webOperations } from './web';
 import { writingOperations } from './writing';
 import { emailOperations } from '../../formats/email/kernel';
 import { financeOperations } from '../../formats/finance/kernel';
+import { geoOperations } from '../../formats/geo/kernel';
 import { pdfCryptOperations } from '../../formats/pdfcrypt/kernel';
 
 export const ALL_ADAPTER_OPERATIONS = [
@@ -39,5 +40,6 @@ export const ALL_ADAPTER_OPERATIONS = [
   ...writingOperations,
   ...emailOperations,
   ...financeOperations,
+  ...geoOperations,
   ...pdfCryptOperations,
 ] as const;
