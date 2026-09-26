@@ -70,6 +70,10 @@ export function buildSitemap(
     '/guides',
     '/blog',
     '/templates',
+    // The tool-request page. Listed because it is the one page whose text is
+    // the question people type -- "is there a free tool for X" -- and because
+    // an unlisted page cannot earn the inbound interest it exists to collect.
+    '/requests',
     // The snippet page for the embed programme. `/embed` is listed; the
     // framable `/embed/<tool>` copies are not, and are disallowed in
     // app/robots.ts -- they are stripped versions of pages this site is

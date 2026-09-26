@@ -182,6 +182,11 @@ describe('guide consolidation off is the previous behaviour', () => {
       '/guides',
       '/blog',
       '/templates',
+      // Added with app/requests/page.tsx. This frozen copy is a control for
+      // whether consolidation moved an entry, so a genuinely new content page
+      // belongs in it -- leaving it out would report the new page as a
+      // consolidation regression.
+      '/requests',
       // Added after d032150 and mirrored here for the same reason every other
       // core route is: this function's job is to rebuild the shipped sitemap
       // minus consolidation, so a core route missing from it would be scored
