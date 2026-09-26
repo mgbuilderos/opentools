@@ -20,6 +20,40 @@ that is easy to mistake for either success or failure.
 
 ## Queries — 3 months to 2026-09-23
 
+> ### ⚠️ SUPERSEDED 2026-09-27 — the figures below are wrong. Do not compare against them.
+>
+> **The real window is 2026-09-15 to 2026-09-23** (the domain was created
+> 2026-09-15, so "last 3 months" holds nine days), and the real totals are:
+>
+> | | recorded here | actual |
+> | --- | --- | --- |
+> | Queries | 18 | **529** |
+> | Impressions | ~18 | **683** (782 on the chart total) |
+> | Clicks | 0 | **2** |
+> | Pages with impressions | not captured | **171** |
+>
+> **Why the original is wrong: nothing was mis-read.** Search Console had not
+> finished processing this property on 23 September and backfilled afterwards.
+> A full export pulled on 26 September for the same window shows 529 queries.
+> Both exports agree exactly on every overlapping day (21 Sep 29 impressions,
+> 22 Sep 205, 23 Sep 512), so neither is suspect — the 23 September *screen*
+> simply had not caught up.
+>
+> **This would have faked the 21 October result.** Comparing October against
+> 18 queries and 0 clicks would show a 30-fold "improvement" that is only
+> Search Console catching up with itself. Compare against 529 / 683 / 2.
+>
+> The corrected figures are stored as data, not prose:
+> `analytics/search.jsonl`, keyed `2026-09-15..2026-09-23`, imported from the
+> owner's own export with `analytics/ingest-search-console.mjs`. That script
+> had a matching fault — it looked for `Dates.csv` when Google names the file
+> `Chart.csv`, so every import resolved to an "unknown" range and silently
+> overwrote the one before it. Fixed the same day; it now refuses an import
+> whose range it cannot read.
+
+The original text follows, unchanged, because it is what was believed on the
+day and the reasoning built on it is easier to audit with it in place.
+
 Read off the owner's Search Console export. **18 queries in total; the top ten
 are listed here, which is what the export showed.** Rows 11–18 were not
 captured — treat the totals below as "at least", not "exactly".
