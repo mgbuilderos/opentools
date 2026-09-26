@@ -3378,7 +3378,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/creator/creator-media-kit-generator',
     name: 'Creator media-kit generator',
-    terms: 'build concise fact markdown mediakit metric supplied',
+    terms:
+      'audience brand build concise fact figure format free laid markdown mediakit metric no one page platform pricing rate reach read screen supplied upload',
     op: 'creator text text',
   },
   {
@@ -3663,7 +3664,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/data/csv-deduplicator',
     name: 'CSV deduplicator',
-    terms: 'column duplicate full key later remove row selected',
+    terms:
+      'back chosen column deduplicated drop duplicate file free full key later no open paste pick remove repeated row selected tab table upload whole',
     op: 'spreadsheet text text',
   },
   {
@@ -3870,7 +3872,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/data/table-to-markdown',
     name: 'Table to Markdown',
-    terms: 'convert csv escaped github githubstyle style',
+    terms:
+      'aligned block comment convert csv drop escaped free github githubstyle issue no page pasted pipe readme ready spreadsheet style tsv upload wiki',
     op: 'spreadsheet text text',
   },
   {
@@ -4789,7 +4792,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/documents/markdown-file-maker',
     name: 'Markdown file maker',
-    terms: '8 download empty md non nonempty text utf utf8 validate',
+    terms:
+      '8 adding download edit empty free has keep live md no non nonempty nowhere one phone preview real save sign text txt useful utf utf8 validate write',
     op: 'document text text',
   },
   {
@@ -4891,7 +4895,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/documents/sop-generator',
     name: 'Standard Operating Procedure (SOP) builder',
     terms:
-      'checklist generate institutional numbered playbook procedural responsible role scope step verification',
+      'action away checklist document finished free generate institutional no numbered owner playbook prerequisite procedural responsible role scope sign step upload verification write',
     op: 'document text text',
   },
   {
@@ -6069,7 +6073,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/math/polygon-calculator',
     name: 'Regular-polygon calculator',
-    terms: 'area count length perimeter regularpolygon side',
+    terms:
+      'angle area count exterior formula interior length one perimeter radii radiu regularpolygon shown side two work',
     op: 'math none text',
   },
   {
@@ -6542,7 +6547,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/qr/app-store-qr-code',
     name: 'App Store QR code',
     terms:
-      'addres checked download encode insert itself link listing official packaging page paste poster scanned shape slide supplied svg symbol url',
+      'addres checked download encode free generate insert itself link listing official packaging page paste poster scanned shape slide supplied svg symbol url',
     op: 'qr-barcode text text',
   },
   {
@@ -7323,7 +7328,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/text/markdown-to-pdf-doc',
     name: 'Markdown to print & PDF document formatter',
     terms:
-      'beautifully doc footer header html page printable raw style transform typeset',
+      'beautifully block code doc footer header heading html laid list no page paginated paper printable raw ready save style transform typeset upload',
     op: 'writing text text',
   },
   {
@@ -7491,7 +7496,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/text/transcript-formatter',
     name: 'Transcript formatter',
-    terms: 'normalize preserving spacing speaker',
+    terms:
+      'clean dump filler line meeting normalize preserving raw readable recorder separated spacing speaker stripped tidied timestamp tool',
     op: 'text text text',
   },
   {
@@ -7724,7 +7730,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/web/favicon-html-generator',
     name: 'Favicon & app icon HTML snippet generator',
     terms:
-      'configuration device link manifest mobile modern production productionready ready tag web',
+      'apple block classic configuration covering device every full link manifest meta mobile modern production productionready ready site tag touch web',
     op: 'web text text',
   },
   {
