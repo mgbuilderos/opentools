@@ -21,7 +21,40 @@ const FORBIDDEN_TAGS = new Set([
   'audio',
   'source',
   'portal',
+  /*
+   * SVG is not decoration in an email. `<image href>`, `<image xlink:href>`
+   * and `<use href>` all fetch a remote URL, and all three were measured
+   * fetching on 2026-09-26 while this page told the reader images were not
+   * loaded. The element list below only matched `img`, so none of them was
+   * ever inspected.
+   *
+   * The whole subtree goes. An email that needs SVG to be readable does not
+   * exist, and the alternative -- walking every SVG descendant for href,
+   * xlink:href, and whatever the next spec adds -- is a list we would have to
+   * keep correct forever.
+   */
+  'svg',
 ]);
+
+/**
+ * Attributes that fetch a URL on any element, whatever its tag.
+ *
+ * `background` is legacy HTML that browsers still honour on table cells.
+ * `srcset` is a second source list beside `src`. `ping` fires a POST when a
+ * link is clicked -- a delayed read receipt. `href`/`xlink:href` fetch on SVG
+ * elements and are kept only on `<a>`, which is handled separately below.
+ */
+const REMOTE_FETCH_ATTRIBUTES = [
+  'background',
+  'srcset',
+  'imagesrcset',
+  'ping',
+  'lowsrc',
+  'dynsrc',
+  'poster',
+  'formaction',
+  'xlink:href',
+];
 
 const SAFE_SCHEMES = /^https?:\/\//i;
 const DATA_IMAGE_SCHEME =
@@ -80,6 +113,15 @@ export function sanitizeEmailHtml(
       if (attrName.toLowerCase().startsWith('on')) {
         el.removeAttribute(attrName);
       }
+    }
+
+    // Attributes that fetch regardless of tag. `href` is deliberately not in
+    // the shared list: an anchor needs it, and the anchor branch below decides.
+    for (const attribute of REMOTE_FETCH_ATTRIBUTES) {
+      if (el.hasAttribute(attribute)) el.removeAttribute(attribute);
+    }
+    if (el.tagName.toLowerCase() !== 'a' && el.hasAttribute('href')) {
+      el.removeAttribute('href');
     }
 
     // Sanitize style attribute: strip url(...) references
@@ -174,6 +216,20 @@ function fallbackSanitize(
   }
 
   let result = html
+    /*
+     * The same holes the DOMParser path had, closed the same way. This branch
+     * is not dead code in tests -- `vitest.config` sets `environment: 'node'`,
+     * where `DOMParser` is undefined, so every unit test in this repository
+     * runs THIS function and not the one that ships. Six of the eighteen
+     * vectors survived it when measured directly on 2026-09-26.
+     */
+    .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
+    .replace(/<svg\b[^>]*\/?>/gi, '')
+    .replace(
+      /\s+(?:background|srcset|imagesrcset|ping|lowsrc|dynsrc|poster|formaction)=["'][^"']*["']/gi,
+      '',
+    )
+    .replace(/\s+xlink:href=["'][^"']*["']/gi, '')
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
