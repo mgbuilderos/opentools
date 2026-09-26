@@ -1,4 +1,5 @@
 import { PdfFormFillerTool } from '@/components/pdf-form-filler-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 import { PageDepthProvider } from '@/components/page-depth-provider';
 import {
   requireToolPageDepth,
@@ -11,8 +12,11 @@ export const metadata = toolPageMetadata(ROUTE);
 
 export default function FormFillerPage() {
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <PdfFormFillerTool />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route={ROUTE} meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <PdfFormFillerTool />
+      </PageDepthProvider>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { WorkbookAuditTool } from '@/components/workbook-audit-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -14,5 +15,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const related = relatedToolsFor('/data/workbook-audit');
-  return <WorkbookAuditTool relatedTools={related} />;
+  return (
+    <>
+      <ToolJsonLd route="/data/workbook-audit" meta={metadata} />
+      <WorkbookAuditTool relatedTools={related} />
+    </>
+  );
 }

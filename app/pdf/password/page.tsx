@@ -1,4 +1,5 @@
 import { PdfPasswordTool } from '@/components/pdf-password-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 import { PageDepthProvider } from '@/components/page-depth-provider';
 import {
   requireToolPageDepth,
@@ -11,8 +12,11 @@ export const metadata = toolPageMetadata(ROUTE);
 
 export default function PdfPasswordPage() {
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <PdfPasswordTool />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route={ROUTE} meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <PdfPasswordTool />
+      </PageDepthProvider>
+    </>
   );
 }
