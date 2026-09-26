@@ -5,6 +5,7 @@ import {
   requireToolPageDepth,
   toolPageMetadata,
 } from '@/lib/seo/tool-page-depth';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -22,8 +23,11 @@ export const metadata = toolPageMetadata(ROUTE);
 
 export default function Page() {
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <AadhaarPanMaskerTool brief={BRIEF} />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route="/life-admin/aadhaar-pan-masker" meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <AadhaarPanMaskerTool brief={BRIEF} />
+      </PageDepthProvider>
+    </>
   );
 }
