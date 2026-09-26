@@ -74,6 +74,26 @@ cookies, files, file names, pasted text, or results — tools run in the browser
 so the server never receives them. Logs are retained under Cloudflare's Workers Logs retention.
 Cloudflare may also record standard request metadata for its platform logs.
 
+## Say What You Need Done
+
+There is one text box on the home page. You type the job in your own words —
+"make this under 2MB and strip my name out of it" — and it answers with the
+tools that do it, in order, or tells you this site cannot. Where the steps are
+operations the batch runner can take, it offers to run the whole chain over your
+files in one pass.
+
+It reads the sentence **on your device**, and that is structural rather than
+promised: these pages ship `connect-src 'none'`, so the tab cannot open a
+connection, and the test suite fails on a network primitive anywhere in
+`lib/command/`. There is no model and no API key, which is also why it can say
+what it cannot do — a language translation, an email, today's exchange rate —
+instead of answering with whichever tool shares a word with the question. A gap
+that is just a missing tool offers to file itself as an issue, with your words
+already in the form and nothing sent until you submit it.
+
+See [docs/COMMAND_BAR.md](docs/COMMAND_BAR.md) for how it reads a sentence, why
+the index is 35 KB, and what it still cannot do.
+
 ## Core Tool Suite
 
 691 live tool routes, 679 of them browsable from the 17 sidebar groups. Those
@@ -201,6 +221,7 @@ Cloudflare Workers.
 app/          routes (one folder per tool)
 components/   shared workbench UI and tool components
 lib/tools/    pure tool logic, manifests (catalog.ts), and tests
+lib/command/  the home page's command bar: reads a request, plans the steps
 workers/      Web Workers for heavy processing
 scripts/      QC, design-system, and SBOM scripts
 release/      checked-in SBOM

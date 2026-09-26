@@ -62,7 +62,24 @@ npm ci
 npm run qc                       # the full suite CI runs
 npm run release:notes v0.2.0     # the exact body the release will carry
 git tag v0.2.0 && git push origin v0.2.0
+git ls-remote --tags origin      # the tag is pushed only if it appears here
 ```
+
+**Then, once the workflow has pushed the image**, one command that belongs to
+the release and is easy to forget because it comes after the interesting part:
+
+```bash
+npm run release:digest           # pins the Umbrel manifest to the new digest
+npm test                         # confirms every manifest agrees with it
+```
+
+Umbrel is the only catalogue that requires `repo:tag@sha256:<digest>`, and the
+digest cannot exist before the image does, so `packaging/umbrel/docker-compose.yml`
+ships a placeholder between releases. `scripts/umbrel-digest.mjs` reads the real
+digest from the registry, checks the image carries both architectures, and exits
+non-zero rather than writing anything if the tag is not published — so running
+it too early tells you so instead of producing a manifest that installs for
+nobody.
 
 Add the `## 0.2.0` section to `CHANGELOG.md` in the pull request, before the
 tag — `scripts/release-notes.test.ts` fails on a section that is empty or not

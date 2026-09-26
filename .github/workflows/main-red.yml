@@ -1,0 +1,133 @@
+name: Main red
+
+# Stop the line when main breaks, and say so somewhere a person will look.
+#
+# ## Why this exists
+#
+# CI already runs on main. Nothing read the result. On 2026-09-26 main was red
+# for roughly fifteen minutes and four pull requests went red with it, each
+# author starting to debug a failure that was not theirs -- because the only
+# place the breakage was visible was a check on a merge commit nobody opens.
+#
+# The breakage itself could not have been caught earlier by either author.
+# #44 added a guard requiring every live tool page to render ToolJsonLd;
+# /file/xray had merged in #37 without one. The two PRs touched no common file,
+# so neither conflicted and both were correctly green. They were only wrong
+# together, and "together" first exists on main. That class of failure cannot
+# be prevented in a branch -- it can only be detected fast on main and made
+# loud, which is what this does.
+#
+# ## What it does
+#
+# Opens one issue when main goes red, updates that same issue on each further
+# failure rather than opening another, and closes it when main goes green. One
+# issue per outage, not one per commit.
+#
+# It deliberately ignores a `cancelled` run: cancellation is the absence of a
+# verdict, not a bad one, and treating it as failure would have this filing
+# issues constantly. (ci.yml no longer cancels on main for that same reason.)
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+# Never two of these at once: both would look for the open issue, both would
+# find none, and main would collect two issues for one outage.
+concurrency:
+  group: main-red
+  cancel-in-progress: false
+
+jobs:
+  signal:
+    name: Open, update or close the stop-the-line issue
+    runs-on: ubuntu-latest
+    # `success` and `failure` only. A cancelled or skipped run says nothing.
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const MARKER = 'main is red';
+            const run = context.payload.workflow_run;
+            const failed = run.conclusion === 'failure';
+
+            // Found by title rather than by label, so this needs no label to
+            // exist first and cannot silently stop matching if one is renamed.
+            const open = await github.paginate(
+              github.rest.issues.listForRepo,
+              { ...context.repo, state: 'open', per_page: 100 },
+            );
+            const existing = open.find((issue) =>
+              issue.title.startsWith(MARKER) && !issue.pull_request,
+            );
+
+            const sha = run.head_sha.slice(0, 7);
+            const link = `[run #${run.run_number}](${run.html_url})`;
+            const title = `${MARKER} — CI failing on ${sha}`;
+
+            if (failed) {
+              const body = [
+                `**${run.name} failed on \`${sha}\`** — ${link}`,
+                '',
+                `> ${run.head_commit.message.split('\n')[0]}`,
+                '',
+                'Anyone whose pull request is red right now should check here',
+                'first: a failure on main appears on every open PR, and it is',
+                'not theirs to fix.',
+                '',
+                'Worth ruling out before assuming the last merge is at fault:',
+                'two pull requests can each be correct and still break main',
+                'together, when one adds something a rule in the other governs.',
+                'Neither conflicts, both go green, and the breakage exists only',
+                'once both are in the same tree. The last commit is where it',
+                'surfaced, not necessarily where it came from.',
+                '',
+                'This issue closes itself when CI next passes on main.',
+              ].join('\n');
+
+              if (existing) {
+                await github.rest.issues.createComment({
+                  ...context.repo,
+                  issue_number: existing.number,
+                  body: `Still red on \`${sha}\` — ${link}`,
+                });
+                core.setFailed(`main is still red: ${run.html_url}`);
+                return;
+              }
+
+              const created = await github.rest.issues.create({
+                ...context.repo,
+                title,
+                body,
+              });
+              core.setFailed(
+                `main is red, opened #${created.data.number}: ${run.html_url}`,
+              );
+              return;
+            }
+
+            if (!existing) {
+              core.info('main is green and no outage issue is open.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: existing.number,
+              body: `Green again on \`${sha}\` — ${link}. Closing.`,
+            });
+            await github.rest.issues.update({
+              ...context.repo,
+              issue_number: existing.number,
+              state: 'closed',
+              state_reason: 'completed',
+            });
+            core.info(`Closed #${existing.number}.`);

@@ -27,7 +27,16 @@ test.describe('the file follows you to the tool you picked', () => {
     await page.goto('/');
     await dropPdf(page, await testPdf(3));
 
-    await expect(page.getByText('PDF Document')).toBeVisible();
+    /*
+     * Both `exact` and `.first()`, because there were two separate collisions
+     * and each fix alone leaves the other: the home page lists a tool called
+     * "Compare PDF Documents Online" (substring), and the depth prose also
+     * says "PDF document" (case). Resolved from two branches that each caught
+     * one of them.
+     */
+    await expect(
+      page.getByText('PDF Document', { exact: true }).first(),
+    ).toBeVisible();
     await page.getByRole('link', { name: 'Rotate PDF', exact: true }).click();
 
     await page.waitForURL(/\/pdf\/page-tools/u);
