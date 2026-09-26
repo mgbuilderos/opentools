@@ -153,3 +153,34 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   itself is proved by `e2e/share-target.spec.ts`, which disconnects the browser
   and loads `/pdf/merge`.
 - **Not verified:** anything on getopentools.com. This has not been deployed.
+
+## 2026-09-26 — Tools must be evergreen: never encode another system's rules
+
+Decided by: project owner. Recorded by: Claude Code at the owner's request.
+Full reasoning, evidence and design patterns: **`docs/EVERGREEN_PRINCIPLE.md`**.
+
+### 9. The requirement is an input, not a constant
+
+- The owner's words, rejecting a proposal to build pages around named exam and
+  government form requirements: *"we need to make evergreen tool — suppose a
+  form changes then we dont know that what is the new image size. so we want to
+  have evergreen tool that stays the test of the time."*
+- **The rule:** a tool asks the user for the size, format or limit they have
+  been given. It does not store what some portal, exam board or employer
+  requires. A page that states another system's rule is a claim nobody here is
+  watching, and when it goes stale it does not throw, fail a test or appear in
+  a log — it renders perfectly and quietly misleads. There is no instrument on
+  this site that can detect that, by design.
+- **The test before building anything:** *if the external system changes
+  tomorrow and nobody tells us, does this become wrong?* If yes, redesign so
+  the requirement arrives as input.
+- **This does not reverse decision 16**, which stays in force for the cases
+  where a preset genuinely helps: sourced, dated, 90-day expiry, in-app only,
+  editable, never in cached metadata. Decision 16 is the mitigation for
+  encoding a rule; this decision is the avoidance. Prefer the avoidance —
+  an expiry gate needs a person to re-open every source four times a year,
+  forever, and that does not scale.
+- Recorded because it was paid for once already: sourcing the six original
+  preset rows found four of them wrong or unsourceable, including two invented
+  USCIS ceilings for a portal that publishes one.
+- Be precise about what this software does; silent about everyone else's rules.
