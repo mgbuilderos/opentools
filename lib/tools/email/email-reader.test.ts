@@ -109,3 +109,55 @@ describe('Email Reader and Sanitizer', () => {
     });
   });
 });
+
+/**
+ * The four vectors that fetched through the original sanitiser.
+ *
+ * Each one was a working read receipt: the sender learns the message was
+ * opened, when, and from which IP, while the page says remote images are
+ * blocked. They fetched because the check asked whether an element's `tagName`
+ * was `img`, and a tracking pixel does not care what element carries it.
+ *
+ * These run against the regex fallback, because `vitest.config` sets
+ * `environment: 'node'` and `DOMParser` is therefore undefined here — which is
+ * exactly why six passing unit tests never saw the original defect.
+ * `e2e/email-tracker.spec.ts` covers the DOM path in a real browser.
+ */
+describe('remote fetch vectors', () => {
+  const TRACKER = 'http://tracker.invalid';
+
+  it('strips an SVG image href', () => {
+    const out = sanitizeEmailHtml(
+      `<svg><image href="${TRACKER}/svgimg.png" /></svg>`,
+    );
+    expect(out).not.toContain('tracker.invalid');
+  });
+
+  it('strips an SVG image xlink:href', () => {
+    const out = sanitizeEmailHtml(
+      `<svg><image xlink:href="${TRACKER}/svgxlink.png" /></svg>`,
+    );
+    expect(out).not.toContain('tracker.invalid');
+  });
+
+  it('strips an SVG use href', () => {
+    const out = sanitizeEmailHtml(
+      `<svg><use href="${TRACKER}/svguse.svg" /></svg>`,
+    );
+    expect(out).not.toContain('tracker.invalid');
+  });
+
+  it('strips a legacy table-cell background', () => {
+    const out = sanitizeEmailHtml(
+      `<table><tr><td background="${TRACKER}/td.png">x</td></tr></table>`,
+    );
+    expect(out).not.toContain('tracker.invalid');
+  });
+
+  it('strips poster, srcset and ping attributes', () => {
+    const out = sanitizeEmailHtml(
+      `<p poster="${TRACKER}/a.png" srcset="${TRACKER}/b.png" ping="${TRACKER}/c">x</p>`,
+    );
+    expect(out).not.toContain('tracker.invalid');
+  });
+});
