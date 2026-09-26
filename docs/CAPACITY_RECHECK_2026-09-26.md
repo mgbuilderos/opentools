@@ -20,40 +20,55 @@ to be re-decided; §3 was right when written.
 
 ## Load, measured
 
+**Run twice**, because a single sample was the weakest part of the first
+version of this file.
+
 ```
-60 concurrent requests, same URL (the HN shape)
-  0 non-200 · median 0.287s · p95 0.519s · max 0.550s · ~50 req/s
+RUN 1
+  60 concurrent, same URL     0 non-200 · median 0.287s · p95 0.519s · ~50 req/s
+  40 concurrent, 4 pages      37 HIT / 3 MISS                       = 92.5% hit
+  30 concurrent, forced MISS  0 non-200 · median 0.285s · p95 0.482s · max 2.505s
 
-40 concurrent across 4 popular pages
-  37 HIT / 3 MISS  = 92.5% served from edge cache, never touching the Worker
+RUN 2
+ 100 concurrent, same URL     0 non-200 · median 0.285s · p95 0.461s · max 0.552s
+  60 concurrent, 6 pages      58 HIT / 1 REVALIDATED / 1 MISS       = 96.7% hit
 
-30 concurrent, unique query string per request (forced cache MISS — worst case)
-  0 non-200 · median 0.285s · p95 0.482s · max 2.505s
+COMBINED                      95 / 100 = 95.0% hit, 5.0% miss
 ```
 
-The forced-MISS run is the one that matters: even when *every* request is made
-to reach the origin, nothing failed.
+The second run is *better* than the first at 2.5× the concurrency — 100
+simultaneous requests came back cleaner (p95 0.461s) than 60 did. Whatever the
+limit is, this is not near it.
+
+Two things the second run added. A `REVALIDATED` appeared, which is
+`stale-while-revalidate` working as intended — the visitor got a cached page
+while the edge refreshed behind them; it is counted as a **miss** above, which
+is conservative. And the forced-MISS run is still the one that matters: when
+*every* request is made to reach the origin, nothing failed.
 
 ## The ceiling, three ways
 
 Workers Free allows 100,000 requests/day. Only a cache **miss** spends one.
 Assume an HN front page delivers 50,000 visitors × 3 pages = 150,000 views.
 
-| Model | Worker requests | % of ceiling |
-| --- | --- | --- |
-| A — measured 7.5% miss rate | 11,250 | **11.2%** |
-| B — `s-maxage=3600`: 5 URLs × 40 PoPs × 8h | 1,600 | **1.6%** |
-| C — pessimistic, 3× the measured miss rate | 33,750 | **33.8%** |
+| Model | Worker requests | % of ceiling | Break-even |
+| --- | --- | --- | --- |
+| A — combined measured, 5.0% miss | 7,500 | **7.5%** | 2.0M views/day |
+| B — `s-maxage=3600`: 5 URLs × 40 PoPs × 8h | 1,600 | **1.6%** | — |
+| C — pessimistic, 3× the measured miss | 22,500 | **22.5%** | 667,000 views/day |
 
-Break-even moves from §3's **71,000** page views/day to **444,000** on the
-pessimistic model and **1.33M** on the measured one.
+Break-even moves from §3's **71,000** page views/day to **667,000** on the
+pessimistic model and **2.0M** on the measured one. Plan against C.
 
 ## What is NOT established here, and matters
 
-- **The 92.5% is from one location.** Each Cloudflare PoP caches independently,
-  so a globally distributed spike misses more often than a single-origin test.
-  Model C exists for that reason and is the one to plan against. It is a guess
-  at the multiplier, not a measurement.
+- **Both runs are from one location.** Repeating the measurement raised
+  confidence in the *number* (92.5% then 96.7%, combined 95.0%) but not in its
+  *generality*: each Cloudflare PoP caches independently, so a globally
+  distributed spike misses more often than any single-origin test can show.
+  Two samples from one place are still one place. Model C exists for that
+  reason and is the one to plan against; its 3× multiplier is a guess, not a
+  measurement.
 - **Nobody has read the actual Workers request counter.** Everything above is
   inferred from response headers. **Before launching, open Cloudflare →
   Workers → Requests and read the real daily number.** One look beats three
