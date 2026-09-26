@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   FORBIDDEN_COMPETITORS,
+  UNSOURCED_PRICE_CLAIM,
   findForbiddenCompetitors,
   findUnsourcedPriceClaims,
 } from './competitor-names';
@@ -129,6 +130,46 @@ describe('the list stays cheap enough to run over every page', () => {
       `these patterns take ~17x longer than the same pattern without u, and ` +
         `every name here is ASCII so u changes nothing they match: ${slow.join(', ')}`,
     ).toEqual([]);
+  });
+
+  /*
+   * The price pattern was missed when `u` was dropped from the name list, and
+   * nothing here noticed: the two checks either side of this one read
+   * `FORBIDDEN_COMPETITORS` and the price claim is not in it. It kept `giu` and
+   * cost 1,993ms of the sweep by itself, against 419ms for the same pattern as
+   * `gi` -- 4.8x, for byte-identical matches over the built site.
+   *
+   * So it is checked by name. A third pattern added to this module needs a
+   * third check; there is no way to enumerate them, which is the honest cost of
+   * keeping the fast ones fast.
+   */
+  it('uses no i+u on the price pattern either, which is the same slow path', () => {
+    expect(
+      UNSOURCED_PRICE_CLAIM.flags.includes('i') &&
+        UNSOURCED_PRICE_CLAIM.flags.includes('u'),
+      `the price pattern costs 4.8x with u and matches exactly the same text ` +
+        `without it; flags are currently "${UNSOURCED_PRICE_CLAIM.flags}"`,
+    ).toBe(false);
+  });
+
+  /*
+   * Why the price pattern is allowed to be non-ASCII when no name is.
+   *
+   * The check below this one forbids a non-ASCII *name*, because a name that
+   * needs folding needs `u`. The price pattern is non-ASCII on purpose --
+   * `[$€£₹]` -- and drops `u` anyway, because those symbols are single UTF-16
+   * code units with no case to fold. That argument is only worth as much as a
+   * test of it, so each symbol is exercised against the shipped pattern.
+   */
+  it('still catches every currency symbol without the u flag', () => {
+    for (const text of [
+      'it charges $9 a month',
+      'it charges €9 a month',
+      'it charges £9 a month',
+      'it charges ₹9 a month',
+    ]) {
+      expect(findUnsourcedPriceClaims(text, 'a.tsx'), text).toHaveLength(1);
+    }
   });
 
   it('holds only ASCII patterns, which is what makes dropping u safe', () => {
