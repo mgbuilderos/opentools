@@ -238,7 +238,35 @@ test.describe('egress sweep across every dedicated tool route', () => {
        * Both directions fail: a route that stops accepting a file, and a route
        * that starts accepting one without anybody deciding it should be swept.
        */
-      const expectedFed = routes.filter((route) => TAKES_A_FILE.has(route));
+      /*
+       * A runner without a video encoder cannot be handed a video.
+       *
+       * CI's browsers are built without the proprietary codecs, so
+       * `MediaRecorder.isTypeSupported` answers false for everything and the
+       * twelve /video routes get a page-load proof instead of a file-level
+       * one. That is a fact about the runner, not a regression, but it must
+       * not pass silently: coverage quietly dropping from 56 routes to 44 is
+       * exactly the kind of erosion this pin exists to catch. So it is
+       * detected, subtracted deliberately, and printed.
+       */
+      const canEncodeVideo =
+        kind !== 'webm' ||
+        (await page.evaluate(
+          () =>
+            typeof MediaRecorder !== 'undefined' &&
+            ['video/mp4', 'video/webm;codecs=vp8', 'video/webm'].some((type) =>
+              MediaRecorder.isTypeSupported(type),
+            ),
+        ));
+      if (!canEncodeVideo) {
+        console.log(
+          `[sweep] ${section}: no video encoder on this runner — ${routes.length} route(s) got a page-load proof only`,
+        );
+      }
+
+      const expectedFed = canEncodeVideo
+        ? routes.filter((route) => TAKES_A_FILE.has(route))
+        : [];
       expect(
         fedAFile.sort(),
         `${section}: the set of routes accepting a file changed`,
@@ -272,6 +300,11 @@ test.describe('egress sweep across every dedicated tool route', () => {
  * `probe-files.ts` instead of collapsing into one `page.evaluate` argument.
  */
 test.beforeEach(async ({ page }) => {
+  if (process.env.SWEEP_NO_ENCODER === '1') {
+    await page.addInitScript(
+      'if (typeof MediaRecorder !== "undefined") MediaRecorder.isTypeSupported = () => false;',
+    );
+  }
   await page.addInitScript(
     `window.__handProbe = (kind, token) => (${HAND_PROBE_TO_PAGE.toString()})(kind, token);`,
   );
