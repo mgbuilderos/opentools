@@ -385,6 +385,17 @@ export function HomeWorkspace() {
                 About
               </a>
               {/*
+                The only page that gives a returning visitor a reason to come
+                back before their next file problem, so it belongs on the
+                most-linked page on the site rather than in the sitemap alone.
+              */}
+              <a
+                href="/whats-new"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                What&rsquo;s new
+              </a>
+              {/*
                 The comparison pages are reachable from here because an orphan
                 page earns nothing: this footer is on the most-linked page on
                 the site, so it is where their crawl path starts.

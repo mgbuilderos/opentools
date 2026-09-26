@@ -68,7 +68,7 @@ PRIVACY
 
 The extension makes no network requests of its own. It reads one response header the browser was already receiving, keeps the verdict in memory for the open tab, and discards it when you close the tab. It does not request permission to store anything on disk. There is no account, no analytics, no third party, and no remote code.
 
-The whole thing is 179 lines of JavaScript and it is public. Every claim above can be checked:
+The whole thing is 254 lines of JavaScript and it is public. Every claim above can be checked:
 https://github.com/mgbuilderos/opentools/tree/main/extension
 
 WHO MADE IT

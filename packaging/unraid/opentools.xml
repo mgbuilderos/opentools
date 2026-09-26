@@ -14,7 +14,7 @@
 -->
 <Container version="2">
   <Name>OpenTools</Name>
-  <Repository>ghcr.io/mgbuilderos/opentools:0.1.0</Repository>
+  <Repository>ghcr.io/mgbuilderos/opentools:0.2.0</Repository>
   <Registry>https://github.com/mgbuilderos/opentools/pkgs/container/opentools</Registry>
   <Network>bridge</Network>
   <Shell>bash</Shell>

@@ -111,53 +111,53 @@ describe('Email Reader and Sanitizer', () => {
 });
 
 /**
- * The four vectors that fetched through the original sanitiser.
+ * The four vectors that fetched through the original sanitiser, held here as
+ * unit assertions as well as in `e2e/email-tracker.spec.ts`.
  *
- * Each one was a working read receipt: the sender learns the message was
- * opened, when, and from which IP, while the page says remote images are
- * blocked. They fetched because the check asked whether an element's `tagName`
- * was `img`, and a tracking pixel does not care what element carries it.
+ * The e2e guard is the authoritative one — it watches real network traffic in
+ * a real browser, which is the only place the DOMParser path runs. These are
+ * the cheap copy that fails in a second rather than in a browser run, and they
+ * cover the regex fallback, which is what `environment: 'node'` actually
+ * executes here.
  *
- * These run against the regex fallback, because `vitest.config` sets
- * `environment: 'node'` and `DOMParser` is therefore undefined here — which is
- * exactly why six passing unit tests never saw the original defect.
- * `e2e/email-tracker.spec.ts` covers the DOM path in a real browser.
+ * Verified to go red: against the pre-fix sanitiser all five fail.
  */
 describe('remote fetch vectors', () => {
   const TRACKER = 'http://tracker.invalid';
 
   it('strips an SVG image href', () => {
-    const out = sanitizeEmailHtml(
-      `<svg><image href="${TRACKER}/svgimg.png" /></svg>`,
-    );
-    expect(out).not.toContain('tracker.invalid');
+    expect(
+      sanitizeEmailHtml(`<svg><image href="${TRACKER}/svgimg.png" /></svg>`),
+    ).not.toContain('tracker.invalid');
   });
 
   it('strips an SVG image xlink:href', () => {
-    const out = sanitizeEmailHtml(
-      `<svg><image xlink:href="${TRACKER}/svgxlink.png" /></svg>`,
-    );
-    expect(out).not.toContain('tracker.invalid');
+    expect(
+      sanitizeEmailHtml(
+        `<svg><image xlink:href="${TRACKER}/svgxlink.png" /></svg>`,
+      ),
+    ).not.toContain('tracker.invalid');
   });
 
   it('strips an SVG use href', () => {
-    const out = sanitizeEmailHtml(
-      `<svg><use href="${TRACKER}/svguse.svg" /></svg>`,
-    );
-    expect(out).not.toContain('tracker.invalid');
+    expect(
+      sanitizeEmailHtml(`<svg><use href="${TRACKER}/svguse.svg" /></svg>`),
+    ).not.toContain('tracker.invalid');
   });
 
   it('strips a legacy table-cell background', () => {
-    const out = sanitizeEmailHtml(
-      `<table><tr><td background="${TRACKER}/td.png">x</td></tr></table>`,
-    );
-    expect(out).not.toContain('tracker.invalid');
+    expect(
+      sanitizeEmailHtml(
+        `<table><tr><td background="${TRACKER}/td.png">x</td></tr></table>`,
+      ),
+    ).not.toContain('tracker.invalid');
   });
 
-  it('strips poster, srcset and ping attributes', () => {
-    const out = sanitizeEmailHtml(
-      `<p poster="${TRACKER}/a.png" srcset="${TRACKER}/b.png" ping="${TRACKER}/c">x</p>`,
-    );
-    expect(out).not.toContain('tracker.invalid');
+  it('strips poster, srcset, imagesrcset, ping and formaction', () => {
+    expect(
+      sanitizeEmailHtml(
+        `<p poster="${TRACKER}/a.png" srcset="${TRACKER}/b.png" imagesrcset="${TRACKER}/c.png" ping="${TRACKER}/d" formaction="${TRACKER}/e">x</p>`,
+      ),
+    ).not.toContain('tracker.invalid');
   });
 });

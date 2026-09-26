@@ -61,6 +61,11 @@ export function buildSitemap(
     // rather than for someone with a file to convert.
     '/self-host',
     '/about',
+    // What shipped, for a returning visitor. Listed with the content pages
+    // rather than in LIVE_TOOL_ROUTES: it runs no tool, so a CTA or the smart
+    // dropzone must never offer it as a place to send a file. Its `feed.xml`
+    // is deliberately absent -- a feed is for readers, not for crawlers.
+    '/whats-new',
     '/support',
     '/guides',
     '/blog',

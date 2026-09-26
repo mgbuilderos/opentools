@@ -65,6 +65,43 @@ describe('the shipped extension is submittable', () => {
   it('declares only the permissions the listing justifies', () => {
     expect(manifest.permissions).toEqual(DECLARED_PERMISSIONS);
   });
+
+  /**
+   * The listing invites the reader to count: "the whole thing is N lines of
+   * JavaScript and it is public". That is the second claim in this file to go
+   * stale against the code it describes — the description drifted to 152
+   * characters, and this number sat at 179 while a later change took the real
+   * count to 254. Both are the same failure: copy that cites the tree, in a
+   * file nothing reads on the way past.
+   *
+   * Counted over the files that actually ship, the way someone checking it
+   * would, so a number typed here has to be the true one.
+   */
+  it('states the line count the shipped JavaScript actually has', () => {
+    const shipped = shippableFiles().filter((file) => file.endsWith('.js'));
+    const actual = shipped.reduce(
+      (total, file) =>
+        total +
+        readFileSync(path.join(root, 'extension', file), 'utf8').split('\n')
+          .length -
+        1,
+      0,
+    );
+
+    const listing = readFileSync(
+      path.join(root, 'extension/STORE_LISTING.md'),
+      'utf8',
+    );
+    const claimed = /is (\d+) lines of JavaScript/u.exec(listing);
+    expect(
+      claimed,
+      'STORE_LISTING.md no longer states a line count',
+    ).toBeTruthy();
+    expect(
+      Number(claimed![1]),
+      `STORE_LISTING.md says ${claimed![1]} lines; ${shipped.join(', ')} total ${actual}`,
+    ).toBe(actual);
+  });
 });
 
 describe('choosing what goes in the archive', () => {
