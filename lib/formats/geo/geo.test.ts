@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   GeoFormatError,
+  parseGeo,
   parseGeoJson,
   parseGpx,
   parseKml,
@@ -66,6 +67,18 @@ describe('geographic formats', () => {
     });
   });
 
+  it('detects each supported geographic representation from its bytes', async () => {
+    await expect(parseGeo(await fixture('track.gpx'))).resolves.toEqual(
+      await parseGpx(await fixture('track.gpx')),
+    );
+    await expect(parseGeo(await fixture('route.kml'))).resolves.toEqual(
+      await parseKml(await fixture('route.kml')),
+    );
+    await expect(parseGeo(await fixture('tracks.geojson'))).resolves.toEqual(
+      await parseGeoJson(await fixture('tracks.geojson')),
+    );
+  });
+
   it('round-trips each supported representation', async () => {
     const gpx = await parseGpx(await fixture('track.gpx'));
     const viaGeoJson = await parseGeoJson(
@@ -111,6 +124,20 @@ describe('geographic formats', () => {
       name: 'Short route',
       points: [],
     });
+  });
+
+  it('writes an empty privacy-trimmed track in every supported format', async () => {
+    const document = { tracks: [{ name: 'Private', points: [] }] };
+
+    await expect(
+      parseGpx(new TextEncoder().encode(writeGpx(document))),
+    ).resolves.toEqual(document);
+    await expect(
+      parseKml(new TextEncoder().encode(writeKml(document))),
+    ).resolves.toEqual(document);
+    await expect(
+      parseGeoJson(new TextEncoder().encode(writeGeoJson(document))),
+    ).resolves.toEqual(document);
   });
 
   it('strips only timestamps without mutating the input', () => {

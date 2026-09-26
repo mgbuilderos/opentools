@@ -25,6 +25,7 @@ const LOADERS: Readonly<Record<string, AdapterLoader>> = {
   writing: () => import('./adapters/writing'),
   'formats-email': () => import('../formats/email/kernel'),
   'formats-finance': () => import('../formats/finance/kernel'),
+  'formats-geo': () => import('../formats/geo/kernel'),
   'formats-pdfcrypt': () => import('../formats/pdfcrypt/kernel'),
 };
 

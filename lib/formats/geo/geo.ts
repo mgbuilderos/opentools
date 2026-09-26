@@ -235,12 +235,6 @@ export async function parseGpx(bytes: Uint8Array): Promise<GeoDocument> {
       const timestamp = textElement(pointSource, 'time', 'MALFORMED_GPX');
       return timestamp ? { ...point, timestamp } : point;
     });
-    if (points.length === 0) {
-      throw new GeoFormatError(
-        'MALFORMED_GPX',
-        'A GPX track must contain at least one track point.',
-      );
-    }
     const name = textElement(trackSource, 'name', 'MALFORMED_GPX');
     return name ? { name, points } : { points };
   });
@@ -266,22 +260,24 @@ export async function parseKml(bytes: Uint8Array): Promise<GeoDocument> {
     const name = textElement(placemark, 'name', 'MALFORMED_KML');
     for (const lineString of elementBlocks(placemark, 'LineString')) {
       const raw = textElement(lineString, 'coordinates', 'MALFORMED_KML');
-      if (!raw) {
+      if (raw === undefined) {
         throw new GeoFormatError(
           'MALFORMED_KML',
           'A KML LineString has no coordinates.',
         );
       }
-      const points = raw.split(/\s+/u).map((item) => {
-        const values = item.split(',').map(Number);
-        if (values.length < 2 || values.length > 3) {
-          throw new GeoFormatError(
-            'INVALID_COORDINATE',
-            'A KML coordinate must contain longitude and latitude.',
-          );
-        }
-        return coordinate(values[0], values[1], values[2]);
-      });
+      const points = raw
+        ? raw.split(/\s+/u).map((item) => {
+            const values = item.split(',').map(Number);
+            if (values.length < 2 || values.length > 3) {
+              throw new GeoFormatError(
+                'INVALID_COORDINATE',
+                'A KML coordinate must contain longitude and latitude.',
+              );
+            }
+            return coordinate(values[0], values[1], values[2]);
+          })
+        : [];
       tracks.push(name ? { name, points } : { points });
     }
   }
@@ -385,6 +381,17 @@ export async function parseGeoJson(bytes: Uint8Array): Promise<GeoDocument> {
     }
   }
   return { tracks };
+}
+
+export async function parseGeo(bytes: Uint8Array): Promise<GeoDocument> {
+  const source = decodeUtf8(bytes).trimStart();
+  if (source.startsWith('{')) return parseGeoJson(bytes);
+  if (/<(?:[\w.-]+:)?gpx(?:\s|>)/iu.test(source)) return parseGpx(bytes);
+  if (/<(?:[\w.-]+:)?kml(?:\s|>)/iu.test(source)) return parseKml(bytes);
+  throw new GeoFormatError(
+    'UNSUPPORTED_FORMAT',
+    'The file is not supported GPX, KML, or GeoJSON.',
+  );
 }
 
 function escapeXml(value: string): string {
@@ -496,10 +503,11 @@ export function haversineMetres(left: TrackPoint, right: TrackPoint): number {
     Math.cos(leftLatitude) *
       Math.cos(rightLatitude) *
       Math.sin(longitudeDelta / 2) ** 2;
+  const clamped = Math.min(1, Math.max(0, haversine));
   return (
     2 *
     WGS84_MEAN_RADIUS_METRES *
-    Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
+    Math.atan2(Math.sqrt(clamped), Math.sqrt(1 - clamped))
   );
 }
 

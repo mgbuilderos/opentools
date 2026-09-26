@@ -1,6 +1,7 @@
 export {
   GeoFormatError,
   haversineMetres,
+  parseGeo,
   parseGeoJson,
   parseGpx,
   parseKml,
