@@ -10,7 +10,29 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded runs on a branch, never on main.
+  #
+  # A branch only cares about its latest push, so cancelling there saves CI
+  # minutes and costs nothing. `main` is the opposite: every commit on it is a
+  # commit somebody will build on, and a cancelled run leaves it with no
+  # verdict at all.
+  #
+  # That is not theoretical. Measured 2026-09-26 over the last 39 CI runs on
+  # main: 21 succeeded, 1 failed, and **17 were cancelled** -- 44% of commits
+  # merged to main were never checked, because the next merge landed inside the
+  # ~2.5 minutes a run takes and killed it.
+  #
+  # It has already cost a morning. #44 added a guard requiring every live tool
+  # page to render ToolJsonLd; /file/xray had merged earlier in #37 without one.
+  # Neither PR could see the other -- no file they both touched -- so both went
+  # green and both merged. The run that would have caught it, on #44's own merge
+  # commit, was CANCELLED by the next merge. Two more merges piled on before a
+  # run finally completed and went red, by which point the failure looked like
+  # it belonged to #50, which was innocent.
+  #
+  # `scripts/ci-signal.test.ts` fails if this ever goes back to an
+  # unconditional true.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   qc:
