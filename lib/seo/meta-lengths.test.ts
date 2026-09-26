@@ -5,6 +5,7 @@ import {
   servedDescription,
   servedTitle,
 } from './meta-inventory';
+import { TITLE_MAX } from './title-budget';
 
 /**
  * Every page's title and description must fit a search result, and be its own.
@@ -25,7 +26,6 @@ import {
 
 /** A title under this reads as a stub; over it is cut off in results. */
 const TITLE_MIN = 15;
-const TITLE_MAX = 70;
 
 /** Under this Google substitutes its own snippet; over it, it truncates. */
 const DESCRIPTION_MIN = 50;
