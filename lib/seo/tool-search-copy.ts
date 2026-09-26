@@ -1,3 +1,4 @@
+import { asServed, TITLE_MAX, TITLE_SUFFIX_LENGTH } from './title-budget';
 /*
   WHAT A TOOL PAGE SAYS IN A SEARCH RESULT.
 
@@ -547,4 +548,56 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
 /** The search copy for a route, or undefined when it uses its own. */
 export function toolSearchCopy(route: string): ToolSearchCopy | undefined {
   return TOOL_SEARCH_COPY[route];
+}
+
+/*
+  THE FALLBACK TITLE.
+
+  495 of the 1,464 live pages took their `<title>` straight from the
+  operation's name, which is the label written for a tab strip: "CSV
+  deduplicator", "YouTube chapter generator". Median length was 34 characters
+  with the layout's suffix counted, against the ~60 a result can show, and
+  Search Console for the seven days to 2026-09-24 recorded 35 queries sitting
+  on page one with zero clicks between them. Ranking was not the problem on
+  those pages; the line a searcher reads first was.
+
+  So a route with no hand-written entry gets its name plus one short qualifier
+  rather than nothing. An explicit `title` in the map above always wins, and
+  should be preferred whenever the query is known -- this is a floor, not a
+  target.
+
+  WHAT THE QUALIFIER MAY SAY. Only what the whole site already substantiates:
+  no page here needs an account, and `e2e/egress-proof.spec.ts` asserts the
+  served policy refuses outbound connections everywhere. "No Upload" is
+  therefore true of every route but only *informative* where a file is
+  involved, so it is used for the file-handling sections and "No Sign-Up"
+  elsewhere. Nothing names a competitor and nothing claims offline support,
+  which is true of four routes only.
+*/
+
+/** Sections whose tools take a file, where "No Upload" answers a real worry. */
+const FILE_SECTIONS: ReadonlySet<string> = new Set([
+  'data',
+  'documents',
+  'file',
+  'subtitles',
+]);
+
+/**
+ * The title a tool page ships when the map above has no entry for it.
+ *
+ * Falls back to the bare name rather than truncating: a qualifier that does
+ * not fit is worse than none, because `meta-lengths.test.ts` holds every
+ * title to 70 characters including the suffix and a cut-off phrase reads as
+ * broken in a result.
+ */
+export function searchTitle(route: string, operationName: string): string {
+  const section = route.split('/')[1] ?? '';
+  const budget = TITLE_MAX - TITLE_SUFFIX_LENGTH - asServed(operationName).length;
+  for (const qualifier of FILE_SECTIONS.has(section)
+    ? [' — Free, No Upload', ' — Free']
+    : [' — Free, No Sign-Up', ' — Free']) {
+    if (qualifier.length <= budget) return `${operationName}${qualifier}`;
+  }
+  return operationName;
 }
