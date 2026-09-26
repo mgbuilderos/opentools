@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AudioLoudnessTool } from '@/components/audio-loudness-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const related = relatedToolsFor('/audio/loudness');
-  return <AudioLoudnessTool relatedTools={related} />;
+  return (
+    <>
+      <ToolJsonLd route="/audio/loudness" meta={metadata} />
+      <AudioLoudnessTool relatedTools={related} />
+    </>
+  );
 }
