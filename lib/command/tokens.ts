@@ -104,7 +104,7 @@ export const STOP_WORDS: ReadonlySet<string> = new Set([
     exactly two words left after the ordinary stop words -- `make` and `under` --
     and the leap-year checker's description contains both, so it covered 100% of
     that query and was offered as the second-best answer to it. Words like these
-    cannot narrow 1,367 tools down to anything; they are how English carries a
+    cannot narrow 1,390 tools down to anything; they are how English carries a
     request, not what the request is for.
   */
   'a',

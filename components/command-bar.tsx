@@ -13,7 +13,7 @@ import type { CommandPlan } from '@/lib/command';
 import type { SubjectKind } from '@/lib/command/types';
 
 /*
-  ONE BOX, INSTEAD OF KNOWING WHICH OF 1,367 PAGES TO OPEN.
+  ONE BOX, INSTEAD OF KNOWING WHICH OF 1,362 PAGES TO OPEN.
 
   You type what you want done -- "make this under 2MB and strip my name out of
   it" -- and this says which tools do it, in order, with the ones it is not sure

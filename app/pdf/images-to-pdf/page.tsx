@@ -4,6 +4,7 @@ import {
   requireToolPageDepth,
   toolPageMetadata,
 } from '@/lib/seo/tool-page-depth';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -23,8 +24,11 @@ export const metadata = toolPageMetadata(ROUTE);
 
 export default function ImagesToPdfPage() {
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <ImagesToPdfTool />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route="/pdf/images-to-pdf" meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <ImagesToPdfTool />
+      </PageDepthProvider>
+    </>
   );
 }

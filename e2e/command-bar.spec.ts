@@ -125,8 +125,8 @@ test.describe('the command bar', () => {
 
   /**
    * The chain. Two operations the kernel can run, handed to the batch runner as a
-   * pipeline it loads and reports -- which is the same path a shared pipeline link
-   * takes, so this also proves the link is in the shape that page accepts.
+   * recipe link it reads and shows -- the same path a pipeline shared between two
+   * people takes, so this also proves the link is in the shape that page accepts.
    */
   test('hands a two-step chain to the batch runner', async ({ page }) => {
     await page.goto('/');
@@ -140,14 +140,13 @@ test.describe('the command bar', () => {
     await expect(chain).toBeVisible({ timeout: 15_000 });
     await chain.click();
 
-    await expect(page).toHaveURL(/\/batch\?pipeline=/u);
-    await expect(
-      page.getByText('Loaded settings-only pipeline link'),
-    ).toBeVisible({
-      timeout: 15_000,
-    });
-    await expect(page.getByText('CSV deduplicator')).toBeVisible();
-    await expect(page.getByText('Line sorter')).toBeVisible();
+    await expect(page).toHaveURL(/\/batch\?s1=/u);
+    // The panel the batch runner shows for an arriving recipe link, which is the
+    // same path a pipeline shared between two people takes.
+    const arrival = page.getByTestId('recipe-arrival');
+    await expect(arrival).toBeVisible({ timeout: 15_000 });
+    await expect(arrival).toContainText('CSV deduplicator');
+    await expect(arrival).toContainText('Line sorter');
   });
 
   /**

@@ -7,7 +7,7 @@
  * and there is no code here that would try.
  *
  * `components/command-bar.tsx` imports this module dynamically, on the first
- * keystroke, so the 1,367-tool index is fetched only by someone who is using the
+ * keystroke, so the 1,390-tool index is fetched only by someone who is using the
  * box rather than by everyone who opens the home page.
  */
 import { COMMAND_CATALOGUE } from './catalogue.generated';

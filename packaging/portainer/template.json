@@ -1,0 +1,42 @@
+{
+  "version": "3",
+  "templates": [
+    {
+      "id": 1,
+      "type": 1,
+      "title": "OpenTools",
+      "name": "opentools",
+      "description": "PDF, image, audio, video, subtitle, data, text and QR utilities that run entirely in the visitor's browser. Files are read into memory by the browser, processed there with Web Workers and WebAssembly, and offered back as a download — they are never sent to this container, so they never touch its disk and never appear in a backup of it. The server serves pages and does none of the work. Needs no internet access at runtime.",
+      "note": "Published on 127.0.0.1 by default because the image ships no TLS and no authentication. To serve it beyond this host, put a TLS-terminating reverse proxy in front of it and set OPENTOOLS_AUTH_USER and OPENTOOLS_AUTH_PASSWORD. See https://github.com/mgbuilderos/opentools/blob/main/docs/SELF_HOSTING.md",
+      "categories": ["Tools", "Documents"],
+      "platform": "linux",
+      "logo": "https://getopentools.com/icon-512.png",
+      "image": "ghcr.io/mgbuilderos/opentools:latest",
+      "restart_policy": "unless-stopped",
+      "ports": ["127.0.0.1:8796:8796/tcp"],
+      "volumes": [
+        {
+          "container": "/var/lib/opentools"
+        }
+      ],
+      "env": [
+        {
+          "name": "OPENTOOLS_STATE_DIR",
+          "label": "Page cache directory",
+          "default": "/var/lib/opentools",
+          "preset": true
+        },
+        {
+          "name": "OPENTOOLS_AUTH_USER",
+          "label": "Access gate username (optional, leave empty for no prompt)",
+          "default": ""
+        },
+        {
+          "name": "OPENTOOLS_AUTH_PASSWORD",
+          "label": "Access gate password (optional, required if a username is set)",
+          "default": ""
+        }
+      ]
+    }
+  ]
+}

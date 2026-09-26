@@ -1,7 +1,8 @@
 name: Self-host image
 
 # Pull requests build the image without pushing it. Only a `v*` tag publishes
-# it to GitHub Container Registry. Pushes to main never publish.
+# it to GitHub Container Registry, and then creates the GitHub release for that
+# tag from `CHANGELOG.md`. Pushes to main never publish.
 on:
   pull_request:
   push:
@@ -74,3 +75,49 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  release:
+    name: Create the GitHub release (release tag)
+    # Strictly after the image is live. These notes tell the reader to
+    # `docker run ghcr.io/...`, and a release published while the multi-arch
+    # build is still going sends whoever reads it first to a 404 — which is the
+    # one failure that gets reported back into the thread the link came from.
+    needs: publish
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Node is preinstalled on the runner and the script imports only built-in
+      # modules, so there is nothing to set up and no dependency to install.
+      # It exits non-zero when the tag has no section, which fails the release
+      # rather than publishing an empty one.
+      - name: Read the notes for this tag out of CHANGELOG.md
+        env:
+          TAG: ${{ github.ref_name }}
+        run: node scripts/release-notes.mjs "$TAG" > "$RUNNER_TEMP/notes.md"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        # `--verify-tag` refuses to invent a tag that is not already pushed. A
+        # tag carrying a pre-release suffix is marked as one, which keeps it out
+        # of "latest release" — matching the image, where the metadata action
+        # leaves `latest` pointing at the last stable version.
+        run: |
+          case "$TAG" in
+            *-*) prerelease=--prerelease ;;
+            *) prerelease= ;;
+          esac
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --verify-tag \
+            $prerelease

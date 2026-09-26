@@ -7,14 +7,15 @@ import { destinationIcon } from '@/components/category-icons';
 import { CommandBar } from '@/components/command-bar';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
+import { PROFESSION_HUBS } from '@/lib/seo/audience-pages';
 import { CATEGORY_LINKS } from '@/lib/seo/category-hubs';
+import type { SubjectKind } from '@/lib/command/types';
 import {
   INITIAL_GROUP_ID,
   INITIAL_SECTIONS,
   loadBrowseSections,
   type BrowseSection,
 } from '@/lib/tools/browse';
-import type { SubjectKind } from '@/lib/command/types';
 import { NAV_GROUPS, type NavGroupId } from '@/lib/tools/navigation';
 
 export function HomeWorkspace() {
@@ -213,6 +214,38 @@ export function HomeWorkspace() {
           </a>
 
           {/*
+            Pages addressed to a job rather than a file format. Owner decision
+            2026-09-25, overriding C4; see lib/seo/audience-pages.ts for what
+            makes these defensible rather than a doorway family.
+
+            They are linked from here because a page reachable only from the
+            sitemap gets minimal crawl priority and no internal authority —
+            the exact failure lib/seo/orphan-coverage.test.ts exists to catch.
+          */}
+          <nav aria-label="Pages for your profession" className="mt-8">
+            <h2 className="text-sm font-semibold text-foreground">
+              Built for your work
+            </h2>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {PROFESSION_HUBS.map((page) => (
+                <li key={page.route}>
+                  <a
+                    href={page.route}
+                    className="focus-ring block h-full rounded-xl border bg-card p-4 transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:border-foreground/30"
+                  >
+                    <span className="block text-sm font-semibold">
+                      {page.name}
+                    </span>
+                    <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+                      {page.blurb}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/*
             The crawlable twin of the category switcher in the top bar.
 
             That switcher calls `selectCategory`, which is
@@ -368,10 +401,27 @@ export function HomeWorkspace() {
                 Security
               </a>
               <a
+                href="/self-host"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Self-host
+              </a>
+              <a
                 href="/about"
                 className="focus-ring underline underline-offset-4 hover:text-foreground"
               >
                 About
+              </a>
+              {/*
+                The only page that gives a returning visitor a reason to come
+                back before their next file problem, so it belongs on the
+                most-linked page on the site rather than in the sitemap alone.
+              */}
+              <a
+                href="/whats-new"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                What&rsquo;s new
               </a>
               {/*
                 The comparison pages are reachable from here because an orphan

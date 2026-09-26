@@ -5,6 +5,7 @@ import {
   requireToolPageDepth,
   toolPageMetadata,
 } from '@/lib/seo/tool-page-depth';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -15,8 +16,11 @@ export const metadata = toolPageMetadata(ROUTE);
 export default function Page() {
   const related = relatedToolsFor(ROUTE);
   return (
-    <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
-      <PdfBurstTool relatedTools={related} />
-    </PageDepthProvider>
+    <>
+      <ToolJsonLd route="/pdf/burst" meta={metadata} />
+      <PageDepthProvider content={requireToolPageDepth(ROUTE)}>
+        <PdfBurstTool relatedTools={related} />
+      </PageDepthProvider>
+    </>
   );
 }

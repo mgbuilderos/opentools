@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { SchemaHubTool } from '@/components/schema-hub-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 
 export default function SchemaHubPage() {
   const related = relatedToolsFor('/schema');
-  return <SchemaHubTool initialTab="erd" relatedTools={related} />;
+  return (
+    <>
+      <ToolJsonLd route="/schema" meta={metadata} />
+      <SchemaHubTool initialTab="erd" relatedTools={related} />
+    </>
+  );
 }

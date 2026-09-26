@@ -9,7 +9,7 @@
  * only on the machine they were typed on.
  *
  * THE PART THAT MATTERS MOST IS THE NO. A catalogue this size can produce a
- * confident-looking answer to almost anything, and four of its 1,367 tools are
+ * confident-looking answer to almost anything, and four of its 1,390 tools are
  * called translators. So a clause gets an answer only when the words really
  * reach a tool (`match.ts` measures that), a known-wrong match is overruled by
  * `limits.ts` before it is ever shown, and anything left over is reported as a
@@ -105,23 +105,29 @@ function requestUrl(clause: string): string {
  */
 const ALTERNATIVE_SHARE = 0.4;
 
-/** A pipeline of one, as a link the batch runner opens with it already chosen. */
-function pipelineHref(
-  steps: readonly { name: string; op: CommandOperationRef }[],
-) {
-  const search = new URLSearchParams({
-    pipeline: JSON.stringify({
-      version: 1,
-      // Built from the steps rather than from the sentence: a pipeline name ends
-      // up in the address bar and in browser history, and the sentence is the
-      // visitor's own words.
-      name: boundedText(steps.map((step) => step.name).join(', then '), 80),
-      steps: steps.map((step) => ({
-        op: step.op.id,
-        source: step.op.source,
-        params: {},
-      })),
-    }),
+/**
+ * The steps, as a link the batch runner opens with them already chosen.
+ *
+ * The format is `lib/pipeline/recipe.ts`'s: `?s1=<source>.<id>&s2=…`, one key
+ * per step, in order. It is written out here rather than built with
+ * `buildRecipeSearch` because that function resolves every step against the
+ * kernel, and importing the kernel would put its 550 KB manifest in the chunk
+ * this module is lazily loaded as — for a query string with no settings in it.
+ * A plan carries no settings: each step arrives on its own defaults, which is
+ * what somebody who typed a sentence has chosen.
+ *
+ * `plan.test.ts` puts what this builds through `readRecipe`, which is the
+ * function the batch runner really calls, so a link it would refuse cannot be
+ * offered as a button.
+ *
+ * Nothing else goes in. There is no name and no parameter, so there is nothing
+ * of the visitor's own words in the URL — `recipe.ts` makes the same decision
+ * for the same reason, and names what arrives after its own steps.
+ */
+function pipelineHref(steps: readonly { op: CommandOperationRef }[]) {
+  const search = new URLSearchParams();
+  steps.forEach((step, index) => {
+    search.set(`s${index + 1}`, `${step.op.source}.${step.op.id}`);
   });
   return `/batch?${search.toString()}`;
 }
@@ -298,7 +304,7 @@ export function planRequest(
         */
         href:
           best.entry.href.startsWith('/batch?') && best.op
-            ? pipelineHref([{ name: best.entry.name, op: best.op }])
+            ? pipelineHref([{ op: best.op }])
             : best.entry.href,
         ...(best.op ? { op: best.op } : {}),
         alternatives,

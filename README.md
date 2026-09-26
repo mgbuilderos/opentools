@@ -122,6 +122,40 @@ The route list is not hand-maintained prose: `LIVE_TOOL_ROUTES` in
 and a route only counts as live when the code that renders it really runs the
 operation.
 
+## Run It Yourself
+
+The whole site ships as a container, so you can run it on your own machine or
+inside your own network:
+
+```bash
+docker compose up -d      # then open http://localhost:8796
+```
+
+That pulls a published multi-arch image — `linux/amd64` and `linux/arm64`, so a
+Raspberry Pi works — and needs no Cloudflare account, no build toolchain and no
+network access at runtime. You can check that last claim rather than take it:
+
+```bash
+docker run --rm -d --network none --name opentools ghcr.io/mgbuilderos/opentools:latest
+docker exec opentools node -e "fetch('http://127.0.0.1:8796/').then(r=>console.log(r.status))"
+```
+
+Worth knowing before you compare it to anything else you self-host: **this
+server does no work and never receives a file.** Other file tools you can host
+accept an upload, convert it on the server, and hand the result back. This one
+serves a page and stops — the conversion happens in the browser that opened it.
+So your hardware only serves static pages however many people use it, and
+handing the URL to someone else never makes you the custodian of their
+documents.
+
+The image ships no TLS and no authentication, which is why the compose file
+binds to loopback. To go beyond that, put a reverse proxy in front and turn on
+the optional access gate. [`/self-host`](https://getopentools.com/self-host) is
+the page for an administrator deciding; [`docs/SELF_HOSTING.md`](docs/SELF_HOSTING.md)
+has the measured no-network results and what self-hosting deliberately does not
+include; [`docs/APP_CATALOGUES.md`](docs/APP_CATALOGUES.md) covers installing it
+from a home-server app store.
+
 ## Sponsorship & Patronage
 
 OpenTools is free forever. There are no paid tiers and no result is ever gated.

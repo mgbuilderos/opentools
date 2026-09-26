@@ -15,14 +15,14 @@ request to make. `lib/tools/local-source-policy.test.ts` now guards
 
 ## Why a box at all
 
-The site has **1,367 live tool routes in 21 categories**. Someone who knows what
+The site has **1,362 live tool routes in 21 categories**. Someone who knows what
 they want done and not what it is called here has to guess which category holds
 it. Search Console on 2026-09-23 showed the shape of that problem from the other
 side: the queries this site ranks for are tasks, and the pages are named after
 tools.
 
 The box collapses the catalogue to one entry point without removing anything:
-the categories, the dropzone and the 1,367 pages are all still there, and every
+the categories, the dropzone and the 1,362 pages are all still there, and every
 answer the box gives is a link to one of them.
 
 ## What it is made of
@@ -50,8 +50,8 @@ same arrangement `lib/tools/browse.test.ts` has.
 
 ## The index, and why it is this small
 
-Measured on this tree: **1,376 entries in 194 KB of JSON**, which the edge serves
-as about **35 KB of Brotli** — roughly 25 bytes per tool. It is imported
+Measured on this tree: **1,390 entries in 197 KB of JSON**, which the edge serves
+as about **35 KB of Brotli** — roughly 26 bytes per tool. It is imported
 dynamically on the first keystroke, so the home page itself carries none of it.
 
 Three decisions got it there, each of which cost nothing in reach:
@@ -66,7 +66,7 @@ Three decisions got it there, each of which cost nothing in reach:
   aliases were 55 KB.
 - **An operation's id is its address.** The stored `op` is `"<source> <input>
   <output>"`; the id is the last segment of the route. 16 KB, and
-  `catalogue.test.ts` checks all 639 against the kernel manifest.
+  `catalogue.test.ts` checks all 647 against the kernel manifest.
 
 ## How a sentence is read
 
@@ -101,7 +101,7 @@ Four things the plain version got wrong, each now a comment where it was fixed:
 ## Saying no
 
 This is the part that matters most, and the reason the module exists as much as
-the matching does. A catalogue of 1,367 tools contains a Pig Latin translator, a
+the matching does. A catalogue of 1,362 tools contains a Pig Latin translator, a
 Morse translator, a Braille translator and a NATO one, so "translate this to
 Spanish" has four confident matches and not one of them translates anything into
 Spanish. Ranking cannot fix that. Only knowing what is absent can.
@@ -137,13 +137,22 @@ Two tests keep that honest, and both earned their place by finding something:
 ## Chaining
 
 Where the steps are operations the kernel can run and the kinds line up, the plan
-builds a `lib/pipeline` pipeline and hands it to `/batch?pipeline=…`, which the
-pipeline editor already reads. Nothing new runs anything: the batch runner
-validates the chain again, against the real kernel, before it starts.
+writes a recipe link — `/batch?s1=spreadsheet.csv-deduplicator&s2=text.line-sorter`,
+the format `lib/pipeline/recipe.ts` defines — and the batch runner reads it the
+same way it reads a pipeline one person shared with another. Nothing new runs
+anything: the runner resolves every step against the real kernel and validates
+the chain before it starts.
 
-`plan.test.ts` puts what the box builds through `deserialisePipeline` and
-`validate` — the code the batch runner really uses — so a chain it would reject
-cannot be offered as a button.
+The link is written out here rather than built with `buildRecipeSearch`, which
+resolves each step against the kernel: importing the kernel would put its 550 KB
+manifest in the chunk this module is lazily loaded as, for a query string with no
+settings in it. A plan carries no settings — each step arrives on its own
+defaults, which is what somebody who typed a sentence has chosen — and no name,
+so nothing of the visitor's own words reaches the URL.
+
+`plan.test.ts` puts what the box builds through `readRecipe` and `validate` — the
+code the batch runner really calls — so a chain it would reject cannot be offered
+as a button.
 
 This is also how ten operations that have **no page at all** became reachable:
 `pdfcrypt-decrypt` unlocks a PDF, `email-parse-mbox` reads a mailbox,

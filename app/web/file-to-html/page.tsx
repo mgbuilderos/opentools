@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { FileToHtmlTool } from '@/components/file-to-html-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -12,5 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <FileToHtmlTool />;
+  return (
+    <>
+      <ToolJsonLd route="/web/file-to-html" meta={metadata} />
+      <FileToHtmlTool />
+    </>
+  );
 }

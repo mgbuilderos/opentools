@@ -11,6 +11,14 @@ export const SECTIONS: readonly BrowseSection[] = [
     description: 'ZIP archives, checksums, renaming, and file inspection.',
     destinations: [
       {
+        id: 'file-xray',
+        name: 'File X-ray',
+        description:
+          'Drop any file and see what is hidden inside it, from GPS coordinates to text you deleted, then remove it.',
+        href: '/file/xray',
+        workspaceId: 'file-xray',
+      },
+      {
         id: 'file-hash',
         name: 'File hash calculator',
         description: 'Calculate SHA-256, SHA-384, or SHA-512 locally.',
@@ -24,6 +32,14 @@ export const SECTIONS: readonly BrowseSection[] = [
           'Open a ZIP, see what is inside, take files out, and pack new archives.',
         href: '/file/archive',
         workspaceId: 'archive-toolkit',
+      },
+      {
+        id: 'email-reader',
+        name: 'Offline email reader',
+        description:
+          'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
+        href: '/email/reader',
+        workspaceId: 'email-reader',
       },
       {
         id: 'file-workbench:file-compressor',

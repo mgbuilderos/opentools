@@ -22,6 +22,7 @@ export type ProbeKind =
   | 'webm'
   | 'text'
   | 'csv'
+  | 'eml'
   | 'none';
 
 /**
@@ -52,21 +53,24 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
   file: 'png',
   'life-admin': 'png',
   finance: 'csv',
+  /*
+   * Declared before `/email/reader` exists, deliberately. A new section
+   * defaults to `none` and would get a page-load proof while looking, in the
+   * report, exactly like a section somebody decided to leave load-only. An
+   * email is the most sensitive document most people own, so the decision is
+   * recorded here in advance rather than discovered when the route lands.
+   */
+  email: 'eml',
   subtitles: 'text',
   schema: 'text',
   latex: 'text',
   math: 'none',
   date: 'none',
-  /*
-    The folder runner. Load-only here, and covered with real files by
-    `bench.spec.ts`, which watches its egress while running a two-step pipeline.
-
-    The key said `bench` until now, and `/bench` became `/batch` some time ago --
-    so the section was undeclared, fell back to 'none' by accident rather than by
-    decision, and the test that exists to catch exactly that had been failing ever
-    since. Same rename, same casualty as the heading in `bench.spec.ts`.
-  */
-  batch: 'none',
+  bench: 'none',
+  // `/batch` runs saved pipelines over whatever you give it, so any real file
+  // exercises the intake. Landed after this file was written and caught by the
+  // explicit-decision test, which is what that test is for.
+  batch: 'png',
 };
 
 /**
@@ -76,13 +80,11 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
  * is a fact about the route, not a failure. Several workbench routes take typed
  * text rather than a file.
  */
-export const HAND_PROBE_TO_PAGE = (
-  kind: Exclude<ProbeKind, 'none'>,
-  token: string,
-) => {
+export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: string) => {
   const extensionFor: Record<string, string> = {
     text: 'txt',
     webm: 'webm',
+    eml: 'eml',
   };
   let name = `${token}.${extensionFor[kind] ?? kind}`;
 
@@ -164,7 +166,11 @@ export const HAND_PROBE_TO_PAGE = (
     canvas.width = 160;
     canvas.height = 120;
     const context = canvas.getContext('2d')!;
-    const candidates = ['video/mp4', 'video/webm;codecs=vp8', 'video/webm'];
+    const candidates = [
+      'video/mp4',
+      'video/webm;codecs=vp8',
+      'video/webm',
+    ];
     const type =
       candidates.find((candidate) =>
         typeof MediaRecorder !== 'undefined' &&
@@ -227,6 +233,25 @@ export const HAND_PROBE_TO_PAGE = (
       // WebKit records MP4, Chromium WebM. A name that disagrees with the bytes
       // is refused by an `accept` filter before the tool ever runs.
       name = `${token}.${clip.mime.startsWith('video/mp4') ? 'mp4' : 'webm'}`;
+    } else if (kind === 'eml') {
+      // A real RFC 5322 message with a remote image in it. The sweep only
+      // asserts that nothing left the device; `email-tracker.spec.ts` is what
+      // exercises the full vector list against the rendered document.
+      bytes = new TextEncoder().encode(
+        [
+          'From: sender@example.com',
+          'To: reader@example.com',
+          `Subject: ${token}`,
+          'MIME-Version: 1.0',
+          'Content-Type: text/html; charset=utf-8',
+          '',
+          `<html><body><p>${token}</p>`,
+          '<img src="http://tracker.invalid/pixel.png">',
+          '</body></html>',
+          '',
+        ].join('\r\n'),
+      );
+      mime = 'message/rfc822';
     } else if (kind === 'csv') {
       bytes = new TextEncoder().encode(
         `name,amount\n${token},1234.56\nsecond,7,89\n`,

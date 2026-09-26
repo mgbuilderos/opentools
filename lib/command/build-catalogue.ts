@@ -315,11 +315,12 @@ function drafts(): Draft[] {
 /**
  * A word in half the index cannot tell two tools apart.
  *
- * Measured on this tree: "browser" is in the terms of 48.8% of the 1,367
+ * Measured on this tree: "browser" is in the terms of 48.0% of the 1,390
  * entries, because 632 `/convert` descriptions end "in your browser." -- 6 KB
- * of index that no query is better off for. Nothing else in the terms reaches
- * this cut; "pdf" is 7% and "csv" 4.5%, and both are exactly the kind of word
- * that has to stay.
+ * of index that no query is better off for. Nothing else comes close: the next
+ * word down is "read" at 5.5%, and the ones that matter most are far below it,
+ * because a word like "pdf" or "csv" is in the NAME of the tools it belongs to
+ * rather than in the description they were indexed with.
  *
  * The matcher weighs a rare word above a common one on its own
  * (`match.ts`), so this is about bytes rather than about ranking.

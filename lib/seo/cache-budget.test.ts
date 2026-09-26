@@ -32,6 +32,14 @@ const appDir = path.join(
 const WRITES_PER_PAGE = 2;
 /** Free-plan allowance is ~1,000/day; stop well short so a deploy still fits. */
 const WRITE_BUDGET = 900;
+/**
+ * How far above the measured cost `FULL_REWARM` may sit.
+ *
+ * 200 writes is 100 cached pages -- enough that routine route additions never
+ * touch the constant, and small enough that an unbuilt tree is still priced
+ * close to what it really costs. See the band tests below.
+ */
+const CEILING_HEADROOM = 200;
 
 /** Route patterns that stand for many pages, and where the count comes from. */
 const DYNAMIC_PAGE_COUNTS: Record<string, () => number> = {
@@ -97,17 +105,31 @@ describe('the page cache stays inside the free Cloudflare allowance', () => {
     ).toBeLessThanOrEqual(WRITE_BUDGET);
   });
 
-  it('agrees with the FULL_REWARM constant the deploy verdict is priced on', () => {
-    // `scripts/predeploy.mjs` prices a deploy against FULL_REWARM, and its own
-    // comment says to KEEP IN SYNC with this test by hand. It did not stay in
-    // sync: it read 326 from 2026-09-19 while the real cost had moved, and the
-    // header records that it "was already stale". An optimistic constant makes
-    // every deploy verdict optimistic, which is the one direction that costs
-    // something.
-    //
-    // So the constant is read out of the script and compared, rather than
-    // remembered. Changing what is cached now fails here with the number to
-    // put in its place.
+  /**
+   * `scripts/predeploy.mjs` prices a deploy it cannot measure against
+   * `FULL_REWARM`. This used to assert that constant EXACTLY equalled the
+   * measured cost, while the constant's own comment called it "Ceiling, not a
+   * bill" -- and the exact assertion is the one that was wrong.
+   *
+   * Exactness made that line a shared mutex. Every branch adding a route had
+   * to edit the same number, so any two collided there, and whoever merged
+   * second resolved a conflict over a figure neither side had computed for the
+   * union. It was repriced 420, 422, 424, 438, 440, 442, 444 in one day, and
+   * each of those was a merge someone had to stop and fix.
+   *
+   * What actually has to hold is a band, so both failure modes stay caught:
+   *
+   *   never below the measured cost   an optimistic verdict says GO when a
+   *                                   deploy cannot afford itself
+   *   never far above it              an inflated one says WAIT on every
+   *                                   deploy -- which happened when the
+   *                                   constant priced 163 ISR pages that had
+   *                                   already become static files, and was
+   *                                   overridden by hand three times in a day
+   *
+   * Inside the band, adding a route changes nothing here.
+   */
+  const declaredCeiling = () => {
     const source = readFileSync(
       path.join(appDir, '..', 'scripts', 'predeploy.mjs'),
       'utf8',
@@ -118,14 +140,51 @@ describe('the page cache stays inside the free Cloudflare allowance', () => {
       'scripts/predeploy.mjs no longer declares `const FULL_REWARM = <n>;`, ' +
         'so this test cannot check the number the deploy verdict is priced on',
     ).not.toBeNull();
+    return Number(match![1]);
+  };
 
+  it('prices the deploy on a ceiling that is never optimistic', () => {
     const { writes, cached } = rewarmCost();
+
     expect(
-      Number(match![1]),
-      `FULL_REWARM in scripts/predeploy.mjs is ${match![1]}, but re-warming ` +
-        `everything currently opted in costs ${writes} KV writes. Set it to ` +
-        `${writes}. Opted in: ${cached.join(', ')}.`,
-    ).toBe(writes);
+      declaredCeiling(),
+      `FULL_REWARM in scripts/predeploy.mjs under-prices a deploy: re-warming ` +
+        `everything opted in costs ${writes} KV writes. Raise it to at least ` +
+        `${writes} -- round up, it is a ceiling, and a round number leaves ` +
+        `room for the next few routes so this line stops causing merge ` +
+        `conflicts. Opted in: ${cached.join(', ')}.`,
+    ).toBeGreaterThanOrEqual(writes);
+  });
+
+  it('prices it on a ceiling that does not stall every deploy', () => {
+    const { writes } = rewarmCost();
+    const highest = Math.min(WRITE_BUDGET, writes + CEILING_HEADROOM);
+
+    expect(
+      declaredCeiling(),
+      `FULL_REWARM in scripts/predeploy.mjs is more than ${CEILING_HEADROOM} ` +
+        `writes above the measured cost of ${writes}, so an unbuilt tree is ` +
+        `priced as unaffordable and the verdict reads WAIT whatever the real ` +
+        `cost is. Lower it to at most ${highest}.`,
+    ).toBeLessThanOrEqual(highest);
+  });
+
+  it('leaves room to add routes without touching the constant', () => {
+    /*
+     * The point of the band, asserted rather than assumed: if the headroom
+     * ever collapses to nothing, this is a mutex again and the next two
+     * branches that add a page will collide on it.
+     */
+    const { writes } = rewarmCost();
+    const spare = declaredCeiling() - writes;
+
+    expect(
+      spare,
+      `FULL_REWARM has ${spare} writes of headroom (${Math.floor(spare / WRITES_PER_PAGE)} ` +
+        `more cached pages). Below one page there is no room to add a route ` +
+        `without editing it, which is what made it a source of merge ` +
+        `conflicts.`,
+    ).toBeGreaterThanOrEqual(WRITES_PER_PAGE);
   });
 
   it('never sets a blanket revalidate in the root layout', () => {

@@ -1,5 +1,5 @@
 /**
- * FINDING THE TOOL, WITH 1,367 OF THEM AND NO SERVER TO ASK.
+ * FINDING THE TOOL, WITH 1,390 OF THEM AND NO SERVER TO ASK.
  *
  * The naive version of this ranks by how many of the typed words a tool
  * contains, and it is wrong in a way that is easy to measure on this catalogue:
@@ -10,7 +10,7 @@
  * So a word is worth what it narrows. `browser` appears everywhere and is worth
  * nothing; `heic` appears in nine entries and all but settles the question. That
  * is inverse document frequency, computed here from the index itself at the
- * moment it is read -- 1,367 entries, one pass, no stored weights to go stale.
+ * moment it is read -- 1,390 entries, one pass, no stored weights to go stale.
  *
  * Three things are then added that frequency cannot see:
  *

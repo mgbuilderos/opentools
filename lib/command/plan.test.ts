@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deserialisePipeline } from '../pipeline/serialise';
+import { readRecipe } from '../pipeline/recipe';
 import { validate } from '../pipeline/validate';
 import { COMMAND_CATALOGUE } from './catalogue.generated';
 import { plan } from '.';
@@ -8,10 +8,14 @@ const live = new Set(
   COMMAND_CATALOGUE.map((entry) => entry.href.split('?')[0]),
 );
 
+/** What the batch runner makes of the link, using its own reader. */
 function pipelineFrom(href: string) {
-  const json = new URLSearchParams(href.split('?')[1]).get('pipeline');
-  if (!json) throw new Error(`no pipeline in ${href}`);
-  return deserialisePipeline(json);
+  const result = readRecipe(href.split('?')[1] ?? '');
+  if (result.kind !== 'recipe')
+    throw new Error(
+      `the batch runner would not take this link: ${JSON.stringify(result)}`,
+    );
+  return result.pipeline;
 }
 
 describe('planning a typed request', () => {
@@ -61,12 +65,12 @@ describe('planning a typed request', () => {
   /**
    * THE TEST THAT MAKES THE CHAIN REAL.
    *
-   * The command bar builds the pipeline out of the four fields its index carries,
+   * The command bar builds the link out of the four fields its index carries,
    * without loading the kernel. This runs what it builds through the code the
-   * batch runner really uses -- `deserialisePipeline`, which resolves every step
-   * against the kernel manifest, and `validate`, which is what decides whether one
-   * step can feed the next. A chain that this pair rejects is a button that would
-   * fail after the click.
+   * batch runner really calls -- `readRecipe`, which resolves every step against
+   * the kernel manifest and refuses the whole link rather than dropping a step --
+   * and then `validate`, which decides whether one step can feed the next. A chain
+   * this pair rejects is a button that would fail after the click.
    */
   it('builds a chain the batch runner accepts', () => {
     const answer = plan('deduplicate this csv then sort the lines');
@@ -87,22 +91,26 @@ describe('planning a typed request', () => {
     expect(step?.name).toBe('Unlock PDF');
     const pipeline = pipelineFrom(step!.href);
     expect(validate(pipeline)).toEqual([]);
-    expect(pipeline.steps).toEqual([
-      { op: 'pdfcrypt-decrypt', source: 'formats-pdfcrypt', params: {} },
+    expect(pipeline.steps.map((step) => [step.op, step.source])).toEqual([
+      ['pdfcrypt-decrypt', 'formats-pdfcrypt'],
     ]);
   });
 
   /**
-   * A pipeline name is in the address bar and in browser history. The steps are
-   * this site's own words; the sentence is the visitor's.
+   * A link is in the address bar, in browser history, and in whatever it gets
+   * pasted into. The steps are this site's own words; the sentence is the
+   * visitor's, and none of it goes in -- the link is step keys and nothing else,
+   * and the name the batch runner shows is derived from the steps on arrival.
    */
   it('keeps the typed sentence out of the link', () => {
     const answer = plan(
       'deduplicate this csv about margaret then sort the lines',
     );
-    expect(answer.chain?.href).not.toContain('margaret');
+    expect(answer.chain?.href).toBe(
+      '/batch?s1=spreadsheet.csv-deduplicator&s2=text.line-sorter',
+    );
     expect(pipelineFrom(answer.chain!.href).name).toBe(
-      'CSV deduplicator, then Line sorter',
+      'CSV deduplicator \u2192 Line sorter',
     );
   });
 

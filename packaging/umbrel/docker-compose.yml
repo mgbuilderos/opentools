@@ -1,0 +1,25 @@
+# Umbrel runs apps behind its own proxy; app_proxy is the standard front for an
+# app that serves a plain web UI on one port. It also asks for the Umbrel
+# password before anything here is reachable, which is why this package leaves
+# OPENTOOLS_AUTH_USER / OPENTOOLS_AUTH_PASSWORD unset: two prompts for one page.
+version: "3.7"
+services:
+  app_proxy:
+    environment:
+      APP_HOST: opentools_web_1
+      APP_PORT: 8796
+  web:
+    # Umbrel requires the multi-arch MANIFEST digest alongside the tag and
+    # rejects a moving tag outright, so this is not the same form as the other
+    # catalogues. The placeholder is filled in from the published image once
+    # v0.2.0 is tagged -- see docs/APP_CATALOGUES.md for the one command.
+    image: ghcr.io/mgbuilderos/opentools:0.2.0@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    restart: on-failure
+    stop_grace_period: 1m
+    # The image runs as `node`, which is uid 1000 in the Node base image.
+    # Without this the bind mount below is created root-owned and the page
+    # cache cannot be written -- the app still serves, but every restart is
+    # a cold one and the log fills with permission errors.
+    user: "1000:1000"
+    volumes:
+      - ${APP_DATA_DIR}/data:/tmp/opentools-state

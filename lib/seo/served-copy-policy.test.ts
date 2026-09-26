@@ -55,6 +55,20 @@ function htmlFiles(directory: string, found: string[] = []): string[] {
 
   So read one page at a time, run both scanners on it, keep only the findings
   and let the markup go. Peak memory is one page; the set is still read once.
+
+  UPDATE 2026-09-26. Those figures went stale and this suite timed out at 120s.
+  Not memory this time: the competitor list grew from nine names to sixty-four
+  on 2026-09-25, and every pattern carried the `iu` flags. `u` on an ASCII
+  pattern buys nothing but V8's Unicode case-folding path, which is 17x slower
+  -- `/\bAdobe\b/iu` costs 2,106ms over this build where `/\bAdobe\b/i` costs
+  121ms. Sixty-four of those is 126s against a 120s ceiling.
+
+  Dropping `u` from the list (see `lib/policy/competitor-names.ts`) put the
+  sweep back to 2.3s and this suite to 5.4s. The lesson is the one this comment
+  already half-recorded: a measured cost written into a comment is a claim with
+  a date on it, and this one outlived the list it measured. If the suite starts
+  creeping again, measure before raising the timeout -- the ceiling is not the
+  problem the two times it has been hit.
 */
 type Finding = ReturnType<typeof findForbiddenCompetitors>[number];
 

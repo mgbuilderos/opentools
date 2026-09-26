@@ -51,6 +51,24 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
       '631 analyze array based batch capture convert csv expression extraction flag folder group header highlighting inspect json live machine match object operation regular run strict test tester whole',
   },
   {
+    href: '/batch?tool=dicom-anonymise-basic',
+    name: 'Anonymise DICOM tags',
+    terms: 'application apply basic batch confidentiality level profile',
+    op: 'formats-dicom file files',
+  },
+  {
+    href: '/batch?tool=dicom-extract-pixels',
+    name: 'Extract DICOM pixels',
+    terms: 'batch byte interpretation lossles rle uncompressed',
+    op: 'formats-dicom file files',
+  },
+  {
+    href: '/batch?tool=dicom-read-tags',
+    name: 'Read DICOM tags',
+    terms: 'batch field identify metadata privacy require review',
+    op: 'formats-dicom file text',
+  },
+  {
     href: '/batch?tool=email-parse-eml',
     name: 'Parse EML',
     terms: '5322 attachment batch bodie header mime read rfc',
@@ -85,6 +103,36 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     name: 'Reconcile statement totals',
     terms: 'balance batch closing compare opening plu rounding transaction',
     op: 'formats-finance text text',
+  },
+  {
+    href: '/batch?tool=geo-convert-to-geojson',
+    name: 'Convert track to GeoJSON',
+    terms: 'batch document gpx kml',
+    op: 'formats-geo file files',
+  },
+  {
+    href: '/batch?tool=geo-convert-to-gpx',
+    name: 'Convert track to GPX',
+    terms: 'batch document geojson kml',
+    op: 'formats-geo file files',
+  },
+  {
+    href: '/batch?tool=geo-convert-to-kml',
+    name: 'Convert track to KML',
+    terms: 'batch document geojson gpx',
+    op: 'formats-geo file files',
+  },
+  {
+    href: '/batch?tool=geo-strip-timestamps',
+    name: 'Remove track timestamps',
+    terms: 'batch coordinate every preserving',
+    op: 'formats-geo file files',
+  },
+  {
+    href: '/batch?tool=geo-trim-ends',
+    name: 'Trim track ends',
+    terms: '84 batch both distance every haversine remove wgs',
+    op: 'formats-geo file files',
   },
   {
     href: '/batch?tool=pdfcrypt-decrypt',
@@ -4883,6 +4931,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     op: 'document text text',
   },
   {
+    href: '/email/reader',
+    name: 'Offline email reader',
+    terms:
+      'archive attachment eml extract file header inspect mbox msg network open outlook tracking view zero',
+  },
+  {
     href: '/file/archive',
     name: 'ZIP opener and packer',
     terms:
@@ -5097,6 +5151,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     terms: 'download encode hash inspect join local rename split',
   },
   {
+    href: '/file/xray',
+    name: 'File X-ray',
+    terms:
+      'addres check coordinate data deleted document drop exif find gps hidden if inside location machine metadata pdf personal photo remove reveal sending strip text who word wrote xray',
+  },
+  {
     href: '/finance/50-30-20-budget-calculator',
     name: '50/30/20 budget split',
     terms: 'amount calculate income reference stated',
@@ -5114,6 +5174,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     name: 'ARR calculator',
     terms: '12 annualize monthly multiplying recurring revenue supplied',
     op: 'finance-business none text',
+  },
+  {
+    href: '/finance/bank-statement',
+    name: 'Bank statement converter',
+    terms:
+      'balance csv excel extract parse pdf reconcile reconciliation running spreadsheet transaction uploading',
   },
   {
     href: '/finance/break-even-calculator',
@@ -5323,6 +5389,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     name: 'NPV calculator',
     terms: 'cash discount equally flow period spaced zero',
     op: 'finance-business text text',
+  },
+  {
+    href: '/finance/ofx-qif',
+    name: 'OFX & QIF statement converter',
+    terms:
+      'account against balance bank clean closing csv data excel export extract financial multi opening preview reconcile reconciliation securely server sgml spreadsheet tabular total transaction upload xml',
   },
   {
     href: '/finance/overtime-calculator',
@@ -6254,6 +6326,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     terms: 'choose keep new range save select selected split',
   },
   {
+    href: '/pdf/form-filler',
+    name: 'Fill PDF forms',
+    terms:
+      'cannot changed complete edit field filler flatten interactive legal locally tax value widget',
+  },
+  {
     href: '/pdf/images-to-pdf',
     name: 'Images to PDF',
     terms:
@@ -6280,6 +6358,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/pdf/page-tools',
     name: 'PDF page tools',
     terms: 'label number remove reorder rotate watermark',
+  },
+  {
+    href: '/pdf/password',
+    name: 'Unlock and protect PDF',
+    terms:
+      '256 add aes aes256 document encrypt encrypted file owner password protected remove restriction',
   },
   {
     href: '/pdf/pdf-metadata-editor',

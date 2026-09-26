@@ -118,7 +118,16 @@ export interface DocxStripOptions {
   stripProperties?: boolean;
 }
 
-function parseCoreProperties(xml: string): DocxCoreProperties {
+/**
+ * Reads OOXML package core properties from `docProps/core.xml`.
+ *
+ * Exported because the part is not specific to Word: `.xlsx` and `.pptx`
+ * packages carry the same `docProps/core.xml`, with the same Dublin Core
+ * element names, and the tag matcher below ignores the namespace prefix. The
+ * File X-ray tool reads spreadsheets and presentations through this rather than
+ * through a second copy that could drift from it.
+ */
+export function parseCoreProperties(xml: string): DocxCoreProperties {
   const getTagValue = (tagName: string): string | null => {
     const pattern = new RegExp(
       `<(?:[a-zA-Z0-9_]+:)?${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/(?:[a-zA-Z0-9_]+:)?${tagName}>`,
@@ -144,7 +153,13 @@ function parseCoreProperties(xml: string): DocxCoreProperties {
   };
 }
 
-function parseAppProperties(xml: string): DocxAppProperties {
+/**
+ * Reads OOXML extended application properties from `docProps/app.xml`.
+ *
+ * Exported for the same reason as `parseCoreProperties`: the part is shared by
+ * every OOXML package, not just Word.
+ */
+export function parseAppProperties(xml: string): DocxAppProperties {
   const getTagValue = (tagName: string): string | null => {
     const pattern = new RegExp(
       `<(?:[a-zA-Z0-9_]+:)?${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/(?:[a-zA-Z0-9_]+:)?${tagName}>`,

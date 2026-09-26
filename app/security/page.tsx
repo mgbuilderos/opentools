@@ -164,9 +164,17 @@ export default function SecurityPage() {
               href="/compare/open-source-pdf-tools"
               className="focus-ring font-semibold text-foreground underline underline-offset-4"
             >
-              the licence and self-hosting page
+              the licence comparison
             </a>{' '}
-            covers running it inside your own network.
+            covers what each project permits.{' '}
+            <a
+              href="/self-host"
+              className="focus-ring font-semibold text-foreground underline underline-offset-4"
+            >
+              Self-hosting
+            </a>{' '}
+            is the route for an organisation that would rather run it inside its
+            own network than allow this domain at all.
           </p>
           <p className="mt-3 rounded-xl border bg-muted/50 p-3.5 text-sm leading-6 sm:p-4 sm:leading-7">
             <strong>One route differs, deliberately.</strong> The background

@@ -2,7 +2,7 @@
  * WHAT THIS SITE CANNOT DO, SAID PLAINLY.
  *
  * A box you type a sentence into has to be able to answer "no". The failure it
- * would otherwise make is worse than not understanding: a catalogue of 1,367
+ * would otherwise make is worse than not understanding: a catalogue of 1,390
  * tools contains a Pig Latin translator, a Morse translator and a Braille
  * translator, so "translate this to Spanish" has four confident matches and not
  * one of them translates anything into Spanish. Ranking cannot fix that. Only

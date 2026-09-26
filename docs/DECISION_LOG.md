@@ -157,7 +157,7 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
 ### 9. One box on the home page reads a typed request, and says when it cannot
 
 - **Date:** 2026-09-26. **Status:** implemented on a branch, not deployed.
-- **The problem, measured.** 1,367 live tool routes in 21 categories. Somebody
+- **The problem, measured.** 1,362 live tool routes in 21 categories. Somebody
   who knows what they want done and not what this site calls it has to guess a
   category first; the note in `home-workspace.tsx` records the same shape from
   the crawl side, where every tool outside `/pdf` sat four clicks from the front
@@ -191,7 +191,7 @@ Decided by: project owner. Recorded by: Claude Code at the owner's request.
   decisive phrase is ever a tool's name, which is what caught "to pound" (a unit
   of mass) and "bitcoin" (a QR code generator here).
 - **The index is generated, and small.** `lib/command/catalogue.generated.ts` is
-  1,376 entries in 194 KB of JSON, about 35 KB of Brotli, in its own chunk that
+  1,390 entries in 197 KB of JSON, about 35 KB of Brotli, in its own chunk that
   the home page does not load until somebody types. `catalogue.test.ts` fails if
   it drifts from the registries it was built from, and if any live tool route is
   missing from it.

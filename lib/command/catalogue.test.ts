@@ -87,9 +87,9 @@ describe('command catalogue', () => {
 
   /**
    * The index is downloaded by anyone who types in the box, so its size is a
-   * promise to them rather than a detail. Measured on this tree: 1,376 tools in
-   * 194,342 bytes of JSON, which Cloudflare serves as about 35 KB of Brotli --
-   * around 25 bytes per tool.
+   * promise to them rather than a detail. Measured on this tree: 1,390 tools in
+   * 196,749 bytes of JSON, which Cloudflare serves as about 35 KB of Brotli --
+   * around 26 bytes per tool.
    *
    * The ceiling is deliberately close. Storing the descriptions again would pass
    * 290 KB, and did in the first build; anything that puts prose back in here

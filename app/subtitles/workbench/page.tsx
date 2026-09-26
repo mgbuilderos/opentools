@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { SubtitleWorkbenchTool } from '@/components/subtitle-workbench-tool';
+import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
 
@@ -12,5 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <SubtitleWorkbenchTool />;
+  return (
+    <>
+      <ToolJsonLd route="/subtitles/workbench" meta={metadata} />
+      <SubtitleWorkbenchTool />
+    </>
+  );
 }
