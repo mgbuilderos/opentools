@@ -340,6 +340,12 @@ export function HomeWorkspace() {
                 Security
               </a>
               <a
+                href="/self-host"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Self-host
+              </a>
+              <a
                 href="/about"
                 className="focus-ring underline underline-offset-4 hover:text-foreground"
               >

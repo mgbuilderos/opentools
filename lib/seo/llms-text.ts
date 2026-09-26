@@ -65,6 +65,7 @@ export function buildLlmsTxt(
     // is asked by exactly the people for whom local processing is a compliance
     // requirement rather than a preference.
     `## Running it yourself (self-hosted, offline)`,
+    `- **The instructions, as a page**: [${baseUrl}/self-host](${baseUrl}/self-host) gives the build and run commands, the offline verification, the settings table and the optional instance-wide access gate. Written for an IT administrator deploying it on internal hardware.`,
     `- **The whole site runs from one container.** \`Dockerfile\` is in the repository; \`docs/SELF_HOSTING.md\` has the build and run steps. MIT licensed.`,
     `- **It runs with no network at all.** Verified with \`--network none\`: every page still serves, and outbound requests fail to resolve. Suitable for an air-gapped or internal-only deployment.`,
     `- **Verifying the claim**: the page is served \`connect-src 'none'\`, which the browser enforces. \`e2e/egress-proof.spec.ts\` attempts five exfiltration vectors per release and asserts zero off-origin bytes during a real file operation, in Chromium and WebKit.`,
