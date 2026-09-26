@@ -4,6 +4,7 @@ import { LockKeyhole, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { destinationIcon } from '@/components/category-icons';
+import { CommandBar } from '@/components/command-bar';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { ToolLinkCard } from '@/components/ui/tool-link-card';
 import { CATEGORY_LINKS } from '@/lib/seo/category-hubs';
@@ -149,8 +150,24 @@ export function HomeWorkspace() {
             </span>
           </div>
 
-          {/* Smart Universal Auto-Detector Dropzone */}
+          {/*
+            The box you type a sentence into.
+
+            It is first because it is the answer to the problem this page has: 21
+            categories and 1,367 tools, and somebody who knows what they want done
+            but not what it is called here. Everything below it -- the dropzone,
+            the categories, the cards -- is for browsing, which is the other way
+            people arrive at a tool and not the way they describe a job.
+
+            It costs the page nothing until it is used: `components/command-bar.tsx`
+            imports the catalogue on the first keystroke.
+          */}
           <div className="mt-8">
+            <CommandBar />
+          </div>
+
+          {/* Smart Universal Auto-Detector Dropzone */}
+          <div className="mt-4">
             <SmartDropzone />
           </div>
 

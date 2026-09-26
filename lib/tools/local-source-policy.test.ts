@@ -9,6 +9,13 @@ import {
 const projectRoot = path.resolve(import.meta.dirname, '../..');
 const guardedRoots = [
   path.join(projectRoot, 'lib/tools'),
+  /*
+    The command bar's whole claim is that a sentence typed into it does not leave
+    the tab. That is a claim about this directory: it reads a generated index and
+    computes, and the only URL it builds is a GitHub issue link somebody has to
+    click. Guarding it here is what makes the claim checkable rather than stated.
+  */
+  path.join(projectRoot, 'lib/command'),
   path.join(projectRoot, 'workers'),
   path.join(projectRoot, 'components'),
   path.join(projectRoot, 'app'),
