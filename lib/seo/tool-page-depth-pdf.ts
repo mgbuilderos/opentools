@@ -1270,7 +1270,7 @@ export const PAGE_DEPTH_PDF: Readonly<Record<string, ToolPageDepth>> = {
         body: [
           'It compares text. Changes to images, tables as tables, vector drawings and page furniture are not detected, and a document whose meaning changed because a figure was replaced will show nothing.',
           'It cannot read a scan. A document with no text layer is refused by name, with a link that hands the file to the OCR tool on this site so real text can be added first.',
-          'And there is no similarity percentage anywhere on this page. A "94% match" is a number with no defensible definition — percentage of what, weighted how — and it is exactly the sort of figure a reviewer stops reading after. An end-to-end test checks the rendered page does not contain one.',
+          'And there is no similarity percentage anywhere on this page. A single match figure is a number with no defensible definition — percentage of what, weighted how — and it is exactly the sort of figure a reviewer stops reading after. An end-to-end test checks the rendered page does not contain one, and it reads the rendered text rather than the intent, so this paragraph may not quote an example of the thing it refuses to print.',
           SEALED_PAGE,
         ],
       },
