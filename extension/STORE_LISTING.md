@@ -178,7 +178,27 @@ That writes `dist/extension/opentools-extension-<version>.zip` and refuses to
 write anything if the manifest would be rejected. It is also what checks the two
 ticked items below, so those are no longer yours to remember:
 
-- [ ] Load the unpacked extension and confirm all four verdicts still render
+- [ ] Load the unpacked extension and confirm all four verdicts still render.
+      **This is the only check that covers the extension running at all, and it
+      cannot be skipped on the grounds that the tests are green.** Nothing
+      automated exercises the runtime: `scripts/package-extension.test.ts`
+      checks the archive's shape, and `lib/egress/verdict-parity.test.ts` calls
+      `verdictFromCsp` directly in Node. Neither loads the extension, so both
+      pass whether or not `onHeadersReceived` ever fires or a badge is ever
+      painted.
+      That gap is not hypothetical: `verdict.js` was rewritten on 2026-09-26 —
+      the `default-src` fallback added, the report-only rule corrected — and
+      every test stayed green without the result once being seen in a browser.
+      Automating it was attempted the same day and abandoned, which is worth
+      recording so the next person does not repeat it: under
+      `--headless=new` with an unpacked MV3 extension, Chromium loads the
+      extension, starts the worker, and reports `onHeadersReceived.hasListeners()`
+      as true — and then delivers no event, so the badge stays empty on every
+      page, including a plain local server with no service worker and an
+      explicit `connect-src 'none'`. The badge API itself round-trips, so the
+      harness was sound. Whether real headed Chrome behaves the same is exactly
+      the question this checkbox exists to answer, and it needs a human at a
+      browser
 - [ ] Screenshots taken at 1280×800 — **the one thing nothing here can do**
 - [ ] `PRIVACY.md` is pushed to `main` so its URL resolves publicly
 - [ ] Bump `version` in `manifest.json` if this is not the first upload — it is
