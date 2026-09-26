@@ -20,7 +20,11 @@ describe('a tool page gives a searcher a reason to click', () => {
   it('never ships a title that is only the tool name', () => {
     const bare = metaInventory()
       .pages.filter((page) => page.source.startsWith('lib/tools/ (operation'))
-      .filter((page) => servedTitle(page) === asServed(`${page.title}`) && !page.title.includes('—'));
+      .filter(
+        (page) =>
+          servedTitle(page) === asServed(`${page.title}`) &&
+          !page.title.includes('—'),
+      );
     expect(bare).toEqual([]);
   });
 
@@ -39,7 +43,9 @@ describe('a tool page gives a searcher a reason to click', () => {
   it('counts an ampersand as the five characters the head ships', () => {
     const name = 'Docker & Compose generator & cheatsheet';
     const title = searchTitle('/developer/docker-cheatsheet', name);
-    expect(asServed(title).length + TITLE_SUFFIX_LENGTH).toBeLessThanOrEqual(TITLE_MAX);
+    expect(asServed(title).length + TITLE_SUFFIX_LENGTH).toBeLessThanOrEqual(
+      TITLE_MAX,
+    );
   });
 
   it('falls back to the bare name rather than shipping a cut-off qualifier', () => {
@@ -49,6 +55,8 @@ describe('a tool page gives a searcher a reason to click', () => {
 
   it('offers "No Upload" only where a file is actually involved', () => {
     expect(searchTitle('/data/csv-thing', 'CSV thing')).toContain('No Upload');
-    expect(searchTitle('/math/some-calculator', 'Some calculator')).toContain('No Sign-Up');
+    expect(searchTitle('/math/some-calculator', 'Some calculator')).toContain(
+      'No Sign-Up',
+    );
   });
 });

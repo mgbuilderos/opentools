@@ -593,7 +593,8 @@ const FILE_SECTIONS: ReadonlySet<string> = new Set([
  */
 export function searchTitle(route: string, operationName: string): string {
   const section = route.split('/')[1] ?? '';
-  const budget = TITLE_MAX - TITLE_SUFFIX_LENGTH - asServed(operationName).length;
+  const budget =
+    TITLE_MAX - TITLE_SUFFIX_LENGTH - asServed(operationName).length;
   for (const qualifier of FILE_SECTIONS.has(section)
     ? [' — Free, No Upload', ' — Free']
     : [' — Free, No Sign-Up', ' — Free']) {
