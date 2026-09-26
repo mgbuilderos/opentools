@@ -949,7 +949,7 @@ export const SITEMAP_LASTMOD: Readonly<Record<string, string>> = {
   '/documents/user-story-acceptance-criteria-builder':
     '2026-09-23T21:57:44+05:30',
   '/documents/workbench': '2026-09-23T15:54:01+05:30',
-  '/email/reader': '2026-09-26T04:02:42+05:30',
+  '/email/reader': '2026-09-26T11:24:18+05:30',
   '/embed': '2026-09-24T11:49:26+05:30',
   '/file': '2026-09-26T01:12:47+05:30',
   '/file/archive': '2026-09-23T15:54:01+05:30',
