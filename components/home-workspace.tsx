@@ -396,6 +396,19 @@ export function HomeWorkspace() {
                 What&rsquo;s new
               </a>
               {/*
+                The request page hangs off the footer for the same reason: it is
+                otherwise reachable only from the sitemap, and a page nothing
+                links to collects nothing. It sits beside "What's new" because
+                the two are the same loop from opposite ends -- what got built,
+                and what to build next.
+              */}
+              <a
+                href="/requests"
+                className="focus-ring underline underline-offset-4 hover:text-foreground"
+              >
+                Ask for a tool
+              </a>
+              {/*
                 The comparison pages are reachable from here because an orphan
                 page earns nothing: this footer is on the most-linked page on
                 the site, so it is where their crawl path starts.
