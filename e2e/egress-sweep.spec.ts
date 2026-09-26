@@ -66,17 +66,39 @@ const LOCAL_MODEL_ROUTES = new Set(['/image/background-remover', '/image/editor'
  * Do not edit it to make a run go green. A route leaving this list means its
  * file input disappeared, which is a product defect; a route arriving means a
  * new intake exists that nobody decided to sweep. Both are worth stopping for.
+ *
+ * Regenerated 2026-09-26, after the tool families that landed that day. Seven
+ * routes arrived and none left: `/batch`, `/email/reader`, `/file/xray`,
+ * `/finance/bank-statement`, `/finance/ofx-qif`, `/pdf/form-filler` and
+ * `/pdf/password`. That is the arriving case above, and it is why this is a
+ * regeneration rather than the edit the paragraph forbids: in the run that
+ * produced these names, all seven were visited, handed a real probe file, given
+ * time to act, and passed every egress assertion in the loop — nothing
+ * off-origin, nothing carrying a body, the probe filename in no URL, and
+ * `connect-src 'none'` still served. The five sections failed on this
+ * comparison alone. The list moved because the product gained intakes, not
+ * because the sweep was loosened around them.
+ *
+ * Worth noticing what the arrivals are: a folder runner, an email reader, a
+ * whole-file inspector, two bank-statement parsers and two PDF tools, one of
+ * which takes a password. Every one is a route whose whole point is that the
+ * file is sensitive.
  */
 const TAKES_A_FILE = new Set<string>([
   '/audio/convert',
   '/audio/loudness',
   '/audio/mp3-toolkit',
+  '/batch',
   '/data/csv-to-json',
   '/data/excel',
   '/data/workbook-audit',
   '/documents/metadata',
+  '/email/reader',
   '/file/archive',
   '/file/hash-calculator',
+  '/file/xray',
+  '/finance/bank-statement',
+  '/finance/ofx-qif',
   '/image/background-remover',
   '/image/editor',
   '/image/exact-size',
@@ -94,11 +116,13 @@ const TAKES_A_FILE = new Set<string>([
   '/pdf/drawing-register',
   '/pdf/excel-to-pdf',
   '/pdf/extract-pages',
+  '/pdf/form-filler',
   '/pdf/images-to-pdf',
   '/pdf/merge',
   '/pdf/metadata',
   '/pdf/ocr',
   '/pdf/page-tools',
+  '/pdf/password',
   '/pdf/preflight',
   '/pdf/redact',
   '/pdf/sign',
