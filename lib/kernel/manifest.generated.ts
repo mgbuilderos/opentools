@@ -15,6 +15,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'youtube-timestamp-formatter',
@@ -29,6 +30,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'youtube-tag-workspace',
@@ -42,6 +44,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'youtube-description-template',
@@ -72,6 +75,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'youtube-title-length-checker',
@@ -94,6 +98,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'instagram-caption-formatter',
@@ -116,6 +121,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'instagram-bio-formatter',
@@ -138,6 +144,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'instagram-hashtag-workspace',
@@ -152,6 +159,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'linkedin-post-formatter',
@@ -174,6 +182,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'x-post-character-counter',
@@ -196,6 +205,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'x-thread-formatter',
@@ -218,6 +228,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'facebook-post-formatter',
@@ -232,6 +243,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'tiktok-caption-formatter',
@@ -254,6 +266,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'podcast-show-notes-template',
@@ -292,6 +305,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'podcast-chapter-generator',
@@ -305,6 +319,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'newsletter-template-builder',
@@ -342,6 +357,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'substack-draft-formatter',
@@ -371,6 +387,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'medium-draft-formatter',
@@ -400,6 +417,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'dev-to-front-matter-generator',
@@ -446,6 +464,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hashnode-front-matter-generator',
@@ -475,6 +494,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'rss-feed-builder',
@@ -512,6 +532,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'rss-feed-validator',
@@ -526,6 +547,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'social-share-preview',
@@ -555,6 +577,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'link-in-bio-page-exporter',
@@ -585,6 +608,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'creator-media-kit-generator',
@@ -630,6 +654,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'rate-card-generator',
@@ -660,6 +685,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sponsorship-cpm-calculator',
@@ -689,6 +715,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'engagement-rate-calculator',
@@ -718,6 +745,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'follower-growth-calculator',
@@ -747,6 +775,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'content-calendar-maker',
@@ -761,6 +790,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'content-idea-matrix',
@@ -783,6 +813,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hook-generator-workspace',
@@ -805,6 +836,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'caption-line-breaker',
@@ -827,6 +859,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hashtag-deduplicator',
@@ -840,6 +873,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'brand-name-shortlister',
@@ -854,6 +888,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'brand-palette-generator',
@@ -867,6 +902,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'brand-font-pairing-notes',
@@ -924,6 +960,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'creator-file-naming-tool',
@@ -967,6 +1004,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'audio-trimmer',
@@ -1029,6 +1067,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Zero remote egress. Trims uncompressed PCM WAV files and exports WAV clips in this tab. Other audio formats are not supported.',
   },
@@ -1071,6 +1110,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Zero remote egress. Converts between SubRip (.srt) and WebVTT (.vtt) with timestamp offset shifting.',
   },
@@ -1113,6 +1153,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Converts SVG attributes to React camelCase (fill-rule → fillRule, stroke-width → strokeWidth, class → className).',
   },
@@ -1159,6 +1200,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Outputs backdrop-filter blur, border transparencies, and multi-layered soft drop shadows.',
   },
@@ -1229,6 +1271,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'px-to-rem',
@@ -1259,6 +1302,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'favicon-generator',
@@ -1289,6 +1333,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-flexbox-grid',
@@ -1404,6 +1449,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'app-store-mockup-generator',
@@ -1506,6 +1552,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'social-media-post-formatter',
@@ -1608,6 +1655,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'word-cloud-generator',
@@ -1716,6 +1764,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The layout is fixed, not random: the same text always produces the same cloud. Output is an SVG, so it stays sharp at any size and can be recoloured in any vector editor.',
   },
@@ -1739,6 +1788,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtract-days-from-date',
@@ -1760,6 +1810,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'business-days-calculator',
@@ -1782,6 +1833,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'workday-calculator',
@@ -1803,6 +1855,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'birthday-countdown',
@@ -1825,6 +1878,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'anniversary-calculator',
@@ -1847,6 +1901,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'week-number-calculator',
@@ -1861,6 +1916,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'day-of-year-calculator',
@@ -1875,6 +1931,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'leap-year-checker',
@@ -1897,6 +1954,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'iso-date-formatter',
@@ -1911,6 +1969,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'timezone-converter',
@@ -1932,6 +1991,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'world-clock',
@@ -1954,6 +2014,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'meeting-time-planner',
@@ -1976,6 +2037,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'duration-calculator',
@@ -1998,6 +2060,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hours-calculator',
@@ -2027,6 +2090,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'timesheet-calculator',
@@ -2041,6 +2105,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-editor',
@@ -2056,6 +2121,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-diff',
@@ -2078,6 +2144,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-path-tester',
@@ -2101,6 +2168,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Supports $, dot properties, numeric indexes, and quoted bracket properties. It is not a full JSONPath query language.',
   },
@@ -2118,6 +2186,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Decoded does not mean trusted. This tool does not verify signatures, issuers, audiences, or claims.',
   },
@@ -2142,6 +2211,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Structural aid only. It explains a documented common JavaScript subset, does not prove safety or intent, and does not execute the expression against input.',
   },
@@ -2166,6 +2236,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'nano-id-generator',
@@ -2195,6 +2266,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'random-token-generator',
@@ -2234,6 +2306,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'password-generator',
@@ -2284,6 +2357,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
     notice:
       'Generated locally with Web Crypto. Save important passwords in a reputable password manager.',
   },
@@ -2345,6 +2419,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The key remains in this tab. Treat output as sensitive authentication material.',
   },
@@ -2383,6 +2458,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'cron-expression-parser',
@@ -2397,6 +2473,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Validates conventional five-field numeric syntax; scheduler-specific names and extensions are intentionally excluded.',
   },
@@ -2442,6 +2519,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'epoch-calculator',
@@ -2477,6 +2555,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'number-base-converter',
@@ -2506,6 +2585,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'binary-calculator',
@@ -2557,6 +2637,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'bitwise-calculator',
@@ -2611,6 +2692,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'ip-address-converter',
@@ -2625,6 +2707,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'ipv4-subnet-calculator',
@@ -2647,6 +2730,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'cidr-calculator',
@@ -2661,6 +2745,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'ipv6-subnet-calculator',
@@ -2684,6 +2769,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Pure IPv6 hexadecimal notation is supported. Embedded IPv4 tails, zone identifiers, routing policy, address assignment, and reachability are intentionally excluded.',
   },
@@ -2701,6 +2787,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'cookie-parser',
@@ -2715,6 +2802,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'ini-viewer',
@@ -2730,6 +2818,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Supports comments, [sections], and key=value or key:value rows. Values remain strings; interpolation, arrays, escapes, includes, and dialect-specific coercion are not applied.',
   },
@@ -2747,6 +2836,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Heuristic only. User-Agent strings can be reduced, frozen, changed, or spoofed.',
   },
@@ -2772,6 +2862,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Preview only—not a database driver or security boundary. Use native parameterized queries in production.',
   },
@@ -2789,6 +2880,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Readability formatter, not a SQL parser or validator. Review vendor-specific syntax, procedural SQL, operators, comments, and generated queries before use.',
   },
@@ -2806,6 +2898,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Conservative lexical transform, not dialect validation. It preserves quoted values but may not understand vendor-specific quoting or procedural blocks; verify the result before execution.',
   },
@@ -2823,6 +2916,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Lexical formatter only. It does not validate a schema, operation semantics, directives, variables, fragments, or server compatibility.',
   },
@@ -2840,6 +2934,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'gitignore-generator',
@@ -2855,6 +2950,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'dockerignore-generator',
@@ -2869,6 +2965,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'editorconfig-generator',
@@ -2943,6 +3040,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'package-json-inspector',
@@ -2958,6 +3056,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'semantic-version-calculator',
@@ -2994,6 +3093,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'chmod-calculator',
@@ -3017,6 +3117,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'escape-sequence-viewer',
@@ -3031,6 +3132,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'webhook-payload-tester',
@@ -3046,6 +3148,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'No webhook is sent. This checks the payload body only; signature verification and HTTP behavior are outside this tool.',
   },
@@ -3063,6 +3166,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'openapi-example-generator',
@@ -3078,6 +3182,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Supports object, array, string, number, integer, boolean, null, enum, example, and default. Composition and external references are not resolved.',
   },
@@ -3133,6 +3238,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'svg-cleaner',
@@ -3166,6 +3272,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'cron-generator',
@@ -3215,6 +3322,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Standard 5-field cron: minute (0-59), hour (0-23), day of month (1-31), month (1-12), weekday (0-7).',
   },
@@ -3248,6 +3356,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'dummy-data-generator',
@@ -3313,6 +3422,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'git-flight-rules',
@@ -3380,6 +3490,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'docker-cheatsheet',
@@ -3425,6 +3536,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'http-status-codes',
@@ -3518,6 +3630,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'llm-secret-scrubber',
@@ -3619,6 +3732,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'har-sanitizer',
@@ -3686,6 +3800,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sql-pii-obfuscator',
@@ -3753,6 +3868,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-to-typescript',
@@ -3818,6 +3934,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sql-to-er-diagram',
@@ -3892,6 +4009,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'er-diagram-to-sql',
@@ -3963,6 +4081,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Reads Mermaid erDiagram syntax. An entity with no attribute block has no columns to create, and a foreign key is written only when the entity it points at declares a single primary key — anything skipped is listed in a comment at the end rather than guessed.',
   },
@@ -4022,6 +4141,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-encode-component',
@@ -4036,6 +4156,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-decode-component',
@@ -4049,6 +4170,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-encode',
@@ -4062,6 +4184,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-decode',
@@ -4076,6 +4199,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'html-entity-encode',
@@ -4089,6 +4213,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'html-entity-decode',
@@ -4102,6 +4227,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'base64-encode-text',
@@ -4116,6 +4242,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'base64-decode-text',
@@ -4130,6 +4257,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'base64url-encode-text',
@@ -4143,6 +4271,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'base64url-decode-text',
@@ -4157,6 +4286,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'jwt-inspector',
@@ -4170,6 +4300,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Inspection is not verification. A decoded token can be forged; verify its signature, issuer, audience, and time claims in the system that relies on it.',
   },
@@ -4185,6 +4316,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-minify',
@@ -4198,6 +4330,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-sort-keys',
@@ -4211,6 +4344,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-to-csv',
@@ -4224,6 +4358,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-to-json',
@@ -4237,6 +4372,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'query-string-parser',
@@ -4250,6 +4386,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'query-string-builder',
@@ -4264,6 +4401,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-parser',
@@ -4277,6 +4415,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-origin-extractor',
@@ -4290,6 +4429,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-path-segments',
@@ -4304,6 +4444,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-normalizer',
@@ -4318,6 +4459,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'query-parameter-set',
@@ -4346,6 +4488,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'query-parameter-remove',
@@ -4367,6 +4510,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'regex-tester',
@@ -4421,6 +4565,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Potentially explosive nested-quantifier patterns are rejected; matches are capped at 200.',
   },
@@ -4485,6 +4630,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Potentially explosive nested-quantifier patterns are rejected; matches are capped at 200.',
   },
@@ -4549,6 +4695,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Potentially explosive nested-quantifier patterns are rejected before replacement.',
   },
@@ -4564,6 +4711,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-string-unescape',
@@ -4577,6 +4725,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'unicode-code-points',
@@ -4590,6 +4739,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'code-points-to-text',
@@ -4603,6 +4753,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'utf8-byte-encoder',
@@ -4616,6 +4767,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'utf8-byte-decoder',
@@ -4629,6 +4781,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'byte-counter',
@@ -4643,6 +4796,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hex-encode-text',
@@ -4657,6 +4811,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hex-decode-text',
@@ -4670,6 +4825,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'binary-encode-text',
@@ -4684,6 +4840,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'binary-decode-text',
@@ -4697,6 +4854,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sha-256-text',
@@ -4711,6 +4869,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sha-384-text',
@@ -4725,6 +4884,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sha-512-text',
@@ -4739,6 +4899,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hex-to-rgb',
@@ -4752,6 +4913,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'rgb-to-hex',
@@ -4795,6 +4957,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hex-to-hsl',
@@ -4808,6 +4971,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hsl-to-hex',
@@ -4851,6 +5015,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'plain-text-file-maker',
@@ -4866,6 +5031,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'markdown-file-maker',
@@ -4881,6 +5047,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'readme-generator',
@@ -4932,6 +5099,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'changelog-generator',
@@ -4963,6 +5131,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'invoice-generator',
@@ -5028,6 +5197,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Drafting aid only. Verify tax, numbering, currency, disclosure, retention, and legal requirements for your jurisdiction before use.',
   },
@@ -5102,6 +5272,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Drafting aid only. Verify tax, numbering, currency, disclosure, retention, and legal requirements for your jurisdiction before use.',
   },
@@ -5176,6 +5347,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Drafting aid only. Verify tax, numbering, currency, disclosure, retention, and legal requirements for your jurisdiction before use.',
   },
@@ -5243,6 +5415,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Drafting aid only. Verify tax, numbering, currency, disclosure, retention, and legal requirements for your jurisdiction before use.',
   },
@@ -5304,6 +5477,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'cover-letter-builder',
@@ -5364,6 +5538,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'business-letter-generator',
@@ -5416,6 +5591,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'meeting-minutes-generator',
@@ -5469,6 +5645,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'agenda-generator',
@@ -5499,6 +5676,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'certificate-generator',
@@ -5550,6 +5728,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'label-sheet-generator',
@@ -5573,6 +5752,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'envelope-layout-generator',
@@ -5603,6 +5783,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'mail-merge-preview',
@@ -5627,6 +5808,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'document-word-counter',
@@ -5649,6 +5831,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'document-compare',
@@ -5671,6 +5854,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'document-template-filler',
@@ -5695,6 +5879,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'bibtex-viewer',
@@ -5710,6 +5895,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'ris-citation-viewer',
@@ -5724,6 +5910,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'citation-formatter',
@@ -5788,6 +5975,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This is a basic formatting aid, not a complete style-manual implementation. Verify source-type rules, capitalization, italics, dates, and access requirements.',
   },
@@ -5887,6 +6075,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'markdown-to-slides',
@@ -5920,6 +6109,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'speaker-notes-extractor',
@@ -5935,6 +6125,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'presentation-timer-pacer',
@@ -5958,6 +6149,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'presentation-outline-builder',
@@ -6012,6 +6204,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'calendar-ics-generator',
@@ -6071,6 +6264,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'passport-photo-sheet',
@@ -6118,6 +6312,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'transparent-signature-maker',
@@ -6165,6 +6360,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'pdf-form-field-schema-builder',
@@ -6190,6 +6386,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'markdown-table-generator',
@@ -6227,6 +6424,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'markdown-resume-builder',
@@ -6290,6 +6488,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'html-email-templates',
@@ -6360,6 +6559,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'legal-nda-generator',
@@ -6470,6 +6670,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Self-help legal drafting aid only. Not formal legal advice. Consult licensed counsel before executing binding agreements.',
   },
@@ -6573,6 +6774,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'user-story-acceptance-criteria-builder',
@@ -6642,6 +6844,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'file-compressor',
@@ -6656,6 +6859,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Runs on the selected bytes in this tab. Browser file pickers do not grant permission to overwrite originals; transformed files are offered as new downloads. This creates .gz output; it is not ZIP or a media-specific optimizer.',
   },
@@ -6680,6 +6884,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Runs on the selected bytes in this tab. Browser file pickers do not grant permission to overwrite originals; transformed files are offered as new downloads.',
   },
@@ -6703,6 +6908,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Select chunks in the intended order. The tool does not infer or reorder part numbers.',
   },
@@ -6749,6 +6955,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'duplicate-file-finder',
@@ -6763,6 +6970,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Exact-byte duplicates only; filenames and modification dates are ignored.',
   },
@@ -6779,6 +6987,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'A signature match is a hint, not proof that the entire file is valid or safe.',
   },
@@ -6795,6 +7004,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Best-effort local detection only. Treat untrusted files as untrusted even when a type appears recognized.',
   },
@@ -6810,6 +7020,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'file-metadata-viewer',
@@ -6824,6 +7035,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Displays picker/File API metadata only; it does not parse embedded EXIF, document, archive, audio, or video metadata.',
   },
@@ -6848,6 +7060,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This changes only the downloaded copy’s name, not its bytes or true format. Renaming an extension does not convert a file.',
   },
@@ -6879,6 +7092,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This changes only the downloaded copy’s name, not its bytes or true format. Renaming an extension does not convert a file.',
   },
@@ -6916,6 +7130,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This changes only the downloaded copy’s name, not its bytes or true format. Renaming an extension does not convert a file.',
   },
@@ -6962,6 +7177,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This changes only the downloaded copy’s name, not its bytes or true format. Renaming an extension does not convert a file.',
   },
@@ -6986,6 +7202,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This changes only the downloaded copy’s name, not its bytes or true format. Renaming an extension does not convert a file.',
   },
@@ -7001,6 +7218,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Folder selection support varies by browser. File contents are not read for this operation.',
   },
@@ -7017,6 +7235,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Runs on the selected bytes in this tab. Browser file pickers do not grant permission to overwrite originals; transformed files are offered as new downloads.',
   },
@@ -7033,6 +7252,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'file-size-analyzer',
@@ -7046,6 +7266,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'empty-file-finder',
@@ -7059,6 +7280,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'large-file-finder',
@@ -7080,6 +7302,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'binary-file-viewer',
@@ -7108,6 +7331,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hex-viewer',
@@ -7137,6 +7361,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hex-patch-generator',
@@ -7151,6 +7376,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Generates a reviewable patch listing only; it does not modify either source file. Select exactly two files in before/after order.',
   },
@@ -7166,6 +7392,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Text output is limited to files up to 32 MiB to avoid excessive in-memory expansion.',
   },
@@ -7203,6 +7430,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'data-uri-file-maker',
@@ -7217,6 +7445,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Output is limited to files up to 16 MiB. Data URIs can become very large and should not be used for sensitive content in shareable documents.',
   },
@@ -7247,6 +7476,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'file-encrypt',
@@ -7269,6 +7499,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
     notice:
       'Encryption runs 100% in your browser using the native Web Crypto API. No password or file data is ever transmitted.',
   },
@@ -7293,6 +7524,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Decryption runs 100% in your browser using authenticated AES-GCM tag verification.',
   },
@@ -7309,6 +7541,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Inspects JPEG and TIFF EXIF metadata chunks client-side without sending files to any server.',
   },
@@ -7333,6 +7566,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'JPEG and PNG only; other formats are refused by name rather than returned unchanged. The colour profile and image orientation are kept on purpose, and the result lists exactly what was removed from each file.',
   },
@@ -7371,6 +7605,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7409,6 +7644,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Principal-and-interest scenario only. A real housing payment can also include taxes, insurance, mortgage insurance, fees, escrow changes, association fees, and other costs.',
   },
@@ -7447,6 +7683,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7491,6 +7728,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7529,6 +7767,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7566,6 +7805,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7604,6 +7844,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7649,6 +7890,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7687,6 +7929,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7718,6 +7961,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7734,6 +7978,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'IRR can have no solution or multiple solutions and assumes equally spaced periods. This tool reports the first sign-change root it finds; do not use it alone for decisions.',
   },
@@ -7749,6 +7994,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'XIRR can have no solution or multiple solutions. Uses actual day differences divided by 365 and reports the first sign-change root found.',
   },
@@ -7772,6 +8018,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7810,6 +8057,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7855,6 +8103,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7899,6 +8148,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7936,6 +8186,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -7988,6 +8239,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Simplified annual, end-of-year withdrawal scenario. It ignores taxes, fees, longevity uncertainty, sequence risk, irregular expenses, income, and changing inflation/returns. Not retirement advice.',
   },
@@ -8026,6 +8278,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -8071,6 +8324,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -8109,6 +8363,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Simplified one-balance simulation. It ignores changing rates, fees, payment allocation rules, daily accrual, taxes, and lender terms. Confirm payoff figures with the lender.',
   },
@@ -8147,6 +8402,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Simplified scenario; card issuers may use daily balances, fees, minimum formulas, promotional rates, and different allocation rules. Confirm terms and payoff with the issuer.',
   },
@@ -8178,6 +8434,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic ratio only. Lenders can define included debts/income differently and use other eligibility criteria.',
   },
@@ -8202,6 +8459,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8225,6 +8483,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -8249,6 +8508,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Reference split only, not a universal recommendation. Actual needs, obligations, goals, taxes, and local costs differ.',
   },
@@ -8279,6 +8539,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic using only the rate you supply. This tool does not determine jurisdiction, classification, exemptions, filing, credits, thresholds, or the legally correct rate.',
   },
@@ -8309,6 +8570,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic using only the rate you supply. This tool does not determine jurisdiction, classification, exemptions, filing, credits, thresholds, or the legally correct rate.',
   },
@@ -8340,6 +8602,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic using only the rate you supply. This tool does not determine jurisdiction, classification, exemptions, filing, credits, thresholds, or the legally correct rate.',
   },
@@ -8378,6 +8641,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -8416,6 +8680,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic only. Overtime eligibility, base-rate definitions, thresholds, exclusions, taxation, and legal multipliers depend on applicable law and employment terms.',
   },
@@ -8461,6 +8726,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -8491,6 +8757,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8521,6 +8788,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8559,6 +8827,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Single-product estimate using consistent periods. Mixed/semi-variable costs, capacity, demand, taxes, financing, and multiple products require a fuller analysis.',
   },
@@ -8597,6 +8866,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8628,6 +8898,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8658,6 +8929,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8689,6 +8961,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic only. Tipping practices, service charges, tax treatment, and local norms differ.',
   },
@@ -8727,6 +9000,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Equal arithmetic split only; it does not account for item-level shares, service charges, or local tax/tip practices.',
   },
@@ -8758,6 +9032,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8788,6 +9063,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Definition and attribution estimate only. Include/exclude costs consistently and do not treat this ratio as causal proof.',
   },
@@ -8826,6 +9102,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Simplified steady-state estimate only. Cohorts, expansion, contraction, retention shape, discounting, servicing costs, and segment mix can materially change LTV.',
   },
@@ -8857,6 +9134,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -8873,6 +9151,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Simple recurring-price total only. Confirm treatment of discounts, usage, one-time fees, refunds, churn, annual contracts, currency, and revenue-recognition policy.',
   },
@@ -8897,6 +9176,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Simple MRR × 12 annualization only. Confirm your organization’s ARR/MRR definitions and exclusions.',
   },
@@ -8927,6 +9207,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Constant-burn estimate only. Cash timing, receivables, debt, financing, taxes, growth, seasonality, and one-off events can change runway.',
   },
@@ -8965,6 +9246,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -9003,6 +9285,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic only. Contract terms, applicable law, notice, grace periods, compounding, taxes, caps, and enforceability determine whether any fee is valid.',
   },
@@ -9041,6 +9324,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -9086,6 +9370,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -9131,6 +9416,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Scenario math only—not financial, investment, tax, accounting, or lending advice. Rates, fees, compounding, timing, taxes, insurance, rounding, and provider rules can change the real result.',
   },
@@ -9183,6 +9469,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning estimate only—not accounting, tax, valuation, or business advice. Use consistent periods and verify definitions against your records and professional requirements.',
   },
@@ -9302,6 +9589,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       '100% private. All invoice computations and print templates are generated locally in browser memory with zero server uploads.',
   },
@@ -9429,6 +9717,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       '100% private. All receipt formatting and print layouts are generated client-side.',
   },
@@ -9524,6 +9813,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       '100% private. All hours arithmetic, rate calculations, and print layouts execute locally in browser memory.',
   },
@@ -9540,6 +9830,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Masking follows UIDAI’s displayed masked-Aadhaar pattern. This does not validate, authenticate, store, or retrieve Aadhaar data. For a whole document or paste, use the Aadhaar and PAN masker.',
   },
@@ -9556,6 +9847,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Privacy transform only. It does not validate PAN structure, ownership, status, or tax records. For a whole document or paste, use the Aadhaar and PAN masker.',
   },
@@ -9572,6 +9864,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This local utility transforms the value you enter in this tab. Clear the result when using a shared device.',
   },
@@ -9588,6 +9881,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Layout helper only. It does not verify a locality, PIN code, deliverability, or government-address record.',
   },
@@ -9604,6 +9898,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Format check only. A matching result does not prove that the identifier, account, branch, address, or beneficiary exists or is active.',
   },
@@ -9620,6 +9915,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Formatting check only. It does not verify assignment, ownership, reachability, consent, or DND status.',
   },
@@ -9635,6 +9931,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Structure check only: four letters, zero as the fifth character, then six alphanumerics. Verify the current branch code with RBI or the bank.',
   },
@@ -9650,6 +9947,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Format check only. A matching result does not prove that the identifier, account, branch, address, or beneficiary exists or is active.',
   },
@@ -9666,6 +9964,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Syntax check only. NPCI describes a UPI ID/VPA as a payment address; only a UPI app or PSP can verify that a particular ID exists and can receive money.',
   },
@@ -9689,6 +9988,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'English wording for non-negative amounts below ₹1,00,00,00,00,000. Verify institutional spelling and rounding requirements.',
   },
@@ -9713,6 +10013,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Writing aid only. Verify the numeric amount, payee, date, bank instructions, overwriting rules, and local acceptance before signing.',
   },
@@ -9750,6 +10051,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.',
   },
@@ -9795,6 +10097,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Arithmetic estimate only. It does not model slabs, taxes, subsidies, demand charges, fuel adjustments, meter multipliers, or utility rules.',
   },
@@ -9832,6 +10135,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Linear estimate from measured gas weight; consumption varies. Do not use this estimate for leak detection or safety decisions.',
   },
@@ -9869,6 +10173,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.',
   },
@@ -9899,6 +10204,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.',
   },
@@ -9971,6 +10277,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.',
   },
@@ -10002,6 +10309,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Calendar estimate using the dates and interval you supply. Verify contractual, banking, holiday, time-zone, and local-rule effects separately.',
   },
@@ -10032,6 +10340,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Calendar estimate only. Registration, replacement, repairs, exclusions, proof of purchase, and provider terms may change coverage.',
   },
@@ -10064,6 +10373,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Calendar estimate using the dates and interval you supply. Verify contractual, banking, holiday, time-zone, and local-rule effects separately.',
   },
@@ -10102,6 +10412,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.',
   },
@@ -10168,6 +10479,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning arithmetic using only your inputs. It does not apply contracts, taxes, tariffs, penalties, eligibility rules, or provider-specific terms.',
   },
@@ -10192,6 +10504,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Calendar-day arithmetic only. Employment terms, service rules, holidays, leave, buyout, notice acceptance, and jurisdiction can change the actual last working day.',
   },
@@ -10208,6 +10521,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Numerology is a cultural practice, not science. This shows the arithmetic only — no meanings or predictions. Your date of birth stays on this device.',
   },
@@ -10224,6 +10538,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Numerology is a cultural practice, not science. This shows the arithmetic only — no meanings or predictions. Your date of birth stays on this device.',
   },
@@ -10248,6 +10563,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Numerology is a cultural practice, not science. This shows the arithmetic only — no meanings or predictions. Your date of birth stays on this device.',
   },
@@ -10264,6 +10580,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'fraction-calculator',
@@ -10332,6 +10649,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'ratio-calculator',
@@ -10361,6 +10679,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'proportion-calculator',
@@ -10397,6 +10716,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'average-calculator',
@@ -10411,6 +10731,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'median-calculator',
@@ -10425,6 +10746,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'mode-calculator',
@@ -10439,6 +10761,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'variance-calculator',
@@ -10453,6 +10776,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'standard-deviation-calculator',
@@ -10467,6 +10791,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'probability-calculator',
@@ -10495,6 +10820,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'permutation-calculator',
@@ -10524,6 +10850,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'combination-calculator',
@@ -10553,6 +10880,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'prime-number-checker',
@@ -10575,6 +10903,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'prime-factorization',
@@ -10596,6 +10925,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'gcd-calculator',
@@ -10625,6 +10955,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'lcm-calculator',
@@ -10654,6 +10985,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'quadratic-equation-solver',
@@ -10690,6 +11022,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'linear-equation-solver',
@@ -10719,6 +11052,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'logarithm-calculator',
@@ -10748,6 +11082,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'exponent-calculator',
@@ -10777,6 +11112,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'root-calculator',
@@ -10805,6 +11141,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'scientific-calculator',
@@ -10893,6 +11230,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'system-of-equations-solver',
@@ -10949,6 +11287,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'matrix-calculator',
@@ -10991,6 +11330,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'determinant-calculator',
@@ -11004,6 +11344,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'complex-number-calculator',
@@ -11071,6 +11412,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'geometry-calculator',
@@ -11120,6 +11462,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'volume-calculator',
@@ -11180,6 +11523,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'surface-area-calculator',
@@ -11236,6 +11580,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'fuel-economy-converter',
@@ -11300,6 +11645,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'number-to-words',
@@ -11321,6 +11667,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'words-to-number',
@@ -11334,6 +11681,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'significant-figures-calculator',
@@ -11362,6 +11710,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'margin-of-error-calculator',
@@ -11398,6 +11747,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'confidence-interval-calculator',
@@ -11441,6 +11791,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'z-score-calculator',
@@ -11476,6 +11827,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'percentile-calculator',
@@ -11497,6 +11849,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'correlation-calculator',
@@ -11518,6 +11871,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'linear-regression-calculator',
@@ -11539,6 +11893,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sample-size-calculator',
@@ -11575,6 +11930,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'triangle-calculator',
@@ -11603,6 +11959,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'circle-calculator',
@@ -11624,6 +11981,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'rectangle-calculator',
@@ -11653,6 +12011,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'polygon-calculator',
@@ -11682,6 +12041,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'temperature-converter',
@@ -11746,6 +12106,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'roman-numeral-converter',
@@ -11760,6 +12121,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'scientific-notation-converter',
@@ -11781,6 +12143,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'rounding-calculator',
@@ -11809,6 +12172,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'random-number-generator',
@@ -11845,6 +12209,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'dice-roller',
@@ -11874,6 +12239,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'coin-flipper',
@@ -11896,6 +12262,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'sequence-generator',
@@ -11932,6 +12299,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'distance-converter',
@@ -12044,6 +12412,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'area-converter',
@@ -12148,6 +12517,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'volume-converter',
@@ -12252,6 +12622,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'mass-converter',
@@ -12348,6 +12719,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'speed-converter',
@@ -12428,6 +12800,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'time-unit-converter',
@@ -12516,6 +12889,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'pressure-converter',
@@ -12603,6 +12977,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'energy-converter',
@@ -12699,6 +13074,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'power-converter',
@@ -12779,6 +13155,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'force-converter',
@@ -12859,6 +13236,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'torque-converter',
@@ -12939,6 +13317,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'angle-converter',
@@ -13011,6 +13390,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'frequency-converter',
@@ -13091,6 +13471,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'data-size-converter',
@@ -13187,6 +13568,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'cooking-unit-converter',
@@ -13275,6 +13657,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'habit-streak-calculator',
@@ -13297,6 +13680,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'task-prioritization-matrix',
@@ -13311,6 +13695,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'eisenhower-matrix',
@@ -13325,6 +13710,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'daily-planner',
@@ -13347,6 +13733,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'weekly-planner',
@@ -13361,6 +13748,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'monthly-planner',
@@ -13383,6 +13771,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'goal-breakdown-tool',
@@ -13406,6 +13795,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'decision-matrix',
@@ -13420,6 +13810,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'weighted-scoring-matrix',
@@ -13443,6 +13834,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'random-picker',
@@ -13464,6 +13856,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'name-picker',
@@ -13477,6 +13870,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'team-generator',
@@ -13498,6 +13892,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'tournament-bracket-maker',
@@ -13512,6 +13907,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'seating-chart-maker',
@@ -13533,6 +13929,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'checklist-maker',
@@ -13546,6 +13943,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'packing-list-generator',
@@ -13560,6 +13958,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'grocery-list-generator',
@@ -13574,6 +13973,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'study-schedule-maker',
@@ -13603,6 +14003,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'qr-code-generator',
@@ -13650,6 +14051,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The SVG is generated in this tab. Test the downloaded symbol with the exact devices, print size, surface, lighting, and destination you intend to use.',
   },
@@ -13700,6 +14102,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -13749,6 +14152,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The SVG is generated in this tab. Test the downloaded symbol with the exact devices, print size, surface, lighting, and destination you intend to use.',
   },
@@ -13843,6 +14247,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The password is encoded visibly in the QR payload and is not encrypted. Share the symbol only with people who should receive the network credentials.',
   },
@@ -13914,6 +14319,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -13977,6 +14383,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14034,6 +14441,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14084,6 +14492,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14148,6 +14557,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14218,6 +14628,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Calendar applications may interpret time zones, reminders, recurrence, and imports differently. This tool emits a single UTC VEVENT; verify the imported event.',
   },
@@ -14288,6 +14699,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Always verify the payee name and UPI ID in the payment app before authorizing. This tool cannot confirm ownership, availability, merchant status, or successful payment.',
   },
@@ -14359,6 +14771,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Address-shape check only. Verify network, address, amount, wallet preview, and fees independently before sending; cryptocurrency transfers can be irreversible.',
   },
@@ -14409,6 +14822,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14458,6 +14872,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This does not create or host a redirect page. It encodes a data:text/html URL; many scanners or managed browsers block data URLs, so test the exact destination devices before use.',
   },
@@ -14521,6 +14936,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The SVG is generated in this tab. Test the downloaded symbol with the exact devices, print size, surface, lighting, and destination you intend to use.',
   },
@@ -14553,6 +14969,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Logo overlays reduce readable modules even with H correction. The logo remains embedded in the downloaded SVG; test scanning at every target size and device before publishing.',
   },
@@ -14596,6 +15013,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The SVG is generated in this tab. Test the downloaded symbol with the exact devices, print size, surface, lighting, and destination you intend to use.',
   },
@@ -14638,6 +15056,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Labels and payloads are included in the local SVG. Print scaling can reduce readability; verify the final physical output with target scanners.',
   },
@@ -14654,6 +15073,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Higher correction adds redundancy and can make the symbol denser. This comparison does not simulate real damage or certify scan reliability.',
   },
@@ -14735,6 +15155,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The SVG is generated in this tab. Test the downloaded symbol with the exact devices, print size, surface, lighting, and destination you intend to use.',
   },
@@ -14806,6 +15227,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14889,6 +15311,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This creates a standards-shaped payload, not a live destination or ownership check. Review every encoded value before sharing or printing.',
   },
@@ -14971,6 +15394,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Always verify destination wallet addresses on hardware or secure device before sending funds.',
   },
@@ -14988,6 +15412,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This checks or adds the mathematical check digit and draws a symbol locally. It does not allocate a GS1 identifier, prove ownership, or certify retail/logistics acceptance.',
   },
@@ -15005,6 +15430,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This checks or adds the mathematical check digit and draws a symbol locally. It does not allocate a GS1 identifier, prove ownership, or certify retail/logistics acceptance.',
   },
@@ -15021,6 +15447,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This checks or adds the mathematical check digit and draws a symbol locally. It does not allocate a GS1 identifier, prove ownership, or certify retail/logistics acceptance.',
   },
@@ -15038,6 +15465,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Code 39 does not provide an assignment registry. Verify content, quiet zones, print contrast, dimensions, optional checksums, and receiving-system requirements.',
   },
@@ -15055,6 +15483,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This checks or adds the mathematical check digit and draws a symbol locally. It does not allocate a GS1 identifier, prove ownership, or certify retail/logistics acceptance.',
   },
@@ -15085,6 +15514,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15122,6 +15552,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15145,6 +15576,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Assumes ideal activity and pH + pOH = 14 at 25 °C. Not suitable for clinical, safety, or process-control decisions.',
   },
@@ -15182,6 +15614,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15219,6 +15652,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15249,6 +15683,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15280,6 +15715,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15477,6 +15913,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15493,6 +15930,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15530,6 +15968,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15568,6 +16007,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Ideal capacity/current estimate only. Real runtime varies with chemistry, temperature, age, discharge curve, conversion loss, and device behavior.',
   },
@@ -15606,6 +16046,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15637,6 +16078,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15675,6 +16117,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15713,6 +16156,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Ideal level-ground model with no drag, wind, spin, or launch-height difference.',
   },
@@ -15743,6 +16187,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Ideal constant-gravity vacuum model; ignores drag and object shape.',
   },
@@ -15774,6 +16219,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15805,6 +16251,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15843,6 +16290,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15888,6 +16336,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15919,6 +16368,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -15964,6 +16414,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Classical collinear model f′ = f(v + vₒ)/(v − vₛ). Sign convention is stated in the field labels; not relativistic.',
   },
@@ -15995,6 +16446,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the thin-lens reciprocal relation with the supplied signed values. Confirm the sign convention for your course or optical system.',
   },
@@ -16025,6 +16477,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -16056,6 +16509,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses the stated idealized formula and supplied SI-unit inputs. Check significant figures, uncertainty, conditions, and domain assumptions before laboratory or engineering use.',
   },
@@ -16096,6 +16550,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses intensity reference I₀ = 10⁻¹² W/m². This is not an exposure or hearing-safety assessment.',
   },
@@ -16170,6 +16625,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Fixed conversion constants are displayed with the result; precision is limited by JavaScript numbers.',
   },
@@ -16239,6 +16695,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses approximate mean surface gravity. “Weight” here is force in newtons, not mass.',
   },
@@ -16269,6 +16726,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16285,6 +16743,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16300,6 +16759,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16352,6 +16812,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16368,6 +16829,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16406,6 +16868,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16437,6 +16900,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Planning and grading aid only. Confirm the scale, rounding, attendance, and institutional rules that apply to you.',
   },
@@ -16453,6 +16917,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'quiz-generator-workspace',
@@ -16468,6 +16933,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This tool structures only the facts you provide; it does not verify question accuracy or invent content.',
   },
@@ -16533,6 +16999,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic formatting aid only. Verify source-type, capitalization, italics, date, contributor, and access rules against the current required style guide.',
   },
@@ -16577,6 +17044,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic formatting aid only. Verify source-type, capitalization, italics, date, contributor, and access rules against the current required style guide.',
   },
@@ -16621,6 +17089,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic formatting aid only. Verify source-type, capitalization, italics, date, contributor, and access rules against the current required style guide.',
   },
@@ -16665,6 +17134,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic formatting aid only. Verify source-type, capitalization, italics, date, contributor, and access rules against the current required style guide.',
   },
@@ -16718,6 +17188,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic formatting aid only. Verify source-type, capitalization, italics, date, contributor, and access rules against the current required style guide.',
   },
@@ -16741,6 +17212,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'truth-table-generator',
@@ -16756,6 +17228,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Supports identifiers, !, &&, ||, ^, and parentheses for up to eight variables.',
   },
@@ -16780,6 +17253,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'venn-diagram-data-builder',
@@ -16810,6 +17284,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'function-table-generator',
@@ -16867,6 +17342,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'statistics-distribution-viewer',
@@ -16881,6 +17357,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Uses linear-interpolated quartiles and population variance/deviation; confirm the convention required by your course.',
   },
@@ -16912,6 +17389,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Formula result only, not medical advice. BMI does not distinguish muscle from body fat.',
   },
@@ -16967,6 +17445,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Formula results only, not medical advice. Formulas are population estimates and individual values vary.',
   },
@@ -17051,6 +17530,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Formula result only, not medical or dietary advice. Activity multipliers are rough population estimates.',
   },
@@ -17092,6 +17572,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Formula results only, not medical advice. These are historical formulas and do not describe what any individual should weigh.',
   },
@@ -17108,6 +17589,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-editor',
@@ -17122,6 +17604,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-cleaner',
@@ -17136,6 +17619,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-sorter',
@@ -17182,6 +17666,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-filter',
@@ -17240,6 +17725,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-column-selector',
@@ -17261,6 +17747,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-column-renamer',
@@ -17283,6 +17770,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-deduplicator',
@@ -17305,6 +17793,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-merger',
@@ -17327,6 +17816,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-splitter',
@@ -17349,6 +17839,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-transposer',
@@ -17362,6 +17853,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-pivot-table',
@@ -17415,6 +17907,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-group-by',
@@ -17464,6 +17957,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-join',
@@ -17517,6 +18011,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-diff',
@@ -17547,6 +18042,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-schema-inferer',
@@ -17561,6 +18057,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-type-converter',
@@ -17608,6 +18105,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-to-json',
@@ -17621,6 +18119,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'json-to-csv',
@@ -17634,6 +18133,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-to-tsv',
@@ -17648,6 +18148,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'tsv-to-csv',
@@ -17661,6 +18162,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'csv-to-sql',
@@ -17683,6 +18185,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'spreadsheet-formula-viewer',
@@ -17697,6 +18200,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'spreadsheet-cell-inspector',
@@ -17726,6 +18230,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'spreadsheet-duplicate-finder',
@@ -17747,6 +18252,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'spreadsheet-blank-row-remover',
@@ -17761,6 +18267,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'spreadsheet-data-profiler',
@@ -17775,6 +18282,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'vlookup-generator',
@@ -17821,6 +18329,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'pivot-table-planner',
@@ -17864,6 +18373,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'data-sampling-tool',
@@ -17885,6 +18395,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'random-row-selector',
@@ -17899,6 +18410,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'column-statistics',
@@ -17921,6 +18433,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'missing-value-analyzer',
@@ -17935,6 +18448,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'outlier-detector',
@@ -17957,6 +18471,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'date-column-normalizer',
@@ -18000,6 +18515,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'phone-column-normalizer',
@@ -18029,6 +18545,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'address-column-cleaner',
@@ -18051,6 +18568,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'table-to-markdown',
@@ -18064,6 +18582,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'markdown-table-to-csv',
@@ -18078,6 +18597,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-to-srt',
@@ -18134,6 +18654,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Positioning, fonts and colours are not carried across — SubRip has no way to store them. The words and the times are exact.',
   },
@@ -18192,6 +18713,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'WebVTT cue identifiers and positioning settings are kept when the source had them.',
   },
@@ -18249,6 +18771,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-to-lrc',
@@ -18305,6 +18828,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'LRC stores a start time only, so end times are dropped and each cue is written on one line. Converting back cannot recover them.',
   },
@@ -18397,6 +18921,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-shift',
@@ -18489,6 +19014,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'A shift that would push the first subtitle before the start of the video is refused, rather than flattening those cues onto 00:00.',
   },
@@ -18590,6 +19116,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'This stretches and shifts the whole file so both moments land exactly. It is the fix a plain shift cannot make.',
   },
@@ -18735,6 +19262,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-speed',
@@ -18827,6 +19355,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-merge',
@@ -18966,6 +19495,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'The second file starts at the offset you give — normally the exact length of the first video.',
   },
@@ -19094,6 +19624,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-trim',
@@ -19210,6 +19741,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitle-clean',
@@ -19347,6 +19879,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Every change is counted and reported at the top of the result, so you can see what was altered.',
   },
@@ -19405,6 +19938,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Nothing is changed. The limits used are the common broadcast ones and are named in the report.',
   },
@@ -19421,6 +19955,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'character-counter',
@@ -19434,6 +19969,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sentence-counter',
@@ -19447,6 +19983,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'paragraph-counter',
@@ -19461,6 +19998,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'reading-time',
@@ -19475,6 +20013,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'slug-generator',
@@ -19489,6 +20028,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'whitespace-remover',
@@ -19503,6 +20043,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'blank-line-remover',
@@ -19517,6 +20058,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'duplicate-line-remover',
@@ -19531,6 +20073,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'line-sorter',
@@ -19563,6 +20106,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'line-shuffler',
@@ -19577,6 +20121,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'line-number-adder',
@@ -19591,6 +20136,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-reverser',
@@ -19605,6 +20151,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-repeater',
@@ -19627,6 +20174,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'find-and-replace',
@@ -19662,6 +20210,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'regex-replace',
@@ -19698,6 +20247,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-splitter',
@@ -19719,6 +20269,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-deduplicator',
@@ -19733,6 +20284,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'lorem-ipsum-generator',
@@ -19755,6 +20307,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'random-word-generator',
@@ -19777,6 +20330,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
   {
     id: 'anagram-finder',
@@ -19799,6 +20353,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'palindrome-checker',
@@ -19813,6 +20368,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'smart-quote-converter',
@@ -19826,6 +20382,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'unicode-normalizer',
@@ -19866,6 +20423,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'diacritic-remover',
@@ -19880,6 +20438,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'emoji-remover',
@@ -19894,6 +20453,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'emoji-extractor',
@@ -19907,6 +20467,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'punctuation-cleaner',
@@ -19920,6 +20481,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'morse-code-translator',
@@ -19934,6 +20496,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'nato-alphabet-translator',
@@ -19948,6 +20511,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'pig-latin-translator',
@@ -19962,6 +20526,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'subtitles-text-cleaner',
@@ -19975,6 +20540,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'transcript-formatter',
@@ -19988,6 +20554,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'meta-tag-generator',
@@ -20024,6 +20591,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'open-graph-generator',
@@ -20059,6 +20627,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'twitter-card-generator',
@@ -20104,6 +20673,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'serp-snippet-preview',
@@ -20134,6 +20704,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'robots-txt-generator',
@@ -20170,6 +20741,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'robots-txt-tester',
@@ -20199,6 +20771,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sitemap-generator',
@@ -20213,6 +20786,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'sitemap-viewer',
@@ -20227,6 +20801,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'canonical-url-builder',
@@ -20241,6 +20816,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'hreflang-generator',
@@ -20255,6 +20831,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'schema-markup-generator',
@@ -20298,6 +20875,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'schema-markup-validator',
@@ -20312,6 +20890,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'html-head-inspector',
@@ -20326,6 +20905,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'link-extractor',
@@ -20348,6 +20928,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'redirect-chain-planner',
@@ -20362,6 +20943,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'url-normalizer',
@@ -20376,6 +20958,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'utm-builder',
@@ -20426,6 +21009,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'utm-parser',
@@ -20440,6 +21024,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'query-string-builder',
@@ -20453,6 +21038,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'query-string-parser',
@@ -20466,6 +21052,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'domain-name-generator',
@@ -20488,6 +21075,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'domain-typo-generator',
@@ -20502,6 +21090,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'favicon-inspector',
@@ -20524,6 +21113,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'web-app-manifest-generator',
@@ -20581,6 +21171,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'browser-compatibility-checklist',
@@ -20595,6 +21186,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-gradient-generator',
@@ -20617,6 +21209,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-shadow-generator',
@@ -20659,6 +21252,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-border-radius-generator',
@@ -20702,6 +21296,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-clip-path-generator',
@@ -20716,6 +21311,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-grid-generator',
@@ -20752,6 +21348,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-flexbox-generator',
@@ -20837,6 +21434,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-clamp-calculator',
@@ -20880,6 +21478,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'responsive-breakpoint-tester',
@@ -20902,6 +21501,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'viewport-size-calculator',
@@ -20945,6 +21545,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'aspect-ratio-calculator',
@@ -20981,6 +21582,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'html-table-generator',
@@ -20995,6 +21597,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'accessibility-contrast-checker',
@@ -21017,6 +21620,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'aria-label-checklist',
@@ -21031,6 +21635,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'heading-structure-checker',
@@ -21044,6 +21649,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'keyword-density-analyzer',
@@ -21066,6 +21672,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-to-html-link',
@@ -21105,6 +21712,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'svg-optimizer',
@@ -21196,6 +21804,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'favicon-html-generator',
@@ -21239,6 +21848,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-glassmorphism-generator',
@@ -21308,6 +21918,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-neumorphism-generator',
@@ -21402,6 +22013,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-animation-generator',
@@ -21587,6 +22199,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'css-gradient-studio',
@@ -21698,6 +22311,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-editor',
@@ -21713,6 +22327,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'markdown-editor',
@@ -21727,6 +22342,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'html-to-markdown',
@@ -21741,6 +22357,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Converts a documented common subset, not every extension or arbitrary HTML document. Review the generated output before publishing.',
   },
@@ -21757,6 +22374,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Converts a documented common subset, not every extension or arbitrary HTML document. Review the generated output before publishing.',
   },
@@ -21781,6 +22399,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'text-merge',
@@ -21810,6 +22429,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'spelling-variant-converter',
@@ -21842,6 +22462,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Dictionary-based aid for common variants only; context, proper nouns, domain terms, and many variants need human review.',
   },
@@ -21858,6 +22479,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic uncontracted character mapping only; it does not implement Grade 2 contractions, language-specific rules, tactile layout, or accessibility certification.',
   },
@@ -21882,6 +22504,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'caesar-cipher',
@@ -21921,6 +22544,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Classical puzzle cipher only. It provides no modern confidentiality or security.',
   },
@@ -21962,6 +22586,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Classical puzzle cipher only. It provides no modern confidentiality or security.',
   },
@@ -21986,6 +22611,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Deterministic extractive ranking only. It does not understand facts, intent, nuance, or truth and may omit important context.',
   },
@@ -22002,6 +22628,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'prompt-template-builder',
@@ -22048,6 +22675,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'email-signature-generator',
@@ -22099,6 +22727,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Email clients vary. Send test messages and confirm links, wrapping, dark mode, and accessibility before organization-wide use.',
   },
@@ -22143,6 +22772,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
     notice:
       'Basic starting point only. Verify the current style guide and the exact rules for your source type.',
   },
@@ -22231,6 +22861,109 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'dicom-read-tags',
+    source: 'formats-dicom',
+    name: 'Read DICOM tags',
+    description:
+      'Read DICOM metadata and identify fields that require privacy review.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+    notice:
+      'Tag anonymisation does not remove identifying information burned into pixel data. Review pixels separately.',
+  },
+  {
+    id: 'dicom-anonymise-basic',
+    source: 'formats-dicom',
+    name: 'Anonymise DICOM tags',
+    description:
+      'Apply the Basic Application Level Confidentiality Profile to DICOM tags.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'dcm',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+    notice:
+      'Tag anonymisation does not remove identifying information burned into pixel data. Review pixels separately.',
+  },
+  {
+    id: 'dicom-extract-pixels',
+    source: 'formats-dicom',
+    name: 'Extract DICOM pixels',
+    description:
+      'Extract uncompressed or RLE Lossless DICOM pixel bytes without interpretation.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'raw',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+    notice:
+      'Raw pixel extraction performs no diagnostic interpretation, windowing, or measurement.',
+  },
+  {
+    id: 'email-parse-eml',
+    source: 'formats-email',
+    name: 'Parse EML',
+    description:
+      'Read RFC 5322 headers, MIME bodies, and attachments from EML.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'email-parse-mbox',
+    source: 'formats-email',
+    name: 'Parse mbox',
+    description:
+      'Read messages and escaped body separators from an mbox archive.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'email-parse-msg',
+    source: 'formats-email',
+    name: 'Parse MSG',
+    description:
+      'Read Unicode or ANSI properties and attachments from MSG CFB storage.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'text',
+      extension: 'json',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
   },
   {
     id: 'finance-parse-ofx',
@@ -22246,6 +22979,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'finance-parse-qif',
@@ -22261,6 +22995,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'finance-reconcile',
@@ -22276,6 +23011,91 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'geo-convert-to-gpx',
+    source: 'formats-geo',
+    name: 'Convert track to GPX',
+    description: 'Convert a GPX, KML, or GeoJSON track document to GPX.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'gpx',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'geo-convert-to-kml',
+    source: 'formats-geo',
+    name: 'Convert track to KML',
+    description: 'Convert a GPX, KML, or GeoJSON track document to KML.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'kml',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'geo-convert-to-geojson',
+    source: 'formats-geo',
+    name: 'Convert track to GeoJSON',
+    description: 'Convert a GPX, KML, or GeoJSON track document to GeoJSON.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'geojson',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'geo-trim-ends',
+    source: 'formats-geo',
+    name: 'Trim track ends',
+    description:
+      'Remove a WGS 84 Haversine distance from both ends of every track.',
+    input: 'file',
+    params: [
+      {
+        id: 'metres',
+        label: 'Metres from each end',
+        type: 'number',
+        defaultValue: '100',
+        serialisable: true,
+      },
+    ],
+    output: {
+      kind: 'files',
+      extension: 'geojson',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
+  },
+  {
+    id: 'geo-strip-timestamps',
+    source: 'formats-geo',
+    name: 'Remove track timestamps',
+    description: 'Remove every timestamp while preserving track coordinates.',
+    input: 'file',
+    params: [],
+    output: {
+      kind: 'files',
+      extension: 'geojson',
+    },
+    runtime: 'pure',
+    deterministic: true,
+    streamable: false,
   },
   {
     id: 'pdfcrypt-inspect',
@@ -22291,6 +23111,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'pdfcrypt-decrypt',
@@ -22314,6 +23135,7 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
+    streamable: false,
   },
   {
     id: 'pdfcrypt-encrypt-r6',
@@ -22350,5 +23172,6 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: false,
+    streamable: false,
   },
 ] as const satisfies readonly KernelOperationDescriptor[];

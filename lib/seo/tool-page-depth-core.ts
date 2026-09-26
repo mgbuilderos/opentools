@@ -28,6 +28,95 @@ const LOCAL_EXECUTION_ENGINE =
   'Computations run directly on your own device using WebAssembly, Web Workers, and modern browser APIs including Web Crypto and TextDecoder. There are no server queues, no background telemetry, and no temporary cloud files created. Large operations remain responsive by offloading heavy parsing and conversion tasks to dedicated worker threads, ensuring the browser UI never freezes during intensive document and data processing tasks.';
 
 export const PAGE_DEPTH_CORE: Readonly<Record<string, ToolPageDepth>> = {
+  // components/email-reader-tool.tsx, lib/formats/email/index.ts
+  '/email/reader': {
+    title: 'Offline Email Reader — View EML, MSG, and Mbox Files',
+    description:
+      'Open and read EML, Outlook MSG, and Mbox email files locally in your browser. Inspect headers, attachments, and clean HTML with zero network tracking.',
+    heading: 'About this offline email reader',
+    directAnswer:
+      'Open, inspect, and extract attachments from EML, Outlook MSG, and Mbox files directly in your browser without uploading to any remote mail server. View full RFC 822 email headers, toggle between formatted HTML and plain text bodies, sanitize tracking pixels, and download attachments with cryptographic safety.',
+    lead: 'Email files contain confidential correspondence, sensitive business negotiations, financial statements, and private personal data. Conventional cloud webmail viewers force you to upload these messages to third-party servers, exposing sender metadata, message contents, and unencrypted attachments. Our offline email reader processes every message locally inside your browser memory using sandboxed parsing engines. It inspects RFC 822 MIME headers, strips remote tracking beacons and scripts, renders multipart layouts safely, and extracts attached documents with complete zero-knowledge isolation.',
+    steps: [
+      {
+        name: 'Open or drop your email file',
+        text: 'Select an .eml, .msg, or .mbox file up to 100 MB directly from your device storage, or drag and drop it into the designated drop zone. The file is read into memory instantly without any network upload.',
+      },
+      {
+        name: 'Select message from archive',
+        text: 'If viewing an mbox archive containing multiple messages, select an email from the message list index to inspect its individual headers, content, and attachments.',
+      },
+      {
+        name: 'Inspect verified email headers',
+        text: 'Review authenticated envelope details including From, To, CC, BCC, Date, Subject, Message-ID, Reply-To, and raw MIME headers to verify message provenance and transit hops.',
+      },
+      {
+        name: 'Toggle view and download attachments',
+        text: 'Switch between sanitized HTML view and raw plain text. Preview inline images and click any attachment badge to download extracted files directly to your device.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'RFC 822 and Outlook MSG format support',
+        body: [
+          'Email messages exist in several standard and proprietary file formats depending on the sending client and backup utility. Standard EML files follow RFC 822 and RFC 2822 MIME structure, packing headers, boundary-delimited message bodies, and base64-encoded attachments into plain text streams. Outlook MSG files, by contrast, use Microsoft Compound File Binary Format (CFBF) with OLE structured storage streams for properties, recipients, and attachments. This tool includes specialized in-browser parsers for both standard MIME and binary OLE MSG files, extracting headers, rich bodies, and attachments accurately without requiring Microsoft Outlook or cloud conversion services.',
+        ],
+      },
+      {
+        heading: 'Privacy-first HTML sanitization and tracker blocking',
+        body: [
+          'Marketing emails and newsletters frequently embed invisible tracking pixels (1x1 transparent images) and remote CSS resources to monitor when, where, and how often you open a message. Furthermore, unvetted HTML emails may carry dangerous active scripts or frame embeds. Our reader applies strict client-side DOMPurify-based sanitization that completely eliminates script tags, object embeds, frames, and inline event handlers. Crucially, all remote HTTP and HTTPS image URLs are blocked by default from loading, preventing tracking beacons from notifying the sender. Local inline image attachments referenced via cid: URLs are safely translated into isolated object URLs in memory.',
+        ],
+      },
+      {
+        heading: 'Mbox multi-message mailbox archives',
+        body: [
+          'The mbox format is widely used by Unix mail systems, Mozilla Thunderbird, Google Takeout, and email migration utilities to store entire folders of messages in a single continuous file. Messages are delimited by From lines at the beginning of each email. Our parser scans mbox streams, partitions individual messages accurately, extracts header summaries, and presents an interactive message browser that lets you navigate through thousands of archived emails without external database servers or desktop email clients.',
+        ],
+      },
+      {
+        heading: 'Direct attachment extraction and verification',
+        body: [
+          'Email attachments often contain contracts, invoices, spreadsheets, and archives. When opening an email in this reader, all MIME multipart attachments are identified, decoded from base64 or quoted-printable encodings, and verified. Each attachment displays its original filename, MIME content type, and human-readable byte size. You can download individual attachments directly to your filesystem with a single click, without risking exposure to external servers or malicious payload execution.',
+        ],
+      },
+      {
+        heading: 'Zero upload security guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which email file formats can I open?',
+        answer:
+          'You can open standard MIME .eml files, Microsoft Outlook binary .msg files, and Unix / Thunderbird / Google Takeout .mbox mailbox archives.',
+      },
+      {
+        question: 'Does this tool load remote images or notify the sender?',
+        answer:
+          'No. Remote image loading and tracking pixels are blocked by default. The site operates under a strict connect-src none Content Security Policy, meaning network requests are completely forbidden by your browser.',
+      },
+      {
+        question: 'Can I extract attachments from Outlook MSG files?',
+        answer:
+          'Yes. Both regular file attachments and inline embedded images are extracted and available for instant local download.',
+      },
+      {
+        question: 'Is there any file size limit for mbox archives?',
+        answer:
+          'Mbox archives up to 100 MB can be processed smoothly in standard browser memory. For giant multi-gigabyte archives, consider splitting or filtering the mailbox prior to reading.',
+      },
+      {
+        question: 'Are my emails or attachments stored on any server?',
+        answer:
+          'Never. All parsing and rendering take place in-memory on your local device. Once you close or reload the browser tab, all memory is immediately freed.',
+      },
+    ],
+  },
   // components/aadhaar-pan-masker-tool.tsx, lib/tools/id-mask/mask.ts, lib/tools/id-mask/recheck.ts
   '/life-admin/aadhaar-pan-masker': {
     title: 'Mask Aadhaar and PAN Numbers — Free, No Upload',
@@ -1157,6 +1246,87 @@ export const PAGE_DEPTH_CORE: Readonly<Record<string, ToolPageDepth>> = {
         question: 'Can this tool format entire source code files?',
         answer:
           'While designed for identifiers, strings, and copy, pasting large code blocks will normalize all identifiers according to the selected case convention.',
+      },
+    ],
+  },
+  // components/ofx-qif-tool.tsx, lib/formats/finance/finance.ts
+  '/finance/ofx-qif': {
+    title: 'Convert OFX & QIF to CSV or Excel — No Upload',
+    description:
+      'Convert OFX and QIF bank statements to CSV or Excel in your browser. Reconcile opening balance and transactions with zero file uploads.',
+    heading: 'About this OFX and QIF statement converter',
+    directAnswer:
+      'Select or drop an OFX (.ofx, .qfx, .sgml, .xml) or QIF (.qif) financial statement file up to 50 MB. The browser engine parses banking, credit card, and investment transactions completely in memory, checks opening and closing balance arithmetic, highlights reconciliation discrepancies, and exports clean CSV or native Excel (.xlsx) spreadsheets.',
+    lead: 'Bank and credit card statements exported in Open Financial Exchange (OFX) or Quicken Interchange Format (QIF) contain structured financial history needed for bookkeeping, tax preparation, audit trails, and expense analysis. Standard desktop accounting applications often enforce proprietary subscription paywalls or require routing personal ledger data through third-party cloud aggregators. This tool provides an offline-capable, in-browser parser that reads SGML and XML OFX variants alongside multi-account QIF files, validates transaction consistency through exact decimal arithmetic, and emits structured tabular files without transmitting a single byte over the network.',
+    steps: [
+      {
+        name: 'Select or drop your statement file',
+        text: 'Choose an OFX, QFX, or QIF statement file up to 50 MB. The document is decoded in memory using standard character decoders without transmitting bytes across the network.',
+      },
+      {
+        name: 'Review parsed accounts and transactions',
+        text: 'Inspect detected accounts, statement date ranges, transaction payees, memos, reference numbers, and split categories in the searchable interactive preview table.',
+      },
+      {
+        name: 'Verify balance reconciliation',
+        text: 'Examine the balance reconciliation card. The engine calculates opening balance plus credits minus debits using exact BigInt decimal scaling and flags any mathematical discrepancies against the reported closing balance.',
+      },
+      {
+        name: 'Export to CSV or Excel',
+        text: 'Click Download CSV or Download Excel (.xlsx) to save structured transaction data formatted with standard column headers ready for spreadsheet modeling or accounting import.',
+      },
+    ],
+    sections: [
+      {
+        heading: 'Differences between OFX 1.x, OFX 2.x, and QIF formats',
+        body: [
+          'Financial institutions publish records in three distinct syntax families. OFX 1.x files are based on SGML and feature custom header blocks (such as OFXHEADER:100, DATA:OFXSGML, and ENCODING:USASCII) followed by unclosed leaf tags like <TRNAMT>-125.50 and <NAME>Utility payment without corresponding closing tags. OFX 2.x files replace SGML with strict XML syntax, carrying standard XML declarations and properly closed element hierarchies. QIF files date back to early personal finance software, organizing transactions with single-character line prefixes such as D for date, T for amount, P for payee, M for memo, and ^ as record delimiters. The parsing engine inspects the initial byte sequences to distinguish SGML, XML, and QIF structures automatically without relying on file extensions.',
+        ],
+      },
+      {
+        heading:
+          'Deterministic balance reconciliation and discrepancy auditing',
+        body: [
+          'A key failure mode in statement translation is silent floating-point drift: binary 64-bit floating point math cannot accurately represent base-10 currency cents without rounding artifacts. This tool converts all financial amounts into exact coefficient and scale BigInt representations during calculation. When both opening and closing balances are present in the statement metadata, the engine checks whether opening balance plus the sum of all transaction credits and debits equals the reported closing balance to the exact cent. If bank adjustments, pending holds, or missing statement pages introduce a deviation, a high-visibility alert displays the exact numerical discrepancy so you can resolve records before importing them into accounting software.',
+        ],
+      },
+      {
+        heading: 'Zero upload security and banking privacy guarantee',
+        body: [SEALED_PAGE, NO_NETWORK_CODE],
+      },
+      {
+        heading: 'Client-side processing limits',
+        body: [LOCAL_EXECUTION_ENGINE],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which statement file extensions and formats are supported?',
+        answer:
+          'This tool accepts OFX 1.02–1.60 SGML files, OFX 2.00–2.20 XML files, Quicken Financial Exchange (.qfx) files, and standard Quicken Interchange Format (.qif) exports up to 50 MB.',
+      },
+      {
+        question:
+          'Are bank account numbers or financial figures sent to any server?',
+        answer:
+          'No. All decoding, XML parsing, reconciliation arithmetic, and spreadsheet formatting execute entirely inside your local browser tab. The page is protected by a Content Security Policy with connect-src none that blocks outbound network connections.',
+      },
+      {
+        question: 'How are multi-currency and multi-account files handled?',
+        answer:
+          'When a file contains multiple bank or credit card accounts, an account selector dropdown appears above the overview cards. You can filter transactions by specific account or view combined statements with respective currency tags.',
+      },
+      {
+        question:
+          'What happens if a statement does not provide an opening balance?',
+        answer:
+          'Certain bank exports provide only a closing balance or list transactions without opening anchors. In this scenario, the tool computes total inflows, total outflows, and net transaction sums, reporting that opening balance was omitted while keeping all records accessible for export.',
+      },
+      {
+        question:
+          'Will visual bank logos, check scans, or letterhead appear in the export?',
+        answer:
+          'No. OFX and QIF are raw data-interchange formats designed for financial numbers and metadata. They do not store graphic logos, page layout fonts, or check image scans.',
       },
     ],
   },

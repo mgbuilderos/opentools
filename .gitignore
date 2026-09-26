@@ -52,3 +52,7 @@ next-env.d.ts
 # deploy lock capability token — proves this worktree holds the lock
 .deploy-lock-token
 .indexnow-state.json
+
+# Built by `npm run portable`. A ~200 MiB copy of dist/client; the recipe is in
+# scripts/build-portable.mjs, the artifact belongs on a USB stick, not in git.
+/release/opentools-portable/

@@ -52,7 +52,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'pdf',
     name: 'PDF',
     shortDescription: 'Merge, compress, extract, and reorder pages.',
-    destinationCount: 22,
+    destinationCount: 24,
     toolIds: [
       'pdf-merge',
       'pdf-compress',
@@ -71,6 +71,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       'pdf-preflight',
       'pdf-burst',
       'excel-to-pdf',
+      'pdf-password',
+      'pdf-form-filler',
     ],
   },
   {
@@ -130,8 +132,14 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'files',
     name: 'Files & archives',
     shortDescription: 'ZIP archives, checksums, renaming, and file inspection.',
-    destinationCount: 34,
-    toolIds: ['file-hash', 'archive-toolkit', 'file-workbench', 'bench'],
+    destinationCount: 35,
+    toolIds: [
+      'file-hash',
+      'archive-toolkit',
+      'email-reader',
+      'file-workbench',
+      'bench',
+    ],
   },
   {
     id: 'text-data',
@@ -201,7 +209,11 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     name: 'Finance & business',
     shortDescription: 'Loans, tax, invoices, margins, and business maths.',
     destinationCount: 57,
-    toolIds: ['finance-business-workbench', 'bank-statement'],
+    toolIds: [
+      'finance-business-workbench',
+      'ofx-qif-converter',
+      'bank-statement',
+    ],
   },
   {
     id: 'science',

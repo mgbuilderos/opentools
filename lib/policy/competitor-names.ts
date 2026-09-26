@@ -42,7 +42,28 @@
  */
 
 export interface ForbiddenCompetitor {
-  /** Matched against source text, case-insensitive, word-bounded. */
+  /**
+   * Matched against source text, case-insensitive, word-bounded.
+   *
+   * `i` and not `iu`, which matters more than it looks. Every pattern here is
+   * ASCII, so the `u` flag adds nothing but V8's Unicode case-folding path --
+   * and that path is **17x slower**: `/\bAdobe\b/iu` takes 2,106ms over the
+   * built site where `/\bAdobe\b/i` takes 121ms. Across 64 names that is the
+   * difference between a two-second sweep and a 126-second one.
+   *
+   * `served-copy-policy.test.ts` allows the sweep 120 seconds. It was taking
+   * 126, so it had already crossed, and it did not degrade gracefully on the way
+   * -- the suite passed until the day it timed out. The comment in that file
+   * still records the 2.4s it cost when this list held nine names; it holds
+   * sixty-four now, and nobody re-measured.
+   *
+   * What `u` changed behaviourally was that an exotic look-alike -- U+212A
+   * KELVIN SIGN for `k`, U+0130 for `i` -- would fold to its ASCII letter. This
+   * guard exists to catch our own writers naming a company by accident, not to
+   * defeat an adversary spelling one in homoglyphs, and nothing on this site
+   * emits those codepoints. `competitor-names.test.ts` pins that every name
+   * still matches its own spelling in any case.
+   */
   readonly pattern: RegExp;
   /** Why this name is on the list — the category we compete with them in. */
   readonly reason: string;
@@ -50,62 +71,62 @@ export interface ForbiddenCompetitor {
 
 export const FORBIDDEN_COMPETITORS: readonly ForbiddenCompetitor[] = [
   // The original nine: PDF and image, guarded since the comparison pages shipped.
-  { pattern: /\bAdobe\b/iu, reason: 'PDF, image, audio and video' },
-  { pattern: /\bAcrobat\b/iu, reason: 'PDF editing, OCR, conversion' },
-  { pattern: /\biLovePDF\b/iu, reason: 'PDF task suite' },
-  { pattern: /\bSmallpdf\b/iu, reason: 'PDF task suite' },
-  { pattern: /\biLoveIMG\b/iu, reason: 'image task suite' },
-  { pattern: /\bCanva\b/iu, reason: 'image and design' },
-  { pattern: /\bSejda\b/iu, reason: 'PDF task suite' },
-  { pattern: /\bPDF24\b/iu, reason: 'PDF task suite' },
-  { pattern: /\bTinyPNG\b/iu, reason: 'image compression' },
+  { pattern: /\bAdobe\b/i, reason: 'PDF, image, audio and video' },
+  { pattern: /\bAcrobat\b/i, reason: 'PDF editing, OCR, conversion' },
+  { pattern: /\biLovePDF\b/i, reason: 'PDF task suite' },
+  { pattern: /\bSmallpdf\b/i, reason: 'PDF task suite' },
+  { pattern: /\biLoveIMG\b/i, reason: 'image task suite' },
+  { pattern: /\bCanva\b/i, reason: 'image and design' },
+  { pattern: /\bSejda\b/i, reason: 'PDF task suite' },
+  { pattern: /\bPDF24\b/i, reason: 'PDF task suite' },
+  { pattern: /\bTinyPNG\b/i, reason: 'image compression' },
 
   // Added 2026-09-25 with the universe map, category by category.
-  { pattern: /\bPhotoshop\b/iu, reason: 'image editing' },
-  { pattern: /\bLightroom\b/iu, reason: 'image editing, RAW' },
-  { pattern: /\bPDFfiller\b/iu, reason: 'PDF forms' },
-  { pattern: /\bPDFelement\b/iu, reason: 'PDF editing' },
-  { pattern: /\bWondershare\b/iu, reason: 'PDF, video' },
-  { pattern: /\bNitro\s?PDF\b/iu, reason: 'PDF editing' },
-  { pattern: /\bFoxit\b/iu, reason: 'PDF editing' },
-  { pattern: /\bABBYY\b/iu, reason: 'OCR, PDF' },
-  { pattern: /\bFineReader\b/iu, reason: 'OCR and scanned PDF' },
-  { pattern: /\bDocuSign\b/iu, reason: 'e-signature' },
-  { pattern: /\bConvertio\b/iu, reason: 'format conversion' },
-  { pattern: /\bCloudConvert\b/iu, reason: 'format conversion' },
-  { pattern: /\bZamzar\b/iu, reason: 'format conversion' },
-  { pattern: /\bFreeConvert\b/iu, reason: 'format conversion' },
-  { pattern: /\bremove\.bg\b/iu, reason: 'background removal' },
-  { pattern: /\bPicflow\b/iu, reason: 'HEIC conversion' },
-  { pattern: /\bTopaz\b/iu, reason: 'image and video upscaling' },
-  { pattern: /\bGigapixel\b/iu, reason: 'image upscaling' },
-  { pattern: /\bKapwing\b/iu, reason: 'video editing, captions' },
+  { pattern: /\bPhotoshop\b/i, reason: 'image editing' },
+  { pattern: /\bLightroom\b/i, reason: 'image editing, RAW' },
+  { pattern: /\bPDFfiller\b/i, reason: 'PDF forms' },
+  { pattern: /\bPDFelement\b/i, reason: 'PDF editing' },
+  { pattern: /\bWondershare\b/i, reason: 'PDF, video' },
+  { pattern: /\bNitro\s?PDF\b/i, reason: 'PDF editing' },
+  { pattern: /\bFoxit\b/i, reason: 'PDF editing' },
+  { pattern: /\bABBYY\b/i, reason: 'OCR, PDF' },
+  { pattern: /\bFineReader\b/i, reason: 'OCR and scanned PDF' },
+  { pattern: /\bDocuSign\b/i, reason: 'e-signature' },
+  { pattern: /\bConvertio\b/i, reason: 'format conversion' },
+  { pattern: /\bCloudConvert\b/i, reason: 'format conversion' },
+  { pattern: /\bZamzar\b/i, reason: 'format conversion' },
+  { pattern: /\bFreeConvert\b/i, reason: 'format conversion' },
+  { pattern: /\bremove\.bg\b/i, reason: 'background removal' },
+  { pattern: /\bPicflow\b/i, reason: 'HEIC conversion' },
+  { pattern: /\bTopaz\b/i, reason: 'image and video upscaling' },
+  { pattern: /\bGigapixel\b/i, reason: 'image upscaling' },
+  { pattern: /\bKapwing\b/i, reason: 'video editing, captions' },
   { pattern: /\bVEED\b/u, reason: 'video editing, captions' },
-  { pattern: /\bDescript\b/iu, reason: 'audio and video editing' },
-  { pattern: /\bOtter\b/iu, reason: 'transcription' },
-  { pattern: /\bRev\.com\b/iu, reason: 'transcription, captions' },
-  { pattern: /\bLALAL\b/iu, reason: 'audio stem separation' },
-  { pattern: /\bAuphonic\b/iu, reason: 'audio loudness and denoise' },
-  { pattern: /\bGrammarly\b/iu, reason: 'writing and spelling' },
-  { pattern: /\bDeepL\b/iu, reason: 'translation' },
-  { pattern: /\bNanonets\b/iu, reason: 'document data extraction' },
-  { pattern: /\bDocparser\b/iu, reason: 'document data extraction' },
-  { pattern: /\bPostman\b/iu, reason: 'developer tooling' },
+  { pattern: /\bDescript\b/i, reason: 'audio and video editing' },
+  { pattern: /\bOtter\b/i, reason: 'transcription' },
+  { pattern: /\bRev\.com\b/i, reason: 'transcription, captions' },
+  { pattern: /\bLALAL\b/i, reason: 'audio stem separation' },
+  { pattern: /\bAuphonic\b/i, reason: 'audio loudness and denoise' },
+  { pattern: /\bGrammarly\b/i, reason: 'writing and spelling' },
+  { pattern: /\bDeepL\b/i, reason: 'translation' },
+  { pattern: /\bNanonets\b/i, reason: 'document data extraction' },
+  { pattern: /\bDocparser\b/i, reason: 'document data extraction' },
+  { pattern: /\bPostman\b/i, reason: 'developer tooling' },
 
   /*
    * The professional tools four live pages named, with prices, until
    * 2026-09-25. None of those prices had a source anywhere in this repository.
    * They are listed here so the same copy cannot come back.
    */
-  { pattern: /\bEnfocus\b/iu, reason: 'PDF print preflight' },
-  { pattern: /\bPitStop\b/iu, reason: 'PDF print preflight' },
-  { pattern: /\bFlightCheck\b/iu, reason: 'PDF print preflight' },
-  { pattern: /\bBluebeam\b/iu, reason: 'drawing sets, title blocks' },
-  { pattern: /\bEverMap\b/iu, reason: 'PDF splitting' },
-  { pattern: /\bAutoSplit\b/iu, reason: 'PDF splitting' },
-  { pattern: /\bPDF-?eXPLODE\b/iu, reason: 'PDF splitting' },
-  { pattern: /\bNUGEN\b/iu, reason: 'audio loudness metering' },
-  { pattern: /\bVisLM\b/iu, reason: 'audio loudness metering' },
+  { pattern: /\bEnfocus\b/i, reason: 'PDF print preflight' },
+  { pattern: /\bPitStop\b/i, reason: 'PDF print preflight' },
+  { pattern: /\bFlightCheck\b/i, reason: 'PDF print preflight' },
+  { pattern: /\bBluebeam\b/i, reason: 'drawing sets, title blocks' },
+  { pattern: /\bEverMap\b/i, reason: 'PDF splitting' },
+  { pattern: /\bAutoSplit\b/i, reason: 'PDF splitting' },
+  { pattern: /\bPDF-?eXPLODE\b/i, reason: 'PDF splitting' },
+  { pattern: /\bNUGEN\b/i, reason: 'audio loudness metering' },
+  { pattern: /\bVisLM\b/i, reason: 'audio loudness metering' },
 
   /*
    * Owner instruction, 2026-09-25: "we dont want to name any other brand."
@@ -120,22 +141,22 @@ export const FORBIDDEN_COMPETITORS: readonly ForbiddenCompetitor[] = [
    * with a text layer — which is more durable than a list of products that
    * rename and get acquired.
    */
-  { pattern: /\bIllustrator\b/iu, reason: 'vector editing' },
-  { pattern: /\bCorelDRAW\b/iu, reason: 'vector editing' },
-  { pattern: /\bInkscape\b/iu, reason: 'vector editing' },
-  { pattern: /\bFigma\b/iu, reason: 'interface design' },
-  { pattern: /\bPremiere\s?Pro\b/iu, reason: 'video editing' },
-  { pattern: /\bFinal\s?Cut\b/iu, reason: 'video editing' },
-  { pattern: /\bDaVinci\s?Resolve\b/iu, reason: 'video editing' },
-  { pattern: /\bAutodesk\b/iu, reason: 'CAD and BIM' },
-  { pattern: /\bAutoCAD\b/iu, reason: 'CAD drafting' },
-  { pattern: /\bRevit\b/iu, reason: 'BIM authoring' },
-  { pattern: /\bArchiCAD\b/iu, reason: 'BIM authoring' },
-  { pattern: /\bGraphisoft\b/iu, reason: 'BIM authoring' },
-  { pattern: /\bVectorworks\b/iu, reason: 'CAD drafting' },
-  { pattern: /\bNemetschek\b/iu, reason: 'CAD drafting' },
-  { pattern: /\bMicroStation\b/iu, reason: 'CAD drafting' },
-  { pattern: /\bProcore\b/iu, reason: 'construction document management' },
+  { pattern: /\bIllustrator\b/i, reason: 'vector editing' },
+  { pattern: /\bCorelDRAW\b/i, reason: 'vector editing' },
+  { pattern: /\bInkscape\b/i, reason: 'vector editing' },
+  { pattern: /\bFigma\b/i, reason: 'interface design' },
+  { pattern: /\bPremiere\s?Pro\b/i, reason: 'video editing' },
+  { pattern: /\bFinal\s?Cut\b/i, reason: 'video editing' },
+  { pattern: /\bDaVinci\s?Resolve\b/i, reason: 'video editing' },
+  { pattern: /\bAutodesk\b/i, reason: 'CAD and BIM' },
+  { pattern: /\bAutoCAD\b/i, reason: 'CAD drafting' },
+  { pattern: /\bRevit\b/i, reason: 'BIM authoring' },
+  { pattern: /\bArchiCAD\b/i, reason: 'BIM authoring' },
+  { pattern: /\bGraphisoft\b/i, reason: 'BIM authoring' },
+  { pattern: /\bVectorworks\b/i, reason: 'CAD drafting' },
+  { pattern: /\bNemetschek\b/i, reason: 'CAD drafting' },
+  { pattern: /\bMicroStation\b/i, reason: 'CAD drafting' },
+  { pattern: /\bProcore\b/i, reason: 'construction document management' },
 ];
 
 /**
@@ -180,6 +201,9 @@ export function findForbiddenCompetitors(
   source: string,
   label: string,
 ): string[] {
+  // The fast path, and why it exists: see ANY_COMPETITOR below.
+  if (!ANY_COMPETITOR.some((union) => union.test(source))) return [];
+
   return FORBIDDEN_COMPETITORS.filter(({ pattern }) =>
     pattern.test(source),
   ).map(
@@ -187,3 +211,45 @@ export function findForbiddenCompetitors(
       `${label} names a competitor matching ${pattern.source} (${reason})`,
   );
 }
+
+/**
+ * The whole list as one alternation per flag set, used only to decide whether
+ * the per-pattern scan needs to run at all.
+ *
+ * ## Why
+ *
+ * `served-copy-policy.test.ts` runs this over every built page — 143 MB of
+ * markup across ~1,480 files. One `RegExp.test` per name meant 65 full passes
+ * over all of it, and the cost had quietly gone from the 2.4s that file's
+ * comment records to **126s**, six seconds under its own 120s timeout, because
+ * the comment was measured when this list held nine names and it now holds
+ * sixty-five. It did not fail gradually; it passed until it did not.
+ *
+ * Almost every page matches nothing, so the answer to "does this page name
+ * anybody" is one pass instead of sixty-five, and the per-pattern scan runs
+ * only on the rare page that already failed. Same patterns, same messages,
+ * same result — `competitor-names.test.ts` asserts the two paths agree.
+ *
+ * ## Two unions, not one
+ *
+ * `VEED` is deliberately case-sensitive while every other entry is not, and
+ * folding it into a case-insensitive union would make it match "veed" in
+ * ordinary English. The patterns are grouped by flag so the union is exactly
+ * the union of what it replaces.
+ *
+ * Derived from `FORBIDDEN_COMPETITORS` rather than written out, so a name
+ * added to the list is in the fast path by construction and cannot be missed
+ * by it.
+ */
+const ANY_COMPETITOR: readonly RegExp[] = (() => {
+  const byFlags = new Map<string, string[]>();
+  for (const { pattern } of FORBIDDEN_COMPETITORS) {
+    const flags = pattern.flags.replace(/[gy]/gu, '');
+    const group = byFlags.get(flags);
+    if (group) group.push(pattern.source);
+    else byFlags.set(flags, [pattern.source]);
+  }
+  return [...byFlags].map(
+    ([flags, sources]) => new RegExp(sources.join('|'), flags),
+  );
+})();
