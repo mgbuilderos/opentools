@@ -55,7 +55,10 @@ const SECTIONS = [...new Set(DEDICATED_TOOL_ROUTES.map(sectionOf))].sort();
  * same-origin requests are expected here, and assertion 2 already tolerates
  * those unless they carry a body.
  */
-const LOCAL_MODEL_ROUTES = new Set(['/image/background-remover', '/image/editor']);
+const LOCAL_MODEL_ROUTES = new Set([
+  '/image/background-remover',
+  '/image/editor',
+]);
 
 /**
  * The routes that accept a file, measured on 2026-09-26 against this build.
@@ -74,9 +77,14 @@ const TAKES_A_FILE = new Set<string>([
   '/data/csv-to-json',
   '/data/excel',
   '/data/workbook-audit',
+  '/email/reader',
   '/documents/metadata',
+  '/batch',
   '/file/archive',
   '/file/hash-calculator',
+  '/file/xray',
+  '/finance/bank-statement',
+  '/finance/ofx-qif',
   '/image/background-remover',
   '/image/editor',
   '/image/exact-size',
@@ -94,11 +102,13 @@ const TAKES_A_FILE = new Set<string>([
   '/pdf/drawing-register',
   '/pdf/excel-to-pdf',
   '/pdf/extract-pages',
+  '/pdf/form-filler',
   '/pdf/images-to-pdf',
   '/pdf/merge',
   '/pdf/metadata',
   '/pdf/ocr',
   '/pdf/page-tools',
+  '/pdf/password',
   '/pdf/preflight',
   '/pdf/redact',
   '/pdf/sign',
