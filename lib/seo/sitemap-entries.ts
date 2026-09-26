@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllTemplates } from '../templates/templates-data';
 import { getAllBlogPosts } from './blog-data';
 import { CATEGORY_HUB_ROUTES } from './category-hubs';
+import { BATCH_LANDING_ROUTES, PROFESSION_HUB_ROUTES } from './audience-pages';
 import { COMPARE_ROUTES } from './compare-pages';
 import {
   GUIDE_CONSOLIDATION,
@@ -50,6 +51,10 @@ export function buildSitemap(
     '/proof',
     '/privacy',
     '/security',
+    // The self-hosting page. It is the only route written for an
+    // administrator deciding whether to run this inside their own network,
+    // rather than for someone with a file to convert.
+    '/self-host',
     '/about',
     '/support',
     '/guides',
@@ -73,6 +78,12 @@ export function buildSitemap(
     // categories and are already in LIVE_TOOL_ROUTES, because those two
     // addresses really do run a tool.
     ...CATEGORY_HUB_ROUTES,
+    // Pages addressed to a job rather than a file format (owner decision,
+    // 2026-09-25, overriding C4 -- see lib/seo/audience-pages.ts). Listed here
+    // with the other content pages for the same reason: they run no tool, so
+    // no CTA or dropzone must offer one as a place to send a file.
+    ...PROFESSION_HUB_ROUTES,
+    ...BATCH_LANDING_ROUTES,
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: lastModifiedFor(route === '' ? '/' : route),

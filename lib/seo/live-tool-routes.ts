@@ -16,7 +16,7 @@
  */
 
 export const LIVE_TOOL_ROUTES: readonly string[] = [
-  '/bench',
+  '/batch',
   '/pdf/merge',
   '/pdf/extract-pages',
   '/pdf/images-to-pdf',

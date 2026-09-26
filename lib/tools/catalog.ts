@@ -1957,7 +1957,7 @@ export const publicTools: ToolManifest[] = [
     category: 'File',
     aliases: KERNEL_MANIFEST.map((operation) => operation.name),
     jobs: KERNEL_MANIFEST.map((operation) => operation.description),
-    href: '/bench',
+    href: '/batch',
     execution: {
       mode: 'local-js',
       capabilities: ['file.bytes.transform', 'file.batch.run'],

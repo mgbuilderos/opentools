@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!--
+  Unraid Community Applications template.
+
+  CA scans a public GitHub repository for templates rather than taking a file
+  upload, so this lives in the project repo and the repository URL is what gets
+  submitted at https://ca.unraid.net/submit. Requirements checked 2026-09-26:
+  one XML file per app, a <Repository> tag pointing at a real image, readable
+  <Name> and <Overview> for the moderator, an OSI licence on the repo, and a
+  ca_profile.xml beside this file.
+
+  The image tag is pinned rather than :latest so an Unraid user who installs
+  today and one who installs next month are running the same reviewed build.
+-->
+<Container version="2">
+  <Name>OpenTools</Name>
+  <Repository>ghcr.io/mgbuilderos/opentools:0.1.0</Repository>
+  <Registry>https://github.com/mgbuilderos/opentools/pkgs/container/opentools</Registry>
+  <Network>bridge</Network>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/mgbuilderos/opentools/issues</Support>
+  <Project>https://getopentools.com/self-host</Project>
+  <Overview>
+    568 document, image, audio, video, data and developer tools served from one
+    container. Every tool runs in the browser tab that opened it: the file is
+    read by the page and is never sent to the server, so this container serves
+    the page and never receives the document. That makes it a static site to
+    secure rather than a document processor - nothing to encrypt at rest, no
+    retention period to set, no per-file audit trail.
+
+    Runs with no outbound network at all (verified with --network none): every
+    page still serves and outbound requests fail to resolve, which suits an
+    internal-only or air-gapped deployment.
+
+    Optional access gate: set both OPENTOOLS_AUTH_USER and
+    OPENTOOLS_AUTH_PASSWORD and the instance asks for HTTP Basic credentials
+    before serving anything. It is one shared credential for the whole
+    instance, not user accounts. There is no TLS - put it behind a reverse
+    proxy if you expose it beyond your LAN.
+
+    MIT licensed. Source: https://github.com/mgbuilderos/opentools
+  </Overview>
+  <Category>Productivity: Tools: MediaApp: Other</Category>
+  <WebUI>http://[IP]:[PORT:8796]/</WebUI>
+  <Icon>https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png</Icon>
+  <ExtraParams>--health-cmd="node -e \"fetch('http://127.0.0.1:8796/robots.txt').then(r=&gt;process.exit([200,401].includes(r.status)?0:1))\"" --health-interval=30s</ExtraParams>
+  <Config Name="WebUI Port" Target="8796" Default="8796" Mode="tcp" Description="Port the site is served on." Type="Port" Display="always" Required="true" Mask="false">8796</Config>
+  <Config Name="Page cache directory" Target="/tmp/opentools-state" Default="/mnt/user/appdata/opentools" Mode="rw" Description="Where the page cache is persisted. Optional - without it the cache simply starts empty after a restart." Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdata/opentools</Config>
+  <Config Name="Access gate username" Target="OPENTOOLS_AUTH_USER" Default="" Mode="" Description="Optional. Set this AND the password to require HTTP Basic credentials before anything is served. Setting only one fails closed." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Access gate password" Target="OPENTOOLS_AUTH_PASSWORD" Default="" Mode="" Description="Optional. Use a long value. Credentials travel in clear text unless you terminate TLS in front of this container." Type="Variable" Display="always" Required="false" Mask="true"/>
+</Container>
