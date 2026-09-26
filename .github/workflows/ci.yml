@@ -16,7 +16,11 @@ jobs:
   qc:
     name: Quality control (Node 22.x)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # `qc:release` adds the browser gate, which opens roughly a thousand pages
+    # across two engines on one worker. Measured at ~21 minutes for Chromium
+    # alone on two workers, so the old 30 would kill the job mid-suite and look
+    # like a product failure.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -32,8 +36,31 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Only the two engines playwright.config.ts declares as projects.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
       - name: Format check
         run: npm run format:check
 
-      - name: Full QC suite
-        run: npm run qc
+      # `qc:release`, not `qc`. The eight everyday gates never open a page, so
+      # nothing here could see a broken one: on 2026-09-25 the /batch rename
+      # left four assertions in e2e/bench.spec.ts waiting on a heading it had
+      # just deleted, and every pull request went green over it. END-TO-END and
+      # DEPENDENCY ADVISORIES only exist under --release, which until now no
+      # pull request ran. A gate nothing executes is not a gate.
+      - name: Full QC suite, including the browser gate
+        run: npm run qc:release
+
+      # A red browser gate otherwise leaves only a log. The HTML report carries
+      # the failing step, the DOM at that moment and the trace kept on retry.
+      - name: Keep the Playwright report when the browser gate fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
