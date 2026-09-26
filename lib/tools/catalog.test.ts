@@ -165,7 +165,10 @@ describe('public canary catalog', () => {
     // 680 after PDF redaction, 682 after the two dedicated OCR destinations,
     // 683 when the PDF metadata viewer joined the PDF workspace, and 684 with
     // the whole-text Aadhaar and PAN masker in the India & life admin group,
-    // beside the two single-number maskers it shares its engine with.
+    // beside the two single-number maskers it shares its engine with, and 714
+    // with the File Compiler at /do, which is one destination and not several:
+    // it has no searchEntries because it is not a list of jobs, it is one
+    // surface that takes whatever requirement you state.
     const everyDestination = publicTools.reduce(
       (total, tool) => total + (tool.searchEntries?.length || 1),
       0,
@@ -180,7 +183,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(713);
+    expect(everyDestination).toBe(714);
     expect(reachable).toBe(everyDestination);
   });
 

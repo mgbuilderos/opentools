@@ -67,6 +67,15 @@ export const DEDICATED_TOOL_ROUTES = [
   '/video/resize',
   '/video/crop',
   '/image/exact-size',
+  /*
+    The File Compiler. Registered rather than held back because
+    `lib/seo/tool-page-registration.test.ts` exempts no page that accepts a
+    file — a dropzone behind no link and in no sitemap is the exact failure that
+    test exists for, and `AGENTS.md` forbids using HELD_BACK to get a green run.
+    Registering puts it in the sitemap and lets every CTA offer it; it reaches
+    people only on a deploy, which is the owner's call and has not been made.
+  */
+  '/do',
   '/image/heic-to-jpg',
   '/image/heic-to-png',
   '/data/excel',

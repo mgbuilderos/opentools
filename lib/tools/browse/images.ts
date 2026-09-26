@@ -73,6 +73,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'image-to-text',
       },
       {
+        id: 'file-compiler',
+        name: 'Say what your file must be',
+        description:
+          'Describe what the finished image must satisfy and have the result checked against it.',
+        href: '/do',
+        workspaceId: 'file-compiler',
+      },
+      {
         id: 'heic-converter',
         name: 'HEIC to JPG converter',
         description:

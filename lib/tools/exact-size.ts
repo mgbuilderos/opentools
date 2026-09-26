@@ -14,6 +14,16 @@ export type FitMode = 'crop' | 'pad' | 'stretch';
 /** Bytes in one KB. 1,024 by default; some portals count 1,000. */
 export type KbUnit = 1024 | 1000;
 
+/**
+ * Formats the size search can run over. WebP belongs here and PNG's difference
+ * is the real one: WebP's encoder takes a quality argument and trades detail
+ * for bytes exactly as JPEG does, so the same search applies. PNG's "quality"
+ * is not that knob at all, so it gets one encode and no search. WebP is not in
+ * `ExactOutputFormat` because `/image/exact-size` writes DPI metadata, which
+ * this project only knows how to write into JPEG and PNG.
+ */
+export type FittableFormat = ExactOutputFormat | 'image/webp';
+
 /** JPEG quality is searched in whole percent inside this range. */
 export const QUALITY_FLOOR = 10;
 export const QUALITY_CEILING = 100;
@@ -21,6 +31,25 @@ export const QUALITY_CEILING = 100;
 export const MIN_SHRINK_EDGE = 16;
 export const MAX_EDGE = 12000;
 export const MAX_DPI = 65535;
+/**
+ * Hard ceiling on encodes for one `fitToSize` call, so the search terminates on
+ * a budget and not only on its own arithmetic. The quality bisection needs at
+ * most 2 probes plus ~7 steps, and the shrink search at most 16 more probes
+ * before a final quality search, so a real run stays far below this. It exists
+ * to bound a pathological encoder, not the algorithm.
+ */
+export const MAX_ENCODES = 64;
+
+/**
+ * Thrown when a caller's `AbortSignal` fires during a size search. Callers that
+ * pass no signal can never see it.
+ */
+export class FitAbortError extends Error {
+  override readonly name = 'FitAbortError';
+  constructor() {
+    super('The size search was cancelled.');
+  }
+}
 
 export interface ExactSizeRequest {
   format: ExactOutputFormat;
@@ -402,10 +431,16 @@ export interface FitResult {
   /** Under-min only: true when a higher quality was tried and went over max. */
   gapBetweenQualities: boolean;
   encodes: number;
+  /**
+   * The search stopped on its encode ceiling or its deadline rather than
+   * because it had finished. The attempt handed back is still real and still
+   * measured; it is simply not necessarily the best one that existed.
+   */
+  truncated: boolean;
 }
 
 export interface FitOptions {
-  format: ExactOutputFormat;
+  format: FittableFormat;
   width: number;
   height: number;
   maxBytes: number;
@@ -413,6 +448,28 @@ export interface FitOptions {
   dpi?: number;
   allowSmallerPixels: boolean;
   encode: Encode;
+  /**
+   * Cancellation. Checked before every encode; when it has fired the search
+   * throws `FitAbortError` rather than returning a half-searched result, because
+   * a cancelled run has no answer to give.
+   */
+  signal?: AbortSignal;
+  /**
+   * Wall-clock budget in milliseconds, measured from the first encode. On
+   * expiry the search stops and returns the best candidate it already has, with
+   * `truncated: true` — unlike a cancellation, a deadline still owes the caller
+   * the best answer found so far.
+   */
+  deadlineMs?: number;
+  /**
+   * Lower the encode ceiling below `MAX_ENCODES`; never raises it.
+   *
+   * It bounds the *search*. One encode always happens regardless, because a
+   * result requires a file to exist, and the two range probes at the requested
+   * size are what make any answer possible at all — so a ceiling of 1 still
+   * permits those. Past that, every further encode is gated.
+   */
+  maxEncodes?: number;
 }
 
 interface SizeSearch {
@@ -425,15 +482,49 @@ interface SizeSearch {
 export async function fitToSize(options: FitOptions): Promise<FitResult> {
   const { format, maxBytes, minBytes, dpi } = options;
   let encodes = 0;
+  let truncated = false;
+  const encodeCeiling = Math.min(
+    MAX_ENCODES,
+    options.maxEncodes ?? MAX_ENCODES,
+  );
+  const startedAt = Date.now();
+
+  const throwIfAborted = () => {
+    if (options.signal?.aborted) {
+      throw new FitAbortError();
+    }
+  };
+
+  /**
+   * True once the search may no longer spend another encode. Checked by every
+   * loop, so termination does not depend on the arithmetic being right.
+   */
+  const outOfBudget = () => {
+    if (encodes >= encodeCeiling) return true;
+    if (
+      options.deadlineMs !== undefined &&
+      Date.now() - startedAt >= options.deadlineMs
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   const attempt = async (width: number, height: number, quality: number) => {
+    throwIfAborted();
     encodes += 1;
     const raw = await options.encode(width, height, quality);
+    throwIfAborted();
     return {
       width,
       height,
-      quality: format === 'image/jpeg' ? quality : null,
-      bytes: applyDpi(raw, format, dpi),
+      // PNG's quality argument is not the JPEG/WebP detail knob, so there is no
+      // honest quality to report for it.
+      quality: format === 'image/png' ? null : quality,
+      // DPI is written by stamping format-specific chunks, and this project
+      // only knows how to do that for JPEG and PNG. WebP bytes are handed back
+      // untouched rather than stamped with a chunk from another container.
+      bytes: format === 'image/webp' ? raw : applyDpi(raw, format, dpi),
     } satisfies Attempt;
   };
 
@@ -457,20 +548,28 @@ export async function fitToSize(options: FitOptions): Promise<FitResult> {
     const top = await attempt(width, height, QUALITY_CEILING);
     tried.push(top);
     if (!fits(top)) {
-      const bottom = await attempt(width, height, QUALITY_FLOOR);
-      tried.push(bottom);
-      if (fits(bottom)) {
-        // Invariant: `low` fits, `high` does not. JPEG size is close to, but
-        // not strictly, monotonic in quality, so every attempt is kept and
-        // judged on its own measured bytes.
-        let low = QUALITY_FLOOR;
-        let high = QUALITY_CEILING;
-        while (high - low > 1) {
-          const mid = Math.floor((low + high) / 2);
-          const next = await attempt(width, height, mid);
-          tried.push(next);
-          if (fits(next)) low = mid;
-          else high = mid;
+      if (outOfBudget()) {
+        truncated = true;
+      } else {
+        const bottom = await attempt(width, height, QUALITY_FLOOR);
+        tried.push(bottom);
+        if (fits(bottom)) {
+          // Invariant: `low` fits, `high` does not. JPEG size is close to, but
+          // not strictly, monotonic in quality, so every attempt is kept and
+          // judged on its own measured bytes.
+          let low = QUALITY_FLOOR;
+          let high = QUALITY_CEILING;
+          while (high - low > 1) {
+            if (outOfBudget()) {
+              truncated = true;
+              break;
+            }
+            const mid = Math.floor((low + high) / 2);
+            const next = await attempt(width, height, mid);
+            tried.push(next);
+            if (fits(next)) low = mid;
+            else high = mid;
+          }
         }
       }
     }
@@ -491,6 +590,7 @@ export async function fitToSize(options: FitOptions): Promise<FitResult> {
       requestedHeight: options.height,
       pixelsReduced,
       encodes,
+      truncated,
     };
     if (!search.chosen) {
       return {
@@ -526,6 +626,14 @@ export async function fitToSize(options: FitOptions): Promise<FitResult> {
     return fits(await attempt(width, height, QUALITY_FLOOR));
   };
 
+  if (outOfBudget()) {
+    // The budget is spent before the shrink search has probed anything. Report
+    // what the requested size produced rather than spending encodes we said we
+    // would not spend.
+    truncated = true;
+    return finish(atRequested, false);
+  }
+
   if (minScale >= 1 || !(await floorFits(minScale))) {
     // Not reachable even at the smallest allowed pixels: report the requested
     // size honestly rather than a shrunken file that still fails.
@@ -535,6 +643,10 @@ export async function fitToSize(options: FitOptions): Promise<FitResult> {
   let low = minScale; // fits
   let high = 1; // does not fit
   for (let step = 0; step < 16; step += 1) {
+    if (outOfBudget()) {
+      truncated = true;
+      break;
+    }
     const a = sizeAt(low);
     const b = sizeAt(high);
     if (
@@ -548,6 +660,10 @@ export async function fitToSize(options: FitOptions): Promise<FitResult> {
     else high = mid;
   }
   const { width, height } = sizeAt(low);
+  if (outOfBudget()) {
+    truncated = true;
+    return finish(atRequested, false);
+  }
   // The lowest quality fits here, so the search always finds a file.
   return finish(await searchAt(width, height), true);
 }

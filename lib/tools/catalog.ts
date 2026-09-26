@@ -1709,6 +1709,37 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    id: 'file-compiler',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'Say what your file must be',
+    shortDescription:
+      'Describe what the finished image must satisfy and have the result checked against it.',
+    category: 'Image',
+    aliases: [
+      'image requirements checker',
+      'make an image meet a spec',
+      'convert and resize to a rule',
+      'file requirement compiler',
+    ],
+    jobs: [
+      'meet an upload rule in one step',
+      'hit a format, a pixel limit and a byte limit together',
+      'prove the finished file really satisfies the rule',
+    ],
+    href: '/do',
+    execution: {
+      mode: 'local-js',
+      capabilities: [
+        'image.raster.decode',
+        'image.raster.encode',
+        'image.metadata.read',
+      ],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'image-exact-size',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2573,6 +2604,7 @@ export const toolGroups: ToolGroup[] = [
     toolIds: [
       'image-optimize',
       'image-to-text',
+      'file-compiler',
       'image-exact-size',
       'image-editor',
       'heic-converter',

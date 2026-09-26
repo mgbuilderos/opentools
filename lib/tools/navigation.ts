@@ -79,10 +79,11 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: 'images',
     name: 'Image',
     shortDescription: 'Compress, resize, convert, crop, and adjust images.',
-    destinationCount: 14,
+    destinationCount: 15,
     toolIds: [
       'image-optimize',
       'image-to-text',
+      'file-compiler',
       'image-exact-size',
       'image-editor',
       'heic-converter',
