@@ -26,6 +26,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         workspaceId: 'archive-toolkit',
       },
       {
+        id: 'email-reader',
+        name: 'Offline email reader',
+        description:
+          'Open and read EML, MSG, and Mbox files with attachments and zero network tracking.',
+        href: '/email/reader',
+        workspaceId: 'email-reader',
+      },
+      {
         id: 'file-workbench:file-compressor',
         name: 'Gzip file compressor',
         description:
