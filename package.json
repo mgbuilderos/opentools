@@ -25,6 +25,7 @@
     "portable": "node scripts/build-portable.mjs",
     "sbom": "node scripts/generate-sbom.mjs",
     "release:notes": "node scripts/release-notes.mjs",
+    "release:digest": "node scripts/umbrel-digest.mjs",
     "extension:package": "node scripts/package-extension.mjs",
     "measure:csp": "node scripts/measure-csp.mjs",
     "test": "vitest run",
