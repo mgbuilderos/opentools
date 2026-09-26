@@ -21,71 +21,44 @@ const FORBIDDEN_TAGS = new Set([
   'audio',
   'source',
   'portal',
+  /*
+   * SVG is not decoration in an email. `<image href>`, `<image xlink:href>`
+   * and `<use href>` all fetch a remote URL, and all three were measured
+   * fetching on 2026-09-26 while this page told the reader images were not
+   * loaded. The element list below only matched `img`, so none of them was
+   * ever inspected.
+   *
+   * The whole subtree goes. An email that needs SVG to be readable does not
+   * exist, and the alternative -- walking every SVG descendant for href,
+   * xlink:href, and whatever the next spec adds -- is a list we would have to
+   * keep correct forever.
+   */
+  'svg',
 ]);
+
+/**
+ * Attributes that fetch a URL on any element, whatever its tag.
+ *
+ * `background` is legacy HTML that browsers still honour on table cells.
+ * `srcset` is a second source list beside `src`. `ping` fires a POST when a
+ * link is clicked -- a delayed read receipt. `href`/`xlink:href` fetch on SVG
+ * elements and are kept only on `<a>`, which is handled separately below.
+ */
+const REMOTE_FETCH_ATTRIBUTES = [
+  'background',
+  'srcset',
+  'imagesrcset',
+  'ping',
+  'lowsrc',
+  'dynsrc',
+  'poster',
+  'formaction',
+  'xlink:href',
+];
 
 const SAFE_SCHEMES = /^https?:\/\//i;
 const DATA_IMAGE_SCHEME =
   /^data:image\/(?:png|jpeg|jpg|gif|webp|svg\+xml);base64,/i;
-
-/**
- * Every attribute that makes the browser fetch a URL on its own.
- *
- * WHY THIS IS A LIST AND NOT AN `img` CHECK. The first version of this file
- * sanitised `src` on elements whose `tagName` was `img`, which is the obvious
- * reading of "block remote images" and is not what the browser does. Four
- * vectors fetched straight through it, each one a working read receipt:
- *
- *   <svg><image href>        tagName is `image`, not `img`
- *   <svg><image xlink:href>  the SVG 1.1 spelling of the same thing
- *   <svg><use href>          not an image element at all
- *   <td background>          a legacy attribute nobody thought to check
- *
- * A tracking pixel does not care which element carries it. So the rule is
- * stated as "these attributes cause a fetch" rather than "these tags are
- * images", and anything not explicitly allowed (a cid: reference we resolve
- * ourselves, or an inline data: image) has the attribute removed.
- *
- * `e2e/email-tracker.spec.ts` holds this from the other side: it renders a
- * message carrying 18 vectors and asserts the browser makes no request to the
- * tracker host. Adding a vector there without adding it here fails the build.
- */
-const URL_BEARING_ATTRIBUTES = [
-  'background',
-  'href',
-  'xlink:href',
-  'poster',
-  'srcset',
-  'lowsrc',
-  'dynsrc',
-  'data',
-  'formaction',
-  'ping',
-] as const;
-
-/** Elements whose `href` is a fetch rather than a link the reader may click. */
-const FETCHING_HREF_TAGS = new Set(['image', 'use', 'feimage', 'filter']);
-
-/**
- * True when this value would send the reader's browser to somebody's server.
- *
- * Allow-list rather than block-list, deliberately. A block-list of known
- * tracker shapes is a list somebody has to keep adding to, and the whole defect
- * this replaces was a check that did not know about four spellings. Three
- * things fetch nothing; everything else is treated as a request, including a
- * relative path (which would resolve against this origin) and any scheme not
- * named here.
- */
-function isRemoteReference(value: string): boolean {
-  const trimmed = value.trim();
-  if (!trimmed) return false;
-  // A same-document reference, e.g. <use href="#icon">. Fetches nothing.
-  if (trimmed.startsWith('#')) return false;
-  // Resolved locally from the message's own attachments.
-  if (trimmed.toLowerCase().startsWith('cid:')) return false;
-  // An inline image that carries its own bytes.
-  if (DATA_IMAGE_SCHEME.test(trimmed)) return false;
-  return true;
-}
 
 /**
  * Sanitizes email HTML for safe in-browser rendering.
@@ -142,6 +115,15 @@ export function sanitizeEmailHtml(
       }
     }
 
+    // Attributes that fetch regardless of tag. `href` is deliberately not in
+    // the shared list: an anchor needs it, and the anchor branch below decides.
+    for (const attribute of REMOTE_FETCH_ATTRIBUTES) {
+      if (el.hasAttribute(attribute)) el.removeAttribute(attribute);
+    }
+    if (el.tagName.toLowerCase() !== 'a' && el.hasAttribute('href')) {
+      el.removeAttribute('href');
+    }
+
     // Sanitize style attribute: strip url(...) references
     const styleAttr = el.getAttribute('style');
     if (styleAttr) {
@@ -154,21 +136,6 @@ export function sanitizeEmailHtml(
 
     // Specific tag sanitation
     const tagName = el.tagName.toLowerCase();
-
-    /*
-      The general fetch sweep, before any tag-specific handling.
-
-      An <a href> is a link the reader chooses to follow, so it is left to the
-      anchor branch below. Every other URL-bearing attribute is a fetch the
-      browser performs unasked, and is removed unless it points at something we
-      resolve locally.
-    */
-    for (const attribute of URL_BEARING_ATTRIBUTES) {
-      if (attribute === 'href' && tagName === 'a') continue;
-      if (attribute === 'href' && !FETCHING_HREF_TAGS.has(tagName)) continue;
-      const value = el.getAttribute(attribute);
-      if (value && isRemoteReference(value)) el.removeAttribute(attribute);
-    }
 
     if (tagName === 'a') {
       const href = el.getAttribute('href');
@@ -249,6 +216,20 @@ function fallbackSanitize(
   }
 
   let result = html
+    /*
+     * The same holes the DOMParser path had, closed the same way. This branch
+     * is not dead code in tests -- `vitest.config` sets `environment: 'node'`,
+     * where `DOMParser` is undefined, so every unit test in this repository
+     * runs THIS function and not the one that ships. Six of the eighteen
+     * vectors survived it when measured directly on 2026-09-26.
+     */
+    .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
+    .replace(/<svg\b[^>]*\/?>/gi, '')
+    .replace(
+      /\s+(?:background|srcset|imagesrcset|ping|lowsrc|dynsrc|poster|formaction)=["'][^"']*["']/gi,
+      '',
+    )
+    .replace(/\s+xlink:href=["'][^"']*["']/gi, '')
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
@@ -263,23 +244,6 @@ function fallbackSanitize(
       const clean = styleContent.replace(/url\s*\([^)]*\)/gi, 'none');
       return `style="${clean}"`;
     });
-
-  /*
-    The same vectors, in the fallback. This path runs wherever DOMParser is
-    absent -- which includes the unit suite, since vitest.config sets
-    `environment: 'node'`. That is precisely why the original bug went unseen
-    by six passing tests: they never executed the DOM path that ships.
-  */
-  result = result
-    .replace(/\s+background=["'][^"']*["']/gi, '')
-    .replace(
-      /\s+(?:xlink:href|poster|srcset|lowsrc|dynsrc|ping)=["'][^"']*["']/gi,
-      '',
-    )
-    .replace(
-      /<(image|use|feimage)\b[^>]*>(?:<\/\1>)?/gi,
-      '<span>[Remote image blocked]</span>',
-    );
 
   result = result.replace(/<img\b([^>]*)>/gi, (_, attrs: string) => {
     const srcMatch = /src=["']([^"']*)["']/i.exec(attrs);

@@ -40,6 +40,14 @@ const SERVED_ROUTES = [
   '/robots.txt',
   '/llms.txt',
   '/llms-full.txt',
+  /*
+    The what's-new feed. A route handler, so vinext's prerender skips it (see
+    note 2 above) and without this line the Worker renders the same nine items
+    on every poll -- and feed readers poll on a timer forever, unprompted. It is
+    static content by nature: captured here, it is served as an asset like the
+    page it belongs to.
+  */
+  '/whats-new/feed.xml',
 ];
 /**
  * How many times to re-pick a port before giving up.
@@ -156,7 +164,15 @@ async function captureFrom(origin, server) {
       if (body.length === 0) {
         throw new Error(`${route} answered empty; not saving it`);
       }
-      writeFileSync(path.join(TARGET, route.slice(1)), body);
+      /*
+        Every served route was a top-level file until `/whats-new/feed.xml`, so
+        this wrote straight into `dist/client` and ENOENT'd on the first nested
+        one. The directory is created here rather than in the list above so the
+        next nested route added costs nobody a debugging session.
+      */
+      const destination = path.join(TARGET, route.slice(1));
+      mkdirSync(path.dirname(destination), { recursive: true });
+      writeFileSync(destination, body);
       console.log(`  Captured ${route} (${body.length} bytes)`);
     }
   } finally {

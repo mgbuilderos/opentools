@@ -239,8 +239,27 @@ describe('guide consolidation off is the previous behaviour', () => {
   const withoutLastmod = (entries: MetadataRoute.Sitemap) =>
     entries.map(({ lastModified: _lastModified, ...rest }) => rest);
 
+  /**
+   * Routes added to the sitemap after the frozen copy was taken.
+   *
+   * The frozen copy above is a control -- "sitemap.ts exactly as it read at
+   * d032150" -- and the note explaining it says editing it to track a later
+   * change destroys the only thing it is for. A route genuinely added since
+   * then is neither a move, a drop nor a reorder, which is what these two tests
+   * are about, so it is subtracted from the live side instead and the control
+   * stays untouched.
+   *
+   * Adding a line here is therefore a deliberate statement that a new address
+   * was published on purpose. It is not a place to silence a surprise: if a
+   * route appears that nobody meant to add, the fix is the route, not this list.
+   */
+  const ADDED_SINCE_FREEZE = new Set([`${origin}/whats-new`]);
+
+  const asFrozen = (entries: MetadataRoute.Sitemap) =>
+    entries.filter((entry) => !ADDED_SINCE_FREEZE.has(entry.url));
+
   it('produces the same sitemap, entry for entry and in the same order', () => {
-    expect(withoutLastmod(buildSitemap(OFF))).toEqual(
+    expect(withoutLastmod(asFrozen(buildSitemap(OFF)))).toEqual(
       withoutLastmod(previousSitemap()),
     );
   });
@@ -257,7 +276,7 @@ describe('guide consolidation off is the previous behaviour', () => {
         (path) => `${origin}${path}`,
       ),
     );
-    expect(withoutLastmod(buildSitemap())).toEqual(
+    expect(withoutLastmod(asFrozen(buildSitemap()))).toEqual(
       withoutLastmod(
         previousSitemap().filter((entry) => !consolidated.has(entry.url)),
       ),
@@ -265,7 +284,7 @@ describe('guide consolidation off is the previous behaviour', () => {
     expect(buildSitemap().filter((entry) => kept.has(entry.url))).toHaveLength(
       kept.size,
     );
-    expect(previousSitemap().length - buildSitemap().length).toBe(
+    expect(previousSitemap().length - asFrozen(buildSitemap()).length).toBe(
       consolidated.size,
     );
   });

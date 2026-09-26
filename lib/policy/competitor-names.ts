@@ -176,8 +176,29 @@ export const FORBIDDEN_COMPETITORS: readonly ForbiddenCompetitor[] = [
  * Our own prices are deliberately not caught: `/support` says "$5 / month" with
  * no attribution, because it is ours to state.
  */
-const UNSOURCED_PRICE_CLAIM =
-  /\b(charges|costs|bills you|is priced at|priced from|subscription of)\s+(?:about\s+|around\s+|roughly\s+|from\s+)?[$€£₹]\s?\d/giu;
+/**
+ * Exported so the flag guard in `competitor-names.test.ts` can reach it. The
+ * name list had that guard from the day the `u` flag was removed from it; this
+ * pattern did not, which is how it kept `u` for a day longer than the rest and
+ * cost 1,993ms of the sweep on its own.
+ *
+ * **`gi` and not `giu`, for the same reason as the names above** -- V8's
+ * Unicode case-folding path costs 4.8x here: measured over the built site on
+ * 2026-09-26, `giu` took 1,993ms and `gi` took 419ms, for byte-identical
+ * matches.
+ *
+ * The argument for dropping `u` is *not* the one the name list uses. Those are
+ * pure ASCII; this is not, because of `[$€£₹]`. It is safe anyway, and the
+ * distinction is worth stating so nobody puts `u` back to "fix" the class:
+ * every symbol in it is a single UTF-16 code unit in the BMP, so it needs no
+ * surrogate pair handling, and currency symbols have no case, so there is no
+ * folding for `i` to do on them. `u` therefore changes nothing this pattern
+ * matches -- asserted directly in `competitor-names.test.ts` rather than
+ * assumed, since it is the one place where the ASCII-only argument does not
+ * apply.
+ */
+export const UNSOURCED_PRICE_CLAIM =
+  /\b(charges|costs|bills you|is priced at|priced from|subscription of)\s+(?:about\s+|around\s+|roughly\s+|from\s+)?[$€£₹]\s?\d/gi;
 
 /** Returns one message per price attributed to another party in `source`. */
 export function findUnsourcedPriceClaims(
