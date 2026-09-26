@@ -9,13 +9,12 @@ import {
   Menu,
   Moon,
   Search,
-  Star,
   Sun,
   X,
   PanelLeftClose,
   BookOpen,
   Newspaper,
-  HeartHandshake,
+  Coffee,
   FolderGit2,
   Download,
 } from 'lucide-react';
@@ -361,21 +360,30 @@ export function AppShell({
             </span>
           </span>
         </a>
+        {/*
+          A coffee cup, and the words "Buy me a coffee".
+
+          This used to read "Support OpenTools" behind a handshake icon, beside
+          a green dot that pulsed. Each of those three is a signal a site uses
+          for a help desk: "Support" is what a link to a support team says, a
+          handshake is the service icon, and a pulsing green dot is how live
+          chat says an agent is online. Someone whose file failed would click it
+          expecting a person. The destination has never been that — it is a page
+          that asks for a coffee — so the label now says what the page does, and
+          the dot is gone rather than promising an answer nobody is there to
+          give.
+        */}
         <a
           href="/support"
           title={t.navSupportTitle}
           className="category-link group focus-ring flex h-9 items-center gap-3 overflow-hidden rounded-md px-2 text-sm font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted/80 hover:text-foreground active:scale-[0.98]"
         >
-          <HeartHandshake
+          <Coffee
             aria-hidden="true"
             className="size-4 shrink-0 text-success transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110"
           />
           <span className="category-label min-w-0 flex-1 items-center justify-between gap-2 whitespace-nowrap">
             <span className="truncate">{t.navSupportOpenTools}</span>
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
-              <span className="relative inline-flex size-2 rounded-full bg-success" />
-            </span>
           </span>
         </a>
         {installable && (
@@ -495,18 +503,6 @@ export function AppShell({
                   >
                     <span aria-hidden="true">⚖️</span>
                     <span>{t.navFreeOpenSource}</span>
-                  </a>
-                  <span className="opacity-40" aria-hidden="true">
-                    ·
-                  </span>
-                  <a
-                    href={SUPPORT_CONFIG.githubRepoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-foreground hover:underline"
-                  >
-                    <Star aria-hidden="true" className="size-3 fill-current" />
-                    <span>{t.navStarOnGitHub}</span>
                   </a>
                   <span className="opacity-40" aria-hidden="true">
                     ·
@@ -642,19 +638,17 @@ export function AppShell({
             </p>
           </div>
 
-          <a
-            href={SUPPORT_CONFIG.githubRepoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group focus-ring hidden h-9 items-center gap-1.5 rounded-lg border bg-muted/50 px-3 text-xs font-medium text-muted-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-px hover:border-foreground/30 hover:bg-muted hover:text-foreground active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none md:inline-flex"
-            aria-label={t.navStarOnGitHub}
-          >
-            <Star
-              aria-hidden="true"
-              className="size-3.5 fill-current transition-transform duration-[var(--motion-standard)] ease-[var(--motion-ease)] group-hover:scale-110 group-hover:rotate-12 motion-reduce:transform-none"
-            />
-            <span>{t.navStarOnGitHub}</span>
-          </a>
+          {/*
+            The "Star on GitHub" button that sat here is gone, and so is the one
+            in the strip above.
+
+            Owner decision 2026-09-27: the header makes one ask, and it is the
+            coffee. A star is a second thing to want from a visitor who has not
+            used a tool yet, and it competed with the ask that pays for the
+            domain. What the repo link was also doing — showing the code is
+            readable — is still done, by the "Free & Open Source (MIT)" link in
+            the strip above, which asks for nothing.
+          */}
 
           <Button
             variant="ghost"
@@ -697,13 +691,24 @@ export function AppShell({
           <Button
             variant="ghost"
             className="group flex h-10 shrink-0 items-center gap-2 rounded-lg border border-success/30 bg-success/5 px-2.5 text-sm font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:bg-muted hover:text-foreground active:scale-[0.98] sm:border-transparent sm:bg-transparent sm:px-3 sm:text-muted-foreground"
-            render={<a href="/support" aria-label={t.navSupportOpenTools} />}
+            render={<a href="/support" aria-label={t.navSupportTitle} />}
           >
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75 duration-1000" />
-              <span className="relative inline-flex size-2 rounded-full bg-success" />
-            </span>
-            <span>{t.navSupport}</span>
+            {/*
+              A cup, not a pulsing dot, and "Coffee" rather than "Support".
+
+              The word on its own was the problem: a one-word "Support" beside a
+              green dot that pulsed is the exact shape of a live-chat launcher,
+              so a visitor whose file failed read this as the way to reach a
+              person. It is not — it opens a page that asks for a coffee. The
+              cup carries the meaning at every width, so the phone keeps the
+              short label and only `sm` and up spells the ask out.
+            */}
+            <Coffee
+              aria-hidden="true"
+              className="size-4 shrink-0 text-success"
+            />
+            <span className="sm:hidden">{t.navSupport}</span>
+            <span className="hidden sm:inline">{t.navSupportOpenTools}</span>
           </Button>
 
           <Button

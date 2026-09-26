@@ -7,7 +7,7 @@ import {
   Clipboard,
   Download,
   Gauge,
-  HeartHandshake,
+  Coffee,
   LockKeyhole,
   Share2,
   ShieldCheck,
@@ -674,12 +674,19 @@ export function SchemaWorkbenchTool({
                           href="/support"
                           target="_blank"
                           rel="noopener noreferrer"
-                          aria-label="Support independent development (opens in a new tab)"
+                          aria-label="Buy me a coffee (opens in a new tab)"
                         />
                       }
                     >
-                      <HeartHandshake aria-hidden="true" className="size-3.5" />
-                      Support
+                      {/*
+                        A cup and the word "Coffee", not a handshake and the
+                        word "Support". This button sits beside Download, where
+                        a lone "Support" reads as the way to report that the
+                        download went wrong. It goes to the page that asks for a
+                        coffee, so it says so.
+                      */}
+                      <Coffee aria-hidden="true" className="size-3.5" />
+                      Coffee
                     </Button>
                   </div>
                 </div>

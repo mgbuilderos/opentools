@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label, jsx-a11y/anchor-is-valid, react/no-unescaped-entities */
 import type { Metadata } from 'next';
-import { ArrowLeft, HeartHandshake, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Coffee, ShieldCheck } from 'lucide-react';
 import { SupportDualView } from '@/components/support-dual-view';
 import { buildSitemap } from '@/lib/seo/sitemap-entries';
 
@@ -18,9 +18,16 @@ export const revalidate = 86400;
 
 export const metadata: Metadata = {
   alternates: { canonical: '/support' },
-  title: 'Support OpenTools — 100% Free & Local Utilities',
+  /*
+    "Support" is kept out of the title on purpose. It is the word a help desk
+    uses, and this page has no help desk behind it — someone landing here from
+    a search for it would find a coffee button and no way to reach a person.
+    The URL stays `/support` because it is indexed and linked; only what a
+    human reads changed.
+  */
+  title: 'Buy me a coffee — keep OpenTools free',
   description:
-    'Support independent development of privacy-first, zero-egress browser utilities.',
+    'OpenTools is free, ad-free and runs entirely in your browser. A coffee covers the domain and the hosting. Nothing is asked for in return.',
 };
 
 export default function SupportPage() {
@@ -49,7 +56,7 @@ export default function SupportPage() {
         <section className="rounded-2xl border bg-card p-5 sm:p-8 mb-4 sm:mb-6">
           <div className="flex items-center gap-3">
             <span className="grid size-10 shrink-0 place-items-center rounded-xl border bg-muted sm:size-12">
-              <HeartHandshake
+              <Coffee
                 aria-hidden="true"
                 className="size-5 text-foreground sm:size-6"
               />
@@ -72,8 +79,12 @@ export default function SupportPage() {
           </p>
         </section>
 
-        {/* UPI (India) and Buy Me a Coffee (international) take money today;
-            GitHub Sponsors is shown as pending and takes none. */}
+        {/* One channel is offered: Buy Me a Coffee. UPI still works and its
+            code is all still here, but it is not shown — a payment method a
+            visitor cannot recognise is a reason to distrust an unfamiliar site,
+            not a way to pay it. GitHub Sponsors was never approved, so the tab
+            that announced it is gone too. Both are one constant away: see
+            `SHOW_UPI` and `SHOW_GITHUB_SPONSORS` in `lib/support-config.ts`. */}
         <section className="mb-4 sm:mb-6">
           <SupportDualView />
         </section>
