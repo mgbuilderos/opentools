@@ -154,6 +154,19 @@ describe('translated copy', () => {
     expect(new Set(descriptions).size).toBe(descriptions.length);
   });
 
+  it('translates the depth-block headings the component owns', () => {
+    // `page-depth-content.tsx` renders these two itself rather than reading
+    // them from the depth entry, so an untranslated one shows English directly
+    // above prose in another language.
+    for (const code of LOCALE_CODES) {
+      const hub = LOCALE_COPY[code]?.hub;
+      expect(hub?.stepsHeading, code).toBeTruthy();
+      expect(hub?.faqsHeading, code).toBeTruthy();
+      expect(hub?.stepsHeading).not.toBe('Step by step');
+      expect(hub?.faqsHeading).not.toBe('Questions people ask');
+    }
+  });
+
   it('fills in every hub', () => {
     for (const code of LOCALE_CODES) {
       const hub = LOCALE_COPY[code]?.hub;
@@ -167,6 +180,8 @@ describe('translated copy', () => {
         hub.intro,
         hub.toolsHeading,
         hub.privacyHeading,
+        hub.stepsHeading,
+        hub.faqsHeading,
         hub.switcherLabel,
         hub.englishLinkLabel,
       ]) {

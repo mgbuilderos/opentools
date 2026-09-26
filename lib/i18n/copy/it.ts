@@ -19,6 +19,8 @@ export const IT: LocaleCopy = {
       'La pagina dichiara una Content-Security-Policy con connect-src none, cioè l’istruzione con cui il browser vieta qualsiasi connessione in uscita. Non è una promessa commerciale: è una regola applicata dal browser, non da noi.',
       'Puoi verificarlo da solo: apri gli strumenti per sviluppatori, scheda Rete, stacca la connessione e usa un qualsiasi strumento di questo elenco. Continua a funzionare, perché non c’era nulla da inviare.',
     ],
+    stepsHeading: 'Passo per passo',
+    faqsHeading: 'Domande frequenti',
     switcherLabel: 'Lingua',
     englishLinkLabel: 'English',
   },

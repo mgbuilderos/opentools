@@ -19,6 +19,8 @@ export const ID: LocaleCopy = {
       'Halaman ini menetapkan Content-Security-Policy dengan connect-src none, yaitu perintah kepada peramban untuk melarang semua koneksi keluar. Ini bukan janji pemasaran, melainkan aturan yang ditegakkan oleh peramban, bukan oleh kami.',
       'Anda bisa memeriksanya sendiri: buka alat pengembang, pilih tab Jaringan, putuskan koneksi internet, lalu gunakan alat mana pun dari daftar ini. Semuanya tetap berjalan, karena memang tidak ada yang perlu dikirim.',
     ],
+    stepsHeading: 'Langkah demi langkah',
+    faqsHeading: 'Pertanyaan umum',
     switcherLabel: 'Bahasa',
     englishLinkLabel: 'English',
   },

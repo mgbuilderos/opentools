@@ -20,6 +20,8 @@ export const ES: LocaleCopy = {
       'La página declara una Content-Security-Policy con connect-src none, que es la instrucción del navegador para prohibir cualquier conexión de salida. No es una promesa comercial: es una regla que aplica el navegador, no nosotros.',
       'Puedes comprobarlo tú mismo. Abre las herramientas de desarrollo, ve a la pestaña Red, desconecta el wifi y usa cualquier herramienta de esta lista. Siguen funcionando, porque no había nada que enviar.',
     ],
+    stepsHeading: 'Paso a paso',
+    faqsHeading: 'Preguntas frecuentes',
     switcherLabel: 'Idioma',
     englishLinkLabel: 'English',
   },

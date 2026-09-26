@@ -64,6 +64,8 @@ export default async function Page({
         route: ROUTE,
         label: hub.switcherLabel,
         englishLabel: hub.englishLinkLabel,
+        stepsHeading: hub.stepsHeading,
+        faqsHeading: hub.faqsHeading,
       }}
     >
       <PageDepthProvider content={requireLocalizedDepth(locale, ROUTE)}>

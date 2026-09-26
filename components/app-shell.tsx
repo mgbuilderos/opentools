@@ -777,7 +777,13 @@ export function AppShell({
         data-design-system="operator-v1"
       >
         {children}
-        {toolDepth ? <PageDepthContent content={toolDepth} /> : null}
+        {toolDepth ? (
+          <PageDepthContent
+            content={toolDepth}
+            stepsHeading={localeEdition?.stepsHeading}
+            faqsHeading={localeEdition?.faqsHeading}
+          />
+        ) : null}
         {localeEdition ? (
           <div className="mx-auto w-full max-w-3xl px-4 pb-10">
             <LanguageSwitcher

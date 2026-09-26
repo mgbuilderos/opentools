@@ -138,6 +138,14 @@ export interface LocaleHubCopy {
   privacyHeading: string;
   /** Two or three sentences on why nothing is uploaded. */
   privacyBody: readonly string[];
+  /**
+   * The two headings `components/page-depth-content.tsx` renders around a
+   * page's steps and FAQs. They are the only strings in that component that do
+   * not come from the depth entry, so without them a localised page shows
+   * "Step by step" in English directly above prose in its own language.
+   */
+  stepsHeading: string;
+  faqsHeading: string;
   /** Label for the language switcher, e.g. "Idioma". */
   switcherLabel: string;
   /** Link text back to the English edition. */

@@ -19,6 +19,8 @@ export const JA: LocaleCopy = {
       'このページは Content-Security-Policy に connect-src none を宣言しています。これは外部への通信をいっさい禁止するようブラウザに指示するものです。広告的な約束ではなく、私たちではなくブラウザ自身が強制する規則です。',
       'ご自身で確認できます。開発者ツールを開いてネットワークタブを表示し、通信を切断したうえで、この一覧のツールを使ってみてください。送るものが最初から無いので、そのまま動き続けます。',
     ],
+    stepsHeading: '手順',
+    faqsHeading: 'よくある質問',
     switcherLabel: '言語',
     englishLinkLabel: 'English',
   },

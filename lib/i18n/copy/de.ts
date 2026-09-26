@@ -20,6 +20,8 @@ export const DE: LocaleCopy = {
       'Die Seite setzt eine Content-Security-Policy mit connect-src none — die Anweisung, mit der der Browser jede ausgehende Verbindung verbietet. Das ist kein Werbeversprechen, sondern eine Regel, die der Browser durchsetzt, nicht wir.',
       'Sie können es selbst prüfen: Entwicklertools öffnen, Reiter Netzwerk, Verbindung trennen und irgendein Werkzeug aus dieser Liste benutzen. Es funktioniert weiter, weil es nichts zu senden gab.',
     ],
+    stepsHeading: 'Schritt für Schritt',
+    faqsHeading: 'Häufige Fragen',
     switcherLabel: 'Sprache',
     englishLinkLabel: 'English',
   },

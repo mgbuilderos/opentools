@@ -26,6 +26,10 @@ export interface LocaleEdition {
   label: string;
   /** What to call the English edition, in this locale. */
   englishLabel: string;
+  /** "Paso a paso" -- the heading above the steps in the depth block. */
+  stepsHeading: string;
+  /** "Preguntas frecuentes" -- the heading above the FAQs. */
+  faqsHeading: string;
 }
 
 const LocaleEditionContext = createContext<LocaleEdition | null>(null);
