@@ -340,6 +340,12 @@ export function BankStatementTool() {
         tabIndex={-1}
         className="mx-auto max-w-5xl space-y-6 px-4 py-8 focus:outline-none sm:px-6 lg:px-8"
       >
+        {/* Header */}
+        <div className="space-y-3">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            Bank statement converter
+          </h1>
+        </div>
         {/* R3 Honest Caveat Banner */}
         <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm text-foreground shadow-sm">
           <div className="flex items-start gap-3">
