@@ -50,7 +50,7 @@ const DAILY_ALLOWANCE = 1000;
  * `lib/seo/cache-budget.test.ts` now computes the real figure and fails with
  * the number to put here. Do not edit this by hand; run the test.
  */
-const FULL_REWARM = 444;
+const FULL_REWARM = 446;
 const ROOT = path.resolve(import.meta.dirname, '..');
 const STATE = path.join(ROOT, '.predeploy-state.json');
 
