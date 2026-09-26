@@ -12,7 +12,7 @@
     "prebuild": "npm run design:qc",
     "build": "vinext build && node scripts/prerender-to-assets.mjs && node scripts/verify-static-coverage.mjs && node scripts/verify-no-orphans.mjs && node scripts/verify-indexnow-key.mjs && node scripts/verify-built-headers.mjs && node scripts/check-share-and-heading-order.mjs && node scripts/build-service-worker-precache.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
-    "deploy": "node scripts/deploy-lock.mjs assert && wrangler deploy --config dist/server/wrangler.json",
+    "deploy": "node scripts/deploy-lock.mjs assert && wrangler deploy --config dist/server/wrangler.json && node scripts/predeploy.mjs --approve",
     "lock": "node scripts/deploy-lock.mjs status",
     "lock:acquire": "node scripts/deploy-lock.mjs acquire",
     "lock:release": "node scripts/deploy-lock.mjs release",
