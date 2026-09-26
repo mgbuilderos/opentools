@@ -2,6 +2,20 @@ import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import { extractEntry, readZip } from '@/lib/tools/archive/zip-reader';
 
+/**
+ * The page's own `<h1>`, in `components/bench/bench-tool.tsx`.
+ *
+ * This spec waited for a heading that said "The Bench" and had been failing ever
+ * since the page was renamed: `/bench` became `/batch` and its heading became a
+ * sentence, because nobody searches for "bench" (see the note in
+ * `app/batch/page.tsx`). Four tests were erroring before they reached the thing
+ * they test, so the folder runner has had no browser coverage since.
+ *
+ * The catalogue still calls the tool "The Bench", which is why the search below
+ * still finds it under that name. Only the heading moved.
+ */
+const HEADING = 'Run one operation over a whole folder';
+
 test.describe('The Bench', () => {
   test('is discoverable from the home page and opens from search', async ({
     page,
@@ -17,9 +31,7 @@ test.describe('The Bench', () => {
     await benchResult.click();
 
     await expect(page).toHaveURL(/\/batch$/u);
-    await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: HEADING })).toBeVisible();
   });
 
   test('previews and runs files without external egress', async ({ page }) => {
@@ -31,9 +43,7 @@ test.describe('The Bench', () => {
     });
 
     await page.goto('/batch');
-    await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: HEADING })).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
       .setInputFiles([
@@ -89,9 +99,7 @@ test.describe('The Bench', () => {
     });
 
     await page.goto('/batch');
-    await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: HEADING })).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
       .setInputFiles([
@@ -179,9 +187,7 @@ test.describe('The Bench', () => {
     const dedicatedMs = performance.now() - dedicatedStarted;
 
     await page.goto('/batch');
-    await expect(
-      page.getByRole('heading', { name: 'The Bench' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: HEADING })).toBeVisible();
     await page.waitForTimeout(500);
     await page
       .getByLabel('Upload file to inspect and detect tools')
