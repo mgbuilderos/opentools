@@ -118,6 +118,82 @@ export interface Verification {
   pass: boolean;
 }
 
+/* ------------------------------------------------- what a browser can write -- */
+
+/**
+ * The media type a browser's canvas *actually* produces when asked for one.
+ *
+ * Moved here from `lib/tools/ask-link.ts`, where the Ask Link lane wrote it, so
+ * that both lanes ask the question with the same code. It belongs in this file:
+ * everything else here is about what bytes really are rather than what they were
+ * meant to be, and this is the same question one step earlier.
+ *
+ * **It has to be a real encode.** There is no reliable feature flag for WebP
+ * *encoding* — the usual sniffing answers the *decode* question, which Safari
+ * supports, and that is presumably why WebKit's `toBlob` substitutes a PNG
+ * instead of refusing. A capability flag would report WebP as available on the
+ * one engine that cannot write it.
+ *
+ * Returns `null` for **unknown**, never for "cannot": no canvas, no `toBlob`, a
+ * null blob, an empty type, a throw, or a callback that never arrives all come
+ * back as `null`. `createCanvas` is injectable so this is testable without a DOM.
+ */
+export async function probeEncodedFormat(
+  mediaType: string,
+  createCanvas: () => HTMLCanvasElement | null = defaultCanvas,
+): Promise<string | null> {
+  try {
+    const canvas = createCanvas();
+    if (!canvas || typeof canvas.toBlob !== 'function') return null;
+    canvas.width = 2;
+    canvas.height = 2;
+    const produced = await new Promise<string | null>((resolve) => {
+      // A browser that never calls back must not hang the page.
+      const giveUp = setTimeout(() => resolve(null), PROBE_TIMEOUT_MS);
+      try {
+        canvas.toBlob(
+          (blob) => {
+            clearTimeout(giveUp);
+            resolve(blob ? blob.type : null);
+          },
+          mediaType,
+          0.8,
+        );
+      } catch {
+        clearTimeout(giveUp);
+        resolve(null);
+      }
+    });
+    return produced === '' ? null : produced;
+  } catch {
+    return null;
+  }
+}
+
+/** How long to wait for a 2x2 probe encode before calling the answer unknown. */
+const PROBE_TIMEOUT_MS = 2000;
+
+function defaultCanvas(): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null;
+  return document.createElement('canvas');
+}
+
+/**
+ * Whether a probe result contradicts what was asked for.
+ *
+ * Conservative in one direction on purpose: an unknown answer (`null`) is **not**
+ * a substitution. Saying "this browser cannot do it" because the check itself
+ * failed would be inventing a limitation, which is the same class of untruth as
+ * the substitution this exists to catch.
+ */
+export function formatWasSubstituted(
+  requested: string,
+  produced: string | null,
+): boolean {
+  if (!produced) return false;
+  return produced.toLowerCase() !== requested.toLowerCase();
+}
+
 /**
  * Read whether an alpha channel is present, from the bytes alone.
  *

@@ -52,6 +52,8 @@ import { planDraw, QUALITY_CEILING } from '@/lib/tools/exact-size';
 import {
   describeBytes,
   formatLabel,
+  formatWasSubstituted,
+  probeEncodedFormat,
   type DecodedSize,
   type VerifiableFormat,
 } from '@/lib/tools/image-verify';
@@ -487,6 +489,21 @@ export function FileCompilerTool() {
 
     let release: (() => void) | null = null;
     try {
+      /*
+       * Ask the browser whether it can write this container at all, before doing
+       * any real work. One 2x2 encode, and it answers the question that WebKit
+       * gets wrong: `toBlob` there returns a PNG when asked for WebP rather than
+       * refusing. The check after the real encode stays as well — that one is the
+       * point of truth — but failing here means the visitor is told why in a
+       * sentence instead of watching a photograph get resized for nothing.
+       */
+      const produced = await probeEncodedFormat(plan.outputFormat);
+      if (formatWasSubstituted(plan.outputFormat, produced)) {
+        throw new ShowableError(
+          `This browser cannot save ${formatLabel(plan.outputFormat)}.`,
+        );
+      }
+
       const source = await loadBitmap(
         loaded.bytes,
         loaded.input.format ?? 'image/png',

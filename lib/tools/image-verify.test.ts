@@ -11,6 +11,8 @@ import {
   describeBytes,
   formatLabel,
   formatSupportsTransparency,
+  formatWasSubstituted,
+  probeEncodedFormat,
   readAlphaChannel,
   unmetReasons,
   verifyImageBytes,
@@ -389,5 +391,86 @@ describe('copy helpers', () => {
     expect(formatLabel('image/jpeg')).toBe('JPEG');
     expect(formatLabel('image/png')).toBe('PNG');
     expect(formatLabel('image/webp')).toBe('WebP');
+  });
+});
+
+describe('what a browser can actually write', () => {
+  /** A canvas stand-in, so the probe is testable with no DOM at all. */
+  const fakeCanvas =
+    (behaviour: {
+      produces?: string | null;
+      throws?: boolean;
+      noToBlob?: boolean;
+      silent?: boolean;
+    }) =>
+    () =>
+      ({
+        width: 0,
+        height: 0,
+        ...(behaviour.noToBlob
+          ? {}
+          : {
+              toBlob(callback: (blob: { type: string } | null) => void) {
+                if (behaviour.throws) throw new Error('no');
+                if (behaviour.silent) return; // never calls back
+                callback(
+                  behaviour.produces === null
+                    ? null
+                    : { type: behaviour.produces ?? '' },
+                );
+              },
+            }),
+      }) as unknown as HTMLCanvasElement;
+
+  it('reports the type the browser really produced', async () => {
+    expect(
+      await probeEncodedFormat(
+        'image/webp',
+        fakeCanvas({ produces: 'image/webp' }),
+      ),
+    ).toBe('image/webp');
+  });
+
+  it('reports the substitute, which is the whole point', async () => {
+    // WebKit answers a WebP request with a PNG rather than refusing.
+    expect(
+      await probeEncodedFormat(
+        'image/webp',
+        fakeCanvas({ produces: 'image/png' }),
+      ),
+    ).toBe('image/png');
+  });
+
+  it('answers unknown rather than "cannot" for every way the check can fail', async () => {
+    for (const behaviour of [
+      { produces: null },
+      { produces: '' },
+      { throws: true },
+      { noToBlob: true },
+      { silent: true },
+    ]) {
+      expect(
+        await probeEncodedFormat('image/webp', fakeCanvas(behaviour)),
+      ).toBeNull();
+    }
+    expect(await probeEncodedFormat('image/webp', () => null)).toBeNull();
+  });
+
+  it('does not hang when the browser never calls back', async () => {
+    const started = Date.now();
+    expect(
+      await probeEncodedFormat('image/webp', fakeCanvas({ silent: true })),
+    ).toBeNull();
+    // Bounded, and comfortably inside its own 2s cap.
+    expect(Date.now() - started).toBeLessThan(4000);
+  });
+
+  it('calls a substitution a substitution, and an unknown answer neither way', () => {
+    expect(formatWasSubstituted('image/webp', 'image/png')).toBe(true);
+    expect(formatWasSubstituted('image/webp', 'image/webp')).toBe(false);
+    expect(formatWasSubstituted('image/webp', 'IMAGE/WEBP')).toBe(false);
+    // Unknown must never be reported as a limitation of the browser.
+    expect(formatWasSubstituted('image/webp', null)).toBe(false);
+    expect(formatWasSubstituted('image/webp', '')).toBe(false);
   });
 });
