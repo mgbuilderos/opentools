@@ -589,10 +589,20 @@ export function FileCompilerTool() {
       } else {
         setStatus('That did not work.');
       }
-    } catch {
+    } catch (error) {
+      // Honour a message this project wrote. The pre-flight probe throws here
+      // rather than inside the encode callback, so it never reaches `runPlan`'s
+      // `safeMessage` — and a hardcoded sentence here would have replaced "this
+      // browser cannot save WebP" with something that explains nothing. The
+      // browser test caught exactly that.
       setResult({
         status: 'failed',
-        error: { message: 'This image could not be prepared in this browser.' },
+        error: {
+          message:
+            error instanceof ShowableError
+              ? error.message
+              : 'This image could not be prepared in this browser.',
+        },
       });
       setPhase('done');
     } finally {
