@@ -150,10 +150,38 @@ test.describe('Support page', () => {
     const asks = page.locator(
       'a[href*="buymeacoffee.com"], a[href="/support"]',
     );
-    for (const label of (await asks.allInnerTexts())
+    const askLabels = (await asks.allInnerTexts())
       .map((text) => text.trim())
-      .filter(Boolean)) {
+      .filter(Boolean);
+    /*
+      Asserted, not assumed. A locator that matches nothing makes the loop
+      below pass without reading a single label, which is how a guard becomes
+      decoration. Two is the floor here: the header button and the rail link.
+    */
+    expect(askLabels.length).toBeGreaterThanOrEqual(2);
+    for (const label of askLabels) {
       expect(label).not.toMatch(/\bsupport\b/iu);
+    }
+
+    /*
+      The egress meter's button cannot be checked above, and the reason is the
+      whole point of this block.
+
+      `EgressMeter` returns null until the browser's own performance timers
+      report something measurable, so after hydration it is usually not in the
+      DOM at all — a live-DOM locator silently matches nothing and the label
+      goes unchecked. That is exactly how "Support this work" survived the
+      first sweep: it links straight to the provider AND it is conditionally
+      mounted, so neither the /support path nor the rendered page caught it.
+
+      The served HTML always carries it, so that is what is asserted. This
+      reads the prerendered bytes, not the live DOM, and is deliberate.
+    */
+    const served = await (await page.request.get('/')).text();
+    expect(served).toContain('buymeacoffee.com');
+    expect(served).not.toMatch(/Support this work/iu);
+    for (const phrase of ['>Support<', 'Support OpenTools', 'Star on GitHub']) {
+      expect(served).not.toContain(phrase);
     }
   });
 
