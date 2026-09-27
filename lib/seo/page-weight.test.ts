@@ -40,14 +40,38 @@ import { beforeAll, describe, expect, it } from 'vitest';
  * has 0 Search Console clicks against 134 indexed URLs, and 3.6 MB of
  * JavaScript on a phone is not a page Google has any reason to rank.
  *
- * ## The fix, when someone takes it
+ * ## The fix, diagnosed 2026-09-27
  *
- * Resolve the explainer on the server and pass the one object down as a prop,
- * rather than shipping the corpus and looking it up in the browser.
- * `utility-tools.tsx` already renders `<ToolExplainer detail={detail} …/>`
- * that way, so the shape exists; the nine `ToolExplainerSection` callers are
- * what still resolve by id. Expected result: the median page falls from
- * ~3,653 KB to ~810 KB.
+ * It is two separable halves, and the smaller one is much cheaper than it
+ * looks.
+ *
+ * **The 980 KB catalogue half.** `guide-content.ts` is ~19,000 lines and
+ * references `LIVE_TOOL_CATALOG` in exactly two places — lines 18677 and
+ * 18689, inside `getToolExplainerById` and `getToolExplainer`. Both use it for
+ * one thing only: mapping a tool id or URL to the slug that keys
+ * `GUIDE_DETAILS`. Nothing else in the client's reach needs it.
+ * (`getLiveToolBySlug` at 18919 is used by `getGuideBySlug`, which only
+ * `app/guides/[slug]/page.tsx` imports — server-side.) Replace those two
+ * lookups with a precomputed id→slug index of the ~105 slugs that actually
+ * have an explainer, and Rollup can drop the catalogue from the client graph
+ * entirely. Roughly 10 KB of generated index in place of 980 KB, on 1,209
+ * pages, with no change to any caller's API.
+ *
+ * **The 1.81 MB corpus half.** `GUIDE_DETAILS` spans lines 167–18630 and is
+ * the explainer text itself. This one cannot be solved by passing a single
+ * pre-resolved detail down, which is the obvious fix and the wrong one: the
+ * workbenches switch tools *client-side* and re-render the explainer for
+ * whichever tool is selected, so a fixed block of prose would be wrong the
+ * moment somebody switched — `file-workbench-tool.tsx` says so in a comment
+ * beside the call. What a server page can pass is a map of only the
+ * explainers belonging to that page's own operations, which for most pages is
+ * one entry and for a workbench is a handful.
+ *
+ * Only two client modules import `guide-content` at all —
+ * `components/tool-explainer.tsx` and `components/utility-tools.tsx` — so the
+ * blast radius is smaller than 1,209 pages suggests.
+ *
+ * Expected result: the median page falls from ~3,653 KB to ~810 KB.
  */
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
