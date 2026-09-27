@@ -128,7 +128,10 @@ async function open(page: Page, fragment = '') {
  *
  * The file input is server-rendered, so it exists before `onChange` is attached,
  * and a file set in that window lands in the DOM while the component never hears
- * about it. `e2e/ask-link.spec.ts` documents the same race one control class up.
+ * about it. `e2e/upload.ts` states the same thing about file inputs — "waiting for
+ * the chunks to land before selecting is what actually closes the window" — and
+ * the fault is identical one control type across. Two lanes spent an evening
+ * theorising about CPU load with that sentence already in the repository.
  */
 async function hydrated(page: Page) {
   await page.waitForLoadState('networkidle');
@@ -725,10 +728,14 @@ test.describe('this page reads its own link format and no other', () => {
      * half-understands another feature's link is worse than one that ignores it,
      * because the visitor cannot tell which settings took effect.
      *
-     * This replaced a test that fetched `/ask` and expected 200. That was wrong
-     * on this branch: `app/ask` does not exist on `main`, so the assertion only
-     * held while this branch carried the Ask Link commits. Compatibility with
-     * those links is that lane's spec to prove, on a tree that has them.
+     * This replaced a test that fetched `/ask` and expected 200. That assertion
+     * held only while this branch temporarily carried another lane's unmerged
+     * commits — **a test that passes because of work this branch does not own is
+     * not testing this page.** Whether that route exists here or not is beside the
+     * point and will change; what this page owes is that it reads its own format
+     * and leaves every other one alone, which is what is asserted below.
+     * Compatibility with a neighbouring link format is that lane's spec to prove,
+     * on a tree that has it.
      */
     await open(page, '?v=1&format=jpeg&width=320&quality=80');
     // Nothing from the query reached the requirement.

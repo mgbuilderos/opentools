@@ -123,8 +123,11 @@ export interface Verification {
 /**
  * The media type a browser's canvas *actually* produces when asked for one.
  *
- * Moved here from `lib/tools/ask-link.ts`, where the Ask Link lane wrote it, so
- * that both lanes ask the question with the same code. It belongs in this file:
+ * Written by the Ask Link lane and taken whole with their agreement, so that any
+ * lane asking "can this browser write this container" asks it with the same code.
+ * If you find a second copy of it anywhere, this is the one to keep and that is
+ * the one to delete — but read both call sites first, because the label helpers
+ * beside them are deliberately not interchangeable. It belongs in this file:
  * everything else here is about what bytes really are rather than what they were
  * meant to be, and this is the same question one step earlier.
  *
