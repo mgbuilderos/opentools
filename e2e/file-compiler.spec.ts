@@ -674,6 +674,45 @@ test.describe('mobile and keyboard', () => {
   });
 });
 
+test.describe('late scripts', () => {
+  /**
+   * The page still works when its own JavaScript arrives late.
+   *
+   * This is a product property, not a test of a test: every control here is
+   * server-rendered, so it exists and looks usable before React has attached
+   * anything to it. If the page cannot survive that window, a visitor on a slow
+   * connection gets a dropzone that accepts a file and does nothing with it.
+   *
+   * The instrument is the Ask Link lane's, and it is the one that works: delay the
+   * page's own scripts with `page.route`. CPU throttling does **not** reproduce
+   * this — they measured `Emulation.setCPUThrottlingRate` at 1x, 6x and 20x, nine
+   * runs, nine passes — because the race is about when the script *arrives*, not
+   * how fast it runs once it has.
+   *
+   * Proven red-then-green before being committed, twice each way: with `choose()`'s
+   * hydration wait and retry removed, this fails at a 300 ms delay; with them, it
+   * passes. Without that proof it would have been a guard that had never been
+   * shown capable of going red, which is not a guard.
+   */
+  test('a file handed over during hydration is still acted on', async ({
+    page,
+  }) => {
+    await page.route('**/*.js', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      await route.continue();
+    });
+
+    await open(page);
+    await choose(page, await testDetailedPng(page, 800, 600));
+    await say(page, 'jpeg under 150 kb');
+
+    // And the whole way through to real bytes, not just to the panel appearing.
+    const saved = await runAndSave(page);
+    expect(sniff(saved)).toBe('jpeg');
+    expect(saved.length).toBeLessThanOrEqual(150 * 1024);
+  });
+});
+
 test.describe('this page reads its own link format and no other', () => {
   test('ignores a query string, because its own format is a fragment', async ({
     page,
