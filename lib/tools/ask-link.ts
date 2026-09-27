@@ -760,9 +760,16 @@ export function formatWasSubstituted(
  * out and everything else falls back to uppercase, which is the safe default
  * for an acronym nobody has told us about.
  *
- * The File Compiler lane has its own `formatLabel` in `lib/tools/image-verify.ts`
- * and the two are NOT interchangeable: the labels are for different sentences,
- * so do not let one silently replace the other when the modules merge.
+ * IF YOU FIND ANOTHER `formatLabel` IN THIS REPOSITORY, do not assume it is a
+ * duplicate of this one and delete either. Labels are written for the sentence
+ * they appear in, so two of them can differ on purpose — `WebP` versus `WEBP`
+ * is exactly such a difference, and collapsing them silently changes copy a
+ * stranger reads. Compare the call sites before merging them.
+ *
+ * (Stated as a condition rather than as a fact about a particular file: at the
+ * time of writing a second one existed only on an unmerged branch, and a
+ * comment asserting where another lane's code lives is a claim that expires
+ * the moment that branch is renamed, rebased or abandoned.)
  */
 const FORMAT_LABELS: Readonly<Record<string, string>> = {
   webp: 'WebP',
