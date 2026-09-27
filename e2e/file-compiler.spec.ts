@@ -674,14 +674,38 @@ test.describe('mobile and keyboard', () => {
   });
 });
 
-test.describe('existing links still work', () => {
-  test('an ask link is untouched by this page', async ({ page }) => {
-    // `/do` reads its own fragment and nothing else. A recipient page must
-    // still answer exactly as it did before.
-    const response = await page.goto('/ask');
-    expect(response?.status()).toBe(200);
-    await expect(page.locator('body')).not.toContainText(
-      /What must the final file satisfy/iu,
-    );
+test.describe('this page reads its own link format and no other', () => {
+  test('ignores a query string, because its own format is a fragment', async ({
+    page,
+  }) => {
+    /*
+     * `/do` carries its requirement after a `#`, never after a `?`. Other link
+     * formats in this project — the recipe links `e2e/recipe-links.spec.ts`
+     * covers, and the ask links on a branch that has not merged yet — put their
+     * settings in the query string. This page must not read those: a page that
+     * half-understands another feature's link is worse than one that ignores it,
+     * because the visitor cannot tell which settings took effect.
+     *
+     * This replaced a test that fetched `/ask` and expected 200. That was wrong
+     * on this branch: `app/ask` does not exist on `main`, so the assertion only
+     * held while this branch carried the Ask Link commits. Compatibility with
+     * those links is that lane's spec to prove, on a tree that has them.
+     */
+    await open(page, '?v=1&format=jpeg&width=320&quality=80');
+    // Nothing from the query reached the requirement.
+    await expect(
+      page.getByText(/You have been asked for a file that satisfies/iu),
+    ).toBeHidden();
+    await expect(page.getByRole('alert')).toBeHidden();
+
+    // And its own fragment still works on the very same page load.
+    await open(page, '?v=1&format=jpeg&width=320#v=1&f=png');
+    await expect(
+      page.getByRole('list', { name: /Requirement summary/iu }).first(),
+    ).toContainText('PNG');
+    // The query asked for JPEG; only the fragment was read.
+    await expect(
+      page.getByRole('list', { name: /Requirement summary/iu }).first(),
+    ).not.toContainText('JPEG');
   });
 });
