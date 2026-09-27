@@ -558,6 +558,72 @@ test.describe('Ask Link — the recipient', () => {
     }
   });
 
+  /*
+   * The recipient presses the button and the handoff cannot happen.
+   *
+   * Reachable for real: a private window, or a browser with storage switched
+   * off. Until now nothing proved what they see. The failure being guarded
+   * against is not a wrong message but NO message — `busy` stuck true, a
+   * disabled button reading "Opening the tool…", and no route out of the page.
+   */
+  test('says so, and offers a way on, when storage will not hold the file', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    await page.addInitScript(() => {
+      // Both halves of the handoff refuse: IndexedDB will not open, and the
+      // sessionStorage fallback throws on write.
+      Object.defineProperty(window, 'indexedDB', {
+        configurable: true,
+        value: {
+          open: () => {
+            throw new Error('blocked for test');
+          },
+        },
+      });
+      // A plain object, not a spread of the real Storage: spreading a class
+      // instance drops its prototype, and the three methods below are the only
+      // ones `lib/file-handoff.ts` calls.
+      Object.defineProperty(window, 'sessionStorage', {
+        configurable: true,
+        value: {
+          getItem: () => null,
+          removeItem: () => {},
+          setItem: () => {
+            throw new Error('blocked for test');
+          },
+        },
+      });
+    });
+
+    await page.goto('/ask/image?v=1&format=jpeg&width=480');
+    const source = await testDetailedPng(page, 400, 300);
+    await chooseOnAskPage(page, 'image', {
+      name: 'holiday.png',
+      mimeType: 'image/png',
+      buffer: source,
+    });
+    await page.getByRole('button', { name: 'Prepare image' }).click();
+
+    // A message naming the cause, not a hang.
+    await expect(
+      page.getByText('This browser would not hold the file between pages.'),
+    ).toBeVisible({ timeout: 30_000 });
+    // And a route onward, with the settings intact.
+    const onward = page.getByRole('link', {
+      name: 'Open the tool with these settings',
+    });
+    await expect(onward).toBeVisible();
+    expect(await onward.getAttribute('href')).toContain('format=jpeg');
+
+    // The button must be usable again rather than stuck on its busy label.
+    await expect(
+      page.getByRole('button', { name: 'Prepare image' }),
+    ).toBeEnabled();
+    // Still on the ask page: it did not navigate to an empty tool.
+    expect(new URL(page.url()).pathname).toBe('/ask/image');
+  });
+
   test('a hostile link applies nothing and still works', async ({ page }) => {
     await page.goto(
       '/ask/image?v=1&format=gif&quality=99999&width=abc&height=-5' +

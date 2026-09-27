@@ -75,7 +75,15 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
   const [link, setLink] = useState<LinkState>({ kind: 'reading' });
   const [file, setFile] = useState<File | null>(null);
   const [problem, setProblem] = useState('');
-  const [handoffFailed, setHandoffFailed] = useState(false);
+  /**
+   * Why the recipient is still on this page after pressing the button.
+   *
+   * Two causes, and they need different words: storage refusing to hold the
+   * file (nothing was stored, they must choose it again) and the navigation
+   * itself failing (the file IS stored and will be collected on arrival). One
+   * shared message would be wrong for one of them.
+   */
+  const [stuck, setStuck] = useState<null | 'storage' | 'navigation'>(null);
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
   /**
@@ -161,7 +169,7 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
       return;
     }
     setProblem('');
-    setHandoffFailed(false);
+    setStuck(null);
     setFile(chosen);
   };
 
@@ -175,16 +183,37 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
   const prepare = async () => {
     if (!file || busy) return;
     setBusy(true);
-    const stored = await offerFile(file);
-    if (!stored) {
-      // Storage refused. Say so rather than opening an empty tool.
+    setStuck(null);
+    try {
+      const stored = await offerFile(file);
+      if (!stored) {
+        // Storage refused. Say so rather than opening an empty tool.
+        setBusy(false);
+        setStuck('storage');
+        return;
+      }
+      window.location.assign(
+        withHandoffFlag(destination, window.location.origin),
+      );
+    } catch {
+      /*
+       * EVERYTHING AFTER `setBusy(true)` NEEDS THIS, and the reason is the
+       * failure mode rather than the likelihood. `offerFile` is written never
+       * to throw and `destination` comes from the registry, so this should be
+       * unreachable — but if anything here did throw, the rejection would be
+       * unhandled, `busy` would stay true, and the recipient would be left
+       * looking at a permanently disabled button reading "Opening the tool…"
+       * with no message and no way out. A sandboxed frame that refuses
+       * `location.assign` reaches exactly that state without throwing at all.
+       *
+       * So the catch does not swallow a better message — there is no message
+       * here to lose — it restores the one route out of the page. Pointed out
+       * by the File Compiler lane, which hit the mirror image of this: a catch
+       * block that DID replace a specific, useful message with a generic one.
+       */
       setBusy(false);
-      setHandoffFailed(true);
-      return;
+      setStuck('navigation');
     }
-    window.location.assign(
-      withHandoffFlag(destination, window.location.origin),
-    );
   };
 
   if (link.kind === 'unrecognised') {
@@ -360,17 +389,20 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
           </p>
         ) : null}
 
-        {handoffFailed ? (
+        {stuck ? (
           <div
             role="alert"
             className="mt-3 rounded-xl border p-3 text-xs leading-5"
           >
             <p className="font-semibold">
-              This browser would not hold the file between pages.
+              {stuck === 'storage'
+                ? 'This browser would not hold the file between pages.'
+                : 'This page could not open the tool for you.'}
             </p>
             <p className="mt-1 text-muted-foreground">
-              Nothing was sent anywhere. Open the tool with the same settings
-              and choose the file once more there.
+              {stuck === 'storage'
+                ? 'Nothing was sent anywhere. Open the tool with the same settings and choose the file once more there.'
+                : 'Nothing was sent anywhere. Open the tool with the same settings — your file is waiting on this device and should load by itself.'}
             </p>
             <a
               href={destination}

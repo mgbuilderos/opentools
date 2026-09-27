@@ -725,7 +725,13 @@ describe('a format the browser cannot actually produce', () => {
 
   it('names the format the way a sentence needs it', () => {
     expect(formatLabel('image/png')).toBe('PNG');
-    expect(formatLabel('image/webp')).toBe('WEBP');
+    expect(formatLabel('image/jpeg')).toBe('JPEG');
+    // Lower-case `b`. "WEBP" is how a machine writes it, and this string goes
+    // into a sentence a stranger reads. Flagged by the File Compiler lane.
+    expect(formatLabel('image/webp')).toBe('WebP');
+    expect(formatLabel('IMAGE/WEBP')).toBe('WebP');
+    // An acronym nobody has told us about still reads as one.
+    expect(formatLabel('image/heif')).toBe('HEIF');
     expect(formatLabel('nonsense')).toBe('nonsense');
   });
 

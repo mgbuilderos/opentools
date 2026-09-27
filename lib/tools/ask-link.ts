@@ -751,8 +751,30 @@ export function formatWasSubstituted(
   return produced.toLowerCase() !== `image/${requested.toLowerCase()}`;
 }
 
-/** `image/png` -> `PNG`, for a sentence. Falls back to the raw type. */
+/**
+ * `image/png` -> `PNG`, for a sentence. Falls back to the raw type.
+ *
+ * Uppercasing the subtype is right for PNG, JPEG, GIF and AVIF and WRONG for
+ * WebP, which is written with a lower-case `b` — "WEBP" is the sort of detail
+ * that makes a sentence read as machine output. The named cases are spelled
+ * out and everything else falls back to uppercase, which is the safe default
+ * for an acronym nobody has told us about.
+ *
+ * The File Compiler lane has its own `formatLabel` in `lib/tools/image-verify.ts`
+ * and the two are NOT interchangeable: the labels are for different sentences,
+ * so do not let one silently replace the other when the modules merge.
+ */
+const FORMAT_LABELS: Readonly<Record<string, string>> = {
+  webp: 'WebP',
+  jpeg: 'JPEG',
+  jpg: 'JPEG',
+  png: 'PNG',
+  avif: 'AVIF',
+  gif: 'GIF',
+};
+
 export function formatLabel(mediaType: string): string {
   const subtype = mediaType.split('/')[1];
-  return subtype ? subtype.toUpperCase() : mediaType;
+  if (!subtype) return mediaType;
+  return FORMAT_LABELS[subtype.toLowerCase()] ?? subtype.toUpperCase();
 }
