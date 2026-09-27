@@ -140,6 +140,21 @@ test.describe('Support page', () => {
 
     // And the header makes one ask: no star ask anywhere beside it.
     await expect(page.getByText(/Star on GitHub/i)).toHaveCount(0);
+
+    /*
+      Every control that asks for money says the same thing, whether it points
+      at /support or straight at the provider. The egress meter's button was
+      missed the first time precisely because it links out directly rather than
+      through /support, so this checks the destination, not the path.
+    */
+    const asks = page.locator(
+      'a[href*="buymeacoffee.com"], a[href="/support"]',
+    );
+    for (const label of (await asks.allInnerTexts())
+      .map((text) => text.trim())
+      .filter(Boolean)) {
+      expect(label).not.toMatch(/\bsupport\b/iu);
+    }
   });
 
   test('renders without horizontal overflow at mobile 375x812', async ({

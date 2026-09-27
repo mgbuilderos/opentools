@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity } from 'lucide-react';
+import { Activity, Coffee } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -67,9 +67,20 @@ export function EgressMeter() {
             href={SUPPORT_CONFIG.buyMeACoffeeUrl}
             rel="noopener noreferrer"
             target="_blank"
-            className="focus-ring shrink-0 self-start rounded-lg border px-3 py-2 text-xs font-semibold hover:bg-muted sm:self-center"
+            className="focus-ring inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg border px-3 py-2 text-xs font-semibold hover:bg-muted sm:self-center"
           >
-            Support this work
+            {/*
+              "Buy me a coffee", not "Support this work".
+
+              Owner decision 2026-09-27: the site makes one ask, in one set of
+              words, behind one icon. This link already pointed at Buy Me a
+              Coffee, so it was the right destination under a label that still
+              used the word the rest of the interface stopped using — and
+              "Support" beside a live measurement reads like the place to report
+              that the measurement is wrong.
+            */}
+            <Coffee aria-hidden="true" className="size-3.5" />
+            Buy me a coffee
           </a>
         ) : null}
       </div>
