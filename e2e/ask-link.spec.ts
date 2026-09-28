@@ -3,6 +3,7 @@ import { expect, test, type Page, type Request } from '@playwright/test';
 
 import { findAskRequest } from '../lib/tools/ask-link';
 import { testDetailedPng, testPhotoPdf } from './fixtures';
+import { networkSettled } from './hydration';
 
 /**
  * Ask links, driven end to end in a real browser.
@@ -44,9 +45,23 @@ function picker(page: Page, noun: string) {
  * never hears about it. The failure then surfaces somewhere else entirely — a
  * validation message that never appears — and reads as a product bug. This is
  * the same race `e2e/upload.ts` documents, one control class up.
+ *
+ * **The body of this function used to be that comment and nothing else.** It
+ * called `waitForLoadState('networkidle')`, which does not detect hydration —
+ * it returns when no request has been in flight for 500ms, and React hydrating
+ * is CPU work that finishes either side of that. So every caller below read as
+ * guarded against the race described above while being guarded against nothing,
+ * which is worse than no helper at all: the name asserted a property the code
+ * did not have.
+ *
+ * It is now honest about what it does. The callers here hand a file to a picker
+ * rather than typing into a field, and each already retries the click/chooser
+ * handshake and then asserts on the page having taken the file — that assertion
+ * is what actually proves React arrived. Where a spec types into a control
+ * instead, `./hydration.ts` has the probe that proves it.
  */
 async function hydrated(page: Page) {
-  await page.waitForLoadState('networkidle');
+  await networkSettled(page);
 }
 
 /**

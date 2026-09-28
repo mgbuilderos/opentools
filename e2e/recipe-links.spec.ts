@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 
 import { testPng } from './fixtures';
+import { typeAndRun } from './hydration';
 
 /**
  * Recipe links in a real browser.
@@ -124,17 +125,28 @@ async function copiedLink(page: Page) {
  * Proven: unfixed body FAILS and this one PASSES under an identical 300 ms
  * delay, three sweeps out of three.
  */
+/**
+ * Converts text on a prerendered page, waiting for React before touching it.
+ *
+ * This used to wrap fill-click-assert in `toPass` and retry the whole thing for
+ * 45 seconds, and it flaked anyway -- observed on WebKit in CI on 2026-09-28,
+ * failing with `element is not enabled` repeated hundreds of times, which is a
+ * button that never became enabled rather than one that was slow to.
+ *
+ * The retry was the reason it could not recover. Every attempt re-filled the
+ * box with the same string, and React ignores an event carrying the value it
+ * already believes the node has -- so once it hydrated over text typed before
+ * it was listening, no number of identical retries could re-announce the field.
+ * `./hydration.ts` documents the mechanism; the clear-then-probe there is what
+ * breaks the deadlock.
+ */
 async function typeAndConvert(page: Page, input: string, expected: string) {
-  await page.waitForLoadState('networkidle');
-  await expect(async () => {
-    await page.getByRole('textbox', { name: 'Text to convert' }).fill(input);
-    await page
-      .getByRole('button', { name: 'Convert text' })
-      .click({ timeout: 4_000 });
-    await expect(page.getByText(expected, { exact: true })).toBeVisible({
-      timeout: 4_000,
-    });
-  }).toPass({ timeout: 45_000 });
+  await typeAndRun(
+    page.getByRole('textbox', { name: 'Text to convert' }),
+    page.getByRole('button', { name: 'Convert text' }),
+    input,
+  );
+  await expect(page.getByText(expected, { exact: true })).toBeVisible();
 }
 
 test.describe('Recipe links carry settings between people', () => {

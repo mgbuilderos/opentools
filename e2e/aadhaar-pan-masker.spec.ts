@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 
 import { verhoeffCheckDigit } from '../lib/tools/id-mask/mask';
+import { waitForHydration as hydrate } from './hydration';
 
 /** A 12-digit number whose last digit is its Verhoeff check digit. */
 function aadhaar(first11: string) {
@@ -19,28 +20,18 @@ const ZERO_WIDTH = String.fromCharCode(0x200b);
 /**
  * Waits until React has taken the prerendered page over.
  *
- * Every page here is prerendered to static HTML. Text typed into a control
- * before hydration lands in the DOM and never in React's state, so the tool
- * goes on believing the box is empty and its button stays disabled for the
- * rest of the test -- which is what this spec did on WebKit, intermittently,
- * with the text plainly visible in the failure snapshot beside a counter
- * reading "0 characters". So type a probe until the page answers, then clear
- * it.
- *
- * Each attempt clears the box first. Retrying with the same text is not enough
- * and deadlocks: React records the value it finds on the node when it hydrates
- * -- the text already typed into it -- and then ignores every later event that
- * carries that same value, so the box can never be re-announced.
+ * This spec is where the race was first pinned down, on WebKit, intermittently,
+ * "with the text plainly visible in the failure snapshot beside a counter
+ * reading 0 characters" -- and the clear-then-probe written here is what fixed
+ * it. It now lives in `./hydration.ts`, with that reasoning, because four other
+ * specs had each written their own description of the same race and one of them
+ * shipped a version that did not work. Same behaviour, one copy.
  */
 async function waitForHydration(page: Page) {
-  const area = page.getByLabel('Text to mask');
-  const run = page.getByRole('button', { name: 'Mask numbers' });
-  await expect(async () => {
-    await area.fill('');
-    await area.fill('probe');
-    await expect(run).toBeEnabled({ timeout: 500 });
-  }).toPass({ timeout: 30_000 });
-  await area.fill('');
+  await hydrate(
+    page.getByLabel('Text to mask'),
+    page.getByRole('button', { name: 'Mask numbers' }),
+  );
 }
 
 async function mask(page: Page, text: string) {
