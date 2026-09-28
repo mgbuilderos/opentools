@@ -16,7 +16,7 @@ import { SUBTITLE_OPERATIONS } from '../tools/subtitle-workbench';
 import { TEXT_OPERATIONS } from '../tools/text-workbench';
 import { WEB_OPERATIONS } from '../tools/web-workbench';
 import { WRITING_OPERATIONS } from '../tools/writing-workbench';
-import { CONVERSION_PAIRS } from './conversion-pairs';
+import { publishedUnitPairs } from './unit-pair-consolidation';
 import { FORMAT_PAIRS } from './format-pairs';
 import { IMAGE_PAIRS } from './image-pairs';
 import { TOOL_CATALOG, type ToolCatalogEntry } from './tool-catalog-data';
@@ -238,7 +238,13 @@ const ROUTED_PREFIX_ENTRIES: readonly (readonly [
   [
     '/convert',
     [
-      ...CONVERSION_PAIRS.map((pair) => ({
+      // `publishedUnitPairs()` and not `CONVERSION_PAIRS`: the unit half of
+      // `/convert` is folded onto the converters, and this registry is what
+      // the sitemap, the link graph and `generateStaticParams` all read. One
+      // filter here is what keeps the URLs promised to Google and the pages
+      // the build produces from drifting apart. See
+      // `unit-pair-consolidation-config.ts` for the measurement behind it.
+      ...publishedUnitPairs().map((pair) => ({
         id: pair.id,
         name: pair.title,
         description: `Convert ${pair.fromLabel} to ${pair.toLabel} in your browser.`,

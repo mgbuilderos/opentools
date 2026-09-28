@@ -4,10 +4,10 @@ import { ImagePairConverterTool } from '@/components/image-pair-converter-tool';
 import { MathWorkbenchTool } from '@/components/math-workbench-tool';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
 import {
-  CONVERSION_PAIRS,
   conversionFacts,
   conversionPairById,
 } from '@/lib/seo/conversion-pairs';
+import { publishedUnitPairs } from '@/lib/seo/unit-pair-consolidation';
 import {
   FORMAT_PAIRS,
   formatFacts,
@@ -68,9 +68,15 @@ const CANONICAL_ORIGIN = ['https:', '//', 'getopentools.com'].join('');
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return [...CONVERSION_PAIRS, ...FORMAT_PAIRS, ...IMAGE_PAIRS].map((pair) => ({
-    pair: pair.id,
-  }));
+  // `publishedUnitPairs()` and not `CONVERSION_PAIRS`: a folded unit pair has
+  // no page, and `dynamicParams = false` above is what makes that true of the
+  // build as well as of the sitemap. The proxy turns the folded address into a
+  // 301 before this route is consulted — see `lib/seo/site-redirects.ts`. The
+  // format and image pairs are untouched; they are the half of `/convert`
+  // Google cannot answer in its own results.
+  return [...publishedUnitPairs(), ...FORMAT_PAIRS, ...IMAGE_PAIRS].map(
+    (pair) => ({ pair: pair.id }),
+  );
 }
 
 export async function generateMetadata({

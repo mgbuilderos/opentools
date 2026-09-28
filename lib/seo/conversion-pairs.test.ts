@@ -7,6 +7,8 @@ import {
   conversionPairById,
 } from './conversion-pairs';
 import { LIVE_TOOL_ROUTES, isLiveToolUrl } from './live-tools';
+import { siteRedirect } from './site-redirects';
+import { publishedUnitPairs } from './unit-pair-consolidation';
 
 /**
  * This route multiplies the number of pages on the site by roughly two, which
@@ -205,11 +207,33 @@ describe('unit conversion pairs', () => {
   });
 
   it('is registered, so the pages are not published invisible', () => {
-    for (const pair of CONVERSION_PAIRS) {
+    for (const pair of publishedUnitPairs()) {
       const route = `/convert/${pair.id}`;
       expect(LIVE_TOOL_ROUTES, route).toContain(route);
       expect(isLiveToolUrl(route), route).toBe(true);
     }
     expect(isLiveToolUrl('/convert/not-a-real-pair')).toBe(false);
+  });
+
+  /*
+   * The other half of the same promise, after the 2026-09-28 fold. A folded
+   * pair must be absent from the registry AND answered by a redirect. Missing
+   * from both is a 404 on a URL Google has indexed; present in both is a page
+   * that redirects to itself. Neither is caught by any other test.
+   */
+  it('is unregistered but answered once it is folded', () => {
+    const published = new Set(publishedUnitPairs().map((pair) => pair.id));
+    const folded = CONVERSION_PAIRS.filter((pair) => !published.has(pair.id));
+    expect(folded.length).toBe(501);
+
+    for (const pair of folded) {
+      const route = `/convert/${pair.id}`;
+      expect(LIVE_TOOL_ROUTES, route).not.toContain(route);
+      expect(isLiveToolUrl(route), route).toBe(false);
+      expect(siteRedirect(route), route).toEqual({
+        location: `/math/${pair.operationId}`,
+        status: 301,
+      });
+    }
   });
 });

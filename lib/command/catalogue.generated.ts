@@ -155,634 +155,134 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     op: 'formats-pdfcrypt file text',
   },
   {
-    href: '/convert/acres-to-cm2',
-    name: 'Convert Acres to Square centimetres',
-    terms: 'cm2',
-  },
-  {
-    href: '/convert/acres-to-ft2',
-    name: 'Convert Acres to Square feet (acre to ft²)',
-    terms: '',
-  },
-  {
-    href: '/convert/acres-to-hectares',
-    name: 'Convert Acres to Hectares (acre to ha)',
-    terms: '',
-  },
-  {
-    href: '/convert/acres-to-in2',
-    name: 'Convert Acres to Square inches (acre to in²)',
-    terms: '',
-  },
-  {
-    href: '/convert/acres-to-km2',
-    name: 'Convert Acres to Square kilometres (acre to km²)',
-    terms: '',
-  },
-  {
-    href: '/convert/acres-to-m2',
-    name: 'Convert Acres to Square metres (acre to m²)',
-    terms: '',
-  },
-  {
-    href: '/convert/acres-to-mi2',
-    name: 'Convert Acres to Square miles (acre to mi²)',
-    terms: '',
-  },
-  {
     href: '/convert/asciidoc-to-csv',
     name: 'AsciiDoc to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-html',
     name: 'AsciiDoc to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-json',
     name: 'AsciiDoc to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-latex',
     name: 'AsciiDoc to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-markdown',
     name: 'AsciiDoc to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-rst',
     name: 'AsciiDoc to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/asciidoc-to-sql',
     name: 'AsciiDoc to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-tsv',
     name: 'AsciiDoc to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-xml',
     name: 'AsciiDoc to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/asciidoc-to-yaml',
     name: 'AsciiDoc to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/atmospheres-to-bar',
-    name: 'Convert Atmospheres to Bar (atm to bar)',
-    terms: '',
-  },
-  {
-    href: '/convert/atmospheres-to-kilopascals',
-    name: 'Convert Atmospheres to Kilopascals (atm to kPa)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/atmospheres-to-megapascals',
     name: 'Convert Atmospheres to Megapascals (atm to MPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/atmospheres-to-pascals',
-    name: 'Convert Atmospheres to Pascals (atm to Pa)',
-    terms: '',
-  },
-  {
-    href: '/convert/atmospheres-to-psi',
-    name: 'Convert Atmospheres to Pounds per square inch',
-    terms: 'atm psi',
+    terms: 'browser',
   },
   {
     href: '/convert/avif-to-jpg',
     name: 'AVIF to JPEG converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/avif-to-png',
     name: 'AVIF to PNG converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/avif-to-webp',
     name: 'AVIF to WebP converter',
-    terms: '',
-  },
-  {
-    href: '/convert/bar-to-atmospheres',
-    name: 'Convert Bar to Atmospheres (bar to atm)',
-    terms: '',
-  },
-  {
-    href: '/convert/bar-to-kilopascals',
-    name: 'Convert Bar to Kilopascals (bar to kPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/bar-to-megapascals',
-    name: 'Convert Bar to Megapascals (bar to MPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/bar-to-pascals',
-    name: 'Convert Bar to Pascals (bar to Pa)',
-    terms: '',
-  },
-  {
-    href: '/convert/bar-to-psi',
-    name: 'Convert Bar to Pounds per square inch',
-    terms: 'psi',
+    terms: 'browser',
   },
   {
     href: '/convert/bmp-to-jpg',
     name: 'BMP to JPEG converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/bmp-to-png',
     name: 'BMP to PNG converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/bmp-to-webp',
     name: 'BMP to WebP converter',
-    terms: '',
-  },
-  {
-    href: '/convert/btu-h-to-hp',
-    name: 'Convert BTU per hour to Mechanical horsepower',
-    terms: 'h hp',
-  },
-  {
-    href: '/convert/btu-h-to-kilowatts',
-    name: 'Convert BTU per hour to Kilowatts (BTU/h to kW)',
-    terms: '',
-  },
-  {
-    href: '/convert/btu-h-to-megawatts',
-    name: 'Convert BTU per hour to Megawatts (BTU/h to MW)',
-    terms: '',
-  },
-  {
-    href: '/convert/btu-h-to-watts',
-    name: 'Convert BTU per hour to Watts (BTU/h to W)',
-    terms: '',
-  },
-  {
-    href: '/convert/btu-to-calories',
-    name: 'Convert BTU (IT) to Calories',
-    terms: 'cal',
-  },
-  {
-    href: '/convert/btu-to-joules',
-    name: 'Convert BTU (IT) to Joules',
-    terms: 'j',
-  },
-  {
-    href: '/convert/btu-to-kilocalories',
-    name: 'Convert BTU (IT) to Kilocalories',
-    terms: 'kcal',
-  },
-  {
-    href: '/convert/btu-to-kilojoules',
-    name: 'Convert BTU (IT) to Kilojoules',
-    terms: 'kj',
-  },
-  {
-    href: '/convert/btu-to-kilowatt-hours',
-    name: 'Convert BTU (IT) to Kilowatt-hours',
-    terms: 'kilowatthour kwh',
-  },
-  {
-    href: '/convert/btu-to-watt-hours',
-    name: 'Convert BTU (IT) to Watt-hours',
-    terms: 'watthour wh',
-  },
-  {
-    href: '/convert/bytes-to-gb',
-    name: 'Convert Bytes to Gigabytes (10⁹)',
-    terms: 'b gb',
+    terms: 'browser',
   },
   {
     href: '/convert/bytes-to-gib',
     name: 'Convert Bytes to Gibibytes (2³⁰)',
-    terms: 'b gib',
-  },
-  {
-    href: '/convert/bytes-to-kb',
-    name: 'Convert Bytes to Kilobytes (10³)',
-    terms: 'b kb',
-  },
-  {
-    href: '/convert/bytes-to-kib',
-    name: 'Convert Bytes to Kibibytes (2¹⁰)',
-    terms: 'b kib',
-  },
-  {
-    href: '/convert/bytes-to-mb',
-    name: 'Convert Bytes to Megabytes (10⁶)',
-    terms: 'b mb',
-  },
-  {
-    href: '/convert/bytes-to-mib',
-    name: 'Convert Bytes to Mebibytes (2²⁰)',
-    terms: 'b mib',
-  },
-  {
-    href: '/convert/calories-to-btu',
-    name: 'Convert Calories to BTU (IT)',
-    terms: 'cal',
-  },
-  {
-    href: '/convert/calories-to-joules',
-    name: 'Convert Calories to Joules (cal to J)',
-    terms: '',
-  },
-  {
-    href: '/convert/calories-to-kilocalories',
-    name: 'Convert Calories to Kilocalories (cal to kcal)',
-    terms: '',
-  },
-  {
-    href: '/convert/calories-to-kilojoules',
-    name: 'Convert Calories to Kilojoules (cal to kJ)',
-    terms: '',
-  },
-  {
-    href: '/convert/calories-to-kilowatt-hours',
-    name: 'Convert Calories to Kilowatt-hours (cal to kWh)',
-    terms: 'kilowatthour',
+    terms: 'b browser gib',
   },
   {
     href: '/convert/calories-to-watt-hours',
     name: 'Convert Calories to Watt-hours (cal to Wh)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/celsius-to-fahrenheit',
-    name: 'Convert Celsius to Fahrenheit (C to F)',
-    terms: '',
-  },
-  {
-    href: '/convert/celsius-to-kelvin',
-    name: 'Convert Celsius to Kelvin (C to K)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-feet',
-    name: 'Convert Centimetres to Feet (cm to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-inches',
-    name: 'Convert Centimetres to Inches (cm to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-kilometres',
-    name: 'Convert Centimetres to Kilometres (cm to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-metres',
-    name: 'Convert Centimetres to Metres (cm to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-miles',
-    name: 'Convert Centimetres to Miles (cm to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-millimetres',
-    name: 'Convert Centimetres to Millimetres (cm to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/centimetres-to-nmi',
-    name: 'Convert Centimetres to Nautical miles',
-    terms: 'cm nmi',
-  },
-  {
-    href: '/convert/centimetres-to-yards',
-    name: 'Convert Centimetres to Yards (cm to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/cm2-to-acres',
-    name: 'Convert Square centimetres to Acres',
-    terms: 'cm2',
-  },
-  {
-    href: '/convert/cm2-to-ft2',
-    name: 'Convert Square centimetres to Square feet',
-    terms: 'cm2 ft2',
-  },
-  {
-    href: '/convert/cm2-to-hectares',
-    name: 'Convert Square centimetres to Hectares',
-    terms: 'cm2',
-  },
-  {
-    href: '/convert/cm2-to-in2',
-    name: 'Convert Square centimetres to Square inches',
-    terms: 'cm2 in2',
-  },
-  {
-    href: '/convert/cm2-to-km2',
-    name: 'Convert Square centimetres to Square kilometres',
-    terms: 'cm2 km2',
-  },
-  {
-    href: '/convert/cm2-to-m2',
-    name: 'Convert Square centimetres to Square metres',
-    terms: 'cm2 m2',
-  },
-  {
-    href: '/convert/cm2-to-mi2',
-    name: 'Convert Square centimetres to Square miles',
-    terms: 'cm2 mi2',
-  },
-  {
-    href: '/convert/cm3-to-cup-us',
-    name: 'Convert Cubic centimetres to US cups',
-    terms: 'cm3',
-  },
-  {
-    href: '/convert/cm3-to-floz-us',
-    name: 'Convert Cubic centimetres to US fluid ounces',
-    terms: 'cm3 floz',
-  },
-  {
-    href: '/convert/cm3-to-ft3',
-    name: 'Convert Cubic centimetres to Cubic feet',
-    terms: 'cm3 ft3',
-  },
-  {
-    href: '/convert/cm3-to-gal-us',
-    name: 'Convert Cubic centimetres to US gallons',
-    terms: 'cm3 gal',
-  },
-  {
-    href: '/convert/cm3-to-litres',
-    name: 'Convert Cubic centimetres to Litres (cm³ to l)',
-    terms: '',
-  },
-  {
-    href: '/convert/cm3-to-m3',
-    name: 'Convert Cubic centimetres to Cubic metres',
-    terms: 'cm3 m3',
-  },
-  {
-    href: '/convert/cm3-to-millilitres',
-    name: 'Convert Cubic centimetres to Millilitres',
-    terms: 'cm3 ml',
+    terms: 'browser watthour',
   },
   {
     href: '/convert/csv-to-asciidoc',
     name: 'CSV to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/csv-to-html',
     name: 'CSV to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/csv-to-latex',
     name: 'CSV to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/csv-to-markdown',
     name: 'CSV to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/csv-to-rst',
     name: 'CSV to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/csv-to-xml',
     name: 'CSV to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/csv-to-yaml',
     name: 'CSV to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/cup-us-to-cm3',
-    name: 'Convert US cups to Cubic centimetres',
-    terms: 'cm3',
-  },
-  {
-    href: '/convert/cup-us-to-floz-us',
-    name: 'Convert US cups to US fluid ounces',
-    terms: 'floz',
-  },
-  {
-    href: '/convert/cup-us-to-ft3',
-    name: 'Convert US cups to Cubic feet',
-    terms: 'ft3',
-  },
-  {
-    href: '/convert/cup-us-to-gal-us',
-    name: 'Convert US cups to US gallons',
-    terms: 'gal',
-  },
-  {
-    href: '/convert/cup-us-to-litres',
-    name: 'Convert US cups to Litres',
-    terms: 'l',
-  },
-  {
-    href: '/convert/cup-us-to-m3',
-    name: 'Convert US cups to Cubic metres',
-    terms: 'm3',
-  },
-  {
-    href: '/convert/cup-us-to-millilitres',
-    name: 'Convert US cups to Millilitres',
-    terms: 'ml',
-  },
-  {
-    href: '/convert/cup-us-to-tbsp',
-    name: 'Convert US cups to US tablespoons',
-    terms: 'tbsp',
-  },
-  {
-    href: '/convert/cup-us-to-tsp',
-    name: 'Convert US cups to US teaspoons',
-    terms: 'tsp',
-  },
-  {
-    href: '/convert/days-to-hours',
-    name: 'Convert Days to Hours (day to h)',
-    terms: '',
-  },
-  {
-    href: '/convert/days-to-milliseconds',
-    name: 'Convert Days to Milliseconds (day to ms)',
-    terms: '',
-  },
-  {
-    href: '/convert/days-to-minutes',
-    name: 'Convert Days to Minutes (day to min)',
-    terms: '',
-  },
-  {
-    href: '/convert/days-to-seconds',
-    name: 'Convert Days to Seconds (day to s)',
-    terms: '',
-  },
-  {
-    href: '/convert/days-to-weeks',
-    name: 'Convert Days to Weeks (day to week)',
-    terms: '',
-  },
-  {
-    href: '/convert/degrees-to-gradians',
-    name: 'Convert Degrees to Gradians (deg to grad)',
-    terms: '',
-  },
-  {
-    href: '/convert/degrees-to-radians',
-    name: 'Convert Degrees to Radians (deg to rad)',
-    terms: '',
-  },
-  {
-    href: '/convert/degrees-to-turns',
-    name: 'Convert Degrees to Turns (deg to turn)',
-    terms: '',
-  },
-  {
-    href: '/convert/dynes-to-kilogram-force',
-    name: 'Convert Dynes to Kilogram-force (dyn to kgf)',
-    terms: 'kilogramforce',
-  },
-  {
-    href: '/convert/dynes-to-kilonewtons',
-    name: 'Convert Dynes to Kilonewtons (dyn to kN)',
-    terms: '',
-  },
-  {
-    href: '/convert/dynes-to-newtons',
-    name: 'Convert Dynes to Newtons (dyn to N)',
-    terms: '',
-  },
-  {
-    href: '/convert/dynes-to-pound-force',
-    name: 'Convert Dynes to Pound-force (dyn to lbf)',
-    terms: 'poundforce',
-  },
-  {
-    href: '/convert/fahrenheit-to-celsius',
-    name: 'Convert Fahrenheit to Celsius (F to C)',
-    terms: '',
-  },
-  {
-    href: '/convert/fahrenheit-to-kelvin',
-    name: 'Convert Fahrenheit to Kelvin (F to K)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-centimetres',
-    name: 'Convert Feet to Centimetres (ft to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-inches',
-    name: 'Convert Feet to Inches (ft to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-kilometres',
-    name: 'Convert Feet to Kilometres (ft to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-metres',
-    name: 'Convert Feet to Metres (ft to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-miles',
-    name: 'Convert Feet to Miles (ft to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-millimetres',
-    name: 'Convert Feet to Millimetres (ft to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-nmi',
-    name: 'Convert Feet to Nautical miles (ft to nmi)',
-    terms: '',
-  },
-  {
-    href: '/convert/feet-to-yards',
-    name: 'Convert Feet to Yards (ft to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/floz-us-to-cm3',
-    name: 'Convert US fluid ounces to Cubic centimetres',
-    terms: 'cm3 floz',
-  },
-  {
-    href: '/convert/floz-us-to-cup-us',
-    name: 'Convert US fluid ounces to US cups',
-    terms: 'floz',
-  },
-  {
-    href: '/convert/floz-us-to-ft3',
-    name: 'Convert US fluid ounces to Cubic feet',
-    terms: 'floz ft3',
-  },
-  {
-    href: '/convert/floz-us-to-gal-us',
-    name: 'Convert US fluid ounces to US gallons',
-    terms: 'floz gal',
-  },
-  {
-    href: '/convert/floz-us-to-litres',
-    name: 'Convert US fluid ounces to Litres',
-    terms: 'floz l',
-  },
-  {
-    href: '/convert/floz-us-to-m3',
-    name: 'Convert US fluid ounces to Cubic metres',
-    terms: 'floz m3',
-  },
-  {
-    href: '/convert/floz-us-to-millilitres',
-    name: 'Convert US fluid ounces to Millilitres',
-    terms: 'floz ml',
-  },
-  {
-    href: '/convert/floz-us-to-tbsp',
-    name: 'Convert US fluid ounces to US tablespoons',
-    terms: 'floz tbsp',
-  },
-  {
-    href: '/convert/floz-us-to-tsp',
-    name: 'Convert US fluid ounces to US teaspoons',
-    terms: 'floz tsp',
+    terms: 'browser',
   },
   {
     href: '/convert/formats',
@@ -791,2529 +291,524 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
       'another asciidoc csv data export html json latex markdown one paper paste readme restructuredtext spreadsheet sql table tsv xml yaml',
   },
   {
-    href: '/convert/ft-s-to-km-h',
-    name: 'Convert Feet per second to Kilometres per hour',
-    terms: 'ft h km s',
-  },
-  {
-    href: '/convert/ft-s-to-knots',
-    name: 'Convert Feet per second to Knots (ft/s to knot)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft-s-to-m-s',
-    name: 'Convert Feet per second to Metres per second',
-    terms: 'ft m s',
-  },
-  {
-    href: '/convert/ft-s-to-mph',
-    name: 'Convert Feet per second to Miles per hour',
-    terms: 'ft mph s',
-  },
-  {
-    href: '/convert/ft2-to-acres',
-    name: 'Convert Square feet to Acres (ft² to acre)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft2-to-cm2',
-    name: 'Convert Square feet to Square centimetres',
-    terms: 'cm2 ft2',
-  },
-  {
-    href: '/convert/ft2-to-hectares',
-    name: 'Convert Square feet to Hectares (ft² to ha)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft2-to-in2',
-    name: 'Convert Square feet to Square inches',
-    terms: 'ft2 in2',
-  },
-  {
-    href: '/convert/ft2-to-km2',
-    name: 'Convert Square feet to Square kilometres',
-    terms: 'ft2 km2',
-  },
-  {
-    href: '/convert/ft2-to-m2',
-    name: 'Convert Square feet to Square metres (ft² to m²)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft2-to-mi2',
-    name: 'Convert Square feet to Square miles (ft² to mi²)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft3-to-cm3',
-    name: 'Convert Cubic feet to Cubic centimetres',
-    terms: 'cm3 ft3',
-  },
-  {
-    href: '/convert/ft3-to-cup-us',
-    name: 'Convert Cubic feet to US cups',
-    terms: 'ft3',
-  },
-  {
-    href: '/convert/ft3-to-floz-us',
-    name: 'Convert Cubic feet to US fluid ounces',
-    terms: 'floz ft3',
-  },
-  {
-    href: '/convert/ft3-to-gal-us',
-    name: 'Convert Cubic feet to US gallons',
-    terms: 'ft3 gal',
-  },
-  {
-    href: '/convert/ft3-to-litres',
-    name: 'Convert Cubic feet to Litres (ft³ to l)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft3-to-m3',
-    name: 'Convert Cubic feet to Cubic metres (ft³ to m³)',
-    terms: '',
-  },
-  {
-    href: '/convert/ft3-to-millilitres',
-    name: 'Convert Cubic feet to Millilitres (ft³ to ml)',
-    terms: '',
-  },
-  {
-    href: '/convert/gal-us-to-cm3',
-    name: 'Convert US gallons to Cubic centimetres',
-    terms: 'cm3 gal',
-  },
-  {
-    href: '/convert/gal-us-to-cup-us',
-    name: 'Convert US gallons to US cups',
-    terms: 'gal',
-  },
-  {
-    href: '/convert/gal-us-to-floz-us',
-    name: 'Convert US gallons to US fluid ounces',
-    terms: 'floz gal',
-  },
-  {
-    href: '/convert/gal-us-to-ft3',
-    name: 'Convert US gallons to Cubic feet',
-    terms: 'ft3 gal',
-  },
-  {
-    href: '/convert/gal-us-to-litres',
-    name: 'Convert US gallons to Litres',
-    terms: 'gal l',
-  },
-  {
-    href: '/convert/gal-us-to-m3',
-    name: 'Convert US gallons to Cubic metres',
-    terms: 'gal m3',
-  },
-  {
-    href: '/convert/gal-us-to-millilitres',
-    name: 'Convert US gallons to Millilitres',
-    terms: 'gal ml',
-  },
-  {
-    href: '/convert/gb-to-bytes',
-    name: 'Convert Gigabytes (10⁹) to Bytes',
-    terms: 'b gb',
-  },
-  {
-    href: '/convert/gb-to-gib',
-    name: 'Convert Gigabytes (10⁹) to Gibibytes (2³⁰)',
-    terms: 'gb gib',
-  },
-  {
-    href: '/convert/gb-to-kb',
-    name: 'Convert Gigabytes (10⁹) to Kilobytes (10³)',
-    terms: 'gb kb',
-  },
-  {
-    href: '/convert/gb-to-kib',
-    name: 'Convert Gigabytes (10⁹) to Kibibytes (2¹⁰)',
-    terms: 'gb kib',
-  },
-  {
-    href: '/convert/gb-to-mb',
-    name: 'Convert Gigabytes (10⁹) to Megabytes (10⁶)',
-    terms: 'gb mb',
-  },
-  {
-    href: '/convert/gb-to-mib',
-    name: 'Convert Gigabytes (10⁹) to Mebibytes (2²⁰)',
-    terms: 'gb mib',
-  },
-  {
-    href: '/convert/gib-to-bytes',
-    name: 'Convert Gibibytes (2³⁰) to Bytes',
-    terms: 'b gib',
-  },
-  {
-    href: '/convert/gib-to-gb',
-    name: 'Convert Gibibytes (2³⁰) to Gigabytes (10⁹)',
-    terms: 'gb gib',
-  },
-  {
-    href: '/convert/gib-to-kb',
-    name: 'Convert Gibibytes (2³⁰) to Kilobytes (10³)',
-    terms: 'gib kb',
-  },
-  {
-    href: '/convert/gib-to-kib',
-    name: 'Convert Gibibytes (2³⁰) to Kibibytes (2¹⁰)',
-    terms: 'gib kib',
-  },
-  {
-    href: '/convert/gib-to-mb',
-    name: 'Convert Gibibytes (2³⁰) to Megabytes (10⁶)',
-    terms: 'gib mb',
-  },
-  {
-    href: '/convert/gib-to-mib',
-    name: 'Convert Gibibytes (2³⁰) to Mebibytes (2²⁰)',
-    terms: 'gib mib',
-  },
-  {
     href: '/convert/gif-to-jpg',
     name: 'GIF to JPEG converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/gif-to-png',
     name: 'GIF to PNG converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/gif-to-webp',
     name: 'GIF to WebP converter',
-    terms: '',
-  },
-  {
-    href: '/convert/gigahertz-to-hertz',
-    name: 'Convert Gigahertz to Hertz (GHz to Hz)',
-    terms: '',
-  },
-  {
-    href: '/convert/gigahertz-to-kilohertz',
-    name: 'Convert Gigahertz to Kilohertz (GHz to kHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/gigahertz-to-megahertz',
-    name: 'Convert Gigahertz to Megahertz (GHz to MHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/gigahertz-to-rpm',
-    name: 'Convert Gigahertz to Revolutions per minute',
-    terms: 'ghz rpm',
-  },
-  {
-    href: '/convert/gradians-to-degrees',
-    name: 'Convert Gradians to Degrees (grad to deg)',
-    terms: '',
-  },
-  {
-    href: '/convert/gradians-to-radians',
-    name: 'Convert Gradians to Radians (grad to rad)',
-    terms: '',
-  },
-  {
-    href: '/convert/gradians-to-turns',
-    name: 'Convert Gradians to Turns (grad to turn)',
-    terms: '',
-  },
-  {
-    href: '/convert/grams-to-kilograms',
-    name: 'Convert Grams to Kilograms (g to kg)',
-    terms: '',
-  },
-  {
-    href: '/convert/grams-to-milligrams',
-    name: 'Convert Grams to Milligrams (g to mg)',
-    terms: '',
-  },
-  {
-    href: '/convert/grams-to-ounces',
-    name: 'Convert Grams to Ounces (g to oz)',
-    terms: '',
-  },
-  {
-    href: '/convert/grams-to-pounds',
-    name: 'Convert Grams to Pounds (g to lb)',
-    terms: '',
-  },
-  {
-    href: '/convert/grams-to-stone',
-    name: 'Convert Grams to Stone (g to stone)',
-    terms: '',
-  },
-  {
-    href: '/convert/grams-to-tonne',
-    name: 'Convert Grams to Metric tonnes (g to tonne)',
-    terms: '',
-  },
-  {
-    href: '/convert/hectares-to-acres',
-    name: 'Convert Hectares to Acres (ha to acre)',
-    terms: '',
-  },
-  {
-    href: '/convert/hectares-to-cm2',
-    name: 'Convert Hectares to Square centimetres',
-    terms: 'cm2',
-  },
-  {
-    href: '/convert/hectares-to-ft2',
-    name: 'Convert Hectares to Square feet (ha to ft²)',
-    terms: '',
-  },
-  {
-    href: '/convert/hectares-to-in2',
-    name: 'Convert Hectares to Square inches (ha to in²)',
-    terms: '',
-  },
-  {
-    href: '/convert/hectares-to-km2',
-    name: 'Convert Hectares to Square kilometres',
-    terms: 'km2',
-  },
-  {
-    href: '/convert/hectares-to-m2',
-    name: 'Convert Hectares to Square metres (ha to m²)',
-    terms: '',
-  },
-  {
-    href: '/convert/hectares-to-mi2',
-    name: 'Convert Hectares to Square miles (ha to mi²)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/heic-to-webp',
     name: 'HEIC to WebP converter',
-    terms: '',
-  },
-  {
-    href: '/convert/hertz-to-gigahertz',
-    name: 'Convert Hertz to Gigahertz (Hz to GHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/hertz-to-kilohertz',
-    name: 'Convert Hertz to Kilohertz (Hz to kHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/hertz-to-megahertz',
-    name: 'Convert Hertz to Megahertz (Hz to MHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/hertz-to-rpm',
-    name: 'Convert Hertz to Revolutions per minute',
-    terms: 'hz rpm',
-  },
-  {
-    href: '/convert/hours-to-days',
-    name: 'Convert Hours to Days (h to day)',
-    terms: '',
-  },
-  {
-    href: '/convert/hours-to-milliseconds',
-    name: 'Convert Hours to Milliseconds (h to ms)',
-    terms: '',
-  },
-  {
-    href: '/convert/hours-to-minutes',
-    name: 'Convert Hours to Minutes (h to min)',
-    terms: '',
-  },
-  {
-    href: '/convert/hours-to-seconds',
-    name: 'Convert Hours to Seconds (h to s)',
-    terms: '',
-  },
-  {
-    href: '/convert/hours-to-weeks',
-    name: 'Convert Hours to Weeks (h to week)',
-    terms: '',
-  },
-  {
-    href: '/convert/hp-to-btu-h',
-    name: 'Convert Mechanical horsepower to BTU per hour',
-    terms: 'h hp',
-  },
-  {
-    href: '/convert/hp-to-kilowatts',
-    name: 'Convert Mechanical horsepower to Kilowatts',
-    terms: 'hp kw',
-  },
-  {
-    href: '/convert/hp-to-megawatts',
-    name: 'Convert Mechanical horsepower to Megawatts',
-    terms: 'hp mw',
-  },
-  {
-    href: '/convert/hp-to-watts',
-    name: 'Convert Mechanical horsepower to Watts (hp to W)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-asciidoc',
     name: 'HTML to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-csv',
     name: 'HTML to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-json',
     name: 'HTML to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-latex',
     name: 'HTML to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-rst',
     name: 'HTML to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/html-to-sql',
     name: 'HTML to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-tsv',
     name: 'HTML to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-xml',
     name: 'HTML to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/html-to-yaml',
     name: 'HTML to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/in2-to-acres',
-    name: 'Convert Square inches to Acres (in² to acre)',
-    terms: '',
-  },
-  {
-    href: '/convert/in2-to-cm2',
-    name: 'Convert Square inches to Square centimetres',
-    terms: 'cm2 in2',
-  },
-  {
-    href: '/convert/in2-to-ft2',
-    name: 'Convert Square inches to Square feet',
-    terms: 'ft2 in2',
-  },
-  {
-    href: '/convert/in2-to-hectares',
-    name: 'Convert Square inches to Hectares (in² to ha)',
-    terms: '',
-  },
-  {
-    href: '/convert/in2-to-km2',
-    name: 'Convert Square inches to Square kilometres',
-    terms: 'in2 km2',
-  },
-  {
-    href: '/convert/in2-to-m2',
-    name: 'Convert Square inches to Square metres',
-    terms: 'in2 m2',
-  },
-  {
-    href: '/convert/in2-to-mi2',
-    name: 'Convert Square inches to Square miles',
-    terms: 'in2 mi2',
-  },
-  {
-    href: '/convert/inches-to-centimetres',
-    name: 'Convert Inches to Centimetres (in to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-feet',
-    name: 'Convert Inches to Feet (in to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-kilometres',
-    name: 'Convert Inches to Kilometres (in to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-metres',
-    name: 'Convert Inches to Metres (in to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-miles',
-    name: 'Convert Inches to Miles (in to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-millimetres',
-    name: 'Convert Inches to Millimetres (in to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-nmi',
-    name: 'Convert Inches to Nautical miles (in to nmi)',
-    terms: '',
-  },
-  {
-    href: '/convert/inches-to-yards',
-    name: 'Convert Inches to Yards (in to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/joules-to-btu',
-    name: 'Convert Joules to BTU (IT)',
-    terms: 'j',
-  },
-  {
-    href: '/convert/joules-to-calories',
-    name: 'Convert Joules to Calories (J to cal)',
-    terms: '',
-  },
-  {
-    href: '/convert/joules-to-kilocalories',
-    name: 'Convert Joules to Kilocalories (J to kcal)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/joules-to-kilojoules',
     name: 'Convert Joules to Kilojoules (J to kJ)',
-    terms: '',
-  },
-  {
-    href: '/convert/joules-to-kilowatt-hours',
-    name: 'Convert Joules to Kilowatt-hours (J to kWh)',
-    terms: 'kilowatthour',
-  },
-  {
-    href: '/convert/joules-to-watt-hours',
-    name: 'Convert Joules to Watt-hours (J to Wh)',
-    terms: 'watthour',
+    terms: 'browser',
   },
   {
     href: '/convert/jpg-to-png',
     name: 'JPEG to PNG converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/jpg-to-webp',
     name: 'JPEG to WebP converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/json-to-asciidoc',
     name: 'JSON to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-html',
     name: 'JSON to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-latex',
     name: 'JSON to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-markdown',
     name: 'JSON to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-rst',
     name: 'JSON to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/json-to-sql',
     name: 'JSON to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-tsv',
     name: 'JSON to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-xml',
     name: 'JSON to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/json-to-yaml',
     name: 'JSON to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/kb-to-bytes',
-    name: 'Convert Kilobytes (10³) to Bytes',
-    terms: 'b kb',
-  },
-  {
-    href: '/convert/kb-to-gb',
-    name: 'Convert Kilobytes (10³) to Gigabytes (10⁹)',
-    terms: 'gb kb',
-  },
-  {
-    href: '/convert/kb-to-gib',
-    name: 'Convert Kilobytes (10³) to Gibibytes (2³⁰)',
-    terms: 'gib kb',
-  },
-  {
-    href: '/convert/kb-to-kib',
-    name: 'Convert Kilobytes (10³) to Kibibytes (2¹⁰)',
-    terms: 'kb kib',
+    terms: 'browser',
   },
   {
     href: '/convert/kb-to-mb',
     name: 'Convert Kilobytes (10³) to Megabytes (10⁶)',
-    terms: 'kb mb',
-  },
-  {
-    href: '/convert/kb-to-mib',
-    name: 'Convert Kilobytes (10³) to Mebibytes (2²⁰)',
-    terms: 'kb mib',
-  },
-  {
-    href: '/convert/kelvin-to-celsius',
-    name: 'Convert Kelvin to Celsius (K to C)',
-    terms: '',
-  },
-  {
-    href: '/convert/kelvin-to-fahrenheit',
-    name: 'Convert Kelvin to Fahrenheit (K to F)',
-    terms: '',
-  },
-  {
-    href: '/convert/kgf-m-to-lbf-ft',
-    name: 'Convert Kilogram-force metres to Pound-force feet',
-    terms: 'ft kgf kilogramforce lbf m poundforce',
-  },
-  {
-    href: '/convert/kgf-m-to-lbf-in',
-    name: 'Convert Kilogram-force metres to Pound-force inches',
-    terms: 'kgf kilogramforce lbf m poundforce',
-  },
-  {
-    href: '/convert/kgf-m-to-newton-centimetres',
-    name: 'Convert Kilogram-force metres to Newton-centimetres',
-    terms: 'cm kgf kilogramforce m n newtoncentimetre',
-  },
-  {
-    href: '/convert/kgf-m-to-newton-metres',
-    name: 'Convert Kilogram-force metres to Newton-metres',
-    terms: 'kgf kilogramforce m n newtonmetre',
-  },
-  {
-    href: '/convert/kib-to-bytes',
-    name: 'Convert Kibibytes (2¹⁰) to Bytes',
-    terms: 'b kib',
-  },
-  {
-    href: '/convert/kib-to-gb',
-    name: 'Convert Kibibytes (2¹⁰) to Gigabytes (10⁹)',
-    terms: 'gb kib',
-  },
-  {
-    href: '/convert/kib-to-gib',
-    name: 'Convert Kibibytes (2¹⁰) to Gibibytes (2³⁰)',
-    terms: 'gib kib',
-  },
-  {
-    href: '/convert/kib-to-kb',
-    name: 'Convert Kibibytes (2¹⁰) to Kilobytes (10³)',
-    terms: 'kb kib',
-  },
-  {
-    href: '/convert/kib-to-mb',
-    name: 'Convert Kibibytes (2¹⁰) to Megabytes (10⁶)',
-    terms: 'kib mb',
-  },
-  {
-    href: '/convert/kib-to-mib',
-    name: 'Convert Kibibytes (2¹⁰) to Mebibytes (2²⁰)',
-    terms: 'kib mib',
-  },
-  {
-    href: '/convert/kilocalories-to-btu',
-    name: 'Convert Kilocalories to BTU (IT)',
-    terms: 'kcal',
-  },
-  {
-    href: '/convert/kilocalories-to-calories',
-    name: 'Convert Kilocalories to Calories (kcal to cal)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilocalories-to-joules',
-    name: 'Convert Kilocalories to Joules (kcal to J)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilocalories-to-kilojoules',
-    name: 'Convert Kilocalories to Kilojoules (kcal to kJ)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilocalories-to-kilowatt-hours',
-    name: 'Convert Kilocalories to Kilowatt-hours',
-    terms: 'kcal kilowatthour kwh',
-  },
-  {
-    href: '/convert/kilocalories-to-watt-hours',
-    name: 'Convert Kilocalories to Watt-hours (kcal to Wh)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/kilogram-force-to-dynes',
-    name: 'Convert Kilogram-force to Dynes (kgf to dyn)',
-    terms: 'kilogramforce',
-  },
-  {
-    href: '/convert/kilogram-force-to-kilonewtons',
-    name: 'Convert Kilogram-force to Kilonewtons',
-    terms: 'kgf kilogramforce kn',
-  },
-  {
-    href: '/convert/kilogram-force-to-newtons',
-    name: 'Convert Kilogram-force to Newtons (kgf to N)',
-    terms: 'kilogramforce',
-  },
-  {
-    href: '/convert/kilogram-force-to-pound-force',
-    name: 'Convert Kilogram-force to Pound-force',
-    terms: 'kgf kilogramforce lbf poundforce',
-  },
-  {
-    href: '/convert/kilograms-to-grams',
-    name: 'Convert Kilograms to Grams (kg to g)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilograms-to-milligrams',
-    name: 'Convert Kilograms to Milligrams (kg to mg)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilograms-to-ounces',
-    name: 'Convert Kilograms to Ounces (kg to oz)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilograms-to-pounds',
-    name: 'Convert Kilograms to Pounds (kg to lb)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilograms-to-stone',
-    name: 'Convert Kilograms to Stone (kg to stone)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilograms-to-tonne',
-    name: 'Convert Kilograms to Metric tonnes (kg to tonne)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilohertz-to-gigahertz',
-    name: 'Convert Kilohertz to Gigahertz (kHz to GHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilohertz-to-hertz',
-    name: 'Convert Kilohertz to Hertz (kHz to Hz)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilohertz-to-megahertz',
-    name: 'Convert Kilohertz to Megahertz (kHz to MHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilohertz-to-rpm',
-    name: 'Convert Kilohertz to Revolutions per minute',
-    terms: 'khz rpm',
-  },
-  {
-    href: '/convert/kilojoules-to-btu',
-    name: 'Convert Kilojoules to BTU (IT)',
-    terms: 'kj',
-  },
-  {
-    href: '/convert/kilojoules-to-calories',
-    name: 'Convert Kilojoules to Calories (kJ to cal)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilojoules-to-joules',
-    name: 'Convert Kilojoules to Joules (kJ to J)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilojoules-to-kilocalories',
-    name: 'Convert Kilojoules to Kilocalories (kJ to kcal)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilojoules-to-kilowatt-hours',
-    name: 'Convert Kilojoules to Kilowatt-hours (kJ to kWh)',
-    terms: 'kilowatthour',
-  },
-  {
-    href: '/convert/kilojoules-to-watt-hours',
-    name: 'Convert Kilojoules to Watt-hours (kJ to Wh)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/kilometres-to-centimetres',
-    name: 'Convert Kilometres to Centimetres (km to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-feet',
-    name: 'Convert Kilometres to Feet (km to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-inches',
-    name: 'Convert Kilometres to Inches (km to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-metres',
-    name: 'Convert Kilometres to Metres (km to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-miles',
-    name: 'Convert Kilometres to Miles (km to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-millimetres',
-    name: 'Convert Kilometres to Millimetres (km to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-nmi',
-    name: 'Convert Kilometres to Nautical miles (km to nmi)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilometres-to-yards',
-    name: 'Convert Kilometres to Yards (km to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilonewtons-to-dynes',
-    name: 'Convert Kilonewtons to Dynes (kN to dyn)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilonewtons-to-kilogram-force',
-    name: 'Convert Kilonewtons to Kilogram-force',
-    terms: 'kgf kilogramforce kn',
-  },
-  {
-    href: '/convert/kilonewtons-to-newtons',
-    name: 'Convert Kilonewtons to Newtons (kN to N)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilonewtons-to-pound-force',
-    name: 'Convert Kilonewtons to Pound-force (kN to lbf)',
-    terms: 'poundforce',
+    terms: 'browser kb mb',
   },
   {
     href: '/convert/kilopascals-to-atmospheres',
     name: 'Convert Kilopascals to Atmospheres (kPa to atm)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilopascals-to-bar',
-    name: 'Convert Kilopascals to Bar (kPa to bar)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilopascals-to-megapascals',
-    name: 'Convert Kilopascals to Megapascals (kPa to MPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilopascals-to-pascals',
-    name: 'Convert Kilopascals to Pascals (kPa to Pa)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilopascals-to-psi',
-    name: 'Convert Kilopascals to Pounds per square inch',
-    terms: 'kpa psi',
-  },
-  {
-    href: '/convert/kilowatt-hours-to-btu',
-    name: 'Convert Kilowatt-hours to BTU (IT)',
-    terms: 'kilowatthour kwh',
-  },
-  {
-    href: '/convert/kilowatt-hours-to-calories',
-    name: 'Convert Kilowatt-hours to Calories (kWh to cal)',
-    terms: 'kilowatthour',
-  },
-  {
-    href: '/convert/kilowatt-hours-to-joules',
-    name: 'Convert Kilowatt-hours to Joules (kWh to J)',
-    terms: 'kilowatthour',
-  },
-  {
-    href: '/convert/kilowatt-hours-to-kilocalories',
-    name: 'Convert Kilowatt-hours to Kilocalories',
-    terms: 'kcal kilowatthour kwh',
+    terms: 'browser',
   },
   {
     href: '/convert/kilowatt-hours-to-kilojoules',
     name: 'Convert Kilowatt-hours to Kilojoules (kWh to kJ)',
-    terms: 'kilowatthour',
-  },
-  {
-    href: '/convert/kilowatt-hours-to-watt-hours',
-    name: 'Convert Kilowatt-hours to Watt-hours (kWh to Wh)',
-    terms: 'kilowatthour watthour',
-  },
-  {
-    href: '/convert/kilowatts-to-btu-h',
-    name: 'Convert Kilowatts to BTU per hour (kW to BTU/h)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilowatts-to-hp',
-    name: 'Convert Kilowatts to Mechanical horsepower',
-    terms: 'hp kw',
-  },
-  {
-    href: '/convert/kilowatts-to-megawatts',
-    name: 'Convert Kilowatts to Megawatts (kW to MW)',
-    terms: '',
-  },
-  {
-    href: '/convert/kilowatts-to-watts',
-    name: 'Convert Kilowatts to Watts (kW to W)',
-    terms: '',
-  },
-  {
-    href: '/convert/km-h-to-ft-s',
-    name: 'Convert Kilometres per hour to Feet per second',
-    terms: 'ft h km s',
+    terms: 'browser kilowatthour',
   },
   {
     href: '/convert/km-h-to-knots',
     name: 'Convert Kilometres per hour to Knots',
-    terms: 'h km',
-  },
-  {
-    href: '/convert/km-h-to-m-s',
-    name: 'Convert Kilometres per hour to Metres per second',
-    terms: 'h km m s',
-  },
-  {
-    href: '/convert/km-h-to-mph',
-    name: 'Convert Kilometres per hour to Miles per hour',
-    terms: 'h km mph',
-  },
-  {
-    href: '/convert/km2-to-acres',
-    name: 'Convert Square kilometres to Acres (km² to acre)',
-    terms: '',
-  },
-  {
-    href: '/convert/km2-to-cm2',
-    name: 'Convert Square kilometres to Square centimetres',
-    terms: 'cm2 km2',
-  },
-  {
-    href: '/convert/km2-to-ft2',
-    name: 'Convert Square kilometres to Square feet',
-    terms: 'ft2 km2',
-  },
-  {
-    href: '/convert/km2-to-hectares',
-    name: 'Convert Square kilometres to Hectares',
-    terms: 'km2',
-  },
-  {
-    href: '/convert/km2-to-in2',
-    name: 'Convert Square kilometres to Square inches',
-    terms: 'in2 km2',
-  },
-  {
-    href: '/convert/km2-to-m2',
-    name: 'Convert Square kilometres to Square metres',
-    terms: 'km2 m2',
-  },
-  {
-    href: '/convert/km2-to-mi2',
-    name: 'Convert Square kilometres to Square miles',
-    terms: 'km2 mi2',
-  },
-  {
-    href: '/convert/knots-to-ft-s',
-    name: 'Convert Knots to Feet per second (knot to ft/s)',
-    terms: '',
-  },
-  {
-    href: '/convert/knots-to-km-h',
-    name: 'Convert Knots to Kilometres per hour',
-    terms: 'h km',
-  },
-  {
-    href: '/convert/knots-to-m-s',
-    name: 'Convert Knots to Metres per second (knot to m/s)',
-    terms: '',
-  },
-  {
-    href: '/convert/knots-to-mph',
-    name: 'Convert Knots to Miles per hour (knot to mph)',
-    terms: '',
-  },
-  {
-    href: '/convert/l100km-to-mpg-uk',
-    name: 'Convert L/100 km to Imperial MPG',
-    terms: 'l100km uk',
-  },
-  {
-    href: '/convert/l100km-to-mpg-us',
-    name: 'Convert L/100 km to US MPG',
-    terms: 'l100km',
+    terms: 'browser h km',
   },
   {
     href: '/convert/latex-to-asciidoc',
     name: 'LaTeX to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-csv',
     name: 'LaTeX to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-html',
     name: 'LaTeX to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-json',
     name: 'LaTeX to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-markdown',
     name: 'LaTeX to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-rst',
     name: 'LaTeX to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/latex-to-sql',
     name: 'LaTeX to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-tsv',
     name: 'LaTeX to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-xml',
     name: 'LaTeX to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/latex-to-yaml',
     name: 'LaTeX to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/lbf-ft-to-kgf-m',
-    name: 'Convert Pound-force feet to Kilogram-force metres',
-    terms: 'ft kgf kilogramforce lbf m poundforce',
-  },
-  {
-    href: '/convert/lbf-ft-to-lbf-in',
-    name: 'Convert Pound-force feet to Pound-force inches',
-    terms: 'ft lbf poundforce',
-  },
-  {
-    href: '/convert/lbf-ft-to-newton-centimetres',
-    name: 'Convert Pound-force feet to Newton-centimetres',
-    terms: 'cm ft lbf n newtoncentimetre poundforce',
-  },
-  {
-    href: '/convert/lbf-ft-to-newton-metres',
-    name: 'Convert Pound-force feet to Newton-metres',
-    terms: 'ft lbf m n newtonmetre poundforce',
-  },
-  {
-    href: '/convert/lbf-in-to-kgf-m',
-    name: 'Convert Pound-force inches to Kilogram-force metres',
-    terms: 'kgf kilogramforce lbf m poundforce',
-  },
-  {
-    href: '/convert/lbf-in-to-lbf-ft',
-    name: 'Convert Pound-force inches to Pound-force feet',
-    terms: 'ft lbf poundforce',
-  },
-  {
-    href: '/convert/lbf-in-to-newton-centimetres',
-    name: 'Convert Pound-force inches to Newton-centimetres',
-    terms: 'cm lbf n newtoncentimetre poundforce',
-  },
-  {
-    href: '/convert/lbf-in-to-newton-metres',
-    name: 'Convert Pound-force inches to Newton-metres',
-    terms: 'lbf m n newtonmetre poundforce',
-  },
-  {
-    href: '/convert/litres-to-cm3',
-    name: 'Convert Litres to Cubic centimetres (l to cm³)',
-    terms: '',
-  },
-  {
-    href: '/convert/litres-to-cup-us',
-    name: 'Convert Litres to US cups',
-    terms: 'l',
-  },
-  {
-    href: '/convert/litres-to-floz-us',
-    name: 'Convert Litres to US fluid ounces',
-    terms: 'floz l',
-  },
-  {
-    href: '/convert/litres-to-ft3',
-    name: 'Convert Litres to Cubic feet (l to ft³)',
-    terms: '',
-  },
-  {
-    href: '/convert/litres-to-gal-us',
-    name: 'Convert Litres to US gallons',
-    terms: 'gal l',
-  },
-  {
-    href: '/convert/litres-to-m3',
-    name: 'Convert Litres to Cubic metres (l to m³)',
-    terms: '',
-  },
-  {
-    href: '/convert/litres-to-millilitres',
-    name: 'Convert Litres to Millilitres (l to ml)',
-    terms: '',
-  },
-  {
-    href: '/convert/litres-to-tbsp',
-    name: 'Convert Litres to US tablespoons (l to tbsp)',
-    terms: '',
-  },
-  {
-    href: '/convert/litres-to-tsp',
-    name: 'Convert Litres to US teaspoons (l to tsp)',
-    terms: '',
-  },
-  {
-    href: '/convert/m-s-to-ft-s',
-    name: 'Convert Metres per second to Feet per second',
-    terms: 'ft m s',
-  },
-  {
-    href: '/convert/m-s-to-km-h',
-    name: 'Convert Metres per second to Kilometres per hour',
-    terms: 'h km m s',
-  },
-  {
-    href: '/convert/m-s-to-knots',
-    name: 'Convert Metres per second to Knots (m/s to knot)',
-    terms: '',
-  },
-  {
-    href: '/convert/m-s-to-mph',
-    name: 'Convert Metres per second to Miles per hour',
-    terms: 'm mph s',
-  },
-  {
-    href: '/convert/m2-to-acres',
-    name: 'Convert Square metres to Acres (m² to acre)',
-    terms: '',
-  },
-  {
-    href: '/convert/m2-to-cm2',
-    name: 'Convert Square metres to Square centimetres',
-    terms: 'cm2 m2',
-  },
-  {
-    href: '/convert/m2-to-ft2',
-    name: 'Convert Square metres to Square feet (m² to ft²)',
-    terms: '',
-  },
-  {
-    href: '/convert/m2-to-hectares',
-    name: 'Convert Square metres to Hectares (m² to ha)',
-    terms: '',
-  },
-  {
-    href: '/convert/m2-to-in2',
-    name: 'Convert Square metres to Square inches',
-    terms: 'in2 m2',
-  },
-  {
-    href: '/convert/m2-to-km2',
-    name: 'Convert Square metres to Square kilometres',
-    terms: 'km2 m2',
-  },
-  {
-    href: '/convert/m2-to-mi2',
-    name: 'Convert Square metres to Square miles',
-    terms: 'm2 mi2',
-  },
-  {
-    href: '/convert/m3-to-cm3',
-    name: 'Convert Cubic metres to Cubic centimetres',
-    terms: 'cm3 m3',
-  },
-  {
-    href: '/convert/m3-to-cup-us',
-    name: 'Convert Cubic metres to US cups',
-    terms: 'm3',
-  },
-  {
-    href: '/convert/m3-to-floz-us',
-    name: 'Convert Cubic metres to US fluid ounces',
-    terms: 'floz m3',
-  },
-  {
-    href: '/convert/m3-to-ft3',
-    name: 'Convert Cubic metres to Cubic feet (m³ to ft³)',
-    terms: '',
-  },
-  {
-    href: '/convert/m3-to-gal-us',
-    name: 'Convert Cubic metres to US gallons',
-    terms: 'gal m3',
-  },
-  {
-    href: '/convert/m3-to-litres',
-    name: 'Convert Cubic metres to Litres (m³ to l)',
-    terms: '',
-  },
-  {
-    href: '/convert/m3-to-millilitres',
-    name: 'Convert Cubic metres to Millilitres (m³ to ml)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-asciidoc',
     name: 'Markdown to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-csv',
     name: 'Markdown to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-json',
     name: 'Markdown to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-latex',
     name: 'Markdown to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-rst',
     name: 'Markdown to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/markdown-to-sql',
     name: 'Markdown to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-tsv',
     name: 'Markdown to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-xml',
     name: 'Markdown to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/markdown-to-yaml',
     name: 'Markdown to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/mb-to-bytes',
-    name: 'Convert Megabytes (10⁶) to Bytes',
-    terms: 'b mb',
-  },
-  {
-    href: '/convert/mb-to-gb',
-    name: 'Convert Megabytes (10⁶) to Gigabytes (10⁹)',
-    terms: 'gb mb',
-  },
-  {
-    href: '/convert/mb-to-gib',
-    name: 'Convert Megabytes (10⁶) to Gibibytes (2³⁰)',
-    terms: 'gib mb',
-  },
-  {
-    href: '/convert/mb-to-kb',
-    name: 'Convert Megabytes (10⁶) to Kilobytes (10³)',
-    terms: 'kb mb',
-  },
-  {
-    href: '/convert/mb-to-kib',
-    name: 'Convert Megabytes (10⁶) to Kibibytes (2¹⁰)',
-    terms: 'kib mb',
-  },
-  {
-    href: '/convert/mb-to-mib',
-    name: 'Convert Megabytes (10⁶) to Mebibytes (2²⁰)',
-    terms: 'mb mib',
-  },
-  {
-    href: '/convert/megahertz-to-gigahertz',
-    name: 'Convert Megahertz to Gigahertz (MHz to GHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/megahertz-to-hertz',
-    name: 'Convert Megahertz to Hertz (MHz to Hz)',
-    terms: '',
-  },
-  {
-    href: '/convert/megahertz-to-kilohertz',
-    name: 'Convert Megahertz to Kilohertz (MHz to kHz)',
-    terms: '',
-  },
-  {
-    href: '/convert/megahertz-to-rpm',
-    name: 'Convert Megahertz to Revolutions per minute',
-    terms: 'mhz rpm',
+    terms: 'browser',
   },
   {
     href: '/convert/megapascals-to-atmospheres',
     name: 'Convert Megapascals to Atmospheres (MPa to atm)',
-    terms: '',
-  },
-  {
-    href: '/convert/megapascals-to-bar',
-    name: 'Convert Megapascals to Bar (MPa to bar)',
-    terms: '',
-  },
-  {
-    href: '/convert/megapascals-to-kilopascals',
-    name: 'Convert Megapascals to Kilopascals (MPa to kPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/megapascals-to-pascals',
-    name: 'Convert Megapascals to Pascals (MPa to Pa)',
-    terms: '',
-  },
-  {
-    href: '/convert/megapascals-to-psi',
-    name: 'Convert Megapascals to Pounds per square inch',
-    terms: 'mpa psi',
-  },
-  {
-    href: '/convert/megawatts-to-btu-h',
-    name: 'Convert Megawatts to BTU per hour (MW to BTU/h)',
-    terms: '',
-  },
-  {
-    href: '/convert/megawatts-to-hp',
-    name: 'Convert Megawatts to Mechanical horsepower',
-    terms: 'hp mw',
-  },
-  {
-    href: '/convert/megawatts-to-kilowatts',
-    name: 'Convert Megawatts to Kilowatts (MW to kW)',
-    terms: '',
-  },
-  {
-    href: '/convert/megawatts-to-watts',
-    name: 'Convert Megawatts to Watts (MW to W)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-centimetres',
-    name: 'Convert Metres to Centimetres (m to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-feet',
-    name: 'Convert Metres to Feet (m to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-inches',
-    name: 'Convert Metres to Inches (m to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-kilometres',
-    name: 'Convert Metres to Kilometres (m to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-miles',
-    name: 'Convert Metres to Miles (m to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-millimetres',
-    name: 'Convert Metres to Millimetres (m to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-nmi',
-    name: 'Convert Metres to Nautical miles (m to nmi)',
-    terms: '',
-  },
-  {
-    href: '/convert/metres-to-yards',
-    name: 'Convert Metres to Yards (m to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/mi2-to-acres',
-    name: 'Convert Square miles to Acres (mi² to acre)',
-    terms: '',
-  },
-  {
-    href: '/convert/mi2-to-cm2',
-    name: 'Convert Square miles to Square centimetres',
-    terms: 'cm2 mi2',
-  },
-  {
-    href: '/convert/mi2-to-ft2',
-    name: 'Convert Square miles to Square feet (mi² to ft²)',
-    terms: '',
-  },
-  {
-    href: '/convert/mi2-to-hectares',
-    name: 'Convert Square miles to Hectares (mi² to ha)',
-    terms: '',
-  },
-  {
-    href: '/convert/mi2-to-in2',
-    name: 'Convert Square miles to Square inches',
-    terms: 'in2 mi2',
-  },
-  {
-    href: '/convert/mi2-to-km2',
-    name: 'Convert Square miles to Square kilometres',
-    terms: 'km2 mi2',
-  },
-  {
-    href: '/convert/mi2-to-m2',
-    name: 'Convert Square miles to Square metres',
-    terms: 'm2 mi2',
-  },
-  {
-    href: '/convert/mib-to-bytes',
-    name: 'Convert Mebibytes (2²⁰) to Bytes',
-    terms: 'b mib',
+    terms: 'browser',
   },
   {
     href: '/convert/mib-to-gb',
     name: 'Convert Mebibytes (2²⁰) to Gigabytes (10⁹)',
-    terms: 'gb mib',
-  },
-  {
-    href: '/convert/mib-to-gib',
-    name: 'Convert Mebibytes (2²⁰) to Gibibytes (2³⁰)',
-    terms: 'gib mib',
-  },
-  {
-    href: '/convert/mib-to-kb',
-    name: 'Convert Mebibytes (2²⁰) to Kilobytes (10³)',
-    terms: 'kb mib',
-  },
-  {
-    href: '/convert/mib-to-kib',
-    name: 'Convert Mebibytes (2²⁰) to Kibibytes (2¹⁰)',
-    terms: 'kib mib',
-  },
-  {
-    href: '/convert/mib-to-mb',
-    name: 'Convert Mebibytes (2²⁰) to Megabytes (10⁶)',
-    terms: 'mb mib',
-  },
-  {
-    href: '/convert/miles-to-centimetres',
-    name: 'Convert Miles to Centimetres (mi to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-feet',
-    name: 'Convert Miles to Feet (mi to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-inches',
-    name: 'Convert Miles to Inches (mi to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-kilometres',
-    name: 'Convert Miles to Kilometres (mi to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-metres',
-    name: 'Convert Miles to Metres (mi to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-millimetres',
-    name: 'Convert Miles to Millimetres (mi to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-nmi',
-    name: 'Convert Miles to Nautical miles (mi to nmi)',
-    terms: '',
-  },
-  {
-    href: '/convert/miles-to-yards',
-    name: 'Convert Miles to Yards (mi to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/milligrams-to-grams',
-    name: 'Convert Milligrams to Grams (mg to g)',
-    terms: '',
-  },
-  {
-    href: '/convert/milligrams-to-kilograms',
-    name: 'Convert Milligrams to Kilograms (mg to kg)',
-    terms: '',
-  },
-  {
-    href: '/convert/milligrams-to-ounces',
-    name: 'Convert Milligrams to Ounces (mg to oz)',
-    terms: '',
-  },
-  {
-    href: '/convert/milligrams-to-pounds',
-    name: 'Convert Milligrams to Pounds (mg to lb)',
-    terms: '',
-  },
-  {
-    href: '/convert/milligrams-to-stone',
-    name: 'Convert Milligrams to Stone (mg to stone)',
-    terms: '',
-  },
-  {
-    href: '/convert/milligrams-to-tonne',
-    name: 'Convert Milligrams to Metric tonnes',
-    terms: 'mg',
-  },
-  {
-    href: '/convert/millilitres-to-cm3',
-    name: 'Convert Millilitres to Cubic centimetres',
-    terms: 'cm3 ml',
-  },
-  {
-    href: '/convert/millilitres-to-cup-us',
-    name: 'Convert Millilitres to US cups',
-    terms: 'ml',
-  },
-  {
-    href: '/convert/millilitres-to-floz-us',
-    name: 'Convert Millilitres to US fluid ounces',
-    terms: 'floz ml',
-  },
-  {
-    href: '/convert/millilitres-to-ft3',
-    name: 'Convert Millilitres to Cubic feet (ml to ft³)',
-    terms: '',
-  },
-  {
-    href: '/convert/millilitres-to-gal-us',
-    name: 'Convert Millilitres to US gallons',
-    terms: 'gal ml',
-  },
-  {
-    href: '/convert/millilitres-to-litres',
-    name: 'Convert Millilitres to Litres (ml to l)',
-    terms: '',
-  },
-  {
-    href: '/convert/millilitres-to-m3',
-    name: 'Convert Millilitres to Cubic metres (ml to m³)',
-    terms: '',
-  },
-  {
-    href: '/convert/millilitres-to-tbsp',
-    name: 'Convert Millilitres to US tablespoons',
-    terms: 'ml tbsp',
-  },
-  {
-    href: '/convert/millilitres-to-tsp',
-    name: 'Convert Millilitres to US teaspoons (ml to tsp)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-centimetres',
-    name: 'Convert Millimetres to Centimetres (mm to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-feet',
-    name: 'Convert Millimetres to Feet (mm to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-inches',
-    name: 'Convert Millimetres to Inches (mm to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-kilometres',
-    name: 'Convert Millimetres to Kilometres (mm to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-metres',
-    name: 'Convert Millimetres to Metres (mm to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-miles',
-    name: 'Convert Millimetres to Miles (mm to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/millimetres-to-nmi',
-    name: 'Convert Millimetres to Nautical miles',
-    terms: 'mm nmi',
-  },
-  {
-    href: '/convert/millimetres-to-yards',
-    name: 'Convert Millimetres to Yards (mm to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/milliseconds-to-days',
-    name: 'Convert Milliseconds to Days (ms to day)',
-    terms: '',
-  },
-  {
-    href: '/convert/milliseconds-to-hours',
-    name: 'Convert Milliseconds to Hours (ms to h)',
-    terms: '',
-  },
-  {
-    href: '/convert/milliseconds-to-minutes',
-    name: 'Convert Milliseconds to Minutes (ms to min)',
-    terms: '',
-  },
-  {
-    href: '/convert/milliseconds-to-seconds',
-    name: 'Convert Milliseconds to Seconds (ms to s)',
-    terms: '',
-  },
-  {
-    href: '/convert/milliseconds-to-weeks',
-    name: 'Convert Milliseconds to Weeks (ms to week)',
-    terms: '',
-  },
-  {
-    href: '/convert/minutes-to-days',
-    name: 'Convert Minutes to Days (min to day)',
-    terms: '',
-  },
-  {
-    href: '/convert/minutes-to-hours',
-    name: 'Convert Minutes to Hours (min to h)',
-    terms: '',
-  },
-  {
-    href: '/convert/minutes-to-milliseconds',
-    name: 'Convert Minutes to Milliseconds (min to ms)',
-    terms: '',
-  },
-  {
-    href: '/convert/minutes-to-seconds',
-    name: 'Convert Minutes to Seconds (min to s)',
-    terms: '',
-  },
-  {
-    href: '/convert/minutes-to-weeks',
-    name: 'Convert Minutes to Weeks (min to week)',
-    terms: '',
-  },
-  {
-    href: '/convert/mpg-uk-to-l100km',
-    name: 'Convert Imperial MPG to L/100 km',
-    terms: 'l100km uk',
-  },
-  {
-    href: '/convert/mpg-uk-to-mpg-us',
-    name: 'Convert Imperial MPG to US MPG',
-    terms: 'uk',
-  },
-  {
-    href: '/convert/mpg-us-to-l100km',
-    name: 'Convert US MPG to L/100 km',
-    terms: 'l100km',
-  },
-  {
-    href: '/convert/mpg-us-to-mpg-uk',
-    name: 'Convert US MPG to Imperial MPG',
-    terms: 'uk',
-  },
-  {
-    href: '/convert/mph-to-ft-s',
-    name: 'Convert Miles per hour to Feet per second',
-    terms: 'ft mph s',
-  },
-  {
-    href: '/convert/mph-to-km-h',
-    name: 'Convert Miles per hour to Kilometres per hour',
-    terms: 'h km mph',
-  },
-  {
-    href: '/convert/mph-to-knots',
-    name: 'Convert Miles per hour to Knots (mph to knot)',
-    terms: '',
-  },
-  {
-    href: '/convert/mph-to-m-s',
-    name: 'Convert Miles per hour to Metres per second',
-    terms: 'm mph s',
-  },
-  {
-    href: '/convert/newton-centimetres-to-kgf-m',
-    name: 'Convert Newton-centimetres to Kilogram-force metres',
-    terms: 'cm kgf kilogramforce m n newtoncentimetre',
-  },
-  {
-    href: '/convert/newton-centimetres-to-lbf-ft',
-    name: 'Convert Newton-centimetres to Pound-force feet',
-    terms: 'cm ft lbf n newtoncentimetre poundforce',
-  },
-  {
-    href: '/convert/newton-centimetres-to-lbf-in',
-    name: 'Convert Newton-centimetres to Pound-force inches',
-    terms: 'cm lbf n newtoncentimetre poundforce',
-  },
-  {
-    href: '/convert/newton-centimetres-to-newton-metres',
-    name: 'Convert Newton-centimetres to Newton-metres',
-    terms: 'cm m n newtoncentimetre newtonmetre',
-  },
-  {
-    href: '/convert/newton-metres-to-kgf-m',
-    name: 'Convert Newton-metres to Kilogram-force metres',
-    terms: 'kgf kilogramforce m n newtonmetre',
-  },
-  {
-    href: '/convert/newton-metres-to-lbf-ft',
-    name: 'Convert Newton-metres to Pound-force feet',
-    terms: 'ft lbf m n newtonmetre poundforce',
-  },
-  {
-    href: '/convert/newton-metres-to-lbf-in',
-    name: 'Convert Newton-metres to Pound-force inches',
-    terms: 'lbf m n newtonmetre poundforce',
-  },
-  {
-    href: '/convert/newton-metres-to-newton-centimetres',
-    name: 'Convert Newton-metres to Newton-centimetres',
-    terms: 'cm m n newtoncentimetre newtonmetre',
-  },
-  {
-    href: '/convert/newtons-to-dynes',
-    name: 'Convert Newtons to Dynes (N to dyn)',
-    terms: '',
-  },
-  {
-    href: '/convert/newtons-to-kilogram-force',
-    name: 'Convert Newtons to Kilogram-force (N to kgf)',
-    terms: 'kilogramforce',
-  },
-  {
-    href: '/convert/newtons-to-kilonewtons',
-    name: 'Convert Newtons to Kilonewtons (N to kN)',
-    terms: '',
-  },
-  {
-    href: '/convert/newtons-to-pound-force',
-    name: 'Convert Newtons to Pound-force (N to lbf)',
-    terms: 'poundforce',
-  },
-  {
-    href: '/convert/nmi-to-centimetres',
-    name: 'Convert Nautical miles to Centimetres',
-    terms: 'cm nmi',
-  },
-  {
-    href: '/convert/nmi-to-feet',
-    name: 'Convert Nautical miles to Feet (nmi to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/nmi-to-inches',
-    name: 'Convert Nautical miles to Inches (nmi to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/nmi-to-kilometres',
-    name: 'Convert Nautical miles to Kilometres (nmi to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/nmi-to-metres',
-    name: 'Convert Nautical miles to Metres (nmi to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/nmi-to-miles',
-    name: 'Convert Nautical miles to Miles (nmi to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/nmi-to-millimetres',
-    name: 'Convert Nautical miles to Millimetres',
-    terms: 'mm nmi',
-  },
-  {
-    href: '/convert/nmi-to-yards',
-    name: 'Convert Nautical miles to Yards (nmi to yd)',
-    terms: '',
-  },
-  {
-    href: '/convert/ounces-to-grams',
-    name: 'Convert Ounces to Grams (oz to g)',
-    terms: '',
-  },
-  {
-    href: '/convert/ounces-to-kilograms',
-    name: 'Convert Ounces to Kilograms (oz to kg)',
-    terms: '',
-  },
-  {
-    href: '/convert/ounces-to-milligrams',
-    name: 'Convert Ounces to Milligrams (oz to mg)',
-    terms: '',
-  },
-  {
-    href: '/convert/ounces-to-pounds',
-    name: 'Convert Ounces to Pounds (oz to lb)',
-    terms: '',
-  },
-  {
-    href: '/convert/ounces-to-stone',
-    name: 'Convert Ounces to Stone (oz to stone)',
-    terms: '',
-  },
-  {
-    href: '/convert/ounces-to-tonne',
-    name: 'Convert Ounces to Metric tonnes (oz to tonne)',
-    terms: '',
-  },
-  {
-    href: '/convert/pascals-to-atmospheres',
-    name: 'Convert Pascals to Atmospheres (Pa to atm)',
-    terms: '',
-  },
-  {
-    href: '/convert/pascals-to-bar',
-    name: 'Convert Pascals to Bar (Pa to bar)',
-    terms: '',
-  },
-  {
-    href: '/convert/pascals-to-kilopascals',
-    name: 'Convert Pascals to Kilopascals (Pa to kPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/pascals-to-megapascals',
-    name: 'Convert Pascals to Megapascals (Pa to MPa)',
-    terms: '',
-  },
-  {
-    href: '/convert/pascals-to-psi',
-    name: 'Convert Pascals to Pounds per square inch',
-    terms: 'pa psi',
+    terms: 'browser gb mib',
   },
   {
     href: '/convert/png-to-jpg',
     name: 'PNG to JPEG converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/png-to-webp',
     name: 'PNG to WebP converter',
-    terms: '',
-  },
-  {
-    href: '/convert/pound-force-to-dynes',
-    name: 'Convert Pound-force to Dynes (lbf to dyn)',
-    terms: 'poundforce',
-  },
-  {
-    href: '/convert/pound-force-to-kilogram-force',
-    name: 'Convert Pound-force to Kilogram-force',
-    terms: 'kgf kilogramforce lbf poundforce',
-  },
-  {
-    href: '/convert/pound-force-to-kilonewtons',
-    name: 'Convert Pound-force to Kilonewtons (lbf to kN)',
-    terms: 'poundforce',
-  },
-  {
-    href: '/convert/pound-force-to-newtons',
-    name: 'Convert Pound-force to Newtons (lbf to N)',
-    terms: 'poundforce',
-  },
-  {
-    href: '/convert/pounds-to-grams',
-    name: 'Convert Pounds to Grams (lb to g)',
-    terms: '',
-  },
-  {
-    href: '/convert/pounds-to-kilograms',
-    name: 'Convert Pounds to Kilograms (lb to kg)',
-    terms: '',
-  },
-  {
-    href: '/convert/pounds-to-milligrams',
-    name: 'Convert Pounds to Milligrams (lb to mg)',
-    terms: '',
-  },
-  {
-    href: '/convert/pounds-to-ounces',
-    name: 'Convert Pounds to Ounces (lb to oz)',
-    terms: '',
-  },
-  {
-    href: '/convert/pounds-to-stone',
-    name: 'Convert Pounds to Stone (lb to stone)',
-    terms: '',
-  },
-  {
-    href: '/convert/pounds-to-tonne',
-    name: 'Convert Pounds to Metric tonnes (lb to tonne)',
-    terms: '',
-  },
-  {
-    href: '/convert/psi-to-atmospheres',
-    name: 'Convert Pounds per square inch to Atmospheres',
-    terms: 'atm psi',
-  },
-  {
-    href: '/convert/psi-to-bar',
-    name: 'Convert Pounds per square inch to Bar',
-    terms: 'psi',
-  },
-  {
-    href: '/convert/psi-to-kilopascals',
-    name: 'Convert Pounds per square inch to Kilopascals',
-    terms: 'kpa psi',
-  },
-  {
-    href: '/convert/psi-to-megapascals',
-    name: 'Convert Pounds per square inch to Megapascals',
-    terms: 'mpa psi',
-  },
-  {
-    href: '/convert/psi-to-pascals',
-    name: 'Convert Pounds per square inch to Pascals',
-    terms: 'pa psi',
-  },
-  {
-    href: '/convert/radians-to-degrees',
-    name: 'Convert Radians to Degrees (rad to deg)',
-    terms: '',
-  },
-  {
-    href: '/convert/radians-to-gradians',
-    name: 'Convert Radians to Gradians (rad to grad)',
-    terms: '',
-  },
-  {
-    href: '/convert/radians-to-turns',
-    name: 'Convert Radians to Turns (rad to turn)',
-    terms: '',
-  },
-  {
-    href: '/convert/rpm-to-gigahertz',
-    name: 'Convert Revolutions per minute to Gigahertz',
-    terms: 'ghz rpm',
-  },
-  {
-    href: '/convert/rpm-to-hertz',
-    name: 'Convert Revolutions per minute to Hertz',
-    terms: 'hz rpm',
-  },
-  {
-    href: '/convert/rpm-to-kilohertz',
-    name: 'Convert Revolutions per minute to Kilohertz',
-    terms: 'khz rpm',
-  },
-  {
-    href: '/convert/rpm-to-megahertz',
-    name: 'Convert Revolutions per minute to Megahertz',
-    terms: 'mhz rpm',
+    terms: 'browser',
   },
   {
     href: '/convert/rst-to-asciidoc',
     name: 'reStructuredText to AsciiDoc converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-csv',
     name: 'reStructuredText to CSV converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-html',
     name: 'reStructuredText to HTML converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-json',
     name: 'reStructuredText to JSON converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-latex',
     name: 'reStructuredText to LaTeX converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-markdown',
     name: 'reStructuredText to Markdown converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-sql',
     name: 'reStructuredText to SQL converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-tsv',
     name: 'reStructuredText to TSV converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-xml',
     name: 'reStructuredText to XML converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/rst-to-yaml',
     name: 'reStructuredText to YAML converter',
-    terms: 'rst',
-  },
-  {
-    href: '/convert/seconds-to-days',
-    name: 'Convert Seconds to Days (s to day)',
-    terms: '',
-  },
-  {
-    href: '/convert/seconds-to-hours',
-    name: 'Convert Seconds to Hours (s to h)',
-    terms: '',
-  },
-  {
-    href: '/convert/seconds-to-milliseconds',
-    name: 'Convert Seconds to Milliseconds (s to ms)',
-    terms: '',
-  },
-  {
-    href: '/convert/seconds-to-minutes',
-    name: 'Convert Seconds to Minutes (s to min)',
-    terms: '',
-  },
-  {
-    href: '/convert/seconds-to-weeks',
-    name: 'Convert Seconds to Weeks (s to week)',
-    terms: '',
+    terms: 'browser rst',
   },
   {
     href: '/convert/sql-to-asciidoc',
     name: 'SQL to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-csv',
     name: 'SQL to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-html',
     name: 'SQL to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-json',
     name: 'SQL to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-latex',
     name: 'SQL to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-markdown',
     name: 'SQL to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-rst',
     name: 'SQL to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/sql-to-tsv',
     name: 'SQL to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-xml',
     name: 'SQL to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/sql-to-yaml',
     name: 'SQL to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/stone-to-grams',
-    name: 'Convert Stone to Grams (stone to g)',
-    terms: '',
-  },
-  {
-    href: '/convert/stone-to-kilograms',
-    name: 'Convert Stone to Kilograms (stone to kg)',
-    terms: '',
-  },
-  {
-    href: '/convert/stone-to-milligrams',
-    name: 'Convert Stone to Milligrams (stone to mg)',
-    terms: '',
-  },
-  {
-    href: '/convert/stone-to-ounces',
-    name: 'Convert Stone to Ounces (stone to oz)',
-    terms: '',
-  },
-  {
-    href: '/convert/stone-to-pounds',
-    name: 'Convert Stone to Pounds (stone to lb)',
-    terms: '',
-  },
-  {
-    href: '/convert/stone-to-tonne',
-    name: 'Convert Stone to Metric tonnes (stone to tonne)',
-    terms: '',
-  },
-  {
-    href: '/convert/tbsp-to-cup-us',
-    name: 'Convert US tablespoons to US cups',
-    terms: 'tbsp',
-  },
-  {
-    href: '/convert/tbsp-to-floz-us',
-    name: 'Convert US tablespoons to US fluid ounces',
-    terms: 'floz tbsp',
-  },
-  {
-    href: '/convert/tbsp-to-litres',
-    name: 'Convert US tablespoons to Litres (tbsp to l)',
-    terms: '',
-  },
-  {
-    href: '/convert/tbsp-to-millilitres',
-    name: 'Convert US tablespoons to Millilitres',
-    terms: 'ml tbsp',
-  },
-  {
-    href: '/convert/tbsp-to-tsp',
-    name: 'Convert US tablespoons to US teaspoons',
-    terms: 'tbsp tsp',
-  },
-  {
-    href: '/convert/tonne-to-grams',
-    name: 'Convert Metric tonnes to Grams (tonne to g)',
-    terms: '',
-  },
-  {
-    href: '/convert/tonne-to-kilograms',
-    name: 'Convert Metric tonnes to Kilograms (tonne to kg)',
-    terms: '',
-  },
-  {
-    href: '/convert/tonne-to-milligrams',
-    name: 'Convert Metric tonnes to Milligrams',
-    terms: 'mg',
-  },
-  {
-    href: '/convert/tonne-to-ounces',
-    name: 'Convert Metric tonnes to Ounces (tonne to oz)',
-    terms: '',
-  },
-  {
-    href: '/convert/tonne-to-pounds',
-    name: 'Convert Metric tonnes to Pounds (tonne to lb)',
-    terms: '',
-  },
-  {
-    href: '/convert/tonne-to-stone',
-    name: 'Convert Metric tonnes to Stone (tonne to stone)',
-    terms: '',
-  },
-  {
-    href: '/convert/tsp-to-cup-us',
-    name: 'Convert US teaspoons to US cups',
-    terms: 'tsp',
-  },
-  {
-    href: '/convert/tsp-to-floz-us',
-    name: 'Convert US teaspoons to US fluid ounces',
-    terms: 'floz tsp',
-  },
-  {
-    href: '/convert/tsp-to-litres',
-    name: 'Convert US teaspoons to Litres (tsp to l)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsp-to-millilitres',
     name: 'Convert US teaspoons to Millilitres (tsp to ml)',
-    terms: '',
-  },
-  {
-    href: '/convert/tsp-to-tbsp',
-    name: 'Convert US teaspoons to US tablespoons',
-    terms: 'tbsp tsp',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-asciidoc',
     name: 'TSV to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-html',
     name: 'TSV to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-json',
     name: 'TSV to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-latex',
     name: 'TSV to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-markdown',
     name: 'TSV to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-rst',
     name: 'TSV to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/tsv-to-sql',
     name: 'TSV to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-xml',
     name: 'TSV to XML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/tsv-to-yaml',
     name: 'TSV to YAML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/turns-to-degrees',
-    name: 'Convert Turns to Degrees (turn to deg)',
-    terms: '',
-  },
-  {
-    href: '/convert/turns-to-gradians',
-    name: 'Convert Turns to Gradians (turn to grad)',
-    terms: '',
-  },
-  {
-    href: '/convert/turns-to-radians',
-    name: 'Convert Turns to Radians (turn to rad)',
-    terms: '',
-  },
-  {
-    href: '/convert/watt-hours-to-btu',
-    name: 'Convert Watt-hours to BTU (IT)',
-    terms: 'watthour wh',
-  },
-  {
-    href: '/convert/watt-hours-to-calories',
-    name: 'Convert Watt-hours to Calories (Wh to cal)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/watt-hours-to-joules',
-    name: 'Convert Watt-hours to Joules (Wh to J)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/watt-hours-to-kilocalories',
-    name: 'Convert Watt-hours to Kilocalories (Wh to kcal)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/watt-hours-to-kilojoules',
-    name: 'Convert Watt-hours to Kilojoules (Wh to kJ)',
-    terms: 'watthour',
-  },
-  {
-    href: '/convert/watt-hours-to-kilowatt-hours',
-    name: 'Convert Watt-hours to Kilowatt-hours (Wh to kWh)',
-    terms: 'kilowatthour watthour',
-  },
-  {
-    href: '/convert/watts-to-btu-h',
-    name: 'Convert Watts to BTU per hour (W to BTU/h)',
-    terms: '',
-  },
-  {
-    href: '/convert/watts-to-hp',
-    name: 'Convert Watts to Mechanical horsepower (W to hp)',
-    terms: '',
-  },
-  {
-    href: '/convert/watts-to-kilowatts',
-    name: 'Convert Watts to Kilowatts (W to kW)',
-    terms: '',
-  },
-  {
-    href: '/convert/watts-to-megawatts',
-    name: 'Convert Watts to Megawatts (W to MW)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/webp-to-jpg',
     name: 'WebP to JPEG converter',
-    terms: 'jpg',
+    terms: 'browser jpg',
   },
   {
     href: '/convert/webp-to-png',
     name: 'WebP to PNG converter',
-    terms: '',
-  },
-  {
-    href: '/convert/weeks-to-days',
-    name: 'Convert Weeks to Days (week to day)',
-    terms: '',
-  },
-  {
-    href: '/convert/weeks-to-hours',
-    name: 'Convert Weeks to Hours (week to h)',
-    terms: '',
-  },
-  {
-    href: '/convert/weeks-to-milliseconds',
-    name: 'Convert Weeks to Milliseconds (week to ms)',
-    terms: '',
-  },
-  {
-    href: '/convert/weeks-to-minutes',
-    name: 'Convert Weeks to Minutes (week to min)',
-    terms: '',
-  },
-  {
-    href: '/convert/weeks-to-seconds',
-    name: 'Convert Weeks to Seconds (week to s)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-asciidoc',
     name: 'XML to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-csv',
     name: 'XML to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-html',
     name: 'XML to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-json',
     name: 'XML to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-latex',
     name: 'XML to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-markdown',
     name: 'XML to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-rst',
     name: 'XML to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/xml-to-sql',
     name: 'XML to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-tsv',
     name: 'XML to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/xml-to-yaml',
     name: 'XML to YAML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-asciidoc',
     name: 'YAML to AsciiDoc converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-csv',
     name: 'YAML to CSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-html',
     name: 'YAML to HTML converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-json',
     name: 'YAML to JSON converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-latex',
     name: 'YAML to LaTeX converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-markdown',
     name: 'YAML to Markdown converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-rst',
     name: 'YAML to reStructuredText converter',
-    terms: 'rst',
+    terms: 'browser rst',
   },
   {
     href: '/convert/yaml-to-sql',
     name: 'YAML to SQL converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-tsv',
     name: 'YAML to TSV converter',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/convert/yaml-to-xml',
     name: 'YAML to XML converter',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-centimetres',
-    name: 'Convert Yards to Centimetres (yd to cm)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-feet',
-    name: 'Convert Yards to Feet (yd to ft)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-inches',
-    name: 'Convert Yards to Inches (yd to in)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-kilometres',
-    name: 'Convert Yards to Kilometres (yd to km)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-metres',
-    name: 'Convert Yards to Metres (yd to m)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-miles',
-    name: 'Convert Yards to Miles (yd to mi)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-millimetres',
-    name: 'Convert Yards to Millimetres (yd to mm)',
-    terms: '',
-  },
-  {
-    href: '/convert/yards-to-nmi',
-    name: 'Convert Yards to Nautical miles (yd to nmi)',
-    terms: '',
+    terms: 'browser',
   },
   {
     href: '/creator/app-store-mockup-generator',
@@ -3665,7 +1160,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/data/csv-deduplicator',
     name: 'CSV deduplicator',
     terms:
-      'back chosen column deduplicated drop duplicate file free full key later no open paste pick remove repeated row selected tab table upload whole',
+      'back browser chosen column deduplicated drop duplicate file free full key later no open paste pick remove repeated row selected tab table upload whole',
     op: 'spreadsheet text text',
   },
   {
@@ -3702,7 +1197,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/data/csv-merger',
     name: 'CSV merger',
     terms:
-      'added append appended below both dataset exactly first header kept match once one order paste row same second stack two',
+      'added append appended below both browser dataset exactly first header kept match once one order paste row same second stack two',
     op: 'spreadsheet text text',
   },
   {
@@ -3835,7 +1330,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/data/random-row-selector',
     name: 'Random row selector',
     terms:
-      'back checking column come complete csv dataset draw every number one paste pasted picking randomnes rather record select spot spotchecking together value whole winner',
+      'back browser checking column come complete csv dataset draw every number one paste pasted picking randomnes rather record select spot spotchecking together value whole winner',
     op: 'spreadsheet text text',
   },
   {
@@ -4093,7 +1588,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/developer/checksum-calculator',
     name: 'Text checksum calculator',
     terms:
-      '256 384 512 8 api compare copy crypto digest hexadecimal lowercase paste pasted pick published read result run sha sha256 sha384 sha512 utf value web',
+      '256 384 512 8 api browser compare copy crypto digest hexadecimal lowercase paste pasted pick published read result run sha sha256 sha384 sha512 utf value web',
     op: 'developer-advanced text text',
   },
   {
@@ -4396,7 +1891,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/developer/nano-id-generator',
     name: 'Nano ID generator',
-    terms: 'cryptographic identifier random randomnes safe url urlsafe',
+    terms: 'browser cryptographic identifier random randomnes safe url urlsafe',
     op: 'developer-advanced none text',
   },
   {
@@ -4490,21 +1985,21 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/developer/sha-256-text',
     name: 'SHA-256 text hash',
     terms:
-      '64 64character 8 back cache character choice comparison copy crypto digest fingerprint git hexadecimal implementation integrity jwt key object one paste read sha256 usual utf web',
+      '64 64character 8 back browser cache character choice comparison copy crypto digest fingerprint git hexadecimal implementation integrity jwt key object one paste read sha256 usual utf web',
     op: 'developer-data text text',
   },
   {
     href: '/developer/sha-384-text',
     name: 'SHA-384 text hash',
     terms:
-      '2 512 8 96 96character back character copy crypto digest hexadecimal implementation longer paste read required sha2 sha384 spec truncated used utf value variant vendor web',
+      '2 512 8 96 96character back browser character copy crypto digest hexadecimal implementation longer paste read required sha2 sha384 spec truncated used utf value variant vendor web',
     op: 'developer-data text text',
   },
   {
     href: '/developer/sha-512-text',
     name: 'SHA-512 text hash',
     terms:
-      '128 128character 2 8 archival asked back character copy crypto digest family hexadecimal implementation longest often option paste read sha2 sha512 signing utf web widest workflow',
+      '128 128character 2 8 archival asked back browser character copy crypto digest family hexadecimal implementation longest often option paste read sha2 sha512 signing utf web widest workflow',
     op: 'developer-data text text',
   },
   {
@@ -4538,7 +2033,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/developer/sql-to-er-diagram',
     name: 'SQL Schema to Visual ER Diagram',
     terms:
-      'create dbml ddl erdiagram export interactive mermaid online plantuml server svg upload zero',
+      'browser create dbml ddl erdiagram export interactive mermaid online plantuml server svg upload zero',
     op: 'developer-advanced text text',
   },
   {
@@ -4614,7 +2109,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/developer/user-agent-parser',
     name: 'User-agent parser',
     terms:
-      'common engine family hint identify mobile operating operatingsystem system useragent',
+      'browser common engine family hint identify mobile operating operatingsystem system useragent',
     op: 'developer-advanced text text',
   },
   {
@@ -4673,7 +2168,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/developer/workbench?tool=url-normalizer',
     name: 'URL normalizer',
-    terms: 'apply parameter parse query sorting workbench',
+    terms: 'apply browser parameter parse query sorting workbench',
     op: 'developer-data text text',
   },
   {
@@ -4938,7 +2433,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/email/reader',
     name: 'Offline email reader',
     terms:
-      'archive attachment eml extract file header inspect mbox msg network open outlook tracking view zero',
+      'archive attachment browser eml extract file header inspect mbox msg network open outlook tracking view zero',
   },
   {
     href: '/file/archive',
@@ -4980,7 +2475,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/file/data-uri-file-maker',
     name: 'Data-URI file maker',
     terms:
-      '16 base64 copy css datauri encode filled fixture html kept media mib one paste prefix read result script selected straight test type',
+      '16 base64 browser copy css datauri encode filled fixture html kept media mib one paste prefix read result script selected straight test type',
     op: 'file-workbench file files',
   },
   {
@@ -5039,7 +2534,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/file/file-compressor',
     name: 'Gzip file compressor',
-    terms: 'api compres compression format one standard stream',
+    terms: 'api browser compres compression format one standard stream',
     op: 'file-workbench file files',
   },
   {
@@ -5059,7 +2554,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/file/file-extension-changer',
     name: 'File extension changer',
     terms:
-      'byte change converting copie downloaded encode never pick rather re relabel rename untouched whose wrong',
+      'browser byte change converting copie downloaded encode never pick rather re relabel rename untouched whose wrong',
     op: 'file-workbench files files',
   },
   {
@@ -5140,7 +2635,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/file/mime-type-detector',
     name: 'MIME-type detector',
     terms:
-      'browserreported byte common compare extension filename leading leadingbyte mimetype reported signature',
+      'browser browserreported byte common compare extension filename leading leadingbyte mimetype reported signature',
     op: 'file-workbench files files',
   },
   {
@@ -5385,7 +2880,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/finance/net-worth-calculator',
     name: 'Net-worth calculator',
     terms:
-      'account amount anywhere asset back difference every itemised liabilitie line list listed name networth no nothing one owe per read sent subtract subtracted tab total two',
+      'account amount anywhere asset back browser difference every itemised liabilitie line list listed name networth no nothing one owe per read sent subtract subtracted tab total two',
     op: 'finance-business text text',
   },
   {
@@ -5450,7 +2945,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/finance/roi-calculator',
     name: 'ROI calculator',
     terms:
-      'back came cost enter gain money net percentage read relative return simple sold stated worked worth',
+      'back browser came cost enter gain money net percentage read relative return simple sold stated worked worth',
     op: 'finance-business none text',
   },
   {
@@ -5489,7 +2984,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/finance/simple-interest-calculator',
     name: 'Simple-interest calculator',
     terms:
-      'alone amount annual both compounded enter final multiply never plu principal prt rate read shown simpleinterest time total worked year',
+      'alone amount annual both browser compounded enter final multiply never plu principal prt rate read shown simpleinterest time total worked year',
     op: 'finance-business none text',
   },
   {
@@ -5541,7 +3036,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/image/background-remover',
     name: 'Remove Image Background',
     terms:
-      'clear colour cut itself model net never one photo picture plain run subject u2 u2net uploaded',
+      'browser clear colour cut itself model net never one photo picture plain run subject u2 u2net uploaded',
   },
   {
     href: '/image/editor',
@@ -5564,7 +3059,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/image/heic-to-png',
     name: 'HEIC to PNG',
     terms:
-      'compression convert decoded losslessly no photo picture round second uploading written',
+      'browser compression convert decoded losslessly no photo picture round second uploading written',
   },
   {
     href: '/image/image-brightness',
@@ -5584,7 +3079,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/image/image-flipper',
     name: 'Image flipper',
-    terms: 'flip horizontally',
+    terms: 'browser flip horizontally',
   },
   {
     href: '/image/image-grayscale',
@@ -5836,14 +3331,14 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/angle-converter',
     name: 'Angle converter',
     terms:
-      'between cad code converted degree drawing enter exact expect factor figure gradian pick radian rather read shown trigonometry two unit',
+      'between cad code converted deg degree drawing enter exact expect factor figure grad gradian pick rad radian rather read shown trigonometry two unit',
     op: 'math none text',
   },
   {
     href: '/math/area-converter',
     name: 'Area converter',
     terms:
-      'acre between centimetre common feet floor hectare imperial inche kilometre land metre metric mile millimetre one plu square through tool',
+      'acre between centimetre cm2 common feet floor ft2 hectare imperial in2 inche kilometre km2 land m2 metre metric mi2 mile millimetre one plu square through tool',
     op: 'math none text',
   },
   {
@@ -5895,7 +3390,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/math/cooking-unit-converter',
     name: 'Cooking-unit converter',
-    terms: 'assuming cookingunit density ingredient measure volume volumeonly',
+    terms:
+      'assuming cookingunit cup density floz ingredient l measure ml tbsp tsp us volume volumeonly',
     op: 'math none text',
   },
   {
@@ -5908,7 +3404,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/data-size-converter',
     name: 'Data-size converter',
     terms:
-      '000 024 1 against between binary byte confused datasize decimal file gibibyte gigabyte kibibyte kilobyte mebibyte megabyte never power ten two unit',
+      '000 024 1 against b between binary byte confused datasize decimal file gb gib gibibyte gigabyte kb kib kibibyte kilobyte mb mebibyte megabyte mib never power ten two unit',
     op: 'math none text',
   },
   {
@@ -5928,14 +3424,14 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/distance-converter',
     name: 'Distance converter',
     terms:
-      'between centimetre dimension drawing feet imperial inche kilometre leg length metre metric mile millimetre nautical one tool travel yard',
+      'between centimetre cm dimension drawing feet ft imperial inche kilometre km leg length m metre metric mi mile millimetre mm nautical nmi one tool travel yard yd',
     op: 'math none text',
   },
   {
     href: '/math/energy-converter',
     name: 'Energy converter',
     terms:
-      'answer between bill btu calorie enter exact factor figure food heating hour joule kilocalorie kilojoule kilowatt kilowatthour label pick read shown two unit watt watthour',
+      'answer between bill btu cal calorie enter exact factor figure food heating hour j joule kcal kilocalorie kilojoule kilowatt kilowatthour kj kwh label pick read shown two unit watt watthour wh',
     op: 'math none text',
   },
   {
@@ -5949,7 +3445,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/force-converter',
     name: 'Force converter',
     terms:
-      'answer between common converted dyne exact factor homework kilogram kilogramforce kilonewton load newton physic pound poundforce rating spring unit value',
+      'answer between common converted dyn dyne exact factor homework kgf kilogram kilogramforce kilonewton kn lbf load n newton physic pound poundforce rating spring unit value',
     op: 'math none text',
   },
   {
@@ -5963,14 +3459,14 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/frequency-converter',
     name: 'Frequency converter',
     terms:
-      'band between clock common converted exact factor gigahertz hertz kilohertz megahertz minute motor per plu radio rating revolution scale speed',
+      'band between clock common converted exact factor ghz gigahertz hertz hz khz kilohertz megahertz mhz minute motor per plu radio rating revolution rpm scale speed',
     op: 'math none text',
   },
   {
     href: '/math/fuel-economy-converter',
     name: 'Fuel-economy converter',
     terms:
-      '100 answer between differ enter figure fueleconomy gallon handled imperial km l litre mpg per pick read reciprocal relationship same size two unit us',
+      '100 answer between differ enter figure fueleconomy gallon handled imperial km l l100km litre mpg per pick read reciprocal relationship same size two uk unit us',
     op: 'math none text',
   },
   {
@@ -5997,7 +3493,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/linear-equation-solver',
     name: 'Linear-equation solver',
     terms:
-      '0 ax b cannot coefficient enter has linearequation no read satisfie since single solve tab term two value worked x zero',
+      '0 ax b browser cannot coefficient enter has linearequation no read satisfie since single solve tab term two value worked x zero',
     op: 'math none text',
   },
   {
@@ -6023,7 +3519,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/mass-converter',
     name: 'Mass converter',
     terms:
-      'against amount between body exact factor gram imperial kilogram metric milligram ounce parcel pound recipe stone tab tonne unit weight',
+      'against amount between body browser exact factor g gram imperial kg kilogram lb metric mg milligram ounce oz parcel pound recipe stone tab tonne unit weight',
     op: 'math none text',
   },
   {
@@ -6081,13 +3577,13 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/power-converter',
     name: 'Power converter',
     terms:
-      'against appliance between btu common converted each engine exact factor heating horsepower hour kilowatt mechanical megawatt output per rating shown unit watt',
+      'against appliance between btu common converted each engine exact factor h heating horsepower hour hp kilowatt kw mechanical megawatt mw output per rating shown unit w watt',
     op: 'math none text',
   },
   {
     href: '/math/pressure-converter',
     name: 'Pressure converter',
-    terms: 'common engineering pascal unit',
+    terms: 'atm bar common engineering kpa mpa pa pascal psi unit',
     op: 'math none text',
   },
   {
@@ -6113,7 +3609,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/proportion-calculator',
     name: 'Proportion calculator',
     terms:
-      'b c distance down enter fourth know map missing mixing number ratio read recipe scaling solve tab term three useful value worked x',
+      'b browser c distance down enter fourth know map missing mixing number ratio read recipe scaling solve tab term three useful value worked x',
     op: 'math none text',
   },
   {
@@ -6127,21 +3623,21 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/random-number-generator',
     name: 'Random-number generator',
     terms:
-      '100 between both bound draw end high included inclusive integer low maximum minimum possible provide randomnes randomnumber range result set whole',
+      '100 between both bound browser draw end high included inclusive integer low maximum minimum possible provide randomnes randomnumber range result set whole',
     op: 'math none text',
   },
   {
     href: '/math/ratio-calculator',
     name: 'Ratio calculator',
     terms:
-      '12 18 2 3 aspect down drawing enter handy integer lowest mean mixe number read reduce same scale simplest simplifying such term two whole worked',
+      '12 18 2 3 aspect browser down drawing enter handy integer lowest mean mixe number read reduce same scale simplest simplifying such term two whole worked',
     op: 'math none text',
   },
   {
     href: '/math/rectangle-calculator',
     name: 'Rectangle calculator',
     terms:
-      'above area both corner cornertocorner diagonal enter height length must once perimeter read result tab three unit used width work worked zero',
+      'above area both browser corner cornertocorner diagonal enter height length must once perimeter read result tab three unit used width work worked zero',
     op: 'math none text',
   },
   {
@@ -6198,7 +3694,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/speed-converter',
     name: 'Speed converter',
     terms:
-      'between exact factor feet figure hour kilometre knot metre mile one per running second standard tool travel unit wind',
+      'between exact factor feet figure ft h hour kilometre km knot m metre mile mph one per running s second standard tool travel unit wind',
     op: 'math none text',
   },
   {
@@ -6224,21 +3720,21 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/temperature-converter',
     name: 'Temperature converter',
     terms:
-      'absolute applied below between celsiu converted each enter fahrenheit figure kelvin negative offset pick rather reading rejected scale two value zero',
+      'absolute applied below between c celsiu converted each enter f fahrenheit figure k kelvin negative offset pick rather reading rejected scale two value zero',
     op: 'math none text',
   },
   {
     href: '/math/time-unit-converter',
     name: 'Time-unit converter',
     terms:
-      'against between converted day duration each elapsed exact factor given hour millisecond minute run second span tab timeout timeunit week wrong',
+      'against between browser converted day duration each elapsed exact factor given h hour millisecond min minute ms run s second span tab timeout timeunit week wrong',
     op: 'math none text',
   },
   {
     href: '/math/torque-converter',
     name: 'Torque converter',
     terms:
-      'between centimetre common exact factor feet force inche kilogram kilogramforce metre newton newtoncentimetre newtonmetre pound poundforce spec tightening unit',
+      'between centimetre cm common exact factor feet force ft inche kgf kilogram kilogramforce lbf m metre n newton newtoncentimetre newtonmetre pound poundforce spec tightening unit',
     op: 'math none text',
   },
   {
@@ -6264,7 +3760,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/math/volume-converter',
     name: 'Volume converter',
     terms:
-      'between centimetre common cubic cup drink feet fluid gallon imperial liquid litre metre metric millilitre ounce pint quart tab tank us',
+      'between browser centimetre cm3 common cubic cup drink feet floz fluid ft3 gal gallon imperial l liquid litre m3 metre metric millilitre ml ounce pint quart tab tank us',
     op: 'math none text',
   },
   {
@@ -6334,7 +3830,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/pdf/form-filler',
     name: 'Fill PDF forms',
     terms:
-      'cannot changed complete edit field filler flatten interactive legal locally tax value widget',
+      'browser cannot changed complete edit field filler flatten interactive legal locally tax value widget',
   },
   {
     href: '/pdf/images-to-pdf',
@@ -6476,7 +3972,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/productivity/name-picker',
     name: 'Name picker',
-    terms: 'list local one pick randomnes',
+    terms: 'browser list local one pick randomnes',
     op: 'productivity text text',
   },
   {
@@ -6732,7 +4228,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/schema',
     name: 'Schema Architecture & Data Modeling Hub',
     terms:
-      'compile conversion convert database dbml ddl diagram dialect dictionary diff diffing django er erd erdiagram generate markdown mermaid migration model mysql orm plantuml postgresql prisma sql sqlalchemy sqlite',
+      'browser compile conversion convert database dbml ddl diagram dialect dictionary diff diffing django er erd erdiagram generate markdown mermaid migration model mysql orm plantuml postgresql prisma sql sqlalchemy sqlite',
   },
   {
     href: '/schema/data-dictionary',
@@ -7295,7 +4791,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/text/line-shuffler',
     name: 'Line shuffler',
     terms:
-      'back data drawing list mixing name new order paste prompt question quiz random randomize randomnes reordering row sample set test useful',
+      'back browser data drawing list mixing name new order paste prompt question quiz random randomize randomnes reordering row sample set test useful',
     op: 'text text text',
   },
   {
@@ -7309,7 +4805,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/text/lorem-ipsum-generator',
     name: 'Lorem ipsum generator',
     terms:
-      '1 20 anywhere copy each familiar fetched filler first five generated line local long opening paragraph placeholder rather sentence set tab text three',
+      '1 20 anywhere browser copy each familiar fetched filler first five generated line local long opening paragraph placeholder rather sentence set tab text three',
     op: 'text none text',
   },
   {
@@ -7328,7 +4824,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/text/markdown-to-pdf-doc',
     name: 'Markdown to print & PDF document formatter',
     terms:
-      'beautifully block code doc footer header heading html laid list no page paginated paper printable raw ready save style transform typeset upload',
+      'beautifully block browser code doc footer header heading html laid list no page paginated paper printable raw ready save style transform typeset upload',
     op: 'writing text text',
   },
   {
@@ -7730,7 +5226,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/web/favicon-html-generator',
     name: 'Favicon & app icon HTML snippet generator',
     terms:
-      'apple block classic configuration covering device every full link manifest meta mobile modern production productionready ready site tag touch web',
+      'apple block browser classic configuration covering device every full link manifest meta mobile modern production productionready ready site tag touch web',
     op: 'web text text',
   },
   {
@@ -7760,7 +5256,7 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/web/html-head-inspector',
     name: 'HTML head inspector',
-    terms: 'element inventory link meta render supplied title',
+    terms: 'browser element inventory link meta render supplied title',
     op: 'web text text',
   },
   {

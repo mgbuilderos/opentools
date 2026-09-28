@@ -41,7 +41,9 @@ describe('title and description lengths', () => {
    */
   it('resolves every URL the sitemap offers', () => {
     expect(unresolved).toEqual([]);
-    expect(pages.length).toBeGreaterThan(1300);
+    // 1,531 sitemap URLs before the 2026-09-28 unit-pair fold, 1,030 after it.
+    // See the note on the same floor in indexability-sweep.test.ts.
+    expect(pages.length).toBeGreaterThan(1020);
   });
 
   it('gives every page a title a result can show in full', () => {

@@ -122,8 +122,20 @@ describe('what this site cannot do', () => {
   /** A ratio fixed by definition is not a rate somebody has to publish. */
   it('separates a currency from a unit', () => {
     expect(plan('convert 100 usd to inr').gaps[0]?.kind).toBe('no-network');
-    expect(plan('convert 5 kg to pounds').steps[0]?.href).toContain(
-      '/convert/',
+    /*
+     * `/math/mass-converter` and not `/convert/kilograms-to-pounds`: that pair
+     * was folded on 2026-09-28 and its address is now a 301.
+     *
+     * Named exactly, rather than asserting the href merely contains
+     * `/math/`, because the first attempt at the fold answered this query with
+     * `/math/force-converter` — kilograms-force and pounds-force are units on
+     * that converter too, and with `kg` no longer attached to a page the
+     * planner reached for the wrong one. A test that checked only the prefix
+     * would have passed while sending everyone asking about weight to a
+     * converter for force.
+     */
+    expect(plan('convert 5 kg to pounds').steps[0]?.href).toBe(
+      '/math/mass-converter',
     );
   });
 

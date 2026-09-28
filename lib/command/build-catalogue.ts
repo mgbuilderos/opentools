@@ -23,6 +23,7 @@ import {
   shadowedToolOperations,
 } from '../seo/live-tools';
 import { CONVERSION_PAIRS } from '../seo/conversion-pairs';
+import { publishedUnitPairs } from '../seo/unit-pair-consolidation';
 import { toolPageDepth } from '../seo/tool-page-depth';
 import { toolSearchCopy } from '../seo/tool-search-copy';
 import { publicTools } from '../tools/catalog';
@@ -195,12 +196,32 @@ function drafts(): Draft[] {
     reach. Both keys of all 512 unit pairs are added here, which is what makes
     "kg to lb", "cm to inch" and "ml to oz" work at all.
   */
-  const unitKeys = new Map<string, readonly string[]>(
-    CONVERSION_PAIRS.map((pair) => [
-      `/convert/${pair.id}`,
+  /*
+   * After the 2026-09-28 unit-pair fold, 501 of these pairs no longer have a
+   * page — `/convert/kilograms-to-pounds` is a 301 to `/math/mass-converter`.
+   * Their unit keys must move with them, or the words they carried vanish from
+   * the index: measured before this was written, "convert 5 kg to pounds"
+   * matched `/math/force-converter`, because `kg` was no longer attached to
+   * anything and the planner fell through to a unit named on the force
+   * converter. A folded pair therefore lends its keys to the converter that
+   * now answers it, and the keys of every pair in a system accumulate on that
+   * one page, which is what a converter is.
+   */
+  const unitKeys = new Map<string, string[]>();
+  const lendKeys = (href: string, keys: readonly string[]) => {
+    const existing = unitKeys.get(href);
+    if (existing) for (const key of keys) existing.push(key);
+    else unitKeys.set(href, [...keys]);
+  };
+  const published = new Set(publishedUnitPairs().map((pair) => pair.id));
+  for (const pair of CONVERSION_PAIRS) {
+    lendKeys(
+      published.has(pair.id)
+        ? `/convert/${pair.id}`
+        : `/math/${pair.operationId}`,
       [pair.from, pair.to],
-    ]),
-  );
+    );
+  }
 
   // Every `[tool]` page: 1,280 of the live routes, including all 631 under
   // `/convert`.
