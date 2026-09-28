@@ -4,14 +4,22 @@ import {
   CheckCircle2,
   LockKeyhole,
   SendHorizontal,
+  TriangleAlert,
   Upload,
 } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useToolUi } from '@/components/locale-edition-provider';
-import { optimizeImage } from '@/lib/tools/image-optimize';
+import { loadImage, optimizeImage } from '@/lib/tools/image-optimize';
 import { extensionForRasterType, type RasterFormat } from '@/lib/tools/image';
+import {
+  unmetReasons,
+  verifyImageBytes,
+  type VerifiableFormat,
+  type Verification,
+  type VerifyTargets,
+} from '@/lib/tools/image-verify';
 import { inputAccepts } from '@/lib/file-handoff';
 import {
   askSettingLines,
@@ -84,7 +92,38 @@ type Result = {
   readonly height: number;
   readonly format: RasterFormat;
   readonly url: string;
+  /**
+   * What the finished bytes actually are, judged against what was promised.
+   *
+   * Read from the file after it was written, by `lib/tools/image-verify.ts` —
+   * not restated from what the encoder was asked to do. A property it cannot
+   * inspect lands in `unprovable` and makes `pass` false, so "verified" here
+   * never means "we did not check".
+   */
+  readonly verification: Verification;
 };
+
+/**
+ * The promises this request made, as the verifier's vocabulary.
+ *
+ * Only what was actually asked for. A requirement that never mentioned
+ * metadata produces no metadata check rather than a vacuous pass — that is the
+ * verifier's own rule and this must not undermine it by defaulting fields in.
+ *
+ * `format` is what was REQUESTED, deliberately, not what came out. WebKit
+ * answers a WebP request with a PNG, and a target built from the actual output
+ * would mark that a success. Built from the promise, it fails — which is the
+ * truth, and the page says so.
+ */
+function targetsFor(values: RecipeValues): VerifyTargets {
+  const targets: VerifyTargets = {};
+  if (typeof values.format === 'string') {
+    targets.format = `image/${values.format}` as VerifiableFormat;
+  }
+  if (typeof values.width === 'number') targets.maxWidth = values.width;
+  if (typeof values.height === 'number') targets.maxHeight = values.height;
+  return targets;
+}
 
 type Stage =
   | { kind: 'waiting' }
@@ -218,12 +257,43 @@ export function FixMyUploadSurface({ request }: { request: AskRequest }) {
         quality: typeof values.quality === 'number' ? values.quality : 82,
       });
       const named = `corrected.${extensionForRasterType(optimized.format)}`;
+      const file = new File([optimized.blob], named, {
+        type: optimized.format,
+      });
+
+      /*
+       * Read the finished bytes back and judge them against what was promised.
+       *
+       * The decoded size is taken from a SEPARATE `<img>` decode rather than
+       * from the encoder's own report, because the verifier treats a header
+       * that disagrees with an independent decode as a failure rather than a
+       * tie-break — and `createImageBitmap` is not usable here: it refuses
+       * ordinary PNGs in the test browser.
+       */
+      const verifyUrl = URL.createObjectURL(file);
+      let decoded: { width: number; height: number } | null = null;
+      try {
+        const image = await loadImage(verifyUrl, t);
+        decoded = { width: image.naturalWidth, height: image.naturalHeight };
+      } catch {
+        // A decode that does not answer leaves `decodedSize` null, which the
+        // verifier treats as unprovable — never as a pass.
+      } finally {
+        URL.revokeObjectURL(verifyUrl);
+      }
+      const verification = verifyImageBytes(
+        new Uint8Array(await file.arrayBuffer()),
+        targetsFor(values),
+        decoded,
+      );
+
       const result: Result = {
-        file: new File([optimized.blob], named, { type: optimized.format }),
+        file,
         width: optimized.width,
         height: optimized.height,
         format: optimized.format,
         url: URL.createObjectURL(optimized.blob),
+        verification,
       };
       resultRef.current = result;
       setStage({ kind: 'done', result });
@@ -391,9 +461,44 @@ export function FixMyUploadSurface({ request }: { request: AskRequest }) {
       {stage.kind === 'done' ? (
         <section className="rounded-2xl border bg-card p-4 sm:p-5">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
-            <CheckCircle2 aria-hidden="true" className="size-4" />
-            Your corrected {request.subjectNoun}
+            {stage.result.verification.pass ? (
+              <CheckCircle2 aria-hidden="true" className="size-4" />
+            ) : (
+              <TriangleAlert aria-hidden="true" className="size-4" />
+            )}
+            {stage.result.verification.pass
+              ? `Your corrected ${request.subjectNoun}, checked`
+              : `Your ${request.subjectNoun} — but it does not meet the request`}
           </h2>
+
+          {/*
+            The verdict comes from reading the finished bytes, not from what the
+            encoder was asked to do. When something could not be inspected at
+            all it lands in `unprovable` and the result is NOT a pass — so this
+            never says "checked" about a property nobody looked at.
+          */}
+          {stage.result.verification.pass ? (
+            <ul className="mt-2 grid gap-1 text-xs text-muted-foreground">
+              {stage.result.verification.checks.map((check) => (
+                <li key={check.id}>
+                  {check.label}: {check.actual}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <output className="mt-2 block rounded-xl border border-destructive/35 bg-destructive/5 p-3 text-xs leading-5">
+              <p className="font-semibold">Read back from the finished file:</p>
+              <ul className="mt-1 grid gap-1">
+                {unmetReasons(stage.result.verification).map((reason) => (
+                  <li key={reason}>{reason}</li>
+                ))}
+              </ul>
+              <p className="mt-2 text-muted-foreground">
+                You can still take the file — it is yours either way. It may not
+                be what the other site asked for.
+              </p>
+            </output>
+          )}
           <dl className="mt-3 grid gap-1 text-xs">
             <div className="flex justify-between gap-3">
               <dt className="text-muted-foreground">Format</dt>

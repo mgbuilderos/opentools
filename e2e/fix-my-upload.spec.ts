@@ -142,9 +142,11 @@ test.describe('Fix My Upload — the return channel', () => {
     const source = await testDetailedPng(popup, 1200, 900);
     await chooseInPopup(popup, source);
     await popup.getByRole('button', { name: 'Correct the file' }).click();
-    await expect(popup.getByText('Your corrected image')).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(popup.getByText(/Your corrected image, checked/u)).toBeVisible(
+      {
+        timeout: 60_000,
+      },
+    );
 
     // NOTHING HAS GONE BACK YET. The person has to choose, and until they do
     // the integrating page has seen only `ready`.
@@ -252,9 +254,11 @@ test.describe('Fix My Upload — adversarial', () => {
     const source = await testDetailedPng(popup, 600, 400);
     await chooseInPopup(popup, source);
     await popup.getByRole('button', { name: 'Correct the file' }).click();
-    await expect(popup.getByText('Your corrected image')).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(popup.getByText(/Your corrected image, checked/u)).toBeVisible(
+      {
+        timeout: 60_000,
+      },
+    );
     // The only button offered names the real origin, never the forged one.
     await expect(
       popup.getByRole('button', {
@@ -376,9 +380,11 @@ test.describe('Fix My Upload — adversarial', () => {
     const source = await testDetailedPng(popup, 600, 400);
     await chooseInPopup(popup, source);
     await popup.getByRole('button', { name: 'Correct the file' }).click();
-    await expect(popup.getByText('Your corrected image')).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(popup.getByText(/Your corrected image, checked/u)).toBeVisible(
+      {
+        timeout: 60_000,
+      },
+    );
     await popup
       .getByRole('button', {
         name: /^send it back to integrator\.localhost$/iu,
@@ -419,7 +425,7 @@ test.describe('Fix My Upload — without an integration', () => {
     const source = await testDetailedPng(page, 800, 600);
     await chooseInPopup(page, source);
     await page.getByRole('button', { name: 'Correct the file' }).click();
-    await expect(page.getByText('Your corrected image')).toBeVisible({
+    await expect(page.getByText(/Your corrected image, checked/u)).toBeVisible({
       timeout: 60_000,
     });
 
@@ -430,6 +436,64 @@ test.describe('Fix My Upload — without an integration', () => {
     const download = page.waitForEvent('download');
     await page.getByRole('link', { name: 'Download it' }).click();
     expect((await download).suggestedFilename()).toMatch(/\.jpe?g$/u);
+  });
+
+  /*
+   * THE VERIFIER EARNING ITS PLACE. WebKit answers a WebP request with a PNG
+   * rather than refusing, so on that engine a page that trusted the encoder
+   * would hand somebody a PNG and call it a verified WebP. `verifyImageBytes`
+   * reads the finished bytes against what was PROMISED, so it fails — and the
+   * page says what is wrong instead of claiming success.
+   *
+   * Asserted per engine rather than per browser name: the test asks the engine
+   * what it actually encodes and then requires the page to agree with it.
+   */
+  test('says the file does not meet the request when the bytes disagree', async ({
+    page,
+  }) => {
+    test.setTimeout(180_000);
+    await page.goto(
+      '/fix/image?v=1&format=webp&width=240&height=240&quality=80',
+    );
+
+    const produced = await page.evaluate(async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2;
+      canvas.height = 2;
+      const blob: Blob | null = await new Promise((resolve) => {
+        canvas.toBlob((value) => resolve(value), 'image/webp', 0.8);
+      });
+      return blob ? blob.type : null;
+    });
+    const substitutes = produced !== null && produced !== 'image/webp';
+
+    const source = await testDetailedPng(page, 600, 400);
+    await chooseInPopup(page, source);
+    await page.getByRole('button', { name: 'Correct the file' }).click();
+
+    if (substitutes) {
+      // The honest outcome: the container is not what was asked for, and the
+      // page reports it rather than showing a tick.
+      await expect(page.getByText(/does not meet the request/u)).toBeVisible({
+        timeout: 60_000,
+      });
+      await expect(
+        page.getByText(/Read back from the finished file/u),
+      ).toBeVisible();
+      // 'File type' is the verifier's own label for the container check —
+      // read from lib/tools/image-verify.ts rather than guessed at, after a
+      // first version of this assertion invented 'Container' and failed on a
+      // path that was otherwise working correctly.
+      await expect(page.getByText(/File type: needed/u)).toBeVisible();
+      // And the file is still theirs to take — it is their image either way.
+      await expect(
+        page.getByRole('link', { name: 'Download it' }),
+      ).toBeVisible();
+    } else {
+      await expect(
+        page.getByText(/Your corrected image, checked/u),
+      ).toBeVisible({ timeout: 60_000 });
+    }
   });
 
   test('is noindex, and the integration page is not', async ({ page }) => {
