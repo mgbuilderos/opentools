@@ -49,7 +49,11 @@ x-casaos:
   main: opentools
   author: mgbuilderos
   developer: mgbuilderos
-  category: Utilities
+  # One of the nine in their category-list.json, read from the live store on
+  # 2026-09-28: Media, Productivity, Home, Networking, AI, Finance, Social,
+  # Developer, Others. "Utilities" was not among them and would have been
+  # rejected -- a category this project invented rather than one they define.
+  category: Productivity
   icon: https://raw.githubusercontent.com/mgbuilderos/opentools/main/public/icon-512.png
   screenshot_link:
     - https://raw.githubusercontent.com/mgbuilderos/opentools/main/packaging/screenshots/1-home.png

@@ -34,6 +34,32 @@ awesome-selfhosted, and it is waiting on a calendar, not on work.
 
 ---
 
+## Checked against the live stores, 2026-09-28
+
+Both store repositories were cloned and read rather than taken from their prose,
+and Umbrel's own linter was run against our package. That found four things this
+file previously had wrong:
+
+| What | Was | Is |
+| :--- | :--- | :--- |
+| CasaOS category | `Utilities` | `Productivity` — their `category-list.json` defines nine, and `Utilities` is not one |
+| Umbrel gallery | `1.jpg`, `2.jpg` committed | `gallery: []`; their team hosts gallery images and screenshots go in the PR body |
+| Umbrel `submitter` | blank | the contributor name; only `submission` waits for the PR URL |
+| CasaOS assets | referenced from this repo | committed into `Apps/<AppName>/` in theirs, referenced by jsDelivr |
+
+`npm run lint:apps -- opentools --check-images` in a checkout of
+`getumbrel/umbrel-apps` now passes on our package for manifest shape, app ID,
+host-port conflicts, image pinning, public pullability, multi-arch support,
+compose wiring, app_proxy and persistence paths. The single remaining error is
+`submission`, which must be the pull request URL and therefore cannot be
+satisfied before the pull request exists.
+
+**Not verified:** the package has never been installed on a physical Umbrel
+device. Their skill has a testing section that needs real hardware. Say so in
+the PR rather than letting a reviewer assume otherwise.
+
+---
+
 ## The one you cannot submit yet, with a date
 
 **awesome-selfhosted — eligible 2027-01-18.**
@@ -160,11 +186,13 @@ pages:
 docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:0.1.0
 ```
 
-**The Umbrel gallery is the one thing that is not simply a path.** Its manifest
-lists `1.jpg` and `2.jpg`, which Umbrel serves from the app directory inside
-_their_ repository rather than from a URL. Copy the two files from
-`packaging/screenshots/` into the app directory of the pull request under those
-names.
+**Umbrel does not take these files at all.** Its manifest uses `gallery: []`
+for new packages: their team creates and hosts the store's gallery images, and
+their packaging skill says not to commit screenshots or icon assets for an
+official submission. Screenshots go in the pull request body for review. An
+earlier version of this paragraph said to copy them in as `1.jpg`/`2.jpg`,
+which was exactly wrong. CasaOS is the opposite and wants them committed, under
+the names in `Apps/<AppName>/`: `icon.png`, `thumbnail.png`, `screenshot-1.png`.
 
 ---
 

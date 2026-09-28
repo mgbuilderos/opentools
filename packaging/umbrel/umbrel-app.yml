@@ -47,14 +47,19 @@ dependencies: []
 repo: https://github.com/mgbuilderos/opentools
 support: https://github.com/mgbuilderos/opentools/issues
 port: 8796
-# Copied into the app directory of the umbrel-apps pull request from
-# packaging/screenshots/ in this repo; Umbrel serves them from beside the
-# manifest rather than from a URL.
-gallery:
-  - 1.jpg
-  - 2.jpg
+# Empty on purpose, and it stays empty until the Umbrel team says otherwise.
+# Their own packaging skill (.claude/skills/umbrel-package-app in
+# getumbrel/umbrel-apps, read 2026-09-28) says to use `gallery: []` for new
+# packages, because their team creates and hosts the store's gallery images:
+# "do not commit screenshots, gallery assets, or icon assets for official App
+# Store submissions". Screenshots go in the pull request body instead.
+gallery: []
 path: ""
 defaultUsername: ""
 defaultPassword: ""
-submitter: ""
+# The contributor name as it should appear in store metadata. `submission` is
+# the pull request URL, so it can only be set once the PR exists: open it, fill
+# this in, push again. An empty `submission` is the one error their linter
+# still reports on this package, and it cannot be fixed before submitting.
+submitter: mgbuilderos
 submission: ""
