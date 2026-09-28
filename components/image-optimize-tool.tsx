@@ -26,6 +26,7 @@ import {
   RecipeShareButton,
 } from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
+import { AskLinkOffer } from '@/components/ask-link-offer';
 import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
 import {
@@ -690,6 +691,24 @@ export function ImageOptimizeTool() {
                     height: maxHeight,
                   }}
                 />
+                {/*
+                  The other half of the share, offered only once a result
+                  exists. A setup link says "here is how I did it"; an ask link
+                  says "do this for me" — and the second only makes sense to
+                  somebody who has just seen the first one work. A link, so it
+                  can neither cover nor delay the image they came for.
+                */}
+                {result ? (
+                  <AskLinkOffer
+                    requestId="image"
+                    values={{
+                      format: format.split('/')[1]!,
+                      quality,
+                      width: maxWidth,
+                      height: maxHeight,
+                    }}
+                  />
+                ) : null}
               </div>
             </div>
           </section>

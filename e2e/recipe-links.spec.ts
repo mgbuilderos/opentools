@@ -97,6 +97,46 @@ async function copiedLink(page: Page) {
     .inputValue();
 }
 
+/**
+ * Type into the text converter and run it, surviving a slow script arrival.
+ *
+ * WHY THIS IS NOT A TIMEOUT BUMP. Every input on this site is server-rendered,
+ * so the textbox exists in the DOM before React has attached `onChange`. A
+ * `fill()` inside that window writes the value and the component never hears
+ * about it: the run button stays disabled, and the test then fails on a click
+ * that can never become actionable. Waiting longer cannot help, because there
+ * is no message still in flight — the event was already dispatched into
+ * nothing. That is the same race `e2e/upload.ts` documents for file inputs,
+ * one control type across.
+ *
+ * WHAT ACTUALLY TRIGGERS IT, measured 2026-09-27 rather than assumed. Both
+ * lanes first guessed CPU: pinning the renderer with CDP
+ * `Emulation.setCPUThrottlingRate` at 1x, 6x and 20x passed 9 runs out of 9, so
+ * that guess was wrong. Delaying the page's own `*.js` responses by 300 ms
+ * fails 100% of runs and 0 ms passes 100% — the window is script DELIVERY
+ * latency, which is why it surfaces when several suites or builds share a
+ * machine and not on a quiet one. Under ambient load it was one run in three;
+ * with the delay it is deterministic, which is what made a red-then-green proof
+ * possible at all.
+ *
+ * The repair is therefore to wait for the scripts to land and then retry the
+ * whole handshake, so a fill that lands early is repeated rather than lost.
+ * Proven: unfixed body FAILS and this one PASSES under an identical 300 ms
+ * delay, three sweeps out of three.
+ */
+async function typeAndConvert(page: Page, input: string, expected: string) {
+  await page.waitForLoadState('networkidle');
+  await expect(async () => {
+    await page.getByRole('textbox', { name: 'Text to convert' }).fill(input);
+    await page
+      .getByRole('button', { name: 'Convert text' })
+      .click({ timeout: 4_000 });
+    await expect(page.getByText(expected, { exact: true })).toBeVisible({
+      timeout: 4_000,
+    });
+  }).toPass({ timeout: 45_000 });
+}
+
 test.describe('Recipe links carry settings between people', () => {
   test('a shared link reaches the encoder, not just the controls', async ({
     page,
@@ -400,9 +440,10 @@ test.describe('the share loop closes from the relief moment', () => {
     // And nothing of the person's. The page is holding a file with this name
     // at the moment the link is made, which is what makes the check mean
     // something.
-    expect(link, 'a filename reached a link meant for a group chat').not.toContain(
-      'passport',
-    );
+    expect(
+      link,
+      'a filename reached a link meant for a group chat',
+    ).not.toContain('passport');
     expect(link).not.toContain('private');
     expect(link).not.toContain('.png');
 
@@ -440,8 +481,6 @@ test.describe('the share loop closes from the relief moment', () => {
     // and simply no link. Regressing this would break the support ask on most
     // of the site in order to add a share to three tools.
     await page.goto('/text/case-converter?mode=upper');
-    await page.getByRole('textbox', { name: 'Text to convert' }).fill('hello');
-    await page.getByRole('button', { name: 'Convert text' }).click();
-    await expect(page.getByText('HELLO', { exact: true })).toBeVisible();
+    await typeAndConvert(page, 'hello', 'HELLO');
   });
 });

@@ -365,11 +365,90 @@ export const TEXT_CASE_RECIPE: RecipeDefinition = {
   ],
 };
 
+/**
+ * Resize an image to fit an upload limit — `/image/exact-size`.
+ *
+ * WHY THIS ONE ARRIVED LATE. The other three recipes were added for the share
+ * loop, where someone finishes a job and passes the setup on. This one is here
+ * for the ask link (`lib/tools/ask-link.ts`), where the constraint comes first
+ * and the file second: *"photograph 200 × 230 px, under 50 KB"* is how every
+ * exam and government portal in India states its requirement, and it is the
+ * single most-typed file spec there is.
+ *
+ * `maxkb` is the only field here that the recipient can read as a promise, so
+ * it is worth saying what it is: the tool searches quality and, if allowed,
+ * pixels for the largest file that fits, and reports honestly when nothing
+ * fits. The number in the link is the limit that was asked for, never a
+ * guarantee about the bytes that come out — `fitToSize` in
+ * `lib/tools/exact-size.ts` can return `over-max`, and the page says so.
+ *
+ * `minkb` and `dpi` are deliberately NOT here. They are on the page and they
+ * work, but an ask link is read by someone who did not choose the settings, and
+ * a floor they cannot satisfy or a DPI they cannot explain is a dead end rather
+ * than a request. They stay editable on arrival like every other control.
+ */
+export const IMAGE_EXACT_SIZE_RECIPE: RecipeDefinition = {
+  id: 'image-exact-size',
+  path: '/image/exact-size',
+  subjectNoun: 'image',
+  fields: [
+    {
+      kind: 'choice',
+      param: 'format',
+      label: 'Output format',
+      // Exactly the two options the page's Output format select offers, and
+      // recipe-link.test.ts holds the two lists together.
+      choices: [
+        { value: 'jpeg', label: 'JPEG' },
+        { value: 'png', label: 'PNG' },
+      ],
+    },
+    {
+      // Whole KB only. The page accepts a decimal, but a shared limit of
+      // `49.7 KB` is not a limit anybody was given.
+      kind: 'integer',
+      param: 'maxkb',
+      label: 'at most',
+      min: 1,
+      max: 1_000_000,
+      unit: 'KB',
+    },
+    {
+      kind: 'integer',
+      param: 'width',
+      label: 'width',
+      min: 1,
+      max: 12000,
+      unit: 'px',
+    },
+    {
+      kind: 'integer',
+      param: 'height',
+      label: 'height',
+      min: 1,
+      max: 12000,
+      unit: 'px',
+    },
+    {
+      kind: 'choice',
+      param: 'fit',
+      label: 'When the shape differs',
+      // The three radio values in components/image-exact-size-tool.tsx.
+      choices: [
+        { value: 'crop', label: 'cropped to fill' },
+        { value: 'pad', label: 'padded to fit' },
+        { value: 'stretch', label: 'stretched to fit' },
+      ],
+    },
+  ],
+};
+
 /** Every declared recipe, so tests can sweep the lot rather than a sample. */
 export const ALL_RECIPES: readonly RecipeDefinition[] = [
   IMAGE_OPTIMIZE_RECIPE,
   PDF_COMPRESS_RECIPE,
   TEXT_CASE_RECIPE,
+  IMAGE_EXACT_SIZE_RECIPE,
 ];
 
 /** Look up a declared recipe by id. An unknown id yields null rather than throwing. */

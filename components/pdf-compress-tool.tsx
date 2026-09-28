@@ -29,6 +29,7 @@ import {
   RecipeShareButton,
 } from '@/components/recipe-link-bar';
 import { Button } from '@/components/ui/button';
+import { AskLinkOffer } from '@/components/ask-link-offer';
 import { announceCompletion } from '@/lib/completion';
 import type { PracticeBrief } from '@/lib/practice-briefs';
 import { PORTAL_PRESETS, findPreset } from '@/lib/portal-presets';
@@ -896,6 +897,23 @@ export function PdfCompressTool({
                       metadata: removeMetadata,
                     }}
                   />
+                  {/*
+                    Offered once a receipt exists, which is the moment the
+                    compression finished. A link rather than a dialog: the file
+                    the visitor came for must stay the first thing they can
+                    reach.
+                  */}
+                  {receipt ? (
+                    <AskLinkOffer
+                      requestId="pdf"
+                      values={{
+                        recompress: recompressImages,
+                        quality: imageQuality,
+                        maxedge: String(maxImageDimension),
+                        metadata: removeMetadata,
+                      }}
+                    />
+                  ) : null}
                 </div>
 
                 {status === 'processing' && progress.total > 0 ? (
