@@ -129,7 +129,19 @@ describe('public/_headers lets Cloudflare answer without waking the Worker', () 
       // `max-age=86400, must-revalidate` is what these hashed names were
       // actually served until 2026-09-23. A name that cannot be reused has
       // nothing to re-check.
-      for (const pattern of ['/_next/static/*', '/ocr/*']) {
+      //
+      // The last three prefixes are not content-hashed names; they are fixed
+      // upstream filenames whose URLs carry a content version in the query
+      // string instead. `lib/immutable-assets.test.ts` is what keeps that
+      // version honest, and without it `immutable` here would pin a visitor to
+      // stale bytes for a year.
+      for (const pattern of [
+        '/_next/static/*',
+        '/ocr/*',
+        '/ort/*',
+        '/models/*',
+        '/wasm/*',
+      ]) {
         const value = cacheControl(pattern);
         expect(directive(value, 'immutable'), pattern).toBe('');
         expect(directive(value, 'must-revalidate'), pattern).toBeUndefined();

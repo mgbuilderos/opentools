@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 
+import { immutableAssetUrl } from '@/lib/immutable-assets';
 import type {
   HeicDecodeRequest,
   HeicDecodeResponse,
@@ -67,9 +68,11 @@ function loadDecoder(): Promise<LibheifDecoder> {
         imported) as unknown as LibheifFactory;
       const libheif = factory({
         // Point the glue at our own copy rather than letting it resolve a path
-        // next to the worker chunk, whose name hashes on every build.
+        // next to the worker chunk, whose name hashes on every build. The
+        // version makes that copy cacheable for a year — see
+        // `lib/immutable-assets.ts`.
         locateFile: (path: string) =>
-          path.endsWith('.wasm') ? HEIC_WASM_PATH : path,
+          path.endsWith('.wasm') ? immutableAssetUrl(HEIC_WASM_PATH) : path,
       });
       return new libheif.HeifDecoder();
     })().catch((error: unknown) => {
