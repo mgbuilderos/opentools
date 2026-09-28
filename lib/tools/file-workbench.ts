@@ -5,6 +5,14 @@ export interface LocalFileInput {
   size: number;
   lastModified: number;
   bytes: Uint8Array;
+  /**
+   * Set when `bytes` holds only the leading slice of a file that was never
+   * buffered whole — the streaming path an adapter takes for an operation that
+   * declares how many leading bytes it reads. `size` stays the real file size
+   * so metadata stays truthful, and the operation must not read past
+   * `bytes.length`.
+   */
+  bytesArePrefix?: boolean;
 }
 
 export interface GeneratedFile {
@@ -455,8 +463,13 @@ function validateFiles(
   let total = 0;
   for (const file of files) {
     // Integrity, not capacity: a declared size that disagrees with the bytes
-    // actually present means the read went wrong, whatever the size is.
-    if (file.size !== file.bytes.length)
+    // actually present means the read went wrong, whatever the size is. A
+    // declared prefix is the one case where fewer bytes than `size` is
+    // correct — it may still never hold more than the file it came from.
+    if (file.bytesArePrefix) {
+      if (file.bytes.length > file.size)
+        throw new Error(`${file.name} holds more bytes than it declares.`);
+    } else if (file.size !== file.bytes.length)
       throw new Error(
         `${file.name} byte length does not match its declared size.`,
       );

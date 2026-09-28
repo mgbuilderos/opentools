@@ -20,11 +20,41 @@ That count is generated evidence, not a promise about future operations.
 `import-boundary.test.ts` walks the kernel's source import graph and rejects
 React, Next, or application-page imports.
 
+## Streaming operations
+
+An operation that declares `streamable: true` is handed a `StreamingFileInput`
+per file instead of a buffered `LocalFileInput`. `executePipeline` builds those
+straight from the visitor's `File`, so the Blob is never read whole on the way
+in, and `chunkSizeBytes` states the largest buffer the implementation keeps.
+
+Seven file-workbench operations declare it today. They are not streaming
+codecs: they are the operations whose answer never needed the whole file. A
+signature check reads twelve bytes; a metadata listing reads none; both were
+allocating a two-gigabyte video to do it. `adapters/file-stream-prefixes.ts`
+records how many leading bytes each one reads, `adaptFileWorkbench` slices the
+Blob down to that, and the operation body is untouched.
+
+Declaring too few bytes would be a quietly wrong answer rather than a crash, so
+`adapters/file-adapter.test.ts` runs every listed operation twice — once over
+the prefix, once over the complete file — and fails unless the two outputs are
+identical. It also asserts that no read starts past zero or ends past the
+declared prefix, and that a zero-byte operation touches the Blob not at all.
+
+`LocalFileInput.bytesArePrefix` marks the resulting bounded view. Without it
+the workbench's own integrity check, which requires `bytes.length === size`,
+could not tell a deliberate prefix from a read that went wrong; with it, the
+strict check still runs on every buffered input and on any file short enough to
+arrive complete.
+
 ## Regenerating the manifest
 
 ```sh
 node lib/kernel/generate-manifest.mjs
 ```
+
+Follow it with `npm run format`: the generator emits `JSON.stringify` output,
+so without that step the committed file shows up as rewritten end to end rather
+than as the few descriptors that actually changed.
 
 The generator bundles the adapter index in a temporary directory, writes only
 descriptors to `manifest.generated.ts`, and deletes the temporary bundle. The

@@ -6987,7 +6987,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 64,
     notice:
       'A signature match is a hint, not proof that the entire file is valid or safe.',
   },
@@ -7004,7 +7005,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 64,
     notice:
       'Best-effort local detection only. Treat untrusted files as untrusted even when a type appears recognized.',
   },
@@ -7020,7 +7022,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 64,
   },
   {
     id: 'file-metadata-viewer',
@@ -7035,7 +7038,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 0,
     notice:
       'Displays picker/File API metadata only; it does not parse embedded EXIF, document, archive, audio, or video metadata.',
   },
@@ -7266,7 +7270,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 0,
   },
   {
     id: 'empty-file-finder',
@@ -7280,7 +7285,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 0,
   },
   {
     id: 'large-file-finder',
@@ -7302,7 +7308,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 0,
   },
   {
     id: 'binary-file-viewer',
