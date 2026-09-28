@@ -185,6 +185,36 @@ test.describe('Support page', () => {
     }
   });
 
+  /*
+    The buttons that take money have to be tappable on a phone.
+
+    Measured on the live site at 375x812 they were 275x36 — under Apple's 44pt
+    minimum touch target and under Google's 48dp. Nothing caught it because
+    every other check here reads text, not geometry, and at desktop width a
+    36px button is a perfectly comfortable mouse target. This is the only page
+    where a mis-tap costs the visitor money, so the floor is asserted where it
+    matters: at phone width, on the live layout, in pixels.
+  */
+  test('keeps the payment buttons tappable at 375x812', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/support');
+
+    const pay = page.locator('a[href*="buymeacoffee.com"]');
+    const count = await pay.count();
+    // Three tiers plus "Choose an amount". Asserted so an empty match cannot
+    // pass this test the way it once passed the label one.
+    expect(count).toBeGreaterThanOrEqual(4);
+
+    for (let index = 0; index < count; index += 1) {
+      const box = await pay.nth(index).boundingBox();
+      expect(box, `payment button ${index} has no box`).not.toBeNull();
+      expect(
+        box?.height ?? 0,
+        `payment button ${index} is ${box?.height}px tall`,
+      ).toBeGreaterThanOrEqual(44);
+    }
+  });
+
   test('renders without horizontal overflow at mobile 375x812', async ({
     page,
   }) => {
