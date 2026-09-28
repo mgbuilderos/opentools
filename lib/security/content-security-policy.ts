@@ -46,6 +46,27 @@ export const EMBED_PATH_PREFIX = '/embed/';
 export const EMBED_SOURCE = '/embed/:path+';
 
 /**
+ * Next.js `source` for the Fix My Upload working routes, which are the only
+ * routes on this site a cross-origin window may hold a handle to.
+ *
+ * `/fix/:path+` -- one or more segments -- so `/fix` itself, the page a site
+ * owner reads, is NOT matched and keeps `Cross-Origin-Opener-Policy:
+ * same-origin` with the rest of the site. Exactly the split `EMBED_SOURCE`
+ * makes for the same reason: the page that explains the integration is not part
+ * of the integration.
+ *
+ * See `decisions/ADR-020-fix-cross-origin-opener-policy.md` and
+ * `lib/security/fix-opener-policy.test.ts`, which fails the build if this
+ * relaxation ever widens beyond these routes or beyond this one header.
+ */
+export const FIX_SOURCE = '/fix/:path+';
+
+/** True only for a Fix My Upload working route, never for `/fix` itself. */
+export function isFixRoute(pathname: string) {
+  return /^\/fix\/.+/u.test(pathname);
+}
+
+/**
  * Next.js `source` for every other route. A negative lookahead rather than a
  * plain `/:path*` because `X-Frame-Options: DENY` has no "any origin" value to
  * override it with -- the only way to stop sending it on the embed routes is

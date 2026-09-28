@@ -5,6 +5,7 @@ import { CACHED_GUIDE_SLUGS } from './lib/seo/cached-guides';
 import {
   contentSecurityPolicy,
   EMBED_SOURCE,
+  FIX_SOURCE,
   LOCAL_MODEL_SOURCES,
   NON_EMBED_SOURCE,
 } from './lib/security/content-security-policy';
@@ -116,6 +117,30 @@ const nextConfig: NextConfig = {
               'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
           },
         ],
+      },
+      /*
+       * Fix My Upload's working routes, and the ONLY relaxation here is the
+       * opener policy. Every other directive above still applies to them:
+       * the same CSP with `frame-ancestors 'none'`, `connect-src 'none'`,
+       * COEP, CORP, `X-Frame-Options: DENY`, referrer and permissions policy.
+       * This entry names one key, so it can only change one thing.
+       *
+       * WHY. `Cross-Origin-Opener-Policy: same-origin` severs the browsing
+       * context group between a cross-origin opener and this site, in both
+       * directions, before any script runs -- measured, not assumed:
+       * `window.opener` is null in the popup and the opener's own handle
+       * reports `closed`. That makes it impossible for a site whose upload
+       * rejected a file to hand the visitor a link and receive the corrected
+       * file back through browser memory. The alternative route, an iframe, is
+       * closed by `frame-ancestors 'none'` and stays closed.
+       *
+       * Owner decision 2026-09-28. ADR-020, and
+       * `lib/security/fix-opener-policy.test.ts` fails the build if this ever
+       * widens past `/fix/<path>` or past this single header.
+       */
+      {
+        source: FIX_SOURCE,
+        headers: [{ key: 'Cross-Origin-Opener-Policy', value: 'unsafe-none' }],
       },
       // Later entries override the same header key.
       ...LOCAL_MODEL_SOURCES.map((source) => ({

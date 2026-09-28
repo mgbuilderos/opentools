@@ -242,6 +242,36 @@
 # `/embed` itself -- the page that hands a site owner the snippet -- does NOT
 # match this rule and keeps `frame-ancestors 'none'`. Only `/embed/<tool>` is
 # framable.
+# Fix My Upload's working routes: the ONLY header that changes is the opener
+# policy, and it changes for these paths alone.
+#
+# `Cross-Origin-Opener-Policy: same-origin` severs the browsing context group
+# between a cross-origin opener and this site -- in both directions, before any
+# script runs. Measured on the built site: `window.opener` is null inside the
+# popup and the opening page's own handle already reports `closed`. That makes
+# the whole point of Fix My Upload impossible: a site whose upload rejected a
+# file cannot hand the visitor a link and receive the corrected file back
+# through browser memory. The other way in, an iframe, is closed by
+# `frame-ancestors 'none'` and stays closed.
+#
+# Everything else these routes send is unchanged and still restrictive: the
+# same CSP as the rest of the site, including `frame-ancestors 'none'` and
+# `connect-src 'none'`, so nothing on the page can open a network connection
+# and the page still cannot be framed. Only the opener relationship is allowed.
+#
+# The cost, stated plainly: these routes leave cross-origin isolation, so they
+# cannot use `SharedArrayBuffer`. They use canvas only, so nothing on them
+# needs it. If a future tool on `/fix/*` needs isolation, this decision has to
+# be revisited rather than worked around.
+#
+# `/fix` itself -- the page that explains the integration -- does NOT match
+# this rule and keeps `same-origin`, exactly as `/embed` does above. Owner
+# decision 2026-09-28; ADR-020; `lib/security/fix-opener-policy.test.ts` fails
+# the build if this widens.
+/fix/*
+  ! Cross-Origin-Opener-Policy
+  Cross-Origin-Opener-Policy: unsafe-none
+
 /embed/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors *; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:

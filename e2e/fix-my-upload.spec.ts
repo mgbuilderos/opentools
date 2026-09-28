@@ -27,7 +27,11 @@ const INTEGRATOR = 'http://integrator.localhost';
  * copy-paste snippet on `/fix` is. Kept deliberately close to that snippet:
  * if the two drift, this test stops proving what the page tells people to do.
  */
-function integratorPage(appOrigin: string) {
+function integratorPage(
+  appOrigin: string,
+  forged?: Record<string, string>,
+  recordAllOrigins = false,
+) {
   return `<!doctype html><meta charset="utf-8"><title>Recruiter</title>
 <body>
   <p id="error">Your image must be JPEG and no wider than 320 px.</p>
@@ -36,22 +40,25 @@ function integratorPage(appOrigin: string) {
   <script>
     const target = ${JSON.stringify(appOrigin)};
     window.__result = null;
+    window.__popup = null;
+    window.__allOrigins = [];
     document.getElementById('fix').addEventListener('click', () => {
       const popup = window.open(target + '/fix/image?v=1&format=jpeg&width=320&height=320&quality=80',
         'opentools-fix', 'width=520,height=760');
       window.__popup = popup;
       if (!popup) { document.getElementById('out').textContent = 'blocked'; return; }
-      const hello = {
+      const hello = Object.assign({
         channel: 'opentools.fix-my-upload', version: 1, type: 'hello',
         request: 'image', values: { format: 'jpeg', width: 320, height: 320, quality: 80 },
-      };
+      }, ${JSON.stringify(forged ?? {})});
       const say = () => { try { popup.postMessage(hello, target); } catch (e) {} };
       const ticker = setInterval(say, 200);
       say();
       window.addEventListener('message', function onMessage(event) {
+        ${recordAllOrigins ? 'window.__allOrigins.push(event.origin);' : ''}
         if (event.origin !== target) return;
         const data = event.data;
-        if (!data || data.channel !== hello.channel || data.version !== 1) return;
+        if (!data || data.channel !== 'opentools.fix-my-upload' || data.version !== 1) return;
         if (data.type === 'ready') { clearInterval(ticker); document.getElementById('out').textContent = 'ready'; return; }
         if (data.type === 'result') {
           clearInterval(ticker);
@@ -72,12 +79,17 @@ function integratorPage(appOrigin: string) {
 </body>`;
 }
 
-async function openIntegrator(page: Page, appOrigin: string) {
+async function openIntegrator(
+  page: Page,
+  appOrigin: string,
+  forged?: Record<string, string>,
+  recordAllOrigins = false,
+) {
   await page.route(`${INTEGRATOR}/**`, (route) =>
     route.fulfill({
       status: 200,
       contentType: 'text/html; charset=utf-8',
-      body: integratorPage(appOrigin),
+      body: integratorPage(appOrigin, forged, recordAllOrigins),
     }),
   );
   await page.goto(`${INTEGRATOR}/apply`);
@@ -103,33 +115,86 @@ async function chooseInPopup(popup: Page, buffer: Buffer) {
   }).toPass({ timeout: 45_000 });
 }
 
-/**
- * THE RETURN CHANNEL IS BLOCKED BY A HEADER, AND THIS IS THE MEASUREMENT.
- *
- * `next.config.ts` and `public/_headers` both send
- * `Cross-Origin-Opener-Policy: same-origin` on every route. That severs the
- * browsing-context group between a cross-origin opener and this site, so a
- * third-party page that calls `window.open` gets a handle that immediately
- * reports `closed`, and the popup's own `window.opener` is `null`. Neither side
- * can `postMessage` to the other, so mode B cannot work — and no amount of
- * client-side cleverness changes it, because the browser has cut the link
- * before any script runs.
- *
- * The alternative route is an `iframe`, which `frame-ancestors 'none'` closes
- * just as firmly (see `lib/security/embed-framing.test.ts`).
- *
- * So the capability needs an owner-level decision — a route-scoped
- * `Cross-Origin-Opener-Policy: unsafe-none` on `/fix/*`, exactly parallel to
- * what ADR-019 did for `frame-ancestors` on `/embed/*`. That is a security
- * relaxation on shared files, and the brief says to preserve these directives,
- * so it is not this lane's call to make.
- *
- * The test below is a GUARD rather than a skip: it asserts the severing that
- * exists today. The day COOP changes for these routes it goes red, which is the
- * signal to enable the two `fixme` tests under it.
- */
 test.describe('Fix My Upload — the return channel', () => {
-  test('the opener is severed today, which is why mode B is not live', async ({
+  test('a third-party site gets a real corrected File back, and the bytes are right', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    test.setTimeout(240_000);
+    await openIntegrator(page, new URL(baseURL!).origin);
+
+    const popupPromise = context.waitForEvent('page');
+    await page.getByRole('button', { name: 'Fix this file privately' }).click();
+    const popup = await popupPromise;
+
+    // The handshake completed across a real origin boundary.
+    await expect(page.locator('#out')).toHaveText('ready', { timeout: 30_000 });
+    // The popup read the requirement out of the message, not out of thin air.
+    await expect(
+      popup.getByText(
+        'Please provide a JPEG image no wider than 320 px and no taller than 320 px.',
+      ),
+    ).toBeVisible();
+    // And it tells the person who is waiting, using the browser-supplied origin.
+    await expect(popup.getByText('integrator.localhost')).toBeVisible();
+
+    const source = await testDetailedPng(popup, 1200, 900);
+    await chooseInPopup(popup, source);
+    await popup.getByRole('button', { name: 'Correct the file' }).click();
+    await expect(popup.getByText('Your corrected image')).toBeVisible({
+      timeout: 60_000,
+    });
+
+    // NOTHING HAS GONE BACK YET. The person has to choose, and until they do
+    // the integrating page has seen only `ready`.
+    await expect(page.locator('#out')).toHaveText('ready');
+
+    await popup
+      .getByRole('button', {
+        name: /^send it back to integrator\.localhost$/iu,
+      })
+      .click();
+
+    // THE ASSERTION THIS SPEC EXISTS FOR: a real File arrived at the other
+    // origin, and its bytes satisfy what was asked for.
+    await expect(page.locator('#out')).toContainText('got:true:', {
+      timeout: 30_000,
+    });
+    const landed = await page.evaluate(async () => {
+      const file = (window as unknown as { __result: File }).__result;
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const size = await new Promise<{ w: number; h: number }>((resolve) => {
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        image.onload = () => {
+          resolve({ w: image.naturalWidth, h: image.naturalHeight });
+          URL.revokeObjectURL(url);
+        };
+        image.src = url;
+      });
+      return {
+        name: file.name,
+        type: file.type,
+        head: [...bytes.subarray(0, 3)],
+        byteLength: bytes.byteLength,
+        ...size,
+      };
+    });
+
+    expect(landed.head, 'not a JPEG at the far end').toEqual([
+      0xff, 0xd8, 0xff,
+    ]);
+    expect(landed.type).toBe('image/jpeg');
+    expect(landed.w).toBeLessThanOrEqual(320);
+    expect(landed.h).toBeLessThanOrEqual(320);
+    expect(Math.max(landed.w, landed.h)).toBe(320);
+    expect(landed.byteLength).toBeGreaterThan(0);
+    // The visitor's own filename must not travel to the integrating site.
+    expect(landed.name).not.toContain('rejected-by-the-form');
+  });
+
+  test('tells the site when the person closes the window instead', async ({
     page,
     context,
     baseURL,
@@ -139,35 +204,203 @@ test.describe('Fix My Upload — the return channel', () => {
     const popupPromise = context.waitForEvent('page');
     await page.getByRole('button', { name: 'Fix this file privately' }).click();
     const popup = await popupPromise;
-    await popup.waitForLoadState('domcontentloaded');
+    await expect(page.locator('#out')).toHaveText('ready', { timeout: 30_000 });
 
-    expect(
-      await popup.evaluate(() => window.opener === null),
-      'window.opener is no longer null — COOP has changed, so enable the two ' +
-        'fixme tests below and delete this guard',
-    ).toBe(true);
-    expect(
-      await page.evaluate(
-        () => (window as unknown as { __popup?: Window }).__popup?.closed,
-      ),
-    ).not.toBe(false);
+    await popup.close();
+    await expect(page.locator('#out')).toContainText('cancelled:', {
+      timeout: 30_000,
+    });
+  });
+});
 
-    // And the page degrades honestly rather than hanging: no opener means no
-    // offer to send anything anywhere.
+/**
+ * ADVERSARIAL. Everything the integrating page sends is attacker-controlled —
+ * it runs on a site we do not own. These are the attempts that would matter.
+ *
+ * The unit tests in `lib/tools/fix-my-upload.test.ts` already prove the refusals
+ * at the function boundary. These prove them where it counts: across a real
+ * origin boundary, in a real window, with a real file in play.
+ */
+test.describe('Fix My Upload — adversarial', () => {
+  test('a forged origin in the payload does not redirect the file', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    test.setTimeout(180_000);
+    // The integrator lies: it names somebody else's origin in the message body,
+    // which is exactly the attack a `?return=` parameter would have enabled.
+    await openIntegrator(page, new URL(baseURL!).origin, {
+      origin: 'http://attacker.localhost',
+      returnTo: 'http://attacker.localhost',
+      targetOrigin: 'http://attacker.localhost',
+    });
+    const popupPromise = context.waitForEvent('page');
+    await page.getByRole('button', { name: 'Fix this file privately' }).click();
+    const popup = await popupPromise;
+    await expect(page.locator('#out')).toHaveText('ready', { timeout: 30_000 });
+
+    // The person is shown the REAL origin, taken from the MessageEvent.
+    await expect(popup.getByText('integrator.localhost')).toBeVisible();
+    await expect(popup.getByText('attacker.localhost')).toHaveCount(0);
     await expect(
-      popup.getByRole('button', { name: /send it back/iu }),
-    ).toHaveCount(0);
+      popup.getByRole('button', {
+        name: /^send it back to integrator\.localhost$/iu,
+      }),
+    ).toHaveCount(0); // not until there is a result
+
+    const source = await testDetailedPng(popup, 600, 400);
+    await chooseInPopup(popup, source);
+    await popup.getByRole('button', { name: 'Correct the file' }).click();
+    await expect(popup.getByText('Your corrected image')).toBeVisible({
+      timeout: 60_000,
+    });
+    // The only button offered names the real origin, never the forged one.
+    await expect(
+      popup.getByRole('button', {
+        name: /^send it back to integrator\.localhost$/iu,
+      }),
+    ).toBeVisible();
   });
 
-  test.fixme('a third-party site gets a real corrected File back, and the bytes are right', async () => {
-    /* Enable once `/fix/*` may send Cross-Origin-Opener-Policy: unsafe-none.
-         The flow, the handshake and the byte assertions are written and were
-         proven against the transport in lib/tools/fix-my-upload.test.ts; what
-         cannot be exercised is the window boundary itself. */
+  test('ignores a message on the wrong channel, version or request', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    test.setTimeout(120_000);
+    const app = new URL(baseURL!).origin;
+    await openIntegrator(page, app);
+    const popupPromise = context.waitForEvent('page');
+    await page.getByRole('button', { name: 'Fix this file privately' }).click();
+    const popup = await popupPromise;
+    await expect(page.locator('#out')).toHaveText('ready', { timeout: 30_000 });
+
+    // Now send junk from the same origin and prove nothing changes: no second
+    // integrator is adopted and the displayed requirement is untouched.
+    await page.evaluate((target) => {
+      const popupRef = (window as unknown as { __popup: Window }).__popup;
+      for (const junk of [
+        { channel: 'other', version: 1, type: 'hello', request: 'image' },
+        {
+          channel: 'opentools.fix-my-upload',
+          version: 99,
+          type: 'hello',
+          request: 'image',
+        },
+        {
+          channel: 'opentools.fix-my-upload',
+          version: 1,
+          type: 'hello',
+          request: '__proto__',
+        },
+        {
+          channel: 'opentools.fix-my-upload',
+          version: 1,
+          type: 'hello',
+          request: 'not-a-request',
+        },
+        'a bare string',
+        42,
+      ]) {
+        try {
+          popupRef.postMessage(junk, target);
+        } catch {
+          /* ignore */
+        }
+      }
+    }, app);
+
+    await popup.waitForTimeout(500);
+    await expect(
+      popup.getByText(
+        'Please provide a JPEG image no wider than 320 px and no taller than 320 px.',
+      ),
+    ).toBeVisible();
+    await expect(popup.getByText('integrator.localhost')).toBeVisible();
   });
 
-  test.fixme('tells the site when the person closes the window instead', async () => {
-    /* Same blocker. */
+  test('the first integrator wins; a later hello cannot re-aim the result', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    test.setTimeout(180_000);
+    const app = new URL(baseURL!).origin;
+    await openIntegrator(page, app);
+    const popupPromise = context.waitForEvent('page');
+    await page.getByRole('button', { name: 'Fix this file privately' }).click();
+    const popup = await popupPromise;
+    await expect(page.locator('#out')).toHaveText('ready', { timeout: 30_000 });
+
+    // A second, well-formed hello asking for something else entirely. If it
+    // were honoured, the person would be shown one requirement and produce
+    // another — and the destination could move with it.
+    await page.evaluate((target) => {
+      (window as unknown as { __popup: Window }).__popup.postMessage(
+        {
+          channel: 'opentools.fix-my-upload',
+          version: 1,
+          type: 'hello',
+          request: 'pdf',
+          values: { metadata: true },
+        },
+        target,
+      );
+    }, app);
+    await popup.waitForTimeout(500);
+
+    // Unchanged: still the image request from the first hello.
+    await expect(
+      popup.getByText(
+        'Please provide a JPEG image no wider than 320 px and no taller than 320 px.',
+      ),
+    ).toBeVisible();
+    await expect(
+      popup.getByRole('button', { name: /^choose your image$/iu }),
+    ).toBeVisible();
+  });
+
+  test('sends the file to exactly one origin, and names it explicitly', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    test.setTimeout(240_000);
+    await openIntegrator(page, new URL(baseURL!).origin, undefined, true);
+    const popupPromise = context.waitForEvent('page');
+    await page.getByRole('button', { name: 'Fix this file privately' }).click();
+    const popup = await popupPromise;
+    await expect(page.locator('#out')).toHaveText('ready', { timeout: 30_000 });
+
+    const source = await testDetailedPng(popup, 600, 400);
+    await chooseInPopup(popup, source);
+    await popup.getByRole('button', { name: 'Correct the file' }).click();
+    await expect(popup.getByText('Your corrected image')).toBeVisible({
+      timeout: 60_000,
+    });
+    await popup
+      .getByRole('button', {
+        name: /^send it back to integrator\.localhost$/iu,
+      })
+      .click();
+    await expect(page.locator('#out')).toContainText('got:true:', {
+      timeout: 30_000,
+    });
+
+    /*
+     * The integrator page in this test records EVERY message it receives,
+     * without filtering by origin — a wildcard `postMessage` would show up here
+     * as a message whose origin is not the app's. Exactly one result arrives,
+     * from the app's own origin.
+     */
+    const seen = await page.evaluate(
+      () => (window as unknown as { __allOrigins: string[] }).__allOrigins,
+    );
+    const app = new URL(page.url()).origin;
+    expect(seen.every((origin) => origin !== '*')).toBe(true);
+    expect(new Set(seen).size).toBe(1);
+    expect(seen[0]).not.toBe(app); // it came from the app, not the integrator
   });
 });
 
