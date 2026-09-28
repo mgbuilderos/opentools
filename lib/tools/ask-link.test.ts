@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { isLiveToolUrl } from '@/lib/seo/live-tools';
 
@@ -13,8 +13,6 @@ import {
   askField,
   askRequestedFormat,
   formatLabel,
-  formatWasSubstituted,
-  probeEncodedFormat,
   askParamNames,
   askRequestPath,
   askSettingLines,
@@ -651,77 +649,18 @@ describe('the existing shared links keep working', () => {
  * would have noticed.
  */
 describe('a format the browser cannot actually produce', () => {
-  /** A canvas stub whose `toBlob` answers with whatever type is given here. */
-  const canvasProducing =
-    (type: string | null, mode: 'ok' | 'throw' | 'silent' = 'ok') =>
-    () =>
-      ({
-        width: 0,
-        height: 0,
-        toBlob: (callback: (blob: Blob | null) => void) => {
-          if (mode === 'throw') throw new Error('no encoder');
-          if (mode === 'silent') return;
-          callback(type === null ? null : ({ type } as Blob));
-        },
-      }) as unknown as HTMLCanvasElement;
-
-  it('reports the type the browser really produced', async () => {
-    await expect(
-      probeEncodedFormat('webp', canvasProducing('image/webp')),
-    ).resolves.toBe('image/webp');
-    await expect(
-      probeEncodedFormat('webp', canvasProducing('image/png')),
-    ).resolves.toBe('image/png');
-  });
-
-  it('calls the WebKit substitution a substitution', () => {
-    expect(formatWasSubstituted('webp', 'image/png')).toBe(true);
-    expect(formatWasSubstituted('webp', 'image/webp')).toBe(false);
-    // Case and spelling must not create a false alarm.
-    expect(formatWasSubstituted('webp', 'IMAGE/WEBP')).toBe(false);
-    expect(formatWasSubstituted('JPEG', 'image/jpeg')).toBe(false);
-  });
-
   /*
-   * THE ONE THAT MATTERS MOST, and it is the conservative direction. Turning
-   * "I could not check" into "this browser cannot do it" would invent a
-   * limitation and send the recipient away for no reason — the same class of
-   * untruth as the defect this guard exists to prevent, pointing the other way.
+   * The probe's own tests moved with it to `lib/tools/image-verify.test.ts`,
+   * which is where `probeEncodedFormat` and `formatWasSubstituted` now live —
+   * including the six null paths and the fake-timer case for a `toBlob`
+   * callback that never arrives. They are not repeated here: two copies of a
+   * test drift exactly as two copies of the function do, and the one that
+   * matters is the one beside the implementation.
+   *
+   * What stays below is what did NOT move: this module's own `formatLabel`,
+   * deliberately distinct from the one over there, and `askRequestedFormat`,
+   * which reads a format through this registry's sanitiser.
    */
-  it('treats an unanswerable probe as unknown, never as a failure', async () => {
-    expect(formatWasSubstituted('webp', null)).toBe(false);
-    expect(formatWasSubstituted('webp', '')).toBe(false);
-
-    await expect(probeEncodedFormat('webp', () => null)).resolves.toBeNull();
-    await expect(
-      probeEncodedFormat('webp', canvasProducing(null)),
-    ).resolves.toBeNull();
-    await expect(
-      probeEncodedFormat('webp', canvasProducing('', 'ok')),
-    ).resolves.toBeNull();
-    await expect(
-      probeEncodedFormat('webp', canvasProducing('image/webp', 'throw')),
-    ).resolves.toBeNull();
-    await expect(
-      probeEncodedFormat('webp', () => ({}) as HTMLCanvasElement),
-    ).resolves.toBeNull();
-  });
-
-  it('gives up rather than hanging when the callback never comes', async () => {
-    // A browser that accepts the call and never answers would otherwise leave
-    // the notice in limbo for the life of the page.
-    vi.useFakeTimers();
-    try {
-      const pending = probeEncodedFormat(
-        'webp',
-        canvasProducing('image/webp', 'silent'),
-      );
-      await vi.advanceTimersByTimeAsync(2500);
-      await expect(pending).resolves.toBeNull();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
 
   it('names the format the way a sentence needs it', () => {
     expect(formatLabel('image/png')).toBe('PNG');
