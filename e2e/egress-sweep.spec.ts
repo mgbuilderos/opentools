@@ -92,6 +92,7 @@ const TAKES_A_FILE = new Set<string>([
   '/data/csv-to-json',
   '/data/excel',
   '/data/workbook-audit',
+  '/do',
   '/documents/metadata',
   '/email/reader',
   '/file/archive',

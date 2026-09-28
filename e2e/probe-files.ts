@@ -71,6 +71,17 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
   // exercises the intake. Landed after this file was written and caught by the
   // explicit-decision test, which is what that test is for.
   batch: 'png',
+  /*
+   * `/do` is the File Compiler, and it takes an image.
+   *
+   * `none` was the comfortable declaration available here: one route, already
+   * covered by its own spec, and the section would still have read as swept.
+   * It would also have left the single page that makes the never-leaves-your-
+   * device claim most loudly as the one page nobody in this sweep handed a file
+   * to. The claim is the reason the sweep exists, so the route that makes it
+   * gets a real file.
+   */
+  do: 'png',
 };
 
 /**
