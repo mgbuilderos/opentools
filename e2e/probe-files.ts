@@ -158,7 +158,7 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
     return new Uint8Array(await blob!.arrayBuffer());
   }
 
-  async function recordedClip(): Promise<{ bytes: Uint8Array; mime: string }> {
+  async function recordedClip(): Promise<{ bytes: Uint8Array; mime: string } | null> {
     // A real encoded clip from the browser's own encoder. Half a second of a
     // moving canvas: long enough that the container holds more than a header,
     // short enough that 12 routes do not add a minute to the run.
@@ -178,7 +178,12 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
           ? true
           : false,
       ) ?? '';
-    if (!type) throw new Error('no MediaRecorder container supported');
+    // No encoder on this machine. CI's browsers are built without the
+    // proprietary codecs, so MediaRecorder supports nothing there and this
+    // used to throw and fail the whole /video section. A missing encoder is a
+    // fact about the runner, not a defect in the site: return null so the
+    // route is recorded as load-only and the sweep says so out loud.
+    if (!type) return null;
 
     const stream = canvas.captureStream(15);
     const recorder = new MediaRecorder(stream, { mimeType: type });
@@ -228,6 +233,7 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
       mime = 'audio/wav';
     } else if (kind === 'webm') {
       const clip = await recordedClip();
+      if (!clip) return null;
       bytes = clip.bytes;
       mime = clip.mime;
       // WebKit records MP4, Chromium WebM. A name that disagrees with the bytes

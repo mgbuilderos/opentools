@@ -17,6 +17,7 @@ import {
   canAcceptSupport,
   getBuyMeACoffeeUrl,
   getUpiPaymentUrl,
+  SHOW_UPI,
   isLikelyIndiaVisitor,
 } from '@/lib/support-config';
 import {
@@ -73,7 +74,14 @@ const SETTLE_MS = 1200;
 export function MilestoneModal() {
   const panel = useRef<HTMLDialogElement>(null);
   const [milestone, setMilestone] = useState<number | null>(null);
-  const [isIndia, setIsIndia] = useState(false);
+  /**
+   * Whether this card offers UPI rather than a coffee. Both conditions have to
+   * hold: the browser's own locale has to place the visitor in India, and
+   * `SHOW_UPI` has to offer the channel. It does not, so every visitor is
+   * offered the coffee; see `SHOW_UPI` for why. The detector below stays wired
+   * up so flipping it back on needs no change here.
+   */
+  const [showUpi, setShowUpi] = useState(false);
 
   useEffect(() => {
     // Read once, on mount, never on the completion event: see above.
@@ -116,7 +124,7 @@ export function MilestoneModal() {
       } catch {
         /* Shown once this session either way; storage is best effort. */
       }
-      setIsIndia(isLikelyIndiaVisitor());
+      setShowUpi(SHOW_UPI && isLikelyIndiaVisitor());
       setMilestone(shown);
     }, SETTLE_MS);
     return () => clearTimeout(timer);
@@ -197,7 +205,7 @@ export function MilestoneModal() {
 
         {canAcceptSupport() && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {isIndia ? (
+            {showUpi ? (
               <a
                 href={getUpiPaymentUrl(
                   SUPPORT_QUICK_INR,

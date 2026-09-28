@@ -1,3 +1,4 @@
+import { asServed, TITLE_MAX, TITLE_SUFFIX_LENGTH } from './title-budget';
 /*
   WHAT A TOOL PAGE SAYS IN A SEARCH RESULT.
 
@@ -43,8 +44,18 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
     description:
       'Validate and sort dated platform/topic entries. Paste one line per post with its date, platform and topic, and read back a calendar in date order.',
   },
+  '/creator/creator-media-kit-generator': {
+    title: 'Creator Media Kit Generator — Free, No Upload',
+    description:
+      'Build a one-page media kit from your own audience and rate figures: platforms, reach, formats and pricing laid out for a brand to read in one screen.',
+  },
   '/creator/social-media-post-formatter': {
     title: 'Unicode Text Formatter for LinkedIn, X & Instagram',
+  },
+  '/data/csv-deduplicator': {
+    title: 'Remove Duplicate Rows from CSV — Free, No Upload',
+    description:
+      'Drop repeated rows from a CSV by whole row or by chosen columns. Paste or open the file, pick the keys, and take back a deduplicated table in your browser tab.',
   },
   '/data/csv-merger': {
     description:
@@ -61,6 +72,11 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
   '/data/spreadsheet-cell-inspector': {
     description:
       'Inspect one 1-based data row and named column. Give the row number and the column name and read the exact cell value the sheet holds there.',
+  },
+  '/data/table-to-markdown': {
+    title: 'Table to Markdown Converter — Free, No Upload',
+    description:
+      'Turn a CSV, TSV or pasted spreadsheet block into a Markdown table with aligned pipes, ready to drop into a README, a wiki page or an issue comment.',
   },
   '/date/day-of-year-calculator': {
     description:
@@ -131,6 +147,16 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
   },
   '/documents/latex-table-generator': {
     title: 'LaTeX Table Generator — CSV & Markdown to LaTeX',
+  },
+  '/documents/markdown-file-maker': {
+    title: 'Markdown (.md) File Maker — Free, No Sign-Up',
+    description:
+      'Write Markdown with a live preview and save it as a real .md file. Useful when an editor keeps adding .txt or a phone has nowhere to make one at all.',
+  },
+  '/documents/sop-generator': {
+    title: 'SOP Builder — Free, No Sign-Up, No Upload',
+    description:
+      'Write a standard operating procedure step by step, with scope, owner, prerequisites and numbered actions, then take the finished document away with you.',
   },
   '/file/data-uri-file-maker': {
     description:
@@ -280,6 +306,11 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
     description:
       'Calculate nPr for whole numbers. Enter how many things there are and how many you arrange, and read how many ordered arrangements that allows.',
   },
+  '/math/polygon-calculator': {
+    title: 'Regular Polygon Calculator — Area & Perimeter',
+    description:
+      'Work out area, perimeter, interior and exterior angles, and the two radii of any regular polygon from one side length or radius, with the formula shown.',
+  },
   '/math/power-converter': {
     description:
       'Convert watts and common power units. Watts, kilowatts, horsepower and BTU per hour, converted against each other with the exact factor shown.',
@@ -345,6 +376,7 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
       'Group and order items by weekday. Paste one task per line with the day it belongs to, and read the week back sorted Monday first, ready to copy.',
   },
   '/qr/app-store-qr-code': {
+    title: 'App Store QR Code Generator — Free SVG',
     description:
       'Encode a supplied official app-listing URL. Paste the store link you want scanned and download an SVG for a poster, a slide or a packaging insert.',
   },
@@ -436,6 +468,11 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
     description:
       'Generate local placeholder paragraphs. Set how many paragraphs you need and copy the filler, generated in this browser tab rather than fetched from anywhere.',
   },
+  '/text/markdown-to-pdf-doc': {
+    title: 'Markdown to PDF — Print-Ready, No Upload',
+    description:
+      'Format Markdown into a paginated, print-ready document you can save as PDF from your browser, with headings, lists and code blocks laid out for paper.',
+  },
   '/text/paragraph-counter': {
     description:
       'Count non-empty blocks separated by blank lines. Paste the text and read how many paragraphs it really has, with runs of blank lines counted once.',
@@ -472,6 +509,11 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
     description:
       'Reverse user-perceived Unicode characters. Paste the text and read it backwards, with emoji and accented letters kept whole instead of split into pieces.',
   },
+  '/text/transcript-formatter': {
+    title: 'Transcript Formatter — Clean Up Raw Transcripts',
+    description:
+      'Turn a raw dump from a recorder or meeting tool into a readable transcript: speaker turns separated, timestamps tidied and filler lines stripped out.',
+  },
   '/text/unicode-normalizer': {
     description:
       'Normalize text to NFC, NFD, NFKC, or NFKD. Paste the text, pick the form, and get consistent bytes, so accented characters compare equal as they should.',
@@ -492,6 +534,11 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
     description:
       'Generate common flex container declarations. Set direction, wrapping, justification and alignment, watch the preview, and copy the CSS it produces.',
   },
+  '/web/favicon-html-generator': {
+    title: 'Favicon HTML Generator — Every Tag You Need',
+    description:
+      'Generate the full block of favicon link and meta tags a modern site needs, covering the classic icon, the apple-touch icon and the web app manifest.',
+  },
   '/web/utm-parser': {
     description:
       'Read UTM parameters from an absolute URL. Paste a tagged campaign link and see the source, medium, campaign, term and content broken out as a table.',
@@ -501,4 +548,57 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
 /** The search copy for a route, or undefined when it uses its own. */
 export function toolSearchCopy(route: string): ToolSearchCopy | undefined {
   return TOOL_SEARCH_COPY[route];
+}
+
+/*
+  THE FALLBACK TITLE.
+
+  495 of the 1,464 live pages took their `<title>` straight from the
+  operation's name, which is the label written for a tab strip: "CSV
+  deduplicator", "YouTube chapter generator". Median length was 34 characters
+  with the layout's suffix counted, against the ~60 a result can show, and
+  Search Console for the seven days to 2026-09-24 recorded 35 queries sitting
+  on page one with zero clicks between them. Ranking was not the problem on
+  those pages; the line a searcher reads first was.
+
+  So a route with no hand-written entry gets its name plus one short qualifier
+  rather than nothing. An explicit `title` in the map above always wins, and
+  should be preferred whenever the query is known -- this is a floor, not a
+  target.
+
+  WHAT THE QUALIFIER MAY SAY. Only what the whole site already substantiates:
+  no page here needs an account, and `e2e/egress-proof.spec.ts` asserts the
+  served policy refuses outbound connections everywhere. "No Upload" is
+  therefore true of every route but only *informative* where a file is
+  involved, so it is used for the file-handling sections and "No Sign-Up"
+  elsewhere. Nothing names a competitor and nothing claims offline support,
+  which is true of four routes only.
+*/
+
+/** Sections whose tools take a file, where "No Upload" answers a real worry. */
+const FILE_SECTIONS: ReadonlySet<string> = new Set([
+  'data',
+  'documents',
+  'file',
+  'subtitles',
+]);
+
+/**
+ * The title a tool page ships when the map above has no entry for it.
+ *
+ * Falls back to the bare name rather than truncating: a qualifier that does
+ * not fit is worse than none, because `meta-lengths.test.ts` holds every
+ * title to 70 characters including the suffix and a cut-off phrase reads as
+ * broken in a result.
+ */
+export function searchTitle(route: string, operationName: string): string {
+  const section = route.split('/')[1] ?? '';
+  const budget =
+    TITLE_MAX - TITLE_SUFFIX_LENGTH - asServed(operationName).length;
+  for (const qualifier of FILE_SECTIONS.has(section)
+    ? [' — Free, No Upload', ' — Free']
+    : [' — Free, No Sign-Up', ' — Free']) {
+    if (qualifier.length <= budget) return `${operationName}${qualifier}`;
+  }
+  return operationName;
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { CircleSlash, ListOrdered } from 'lucide-react';
+import { useToolUi } from '@/components/locale-edition-provider';
 
 import type { PracticeBrief } from '@/lib/practice-briefs';
 
@@ -20,6 +21,7 @@ import type { PracticeBrief } from '@/lib/practice-briefs';
  * tool for the first click.
  */
 export function PracticeBriefPanel({ brief }: { brief: PracticeBrief }) {
+  const t = useToolUi();
   const stepsId = `${brief.id}-steps`;
   const limitsId = `${brief.id}-limits`;
 
@@ -34,7 +36,7 @@ export function PracticeBriefPanel({ brief }: { brief: PracticeBrief }) {
           className="flex items-center gap-2 text-sm font-semibold"
         >
           <ListOrdered aria-hidden="true" className="size-4" />
-          What happens on this job
+          {t.briefStepsHeading}
         </h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6 text-muted-foreground">
           {brief.steps.map((step) => (
@@ -52,7 +54,7 @@ export function PracticeBriefPanel({ brief }: { brief: PracticeBrief }) {
           className="flex items-center gap-2 text-sm font-semibold"
         >
           <CircleSlash aria-hidden="true" className="size-4" />
-          What it will not do
+          {t.briefLimitsHeading}
         </h2>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-muted-foreground">
           {brief.limits.map((limit) => (

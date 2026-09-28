@@ -11,6 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useToolUi } from '@/components/locale-edition-provider';
 
 import { AppShell } from '@/components/app-shell';
 import {
@@ -46,6 +47,8 @@ function formatDuration(durationMs: number) {
 }
 
 export function ToolWorkspace() {
+  /* Localised chrome strings; the English bundle on every English page. */
+  const t = useToolUi();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState<TextCaseMode>('sentence');
@@ -175,10 +178,10 @@ export function ToolWorkspace() {
             <button
               type="button"
               className="focus-ring flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold"
-              aria-label="Local processing status. Release proof is pending."
+              aria-label={t.mergeStatusAria}
             >
               <LockKeyhole aria-hidden="true" className="size-3.5" />
-              On-device prototype
+              {t.onDevicePrototype}
             </button>
           </div>
 

@@ -19,11 +19,11 @@ import {
 import { loadsLocalModel } from '@/lib/security/content-security-policy';
 import { findRecipe } from '@/lib/tools/recipe-link';
 import {
+  SHOW_UPI,
   isLikelyIndiaVisitor,
   getBuyMeACoffeeUrl,
   getUpiPaymentUrl,
   BUYMEACOFFEE_UNIT_USD,
-  SUPPORT_CONFIG,
 } from '@/lib/support-config';
 import { drawProofCard } from '@/lib/proof-card';
 import {
@@ -93,7 +93,15 @@ export function CompletionValueDialog() {
   const delayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [receipt, setReceipt] = useState<CompletionDetail | null>(null);
   const [proofUrl, setProofUrl] = useState<string>('');
-  const [isIndia] = useState(() => isLikelyIndiaVisitor());
+  /**
+   * Whether the UPI chips are offered instead of the coffee ones. Both
+   * conditions have to hold: the visitor's own browser has to place them in
+   * India, and the interface has to offer UPI at all. `SHOW_UPI` is off, so
+   * every visitor sees the coffee chips; see that constant for why. The detector
+   * stays wired up so flipping it back on needs no change here.
+   */
+  const [isIndiaVisitor] = useState(() => isLikelyIndiaVisitor());
+  const showUpi = SHOW_UPI && isIndiaVisitor;
 
   const remember = (never = false) => {
     offeredThisPage.current = true;
@@ -394,7 +402,7 @@ export function CompletionValueDialog() {
 
         {/* Dynamic Context-Aware Preset Chips */}
         <div className="mt-3.5 flex flex-wrap gap-2">
-          {isIndia ? (
+          {showUpi ? (
             <>
               <a
                 href={getUpiPaymentUrl(
@@ -437,15 +445,6 @@ export function CompletionValueDialog() {
                 aria-label={`Buy one coffee, $${BUYMEACOFFEE_UNIT_USD}, on Buy Me a Coffee`}
               >
                 ☕ ${BUYMEACOFFEE_UNIT_USD} Coffee
-              </a>
-              <a
-                href={SUPPORT_CONFIG.githubRepoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="focus-ring inline-flex h-9 items-center justify-center rounded-lg border border-success/40 bg-success/15 px-3 text-xs font-semibold text-success transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-success/25 hover:border-success/60 active:translate-y-0 active:scale-[0.98]"
-                aria-label="Star on GitHub"
-              >
-                ⭐ Star on GitHub
               </a>
               <a
                 href="/support"

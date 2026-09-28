@@ -5,7 +5,7 @@ import { ADVANCED_DEVELOPER_OPERATIONS } from '@/lib/tools/developer-advanced-wo
 import { DeveloperDataWorkbenchTool } from '@/components/developer-data-workbench-tool';
 import { DEVELOPER_DATA_OPERATIONS } from '@/lib/tools/developer-data-workbench';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
-import { toolSearchCopy } from '@/lib/seo/tool-search-copy';
+import { searchTitle, toolSearchCopy } from '@/lib/seo/tool-search-copy';
 import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
@@ -70,7 +70,7 @@ export async function generateMetadata({
   const route = `${BASE}/${operation.id}`;
   const copy = toolSearchCopy(route);
   return {
-    title: copy?.title ?? operation.name,
+    title: copy?.title ?? searchTitle(route, operation.name),
     description: copy?.description ?? operation.description,
     alternates: { canonical: `${CANONICAL_ORIGIN}${route}` },
   };

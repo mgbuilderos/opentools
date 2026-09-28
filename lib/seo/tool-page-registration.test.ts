@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { publicTools } from '../tools/catalog';
+import { LOCALE_CODES } from '../i18n/locales';
+import { localizedSitemapRoutes } from '../i18n/routes';
 import {
   LIVE_TOOL_ROUTES,
   isLiveToolUrl,
@@ -85,6 +87,22 @@ function expandDynamic(page: {
   component: string;
 }): { file: string; route: string; component: string }[] {
   if (!page.route.includes('[')) return [page];
+
+  /*
+    `app/[locale]/pdf/merge/page.tsx` is the eight localised editions of one
+    English tool page, so it expands to `/es/pdf/merge` and its seven
+    siblings. The bracket is the FIRST segment here rather than the last,
+    which is why it cannot go through the `ROUTED_TOOL_PREFIXES` path below:
+    that one expands a trailing `[tool]` into operation ids. Each expanded
+    route is then held to the registration rule like any other page -- see the
+    localised branch in the "live tool route" check.
+  */
+  if (page.route.startsWith('/[locale]/')) {
+    return LOCALE_CODES.map((code) => ({
+      ...page,
+      route: page.route.replace('/[locale]/', `/${code}/`),
+    }));
+  }
 
   const prefix = page.route.slice(0, page.route.lastIndexOf('/'));
   const segment = page.route.slice(page.route.lastIndexOf('/') + 1);
@@ -171,9 +189,23 @@ const NOT_A_FILE_TOOL: ReadonlyMap<string, string> = new Map([
   ],
 ]);
 
-/** Held back, or deliberately unregistered: either way, not an accident. */
+/**
+ * Localised editions of a tool already in `LIVE_TOOL_ROUTES`.
+ *
+ * `/es/pdf/merge` is the same tool at another address, registered by
+ * `lib/i18n/routes.ts` and listed in the sitemap from there. It is kept out of
+ * `LIVE_TOOL_ROUTES` on purpose: that list is what every CTA and the smart
+ * dropzone offer as a place to send a file, and nine copies of "Merge PDF" in
+ * one menu is a worse menu. Absent from BOTH registries is still an accident,
+ * which is why the localised routes are checked below rather than skipped.
+ */
+const LOCALIZED_EDITIONS = new Set(localizedSitemapRoutes());
+
+/** Held back, deliberately unregistered, or a translation: not an accident. */
 const registrationExempt = (route: string) =>
-  HELD_BACK.has(route) || NOT_A_FILE_TOOL.has(route);
+  HELD_BACK.has(route) ||
+  NOT_A_FILE_TOOL.has(route) ||
+  LOCALIZED_EDITIONS.has(route);
 
 describe('every tool page in app/ is reachable by something other than the URL bar', () => {
   it('finds the tool pages at all, so a passing run means something', () => {
@@ -199,6 +231,8 @@ describe('every tool page in app/ is reachable by something other than the URL b
     // `LIVE_TOOL_ROUTES` is what `app/sitemap.ts` submits and what
     // `isLiveToolUrl` answers from, so this is the single fact that decides
     // whether a finished tool is findable.
+    // Localised editions are exempt via `registrationExempt`; the next
+    // assertion is what holds them to the sitemap instead.
     const missing = toolPages
       .filter(
         (page) =>
@@ -210,6 +244,24 @@ describe('every tool page in app/ is reachable by something other than the URL b
     expect(
       missing,
       `built and shipped, but in no sitemap and behind no link: ${missing.join(', ')}`,
+    ).toEqual([]);
+  });
+
+  it('puts every localised edition in the sitemap', () => {
+    // The equivalent of the check above, for the pages it just exempted: a
+    // localised page absent from `localizedSitemapRoutes()` is in no sitemap
+    // and behind no link, which is exactly the failure this file exists for.
+    const localized = new Set(localizedSitemapRoutes());
+    const unregistered = toolPages
+      .filter((page) =>
+        LOCALE_CODES.some((code) => page.route.startsWith(`/${code}/`)),
+      )
+      .map((page) => page.route)
+      .filter((route) => !localized.has(route));
+
+    expect(
+      unregistered,
+      `localised tool pages in no sitemap: ${unregistered.join(', ')}`,
     ).toEqual([]);
   });
 
@@ -267,6 +319,8 @@ describe('every tool page in app/ is reachable by something other than the URL b
   it('answers isLiveToolUrl for each of them', () => {
     // Belt and braces: a route can be in the list and still be refused by the
     // gate, because the gate also checks the `?tool=` operation for workbenches.
+    // Localised editions are exempt for the reason on `LOCALIZED_EDITIONS`: a
+    // CTA must offer one address per tool, in one language.
     const refused = toolPages
       .filter((page) => !registrationExempt(page.route))
       .filter((page) => !isLiveToolUrl(page.route))

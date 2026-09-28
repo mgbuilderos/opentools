@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllTemplates } from '../templates/templates-data';
+import { localizedSitemapRoutes } from '../i18n/routes';
 import { getAllBlogPosts } from './blog-data';
 import { CATEGORY_HUB_ROUTES } from './category-hubs';
 import { BATCH_LANDING_ROUTES, PROFESSION_HUB_ROUTES } from './audience-pages';
@@ -70,6 +71,10 @@ export function buildSitemap(
     '/guides',
     '/blog',
     '/templates',
+    // The tool-request page. Listed because it is the one page whose text is
+    // the question people type -- "is there a free tool for X" -- and because
+    // an unlisted page cannot earn the inbound interest it exists to collect.
+    '/requests',
     // The snippet page for the embed programme. `/embed` is listed; the
     // framable `/embed/<tool>` copies are not, and are disallowed in
     // app/robots.ts -- they are stripped versions of pages this site is
@@ -139,11 +144,36 @@ export function buildSitemap(
     }),
   );
 
+  /*
+    The localised editions: eight locale hubs plus five file tools in each,
+    48 URLs.
+
+    `lastModified` comes from the same generated map every other route uses.
+    `build-sitemap-lastmod.mjs` dates these from `lib/i18n/copy/<code>.ts` as
+    well as the page file, so correcting the Spanish copy moves the Spanish
+    dates and leaves Japanese alone -- without that, one barrel import would
+    have redated all 48 together, which is the failure that script exists to
+    prevent.
+
+    Priority sits below the English tool pages on purpose: each is a
+    translation of a page already listed above, and `hreflang` in the head
+    already tells Google they are one cluster rather than 48 new documents.
+  */
+  const localizedRoutes: MetadataRoute.Sitemap = localizedSitemapRoutes().map(
+    (route) => ({
+      url: `${baseUrl}${route}`,
+      lastModified: lastModifiedFor(route),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }),
+  );
+
   return [
     ...coreRoutes,
     ...pillarRoutes,
     ...guideRoutes,
     ...blogRoutes,
     ...templateRoutes,
+    ...localizedRoutes,
   ];
 }

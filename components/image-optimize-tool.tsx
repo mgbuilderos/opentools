@@ -14,6 +14,8 @@ import NextImage from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { useToolUi } from '@/components/locale-edition-provider';
+import { fillMessage, type ToolUiMessages } from '@/lib/i18n/tool-ui';
 import {
   BatchLocalPromise,
   BatchRunnerPanel,
@@ -63,12 +65,16 @@ function formatDuration(durationMs: number) {
     : `${(durationMs / 1000).toFixed(2)} s`;
 }
 
-function loadImage(url: string) {
+/*
+  The bundle is a parameter, not a hook call: these three are plain helpers
+  outside the component, and the message a thrown Error carries is shown to the
+  reader, so it has to be in the reader's language.
+*/
+function loadImage(url: string, t: ToolUiMessages) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () =>
-      reject(new Error('The browser could not decode this image.'));
+    image.onerror = () => reject(new Error(t.optimizeDecodeFailed));
     image.src = url;
   });
 }
@@ -77,13 +83,12 @@ function encodeCanvas(
   canvas: HTMLCanvasElement,
   format: RasterFormat,
   quality: number,
+  t: ToolUiMessages,
 ) {
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
       (blob) =>
-        blob
-          ? resolve(blob)
-          : reject(new Error('The browser could not encode this image.')),
+        blob ? resolve(blob) : reject(new Error(t.optimizeEncodeFailed)),
       format,
       quality,
     );
@@ -91,6 +96,7 @@ function encodeCanvas(
 }
 
 async function optimizeImage({
+  t,
   url,
   width,
   height,
@@ -99,6 +105,7 @@ async function optimizeImage({
   format,
   quality,
 }: {
+  t: ToolUiMessages;
   url: string;
   width: number;
   height: number;
@@ -107,7 +114,7 @@ async function optimizeImage({
   format: RasterFormat;
   quality: number;
 }) {
-  const decoded = await loadImage(url);
+  const decoded = await loadImage(url, t);
   const dimensions = calculateContainDimensions(
     width,
     height,
@@ -120,8 +127,7 @@ async function optimizeImage({
   const context = canvas.getContext('2d', {
     alpha: format !== 'image/jpeg',
   });
-  if (!context)
-    throw new Error('Canvas processing is unavailable in this browser.');
+  if (!context) throw new Error(t.optimizeCanvasUnavailable);
   if (format === 'image/jpeg') {
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -129,21 +135,21 @@ async function optimizeImage({
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
   context.drawImage(decoded, 0, 0, canvas.width, canvas.height);
-  const blob = await encodeCanvas(canvas, format, quality / 100);
+  const blob = await encodeCanvas(canvas, format, quality / 100, t);
   // WebKit answers a WebP request with a PNG rather than failing. Keep what the
   // browser produced and name the file for the format it actually is.
   const encodedFormat = blob.type as RasterFormat;
   if (!supportedRasterTypes.has(encodedFormat)) {
-    throw new Error('This browser did not produce a usable image format.');
+    throw new Error(t.optimizeNoFormat);
   }
   const validationUrl = URL.createObjectURL(blob);
   try {
-    const validationImage = await loadImage(validationUrl);
+    const validationImage = await loadImage(validationUrl, t);
     if (
       validationImage.naturalWidth !== dimensions.width ||
       validationImage.naturalHeight !== dimensions.height
     ) {
-      throw new Error('The optimized image failed its dimension check.');
+      throw new Error(t.optimizeDimensionCheckFailed);
     }
   } finally {
     URL.revokeObjectURL(validationUrl);
@@ -156,6 +162,8 @@ function baseName(fileName: string) {
 }
 
 export function ImageOptimizeTool() {
+  /* Localised control strings; the English bundle everywhere else. */
+  const t = useToolUi();
   const fileRef = useRef<HTMLInputElement>(null);
   const sourceRef = useRef<SourceImage | null>(null);
   const resultRef = useRef<ImageReceipt | null>(null);
@@ -261,18 +269,16 @@ export function ImageOptimizeTool() {
     clearResult();
     setError('');
     if (!supportedRasterTypes.has(file.type as RasterFormat)) {
-      setError(
-        'Choose a JPEG, PNG, or WebP image. Animated output is not supported.',
-      );
+      setError(t.optimizeWrongType);
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      setError('This candidate limits source images to 25 MB.');
+      setError(t.optimizeLimitNote);
       return;
     }
     const url = URL.createObjectURL(file);
     try {
-      const decoded = await loadImage(url);
+      const decoded = await loadImage(url, t);
       if (sourceRef.current) URL.revokeObjectURL(sourceRef.current.url);
       const next = {
         file,
@@ -290,9 +296,7 @@ export function ImageOptimizeTool() {
     } catch (caught) {
       URL.revokeObjectURL(url);
       setError(
-        caught instanceof Error
-          ? caught.message
-          : 'The browser could not decode this image.',
+        caught instanceof Error ? caught.message : t.optimizeDecodeFailed,
       );
     }
   };
@@ -325,7 +329,7 @@ export function ImageOptimizeTool() {
       maxWidth > 12000 ||
       maxHeight > 12000
     ) {
-      setError('Width and height must be whole numbers from 1 to 12,000.');
+      setError(t.optimizeBadDimensions);
       return;
     }
     const targetMaxWidth = Math.floor(maxWidth);
@@ -338,6 +342,7 @@ export function ImageOptimizeTool() {
     const started = performance.now();
     try {
       const optimized = await optimizeImage({
+        t,
         url: source.url,
         width: source.width,
         height: source.height,
@@ -355,7 +360,7 @@ export function ImageOptimizeTool() {
       resultRef.current = next;
       setResult(next);
       announceCompletion({
-        operation: 'Image optimizer',
+        operation: t.optimizeOperation,
         recipe: {
           id: IMAGE_OPTIMIZE_RECIPE.id,
           values: {
@@ -366,22 +371,22 @@ export function ImageOptimizeTool() {
           },
         },
         durationMs: next.durationMs,
-        summary: `Image converted to ${optimized.format.replace('image/', '').toUpperCase()} at ${next.width} × ${next.height}px.`,
+        summary: fillMessage(t.optimizeSummary, {
+          format: optimized.format.replace('image/', '').toUpperCase(),
+          width: next.width,
+          height: next.height,
+        }),
         metrics: [
-          { label: 'Before', value: formatBytes(source.file.size) },
-          { label: 'After', value: formatBytes(optimized.blob.size) },
+          { label: t.before, value: formatBytes(source.file.size) },
+          { label: t.after, value: formatBytes(optimized.blob.size) },
           {
-            label: 'Saved',
+            label: t.saved,
             value: `${Math.max(0, Math.round((1 - optimized.blob.size / source.file.size) * 100))}%`,
           },
         ],
       });
     } catch (caught) {
-      setError(
-        caught instanceof Error
-          ? caught.message
-          : 'The image could not be optimized.',
-      );
+      setError(caught instanceof Error ? caught.message : t.optimizeFailed);
     } finally {
       setBusy(false);
     }
@@ -396,7 +401,7 @@ export function ImageOptimizeTool() {
       maxWidth > 12000 ||
       maxHeight > 12000
     ) {
-      setError('Width and height must be whole numbers from 1 to 12,000.');
+      setError(t.optimizeBadDimensions);
       return;
     }
     setError('');
@@ -416,7 +421,7 @@ export function ImageOptimizeTool() {
       if (file.size > MAX_IMAGE_BYTES) {
         return {
           status: 'skipped',
-          reason: 'The 25 MB file limit was exceeded.',
+          reason: t.optimizeTooLarge,
         };
       }
       if (signal.aborted) {
@@ -424,8 +429,9 @@ export function ImageOptimizeTool() {
       }
       const url = URL.createObjectURL(file);
       try {
-        const decoded = await loadImage(url);
+        const decoded = await loadImage(url, t);
         const optimized = await optimizeImage({
+          t,
           url,
           width: decoded.naturalWidth,
           height: decoded.naturalHeight,
@@ -477,21 +483,20 @@ export function ImageOptimizeTool() {
           <div className="flex flex-col justify-between gap-5 border-b pb-8 sm:flex-row sm:items-start">
             <div>
               <div className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <span>Image</span>
+                <span>{t.optimizeImage}</span>
                 <span aria-hidden="true">/</span>
-                <span>Optimize</span>
+                <span>{t.optimizeAction}</span>
               </div>
               <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                Optimize image
+                {t.optimizeTitle}
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-                Resize, compress, and convert one static JPEG, PNG, or WebP
-                without uploading it.
+                {t.optimizeStandfirst}
               </p>
             </div>
             <span className="flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold">
               <LockKeyhole aria-hidden="true" className="size-3.5" />
-              On-device prototype
+              {t.onDevicePrototype}
             </span>
           </div>
           {error ? (
@@ -502,14 +507,14 @@ export function ImageOptimizeTool() {
               className="focus-ring mt-6 flex items-start justify-between gap-4 rounded-xl border border-destructive/35 bg-destructive/5 p-4 text-sm"
             >
               <div>
-                <p className="font-semibold">Couldn’t optimize this image</p>
+                <p className="font-semibold">{t.optimizeCouldnt}</p>
                 <p className="mt-1 text-muted-foreground">{error}</p>
               </div>
               <button
                 type="button"
                 className="focus-ring rounded p-1"
                 onClick={() => setError('')}
-                aria-label="Dismiss error"
+                aria-label={t.dismissError}
               >
                 <X aria-hidden="true" className="size-4" />
               </button>
@@ -521,9 +526,11 @@ export function ImageOptimizeTool() {
           <section className="overflow-hidden rounded-2xl border bg-card">
             <div className="flex items-center justify-between border-b px-4 py-4 sm:px-5">
               <div>
-                <h2 className="text-sm font-semibold">Source image</h2>
+                <h2 className="text-sm font-semibold">
+                  {t.optimizeSourceImage}
+                </h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  JPEG, PNG, or WebP · 25 MB maximum
+                  {t.optimizeAcceptHint}
                 </p>
               </div>
               {source ? (
@@ -549,9 +556,9 @@ export function ImageOptimizeTool() {
                     <span className="mx-auto grid size-11 place-items-center rounded-xl border bg-background">
                       <FileImage aria-hidden="true" className="size-5" />
                     </span>
-                    <p className="mt-4 font-semibold">Choose an image</p>
+                    <p className="mt-4 font-semibold">{t.optimizeChoose}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      The original stays unchanged.
+                      {t.optimizeOriginalUnchanged}
                     </p>
                   </div>
                 )}
@@ -562,7 +569,7 @@ export function ImageOptimizeTool() {
                   type="file"
                   multiple
                   accept="image/jpeg,image/png,image/webp"
-                  aria-label="Choose image to optimize"
+                  aria-label={t.optimizeChooseAria}
                   className="sr-only"
                   onChange={(event) => chooseImages(event.target.files ?? [])}
                 />
@@ -574,13 +581,13 @@ export function ImageOptimizeTool() {
                 >
                   <FileImage aria-hidden="true" />
                   {source || batchFiles.length > 0
-                    ? 'Choose another'
-                    : 'Choose image(s)'}
+                    ? t.chooseAnother
+                    : t.optimizeChooseMany}
                 </Button>
                 <BatchLocalPromise />
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <label className="text-xs font-semibold">
-                    Max width
+                    {t.optimizeMaxWidth}
                     <input
                       type="number"
                       min="1"
@@ -595,7 +602,7 @@ export function ImageOptimizeTool() {
                     />
                   </label>
                   <label className="text-xs font-semibold">
-                    Max height
+                    {t.optimizeMaxHeight}
                     <input
                       type="number"
                       min="1"
@@ -611,7 +618,7 @@ export function ImageOptimizeTool() {
                   </label>
                 </div>
                 <label className="mt-4 block text-xs font-semibold">
-                  Output format
+                  {t.optimizeOutputFormat}
                   <select
                     value={format}
                     disabled={busy || batch.running}
@@ -660,7 +667,7 @@ export function ImageOptimizeTool() {
                     onClick={() => void run()}
                   >
                     <Sparkles aria-hidden="true" />
-                    {busy ? 'Optimizing…' : 'Optimize image'}
+                    {busy ? t.optimizeBusy : t.optimizeTitle}
                   </Button>
                 ) : null}
                 {source ? (
@@ -671,7 +678,7 @@ export function ImageOptimizeTool() {
                     onClick={clearAll}
                   >
                     <Trash2 aria-hidden="true" />
-                    Clear
+                    {t.clear}
                   </Button>
                 ) : null}
                 <RecipeShareButton
@@ -690,7 +697,7 @@ export function ImageOptimizeTool() {
             <BatchRunnerPanel
               files={batchFiles}
               runner={batch}
-              startLabel="Optimize all"
+              startLabel={t.optimizeAll}
               zipName="optimized-images.zip"
               onStart={startBatch}
               onClear={clearAll}
@@ -708,7 +715,7 @@ export function ImageOptimizeTool() {
                     width={result.width}
                     height={result.height}
                     unoptimized
-                    alt="Optimized preview"
+                    alt={t.optimizePreviewAlt}
                     className="max-h-36 max-w-full object-contain"
                   />
                 </div>
@@ -742,32 +749,36 @@ export function ImageOptimizeTool() {
                 </div>
                 <Button data-receipt-download className="h-11" onClick={save}>
                   <ArrowDownToLine aria-hidden="true" />
-                  Save image
+                  {t.optimizeSave}
                 </Button>
               </div>
               <div className="grid border-t sm:grid-cols-3">
                 <div className="border-b p-4 sm:border-b-0 sm:border-r sm:p-5">
-                  <p className="text-xs text-muted-foreground">Processing</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.processing}
+                  </p>
                   <p className="mt-1 flex items-center gap-2 text-sm font-semibold">
                     <ShieldCheck
                       aria-hidden="true"
                       className="size-4 text-success"
                     />
-                    In this tab
+                    {t.optimizeInThisTab}
                   </p>
                 </div>
                 <div className="border-b p-4 sm:border-b-0 sm:border-r sm:p-5">
-                  <p className="text-xs text-muted-foreground">Output check</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.outputCheck}
+                  </p>
                   <p className="mt-1 text-sm font-semibold">
-                    Decoded dimensions match
+                    {t.optimizeDecodedMatch}
                   </p>
                 </div>
                 <div className="p-4 sm:p-5">
                   <p className="text-xs text-muted-foreground">
-                    Release assurance
+                    {t.optimizeReleaseAssurance}
                   </p>
                   <p className="mt-1 text-sm font-semibold">
-                    Formal egress proof pending
+                    {t.optimizeEgressPending}
                   </p>
                 </div>
               </div>
@@ -775,14 +786,13 @@ export function ImageOptimizeTool() {
           ) : null}
           <footer className="mt-10 flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Candidate {manifest.version} · Browser Canvas · Static raster
-              output
+              Candidate {manifest.version} · {t.browserCanvasNote}
             </p>
             <a
               href="/pdf/merge"
               className="focus-ring rounded font-semibold text-foreground hover:underline"
             >
-              Next: Merge PDF →
+              {t.optimizeNextMerge}
             </a>
           </footer>
         </div>

@@ -66,6 +66,23 @@ const LOCAL_MODEL_ROUTES = new Set(['/image/background-remover', '/image/editor'
  * Do not edit it to make a run go green. A route leaving this list means its
  * file input disappeared, which is a product defect; a route arriving means a
  * new intake exists that nobody decided to sweep. Both are worth stopping for.
+ *
+ * Regenerated 2026-09-26, after the tool families that landed that day. Seven
+ * routes arrived and none left: `/batch`, `/email/reader`, `/file/xray`,
+ * `/finance/bank-statement`, `/finance/ofx-qif`, `/pdf/form-filler` and
+ * `/pdf/password`. That is the arriving case above, and it is why this is a
+ * regeneration rather than the edit the paragraph forbids: in the run that
+ * produced these names, all seven were visited, handed a real probe file, given
+ * time to act, and passed every egress assertion in the loop — nothing
+ * off-origin, nothing carrying a body, the probe filename in no URL, and
+ * `connect-src 'none'` still served. The five sections failed on this
+ * comparison alone. The list moved because the product gained intakes, not
+ * because the sweep was loosened around them.
+ *
+ * Worth noticing what the arrivals are: a folder runner, an email reader, a
+ * whole-file inspector, two bank-statement parsers and two PDF tools, one of
+ * which takes a password. Every one is a route whose whole point is that the
+ * file is sensitive.
  */
 const TAKES_A_FILE = new Set<string>([
   '/audio/convert',
@@ -238,7 +255,35 @@ test.describe('egress sweep across every dedicated tool route', () => {
        * Both directions fail: a route that stops accepting a file, and a route
        * that starts accepting one without anybody deciding it should be swept.
        */
-      const expectedFed = routes.filter((route) => TAKES_A_FILE.has(route));
+      /*
+       * A runner without a video encoder cannot be handed a video.
+       *
+       * CI's browsers are built without the proprietary codecs, so
+       * `MediaRecorder.isTypeSupported` answers false for everything and the
+       * twelve /video routes get a page-load proof instead of a file-level
+       * one. That is a fact about the runner, not a regression, but it must
+       * not pass silently: coverage quietly dropping from 56 routes to 44 is
+       * exactly the kind of erosion this pin exists to catch. So it is
+       * detected, subtracted deliberately, and printed.
+       */
+      const canEncodeVideo =
+        kind !== 'webm' ||
+        (await page.evaluate(
+          () =>
+            typeof MediaRecorder !== 'undefined' &&
+            ['video/mp4', 'video/webm;codecs=vp8', 'video/webm'].some((type) =>
+              MediaRecorder.isTypeSupported(type),
+            ),
+        ));
+      if (!canEncodeVideo) {
+        console.log(
+          `[sweep] ${section}: no video encoder on this runner — ${routes.length} route(s) got a page-load proof only`,
+        );
+      }
+
+      const expectedFed = canEncodeVideo
+        ? routes.filter((route) => TAKES_A_FILE.has(route))
+        : [];
       expect(
         fedAFile.sort(),
         `${section}: the set of routes accepting a file changed`,
@@ -272,6 +317,11 @@ test.describe('egress sweep across every dedicated tool route', () => {
  * `probe-files.ts` instead of collapsing into one `page.evaluate` argument.
  */
 test.beforeEach(async ({ page }) => {
+  if (process.env.SWEEP_NO_ENCODER === '1') {
+    await page.addInitScript(
+      'if (typeof MediaRecorder !== "undefined") MediaRecorder.isTypeSupported = () => false;',
+    );
+  }
   await page.addInitScript(
     `window.__handProbe = (kind, token) => (${HAND_PROBE_TO_PAGE.toString()})(kind, token);`,
   );

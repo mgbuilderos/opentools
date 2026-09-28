@@ -11,17 +11,45 @@ ceiling. The ordering below exists because of it.
 
 ## The order matters, and it is not the obvious one
 
-Do **not** open with Hacker News. The site currently serves every request from
-the Worker with no cache (`cf-cache-status: BYPASS` on every page) against a
-free ceiling of 100,000 requests/day. An HN front page delivers more than that
-in an afternoon, the site goes dark mid-launch, and HN traffic does not return.
+> **UPDATED 2026-09-26 — the reason Hacker News sat last has gone away.** The
+> paragraph below said the site serves every request from the Worker with no
+> cache, `cf-cache-status: BYPASS` on every page. Re-measured live today, five
+> URLs, every one of them answered from the edge:
+>
+> ```
+> /  HIT    /image/optimize  HIT    /pdf/merge  HIT    /proof  HIT
+> /guides/pdf-merge-pdf  EXPIRED  (revalidated, still cached)
+> cache-control: public, max-age=0, must-revalidate,
+>                s-maxage=3600, stale-while-revalidate=86400
+> ```
+>
+> Not one BYPASS. `s-maxage=3600` renders a page at most once an hour per edge
+> location; the prerendered files in `dist/client` never reach the Worker at
+> all. §8 item 1 of `REVENUE_OPERATIONS.md` — the thing Show HN was gated on —
+> was resolved by the 2026-09-19 cache fix, for nothing, and no document was
+> updated to say so.
+>
+> **So Show HN is no longer blocked.** It stays late in the order anyway, for
+> the other reason it always belonged there: it is one shot, it is the least
+> forgiving audience, and posting it before the smaller subreddits have found
+> the obvious holes wastes the shot. That is a judgement about readiness, not
+> a capacity limit — a different reason, and an overridable one.
+>
+> Caching lowers the ceiling; it does not remove it. Keep checking
+> `Workers → Requests` between channels as below.
+
+The original reasoning, kept because it is still how to think about this if
+caching is ever lost: the site served every request from the Worker with no
+cache against a free ceiling of 100,000 requests/day. An HN front page delivers
+more than that in an afternoon, the site goes dark mid-launch, and HN traffic
+does not return.
 
 | # | Channel | Why here | Prerequisite |
 | :-- | :--- | :--- | :--- |
 | 1 | **AlternativeTo** | Submit and forget. **Free queue is months long** — see below. | none |
 | 2 | **r/degoogle**, **r/pdf** | Small, forgiving, real feedback. A capacity test. | none |
 | 3 | **r/SideProject**, **r/opensource**, **r/coolgithubprojects** | Permit self-promotion. r/privacy does **not** — see §3. | survived #2 |
-| 4 | **Show HN** | One shot. Highest ceiling. | **§3 resolved** |
+| 4 | **Show HN** | One shot. Highest ceiling. | ~~§3 resolved~~ — **done**; now only "survived #3" |
 | 5 | awesome-selfhosted | Needs a published release — see the note at the bottom. | self-host ships |
 
 Between each, check `Workers → Requests` in the Cloudflare dashboard. If you
@@ -56,7 +84,10 @@ description. The copy below is written to pass that.
 - **Name:** OpenTools
 - **URL:** https://getopentools.com
 - **Licence:** Open Source · MIT · Free
-- **Platforms:** Web, Self-Hosted (once that ships)
+- **Platforms:** Web, Self-Hosted — **both, now.** The self-host path shipped:
+  `v0.1.0` is tagged, the image is public and multi-architecture on GHCR, and
+  `/self-host` is the install page. `docs/APP_CATALOGUES.md` has the evidence
+  for each of those, checked rather than assumed.
 - **Tags:** `pdf`, `privacy`, `offline`, `no-registration`, `client-side`, `image-optimization`
 
 **Description:**

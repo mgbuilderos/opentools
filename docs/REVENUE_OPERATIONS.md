@@ -175,7 +175,50 @@ inferred — a KV write is rejected with:
 your account has reached the free usage limit for this operation for today [code: 10048]
 ```
 
-That has a consequence chain which currently caps the entire business:
+> **SUPERSEDED 2026-09-26 — re-measured live, and the chain below no longer
+> holds.** Every page checked answers from the Cloudflare edge rather than
+> from the Worker:
+>
+> ```
+> /                      cf-cache-status: HIT
+> /image/optimize        cf-cache-status: HIT
+> /pdf/merge             cf-cache-status: HIT
+> /proof                 cf-cache-status: HIT
+> /guides/pdf-merge-pdf  cf-cache-status: EXPIRED   (revalidated, still cached)
+>
+> cache-control: public, max-age=0, must-revalidate,
+>                s-maxage=3600, stale-while-revalidate=86400
+> ```
+>
+> Step 3 below says responses fall back to `no-store` on **"every page, every
+> time"**, and step 4 concludes that **"every request invokes the Worker"**.
+> Neither is true now. `s-maxage=3600` means a page is rendered at most once an
+> hour per edge location, and `stale-while-revalidate=86400` keeps serving
+> while that happens. The prerendered pages in `dist/client` are served as
+> static assets and never reach the Worker at all.
+>
+> **What changed:** the cache fix of 2026-09-19 and the `public/_headers` work
+> that shipped the `Cache-Control` above. What did *not* change is this
+> document, which kept asserting a measurement taken on 17 September against a
+> build that no longer exists.
+>
+> **What this supersedes, concretely:**
+>
+> - The ~70,000 page-view hard stop. The 1.4 Worker-requests-per-page-view
+>   ratio was measured before any edge caching existed and no longer describes
+>   the site.
+> - §8 item 1, "Fix the §3 ceiling — $5/month Workers Paid, or accept the goal
+>   is capped." It was fixed, by caching, for nothing.
+> - The Show HN gate in `docs/LAUNCH_KIT.md`, which was waiting on that item.
+>
+> **What it does not supersede:** caching lowers the ceiling, it does not
+> remove it. A launch still renders each page once an hour per edge location
+> and still serves uncached paths from the Worker. Watch `Workers → Requests`
+> during any spike, as the launch kit already says. Re-measure before quoting
+> any number here — that is the mistake this note is correcting.
+
+The chain below was the position **before** that note, and is kept because the
+reasoning is still how to think about the ceiling if caching is ever lost:
 
 1. Free KV allows **1,000 writes/day**. The site has **631 URLs × 2 keys ≈
    1,262 writes** just to warm, and every deploy restarts the count.
@@ -377,8 +420,11 @@ ACCT=00f21e5724f9ebf7b1ab0cb42ae76b1e
 
 ## 8. Open, in priority order
 
-1. **Fix the §3 ceiling.** Owner decision: $5/month Workers Paid, or accept that
-   the goal is capped. Everything else is downstream of this.
+1. ~~**Fix the §3 ceiling.** Owner decision: $5/month Workers Paid, or accept
+   that the goal is capped.~~ **RESOLVED 2026-09-26, at no cost.** The edge
+   now caches pages (`s-maxage=3600`, `stale-while-revalidate=86400`), verified
+   live on five URLs — see the note at the top of §3. Workers Paid is not
+   needed for this, and **Show HN is no longer gated**.
 2. **Rung 0 — read the actual revenue.** Owner action, one evening.
 3. **Turn off the Cloudflare analytics beacon** at source — it is edge-injected
    and currently blocked only by our CSP. See `docs/EGRESS_PROOF.md`.

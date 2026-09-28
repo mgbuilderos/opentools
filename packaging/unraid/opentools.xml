@@ -6,8 +6,14 @@
   upload, so this lives in the project repo and the repository URL is what gets
   submitted at https://ca.unraid.net/submit. Requirements checked 2026-09-26:
   one XML file per app, a <Repository> tag pointing at a real image, readable
-  <Name> and <Overview> for the moderator, an OSI licence on the repo, and a
-  ca_profile.xml beside this file.
+  <Name> and <Overview> for the moderator, and an OSI licence on the repo.
+
+  ca_profile.xml is at the REPOSITORY ROOT, not beside this file. Their docs
+  describe it as the repository's own overview rather than one app's, and the
+  page stating where the scanner looks for it could not be read from here, so
+  the root is the reading that cannot be wrong: a scanner that searches the
+  whole tree finds it there too. If their Validate step disagrees, that file
+  moves, not this one.
 
   The image tag is pinned rather than :latest so an Unraid user who installs
   today and one who installs next month are running the same reviewed build.

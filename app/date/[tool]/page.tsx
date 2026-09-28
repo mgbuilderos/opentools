@@ -3,7 +3,7 @@ import { excludedToolIdsForPrefix } from '@/lib/seo/live-tools';
 import { DateWorkbenchTool } from '@/components/date-workbench-tool';
 import { DATE_OPERATIONS } from '@/lib/tools/date-workbench';
 import { relatedToolsFor } from '@/lib/seo/related-tools';
-import { toolSearchCopy } from '@/lib/seo/tool-search-copy';
+import { searchTitle, toolSearchCopy } from '@/lib/seo/tool-search-copy';
 import { ToolJsonLd } from '@/components/tool-json-ld';
 
 export const revalidate = 86400;
@@ -66,7 +66,7 @@ export async function generateMetadata({
   const route = `${BASE}/${operation.id}`;
   const copy = toolSearchCopy(route);
   return {
-    title: copy?.title ?? operation.name,
+    title: copy?.title ?? searchTitle(route, operation.name),
     description: copy?.description ?? operation.description,
     alternates: { canonical: `${CANONICAL_ORIGIN}${route}` },
   };

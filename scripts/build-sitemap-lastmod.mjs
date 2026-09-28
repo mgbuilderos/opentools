@@ -279,6 +279,33 @@ const sourceCache = new Map();
 const lastmod = {};
 const undated = [];
 
+/*
+  The localised editions need one source their page file cannot name.
+
+  `app/[locale]/pdf/merge/page.tsx` renders all eight translations, and the
+  only module it imports is `lib/i18n/copy/index.ts` -- a barrel. Dating the
+  eight routes from that would give every language the same date and redate
+  Japanese whenever Spanish was corrected, which is the `app-shell.tsx`
+  pathology this script exists to avoid, in miniature.
+
+  So a route whose first segment is a published locale also counts
+  `lib/i18n/copy/<code>.ts`, the file that really holds that page's words.
+  Read off the directory rather than from a list, so a locale added there is
+  covered without editing this script.
+*/
+const LOCALE_COPY_DIR = path.join(ROOT, 'lib/i18n/copy');
+const LOCALE_CODES = existsSync(LOCALE_COPY_DIR)
+  ? entriesOf(LOCALE_COPY_DIR)
+      .filter((entry) => /^[a-z]{2}\.ts$/.test(entry))
+      .map((entry) => entry.slice(0, 2))
+  : [];
+
+function localeCopyFileFor(route) {
+  const code = route.split('/')[1];
+  if (!code || !LOCALE_CODES.includes(code)) return undefined;
+  return `lib/i18n/copy/${code}.ts`;
+}
+
 for (const route of routes) {
   const pageFile = pageFileFor(route);
   if (!pageFile) {
@@ -288,8 +315,12 @@ for (const route of routes) {
   if (!sourceCache.has(pageFile))
     sourceCache.set(pageFile, sourcesFor(pageFile));
 
+  const sources = [...sourceCache.get(pageFile)];
+  const localeCopy = localeCopyFileFor(route);
+  if (localeCopy) sources.push(localeCopy);
+
   let newest;
-  for (const relative of sourceCache.get(pageFile)) {
+  for (const relative of sources) {
     const date = dates.get(relative);
     if (date && (!newest || date > newest)) newest = date;
   }

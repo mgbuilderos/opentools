@@ -6,6 +6,8 @@ import {
   BUYMEACOFFEE_UNIT_USD,
   PAYMENT_PLACEHOLDERS,
   GITHUB_SPONSORS_PENDING,
+  SHOW_GITHUB_SPONSORS,
+  SHOW_UPI,
   SUPPORT_CONFIG,
   SUPPORT_TIERS,
   canAcceptSupport,
@@ -105,6 +107,33 @@ describe('support config', () => {
     // GitHub Sponsors was never approved, so it is not a channel at all.
     expect(channels).not.toContain('githubSponsors');
     expect(canAcceptSupport()).toBe(channels.length > 0);
+  });
+
+  it('keeps the UPI channel working while the interface stops offering it', () => {
+    /*
+      Owner decision 2026-09-27: one channel is offered, and it is Buy Me a
+      Coffee. UPI is hidden, not deleted — the address is verified and the money
+      arrives, so the machinery stays ready to switch back on.
+
+      This test is the "not deleted" half. `e2e/support.spec.ts` is the "hidden"
+      half and asserts nothing UPI renders; this one asserts the code behind it
+      still works, so a later cleanup that rips out the address or the link
+      builder fails here instead of quietly making the decision irreversible.
+    */
+    expect(SHOW_UPI).toBe(false);
+    expect(SHOW_GITHUB_SPONSORS).toBe(false);
+
+    // The channel itself is untouched: still configured, still produces a link.
+    expect(SUPPORT_CONFIG.upiId).toBeTruthy();
+    expect(supportChannels()).toContain('upi');
+    const link = getUpiPaymentUrl(149);
+    expect(link).toMatch(/^upi:\/\/pay\?/u);
+    expect(link).toContain(`pa=${encodeURIComponent(SUPPORT_CONFIG.upiId)}`);
+    expect(link).toContain('am=149');
+
+    // Hiding UPI must not leave the page with nothing to offer.
+    expect(SUPPORT_CONFIG.buyMeACoffeeUrl).toBeTruthy();
+    expect(canAcceptSupport()).toBe(true);
   });
 
   it('announces GitHub Sponsors without making it payable', () => {

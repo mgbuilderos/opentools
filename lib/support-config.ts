@@ -101,6 +101,35 @@ export function coffeesFor(usd: number): number | null {
 export type SupportChannel = 'upi' | 'buymeacoffee';
 
 /**
+ * Whether the UPI channel is offered in the interface.
+ *
+ * **Owner decision 2026-09-27: it is not.** The channel works — the address is
+ * verified and the money arrives — but a UPI QR is a payment method a visitor
+ * outside India has no way to recognise, and being asked for one by an
+ * unfamiliar site is a reason to distrust it rather than to pay. The product is
+ * read by people who arrived from a search engine and have no reason to trust
+ * it yet, so it asks in exactly one way, through a provider they already know.
+ *
+ * Everything UPI needs is deliberately left in the code — the address,
+ * `getUpiPaymentUrl`, the QR rendering and the amounts — so turning it back on
+ * is this one constant, not a rebuild. `supportChannels()` still lists `upi`,
+ * because that question is "where can money actually go" and the answer has not
+ * changed; this constant answers a different one: what the interface offers.
+ */
+export const SHOW_UPI = false;
+
+/**
+ * Whether the pending GitHub Sponsors announcement is shown.
+ *
+ * **Owner decision 2026-09-27: it is not.** GitHub never approved the profile,
+ * so the panel was a tab that took no money and told visitors to come back
+ * later — a second and a third thing to read before the one button that works.
+ * `GITHUB_SPONSORS_PENDING` stays below for when approval lands; flip this to
+ * `true` then, or delete both as that comment describes.
+ */
+export const SHOW_GITHUB_SPONSORS = false;
+
+/**
  * The channels that are configured and can actually receive money, in the
  * order they should be offered. An empty array is the honest answer when
  * nothing is set up, and the UI must then show no payment controls at all.
