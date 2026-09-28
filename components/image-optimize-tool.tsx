@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { useToolUi } from '@/components/locale-edition-provider';
-import { fillMessage, type ToolUiMessages } from '@/lib/i18n/tool-ui';
+import { fillMessage } from '@/lib/i18n/tool-ui';
 import {
   BatchLocalPromise,
   BatchRunnerPanel,
@@ -29,8 +29,8 @@ import { Button } from '@/components/ui/button';
 import { AskLinkOffer } from '@/components/ask-link-offer';
 import { announceCompletion } from '@/lib/completion';
 import { publicTools } from '@/lib/tools/catalog';
+import { loadImage, optimizeImage } from '@/lib/tools/image-optimize';
 import {
-  calculateContainDimensions,
   extensionForRasterType,
   supportedRasterTypes,
   type RasterFormat,
@@ -64,98 +64,6 @@ function formatDuration(durationMs: number) {
   return durationMs < 1000
     ? `${durationMs.toFixed(0)} ms`
     : `${(durationMs / 1000).toFixed(2)} s`;
-}
-
-/*
-  The bundle is a parameter, not a hook call: these three are plain helpers
-  outside the component, and the message a thrown Error carries is shown to the
-  reader, so it has to be in the reader's language.
-*/
-function loadImage(url: string, t: ToolUiMessages) {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(t.optimizeDecodeFailed));
-    image.src = url;
-  });
-}
-
-function encodeCanvas(
-  canvas: HTMLCanvasElement,
-  format: RasterFormat,
-  quality: number,
-  t: ToolUiMessages,
-) {
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (blob) =>
-        blob ? resolve(blob) : reject(new Error(t.optimizeEncodeFailed)),
-      format,
-      quality,
-    );
-  });
-}
-
-async function optimizeImage({
-  t,
-  url,
-  width,
-  height,
-  maxWidth,
-  maxHeight,
-  format,
-  quality,
-}: {
-  t: ToolUiMessages;
-  url: string;
-  width: number;
-  height: number;
-  maxWidth: number;
-  maxHeight: number;
-  format: RasterFormat;
-  quality: number;
-}) {
-  const decoded = await loadImage(url, t);
-  const dimensions = calculateContainDimensions(
-    width,
-    height,
-    maxWidth,
-    maxHeight,
-  );
-  const canvas = document.createElement('canvas');
-  canvas.width = dimensions.width;
-  canvas.height = dimensions.height;
-  const context = canvas.getContext('2d', {
-    alpha: format !== 'image/jpeg',
-  });
-  if (!context) throw new Error(t.optimizeCanvasUnavailable);
-  if (format === 'image/jpeg') {
-    context.fillStyle = '#ffffff';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  }
-  context.imageSmoothingEnabled = true;
-  context.imageSmoothingQuality = 'high';
-  context.drawImage(decoded, 0, 0, canvas.width, canvas.height);
-  const blob = await encodeCanvas(canvas, format, quality / 100, t);
-  // WebKit answers a WebP request with a PNG rather than failing. Keep what the
-  // browser produced and name the file for the format it actually is.
-  const encodedFormat = blob.type as RasterFormat;
-  if (!supportedRasterTypes.has(encodedFormat)) {
-    throw new Error(t.optimizeNoFormat);
-  }
-  const validationUrl = URL.createObjectURL(blob);
-  try {
-    const validationImage = await loadImage(validationUrl, t);
-    if (
-      validationImage.naturalWidth !== dimensions.width ||
-      validationImage.naturalHeight !== dimensions.height
-    ) {
-      throw new Error(t.optimizeDimensionCheckFailed);
-    }
-  } finally {
-    URL.revokeObjectURL(validationUrl);
-  }
-  return { blob, format: encodedFormat, ...dimensions };
 }
 
 function baseName(fileName: string) {
