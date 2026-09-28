@@ -163,7 +163,7 @@ describe('a hello from an integrating page', () => {
     ]) {
       expect(
         readIntegratorHello(hello({ request: unknown }), ORIGIN),
-        String(unknown),
+        JSON.stringify(unknown),
       ).toBeNull();
     }
   });
@@ -284,7 +284,7 @@ describe('what the integrating page reads back', () => {
           type: OPENTOOLS_RESULT,
           file: fake,
         }),
-        String(fake),
+        JSON.stringify(fake) ?? 'blob',
       ).toBeNull();
     }
   });
@@ -305,7 +305,9 @@ describe('what the integrating page reads back', () => {
         type: OPENTOOLS_READY,
       }),
     ).toBeNull();
-    expect(readOpenToolsMessage({ channel: FIX_PROTOCOL, version: 1 })).toBeNull();
+    expect(
+      readOpenToolsMessage({ channel: FIX_PROTOCOL, version: 1 }),
+    ).toBeNull();
   });
 
   it('normalises an unrecognised cancellation reason rather than trusting it', () => {

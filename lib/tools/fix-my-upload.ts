@@ -27,7 +27,7 @@
  * everything else rests on:
  *
  * **1. The destination origin is read from the MessageEvent, never from the
- * URL.** A `?return=https://example.test` parameter would be an attacker-typed
+ * URL.** A `?return=` parameter naming an origin would be an attacker-typed
  * destination: send someone a link with your own origin in it and the file comes
  * to you. So there is no such parameter and no allowlist to configure. The
  * integrator's page must `postMessage` to this window first, and the origin we
@@ -57,11 +57,7 @@
  * channel between two windows on the same machine; the page's `connect-src
  * 'none'` is unchanged and still means no script here can open a connection.
  */
-import {
-  findAskRequest,
-  sanitiseAskValues,
-  type AskRequest,
-} from './ask-link';
+import { findAskRequest, sanitiseAskValues, type AskRequest } from './ask-link';
 import type { RecipeValues } from './recipe-link';
 
 /**
@@ -127,7 +123,7 @@ export function isReturnableOrigin(origin: unknown): origin is string {
     url.hostname.endsWith('.localhost');
   if (url.protocol === 'http:') return local;
   if (url.protocol !== 'https:') return false;
-  // `new URL('https://x.test/').origin` normalises away the path; comparing
+  // `URL`'s own `origin` getter normalises away the path; comparing
   // against it rejects anything that was not already a bare origin.
   return url.origin === origin;
 }
@@ -136,7 +132,7 @@ export function isReturnableOrigin(origin: unknown): origin is string {
  * How an origin is shown to the person deciding whether to send their file.
  *
  * The host alone, because that is the part a person can actually judge —
- * `example.test`, not `https://example.test`. The scheme is not dropped from
+ * `example.test`, not the whole origin. The scheme is not dropped from
  * the *decision*, only from the sentence: `isReturnableOrigin` has already
  * refused anything but https outside local development.
  */
@@ -193,7 +189,11 @@ export function readIntegratorHello(
 
 /** The envelope every outbound message shares. */
 function envelope(type: string) {
-  return { channel: FIX_PROTOCOL, version: FIX_PROTOCOL_VERSION, type } as const;
+  return {
+    channel: FIX_PROTOCOL,
+    version: FIX_PROTOCOL_VERSION,
+    type,
+  } as const;
 }
 
 /** Sent once this window has understood the request and is ready for the person. */
