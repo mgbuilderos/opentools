@@ -381,13 +381,22 @@ export function SupportDualView() {
                 </div>
 
                 <div className="mt-3 sm:mt-6">
+                  {/*
+                    Height 44px, not 36. Measured on the live page at 375px
+                    these buttons were 275x36 — under Apple's 44pt minimum
+                    touch target and under Google's 48dp — and they are the
+                    only controls on the site that take money, so a mis-tap
+                    here is the one that actually costs something. 44 clears
+                    the stricter of the two thresholds to hit without making
+                    the three tier cards taller than the phone.
+                  */}
                   <a
                     href={getBuyMeACoffeeUrl(
                       coffeesFor(tier.usdValue) ?? undefined,
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="focus-ring inline-flex h-9 w-full items-center justify-center rounded-lg border bg-foreground px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
+                    className="focus-ring inline-flex h-11 w-full items-center justify-center rounded-lg border bg-foreground px-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
                   >
                     Send {tier.amountUsd} ☕
                   </a>
@@ -409,7 +418,7 @@ export function SupportDualView() {
               href={getBuyMeACoffeeUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="focus-ring inline-flex h-9 w-full shrink-0 items-center justify-center rounded-lg border bg-card px-3 text-xs font-semibold transition-colors hover:bg-muted sm:w-auto"
+              className="focus-ring inline-flex h-11 w-full shrink-0 items-center justify-center rounded-lg border bg-card px-4 text-sm font-semibold transition-colors hover:bg-muted sm:w-auto"
             >
               Choose an amount
             </a>
