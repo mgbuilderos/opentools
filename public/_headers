@@ -130,6 +130,34 @@
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
+# The inference runtime and the model weights. These are the two heaviest files
+# on the site — 12.08 MB and 4.36 MB on disk, 3.09 MB and 4.36 MB over the wire
+# — and until 2026-09-27 they were the largest assets with no rule of their own,
+# so they inherited the catch-all's `max-age=0, must-revalidate`. Measured live
+# that day: both answered
+# `public, max-age=0, must-revalidate, s-maxage=3600, stale-while-revalidate=86400`
+# while `/ocr/*` two rules down was already `immutable`. A returning visitor
+# therefore had to re-check 7.45 MB of unchanged binary before the background
+# remover would start, and a browser that had evicted the 12 MB entry — large
+# entries go first — fetched all of it again.
+#
+# Unlike `/_next/static/*` these filenames come from the upstream package and do
+# not change between versions, so `immutable` is only truthful because the URL
+# carries a content version in its query string: `?v=<first 16 hex of sha256>`,
+# from `lib/immutable-assets.ts`. Cloudflare keys its cache on the query string
+# and matches this rule on the path alone — verified against production
+# 2026-09-27, `?v=a<n>` answering MISS then HIT and `?v=b<n>` answering MISS,
+# all three carrying the rule below. `lib/immutable-assets.test.ts` fails if a
+# token stops matching the bytes in `public/`, which is what stops a replaced
+# binary from being served from a year-old entry under an unchanged URL.
+/ort/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
+/models/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
 /image/background-remover
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
@@ -160,9 +188,14 @@
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
 
+# `public/wasm/` holds one vendored decoder binary and no page, so it takes the
+# same year-long `immutable` policy as `/ort/*` above, on the same condition:
+# the URL carries a content version from `lib/immutable-assets.ts`.
 /wasm/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'none'; img-src 'self' blob: data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; webrtc 'block'; worker-src 'self' blob:
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
 
 # OCR pages keep the default `connect-src 'none'`. The directly-created worker
 # alone may read its same-origin core, WASM and English data from this prefix.

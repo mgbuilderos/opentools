@@ -2,6 +2,7 @@
 
 import * as ort from 'onnxruntime-web/wasm';
 
+import { immutableAssetUrl } from '@/lib/immutable-assets';
 import type {
   BackgroundRemovalRequest,
   BackgroundRemovalResponse,
@@ -16,9 +17,12 @@ import {
 const workerScope = self as DedicatedWorkerGlobalScope;
 
 // Runtime and weights are same-origin static assets; nothing else is loaded.
+// Both carry a content version so they can be served `immutable` — see
+// `lib/immutable-assets.ts`. Together they are 7.45 MB over the wire, and
+// without the version they were re-validated on every single visit.
 ort.env.wasm.wasmPaths = {
-  mjs: '/ort/ort-wasm-simd-threaded.mjs',
-  wasm: '/ort/ort-wasm-simd-threaded.wasm',
+  mjs: immutableAssetUrl('/ort/ort-wasm-simd-threaded.mjs'),
+  wasm: immutableAssetUrl('/ort/ort-wasm-simd-threaded.wasm'),
 };
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.proxy = false;
@@ -27,10 +31,15 @@ let session: Promise<ort.InferenceSession> | undefined;
 
 function getSession() {
   if (!session) {
-    const created = ort.InferenceSession.create(U2NETP.modelPath, {
-      executionProviders: ['wasm'],
-      graphOptimizationLevel: 'all',
-    });
+    // `U2NETP.modelPath` stays the bare path because tests resolve it against
+    // `public/`; the version is added here, at the one place it is fetched.
+    const created = ort.InferenceSession.create(
+      immutableAssetUrl(U2NETP.modelPath),
+      {
+        executionProviders: ['wasm'],
+        graphOptimizationLevel: 'all',
+      },
+    );
     // A failed load must not be cached, or every retry fails.
     created.catch(() => {
       session = undefined;
