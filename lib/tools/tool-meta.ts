@@ -300,6 +300,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Read selectable English text from screenshots, photos and scanned images.',
   },
+  'file-compiler': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Describe what the finished image must satisfy and have the result checked against it.',
+  },
   'image-exact-size': {
     version: '0.1.0-canary',
     shortDescription:

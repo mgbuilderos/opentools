@@ -48,6 +48,7 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/video/resize',
   '/video/crop',
   '/image/exact-size',
+  '/do',
   '/image/heic-to-jpg',
   '/image/heic-to-png',
   '/data/excel',

@@ -4677,6 +4677,12 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     op: 'developer-data text text',
   },
   {
+    href: '/do',
+    name: 'Say what your file must be',
+    terms:
+      'against byte check checked compiler convert describe finished format hit image limit meet one pixel prove requirement resize result rule satisfie satisfy spec step together upload',
+  },
+  {
     href: '/documents/agenda-generator',
     name: 'Agenda generator',
     terms: 'create duration meeting planned timed total',

@@ -432,6 +432,12 @@ const CATEGORY_HUB_LINKS: Readonly<Record<string, readonly CategoryHubLink[]>> =
     ],
     Image: [
       {
+        href: '/do',
+        name: 'Say What Your File Must Be',
+        description:
+          'Drop an image, say what the finished file has to satisfy, and your browser does the work and then checks the result against every requirement you gave it.',
+      },
+      {
         href: '/image/solid-background-remover',
         name: 'Remove White Background Online',
         description:
