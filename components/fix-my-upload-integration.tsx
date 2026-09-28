@@ -23,8 +23,8 @@ import {
  * there, and the failure looks like our bug on their site. Building the strings
  * from `FIX_PROTOCOL`, `FIX_PROTOCOL_VERSION` and the message names means a
  * rename breaks the snippet in the same commit, and
- * `fix-my-upload-integration.test.ts` asserts the generated text still contains
- * them.
+ * `lib/tools/fix-my-upload-snippet.test.ts` asserts they are still interpolated
+ * rather than pasted in.
  *
  * THE ORIGIN IS READ AT RUNTIME rather than written in. Partly because a
  * literal would be wrong on a self-hosted instance, where this page is served
