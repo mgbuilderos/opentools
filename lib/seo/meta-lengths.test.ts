@@ -85,6 +85,43 @@ describe('title and description lengths', () => {
     ).toEqual([]);
   });
 
+  /**
+   * `app/layout.tsx` appends the site name to every title, so a page that also
+   * ends its own title with it ships the name twice. `/do` went live serving
+   * "Say what your file must be \u2014 OpenTools \u00b7 OpenTools", and nothing in this
+   * file caught it: the duplicate-title test compares whole titles *between*
+   * pages, and the length test was satisfied because both copies still fit.
+   * `lib/seo/hub-tool-meta.ts` records the same mistake being made once before.
+   *
+   * The rule is deliberately narrow. Seven pages name the site inside a
+   * sentence -- "Privacy -- what OpenTools does and does not collect",
+   * "Embed OpenTools -- free, no key, no upload" -- and they read correctly and
+   * must keep passing; an "exactly once" rule would have failed all seven. What
+   * cannot be right is a trailing brand *tag*: a separator, the name, and then
+   * the suffix the layout is about to add anyway. Measured before it was
+   * written: 1,532 titles, 2 matches, 7 grammatical uses untouched.
+   */
+  const TRAILING_BRAND = /[\u2014\u2013|:\u00b7-]\s*OpenTools\s*$/;
+
+  /**
+   * `/proof` has the identical defect and is not this lane's to fix:
+   * `app/proof/page.tsx` is claimed by an active session (product telemetry,
+   * 2026-09-28), and editing a claimed file is a section 2 violation. Raised
+   * under section 7 instead, and listed here so the guard can land now rather
+   * than wait on someone else's branch -- the page this test is for is the
+   * *next* one, not this one. Delete the entry when that lane fixes its title;
+   * the guard then covers it with no further change.
+   */
+  const KNOWN_UNFIXED_ELSEWHERE = new Set(['/proof']);
+
+  it('names the site once, not twice, in every served title', () => {
+    const doubled = pages
+      .filter((page) => !KNOWN_UNFIXED_ELSEWHERE.has(page.route))
+      .filter((page) => TRAILING_BRAND.test(page.title))
+      .map((page) => `${page.route} -> ${servedTitle(page)}`);
+    expect(doubled).toEqual([]);
+  });
+
   it('gives no two pages the same description', () => {
     expect(
       sharedValues(pages.map((page) => [servedDescription(page), page.route])),

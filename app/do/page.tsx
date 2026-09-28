@@ -53,7 +53,7 @@ export const metadata = {
     `lib/seo/meta-lengths.test.ts`, which is the length a search result shows
     before it cuts the sentence off.
   */
-  title: 'Say what your file must be — OpenTools',
+  title: 'Say what your file must be',
   description:
     'Drop an image, say what the finished file must satisfy, and your browser does the work — then reads the file back to check it against every requirement.',
   alternates: { canonical: CANONICAL },
@@ -63,7 +63,7 @@ export const metadata = {
   // `site` card is the one all 1,335 tool pages inherit, and this page is a tool
   // page — a card of its own would be a separate design decision, not a fix.
   openGraph: {
-    title: 'Say what your file must be — OpenTools',
+    title: 'Say what your file must be · OpenTools',
     description:
       'Drop an image, say what the finished file must satisfy, and your browser does the work — then reads the file back to check it against every requirement.',
     url: CANONICAL,
