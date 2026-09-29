@@ -176,11 +176,53 @@ describe('PDF, image, and commercial core tool page depth', () => {
     expect(claiming).toContain('/pdf/merge');
   });
 
-  it('spells out the offline mechanism only where the test loads that page', () => {
+  it('claims offline use only for pages something runs offline', () => {
+    /*
+      THE HALF THE TEST ABOVE CANNOT SEE, and the reason this one exists.
+      Precache membership means the page's bytes are held, so the address opens.
+      What the badge says — "Kept for use with the network off", and in
+      `lib/seo/tool-json-ld.ts` the structured claim "Works offline after the
+      first visit" — is that the tool *works*, which is a different fact.
+
+      They came apart once already. `/pdf/compress` was in `PAGES` from the
+      start, opened offline, and could not compress a thing until 2026-09-24,
+      because the engine it starts with `new Worker(...)` was not in the payload.
+      Every check the repository had was green: the route was in the list, the
+      page returned 200, the file input worked.
+
+      So a route may only carry the badge if `e2e/offline-cold-start.spec.ts`
+      names it — that file disconnects the browser, opens the page from the
+      payload and makes the tool finish a real piece of work, failing on any
+      request the payload does not hold. Matched on the quoted route in a
+      `route:` entry, which is how that table is written.
+    */
     const spec = readFileSync(
-      path.join(projectRoot, 'e2e/share-target.spec.ts'),
+      path.join(projectRoot, 'e2e/offline-cold-start.spec.ts'),
       'utf8',
     );
+    for (const route of TOOL_PAGE_DEPTH_ROUTES) {
+      if (!toolPageDepth(route)!.offlineReady) continue;
+      expect(
+        spec.includes(`route: '${route}'`),
+        `${route} claims offline use, but e2e/offline-cold-start.spec.ts never runs its tool offline`,
+      ).toBe(true);
+    }
+  });
+
+  it('spells out the offline mechanism only where the test loads that page', () => {
+    /*
+      Both files, because either one loading the page offline is proof, and they
+      name a route differently. `share-target.spec.ts` writes the literal
+      `page.goto('/pdf/merge')`; `offline-cold-start.spec.ts` drives a table and
+      navigates to `entry.route`, so the route appears there as a `route:` key.
+      Matching both forms is what keeps this from insisting on the older file.
+    */
+    const spec = ['e2e/share-target.spec.ts', 'e2e/offline-cold-start.spec.ts']
+      .map((file) => readFileSync(path.join(projectRoot, file), 'utf8'))
+      .join('\n');
+    const loadedOffline = (route: string) =>
+      spec.includes(`page.goto('${route}')`) ||
+      spec.includes(`route: '${route}'`);
     for (const route of TOOL_PAGE_DEPTH_ROUTES) {
       const depth = toolPageDepth(route)!;
       const prose = [
@@ -192,8 +234,8 @@ describe('PDF, image, and commercial core tool page depth', () => {
         continue;
       }
       expect(
-        spec.includes(`page.goto('${route}')`),
-        `${route} describes working with the network off, but e2e/share-target.spec.ts never loads it offline`,
+        loadedOffline(route),
+        `${route} describes working with the network off, but neither e2e/share-target.spec.ts nor e2e/offline-cold-start.spec.ts loads it offline`,
       ).toBe(true);
     }
   });

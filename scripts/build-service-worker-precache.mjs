@@ -204,6 +204,34 @@ function referencedAssets(htmlFiles) {
  * bundles are self-contained — `pdf-merge.worker` imports nothing (536 KB
  * raw, 215 KB gzipped, shared by the compressor, the merger and the page
  * tools, so one entry makes three tools work rather than one).
+ *
+ * ONE LEVEL IS ENOUGH, RE-MEASURED 2026-09-29, and this is the answer to the
+ * obvious worry about the function above: it reads the assets the HTML names
+ * and no further, so a worker started from a chunk that is only reached by a
+ * lazy import would be missed. Against this build there is no such chunk. Take
+ * each precached page, take the `/_next/static/*.js|css` its HTML names, then
+ * close over every further module those files import — both the absolute
+ * `/_next/static/...` form and the relative `./chunk-<hash>.js` form the
+ * bundler actually emits between chunks. The closure adds **nothing**: for all
+ * nine pages the set of modules reachable at runtime is exactly the set the
+ * HTML already lists (`/pdf/compress`: 47 in the HTML, 47 in the closure). This
+ * build modulepreloads a route's whole graph, so there is no second level for a
+ * worker URL to hide in. Worth re-running rather than trusting if the bundler or
+ * its chunking strategy changes; the shape of the check is in this paragraph.
+ *
+ * Two smaller facts from the same measurement, both load-bearing. Every
+ * `new Worker(new URL(...))` target is emitted as an **absolute**
+ * `/_next/static/workers/...` string — zero relative worker references across
+ * the build — so the pattern below cannot miss one by form. And the precached
+ * pages reference **no** `/_next/static/*` file that is not `.js` or `.css`: no
+ * font, no wasm, no `.mjs`, so the extensions `referencedAssets` matches are the
+ * whole surface for these nine routes rather than a convenient subset.
+ *
+ * What proves the outcome rather than the reasoning is
+ * `e2e/offline-cold-start.spec.ts`: every route in `PAGES` opened from this
+ * payload with the browser disconnected and then made to finish a real piece of
+ * work, failing on any request the payload does not hold. That file reads
+ * `PAGES` below, so a page added here without being run offline turns it red.
  */
 function referencedWorkers(assetFiles) {
   const found = new Set();

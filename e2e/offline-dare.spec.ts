@@ -23,9 +23,10 @@ import { setFilesWhenLive } from './upload';
  *      carries: `scripts/build-service-worker-precache.mjs` holds **nine**
  *      routes, deliberately, because every path in that list costs every
  *      installed visitor its bytes on every worker update.
- *      `e2e/share-target.spec.ts` already proves those nine with the browser
- *      disconnected, and `lib/seo/tool-page-depth.test.ts` refuses an offline
- *      claim on any page outside the list.
+ *      `e2e/offline-cold-start.spec.ts` proves all nine with the browser
+ *      disconnected — each one opened from the payload and then made to finish
+ *      a real piece of work — and `lib/seo/tool-page-depth.test.ts` refuses an
+ *      offline claim on any page outside the list.
  *
  *   2. **Finish the job with no network** — the tool is open, the scripts are
  *      already in the tab, the network goes away, and the work still completes.
@@ -52,6 +53,18 @@ import { setFilesWhenLive } from './upload';
  * built on `setOffline` alone hung all three tests at 30s while measuring
  * nothing. That is why `e2e/share-target.spec.ts` skips every engine but
  * Chromium for its offline work.
+ *
+ * WORSE THAN UNRELIABLE IN WEBKIT, AND WORTH KNOWING BEFORE REACHING FOR IT
+ * AGAIN. Measured on 2026-09-29: with the context offline, WebKit fails an
+ * `<img>` given an in-memory `blob:` URL — a URL that involves no network by
+ * construction — with "WebKit encountered an internal error". The same blob
+ * loads with the flag off. So `setOffline` in WebKit does not emulate a lost
+ * network; it breaks local resource loading, and every tool here that decodes a
+ * blob of its own making then looks broken. `/image/optimize` fails twice over
+ * on it: once previewing the file that was chosen, once re-decoding the encoded
+ * bytes to confirm the output dimensions. Anything measuring these tools
+ * offline in WebKit has to cut the network the way this file does, not with the
+ * flag.
  *
  * Aborting every request is engine-independent and *stricter* than the offline
  * flag: the flag asks the browser to behave as if disconnected, whereas this
@@ -96,6 +109,8 @@ type Dare = {
   readonly reacted: (page: Page) => ReturnType<Page['locator']>;
   readonly run: (page: Page) => Promise<void>;
   readonly finished: (page: Page) => ReturnType<Page['locator']>;
+  /** How many results this dare must produce, when more than one file goes in. */
+  readonly results?: number;
 };
 
 const DARES: readonly Dare[] = [
@@ -114,6 +129,30 @@ const DARES: readonly Dare[] = [
     finished: (page) => page.getByText('Done — SHA-256 calculated'),
   },
   {
+    /*
+      One file, which is different code from the batch below it and is the path
+      a visitor takes first. A single file fills `source` and enables "Optimize
+      image"; two or more hand the page to the batch runner instead, and the two
+      encode, validate and present their results through different components.
+      Until 2026-09-29 only the batch was covered here, so an offline failure in
+      the single-file path had nowhere to show up — and that is the path a
+      report of "/image/optimize cannot work offline" would be about.
+    */
+    route: '/image/optimize',
+    what: 'optimizes one image',
+    files: { name: 'photo.png', mimeType: 'image/png', buffer: testPng() },
+    reacted: (page) => page.getByRole('button', { name: 'Optimize image' }),
+    run: async (page) => {
+      const optimize = page.getByRole('button', { name: 'Optimize image' });
+      // Enabled only once the chosen file has been decoded, which is the step
+      // that has to happen before the network is allowed to matter.
+      await expect(optimize).toBeEnabled({ timeout: 20_000 });
+      await optimize.click();
+    },
+    // The save control exists only once a real encoded blob does.
+    finished: (page) => page.locator('[data-receipt-download]'),
+  },
+  {
     route: '/image/optimize',
     what: 'optimizes three images at once',
     files: [
@@ -128,6 +167,7 @@ const DARES: readonly Dare[] = [
     // Three, not one: a batch that stops after the first file offline would
     // still show a result and would still be broken.
     finished: (page) => page.locator('[data-batch-result="done"]'),
+    results: 3,
   },
 ];
 
@@ -161,10 +201,12 @@ for (const dare of DARES) {
       ).toBeVisible({ timeout: 30_000 });
 
       // A tool that silently degraded — caught nothing, produced an empty
-      // result and called it done — would satisfy a visibility check. The
-      // batch case asserts the full count for the same reason.
-      if (dare.route === '/image/optimize') {
-        await expect(dare.finished(page)).toHaveCount(3);
+      // result and called it done — would satisfy a visibility check. So a
+      // dare that hands over several files says how many results it expects.
+      // Keyed on the dare and not on the route: two dares share
+      // `/image/optimize`, and the single-file one produces exactly one.
+      if (dare.results !== undefined) {
+        await expect(dare.finished(page)).toHaveCount(dare.results);
       }
 
       // The page must not have told the visitor it is offline. The service
