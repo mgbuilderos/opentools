@@ -222,7 +222,10 @@ describe('completion value receipt', () => {
     // `announceCompletion` itself so no individual tool has to remember it.
     expect(event.detail.metrics).toEqual([
       { label: 'Rows counted', value: '12' },
-      { label: 'Sent from this page', value: '0 bytes' },
+      // Renamed 2026-09-28. The meter counts fetch/XHR/beacon — the three
+      // initiators that can carry a file body — and an image is none of them,
+      // so this was never a count of every byte the page sent. See ADR-020.
+      { label: 'File bytes sent from this page', value: '0 bytes' },
     ]);
     vi.unstubAllGlobals();
   });
