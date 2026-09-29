@@ -267,28 +267,30 @@ test.describe('a counter can never damage the work', () => {
 
   test('an offline completion succeeds, and nothing is replayed afterwards', async ({
     page,
-    context,
   }) => {
     /*
-     * `/text/word-counter`, not `/image/optimize`, and the reason is a real
-     * finding rather than a convenience. Measured 2026-09-28 in both engines:
-     * the optimiser never produces a download with the network cut, because
-     * clicking Run starts a worker whose script it fetches at that moment, and
-     * the worker is not in the service worker's precache. So `/image/optimize`
-     * is NOT an offline-capable tool today, and using it here would have made
-     * this test fail for a reason that has nothing to do with telemetry.
+     * THE NETWORK IS CUT WITH `page.route(... abort)`, NOT `context.setOffline`,
+     * and that is a correction rather than a preference.
      *
-     * The word counter runs entirely inside the chunk the page already loaded,
-     * which is what makes it a truthful subject for "the job still finishes
-     * with no network". It also goes through `text-workbench-tool.tsx`, one of
-     * the shared workbenches that covers hundreds of operations at a single
-     * `announceCompletion`.
+     * Measured 2026-09-29 on one build, both engines: WebKit's `setOffline`
+     * does not emulate a lost network, it breaks local resource loading — an
+     * `<img>` given an in-memory `blob:` URL fails with `NotReadableError`, and
+     * a blob URL involves no network by construction. Half this site's tools
+     * hand the browser a blob of their own output to decode, so a WebKit run
+     * built on that flag reports working tools as broken. Route-abort is
+     * engine-independent and stricter, and it is what `e2e/offline-dare.spec.ts`
+     * already uses.
+     *
+     * `/text/word-counter` because its work happens inside the chunk the page
+     * has already loaded, so "the job still finishes with no network" is a
+     * claim about the product rather than about what the bundler happened to
+     * defer.
      */
     const watcher = watchSignals(page);
     await page.goto('/text/word-counter');
     await page.waitForLoadState('networkidle');
 
-    await context.setOffline(true);
+    await page.route('**/*', (route) => route.abort());
     await page
       .locator('main textarea')
       .first()
@@ -300,29 +302,19 @@ test.describe('a counter can never damage the work', () => {
     /*
      * WAIT FOR THE ATTEMPT WHILE STILL OFFLINE. Reading the count the moment
      * the result appears gives zero — the `request` event trails the `img.src`
-     * assignment by a little — and then the event arrives during the
-     * reconnection wait below and reads exactly like a replay. That is what
-     * this test reported on its first run, and it was the test's timing rather
-     * than the product's behaviour.
+     * assignment — and the event then arrives during the reconnection wait
+     * below and reads exactly like a replay. That is what this test reported on
+     * its first run, and it was the test's timing, not the product.
      */
     await expect
       .poll(() => watcher.paths(), { timeout: 10_000 })
       .toEqual(['/telemetry/v1/completed-web.svg']);
     const attemptedOffline = watcher.paths().length;
 
-    /*
-     * Whether the engine then reports that attempt as failed is not asserted:
-     * measured 2026-09-28, neither Chromium nor WebKit had emitted
-     * `requestfailed` by the time the result was on screen, and waiting for
-     * one would be a flake dressed as a guarantee. The requirement is that the
-     * job finishes with no network and that reconnecting produces no second
-     * request — and nothing is queued because there is nowhere to queue it:
-     * `recordProductSignal` sets `img.src` and forgets, and `onerror` only
-     * releases the reference.
-     */
-
-    // Back online. Nothing may arrive late: there is no queue and no replay.
-    await context.setOffline(false);
+    // Network back. Nothing may arrive late: there is no queue and no replay,
+    // because there is nowhere to queue one — `recordProductSignal` sets
+    // `img.src` and forgets, and `onerror` only releases the reference.
+    await page.unroute('**/*');
     await page.waitForTimeout(3000);
     expect(
       watcher.paths().length,
