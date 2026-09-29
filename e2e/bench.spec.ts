@@ -42,7 +42,10 @@ test.describe('The Bench', () => {
 
     await expect(page).toHaveURL(/\/batch$/u);
     await expect(
-      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
+      page.getByRole('heading', {
+        level: 1,
+        name: /Run one operation over a whole folder/u,
+      }),
     ).toBeVisible();
   });
 
@@ -56,7 +59,10 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
+      page.getByRole('heading', {
+        level: 1,
+        name: /Run one operation over a whole folder/u,
+      }),
     ).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
@@ -114,7 +120,10 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
+      page.getByRole('heading', {
+        level: 1,
+        name: /Run one operation over a whole folder/u,
+      }),
     ).toBeVisible();
     await page
       .getByLabel('Upload file to inspect and detect tools')
@@ -174,6 +183,68 @@ test.describe('The Bench', () => {
     );
     expect(texts.toSorted()).toEqual(['2', '3']);
     expect(external).toEqual([]);
+  });
+
+  /**
+   * The capability report was computed and exported for weeks before anything
+   * rendered it, so the check that matters is that the page says it — and that
+   * it says the right one, which depends on operations the page resolves at
+   * runtime rather than on anything this file passes in.
+   */
+  test('says whether the chain streams or buffers the files it is given', async ({
+    page,
+  }) => {
+    await page.goto('/batch');
+    await page
+      .getByLabel('Upload file to inspect and detect tools')
+      .setInputFiles([
+        {
+          name: 'clip.mp4',
+          mimeType: 'video/mp4',
+          buffer: Buffer.concat([
+            Buffer.from([0, 0, 0, 0x18]),
+            Buffer.from('ftypmp42'),
+            Buffer.alloc(4096, 7),
+          ]),
+        },
+      ]);
+
+    // Nothing is claimed while the chosen operation takes text, not a file.
+    await expect(page.getByTestId('capacity-note')).toHaveCount(0);
+
+    await pickStep(
+      page,
+      'file-signature inspector',
+      'file-workbench:file-signature-inspector',
+    );
+    await page
+      .getByRole('button', {
+        name: 'Add File-signature inspector',
+        exact: true,
+      })
+      .click();
+    await expect(page.getByTestId('capacity-note')).toContainText(
+      'Every step streams, so file size is not the limit here.',
+    );
+    await expect(
+      page.getByTestId('pipeline-steps').getByText('streams'),
+    ).toHaveCount(1);
+
+    // One buffering step is enough to make the chain buffer, wherever it sits.
+    await pickStep(
+      page,
+      'gzip file compressor',
+      'file-workbench:file-compressor',
+    );
+    await page
+      .getByRole('button', { name: 'Add Gzip file compressor', exact: true })
+      .click();
+    await expect(page.getByTestId('capacity-note')).toHaveText(
+      'Step 2 reads the whole file into memory. How much it can take is not something this page can honestly put a number on, so a large file may simply fail.',
+    );
+    await expect(
+      page.getByTestId('pipeline-steps').getByText('streams'),
+    ).toHaveCount(1);
   });
 
   test('shares a chain as a link that carries the steps and nothing else', async ({
@@ -243,7 +314,10 @@ test.describe('The Bench', () => {
 
     await page.goto('/batch');
     await expect(
-      page.getByRole('heading', { level: 1, name: /Run one operation over a whole folder/u }),
+      page.getByRole('heading', {
+        level: 1,
+        name: /Run one operation over a whole folder/u,
+      }),
     ).toBeVisible();
     await page.waitForTimeout(500);
     await page

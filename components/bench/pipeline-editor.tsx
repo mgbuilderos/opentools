@@ -16,6 +16,8 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getOperation, KERNEL_OPERATIONS } from '@/lib/kernel/registry';
+import { DEFAULT_STREAM_CHUNK_BYTES } from '@/lib/kernel/stream';
+import { formatBytes } from '@/lib/pipeline/capacity';
 import { chainVerdict } from '@/lib/pipeline/chain';
 import type { KernelOperation, OperationInputKind } from '@/lib/kernel/types';
 import {
@@ -51,6 +53,14 @@ interface PipelineEditorProps {
   pipeline: Pipeline;
   onChange: (pipeline: Pipeline) => void;
   disabled?: boolean;
+}
+
+/** What `streamable` means for this step, in the step's own numbers. */
+function streamingNote(chunkSizeBytes: number | undefined): string {
+  const bounded = chunkSizeBytes ?? DEFAULT_STREAM_CHUNK_BYTES;
+  return bounded === 0
+    ? 'This step reads none of the file’s content — only its name, size and type — so the file is never held in memory.'
+    : `This step reads the file in bounded pieces of at most ${formatBytes(bounded)}, so its memory does not grow with the file.`;
 }
 
 const SHAPE_LABEL: Readonly<Record<OperationInputKind, string>> = {
@@ -533,6 +543,14 @@ export function PipelineEditor({
                       <span className="text-muted-foreground">
                         — {step.source}
                       </span>
+                      {descriptor?.streamable ? (
+                        <span
+                          className="ml-2 whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+                          title={streamingNote(descriptor.chunkSizeBytes)}
+                        >
+                          streams
+                        </span>
+                      ) : null}
                     </span>
                     <Button
                       variant="outline"

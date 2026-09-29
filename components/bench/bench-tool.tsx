@@ -19,8 +19,11 @@ import { PipelineEditor } from '@/components/bench/pipeline-editor';
 import { SmartDropzone } from '@/components/smart-dropzone';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { detectDeviceMemory } from '@/lib/kernel/capability';
+import type { DeviceMemorySnapshot } from '@/lib/kernel/capability';
 import { getOperation, KERNEL_OPERATIONS } from '@/lib/kernel/registry';
 import type { KernelOperation } from '@/lib/kernel/types';
+import { describeCapacity, pipelineCapacity } from '@/lib/pipeline/capacity';
 import { runPipeline } from '@/lib/pipeline/run';
 import type { Pipeline, PipelineTrace } from '@/lib/pipeline/types';
 import { validate } from '@/lib/pipeline/validate';
@@ -39,6 +42,21 @@ import {
   type BenchInput,
   type BenchOutput,
 } from '@/lib/bench/run';
+
+/**
+ * `detectDeviceMemory` reads browser-only globals and builds a fresh object,
+ * so it is memoised here: `useSyncExternalStore` compares snapshots by
+ * reference and would loop on a new one each call. The server snapshot is
+ * empty because prerendering has no device to measure, which makes the
+ * prerendered sentence the honest "no ceiling to quote" one rather than a
+ * number belonging to the build machine.
+ */
+const NO_DEVICE: DeviceMemorySnapshot = {};
+let measuredDevice: DeviceMemorySnapshot | undefined;
+function deviceSnapshot(): DeviceMemorySnapshot {
+  measuredDevice ??= detectDeviceMemory();
+  return measuredDevice;
+}
 
 type Outcome = Awaited<ReturnType<typeof runBench>>[number];
 type BenchFileHandle = {
@@ -143,11 +161,38 @@ export function BenchTool() {
     () => Boolean(window.showDirectoryPicker),
     () => false,
   );
+  const device = useSyncExternalStore(
+    () => () => {},
+    deviceSnapshot,
+    () => NO_DEVICE,
+  );
   const pipelineActive = pipeline.steps.length > 0;
   const pipelineErrors = useMemo(
     () => (pipelineActive ? validate(pipeline) : []),
     [pipeline, pipelineActive],
   );
+  /**
+   * What this run can be told about size, given the steps and this device.
+   * The chain is the pipeline when one is set up, and the single chosen
+   * operation otherwise — which is what the runner does too.
+   */
+  const capacity = useMemo(() => {
+    const chain = pipelineActive
+      ? pipeline.steps
+          .map((step) => getOperation(step.op, step.source))
+          .filter((item) => item !== undefined)
+      : [operation];
+    return pipelineCapacity(chain, device);
+  }, [device, operation, pipeline, pipelineActive]);
+  const largestInput = useMemo(
+    () =>
+      inputs.length
+        ? Math.max(...inputs.map((input) => input.file.size))
+        : undefined,
+    [inputs],
+  );
+  const capacityNote = describeCapacity(capacity, largestInput);
+
   const updatePipeline = useCallback((nextPipeline: Pipeline) => {
     setPipeline(nextPipeline);
     setPreview(null);
@@ -487,6 +532,14 @@ export function BenchTool() {
               ? `${inputs.length} files ready (${inputMode.replace('-', ' ')})`
               : 'No files selected.'}
           </p>
+          {capacityNote ? (
+            <p
+              className="text-sm text-muted-foreground lg:col-span-3"
+              data-testid="capacity-note"
+            >
+              {capacityNote}
+            </p>
+          ) : null}
         </section>
 
         {/*

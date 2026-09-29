@@ -52,6 +52,16 @@ operation touches the Blob not at all. Both properties were checked by mutation:
 narrowing a prefix from 64 bytes to 8, and dropping the window's base offset,
 each fail the suite.
 
+`reportOperationCapability` turns a descriptor into what can honestly be said
+about the size of file it accepts, and `lib/pipeline/capacity.ts` does the same
+for a chain, for the sentence `/batch` shows under the file picker. Two rules
+keep that sentence honest. The input ceiling comes from the **first** step
+alone, because only the first step is handed the file that was picked and
+nothing knows whether the steps after it grew or shrank the data. And where
+there is no number — a browser reporting no heap ceiling, a step declaring no
+working set — the page says there is no number, rather than quoting one side of
+a figure it does not have.
+
 `LocalFileInput.byteWindow` marks the resulting bounded view and says where it
 begins. The workbench's own integrity check requires `bytes.length === size`;
 without the marker it could not tell a deliberate bounded read from a read that
