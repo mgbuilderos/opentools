@@ -35,9 +35,7 @@ import {
 
 const TOOL_URLS = LIVE_TOOL_ROUTES.flatMap((route) => {
   const ids = operationIdsForRoute(route);
-  return ids?.size
-    ? [...ids].map((id) => `${route}?tool=${id}`)
-    : [route];
+  return ids?.size ? [...ids].map((id) => `${route}?tool=${id}`) : [route];
 });
 
 /** Buttons that visibly offer to do the work when nothing runs on its own. */
@@ -65,13 +63,23 @@ async function probe(page: Page): Promise<Probe> {
     if (!main) {
       return { canType: false, canPress: false, hasResult: false, heading: '' };
     }
-    const all = (selector: string) => Array.from(main.querySelectorAll(selector));
+    const all = (selector: string) =>
+      Array.from(main.querySelectorAll(selector));
     // A styled drop zone hides its real <input type=file> behind the visible
     // "browse" affordance, so file inputs count whether or not they are painted.
+    //
+    // `input[type=number]` is in this list because a number box is somewhere to
+    // type, and leaving it out made this spec report a calculator as a page with
+    // nothing to use. `/science/coulomb-s-law-calculator` renders three of them
+    // and no action button, because the science workbench runs on its own as you
+    // type -- so with `number` uncounted the verdict fell to `hasResult`, which
+    // is a race against the 900 ms wait below. It lost that race once in a
+    // 1,997-URL sweep on a loaded machine and was reported as a dead end, which
+    // is the one thing it is not: a visitor can type in it.
     const canType =
       all('input[type=file]').length > 0 ||
       all(
-        'textarea, [contenteditable=""], [contenteditable="true"], input[type=text], input[type=search], input[type=url], input[type=email], input[type=tel], input:not([type])',
+        'textarea, [contenteditable=""], [contenteditable="true"], input[type=text], input[type=search], input[type=url], input[type=email], input[type=tel], input[type=number], input:not([type])',
       ).some(shown);
     const canPress = all('button')
       .filter(shown)
