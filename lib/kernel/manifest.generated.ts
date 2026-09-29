@@ -7338,7 +7338,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 4096,
   },
   {
     id: 'hex-viewer',
@@ -7368,7 +7369,8 @@ export const KERNEL_MANIFEST = [
     },
     runtime: 'pure',
     deterministic: true,
-    streamable: false,
+    streamable: true,
+    chunkSizeBytes: 65536,
   },
   {
     id: 'hex-patch-generator',

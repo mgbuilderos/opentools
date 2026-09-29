@@ -1,3 +1,5 @@
+import type { StreamWindowParams } from './file-adapter';
+
 /**
  * How many leading bytes each streamable file-workbench operation reads.
  *
@@ -27,3 +29,25 @@ export const FILE_STREAM_PREFIX_BYTES: Readonly<Record<string, number>> = {
   'mime-type-detector': 64,
   'magic-byte-inspector': 64,
 };
+
+/**
+ * The byte window each streamable viewer reads, named by its own settings.
+ *
+ * These two do not read the start of a file, they read the part the visitor
+ * asked for — two hundred and fifty-six bytes at offset ten million, say. The
+ * buffered path sliced that window out of a fully materialised file; the
+ * streamed path reads the window and nothing else, so the ceiling on what is
+ * held is the operation's own length limit rather than the file size.
+ *
+ * `maxLength` mirrors the bound the operation already validates against, so a
+ * setting the operation would reject can never widen the read.
+ */
+export const FILE_STREAM_WINDOWS: Readonly<Record<string, StreamWindowParams>> =
+  {
+    'hex-viewer': { offset: 'offset', length: 'length', maxLength: 65_536 },
+    'binary-file-viewer': {
+      offset: 'offset',
+      length: 'length',
+      maxLength: 4096,
+    },
+  };

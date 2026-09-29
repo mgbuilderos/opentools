@@ -6,13 +6,13 @@ export interface LocalFileInput {
   lastModified: number;
   bytes: Uint8Array;
   /**
-   * Set when `bytes` holds only the leading slice of a file that was never
-   * buffered whole — the streaming path an adapter takes for an operation that
-   * declares how many leading bytes it reads. `size` stays the real file size
-   * so metadata stays truthful, and the operation must not read past
-   * `bytes.length`.
+   * Set when `bytes` holds only part of a file that was never buffered whole —
+   * the bounded read an adapter performs for an operation that declares which
+   * bytes it needs. `bytes[0]` is byte `byteWindow.start` of the file, `size`
+   * stays the real file size so metadata stays truthful, and the operation
+   * must not read outside the window.
    */
-  bytesArePrefix?: boolean;
+  byteWindow?: { start: number };
 }
 
 export interface GeneratedFile {
@@ -464,11 +464,14 @@ function validateFiles(
   for (const file of files) {
     // Integrity, not capacity: a declared size that disagrees with the bytes
     // actually present means the read went wrong, whatever the size is. A
-    // declared prefix is the one case where fewer bytes than `size` is
-    // correct — it may still never hold more than the file it came from.
-    if (file.bytesArePrefix) {
-      if (file.bytes.length > file.size)
-        throw new Error(`${file.name} holds more bytes than it declares.`);
+    // declared window is the one case where fewer bytes than `size` is
+    // correct — and it must still fall inside the file it came from.
+    if (file.byteWindow) {
+      if (
+        file.byteWindow.start < 0 ||
+        file.byteWindow.start + file.bytes.length > file.size
+      )
+        throw new Error(`${file.name} declares bytes outside the file.`);
     } else if (file.size !== file.bytes.length)
       throw new Error(
         `${file.name} byte length does not match its declared size.`,
@@ -637,6 +640,20 @@ function renamedStem(name: string, mode: string) {
                 .join(' ')
             : words.join('-').toLocaleLowerCase();
   return `${value || 'file'}${extension}`;
+}
+/**
+ * The file's bytes from an absolute offset, whether the input arrived buffered
+ * whole or as a bounded window read straight out of a Blob. Without it an
+ * operation slicing at an absolute offset would index into the window as
+ * though the window began at byte zero, and quietly show the wrong bytes.
+ */
+function byteWindowOf(file: LocalFileInput, offset: number, length: number) {
+  const start = offset - (file.byteWindow?.start ?? 0);
+  if (start < 0 || start > file.bytes.length)
+    throw new Error(
+      `${file.name} was read from byte ${file.byteWindow?.start ?? 0}, which does not reach offset ${offset}.`,
+    );
+  return file.bytes.slice(start, Math.min(start + length, file.bytes.length));
 }
 function hexView(bytes: Uint8Array, offset: number) {
   const rows: string[] = [];
@@ -1042,10 +1059,7 @@ export async function runFileWorkbenchOperation(
       validateFiles(files, 1, 1);
       const offset = integer(values, 'offset', 0, files[0].size);
       const length = integer(values, 'length', 1, 4096);
-      const bytes = files[0].bytes.slice(
-        offset,
-        Math.min(offset + length, files[0].size),
-      );
+      const bytes = byteWindowOf(files[0], offset, length);
       return result(
         `Showing ${bytes.length} bytes from offset ${offset}`,
         Array.from(
@@ -1059,10 +1073,7 @@ export async function runFileWorkbenchOperation(
       validateFiles(files, 1, 1);
       const offset = integer(values, 'offset', 0, files[0].size);
       const length = integer(values, 'length', 1, 65_536);
-      const bytes = files[0].bytes.slice(
-        offset,
-        Math.min(offset + length, files[0].size),
-      );
+      const bytes = byteWindowOf(files[0], offset, length);
       return result(
         `Showing ${bytes.length} bytes from offset ${offset}`,
         hexView(bytes, offset) || 'Offset is at end of file.',

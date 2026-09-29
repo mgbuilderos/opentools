@@ -5,7 +5,10 @@ import { createStreamingFileInput } from '../stream';
 import type { BlobSliceSource, StreamingFileInput } from '../stream';
 import type { KernelOperation, OperationResult } from '../types';
 import { fileOperations } from './file';
-import { FILE_STREAM_PREFIX_BYTES } from './file-stream-prefixes';
+import {
+  FILE_STREAM_PREFIX_BYTES,
+  FILE_STREAM_WINDOWS,
+} from './file-stream-prefixes';
 
 const MIB = 1024 * 1024;
 
@@ -112,14 +115,52 @@ async function runStreamed(operation: KernelOperation) {
 }
 
 const STREAMABLE_IDS = Object.keys(FILE_STREAM_PREFIX_BYTES);
+const WINDOW_IDS = Object.keys(FILE_STREAM_WINDOWS);
+
+/** One file, since the window viewers accept exactly one. */
+function singleBuffered(bytes: Uint8Array): readonly LocalFileInput[] {
+  return [
+    {
+      name: 'clip.mp4',
+      type: 'video/mp4',
+      size: bytes.length,
+      lastModified: 1_700_000_000_000,
+      bytes,
+    },
+  ];
+}
+
+function singleStreamed(bytes: Uint8Array) {
+  const counted = countingSource(bytes);
+  return {
+    ranges: counted.ranges,
+    streams: [
+      createStreamingFileInput(counted.source, {
+        name: 'clip.mp4',
+        type: 'video/mp4',
+        lastModified: 1_700_000_000_000,
+      }),
+    ],
+  };
+}
+
+async function settle(run: Promise<OperationResult>) {
+  return run.then(
+    (value) => ({ ok: true as const, value }),
+    (error: unknown) => ({
+      ok: false as const,
+      message: error instanceof Error ? error.message : String(error),
+    }),
+  );
+}
 
 describe('streamable file-workbench operations', () => {
-  it('declares every operation in the prefix table, and only those', () => {
+  it('declares every operation in the prefix and window tables, and only those', () => {
     const declared = fileOperations
       .filter((operation) => operation.streamable === true)
       .map((operation) => operation.id)
       .toSorted();
-    expect(declared).toEqual(STREAMABLE_IDS.toSorted());
+    expect(declared).toEqual([...STREAMABLE_IDS, ...WINDOW_IDS].toSorted());
   });
 
   it('publishes the declared prefix as the retained chunk size', () => {
@@ -227,6 +268,71 @@ describe('streamable file-workbench operations', () => {
     ).toContain('ISO Base Media');
     // One bounded slice, never the whole two megabytes.
     expect(slices).toEqual([[0, 64]]);
+  });
+
+  it('publishes a window ceiling as the retained chunk size', () => {
+    for (const [id, params] of Object.entries(FILE_STREAM_WINDOWS))
+      expect(operationFor(id).chunkSizeBytes).toBe(params.maxLength);
+  });
+
+  /**
+   * A window viewer addresses bytes by absolute offset, so a window read that
+   * forgot where it began would show the wrong part of the file and say
+   * nothing about it. Every case below — including the settings the operation
+   * itself rejects — must come out the same on both paths.
+   */
+  describe.each(WINDOW_IDS)('%s', (id) => {
+    const bytes = sample(
+      'clip.mp4',
+      'video/mp4',
+      [0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34, 0x32],
+    ).bytes;
+    const maxLength = FILE_STREAM_WINDOWS[id]!.maxLength;
+
+    it.each([
+      ['the start of the file', '0', '64'],
+      ['a window deep inside it', String(MIB + 12_345), '256'],
+      ['a window overrunning the end', String(bytes.length - 10), '4096'],
+      ['the very end', String(bytes.length), '16'],
+      ['the operation ceiling', '1024', String(maxLength)],
+      ['a length past the ceiling', '0', String(maxLength + 1)],
+      ['an offset past the file', String(bytes.length + 1), '16'],
+      ['a setting that is not a number', 'not-a-number', '16'],
+    ])('matches the buffered read at %s', async (_case, offset, length) => {
+      const operation = operationFor(id);
+      const streamed = await settle(
+        operation.run({
+          text: '',
+          files: [],
+          streams: singleStreamed(bytes).streams,
+          params: { offset, length },
+          signal: new AbortController().signal,
+        }),
+      );
+      const buffered = await settle(
+        operation.run({
+          text: '',
+          files: singleBuffered(bytes),
+          params: { offset, length },
+          signal: new AbortController().signal,
+        }),
+      );
+      expect(streamed).toEqual(buffered);
+    });
+
+    it('reads only the window it was asked for', async () => {
+      const operation = operationFor(id);
+      const streamed = singleStreamed(bytes);
+      const offset = MIB + 12_345;
+      await operation.run({
+        text: '',
+        files: [],
+        streams: streamed.streams,
+        params: { offset: String(offset), length: '256' },
+        signal: new AbortController().signal,
+      });
+      expect(streamed.ranges).toEqual([[offset, offset + 256]]);
+    });
   });
 
   it('leaves every other file operation buffered', () => {

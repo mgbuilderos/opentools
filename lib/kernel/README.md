@@ -27,24 +27,38 @@ per file instead of a buffered `LocalFileInput`. `executePipeline` builds those
 straight from the visitor's `File`, so the Blob is never read whole on the way
 in, and `chunkSizeBytes` states the largest buffer the implementation keeps.
 
-Seven file-workbench operations declare it today. They are not streaming
+Nine file-workbench operations declare it today. They are not streaming
 codecs: they are the operations whose answer never needed the whole file. A
 signature check reads twelve bytes; a metadata listing reads none; both were
 allocating a two-gigabyte video to do it. `adapters/file-stream-prefixes.ts`
-records how many leading bytes each one reads, `adaptFileWorkbench` slices the
-Blob down to that, and the operation body is untouched.
+records what each one reads, `adaptFileWorkbench` slices the Blob down to that,
+and the operation bodies stay as they were.
 
-Declaring too few bytes would be a quietly wrong answer rather than a crash, so
+They read in two shapes. Seven read a **prefix** — a fixed count of leading
+bytes, `0` for the ones that never look at content at all. The hex and binary
+viewers read a **window** instead, because the bytes they want are the ones the
+visitor asked for: `FILE_STREAM_WINDOWS` names the settings carrying the offset
+and the length, and `maxLength` mirrors the bound the operation already
+validates against, so a setting the operation would reject can never widen the
+read.
+
+Declaring too little would be a quietly wrong answer rather than a crash, so
 `adapters/file-adapter.test.ts` runs every listed operation twice — once over
-the prefix, once over the complete file — and fails unless the two outputs are
-identical. It also asserts that no read starts past zero or ends past the
-declared prefix, and that a zero-byte operation touches the Blob not at all.
+the bounded read, once over the complete file — and fails unless the two agree,
+errors included. The corpus tail is patterned rather than zeroed so that an
+operation reading past its bound cannot accidentally match. The test also
+asserts that a read never falls outside what was declared, and that a zero-byte
+operation touches the Blob not at all. Both properties were checked by mutation:
+narrowing a prefix from 64 bytes to 8, and dropping the window's base offset,
+each fail the suite.
 
-`LocalFileInput.bytesArePrefix` marks the resulting bounded view. Without it
-the workbench's own integrity check, which requires `bytes.length === size`,
-could not tell a deliberate prefix from a read that went wrong; with it, the
-strict check still runs on every buffered input and on any file short enough to
-arrive complete.
+`LocalFileInput.byteWindow` marks the resulting bounded view and says where it
+begins. The workbench's own integrity check requires `bytes.length === size`;
+without the marker it could not tell a deliberate bounded read from a read that
+went wrong, and with it the strict check still runs on every buffered input and
+on any file short enough to arrive complete. `byteWindowOf` translates an
+absolute offset against that base, which is what lets one operation body serve
+a buffered file and a window read out of a Blob.
 
 ## Regenerating the manifest
 
