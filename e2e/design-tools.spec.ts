@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
+import { typeUntilVisible } from './hydration';
 import { setFilesWhenLive } from './upload';
 
 const fixturesDir = path.join(
@@ -136,12 +137,22 @@ test.describe('Designer Tools Suite', () => {
         page.getByText('CMYK Print Reproduction Notice'),
       ).toBeVisible();
 
-      // Change HEX input
-      const hexInput = page.getByLabel('HEX Color Code');
-      await hexInput.fill('#ff5722');
-
-      // Check RGB and HSL update
-      await expect(page.getByText('rgb(255, 87, 34)')).toBeVisible();
+      /*
+       * The hex box is a controlled input (`value={hexInput}`), which makes the
+       * prerender race destructive rather than merely lossy: typed before React
+       * is listening, the text is not just ignored, it is written back over from
+       * state on the next render. A single `fill` then leaves the page showing
+       * its default colour and `rgb(255, 87, 34)` never appears -- a flaky
+       * failure in CI on 2026-09-28 (WebKit, which hydrates later under load).
+       *
+       * So type until the conversion shows. `./hydration.ts` explains why each
+       * attempt clears the box first.
+       */
+      await typeUntilVisible(
+        page.getByLabel('HEX Color Code'),
+        '#ff5722',
+        page.getByText('rgb(255, 87, 34)'),
+      );
     });
 
     test('extracts dominant color palette using Median Cut quantization', async ({

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { readMp4 } from '../lib/tools/video/mp4';
+import { actUntilVisible } from './hydration';
 
 const fixtureDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -22,12 +23,37 @@ const fixtureDir = path.join(
  */
 const VIDEO = 'tone-video.mp4';
 
+/**
+ * Hands the page a video and waits until it has actually taken it.
+ *
+ * The wait is not decoration. This page renders its whole trim panel under
+ * `loaded && video`, and `onRun` opens with `if (!loaded) return;`, so a file set
+ * before React was listening does not produce a disabled button -- it produces
+ * no button, and `make()` then waits out its timeout on an element that is never
+ * coming. Observed as a flaky failure in CI on 2026-09-28.
+ *
+ * The proof is deliberately the union of both answers this page can give: the
+ * Make button for a video it can read, an alert for one it cannot. That keeps
+ * one helper honest for all thirteen callers, including the WebM case whose
+ * whole point is that no button appears.
+ */
 async function choose(page: Page, name = VIDEO, buffer?: Buffer) {
-  await page.getByLabel('Choose a video file').setInputFiles({
-    name,
-    mimeType: name.endsWith('.mov') ? 'video/quicktime' : 'video/mp4',
-    buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
-  });
+  // Read the fixture once, outside the retry: it is local disk, it cannot be
+  // the thing that failed, and re-reading it on every attempt would only make
+  // a slow attempt slower.
+  const bytes = buffer ?? (await readFile(path.join(fixtureDir, name)));
+  const answered = page
+    .getByRole('alert')
+    .or(page.getByRole('button', { name: /^Make the (clip|GIF)$/u }));
+  await actUntilVisible(
+    () =>
+      page.getByLabel('Choose a video file').setInputFiles({
+        name,
+        mimeType: name.endsWith('.mov') ? 'video/quicktime' : 'video/mp4',
+        buffer: bytes,
+      }),
+    answered.first(),
+  );
 }
 
 async function make(page: Page) {

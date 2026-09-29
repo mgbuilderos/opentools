@@ -59,6 +59,84 @@ const PROBE_TIMEOUT = 500;
 const HYDRATION_TIMEOUT = 30_000;
 
 /**
+ * How long one attempt waits when the page has real work to do before it can
+ * answer — parsing an MP4 the test just handed it, say. Longer than
+ * `PROBE_TIMEOUT`, which only has to cover a re-render.
+ */
+const SETTLE_TIMEOUT = 3_000;
+
+/**
+ * Repeats an input action until the page visibly answers it.
+ *
+ * The same race as `waitForHydration`, for the inputs that cannot be probed
+ * with a string. A file chosen before React is listening is set on the node and
+ * never reaches state, and the three ways that then surfaces all look like
+ * different bugs:
+ *
+ * - the run button stays `disabled`, because it is gated on the file —
+ *   `/file/hash-calculator` renders `disabled={!file || busy}`;
+ * - the run button never *exists*, because the whole panel is conditional on the
+ *   parsed file — `/video/trim` renders its controls under `loaded && video`, so
+ *   the click waits on an element that is never coming;
+ * - nothing at all happens, because the handler guards itself — that page's
+ *   `onRun` opens with `if (!loaded) return;`.
+ *
+ * One cause, so one wait. `proof` is whatever the page shows once it has taken
+ * the input, and it is the caller's job to pick something only React can
+ * produce. Re-running the action is safe where a text `fill` would deadlock:
+ * a file input carries a `FileList` rather than a string value, so React has no
+ * same-value short circuit to hit.
+ */
+export async function actUntilVisible(
+  act: () => Promise<void>,
+  proof: Locator,
+  settleTimeout = SETTLE_TIMEOUT,
+): Promise<void> {
+  await expect(async () => {
+    await act();
+    await expect(proof).toBeVisible({ timeout: settleTimeout });
+  }).toPass({ timeout: HYDRATION_TIMEOUT });
+}
+
+/** `actUntilVisible` for a page that answers by enabling a control. */
+export async function actUntilEnabled(
+  act: () => Promise<void>,
+  control: Locator,
+  settleTimeout = SETTLE_TIMEOUT,
+): Promise<void> {
+  await expect(async () => {
+    await act();
+    await expect(control).toBeEnabled({ timeout: settleTimeout });
+  }).toPass({ timeout: HYDRATION_TIMEOUT });
+}
+
+/**
+ * Types into a controlled text input until its effect is on the page.
+ *
+ * For a field whose output is text rather than a button — a colour converter
+ * showing `rgb(...)` for the hex it was given. A controlled input makes the
+ * pre-hydration case worse than a lost keystroke: React renders `value` from its
+ * own state, so on hydrating it writes the old value back over what was typed,
+ * and the single `fill` most specs do is not merely ignored but undone.
+ *
+ * Clears before each attempt for the reason in this module's header: React
+ * ignores an event carrying the value it already believes the node holds, so a
+ * retry that re-types the same string cannot re-announce the field.
+ */
+export async function typeUntilVisible(
+  field: Locator,
+  text: string,
+  proof: Locator,
+  settleTimeout = PROBE_TIMEOUT,
+): Promise<void> {
+  await expect(async () => {
+    await field.fill('');
+    await field.fill(text);
+    await expect(proof).toBeVisible({ timeout: settleTimeout });
+  }).toPass({ timeout: HYDRATION_TIMEOUT });
+}
+
+/**
  * Waits until `field` is one React is listening to, then leaves it empty.
  *
  * `enabledOnInput` is any control the page enables once the field is non-empty —
@@ -122,4 +200,53 @@ export async function waitForEnabled(
  */
 export async function networkSettled(page: Page): Promise<void> {
   await page.waitForLoadState('networkidle');
+}
+
+/**
+ * Waits until React has hydrated the page at all, with no control to watch.
+ *
+ * A last resort with a narrow purpose: some tests must act on the page before
+ * any product observable exists. `install-prompt.spec.ts` is the case that
+ * forced this. It dispatches a fake `beforeinstallprompt`, and
+ * `lib/pwa-install.ts` attaches its listener at module scope precisely so a real
+ * one is not missed — but module scope still means *when the bundle runs*. An
+ * event dispatched before that is lost for good, because the browser hands over
+ * exactly one and so does the test. The banner then never appears, and the
+ * failure reads as "the install offer is broken".
+ *
+ * Nothing product-level can be waited on there: the banner is deliberately
+ * withheld until a job finishes, which is the thing under test, and the captured
+ * prompt is module state the page does not expose.
+ *
+ * So this checks React's own marker on a hydrated node. That is an internal, and
+ * naming it as one is the point: it is stable across React 16–19 and is the
+ * standard probe, but if a future React drops the `__reactFiber$` prefix this
+ * fails loudly on a timeout rather than silently going back to not waiting —
+ * which is the failure mode worth choosing.
+ *
+ * Prefer `waitForHydration`, `actUntilVisible` or `typeUntilVisible` whenever the
+ * page gives you something real to wait on.
+ */
+export async function waitForReact(
+  page: Page,
+  timeout = HYDRATION_TIMEOUT,
+): Promise<void> {
+  await page.waitForFunction(
+    () =>
+      [
+        document.querySelector('#tool'),
+        document.body,
+        document.body.firstElementChild,
+      ].some(
+        (node) =>
+          node !== null &&
+          Object.keys(node).some(
+            (key) =>
+              key.startsWith('__reactFiber$') ||
+              key.startsWith('__reactContainer$'),
+          ),
+      ),
+    undefined,
+    { timeout },
+  );
 }
