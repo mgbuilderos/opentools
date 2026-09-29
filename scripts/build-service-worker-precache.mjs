@@ -40,6 +40,20 @@
  * `/_next/static/*` in `public/_headers` holding files a returning visitor
  * already has.
  *
+ * MEASURE THAT FROM A CLEAN TREE OR THE ANSWER IS BACKWARDS. Re-checked
+ * 2026-09-29: two builds of the same commit produce a byte-identical payload
+ * and the same id, but only with nothing uncommitted.
+ * `resolvePinnedBuildId` returns `null` for a dirty tree on purpose -- two
+ * different builds must not share one cache key -- and `null` restores the
+ * random id, so the chunk hashes move again. Measured on a dirty worktree with
+ * four files edited, two builds renamed **18 of the 85 precached paths**
+ * (`app-shell`, `catalog`, `index`, `image-optimize-tool`, `pdf-compress-tool`
+ * and eight more), which renamed every chunk the 10 precached HTML pages
+ * reference, so those pages changed too: 28 of 85 entries different, a new
+ * payload hash, a new worker. Anyone asking "how many KB does my change add
+ * here" from that state sees the whole 1.46 MB move and reads it as a
+ * regression in their own change. Commit first, build twice, compare.
+ *
  * Runs after `prerender-to-assets.mjs`, because it reads what that wrote.
  */
 import { createHash } from 'node:crypto';
