@@ -79,16 +79,29 @@ function precachedPages(): readonly string[] {
 }
 
 /** Inputs, built while there is still a network. They are not under test. */
-interface Inputs {
-  readonly pdf: Buffer;
-  readonly photoPdf: Buffer;
-  readonly png: Buffer;
-}
+/**
+ * What a route needs handed to it, and nothing more.
+ *
+ * Only the fixtures an entry declares in `needs` are built, and all of them are
+ * built before the network goes away — so the offline window contains the
+ * tool's own work and nothing else, which is what this file measures.
+ *
+ * Building all three for every route cost the gate real time for nothing: five
+ * of the nine want no PDF at all, and `testPhotoPdf` draws its photos through
+ * the browser rather than assembling bytes in Node. The end-to-end gate already
+ * runs ~45 minutes on one CI worker and goes flaky under load, so a fixture
+ * nobody reads is not free.
+ */
+type InputName = 'pdf' | 'photoPdf' | 'png';
+
+type Inputs = Partial<Record<InputName, Buffer>>;
 
 interface ColdStart {
   readonly route: string;
   /** What finishing the job means here, for the test name. */
   readonly what: string;
+  /** Fixtures to build before disconnecting. Anything not listed is not built. */
+  readonly needs?: readonly InputName[];
   readonly run: (page: Page, inputs: Inputs) => Promise<void>;
   readonly finished: (page: Page) => ReturnType<Page['locator']>;
 }
@@ -126,8 +139,9 @@ const COLD_STARTS: readonly ColdStart[] = [
   {
     route: '/pdf/page-tools',
     what: 'rewrites a three-page PDF',
+    needs: ['pdf'],
     run: async (page, inputs) => {
-      await chooseThroughPicker(page, inputs.pdf, 'three-pages.pdf');
+      await chooseThroughPicker(page, inputs.pdf!, 'three-pages.pdf');
       const apply = page.getByRole('button', { name: 'Apply PDF changes' });
       await expect(apply).toBeEnabled({ timeout: 30_000 });
       await apply.click();
@@ -138,12 +152,13 @@ const COLD_STARTS: readonly ColdStart[] = [
   {
     route: '/pdf/merge',
     what: 'merges two PDFs into one',
+    needs: ['pdf'],
     run: async (page, inputs) => {
       await setFilesWhenLive(
         page.locator('input[type="file"]').first(),
         [
-          { name: 'one.pdf', mimeType: 'application/pdf', buffer: inputs.pdf },
-          { name: 'two.pdf', mimeType: 'application/pdf', buffer: inputs.pdf },
+          { name: 'one.pdf', mimeType: 'application/pdf', buffer: inputs.pdf! },
+          { name: 'two.pdf', mimeType: 'application/pdf', buffer: inputs.pdf! },
         ],
         page.getByRole('button', { name: /^Merge 2 PDFs$/u }),
       );
@@ -157,8 +172,9 @@ const COLD_STARTS: readonly ColdStart[] = [
     /* The route the 2026-09-24 defect was found on. */
     route: '/pdf/compress',
     what: 'compresses a photo-heavy PDF',
+    needs: ['photoPdf'],
     run: async (page, inputs) => {
-      await chooseThroughPicker(page, inputs.photoPdf, 'photos.pdf');
+      await chooseThroughPicker(page, inputs.photoPdf!, 'photos.pdf');
       await page.getByRole('slider', { name: 'Photo quality' }).fill('50');
       const compress = page.getByRole('button', { name: 'Compress PDF' });
       await expect(compress).toBeEnabled({ timeout: 30_000 });
@@ -170,6 +186,7 @@ const COLD_STARTS: readonly ColdStart[] = [
   {
     route: '/pdf/compress-offline',
     what: 'reports itself ready and then compresses',
+    needs: ['photoPdf'],
     run: async (page, inputs) => {
       /*
         This page's whole subject is the network being off, and the panel is
@@ -185,7 +202,7 @@ const COLD_STARTS: readonly ColdStart[] = [
       ).toContainText('The compression engine, stored for offline use: yes', {
         timeout: 15_000,
       });
-      await chooseThroughPicker(page, inputs.photoPdf, 'offline.pdf');
+      await chooseThroughPicker(page, inputs.photoPdf!, 'offline.pdf');
       await page.getByRole('slider', { name: 'Photo quality' }).fill('50');
       const compress = page.getByRole('button', { name: 'Compress PDF' });
       await expect(compress).toBeEnabled({ timeout: 30_000 });
@@ -197,6 +214,7 @@ const COLD_STARTS: readonly ColdStart[] = [
   {
     route: '/image/optimize',
     what: 'optimizes one image',
+    needs: ['png'],
     run: async (page, inputs) => {
       /*
         The single-file path, not the batch. They are different code — one file
@@ -207,7 +225,7 @@ const COLD_STARTS: readonly ColdStart[] = [
       */
       await setFilesWhenLive(
         page.locator('input[type="file"]').first(),
-        { name: 'photo.png', mimeType: 'image/png', buffer: inputs.png },
+        { name: 'photo.png', mimeType: 'image/png', buffer: inputs.png! },
         page.getByRole('button', { name: 'Optimize image' }),
       );
       const optimize = page.getByRole('button', { name: 'Optimize image' });
@@ -364,11 +382,14 @@ test.describe('cold start with no network', () => {
       await page.goto('/');
       const worker = await activeWorker(context, page);
       await waitForPrecache(worker);
-      const inputs: Inputs = {
-        pdf: await testPdf(3),
-        photoPdf: await testPhotoPdf(page, 2),
-        png: testPng(),
-      };
+      // Built while there is still a network, and only what this route asked
+      // for. The fixtures are the input, not the thing under test.
+      const inputs: Inputs = {};
+      for (const name of entry.needs ?? []) {
+        if (name === 'pdf') inputs.pdf = await testPdf(3);
+        if (name === 'photoPdf') inputs.photoPdf = await testPhotoPdf(page, 2);
+        if (name === 'png') inputs.png = testPng();
+      }
 
       await context.setOffline(true);
       offline = true;
