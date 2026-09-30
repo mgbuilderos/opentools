@@ -35,7 +35,10 @@ they do.
 
 Since 2026-09-28 the site may request one of **nine fixed, same-origin image
 assets** so that aggregate product questions have an answer. Owner decision;
-`decisions/ADR-020-product-signals.md` records the reasoning and the limits.
+`decisions/ADR-020-product-signals.md` **in the blueprint repository** records
+the reasoning and the limits. (The path matters: an unmerged branch introduces a
+`decisions/` directory in *this* repository carrying a different ADR-020, so the
+bare path is ambiguous until one of the two is renumbered.)
 
 ```
 /telemetry/v1/pwa-installed.svg          /telemetry/v1/install-prompt-shown.svg

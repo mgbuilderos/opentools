@@ -341,10 +341,10 @@ export default function PrivacyPage() {
             — there is no queue and no catch-up. A self-hosted copy asks its own
             server and never contacts this one. The reasoning, and the things
             these numbers are therefore <em>not</em> allowed to be called, are
-            in{' '}
-            <code className="text-[0.9em]">
-              decisions/ADR-020-product-signals.md
-            </code>
+            in the project&rsquo;s decision record{' '}
+            <strong className="font-semibold">
+              ADR-020, &ldquo;product signals&rdquo;
+            </strong>
             .
           </p>
           <ProductSignalControl />
