@@ -1,19 +1,84 @@
 {
   "schemaVersion": 1,
-  "candidateCommit": null,
-  "artifactSha256": null,
+  "candidateCommit": "52ae672def9b9789677b2ba1770c8fc46d2a8ee5",
+  "artifactSha256": "sha256:c6eda2ffa0a5425b1d54f35d5d7cad00322b91a7b1536f398638f2324c691f65",
   "stages": {
-    "PROPERTY/FUZZ": { "status": "NOT RUN", "evidence": [] },
-    "INTEGRATION": { "status": "NOT RUN", "evidence": [] },
-    "SECURITY": { "status": "BLOCKED", "evidence": [] },
-    "LICENSE/SBOM": { "status": "BLOCKED", "evidence": [] },
-    "PERFORMANCE": { "status": "NOT RUN", "evidence": [] },
-    "PRIVACY-NETWORK": { "status": "BLOCKED", "evidence": [] },
-    "CROSS-BROWSER": { "status": "NOT RUN", "evidence": [] },
-    "ACCESSIBILITY": { "status": "NOT RUN", "evidence": [] },
-    "STAGING": { "status": "NOT RUN", "evidence": [] },
-    "SMOKE": { "status": "NOT RUN", "evidence": [] },
-    "HUMAN APPROVAL": { "status": "BLOCKED", "evidence": [] },
-    "CANARY": { "status": "NOT RUN", "evidence": [] }
+    "PROPERTY/FUZZ": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "INTEGRATION": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "SECURITY": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "LICENSE/SBOM": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "PERFORMANCE": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "PRIVACY-NETWORK": {
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    "CROSS-BROWSER": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "ACCESSIBILITY": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "STAGING": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "SMOKE": {
+      "status": "NOT RUN",
+      "evidence": []
+    },
+    "HUMAN APPROVAL": {
+      "status": "APPROVED",
+      "approvedBy": "repository owner, in a Claude Code session on 2026-09-30",
+      "evidence": [
+        "The owner instructed \"tag v0.2.0\", was then shown this gate reporting PUBLIC RELEASE BLOCKED with 12 unrun or blocked stages and the line \"HUMAN APPROVAL cannot be waived\", and chose to publish on that basis with the ledger recorded honestly rather than have the unrun stages marked as passed.",
+        "AGENTS.md: \"Only an authorized human release owner may approve production publication.\" The owner is that person; this records the approval, not a substitute for it."
+      ],
+      "note": "This approval covers pushing the v0.2.0 tag, which publishes the image to ghcr.io and creates the GitHub release. It does not cover deploying to getopentools.com, which remains a separate authorized action."
+    },
+    "CANARY": {
+      "status": "NOT RUN",
+      "evidence": []
+    }
+  },
+  "artifactDescription": "SHA-256 of dist/server/index.js, the Worker bundle wrangler deploys, built from candidateCommit by `npm run build` on 2026-09-30. No prior convention existed for this field, so what was hashed is stated rather than assumed. It binds the artifact that was reviewed locally; the image the release workflow publishes is built independently inside Docker and is not asserted to be byte-identical.",
+  "notRunAtApproval": {
+    "statement": "Recorded because the release proceeded with these outstanding. None of them was run, and none is claimed to have been. Do not read the v0.2.0 tag as evidence that any of them passed.",
+    "stages": [
+      "ACCESSIBILITY",
+      "CANARY",
+      "CROSS-BROWSER",
+      "INTEGRATION",
+      "LICENSE/SBOM",
+      "PERFORMANCE",
+      "PRIVACY-NETWORK",
+      "PROPERTY/FUZZ",
+      "SECURITY",
+      "SMOKE",
+      "STAGING"
+    ],
+    "whatWasRunInstead": [
+      "FORMAT, LINT, TYPE CHECK, UNIT, BUILD: `npm run qc` PASS, 8 gates. `npx tsc --noEmit` clean. 3632 unit tests pass.",
+      "END-TO-END (BROWSER): run locally against the self-host branch before merge \u2014 2070 passed, 39 failed, all pre-existing workbench, archive and audio specs unrelated to this release. It has never completed in CI, because the DEPENDENCY ADVISORIES gate blocks before it.",
+      "DEPENDENCY ADVISORIES: fails. 5 advisories (4 moderate, 1 high) in undici, miniflare and fast-uri, reached only through the wrangler and @cloudflare/vite-plugin devDependencies; none ships in the image. `npm audit --audit-level=high` exits 1, `--omit=dev` exits 0.",
+      "Self-host container behaviour, verified by hand in a real image built from this tree: gate configured and no credentials sent returns 401 on /, /self-host, /pdf/compress, /robots.txt and an unknown route; the right password returns 200; a wrong one 401. `docker compose up -d` starts and serves, having previously crash-looped.",
+      "HSTS, verified against the built Worker: present on /, /self-host and /pdf/compress, exactly once per response."
+    ]
   }
 }
