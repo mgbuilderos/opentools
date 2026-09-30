@@ -28,7 +28,7 @@
   <Support>https://github.com/mgbuilderos/opentools/issues</Support>
   <Project>https://getopentools.com/self-host</Project>
   <Overview>
-    568 document, image, audio, video, data and developer tools served from one
+    86 document, image, audio, video, data and developer tools served from one
     container. Every tool runs in the browser tab that opened it: the file is
     read by the page and is never sent to the server, so this container serves
     the page and never receives the document. That makes it a static site to

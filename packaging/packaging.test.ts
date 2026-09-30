@@ -1,6 +1,8 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+
+import { publicTools } from '../lib/tools/catalog';
 
 /**
  * App-store manifests are copies of facts that live elsewhere: the image name,
@@ -106,6 +108,54 @@ describe('app-store packaging manifests', () => {
       expect(declared, `${relativePath} declares no version`).not.toBeNull();
       expect(declared?.[1], relativePath).toBe(version);
     }
+  });
+
+  it('state a tool count that matches the registry', () => {
+    /*
+     * Every one of these said **568 file tools** while `publicTools` held **86** —
+     * a figure matching nothing countable in the repo (distinct job ids 915, sum
+     * of jobs 1533, sitemap entries 2092) and about to be published to the CasaOS,
+     * Umbrel and Unraid catalogues as part of v0.2.0.
+     *
+     * `lib/seo/stated-numbers.test.ts` already forbids a hand-written count in
+     * `app/` and `components/`, and cannot see these: a YAML tagline and an XML
+     * description cannot import a registry, so the number has to be typed and
+     * something has to check it.
+     *
+     * It walks the whole of `packaging/` rather than the `manifests` list above,
+     * because the first version of this test iterated that list, `umbrel-app.yml`
+     * is not in it, and the check passed with `568` still in place. A guard over a
+     * subset of the files that can carry the claim is not a guard.
+     */
+    const stated = publicTools.length;
+    const offences: string[] = [];
+    const text = /\.(ya?ml|json|xml|md|txt)$/iu;
+    const walk = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) return walk(full);
+        return text.test(entry.name) ? [full] : [];
+      });
+
+    const files = walk(path.join(projectRoot, 'packaging'));
+    expect(files.length, 'found no packaging files to check').toBeGreaterThan(
+      5,
+    );
+
+    for (const full of files) {
+      const relativePath = path.relative(projectRoot, full);
+      for (const [phrase, count] of readFileSync(full, 'utf8').matchAll(
+        /\b(\d{2,5})(?:\s+[a-z,]+)*?\s+(?:file\s+)?(?:tools?|utilities)\b/giu,
+      )) {
+        if (Number(count) !== stated) {
+          offences.push(
+            `${relativePath} says "${phrase.replace(/\s+/gu, ' ').trim()}" — ` +
+              `publicTools.length is ${stated}`,
+          );
+        }
+      }
+    }
+    expect(offences, offences.join('\n')).toEqual([]);
   });
 
   it('agree on the port inside the container', () => {

@@ -13,7 +13,7 @@ name.
 
 The dates are release dates in UTC.
 
-## 0.2.0 — 2026-09-26
+## 0.2.0 — 2026-09-30
 
 Everything merged since `v0.1.0`. The two that matter most if you run this
 yourself are the access gate and the prerendering.
