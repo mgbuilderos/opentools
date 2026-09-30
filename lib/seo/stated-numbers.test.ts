@@ -29,9 +29,24 @@ const ROOT = path.join(
   '..',
 );
 
-/** Nouns that make a number a claim about the size of this site. */
+/**
+ * Nouns that make a number a claim about the size of this site.
+ *
+ * The number does not have to sit against the noun. Until 2026-09-30 this
+ * required `\d+` immediately before it, and the copy this site actually writes
+ * puts adjectives in between: "86 MIT-licensed browser tools", "30+ on-device
+ * converters", "33 related tools". A guard that only sees the bare form is
+ * green while the claims it exists to catch go past it, which is how two typed
+ * counts — `app/templates/page.tsx` and `components/text-workbench-tool.tsx` —
+ * shipped under it.
+ *
+ * Two intervening words, because that is what the copy needs and no more. It is
+ * the same fix, and the same day, as the one made to `scripts/launch-claims.test.ts`
+ * after its own matcher went blind and took the unit gate down for every lane;
+ * `SCALE_NOUN` had the identical blind spot and was still passing.
+ */
 const SCALE_NOUN =
-  /\d{1,3}(?:,\d{3})*\+?[ \n\t]+(?:tools|tool pages|pages|utilities|guides|calculators|converters|categories)\b/giu;
+  /\d{1,3}(?:,\d{3})*\+?(?:[ \n\t]+[\w'’-]+){0,2}[ \n\t]+(?:tools|tool pages|pages|utilities|guides|calculators|converters|categories)\b/giu;
 
 /**
  * Numbers that are allowed to be literal, each with the reason it cannot rot.
@@ -50,6 +65,28 @@ const ALLOWED: ReadonlyArray<{ file: string; text: string; why: string }> = [
     file: 'components/pdf-drawing-register-tool.tsx',
     text: '500+ page',
     why: 'the size of drawing set the register reads, not a count of this site',
+  },
+];
+
+/**
+ * Offences this guard could not see until 2026-09-30, in a file this lane may
+ * not edit.
+ *
+ * This is NOT `ALLOWED`. Every entry above is a number that cannot rot. Every
+ * entry here is a number that can, is expected to, and is only listed so that
+ * widening `SCALE_NOUN` does not redden the unit gate on somebody else's file
+ * while they are asked to fix it. An entry leaves this list by the count being
+ * computed from a registry, not by anybody deciding it is fine.
+ */
+const AWAITING_ANOTHER_LANE: ReadonlyArray<{
+  file: string;
+  text: string;
+  why: string;
+}> = [
+  {
+    file: 'app/templates/page.tsx',
+    text: '30+ on-device converters',
+    why: 'Antigravity owns app/templates/** under AGENT_BOARD.md §2; requested there on 2026-09-30 that it read the registry, and it also hedges twice ("over 30+")',
   },
 ];
 
@@ -81,7 +118,7 @@ describe('numbers stated to a reader', () => {
       const source = visibleSource(file);
       for (const match of source.matchAll(SCALE_NOUN)) {
         const phrase = match[0].replace(/\s+/gu, ' ').trim();
-        const excused = ALLOWED.some(
+        const excused = [...ALLOWED, ...AWAITING_ANOTHER_LANE].some(
           (entry) =>
             entry.file === relative &&
             phrase.startsWith(entry.text.split(' ')[0]!),
@@ -96,10 +133,50 @@ describe('numbers stated to a reader', () => {
     expect(offences, offences.join('\n')).toEqual([]);
   });
 
+  /*
+   * Guards the guard.
+   *
+   * `scripts/launch-claims.test.ts` spent an unknown number of days checking
+   * nothing because its matcher stopped matching, and the only reason anybody
+   * found out is that it had an assertion like this one. A pattern that can go
+   * blind needs something that fails when it does, so the pattern is checked
+   * against phrasings taken from the copy it is supposed to catch.
+   */
+  it('still recognises a stated count, however it is phrased', () => {
+    const shouldMatch = [
+      '645+ pages',
+      '86 tools',
+      '33 related tools',
+      '30+ on-device converters',
+      '86 MIT-licensed browser tools',
+      '1,464 pages',
+      '19 categories',
+    ];
+    const missed = shouldMatch.filter(
+      (phrase) => !new RegExp(SCALE_NOUN.source, 'giu').test(phrase),
+    );
+    expect(
+      missed,
+      'SCALE_NOUN no longer matches these, so this guard is checking less ' +
+        'than it reports. Every one of them is a count of this site stated to ' +
+        'a reader.',
+    ).toEqual([]);
+
+    const shouldNotMatch = ['500 KB per tool', 'v0.2.0', '8796'];
+    const overreach = shouldNotMatch.filter((phrase) =>
+      new RegExp(SCALE_NOUN.source, 'giu').test(phrase),
+    );
+    expect(
+      overreach,
+      'SCALE_NOUN now matches something that is not a count of this site, ' +
+        'which turns every file size and version into an offence.',
+    ).toEqual([]);
+  });
+
   it('keeps the excuse list honest', () => {
     // An allowance for a file that no longer says it is an allowance nobody
     // re-read. It must describe something still in the source.
-    for (const entry of ALLOWED) {
+    for (const entry of [...ALLOWED, ...AWAITING_ANOTHER_LANE]) {
       const source = visibleSource(path.join(ROOT, entry.file));
       expect(source, `${entry.file} no longer says "${entry.text}"`).toContain(
         entry.text,

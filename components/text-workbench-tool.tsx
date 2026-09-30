@@ -230,7 +230,7 @@ export function TextWorkbenchTool({
           <header className="flex flex-col justify-between gap-5 border-b pb-7 sm:flex-row sm:items-start">
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                Text & data / 33 related tools
+                Text & data / {TEXT_OPERATIONS.length} related tools
               </p>
               {/* On a per-tool page the heading is the tool, not the workspace. */}
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
