@@ -9,7 +9,7 @@ import {
   WifiOff,
 } from 'lucide-react';
 
-import { publicTools } from '@/lib/tools/catalog';
+import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 export const revalidate = 86400;
 
@@ -134,7 +134,14 @@ const SETTINGS = [
   copy that nobody recounts is a figure that goes stale at the next release and
   is then quoted back at you by somebody evaluating the product.
 */
-const TOOL_COUNT = publicTools.length;
+/*
+  `LIVE_TOOL_CATALOG`, not `publicTools`: this was the only visitor-facing page
+  publishing the smaller registry, and it is the page the CasaOS, Umbrel and
+  Unraid manifests link to — so their tagline and this sentence disagreed by
+  6.6x for anyone who installed from a catalogue and then read it. /about,
+  /privacy, llms.txt and all 19 category hubs render the count below.
+*/
+const TOOL_COUNT = LIVE_TOOL_CATALOG.length;
 
 const AT_SCALE = [
   'No per-person licence, no seat count and nothing to true up later. It is MIT licensed, so there is no agreement that changes when your headcount does.',

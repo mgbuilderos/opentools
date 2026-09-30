@@ -92,7 +92,7 @@ description. The copy below is written to pass that.
 
 **Description:**
 
-> OpenTools is a set of 86 utilities across 19 categories — PDF, image, data,
+> OpenTools is a set of 568 utilities across 19 categories — PDF, image, data,
 > text, developer, QR, calculators and more — that run entirely inside your
 > browser tab. Your files are never uploaded — the page is
 > served with `connect-src 'none'`, so the browser itself blocks it from
@@ -118,7 +118,7 @@ got no traction — you will waste days concluding the wrong thing. Pick the
 closest of `Software`, `Tool`, `Project` or `Discussion`. If a post gets zero
 views in the first hour, check whether it was removed before assuming it flopped.
 
-**Title:** `I built 86 small tools that run entirely in your browser — the page is blocked from making network requests`
+**Title:** `I built 568 small tools that run entirely in your browser — the page is blocked from making network requests`
 
 *(For r/pdf specifically, swap the title for: `PDF tools that run in your browser — the page is physically blocked from uploading your file`. That sub is PDF-only, so lead with PDF there and nowhere else.)*
 
@@ -135,7 +135,7 @@ views in the first hour, check whether it was removed before assuming it flopped
 > five different ways to exfiltrate data on every release and fails the build if
 > any of them get through.
 >
-> 86 tools across 19 categories, and that breadth is the point — PDF and
+> 568 tools across 19 categories, and that breadth is the point — PDF and
 > image work, yes, but also CSV and JSON reshaping, text and writing helpers,
 > developer conversions, QR and barcodes, unit and finance calculators, EXIF
 > stripping, secret scrubbing for logs, date arithmetic. Every one of them runs
@@ -287,7 +287,7 @@ Ordered by how confident I am that self-promotion is allowed. **Still run the
 
 ### r/SideProject and r/somethingimade
 
-**Title:** `I built 86 tools that all run in your browser — none of them can upload your files`
+**Title:** `I built 568 tools that all run in your browser — none of them can upload your files`
 
 **Body:**
 
@@ -302,7 +302,7 @@ Ordered by how confident I am that self-promotion is allowed. **Still run the
 > different ways to exfiltrate data on every release and fails the build if any
 > get through.
 >
-> 86 tools across 19 categories: PDF, images, CSV and JSON, text, developer
+> 568 tools across 19 categories: PDF, images, CSV and JSON, text, developer
 > conversions, QR codes, unit and finance calculators, dates, EXIF stripping,
 > secret scrubbing. All free, no account, no ads, no paid tier, nothing gated.
 > One person.
@@ -315,11 +315,11 @@ Lead with the licence and the repo; these audiences care about the code, not
 the landing page. **Link the GitHub repo, not the site**, for
 r/coolgithubprojects.
 
-**Title:** `86 MIT-licensed browser tools that can't upload your files — connect-src 'none', with a test that proves it`
+**Title:** `568 MIT-licensed browser tools that can't upload your files — connect-src 'none', with a test that proves it`
 
 **Body:**
 
-> 86 client-side utilities across 19 categories — PDF, image, data, text,
+> 568 client-side utilities across 19 categories — PDF, image, data, text,
 > developer, calculators. Everything runs in the tab.
 >
 > The interesting part is the enforcement rather than the tools: pages ship
@@ -352,7 +352,7 @@ Post Tue–Thu, around 09:00–11:00 ET. Then stay at the keyboard for six hours
 and answer every comment. HN rewards the author being present more than it
 rewards the product.
 
-**Title:** `Show HN: 86 browser tools where the page is blocked from uploading your files`
+**Title:** `Show HN: 568 browser tools where the page is blocked from uploading your files`
 
 *(Keep it under 80 chars. No exclamation marks. "Show HN:" prefix is required.)*
 
@@ -381,7 +381,7 @@ rewards the product.
 > bytes, in both engines. I also checked the detector is not vacuous — pointed
 > at a page that does load a cross-origin resource, it fails.
 >
-> 86 tools across 19 categories. MIT, no account, no ads, no paid tier,
+> 568 tools across 19 categories. MIT, no account, no ads, no paid tier,
 > nothing gated, one person.
 >
 > Things it is not: it does not prove the absence of bugs, and the evidence
@@ -484,11 +484,16 @@ violation. **Still run the §3 rule check first.**
 **Prerequisite:** the image must be published *and public*, or the first comment
 will be someone reporting that `docker run` 404s.
 
-**Title:** `86 self-hosted browser tools in one container that runs with no network access at all`
+**Title:** `568 self-hosted browser tools in one container that runs with no network access at all`
 
-<!-- The count is LIVE_TOOL_CATALOG.length, 86 on 2026-09-26, not a round
+<!-- The count is LIVE_TOOL_CATALOG.length, 568 on 2026-09-30, not a round
      number chosen for effect. Re-check it before posting: a title that
-     overstates the catalogue is the first thing a commenter will count. -->
+     overstates the catalogue is the first thing a commenter will count.
+     For one day this kit stated publicTools.length instead. That is a
+     different and much smaller registry, and it contradicted /about,
+     /privacy and all 19 category hubs, every one of which renders the
+     count named above. scripts/launch-claims.test.ts now holds this file
+     to that same registry, so the two cannot drift apart again. -->
 
 **Body:**
 
@@ -498,7 +503,7 @@ will be someone reporting that `docker run` 404s.
 >
 >     docker run --rm -p 8796:8796 ghcr.io/mgbuilderos/opentools:latest
 >
-> 86 tools across 19 categories — PDF, images, CSV/JSON, text, developer
+> 568 tools across 19 categories — PDF, images, CSV/JSON, text, developer
 > conversions, QR codes, unit and finance calculators, EXIF stripping, secret
 > scrubbing for logs.
 >
@@ -528,7 +533,7 @@ and this crowd respects it.
 
 ## Rules that apply everywhere
 
-- **Lead with the breadth, not with PDF.** 86 tools across 19 categories is
+- **Lead with the breadth, not with PDF.** 568 tools across 19 categories is
   the differentiator; PDF is one example of it. Every competitor worth naming
   is single-category, so framing this as a PDF site compares it to the
   strongest opponent it has, in the one place that opponent is strongest. The
