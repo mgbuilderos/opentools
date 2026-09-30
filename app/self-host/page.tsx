@@ -5,8 +5,11 @@ import {
   Server,
   ShieldCheck,
   Terminal,
+  Users,
   WifiOff,
 } from 'lucide-react';
+
+import { publicTools } from '@/lib/tools/catalog';
 
 export const revalidate = 86400;
 
@@ -28,9 +31,9 @@ const DOCKERFILE = [REPO, '/blob/main/Dockerfile'].join('');
 const CANONICAL = ['https:', '//', 'getopentools.com', '/self-host'].join('');
 
 export const metadata: Metadata = {
-  title: 'Self-hosted file tools — run it inside your own network',
+  title: 'Self-hosted file tools for your whole organisation',
   description:
-    'Run every OpenTools utility on your own hardware from one container: one docker run, no account, no outbound network, and an optional access gate. MIT licensed.',
+    'Run every OpenTools utility on your own hardware from one container: no per-person licence, no accounts, no outbound network, and sign-in through your own proxy.',
   alternates: { canonical: CANONICAL },
 };
 
@@ -76,6 +79,15 @@ const OFFLINE_RESULTS = [
   ['/image/background-remover', '200', "'self'"],
 ] as const;
 
+/*
+   Written with the secret generated rather than typed, because the first thing
+   an operator does with a documented example secret is ship it.
+*/
+const PROXY_RUN_COMMAND = `docker run --rm -p 8796:8796 \\
+  -e OPENTOOLS_AUTH_TRUSTED_HEADER=x-forwarded-user \\
+  -e OPENTOOLS_AUTH_PROXY_SECRET="$(openssl rand -hex 32)" \\
+  ${IMAGE}`;
+
 const SETTINGS = [
   ['PORT', '8796', 'Port inside the container.'],
   [
@@ -94,11 +106,48 @@ const SETTINGS = [
     'unset',
     'Password for the optional access gate.',
   ],
+  [
+    'OPENTOOLS_AUTH_TRUSTED_HEADER',
+    'unset',
+    'Header your proxy puts the signed-in name in, such as x-forwarded-user. Requires the secret below; on its own it refuses every request.',
+  ],
+  [
+    'OPENTOOLS_AUTH_PROXY_SECRET',
+    'unset',
+    'Shared secret proving a request arrived through your proxy rather than from anything else that can reach the port.',
+  ],
+  [
+    'OPENTOOLS_AUTH_PROXY_SECRET_HEADER',
+    'x-opentools-proxy-secret',
+    'Which header carries that secret, if you would rather it were another one.',
+  ],
+  [
+    'OPENTOOLS_AUDIT_IDENTITY',
+    'unset',
+    'Set to true and this container writes the signed-in name into its own log lines. Off by default, and does nothing without the two variables above.',
+  ],
 ] as const;
+
+/*
+  Counted from the registry, never typed. `lib/seo/stated-numbers.test.ts` fails
+  the build on a hand-written page or tool count, and it is right to: a figure in
+  copy that nobody recounts is a figure that goes stale at the next release and
+  is then quoted back at you by somebody evaluating the product.
+*/
+const TOOL_COUNT = publicTools.length;
+
+const AT_SCALE = [
+  'No per-person licence, no seat count and nothing to true up later. It is MIT licensed, so there is no agreement that changes when your headcount does.',
+  'Nobody signs up, so there is no user list to provision, deprovision, or lose. Removing someone means their account with your identity provider, not one here.',
+  'No quotas and no file-size ceiling in the container, because it never receives the file. The limit is the machine the person is sitting at.',
+  `All ${TOOL_COUNT} tools, and every guide, from the one image. There is no tier in which some of them are switched off.`,
+  'No outbound network at runtime, so a thousand people using it generate no egress and nothing to review. You can run it with the network switched off entirely.',
+];
 
 const NOT_INCLUDED = [
   'No TLS. Terminate it at a reverse proxy in front of the container — the access gate is HTTP Basic, and Basic credentials over plain HTTP are readable in transit.',
-  'No SSO, no user accounts, no per-user audit trail. The gate is one shared credential for the whole instance, because anything more would mean storing people.',
+  'No user accounts, and no identity system in the container. Per-person sign-in runs in your own proxy in front — this container never holds a directory, an account or a password for anybody.',
+  'No log retention, rotation or search. The container writes one JSON line per request to its own stdout and stops there; collecting them is your log stack\u2019s job.',
   'One container, one process. No clustering, and no shared cache between replicas.',
   'No published image by default. The image builds on every pull request without being pushed; only a v* tag publishes to GitHub Container Registry.',
 ];
@@ -150,6 +199,52 @@ export default function SelfHostPage() {
             removes the remaining question — whose server sent the page — so the
             answer to &ldquo;where did this document go&rdquo; is a machine you
             already own.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            <strong>
+              It is also the answer if the number of people is the problem.
+            </strong>{' '}
+            One container serves as many of them as can reach it, and the next
+            section is about why that is not the boast it sounds like.
+          </p>
+        </section>
+
+        <section className="mt-4 rounded-2xl border bg-card p-5 sm:mt-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <Users aria-hidden="true" className="size-5 shrink-0" />
+            <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+              One container, however many people
+            </h2>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            The reason a file tool normally costs per person is that the file
+            goes to its server, and that server does the work. Ten thousand
+            people converting documents is ten thousand documents to receive,
+            process and store, so it is metered, and every one of those steps is
+            a thing to be assured about in a review.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            Here the work happens in the tab. The container serves a page and
+            some assets and then has nothing further to do with it, so the load
+            of a large office is the load of a large office reading a static
+            site. That is the whole scaling story, and it is why there is
+            nothing to meter:
+          </p>
+          <ul className="mt-3 space-y-2 text-sm leading-6 sm:text-base sm:leading-7">
+            {AT_SCALE.map((item) => (
+              <li key={item} className="flex gap-2.5">
+                <span aria-hidden="true" className="text-muted-foreground">
+                  &bull;
+                </span>
+                <span className="text-muted-foreground">{item}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            What it does not do is spread across machines: one container, one
+            process, no clustering and no shared cache between replicas. Put two
+            behind a load balancer and you have two independent instances, which
+            is fine — they hold no state anybody depends on.
           </p>
         </section>
 
@@ -362,6 +457,42 @@ export default function SelfHostPage() {
             reach this instance at all&rdquo;, and deliberately nothing more:
             accounts would mean storing people, which this product does not do.
             The public site never has it on.
+          </p>
+          <h3 className="mt-5 text-base font-semibold sm:text-lg">
+            Or sign in with your own single sign-on
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-[0.95rem] sm:leading-7">
+            One shared password is enough for a team and not enough for a review
+            that asks who signed in. So the second mode answers that without
+            this container learning anything about your people: your existing
+            identity-aware proxy authenticates against your identity provider,
+            which stays the only system that knows who anybody is, and forwards
+            the authenticated name in a header.
+          </p>
+          <pre className="mt-3 overflow-x-auto rounded-xl border bg-muted/50 p-3.5 text-[0.8rem] leading-6 sm:p-4 sm:text-sm">
+            <code>{PROXY_RUN_COMMAND}</code>
+          </pre>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.95rem] sm:leading-7">
+            <strong>Why a secret and not just the header.</strong> A forwarded
+            header is a claim, not proof — anything that can reach the port can
+            invent one. The secret is what an ordinary client does not have.
+            Setting the header without it does not start this mode: it refuses
+            every request, which fails loudly on the day you configure it rather
+            than quietly some months later. Refusals answer{' '}
+            <code className="text-[0.9em]">403</code> with the reason in the
+            body, because the only person who ever reads it is whoever is wiring
+            the proxy up. Wrong secret, no forwarded name, half-configured, or
+            both modes at once are four different mistakes and say so.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.95rem] sm:leading-7">
+            No session, no cookie, nothing stored: each request is judged on the
+            headers it arrives with. If you need the access record your auditor
+            usually asks for, set{' '}
+            <code className="text-[0.9em]">OPENTOOLS_AUDIT_IDENTITY</code> and
+            the name appears in this container&rsquo;s own log lines — on its
+            stdout, in your log stack, and nowhere else. It is off by default,
+            because keeping a record of your own staff is your decision to make
+            and not ours to make for you.
           </p>
           <h3 className="mt-5 text-base font-semibold sm:text-lg">Settings</h3>
           <ul className="mt-2 divide-y rounded-xl border bg-muted/40">

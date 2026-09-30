@@ -5,7 +5,12 @@ import {
   isEmbedRoute,
   loadsLocalModel,
 } from './lib/security/content-security-policy';
-import { authorise, challengeResponse } from './lib/security/self-host-auth';
+import {
+  auditIdentityEnabled,
+  authorise,
+  challengeResponse,
+  refusedResponse,
+} from './lib/security/self-host-auth';
 import { siteRedirect } from './lib/seo/site-redirects';
 import { recipeArrivalShape, recipeLinkTarget } from './lib/tools/recipe-link';
 
@@ -82,16 +87,38 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(secure, 301);
   }
 
-  // Self-host gate, before the visit log: an instance that
-  // refuses a request should not record it either. Off unless
-  // OPENTOOLS_AUTH_USER and OPENTOOLS_AUTH_PASSWORD are both set, which is
-  // never the case for the public site — no account is the product there.
-  if (
-    authorise(process.env, request.headers.get('authorization')).kind ===
-    'challenge'
-  ) {
-    return challengeResponse();
-  }
+  /*
+   * Self-host gate, before the visit log: an instance that refuses a request
+   * should not record it either. Off unless the operator configured one of the
+   * two modes, which is never the case for the public site — no account is the
+   * product there. `request.headers` is passed so trusted-proxy mode can read
+   * the secret and the forwarded name; Basic mode ignores it.
+   */
+  const gate = authorise(
+    process.env,
+    request.headers.get('authorization'),
+    request.headers,
+  );
+  if (gate.kind === 'challenge') return challengeResponse();
+  if (gate.kind === 'refused') return refusedResponse(gate.reason);
+
+  /*
+   * Who the operator's own proxy said this was — present only in trusted-proxy
+   * mode, and written to the log below only when the operator asks for it.
+   *
+   * This product does not store people, and that is unchanged: nothing is
+   * persisted here, and nothing reaches us at any point. The line goes to the
+   * container's stdout, which is the operator's own `docker logs`. But an
+   * organisation running staff access through its own single sign-on is
+   * generally required to be able to answer "who reached this", and refusing to
+   * make that possible does not protect their staff — it just means the instance
+   * fails their review. Whether to keep that record is their decision about
+   * their own employees, so it is an explicit opt-in and off by default.
+   */
+  const auditedIdentity =
+    gate.kind === 'allowed' && auditIdentityEnabled(process.env)
+      ? gate.identity
+      : undefined;
 
   const pathname = request.nextUrl.pathname;
 
@@ -162,6 +189,12 @@ export function proxy(request: NextRequest) {
           ? 'recipe'
           : recipeArrivalShape(pathname, request.nextUrl.search),
         lang: acceptLang.slice(0, 10),
+        /*
+         * Omitted entirely unless the operator set OPENTOOLS_AUDIT_IDENTITY on
+         * a trusted-proxy instance. `undefined` is dropped by JSON.stringify,
+         * so the public site's log lines keep exactly the shape they had.
+         */
+        identity: auditedIdentity,
         time: Date.now(),
       }),
     );
