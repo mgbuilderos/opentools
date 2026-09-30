@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import type { PracticeBrief } from '@/lib/practice-briefs';
 import type { RelatedTool } from '@/lib/seo/related-tools';
+import { createRunQueue, type RunQueue } from '@/lib/workbench-run-queue';
 
 interface WorkbenchField {
   id: string;
@@ -101,6 +102,19 @@ interface SchemaWorkbenchToolProps {
   ) => string | Promise<string>;
 }
 
+/**
+ * Everything one run needs, captured when the debounced tick fires. Passing it
+ * through the queue rather than reading it from a closure is what makes a run
+ * that starts late still a run of the right inputs.
+ */
+interface RunRequest {
+  operation: WorkbenchOperation;
+  values: Record<string, string>;
+  silent: boolean;
+  run: SchemaWorkbenchToolProps['run'];
+  methodLabel: string;
+}
+
 function defaults(operation: WorkbenchOperation) {
   return Object.fromEntries(
     operation.fields.map((field) => [field.id, field.defaultValue]),
@@ -156,6 +170,7 @@ export function SchemaWorkbenchTool({
   // keyboard focus onto it. Measured on 3 advertised routes.
   const [touched, setTouched] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
+  const queueRef = useRef<RunQueue<RunRequest> | null>(null);
 
   // The URL decides which operation is open, and it has to keep deciding after
   // hydration. In production Cloudflare injects its analytics beacon into the
@@ -191,8 +206,14 @@ export function SchemaWorkbenchTool({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Auto-run if we have values and aren't already running
-      if (!running) void execute({ silent: !touched });
+      // Queued, never dropped. This used to read `running` out of the closure
+      // this effect was created in and skip the tick when a run was in
+      // flight. Because `running` is not a dependency, the run that finished
+      // did not re-arm the tick it had displaced, so the change the visitor
+      // made during a run was lost for good: the panel went on showing a
+      // result for input that was no longer on screen, with no spinner and no
+      // error. See `lib/workbench-run-queue.ts` for the whole argument.
+      execute({ silent: !touched });
     }, 250);
     return () => clearTimeout(timer);
   }, [values, operation.id, touched]);
@@ -243,38 +264,56 @@ export function SchemaWorkbenchTool({
     reader.readAsDataURL(file);
   };
 
-  const execute = async ({ silent = false } = {}) => {
-    const started = performance.now();
-    setRunning(true);
-    try {
-      const nextOutput = await run(operation.id, values);
-      const completedIn = performance.now() - started;
-      setOutput(nextOutput);
-      setDuration(completedIn);
-      setError('');
-      announceCompletion({
-        operation: operation.name,
-        durationMs: completedIn,
-        summary: operation.description,
-        metrics: [
-          { label: 'Result', value: 'Ready' },
-          { label: 'Method', value: methodLabel },
-        ],
-      });
-    } catch (caught) {
-      setOutput('');
-      // A failure the visitor has not caused yet is an empty state, not an
-      // error. Pressing the action button is never silent.
-      setError(
-        silent
-          ? ''
-          : caught instanceof Error
-            ? caught.message
-            : 'The operation could not be completed.',
-      );
-    } finally {
-      setRunning(false);
-    }
+  // One run at a time, and the request that arrives during a run is kept
+  // rather than thrown away. Created once: the state setters it closes over
+  // are stable, and everything that changes per render reaches it through the
+  // request, so nothing here can go stale.
+  if (queueRef.current === null) {
+    queueRef.current = createRunQueue<RunRequest>(
+      async (request, superseded) => {
+        const started = performance.now();
+        try {
+          const nextOutput = await request.run(
+            request.operation.id,
+            request.values,
+          );
+          // A result the visitor has already moved past is not painted and does
+          // not announce a completion: the run for what they can actually see
+          // is queued behind this one.
+          if (superseded()) return;
+          const completedIn = performance.now() - started;
+          setOutput(nextOutput);
+          setDuration(completedIn);
+          setError('');
+          announceCompletion({
+            operation: request.operation.name,
+            durationMs: completedIn,
+            summary: request.operation.description,
+            metrics: [
+              { label: 'Result', value: 'Ready' },
+              { label: 'Method', value: request.methodLabel },
+            ],
+          });
+        } catch (caught) {
+          if (superseded()) return;
+          setOutput('');
+          // A failure the visitor has not caused yet is an empty state, not an
+          // error. Pressing the action button is never silent.
+          setError(
+            request.silent
+              ? ''
+              : caught instanceof Error
+                ? caught.message
+                : 'The operation could not be completed.',
+          );
+        }
+      },
+      setRunning,
+    );
+  }
+
+  const execute = ({ silent = false } = {}) => {
+    queueRef.current?.request({ operation, values, silent, run, methodLabel });
   };
 
   // An operation that can write more than one format names the field holding
