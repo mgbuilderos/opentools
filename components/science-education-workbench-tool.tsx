@@ -31,7 +31,6 @@ export function ScienceEducationWorkbenchTool({
       title="Science & learning workbench"
       introduction="Run transparent formula calculators, build study materials, inspect sets and truth tables, and format supplied academic facts locally."
       selectorLabel="Science or learning tool"
-      actionLabel="Calculate locally"
       methodLabel="Declared formulas and bounded local logic"
       operations={SCIENCE_OPERATIONS}
       initialOperationId={initialOperationId}

@@ -31,7 +31,6 @@ export function DeveloperDataWorkbenchTool({
       title="Developer & data workbench"
       introduction="Encode, decode, inspect, convert, test, and hash common developer data without pasting it into a remote service."
       selectorLabel="Developer tool"
-      actionLabel="Run tool"
       methodLabel="Local JavaScript / Web Crypto"
       operations={DEVELOPER_DATA_OPERATIONS}
       initialOperationId={initialOperationId}

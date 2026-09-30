@@ -36,7 +36,6 @@ export function FinanceBusinessWorkbenchTool({
       title="Finance & business workbench"
       introduction="Run transparent scenario math for borrowing, saving, pricing, budgets, and operating metrics without sending financial inputs away."
       selectorLabel="Scenario calculator"
-      actionLabel="Calculate scenario"
       methodLabel="Declared formulas using supplied assumptions"
       operations={FINANCE_OPERATIONS}
       initialOperationId={initialOperationId}

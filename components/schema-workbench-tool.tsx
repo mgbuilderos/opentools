@@ -1,4 +1,10 @@
-/* oxlint-disable */
+/* The two effects below are deliberate, and each carries its own reason
+   where it stands. This disables only the rules that object to them.
+   It was `oxlint-disable` with no rule list until 2026-09-30, and that
+   also switched off `no-unused-vars`, which is how the `actionLabel`
+   prop went on being required by fourteen callers for two weeks after
+   the button it labelled was deleted. */
+/* oxlint-disable react/react-compiler, react-hooks/exhaustive-deps */
 'use client';
 
 import {
@@ -53,7 +59,6 @@ interface SchemaWorkbenchToolProps {
   title: string;
   introduction: string;
   selectorLabel: string;
-  actionLabel: string;
   methodLabel: string;
   operations: readonly WorkbenchOperation[];
   initialOperationId: string;
@@ -119,7 +124,6 @@ export function SchemaWorkbenchTool({
   title,
   introduction,
   selectorLabel,
-  actionLabel,
   methodLabel,
   operations,
   initialOperationId,
@@ -264,7 +268,8 @@ export function SchemaWorkbenchTool({
     } catch (caught) {
       setOutput('');
       // A failure the visitor has not caused yet is an empty state, not an
-      // error. Pressing the action button is never silent.
+      // error, so the run that fires on mount says nothing. Once they have
+      // touched a field the run is theirs and the message is shown.
       setError(
         silent
           ? ''

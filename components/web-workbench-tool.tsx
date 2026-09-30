@@ -28,7 +28,6 @@ export function WebWorkbenchTool({
       title="Web & SEO workbench"
       introduction="Generate, inspect, and calculate common web assets without sending source, URLs, or campaign data to a service."
       selectorLabel="Web tool"
-      actionLabel="Run tool"
       methodLabel="Deterministic local transform"
       operations={WEB_OPERATIONS}
       initialOperationId={initialOperationId}

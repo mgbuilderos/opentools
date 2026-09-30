@@ -31,7 +31,6 @@ export function DeveloperAdvancedWorkbenchTool({
       title="Advanced developer workbench"
       introduction="Inspect structured data, create secure local tokens, calculate networks, and generate common project configuration without sending inputs away."
       selectorLabel="Developer tool"
-      actionLabel="Run locally"
       methodLabel="Bounded browser APIs and deterministic parsers"
       operations={ADVANCED_DEVELOPER_OPERATIONS}
       initialOperationId={initialOperationId}

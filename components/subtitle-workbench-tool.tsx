@@ -31,7 +31,6 @@ export function SubtitleWorkbenchTool({
       title="Subtitle workbench"
       introduction="Convert between subtitle formats, fix timing that runs ahead or drifts, join and trim files, and check captions against the usual readability limits — all on the text of the file, in this tab."
       selectorLabel="Subtitle tool"
-      actionLabel="Run"
       methodLabel="Local text processing"
       operations={SUBTITLE_OPERATIONS}
       initialOperationId={initialOperationId}

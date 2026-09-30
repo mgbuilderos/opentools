@@ -4714,7 +4714,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/finance-business-workbench.test.ts
   'finance-and-business-gst-calculator': {
     directAnswer:
-      'To add GST to a pre-tax amount: open the GST calculator, enter the amount before tax and the GST percentage you have been told to apply, then select Calculate scenario. The page multiplies the two in your own browser tab and prints the pre-tax amount, the rate it used, the tax amount and the total.',
+      'To add GST to a pre-tax amount: open the GST calculator, enter the amount before tax and the GST percentage you have been told to apply. There is no button: the answer is worked out a quarter of a second after you stop typing. The page multiplies the two in your own browser tab and prints the pre-tax amount, the rate it used, the tax amount and the total.',
     leadParagraph:
       'This is plain arithmetic on the two numbers you type, and it works in one direction only: it adds a rate to an amount that does not yet include tax. It has no built-in table of GST slabs, it will not work backwards from a tax-inclusive price, and it does not split the tax into CGST, SGST and IGST — the output is one tax figure and one total. The rate is whatever you enter, so the answer is only as right as the rate. The same code also drives the VAT and sales-tax calculators on this site, because the arithmetic is identical. This is arithmetic, not tax advice.',
     faqs: [
@@ -4784,7 +4784,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/date-workbench.test.ts
   'date-time-and-productivity-add-days-to-date': {
     directAnswer:
-      'To add days to a date: open the add-days tool, type the starting date as YYYY-MM-DD, type how many days to add, then select Calculate. It returns a single date in YYYY-MM-DD form, reached by adding whole calendar days to the date you gave it.',
+      'To add days to a date: open the add-days tool, type the starting date as YYYY-MM-DD and type how many days to add. There is no button: the answer appears a quarter of a second after you stop typing. It returns a single date in YYYY-MM-DD form, reached by adding whole calendar days to the date you gave it.',
     leadParagraph:
       'The arithmetic is a straight count of calendar days, so every day counts the same: weekends, public holidays and 29 February are each one day. Because it adds days rather than months, the awkward month-end question never arises — you are counting days, not naming a date one month later. Dates are handled as whole UTC days, so no clock change can move the answer by a day. The starting date must be a real calendar date written as YYYY-MM-DD with a year from 0100 to 9999, and 2026-02-30 is refused. The shift is capped at 1,000,000 days in either direction, and the resulting year must also fall between 0100 and 9999.',
     faqs: [
@@ -4821,7 +4821,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // boundedShift) and lib/tools/date-workbench.test.ts
   'date-time-and-productivity-subtract-days-from-date': {
     directAnswer:
-      'To subtract days from a date: open the subtract-days tool, type the date you are counting back from as YYYY-MM-DD, type how many days to go back, then select Calculate. The answer is a single date in YYYY-MM-DD form.',
+      'To subtract days from a date: open the subtract-days tool, type the date you are counting back from as YYYY-MM-DD and type how many days to go back. There is no button: the result is worked out a quarter of a second after you stop typing. The answer is a single date in YYYY-MM-DD form.',
     leadParagraph:
       'This is the same day-counting arithmetic as the add-days tool with the sign reversed: it takes your starting date, steps back the whole number of days you give it and prints where it lands. Every day on the way back counts, so weekends, public holidays and 29 February are one day each. The date it lands on may itself be a Saturday, Sunday or holiday — nothing is skipped, and a separate workday calculator on this site is the one that moves by weekdays, though it does not know public holidays either. A negative number reverses the direction and moves forwards instead. The date must be a real calendar date in YYYY-MM-DD form with a year from 0100 to 9999, and the shift is capped at 1,000,000 days.',
     faqs: [
@@ -4895,7 +4895,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/science-education-workbench.test.ts
   'health-and-fitness-bmi-calculator': {
     directAnswer:
-      'To calculate a BMI: open the BMI calculator, enter weight in kilograms and height in centimetres, then select Calculate locally. It divides the weight by the square of the height in metres and reports the result to two decimal places in kg/m².',
+      'To calculate a BMI: open the BMI calculator, enter weight in kilograms and height in centimetres. There is no button: the figure is worked out in your own browser tab a quarter of a second after you stop typing. It divides the weight by the square of the height in metres and reports the result to two decimal places in kg/m².',
     leadParagraph:
       'The tool prints the number and the formula it used, then deliberately stops: there is no category, no healthy range and no percentile anywhere in the output, and a test in the repository fails if that kind of wording appears. It also prints the Ponderal index, which is the same weight divided by the height in metres cubed. The only inputs are weight and height — no age, no sex, no body-composition field — so two people with the same measurements always get the same number. Both values are metric and both must be greater than zero; there is no pounds or feet-and-inches option. This is a formula result, not medical advice, and as the tool notice says, BMI does not distinguish muscle from body fat.',
     faqs: [
@@ -4928,7 +4928,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/science-education-workbench.test.ts
   'health-and-fitness-bmr-calculator': {
     directAnswer:
-      'To estimate a basal metabolic rate: open the BMR calculator, choose male or female, enter age in years, weight in kilograms and height in centimetres, then select Calculate locally. It returns a Mifflin-St Jeor estimate and a Revised Harris-Benedict estimate side by side, both in kcal per day.',
+      'To estimate a basal metabolic rate: open the BMR calculator, choose male or female, enter age in years, weight in kilograms and height in centimetres. There is no button: both estimates are worked out in your own browser tab a quarter of a second after you stop typing. It returns a Mifflin-St Jeor estimate and a Revised Harris-Benedict estimate side by side, both in kcal per day.',
     leadParagraph:
       'The Mifflin-St Jeor line is 10 × weight in kg, plus 6.25 × height in cm, minus 5 × age, then plus 5 for male or minus 161 for female. The Revised Harris-Benedict line uses its own constants: 88.362 + 13.397 × weight + 4.799 × height − 5.677 × age for male, and 447.593 + 9.247 × weight + 3.098 × height − 4.33 × age for female. Two further lines divide the Mifflin-St Jeor figure by 24 for an hourly rate and by body weight for a kcal-per-kilogram figure. The form offers only male and female, because those are the only two constant sets these equations define, and it asks nothing about body composition. These are population formulas rather than measurements, and not medical advice.',
     faqs: [
@@ -4960,7 +4960,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/science-education-workbench.test.ts
   'health-and-fitness-tdee-calculator': {
     directAnswer:
-      'To estimate total daily energy expenditure: open the TDEE calculator, choose male or female, enter age, weight in kilograms and height in centimetres, pick one of the five activity levels, then select Calculate locally. It works out a Mifflin-St Jeor BMR, multiplies it by that level\x27s multiplier and prints all three figures.',
+      'To estimate total daily energy expenditure: open the TDEE calculator, choose male or female, enter age, weight in kilograms and height in centimetres and pick one of the five activity levels. There is no button: the figures are worked out in your own browser tab a quarter of a second after the last change. It works out a Mifflin-St Jeor BMR, multiplies it by that level\x27s multiplier and prints all three figures.',
     leadParagraph:
       'The five activity levels and their multipliers are fixed and shown on the form: sedentary 1.2, light exercise on 1 to 3 days a week 1.375, moderate exercise on 3 to 5 days 1.55, heavy exercise on 6 to 7 days 1.725, and a physical job or twice-daily training 1.9. The BMR underneath comes from Mifflin-St Jeor only — the Revised Harris-Benedict figure that the BMR calculator also prints is not used here. The output is three lines: the BMR to one decimal place, the multiplier it applied, and the TDEE rounded to a whole kcal per day. It suggests no deficit, no surplus, no goal weight and no macronutrient split. Both the equation and the five-step multiplier are population approximations, so this is an estimate, and it is not medical or dietary advice.',
     faqs: [
@@ -4993,7 +4993,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/science-education-workbench.test.ts
   'science-and-education-mole-calculator': {
     directAnswer:
-      'To convert a mass to moles: open the mole calculator, enter the mass in grams and the molar mass in grams per mole, then select Calculate locally. It divides the first by the second and also multiplies that result by the Avogadro constant to give a particle count.',
+      'To convert a mass to moles: open the mole calculator, enter the mass in grams and the molar mass in grams per mole. There is no button: the answer is worked out in your own browser tab a quarter of a second after you stop typing. It divides the first by the second and also multiplies that result by the Avogadro constant to give a particle count.',
     leadParagraph:
       'The arithmetic is one division and one multiplication: moles = mass ÷ molar mass, and particles = moles × 6.02214076 × 10²³, the exact value fixed in the SI definition of the mole. Units are fixed at grams and grams per mole, so convert milligrams or kilograms before typing, and both numbers must be greater than zero. The tool does not work out a molar mass from a chemical formula — you supply that number yourself. It runs in one direction only: there is no moles-to-mass mode and no volume or concentration input. Figures are printed to up to twelve significant figures, so check significant figures and uncertainty yourself before using a result in a report.',
     faqs: [
@@ -5030,7 +5030,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/life-admin-workbench.test.ts
   'india-and-life-admin-aadhaar-masking-tool': {
     directAnswer:
-      'To mask an Aadhaar number: open the Aadhaar masking tool, type or paste the twelve digits — spaces and hyphens are fine — and select Run locally. It returns xxxx-xxxx- followed by the last four digits, with the first eight replaced.',
+      'To mask an Aadhaar number: open the Aadhaar masking tool, type or paste the twelve digits — spaces and hyphens are fine. There is no button: the masked number appears in your own browser tab a quarter of a second after you stop typing. It returns xxxx-xxxx- followed by the last four digits, with the first eight replaced.',
     leadParagraph:
       'The tool implements the convention its own notice names: only the last four digits are shown and the first eight are replaced with the letter x. The output is always written the same way, xxxx-xxxx-9012, whatever spacing you typed. Input is restricted to digits, spaces and hyphens, and once the non-digits are stripped there must be exactly twelve digits left, so it handles one number at a time. It does not validate the number, test a checksum, look anything up or keep a copy — the page is served with a policy that blocks the browser from making network requests at all. Masking is a text transform and the last four digits survive it, so a masked number is reduced exposure rather than anonymity.',
     faqs: [
@@ -5066,7 +5066,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // and its run case) and lib/tools/life-admin-workbench.test.ts
   'india-and-life-admin-pan-masking-tool': {
     directAnswer:
-      'To mask a PAN: open the PAN masking tool, type or paste the ten-character PAN, then select Run locally. It returns six capital X characters followed by the last four characters of what you typed, in capitals.',
+      'To mask a PAN: open the PAN masking tool, type or paste the ten-character PAN. There is no button: the masked value appears in your own browser tab a quarter of a second after you stop typing. It returns six capital X characters followed by the last four characters of what you typed, in capitals.',
     leadParagraph:
       'The transform is fixed: whitespace is removed, the value is converted to capitals, then the first six characters are replaced with X and the last four are kept. ABCDE1234F becomes XXXXXX234F, and a lower-case abcde1234f gives the same answer. The length check accepts any ten letters or digits and does not test the five-letters, four-digits, one-letter shape of a real PAN, so a value that is not a PAN at all will still be masked rather than refused. As its notice says, it does not validate PAN structure, ownership, status or tax records. The last four characters stay visible, so this reduces exposure rather than making the value anonymous.',
     faqs: [
@@ -5103,7 +5103,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/life-admin-workbench.test.ts
   'india-and-life-admin-indian-address-formatter': {
     directAnswer:
-      'To lay out an Indian address: open the Indian address formatter, paste the address into the box and select Run locally. It splits the text at every comma and line break, tidies the spacing inside each part, and puts each part on its own line ending in a comma.',
+      'To lay out an Indian address: open the Indian address formatter, paste the address into the box. There is no button: the laid-out address appears in your own browser tab a quarter of a second after you stop typing. It splits the text at every comma and line break, tidies the spacing inside each part, and puts each part on its own line ending in a comma.',
     leadParagraph:
       'This is a layout helper and nothing more. It breaks the address at commas and newlines, trims each piece, collapses runs of spaces inside a piece down to one, drops empty pieces and rejoins them with a comma and a line break, leaving no trailing comma on the last line. It never adds, removes, reorders or capitalises any words, and it adds no country line. It has no knowledge of localities or postal codes: a PIN code stays attached to whatever part you typed it in, so Karnataka 560038 comes out on a single line. As its notice says, it does not verify a locality, PIN code, deliverability or any government address record.',
     faqs: [
@@ -5140,7 +5140,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/creator-workbench.test.ts
   'creator-and-social-youtube-chapter-generator': {
     directAnswer:
-      'To build a YouTube chapter list: open the chapter generator, type one chapter per line as a timestamp, a pipe character and a title, then select Build result. It checks that the first chapter is at zero and that every later timestamp is higher, and rewrites the times in clock form.',
+      'To build a YouTube chapter list: open the chapter generator, type one chapter per line as a timestamp, a pipe character and a title. There is no button: the list is rebuilt a quarter of a second after you stop typing. It checks that the first chapter is at zero and that every later timestamp is higher, and rewrites the times in clock form.',
     leadParagraph:
       'This tool does not watch your video — it validates and reformats a list you supply. Each line must be timestamp, pipe, title, with both fields filled, as in 00:00 | Introduction. It refuses a list whose first chapter is not at 0, and refuses any chapter that is not strictly later than the one above it. What it does not check is how many chapters you have or how long each one lasts: two chapters a second apart pass here, even though YouTube itself asks for at least three chapters of at least ten seconds each. Count your chapters and check their spacing yourself before pasting the list into a description.',
     faqs: [
@@ -5178,7 +5178,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/creator-workbench.test.ts
   'creator-and-social-youtube-timestamp-formatter': {
     directAnswer:
-      'To turn second counts into YouTube timestamps: open the timestamp formatter, type one entry per line as a number of seconds, a pipe character and a label, then select Build result. Each line comes back as a clock timestamp followed by its label, so 3661 | Long section becomes 1:01:01 Long section.',
+      'To turn second counts into YouTube timestamps: open the timestamp formatter, type one entry per line as a number of seconds, a pipe character and a label. There is no button: the output is rebuilt a quarter of a second after you stop typing. Each line comes back as a clock timestamp followed by its label, so 3661 | Long section becomes 1:01:01 Long section.',
     leadParagraph:
       'The conversion runs one way, from seconds to clock time: below an hour the output is M:SS and from an hour up it is H:MM:SS with the minutes and seconds zero-padded. Despite the field being labelled seconds | optional label, and the tool description promising optional labels, the label is not in fact optional — every line needs both fields filled, and a bare number on its own line is refused. Second values must be whole, not negative, and strictly increasing down the list, so duplicates and out-of-order entries stop the run. Unlike the chapter generator, the first line here does not have to be 0, which makes this the tool for a partial list. It never opens a video and never reads a timestamp back into seconds.',
     faqs: [
@@ -6144,7 +6144,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-compressor', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-file-compressor': {
     directAnswer:
-      'Choose a single file of any size and select Run operation to compress it into standard gzip format directly inside your browser. The tool streams your local file bytes through the native browser Compression Streams interface, calculates the exact resulting size, and provides a new .gz download without uploading any information across the network.',
+      'Choose a single file of any size and it is compressed into standard gzip format directly inside your browser — there is no button, the work starts a quarter of a second after you choose the file. The tool streams your local file bytes through the native browser Compression Streams interface, calculates the exact resulting size, and provides a new .gz download without uploading any information across the network.',
     leadParagraph:
       'This tool packages an individual file into an RFC 1952 compliant gzip container using your browser\'s built-in CompressionStream interface. Because data processing takes place on a dedicated stream in local tab memory, raw file bytes are never transferred across an external network connection. When compression finishes, the interface reports the exact byte change alongside the percentage reduction, for example "Compressed notes.txt: 12,400 \u2192 3,100 bytes (75% smaller)". For files that are already compressed or contain high-entropy binary sequences, the output summary notes that "gzip overhead exceeded savings". The browser security model prevents overwriting source files in place, so the transformed result is delivered as a separate download carrying the .gz extension. The engine requires exactly one file per run, rejecting empty inputs or multi-file selections with the validation prompt "Choose at least 1 file." There is no file size limit: the work happens in this tab, so the memory on your own machine is the only ceiling.',
     faqs: [
@@ -6176,7 +6176,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-chunk-splitter', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-file-chunk-splitter': {
     directAnswer:
-      'Select one local file and set your desired chunk size in bytes, then click Run operation. The tool calculates the required segment count, slices the binary data into numbered part files, and presents each chunk for download without sending any bytes outside your browser session. Every piece is generated in local memory and ready for immediate saving.',
+      'Select one local file and set your desired chunk size in bytes. There is no button: the split runs a quarter of a second after the last change. The tool calculates the required segment count, slices the binary data into numbered part files, and presents each chunk for download without sending any bytes outside your browser session. Every piece is generated in local memory and ready for immediate saving.',
     leadParagraph:
       'This tool divides any file into byte-exact slices based on your configured chunk size, which defaults to 1,048,576 bytes (exactly 1 MiB). Each chunk is produced by slicing the underlying binary buffer and assigning a zero-padded sequential suffix, such as .part01 and .part02, calibrated to match the total chunk count. The output panel renders a complete breakdown displaying each partition filename alongside its exact byte length. To prevent runaway allocations, the engine enforces a strict maximum of 1,000 chunks; if your configured byte size would produce more pieces, the execution halts with "Chunk count would exceed 1,000. Increase chunk size." The tool processes one file per run, requiring a positive integer between 1 and 268,435,456 bytes. Every byte is preserved in order, ensuring that joining the pieces afterwards restores the original file bit-for-bit.',
     faqs: [
@@ -6205,7 +6205,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-chunk-joiner', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-file-chunk-joiner': {
     directAnswer:
-      'Select two or more split chunk files in your desired sequence, enter an output filename, and click Run operation. The tool concatenates the binary buffers byte-for-byte in the exact selection order and offers the unified file for immediate download without uploading anything to a remote server. The operation runs entirely within local device memory.',
+      'Select two or more split chunk files in your desired sequence and enter an output filename. There is no button: the join runs a quarter of a second after the last change. The tool concatenates the binary buffers byte-for-byte in the exact selection order and offers the unified file for immediate download without uploading anything to a remote server. The operation runs entirely within local device memory.',
     leadParagraph:
       'This utility reconstructs a single unified file from previously partitioned binary fragments. It allocates a single contiguous buffer matching the sum of all provided file sizes and sequentially copies every byte in the order received. Because the tool intentionally does not parse, infer, or reorder parts based on filenames or numerical suffixes, maintaining the correct selection order in your file picker is essential. If only one file is provided, validation stops with "Choose at least 2 files." The default destination filename is joined.bin, though you can provide any valid filename; illegal path characters including slashes, backslashes, and null bytes are automatically sanitised. The output view presents a numbered list of each incorporated chunk with its individual byte count and total combined size. You can verify chunk boundaries before downloading the finished document.',
     faqs: [
@@ -6417,7 +6417,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'filename-cleaner', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-filename-cleaner': {
     directAnswer:
-      'Choose your files, pick a word separator like a hyphen or underscore, and click Run operation to generate clean, web-safe filenames. The tool strips accents, replaces special characters, collapses duplicate separators, and offers renamed copies for download while keeping original file contents completely unaltered. All processing executes in your browser without network transfers.',
+      'Choose your files and pick a word separator like a hyphen or underscore, and clean, web-safe filenames are generated for you — there is no button, the run starts a quarter of a second after the last change. The tool strips accents, replaces special characters, collapses duplicate separators, and offers renamed copies for download while keeping original file contents completely unaltered. All processing executes in your browser without network transfers.',
     leadParagraph:
       'This utility converts messy, irregular filenames into safe, normalised strings suitable for web servers, command-line tools, and cross-platform archives. It applies Unicode NFKD normalisation to decompose accented letters, strips combining diacritical marks, and replaces spaces and punctuation with your configured separator (which defaults to a hyphen). Consecutive separators are collapsed into a single character, and leading or trailing separators are trimmed. If a filename stem becomes completely empty after cleaning, the tool assigns the fallback name "file" while preserving the original lowercase extension. Browser security prevents web pages from renaming files directly on your disk, so the tool prepares renamed duplicates carrying identical bytes for download. The separator parameter is strictly validated: it must be ten characters or fewer and cannot contain forward slashes, backslashes, or null bytes, preventing invalid filesystem names.',
     faqs: [
@@ -6447,7 +6447,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'bulk-file-renamer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-bulk-file-renamer': {
     directAnswer:
-      'Select a collection of files, enter the text you want to find and its replacement, and click Run operation to rename them in bulk. The tool performs literal text substitutions across all filenames and provides renamed copies for download while keeping your original files and data intact. Transformations occur entirely in local tab memory.',
+      'Select a collection of files and enter the text you want to find and its replacement, and they are renamed in bulk — there is no button, the run starts a quarter of a second after the last change. The tool performs literal text substitutions across all filenames and provides renamed copies for download while keeping your original files and data intact. Transformations occur entirely in local tab memory.',
     leadParagraph:
       'This batch renaming tool allows you to replace specific text strings across multiple filenames simultaneously. You specify a search term and a replacement string\u2014for instance, replacing "draft" with "final" or updating project codes across documentation files. The engine performs literal substring matching using replaceAll, ensuring that every occurrence within the filename is updated. To protect against accidental file overwrites, the tool checks the entire output set for name collisions; if your replacement rule causes two different files to produce identical names, execution halts with "Rename rules create duplicate output names." Search text cannot be blank; submitting an empty find field raises "Text to find is required." The tool delivers renamed file copies containing your original bytes, ensuring your local files remain safely untouched on disk. You can review the before-and-after mapping before downloading.',
     faqs: [
@@ -6477,7 +6477,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'sequential-file-renamer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-sequential-file-renamer': {
     directAnswer:
-      'Select a group of files, configure a prefix, starting number, and zero-padding width, then press Run operation. The tool generates numbered filenames in sequential order while preserving original file extensions, providing renamed copies for download without uploading any data to external servers. The entire numbering operation happens privately on your device.',
+      'Select a group of files, configure a prefix, starting number, and zero-padding width. There is no button: the renaming runs a quarter of a second after the last change. The tool generates numbered filenames in sequential order while preserving original file extensions, providing renamed copies for download without uploading any data to external servers. The entire numbering operation happens privately on your device.',
     leadParagraph:
       'This sequential renaming tool creates structured, numbered filenames across a collection of files, making it ideal for organising photo exports, document scans, or project assets. You define a text prefix (defaulting to "file"), an initial sequence number between 0 and 1,000,000,000, and a zero-padding width between 1 and 12 digits. The engine assigns numbers sequentially based on the order files were selected in your picker, formatting output names such as photo-001.jpg, photo-002.jpg, and photo-003.jpg. Original file extensions are preserved automatically. The prefix input is sanitised to remove illegal filesystem characters like slashes and null bytes. Because the operation produces downloadable copies, your original files on disk remain completely unmodified. The output panel lists every transition from original to sequential name for verification before saving. You can verify the full numbering scheme before saving the renamed files.',
     faqs: [
@@ -6536,7 +6536,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'file-extension-changer', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-file-extension-changer': {
     directAnswer:
-      'Choose your files, type a new extension such as txt or csv, and click Run operation to update file extensions on downloaded copies. The tool renames extensions safely in your browser without converting internal file formats or uploading your data to external servers. Your local disk files remain completely unaltered.',
+      'Choose your files and type a new extension such as txt or csv, and the extensions on the downloaded copies are updated — there is no button, the run starts a quarter of a second after the last change. The tool renames extensions safely in your browser without converting internal file formats or uploading your data to external servers. Your local disk files remain completely unaltered.',
     leadParagraph:
       'This utility updates the file extension on downloaded copies of your selected files. It replaces the trailing extension of each filename with your specified string, automatically stripping any leading dot you might enter. The extension field is strictly validated against a safe character pattern: it must contain between 1 and 32 alphanumeric characters, dots, underscores, or hyphens, throwing "Extension must be 1\u201332 safe characters." if invalid characters are supplied. As highlighted in the page notice, changing a file extension alters only the filename string; it does not convert the internal binary data or transform one file format into another. For instance, changing an extension from .jpeg to .png does not create a PNG image container. The tool delivers renamed file duplicates, leaving original files on your computer untouched. You receive a complete mapping of all updated extensions.',
     faqs: [
@@ -6861,7 +6861,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'base64-file-decoder', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-base64-file-decoder': {
     directAnswer:
-      'Paste standard Base64 text into the input area, set your desired output filename and MIME type, then click Run operation. The tool validates the Base64 alphabet, decodes the characters into raw binary bytes, and provides the reconstructed file for immediate download without sending any data over the network to remote machines.',
+      'Paste standard Base64 text into the input area, set your desired output filename and MIME type. There is no button: the decode runs a quarter of a second after you stop typing. The tool validates the Base64 alphabet, decodes the characters into raw binary bytes, and provides the reconstructed file for immediate download without sending any data over the network to remote machines.',
     leadParagraph:
       'This decoder transforms standard Base64 encoded text back into an authentic downloadable binary file. You paste the Base64 text string, specify the destination filename (defaulting to decoded.bin), and optionally provide an appropriate MIME type (defaulting to application/octet-stream). The engine validates the incoming string strictly against standard RFC 4648 Base64 syntax; any illegal symbols, malformed padding, or non-Base64 characters trigger the error "Enter valid standard Base64." Once validated, the characters are decoded into a raw byte buffer. No size ceiling is applied to the decoded result. The output filename is automatically sanitised to remove illegal filesystem characters. The reconstructed file is offered as a direct browser download with your chosen filename and MIME type, keeping all decoding private.',
     faqs: [
@@ -6919,7 +6919,7 @@ const GUIDE_DETAILS: Readonly<Record<string, GuideDetail>> = {
   // lib/tools/file-workbench.ts (FILE_WORKBENCH_OPERATIONS 'data-uri-file-extractor', runFileWorkbenchOperation), lib/tools/file-workbench.test.ts, components/file-workbench-tool.tsx and app/file/workbench/page.tsx
   'archive-and-file-data-uri-file-extractor': {
     directAnswer:
-      'Paste an RFC 2397 Base64 data URI into the input box, configure your desired output filename, and click Run operation. The tool extracts the declared MIME type, decodes the embedded binary payload, and offers the reconstructed file for download directly from your browser without uploading any data to remote servers or cloud systems.',
+      'Paste an RFC 2397 Base64 data URI into the input box, configure your desired output filename. There is no button: the extraction runs a quarter of a second after you stop typing. The tool extracts the declared MIME type, decodes the embedded binary payload, and offers the reconstructed file for download directly from your browser without uploading any data to remote servers or cloud systems.',
     leadParagraph:
       'This extractor unpacks binary files embedded inside Base64 data URIs. When given a valid data URI matching the standard pattern "data:[mediatype];base64,[payload]", the tool extracts the embedded MIME type, strips the URI header, and decodes the Base64 data into raw binary bytes. If the input text is not a valid Base64 data URI or uses percent-encoded data instead of Base64, the engine halts with the clear error "Enter a strict Base64 data URI." You can specify any output filename (defaulting to extracted.txt); dangerous characters like slashes and null bytes are automatically sanitised. The decoded payload has no size limit. The extracted file is prepared as a direct browser download with its authentic MIME type assigned, allowing you to recover images, audio clips, and documents embedded in code without third-party tools.',
     faqs: [

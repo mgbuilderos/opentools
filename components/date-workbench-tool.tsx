@@ -28,7 +28,6 @@ export function DateWorkbenchTool({
       title="Date & time workbench"
       introduction="Calendar arithmetic, time-zone formatting, durations, and timesheets in one compact local workspace."
       selectorLabel="Date or time tool"
-      actionLabel="Calculate"
       methodLabel="UTC-stable local calculation"
       operations={DATE_OPERATIONS}
       initialOperationId={initialOperationId}

@@ -31,7 +31,6 @@ export function CreatorWorkbenchTool({
       title="Creator workbench"
       introduction="Format, plan, measure, and package creator content with explicit local rules and no trend-data claims."
       selectorLabel="Creator tool"
-      actionLabel="Build result"
       methodLabel="Deterministic local transform"
       operations={CREATOR_OPERATIONS}
       initialOperationId={initialOperationId}
