@@ -3,6 +3,10 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { isLiveToolUrl } from '@/lib/seo/live-tools';
+import {
+  TEXT_OPERATIONS,
+  type TextOperationId,
+} from '@/lib/tools/text-workbench';
 import { EMBEDDABLE_TOOLS, embeddableToolByPath } from './embeddable-tools';
 
 const projectRoot = path.resolve(import.meta.dirname, '../..');
@@ -83,6 +87,46 @@ describe('the embed entry point', () => {
          so the slug's own text must never appear. */
       expect(component).not.toContain(tool.slug);
       expect(component).not.toContain(tool.canonicalPath);
+    }
+  });
+
+  it('gives every registered slug a component, so none renders a 404', () => {
+    /* `EMBED_COMPONENTS` lives in the route file and cannot be imported here --
+       it pulls client components into this suite's module graph. Read as text,
+       which is enough: the failure being guarded against is a slug added to the
+       register and forgotten in the map, which is a missing line. */
+    const route = read('app/embed/[tool]/page.tsx');
+    for (const tool of EMBEDDABLE_TOOLS) {
+      expect(route, `${tool.slug} has no component`).toContain(
+        `'${tool.slug}'`,
+      );
+    }
+  });
+
+  it('registers no text operation that would need options inside a frame', () => {
+    /* An operation with an `optionKind` needs a find field, a separator or a
+       sort direction, and an embed with controls is a small application on
+       somebody else's page rather than the one-input-one-output thing the
+       programme promises. Checked against the operation register itself, so a
+       slug that silently gains options upstream fails here. */
+    const byId = new Map(TEXT_OPERATIONS.map((item) => [item.id, item]));
+    for (const tool of EMBEDDABLE_TOOLS) {
+      const operation = byId.get(tool.slug as TextOperationId);
+      if (!operation) continue; // not a text operation, e.g. table-converter
+      expect(
+        operation.optionKind,
+        `${tool.slug} takes options`,
+      ).toBeUndefined();
+    }
+  });
+
+  it('agrees with the text register about what each tool is called', () => {
+    /* The summary a site owner reads before embedding must describe the tool
+       they get. A slug that matches an operation must name that operation. */
+    const ids = new Set(TEXT_OPERATIONS.map((item) => item.id as string));
+    for (const tool of EMBEDDABLE_TOOLS) {
+      if (!ids.has(tool.slug)) continue;
+      expect(tool.canonicalPath).toBe(`/text/${tool.slug}`);
     }
   });
 

@@ -48,6 +48,54 @@ export const EMBEDDABLE_TOOLS: readonly EmbeddableTool[] = [
     canonicalPath: '/latex/table-generator',
     defaultHeight: 620,
   },
+  /*
+   * The four below are option-free `TEXT_OPERATIONS`, served by the one generic
+   * `EmbedTextOperation` component. They were chosen from the 24 that qualify
+   * on one question -- would a site owner actually host this? -- rather than on
+   * how easy each was to add, which was identical for all 24.
+   *
+   *   word-counter / character-counter  every writing and social-scheduling
+   *                                     page has a use for these, and they are
+   *                                     the two most-embedded text widgets on
+   *                                     the web.
+   *   reading-time                      blogs put "N min read" above the fold.
+   *   slug-generator                    CMS and publishing workflows.
+   *
+   * Adding a fifth is a line here and a line in `EMBED_COMPONENTS`. Anything
+   * with an `optionKind` is not eligible -- see `embed-text-operation.tsx`.
+   */
+  {
+    slug: 'word-counter',
+    name: 'Word Counter',
+    summary:
+      'Paste a draft and get the word count back as you type. Nothing is sent anywhere.',
+    canonicalPath: '/text/word-counter',
+    defaultHeight: 440,
+  },
+  {
+    slug: 'character-counter',
+    name: 'Character Counter',
+    summary:
+      'Characters with and without spaces — for meta descriptions, post limits and form fields.',
+    canonicalPath: '/text/character-counter',
+    defaultHeight: 440,
+  },
+  {
+    slug: 'reading-time',
+    name: 'Reading Time',
+    summary:
+      'How long a piece takes to read at 225 words per minute, in seconds for short pieces.',
+    canonicalPath: '/text/reading-time',
+    defaultHeight: 440,
+  },
+  {
+    slug: 'slug-generator',
+    name: 'Slug Generator',
+    summary:
+      'Turn a headline into a lowercase URL slug: accents stripped to ASCII, everything else hyphenated.',
+    canonicalPath: '/text/slug-generator',
+    defaultHeight: 400,
+  },
 ] as const;
 
 export function embeddableTool(slug: string): EmbeddableTool | undefined {

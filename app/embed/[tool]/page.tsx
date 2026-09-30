@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { EmbedFrame } from '@/components/embed-frame';
 import { EmbedTableConverter } from '@/components/embed-table-converter';
+import { EmbedTextOperation } from '@/components/embed-text-operation';
 import { EMBEDDABLE_TOOLS, embeddableTool } from '@/lib/embed/embeddable-tools';
 
 export const revalidate = 86400;
@@ -15,6 +16,15 @@ export const dynamicParams = false;
  */
 const EMBED_COMPONENTS: Record<string, () => React.ReactNode> = {
   'table-converter': EmbedTableConverter,
+  /* One generic component, bound to its operation here rather than reading the
+     slug itself, so an unregistered slug is a missing key and a 404 -- not a
+     component that renders an empty box for a tool that does not exist. */
+  'word-counter': () => <EmbedTextOperation operation="word-counter" />,
+  'character-counter': () => (
+    <EmbedTextOperation operation="character-counter" />
+  ),
+  'reading-time': () => <EmbedTextOperation operation="reading-time" />,
+  'slug-generator': () => <EmbedTextOperation operation="slug-generator" />,
 };
 
 export function generateStaticParams() {
