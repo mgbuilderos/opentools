@@ -460,10 +460,7 @@ export function ExcelTool() {
                 </div>
               ) : null}
 
-              <div
-                className="mt-6 overflow-x-auto rounded-2xl border bg-card"
-                data-testid="sheet-preview"
-              >
+              <div className="mt-6 overflow-x-auto rounded-2xl border bg-card">
                 <table className="w-full text-left text-xs">
                   <caption className="px-4 pt-4 text-left text-sm font-semibold">
                     {sheet.name} — {sheet.rows.length.toLocaleString('en-US')}{' '}
