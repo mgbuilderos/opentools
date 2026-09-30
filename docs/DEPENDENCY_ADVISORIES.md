@@ -153,6 +153,10 @@ The same three chunks (`pdf`, `vinext`, `qr-barcode`) differ in both rows, so
 they are the build's own noise floor, not the change's doing. **The override
 alters no shipped code.**
 
+The counts above were measured against base `9275422`; `main` has added chunks
+since, so re-running this will give different totals. The shape is what carries
+— two rows that match each other.
+
 Related and not root-caused: `main`'s build id is stable at
 `77de51d24b2771ae` across six builds (warm and after `rm -rf dist`), while any
 lockfile change produces a fresh id on every build. Why an unmodified tree
