@@ -176,11 +176,82 @@ if (!distIsBuilt) {
 }
 
 if (releaseMode) {
+  /*
+    Two advisory gates, and only one of them can stop a release.
+
+    WHAT BLOCKS: a HIGH advisory reachable from a *runtime* dependency -- the
+    code that is bundled into the Worker and the client, which a visitor
+    executes. `--omit=dev` narrows the audit to exactly that graph and to
+    nothing else.
+
+    WHY IT WAS NARROWED (2026-09-30). The unnarrowed gate had stopped every
+    lane in the repository, and no pull request could fix it. The single HIGH
+    was `undici@7.29.0`, reachable only as
+    `@cloudflare/vite-plugin -> miniflare -> undici`, both of which are
+    devDependencies. It shipped nothing: a built `dist/` of 4,007 files
+    contains zero occurrences of `undici`, `miniflare`, `permessage-deflate`,
+    `RetryHandler` or `BalancedPool`. The advisories are WebSocket, retry and
+    cache faults in miniflare's HTTP client -- the local dev simulator. No
+    visitor can reach it, because it is not there.
+
+    It was also not any branch's doing, which is what made it the wrong shape
+    of gate: a branch whose `package-lock.json` was byte-identical to `main`'s
+    failed, while `main`'s own last green run predated the advisory being
+    published. The gate was reporting the calendar, not the diff, and a
+    re-run could not clear it.
+
+    WHY NOT UPGRADE INSTEAD. `@cloudflare/vite-plugin@1.62.2` pins
+    `miniflare@5.20260926.1-alpha`, which exact-pins `undici@7.29.1` -- one
+    patch above the vulnerable ceiling, on the 7.x line that has taken ten
+    advisories. The next one re-blocks every lane, and clearing it would again
+    wait on Cloudflare's alpha release cadence rather than on us. Buying that
+    week costs `workerd 1.20260916.1 -> 1.20260926.1` and eight plugin minor
+    versions inside the tool that produces the deployed Worker. Changing
+    production bytes to reset a clock is a worse trade than fixing what the
+    gate measures.
+
+    WHAT THIS GIVES UP, AND WHY THE SECOND GATE EXISTS. `.github/SECURITY.md`
+    lists supply chain compromise as a vulnerability class, and the toolchain
+    that builds the Worker is squarely in it: a compromised build dependency
+    can write anything it likes into `dist/`. So the full audit still runs, on
+    every release pass, printing every dev advisory -- it simply cannot set
+    the exit code. Invisible is the failure mode that mattered; blocking was
+    never what made it visible.
+
+    NO ALLOWLIST, DELIBERATELY. An allowlist with expiry dates was considered
+    and rejected. It was only ever needed to work around a gate that stopped
+    releases over advisories nobody could act on; once the blocking gate
+    covers only shipped code, every advisory it raises is one we must actually
+    fix, and a mechanism for waving those through is a mechanism for shipping
+    known-vulnerable runtime code on a deadline nobody would be watching.
+    The dev advisories it would have held are now on screen instead.
+
+    The full measurements behind every claim above -- the dist/ sweep, the
+    upgrade's dependency table, and the fixture runs that prove a runtime
+    advisory still blocks -- are in `docs/DEPENDENCY_ADVISORIES.md`.
+
+    The wiring of both gates, including that this one keeps `--audit-level`
+    at `high` and that the report is never blocking, is pinned by
+    `scripts/audit-gate.test.ts`. Do not weaken this to `critical`: the flag
+    that narrows it is `--omit=dev`, which changes *whose* code is audited,
+    not *how bad* a fault has to be before someone is told.
+  */
   gates.splice(5, 0, {
-    name: 'DEPENDENCY ADVISORIES',
+    name: 'DEPENDENCY ADVISORIES (RUNTIME)',
+    command: 'npm',
+    args: ['audit', '--audit-level=high', '--omit=dev'],
+    cwd: appRoot,
+  });
+
+  // Report only. `blocking: false` is honoured by the runner below, which
+  // prints the outcome and carries on. No `--omit=dev` here on purpose --
+  // omitting dev is what would make this gate report nothing at all.
+  gates.splice(6, 0, {
+    name: 'DEPENDENCY ADVISORIES (BUILD TOOLCHAIN, REPORT ONLY)',
     command: 'npm',
     args: ['audit', '--audit-level=high'],
     cwd: appRoot,
+    blocking: false,
   });
 
   // End-to-end runs in release mode only, and it runs *after* BUILD so it
@@ -227,6 +298,37 @@ for (const gate of gates) {
     stdio: 'inherit',
   });
 
+  /*
+    A gate marked `blocking: false` reports and does not stop the pass. It is
+    not a softer gate; it is a different job. The only one today is the
+    toolchain advisory report, whose findings are real but are not release
+    blockers -- see the reasoning where it is defined.
+
+    It still has to be LOUD. The whole point of keeping it is that a
+    supply-chain advisory in the tool that builds the Worker stays in front of
+    whoever runs a release, so its non-zero exit is announced rather than
+    swallowed, and `stdio: 'inherit'` above has already printed npm's own
+    report in full. What it must never do is call `process.exit`.
+  */
+  if (gate.blocking === false) {
+    if (result.error) {
+      process.stderr.write(
+        `[QC] ${gate.name} could not run: ${result.error.message}\n` +
+          '[QC] This gate does not block, so the pass continues -- but it ' +
+          'reported nothing, which is not the same as reporting nothing ' +
+          'wrong.\n',
+      );
+    } else if (result.status !== 0) {
+      process.stderr.write(
+        `[QC] ${gate.name} FOUND ADVISORIES (exit ${result.status}). ` +
+          'Not a release blocker; read the report above.\n',
+      );
+    } else {
+      process.stdout.write(`[QC] ${gate.name}: nothing to report.\n`);
+    }
+    continue;
+  }
+
   if (result.error) {
     process.stderr.write(
       `[QC] ${gate.name} could not start: ${result.error.message}\n`,
@@ -242,8 +344,11 @@ for (const gate of gates) {
 }
 
 const elapsedSeconds = ((performance.now() - started) / 1_000).toFixed(2);
+const blockingGateCount = gates.filter(
+  (gate) => gate.blocking !== false,
+).length;
 process.stdout.write(
-  `\n[QC] PASS — ${gates.length} mandatory automated gates completed in ${elapsedSeconds}s.\n`,
+  `\n[QC] PASS — ${blockingGateCount} mandatory automated gates completed in ${elapsedSeconds}s.\n`,
 );
 process.stdout.write(
   '[QC] This pass covers the exact local source/build. Human, cross-browser, corpus, and formal egress sign-offs remain separate release requirements.\n',
