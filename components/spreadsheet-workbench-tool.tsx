@@ -31,7 +31,6 @@ export function SpreadsheetWorkbenchTool({
       title="CSV & spreadsheet workbench"
       introduction="Clean, reshape, compare, inspect, and convert tabular data inside one compact browser workspace."
       selectorLabel="Table tool"
-      actionLabel="Run tool"
       methodLabel="Bounded local table transform"
       operations={SPREADSHEET_OPERATIONS}
       initialOperationId={initialOperationId}

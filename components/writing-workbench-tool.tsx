@@ -31,7 +31,6 @@ export function WritingWorkbenchTool({
       title="Writing workbench"
       introduction="Edit, convert, compare, summarize, structure, and export writing with bounded local logic and no account."
       selectorLabel="Writing tool"
-      actionLabel="Transform locally"
       methodLabel="Bounded deterministic text transforms"
       operations={WRITING_OPERATIONS}
       initialOperationId={initialOperationId}

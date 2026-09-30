@@ -36,7 +36,6 @@ export function LifeAdminWorkbenchTool({
       title="India & life-admin workbench"
       introduction="Mask sensitive references, check common Indian identifier formats, and run everyday household, travel, budget, and calendar calculations without sending your inputs away."
       selectorLabel="Everyday tool"
-      actionLabel="Run locally"
       methodLabel="Deterministic browser-local rules and supplied assumptions"
       operations={LIFE_ADMIN_OPERATIONS}
       initialOperationId={initialOperationId}

@@ -31,7 +31,6 @@ export function ProductivityWorkbenchTool({
       title="Planning workbench"
       introduction="Prioritize, schedule, decide, pick, group, and plan with transparent local logic instead of another account."
       selectorLabel="Planning tool"
-      actionLabel="Build result"
       methodLabel="Transparent local planning logic"
       operations={PRODUCTIVITY_OPERATIONS}
       initialOperationId={initialOperationId}

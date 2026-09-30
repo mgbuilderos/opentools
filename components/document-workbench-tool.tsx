@@ -31,7 +31,6 @@ export function DocumentWorkbenchTool({
       title="Document workbench"
       introduction="Draft, calculate, inspect, compare, merge, and download everyday office documents entirely in this browser tab."
       selectorLabel="Document tool"
-      actionLabel="Build result"
       methodLabel="Deterministic local document logic"
       operations={DOCUMENT_OPERATIONS}
       initialOperationId={initialOperationId}
