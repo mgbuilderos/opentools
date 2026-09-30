@@ -21,8 +21,21 @@ import {
 } from '@/lib/tools/spreadsheet/xlsx-reader';
 import { writeXlsx } from '@/lib/tools/spreadsheet/xlsx-writer';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
-const MAX_BYTES = 50 * 1024 * 1024;
+/**
+ * 50 MB. The workbook is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 50 * 1024 * 1024,
+  because: 'the whole workbook is read in this tab',
+};
 /** How much of a sheet to draw. Everything is converted; only the preview is cut. */
 const PREVIEW_ROWS = 50;
 const PREVIEW_COLUMNS = 20;
@@ -63,6 +76,9 @@ function delimiterName(delimiter: string) {
 }
 
 export function ExcelTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const savedRef = useRef<Saved | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
@@ -115,10 +131,8 @@ export function ExcelTool() {
   };
 
   const tooBig = (file: File) => {
-    if (file.size <= MAX_BYTES) return false;
-    setError(
-      `That file is ${formatBytes(file.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}, because the whole thing is read in this tab.`,
-    );
+    if (file.size <= maxBytes) return false;
+    setError(oversizeMessage(capability, file.size, LIMIT)!);
     return true;
   };
 

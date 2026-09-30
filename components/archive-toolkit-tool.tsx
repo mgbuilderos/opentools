@@ -26,6 +26,14 @@ import {
 } from '@/lib/tools/archive/zip-reader';
 import { createZip } from '@/lib/tools/docx/zip';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  ceilingSentence,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
 type Mode = 'open' | 'create';
 
@@ -45,7 +53,13 @@ interface Saved {
   durationMs: number;
 }
 
-const MAX_BYTES = 100 * 1024 * 1024;
+/**
+ * 100 MB, per file and across a selection.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 100 * 1024 * 1024,
+  because: 'the archive is opened in this tab',
+};
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -81,6 +95,9 @@ function ratio(entry: ZipArchiveEntry) {
 }
 
 export function ArchiveToolkitTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const openRef = useRef<HTMLInputElement>(null);
   const addRef = useRef<HTMLInputElement>(null);
   const savedRef = useRef<Saved | null>(null);
@@ -142,9 +159,9 @@ export function ArchiveToolkitTool() {
     setError('');
     clearSaved();
     try {
-      if (file.size > MAX_BYTES) {
+      if (file.size > maxBytes) {
         throw new Error(
-          `${file.name} is ${formatBytes(file.size)}. This page opens archives up to 100 MB.`,
+          oversizeMessage(capability, file.size, LIMIT, file.name)!,
         );
       }
       const bytes = new Uint8Array(await file.arrayBuffer());
@@ -221,9 +238,9 @@ export function ArchiveToolkitTool() {
       let total = 0;
       for (const file of toPack) {
         total += file.size;
-        if (total > MAX_BYTES) {
+        if (total > maxBytes) {
           throw new Error(
-            `Those files come to more than 100 MB together, which is the limit on this page.`,
+            `Those files come to ${formatBytes(total)} together. ${ceilingSentence(capability, LIMIT)}`,
           );
         }
         entries.push({

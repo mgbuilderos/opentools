@@ -26,6 +26,13 @@ import { announceCompletion } from '@/lib/completion';
 import type { RelatedTool } from '@/lib/seo/related-tools';
 import type { BackgroundRemovalResponse } from '@/lib/tools/background-removal/protocol';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import {
   canvasFilter,
   extensionForRasterType,
@@ -47,7 +54,13 @@ type Result = {
   format: RasterFormat;
   removedPixels: number;
 };
-const MAX_BYTES = 25 * 1024 * 1024;
+/**
+ * 25 MB, on the encoded file. Decoded pixels cost width x height x 4 regardless of how well the file compressed, so this ceiling bounds the input rather than the working set.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 25 * 1024 * 1024,
+  because: 'the image is decoded to pixels in this tab',
+};
 
 function loadImage(url: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -180,6 +193,9 @@ export function ImageEditorTool({
   /** Built by `lib/seo/related-tools.ts` in the route file; see there. */
   relatedTools?: readonly RelatedTool[];
 }) {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const task = initialOperationId
     ? EDITOR_TASKS.get(initialOperationId)
     : undefined;
@@ -271,8 +287,8 @@ export function ImageEditorTool({
       setError('Choose a static JPEG, PNG, or WebP image.');
       return;
     }
-    if (file.size > MAX_BYTES) {
-      setError('This candidate limits source images to 25 MB.');
+    if (file.size > maxBytes) {
+      setError(oversizeMessage(capability, file.size, LIMIT)!);
       return;
     }
     const url = URL.createObjectURL(file);

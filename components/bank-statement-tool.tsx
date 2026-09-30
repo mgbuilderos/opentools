@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   Table as TableIcon,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,13 @@ import {
 } from '@/lib/tools/pdf/tables';
 import { toCsv } from '@/lib/tools/spreadsheet/csv';
 import { writeXlsx } from '@/lib/tools/spreadsheet/xlsx-writer';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
 type StatementData = {
   fileName: string;
@@ -53,9 +60,19 @@ type DownloadReceipt = {
   reconciled: boolean;
 };
 
-const MAX_BYTES = 100 * 1024 * 1024; // 100 MB
+/**
+ * 100 MB. The statement is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 100 * 1024 * 1024,
+  because: 'the statement is parsed in this tab',
+};
 
 export function BankStatementTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [data, setData] = useState<StatementData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
@@ -95,10 +112,8 @@ export function BankStatementTool() {
         setError('Please choose a valid PDF bank statement.');
         return;
       }
-      if (file.size > MAX_BYTES) {
-        setError(
-          `File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum supported size is 100 MB.`,
-        );
+      if (file.size > maxBytes) {
+        setError(oversizeMessage(capability, file.size, LIMIT)!);
         return;
       }
 
@@ -217,7 +232,7 @@ export function BankStatementTool() {
         );
       }
     },
-    [resetAll],
+    [resetAll, capability, maxBytes],
   );
 
   const handleExportCsv = useCallback(() => {

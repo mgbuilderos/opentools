@@ -25,6 +25,12 @@ import { announceCompletion } from '@/lib/completion';
 import { offerFile } from '@/lib/file-handoff';
 import { DOCX_MIME_TYPE } from '@/lib/tools/docx/document';
 import { convertPdfToWord, PdfToWordError } from '@/lib/tools/pdf/pdf-to-word';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
 type Receipt = {
   url: string;
@@ -38,7 +44,13 @@ type Receipt = {
   durationMs: number;
 };
 
-const MAX_BYTES = 150 * 1024 * 1024;
+/**
+ * 150 MB. The refusal here comes from the localised copy, so the ceiling is rewired without replacing the sentence.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 150 * 1024 * 1024,
+  because: 'the document is converted in this tab',
+};
 
 /**
  * The PDF library runs its own worker for parsing, so the heavy work is
@@ -72,6 +84,9 @@ function docxBlob(bytes: Uint8Array) {
 }
 
 export function PdfToWordTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   /* Localised control strings; the English bundle everywhere else. */
   const t = useToolUi();
   const edition = useLocaleEdition();
@@ -114,12 +129,12 @@ export function PdfToWordTool() {
     clearReceipt();
     setError('');
     setCanOpenOcr(false);
-    if (next.size > MAX_BYTES) {
+    if (next.size > maxBytes) {
       setError(
         fillMessage(t.toWordTooLarge, {
           name: next.name,
           size: formatBytes(next.size),
-          max: formatBytes(MAX_BYTES),
+          max: formatBytes(maxBytes),
         }),
       );
       return;
@@ -217,7 +232,7 @@ export function PdfToWordTool() {
   function startBatch() {
     setError('');
     void batch.start(batchFiles, async (source, _index, signal) => {
-      if (source.size > MAX_BYTES) {
+      if (source.size > maxBytes) {
         return { status: 'skipped', reason: 'The 150 MB limit was exceeded.' };
       }
       if (!source.name.toLowerCase().endsWith('.pdf')) {

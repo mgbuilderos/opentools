@@ -38,6 +38,13 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import {
   CATEGORY_ORDER,
   cleanFileName,
@@ -58,7 +65,13 @@ import {
  * path reads the archive index plus two small parts. Only the MP4 demuxer walks
  * the container, and it does that over a `ByteSource` rather than a copy.
  */
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
+/**
+ * 100 MB, above the 50 MB the photo page allows. This page accepts video, where 50 MB is a short clip, and its own reads are bounded: the image and PDF paths read headers and the OOXML path reads the archive index plus two small parts. The component still calls `arrayBuffer()`, so the ceiling stays a memory ceiling until that changes.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 100 * 1024 * 1024,
+  because: 'the file is read in this tab',
+};
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -185,6 +198,10 @@ function FindingRow({ finding }: { finding: XrayFinding }) {
 }
 
 export function FileXrayTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [report, setReport] = useState<XrayReport | null>(null);
   const [bytes, setBytes] = useState<Uint8Array | null>(null);
   const [stripped, setStripped] = useState<XrayStripResult | null>(null);
@@ -204,44 +221,45 @@ export function FileXrayTool() {
     setShowTechnical(false);
   }, []);
 
-  const processFile = useCallback(async (file: File) => {
-    setError('');
-    setStripped(null);
-    setShowTechnical(false);
+  const processFile = useCallback(
+    async (file: File) => {
+      setError('');
+      setStripped(null);
+      setShowTechnical(false);
 
-    if (file.size === 0) {
-      setError(`${file.name} is empty, so there is nothing to look inside.`);
-      errorRef.current?.focus();
-      return;
-    }
-    if (file.size > MAX_FILE_BYTES) {
-      setError(
-        `${file.name} is ${formatBytes(file.size)}. This tool reads files up to ${formatBytes(MAX_FILE_BYTES)}.`,
-      );
-      errorRef.current?.focus();
-      return;
-    }
+      if (file.size === 0) {
+        setError(`${file.name} is empty, so there is nothing to look inside.`);
+        errorRef.current?.focus();
+        return;
+      }
+      if (file.size > maxBytes) {
+        setError(oversizeMessage(capability, file.size, LIMIT, file.name)!);
+        errorRef.current?.focus();
+        return;
+      }
 
-    setBusy('Reading the file…');
-    try {
-      const buffer = await file.arrayBuffer();
-      const fileBytes = new Uint8Array(buffer);
-      const result = await xrayFile(fileBytes, file.name);
-      setBytes(fileBytes);
-      setReport(result);
-    } catch (err) {
-      // `xrayFile` handles its own failures, so reaching here means the file
-      // could not be read off disk at all.
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'This file could not be opened. It may have been moved or is still downloading.',
-      );
-      errorRef.current?.focus();
-    } finally {
-      setBusy('');
-    }
-  }, []);
+      setBusy('Reading the file…');
+      try {
+        const buffer = await file.arrayBuffer();
+        const fileBytes = new Uint8Array(buffer);
+        const result = await xrayFile(fileBytes, file.name);
+        setBytes(fileBytes);
+        setReport(result);
+      } catch (err) {
+        // `xrayFile` handles its own failures, so reaching here means the file
+        // could not be read off disk at all.
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'This file could not be opened. It may have been moved or is still downloading.',
+        );
+        errorRef.current?.focus();
+      } finally {
+        setBusy('');
+      }
+    },
+    [capability, maxBytes],
+  );
 
   const handleStrip = useCallback(async () => {
     if (!report || !bytes) return;
@@ -394,9 +412,8 @@ export function FileXrayTool() {
               </p>
               <p className="mt-1.5 max-w-md text-xs leading-5 text-muted-foreground">
                 Photos (JPEG, PNG, WebP), PDFs, Word, Excel and PowerPoint
-                files, MP4 video and ZIP archives, up to{' '}
-                {formatBytes(MAX_FILE_BYTES)}. The file is read in your browser
-                and never uploaded.
+                files, MP4 video and ZIP archives, up to {formatBytes(maxBytes)}
+                . The file is read in your browser and never uploaded.
               </p>
               <label className="mt-6">
                 <span className="sr-only">Choose a file</span>

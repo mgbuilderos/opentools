@@ -19,6 +19,13 @@ import { PracticeBriefPanel } from '@/components/practice-brief';
 import { Button } from '@/components/ui/button';
 import type { PracticeBrief } from '@/lib/practice-briefs';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import type {
   IdMaskRequest,
   IdMaskResponse,
@@ -29,7 +36,13 @@ import type {
 
 /** Extensions read as plain text. Anything else is refused, not guessed at. */
 const TEXT_EXTENSIONS = ['.txt', '.csv', '.tsv', '.json', '.md', '.log'];
-const MAX_BYTES = 20 * 1024 * 1024;
+/**
+ * 20 MB. The file is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 20 * 1024 * 1024,
+  because: 'the text is read and rewritten in this tab',
+};
 const LISTED_FINDINGS = 50;
 
 type Outcome = {
@@ -69,6 +82,9 @@ const plural = (count: number, one: string, many: string) =>
 export function AadhaarPanMaskerTool({
   brief,
 }: { brief?: PracticeBrief } = {}) {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLTextAreaElement>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -113,8 +129,8 @@ export function AadhaarPanMaskerTool({
       );
       return;
     }
-    if (file.size > MAX_BYTES) {
-      setError('This tool reads text files up to 20 MB.');
+    if (file.size > maxBytes) {
+      setError(oversizeMessage(capability, file.size, LIMIT)!);
       return;
     }
     try {

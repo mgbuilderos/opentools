@@ -45,6 +45,13 @@ import {
   type Rgb,
 } from '@/lib/tools/pdf/signature-ink';
 import { rectFitsPage } from '@/lib/tools/pdf/signature-placement';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
 type SignatureMode = 'draw' | 'type';
 type SourcePdf = {
@@ -68,7 +75,13 @@ type Receipt = {
   durationMs: number;
 };
 
-const MAX_BYTES = 150 * 1024 * 1024;
+/**
+ * 150 MB. The document is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 150 * 1024 * 1024,
+  because: 'the document is read and rewritten in this tab',
+};
 const SIGNATURE_CANVAS = { width: 640, height: 200 };
 /** The stamp's height over its width: the whole pad is exported. */
 const SIGNATURE_ASPECT = SIGNATURE_CANVAS.height / SIGNATURE_CANVAS.width;
@@ -431,6 +444,9 @@ function NumberField({
 }
 
 export function PdfSignTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -676,8 +692,8 @@ export function PdfSignTool() {
     clearResult();
     setError('');
     setInvalidIds([]);
-    if (file.size > MAX_BYTES) {
-      setOpenError(file.name, 'This candidate limits a source PDF to 150 MB.');
+    if (file.size > maxBytes) {
+      setOpenError(file.name, oversizeMessage(capability, file.size, LIMIT)!);
       return;
     }
     const candidate = { id: crypto.randomUUID(), file };

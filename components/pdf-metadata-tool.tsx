@@ -11,11 +11,18 @@ import {
   UploadCloud,
   X,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import {
   readPdfMetadata,
   stripPdfMetadata,
@@ -23,7 +30,13 @@ import {
   type PdfMetadataReport,
 } from '@/lib/tools/pdf/metadata';
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
+/**
+ * 100 MB. The document is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 100 * 1024 * 1024,
+  because: 'the whole document is read into memory to inspect it',
+};
 
 interface LoadedPdf {
   name: string;
@@ -82,6 +95,10 @@ function cleanedName(name: string): string {
 }
 
 export function PdfMetadataTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [loaded, setLoaded] = useState<LoadedPdf | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
@@ -94,32 +111,33 @@ export function PdfMetadataTool() {
   const fileRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
-  const processFile = useCallback(async (file: File) => {
-    setError('');
-    setCleanSummary(null);
+  const processFile = useCallback(
+    async (file: File) => {
+      setError('');
+      setCleanSummary(null);
 
-    if (file.size > MAX_FILE_BYTES) {
-      setError(
-        `File is too large (${formatBytes(file.size)}). This tool reads the whole document into memory, so it stops at ${formatBytes(MAX_FILE_BYTES)} to keep the page responsive.`,
-      );
-      errorRef.current?.focus();
-      return;
-    }
+      if (file.size > maxBytes) {
+        setError(oversizeMessage(capability, file.size, LIMIT)!);
+        errorRef.current?.focus();
+        return;
+      }
 
-    setBusy('Reading what this PDF says about itself…');
-    try {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      const report = await readPdfMetadata(bytes);
-      setLoaded({ name: file.name, size: file.size, bytes, report });
-    } catch {
-      setError(
-        'This file could not be read as a PDF. If it is password-protected, remove the password first — an encrypted file cannot be inspected without it.',
-      );
-      errorRef.current?.focus();
-    } finally {
-      setBusy('');
-    }
-  }, []);
+      setBusy('Reading what this PDF says about itself…');
+      try {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const report = await readPdfMetadata(bytes);
+        setLoaded({ name: file.name, size: file.size, bytes, report });
+      } catch {
+        setError(
+          'This file could not be read as a PDF. If it is password-protected, remove the password first — an encrypted file cannot be inspected without it.',
+        );
+        errorRef.current?.focus();
+      } finally {
+        setBusy('');
+      }
+    },
+    [capability, maxBytes],
+  );
 
   const handleChoose = (file?: File) => {
     if (file) void processFile(file);

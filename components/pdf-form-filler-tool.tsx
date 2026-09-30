@@ -10,11 +10,18 @@ import {
   RotateCcw,
   ShieldCheck,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import type {
   PdfFillOptions,
   PdfFormDocumentInfo,
@@ -68,7 +75,13 @@ const READ_ONLY_REASONS: Record<PdfFormFieldReadOnlyReason, string> = {
   unreadable: 'Could not be parsed',
 };
 
-const MAX_BYTES = 150 * 1024 * 1024; // 150 MB
+/**
+ * 150 MB. The document is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 150 * 1024 * 1024,
+  because: 'the document is read and rewritten in this tab',
+};
 
 function createWorker() {
   return new Worker(
@@ -81,6 +94,10 @@ function createWorker() {
 }
 
 export function PdfFormFillerTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [source, setSource] = useState<SourcePdf | null>(null);
   const [fieldValues, setFieldValues] = useState<
     Record<string, PdfFormFieldValue>
@@ -131,10 +148,10 @@ export function PdfFormFillerTool() {
         });
         return;
       }
-      if (file.size > MAX_BYTES) {
+      if (file.size > maxBytes) {
         setError({
           kind: 'open',
-          message: `File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum allowed size is 150 MB.`,
+          message: oversizeMessage(capability, file.size, LIMIT)!,
         });
         return;
       }
@@ -229,7 +246,7 @@ export function PdfFormFillerTool() {
         });
       }
     },
-    [resetAll],
+    [resetAll, capability, maxBytes],
   );
 
   const handleFill = useCallback(async () => {

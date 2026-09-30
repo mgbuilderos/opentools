@@ -17,10 +17,9 @@ import {
 import { AppShell } from '@/components/app-shell';
 import { PipelineEditor } from '@/components/bench/pipeline-editor';
 import { SmartDropzone } from '@/components/smart-dropzone';
+import { useDeviceMemory } from '@/components/use-device-memory';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
-import { detectDeviceMemory } from '@/lib/kernel/capability';
-import type { DeviceMemorySnapshot } from '@/lib/kernel/capability';
 import { getOperation, KERNEL_OPERATIONS } from '@/lib/kernel/registry';
 import type { KernelOperation } from '@/lib/kernel/types';
 import { describeCapacity, pipelineCapacity } from '@/lib/pipeline/capacity';
@@ -42,21 +41,6 @@ import {
   type BenchInput,
   type BenchOutput,
 } from '@/lib/bench/run';
-
-/**
- * `detectDeviceMemory` reads browser-only globals and builds a fresh object,
- * so it is memoised here: `useSyncExternalStore` compares snapshots by
- * reference and would loop on a new one each call. The server snapshot is
- * empty because prerendering has no device to measure, which makes the
- * prerendered sentence the honest "no ceiling to quote" one rather than a
- * number belonging to the build machine.
- */
-const NO_DEVICE: DeviceMemorySnapshot = {};
-let measuredDevice: DeviceMemorySnapshot | undefined;
-function deviceSnapshot(): DeviceMemorySnapshot {
-  measuredDevice ??= detectDeviceMemory();
-  return measuredDevice;
-}
 
 type Outcome = Awaited<ReturnType<typeof runBench>>[number];
 type BenchFileHandle = {
@@ -161,11 +145,7 @@ export function BenchTool() {
     () => Boolean(window.showDirectoryPicker),
     () => false,
   );
-  const device = useSyncExternalStore(
-    () => () => {},
-    deviceSnapshot,
-    () => NO_DEVICE,
-  );
+  const device = useDeviceMemory();
   const pipelineActive = pipeline.steps.length > 0;
   const pipelineErrors = useMemo(
     () => (pipelineActive ? validate(pipeline) : []),

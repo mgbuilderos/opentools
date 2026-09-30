@@ -16,7 +16,7 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import {
@@ -26,6 +26,13 @@ import {
 } from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import {
   readDocxMetadata,
   stripDocxMetadata,
@@ -37,7 +44,13 @@ import {
 // whole thing is read into memory to inspect it, so this keeps a very large
 // file from locking the tab up. Say so plainly below rather than blaming the
 // browser for a number we picked.
-const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50 MB
+/**
+ * 50 MB. Our own guard, not a limit the browser imposes: a .docx is a ZIP and the whole thing is read in to inspect it, so this keeps a very large file from locking the tab up. The refusal says so rather than blaming the browser for a number we picked.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 50 * 1024 * 1024,
+  because: 'the whole document is read into memory to inspect it',
+};
 
 interface LoadedDocx {
   name: string;
@@ -71,6 +84,10 @@ function getCleanFileName(
 }
 
 export function DocxMetadataTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [loaded, setLoaded] = useState<LoadedDocx | null>(null);
   const [error, setError] = useState<string>('');
   const [busy, setBusy] = useState<string>('');
@@ -95,41 +112,42 @@ export function DocxMetadataTool() {
   const fileRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
-  const processFile = useCallback(async (file: File) => {
-    setError('');
-    setCleanSummary(null);
+  const processFile = useCallback(
+    async (file: File) => {
+      setError('');
+      setCleanSummary(null);
 
-    if (file.size > MAX_FILE_BYTES) {
-      setError(
-        `File is too large (${formatBytes(file.size)}). This tool reads the whole document into memory, so it stops at ${formatBytes(MAX_FILE_BYTES)} to keep the page responsive.`,
-      );
-      errorRef.current?.focus();
-      return;
-    }
+      if (file.size > maxBytes) {
+        setError(oversizeMessage(capability, file.size, LIMIT)!);
+        errorRef.current?.focus();
+        return;
+      }
 
-    setBusy('Analyzing Word document metadata...');
-    try {
-      const buffer = await file.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      const report = await readDocxMetadata(bytes, file.name);
+      setBusy('Analyzing Word document metadata...');
+      try {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        const report = await readDocxMetadata(bytes, file.name);
 
-      setLoaded({
-        name: file.name,
-        size: file.size,
-        bytes,
-        metadata: report,
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Could not parse metadata from this Word document. Please ensure it is a valid .docx file.',
-      );
-      errorRef.current?.focus();
-    } finally {
-      setBusy('');
-    }
-  }, []);
+        setLoaded({
+          name: file.name,
+          size: file.size,
+          bytes,
+          metadata: report,
+        });
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Could not parse metadata from this Word document. Please ensure it is a valid .docx file.',
+        );
+        errorRef.current?.focus();
+      } finally {
+        setBusy('');
+      }
+    },
+    [capability, maxBytes],
+  );
 
   const handleChoose = (files?: FileList | File[]) => {
     const selected = Array.from(files ?? []);
@@ -185,7 +203,7 @@ export function DocxMetadataTool() {
       stripProperties: stripProps,
     };
     void batch.start(batchFiles, async (file, _index, signal) => {
-      if (file.size > MAX_FILE_BYTES) {
+      if (file.size > maxBytes) {
         return { status: 'skipped', reason: 'The 50 MB limit was exceeded.' };
       }
       if (!file.name.toLowerCase().endsWith('.docx')) {

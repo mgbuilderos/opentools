@@ -13,7 +13,7 @@ import {
   UploadCloud,
   X,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { AppShell } from '@/components/app-shell';
 import {
@@ -23,6 +23,13 @@ import {
 } from '@/components/batch-runner';
 import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import {
   readMetadata,
   stripMetadata,
@@ -30,7 +37,13 @@ import {
   type ImageStripResult,
 } from '@/lib/tools/metadata';
 
-const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50 MB
+/**
+ * 50 MB per file, on the photo page.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 50 * 1024 * 1024,
+  because: 'the image is read in this tab',
+};
 
 interface LoadedImage {
   name: string;
@@ -91,6 +104,10 @@ function orientationDescription(tag?: number): string {
 }
 
 export function MetadataTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [loaded, setLoaded] = useState<LoadedImage | null>(null);
   const [error, setError] = useState<string>('');
   const [busy, setBusy] = useState<string>('');
@@ -102,50 +119,51 @@ export function MetadataTool() {
   const fileRef = useRef<HTMLInputElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
-  const processFile = useCallback(async (file: File) => {
-    setError('');
-    setStripResult(null);
+  const processFile = useCallback(
+    async (file: File) => {
+      setError('');
+      setStripResult(null);
 
-    if (file.size > MAX_FILE_BYTES) {
-      setError(
-        `File is too large (${formatBytes(file.size)}). This tool's per-file limit is ${formatBytes(MAX_FILE_BYTES)}.`,
-      );
-      errorRef.current?.focus();
-      return;
-    }
-
-    setBusy('Analyzing photo metadata...');
-    try {
-      const buffer = await file.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      const meta = readMetadata(bytes);
-
-      if (meta.format === 'unsupported') {
-        setError(
-          'Unsupported file format. Please choose a JPEG, PNG, or WebP photo.',
-        );
+      if (file.size > maxBytes) {
+        setError(oversizeMessage(capability, file.size, LIMIT)!);
         errorRef.current?.focus();
         return;
       }
 
-      setLoaded({
-        name: file.name,
-        size: file.size,
-        type: file.type || getMimeType(meta.format),
-        bytes,
-        metadata: meta,
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Could not parse photo metadata from this file.',
-      );
-      errorRef.current?.focus();
-    } finally {
-      setBusy('');
-    }
-  }, []);
+      setBusy('Analyzing photo metadata...');
+      try {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        const meta = readMetadata(bytes);
+
+        if (meta.format === 'unsupported') {
+          setError(
+            'Unsupported file format. Please choose a JPEG, PNG, or WebP photo.',
+          );
+          errorRef.current?.focus();
+          return;
+        }
+
+        setLoaded({
+          name: file.name,
+          size: file.size,
+          type: file.type || getMimeType(meta.format),
+          bytes,
+          metadata: meta,
+        });
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Could not parse photo metadata from this file.',
+        );
+        errorRef.current?.focus();
+      } finally {
+        setBusy('');
+      }
+    },
+    [capability, maxBytes],
+  );
 
   const handleChoose = (files?: FileList | File[]) => {
     const selected = Array.from(files ?? []);
@@ -194,10 +212,10 @@ export function MetadataTool() {
   const startBatch = () => {
     setError('');
     void batch.start(batchFiles, async (file, _index, signal) => {
-      if (file.size > MAX_FILE_BYTES) {
+      if (file.size > maxBytes) {
         return {
           status: 'skipped',
-          reason: `The ${formatBytes(MAX_FILE_BYTES)} per-file limit was exceeded.`,
+          reason: `The ${formatBytes(maxBytes)} per-file limit was exceeded.`,
         };
       }
       if (signal.aborted) {

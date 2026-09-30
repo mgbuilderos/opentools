@@ -30,6 +30,13 @@ import {
   sliceMp3,
 } from '@/lib/tools/audio/mp3';
 import { toolMeta } from '@/lib/tools/tool-meta';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
 type Mode = 'cut' | 'join' | 'tags' | 'inspect';
 
@@ -49,7 +56,13 @@ interface Output {
   durationMs: number;
 }
 
-const MAX_BYTES = 100 * 1024 * 1024;
+/**
+ * 100 MB. The audio is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 100 * 1024 * 1024,
+  because: 'the audio is read in this tab',
+};
 
 const MODES: readonly { id: Mode; label: string; icon: typeof Scissors }[] = [
   { id: 'cut', label: 'Cut', icon: Scissors },
@@ -112,6 +125,9 @@ function formToTags(form: Record<Id3Field, string>): Id3Tags {
 }
 
 export function Mp3ToolkitTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const loadedRef = useRef<Loaded[]>([]);
   const outputRef = useRef<Output | null>(null);
@@ -175,9 +191,9 @@ export function Mp3ToolkitTool() {
     try {
       const next: Loaded[] = [];
       for (const file of files) {
-        if (file.size > MAX_BYTES) {
+        if (file.size > maxBytes) {
           throw new Error(
-            `${file.name} is ${formatBytes(file.size)}. This page reads files up to 100 MB.`,
+            oversizeMessage(capability, file.size, LIMIT, file.name)!,
           );
         }
         const bytes = new Uint8Array(await file.arrayBuffer());

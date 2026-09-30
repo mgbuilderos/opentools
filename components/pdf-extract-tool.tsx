@@ -18,6 +18,13 @@ import { Button } from '@/components/ui/button';
 import { announceCompletion } from '@/lib/completion';
 import { toolMeta } from '@/lib/tools/tool-meta';
 import { parsePageSelection } from '@/lib/tools/pdf/page-selection';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import type {
   PdfWorkerInput,
   PdfWorkerRequest,
@@ -32,7 +39,13 @@ type Receipt = {
   durationMs: number;
   validationDurationMs: number;
 };
-const MAX_BYTES = 150 * 1024 * 1024;
+/**
+ * 150 MB. The document is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 150 * 1024 * 1024,
+  because: 'the document is read in this tab',
+};
 
 function createWorker() {
   return new Worker(
@@ -65,6 +78,9 @@ async function toWorkerInput(source: {
 }
 
 export function PdfExtractTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<Worker | null>(null);
   const outputUrlRef = useRef<string | null>(null);
@@ -110,8 +126,8 @@ export function PdfExtractTool() {
     if (!file || status === 'processing' || status === 'inspecting') return;
     setError('');
     clearResult();
-    if (file.size > MAX_BYTES) {
-      setError('This candidate limits a source PDF to 150 MB.');
+    if (file.size > maxBytes) {
+      setError(oversizeMessage(capability, file.size, LIMIT)!);
       return;
     }
     const candidate = { id: crypto.randomUUID(), file };

@@ -23,15 +23,32 @@ import {
   type Message,
 } from '@/lib/formats/email';
 import { sanitizeEmailHtml } from '@/lib/tools/email/sanitize-html';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
 type DownloadReceipt = {
   url: string;
   name: string;
 };
 
-const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
+/**
+ * 50 MB. The message is read whole, so the ceiling is a memory ceiling.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 50 * 1024 * 1024,
+  because: 'the message and its attachments are held in this tab',
+};
 
 export function EmailReaderTool() {
+  const device = useDeviceMemory();
+  const capability = useMemo(() => toolCapability(LIMIT, device), [device]);
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   const [messages, setMessages] = useState<readonly Message[]>([]);
   const [selectedMessageIndex, setSelectedMessageIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<'html' | 'text'>('html');
@@ -101,10 +118,8 @@ export function EmailReaderTool() {
         setError('Please select a valid email file (.eml, .msg, or .mbox).');
         return;
       }
-      if (file.size > MAX_BYTES) {
-        setError(
-          `File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum supported size is 50 MB.`,
-        );
+      if (file.size > maxBytes) {
+        setError(oversizeMessage(capability, file.size, LIMIT)!);
         return;
       }
 
@@ -145,7 +160,7 @@ export function EmailReaderTool() {
         setLoadingStep('');
       }
     },
-    [resetAll],
+    [resetAll, capability, maxBytes],
   );
 
   const currentMessage: Message | undefined = messages[selectedMessageIndex];

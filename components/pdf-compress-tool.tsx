@@ -34,6 +34,12 @@ import { announceCompletion } from '@/lib/completion';
 import type { PracticeBrief } from '@/lib/practice-briefs';
 import { PORTAL_PRESETS, findPreset } from '@/lib/portal-presets';
 import { publicTools } from '@/lib/tools/catalog';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  ceilingBytes,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 import {
   bytesToKib,
   kibToBytes,
@@ -74,7 +80,13 @@ type Receipt = {
   };
 };
 
-const MAX_BYTES = 150 * 1024 * 1024;
+/**
+ * 150 MB. The refusal here comes from the localised copy, so the ceiling is rewired without replacing the sentence.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 150 * 1024 * 1024,
+  because: 'the document and its images are rebuilt in this tab',
+};
 
 /* A function of the message bundle, because the labels are translated. */
 function dimensionChoices(t: ToolUiMessages) {
@@ -299,6 +311,9 @@ export function PdfCompressTool({
   brief,
   offlineRoute,
 }: { brief?: PracticeBrief; offlineRoute?: string } = {}) {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+  const maxBytes = ceilingBytes(capability, LIMIT);
+
   /* Localised control strings; the English bundle everywhere else. */
   const t = useToolUi();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -389,7 +404,7 @@ export function PdfCompressTool({
     if (!file || status === 'processing' || status === 'inspecting') return;
     clearResult();
     setError('');
-    if (file.size > MAX_BYTES) {
+    if (file.size > maxBytes) {
       setError(t.compressLimitNote);
       return;
     }
@@ -591,7 +606,7 @@ export function PdfCompressTool({
       removeMetadata,
     };
     void batch.start(batchFiles, async (file, _index, signal) => {
-      if (file.size > MAX_BYTES) {
+      if (file.size > maxBytes) {
         return { status: 'skipped', reason: 'The 150 MB limit was exceeded.' };
       }
       if (!file.name.toLowerCase().endsWith('.pdf')) {

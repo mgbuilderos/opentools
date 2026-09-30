@@ -17,8 +17,26 @@ import { convertContainer } from '@/lib/tools/video/convert';
 import { readMp4, type Mp4File } from '@/lib/tools/video/mp4';
 import { sourceFromFile, type ByteSource } from '@/lib/tools/video/source';
 import { VideoSuiteNav, VideoRelatedLinks } from '@/components/video-suite-nav';
+import { useDeviceMemory } from '@/components/use-device-memory';
+import {
+  oversizeMessage,
+  toolCapability,
+  type ToolFileLimit,
+} from '@/lib/tools/file-limit';
 
-const MAX_BYTES = 2 * 1024 * 1024 * 1024;
+/**
+ * 2 GB, and about browser file handling rather than memory.
+ *
+ * This page hands the engine a `ByteSource` from `sourceFromFile`, so the film
+ * is sliced through `File.slice()` and the output assembled as a `Blob`; it is
+ * never held whole. `streams` says so, which stops the report reading this
+ * ceiling as a memory ceiling and lets the refusal say the true thing.
+ */
+const LIMIT: ToolFileLimit = {
+  inputLimitBytes: 2 * 1024 * 1024 * 1024,
+  streams: true,
+  because: 'that is as far as browser file handling reaches',
+};
 
 interface Loaded {
   name: string;
@@ -45,6 +63,8 @@ function formatBytes(bytes: number) {
 }
 
 export function VideoConvertTool() {
+  const capability = toolCapability(LIMIT, useDeviceMemory());
+
   const fileRef = useRef<HTMLInputElement>(null);
   const savedRef = useRef<Saved | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
@@ -80,10 +100,9 @@ export function VideoConvertTool() {
     setError('');
     setLoaded(null);
 
-    if (file.size > MAX_BYTES) {
-      setError(
-        `That file is ${formatBytes(file.size)}. This page works on files up to ${formatBytes(MAX_BYTES)}, processed entirely in your browser without uploading.`,
-      );
+    const tooBig = oversizeMessage(capability, file.size, LIMIT);
+    if (tooBig) {
+      setError(tooBig);
       return;
     }
 
