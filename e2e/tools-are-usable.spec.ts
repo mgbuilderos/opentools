@@ -68,18 +68,17 @@ async function probe(page: Page): Promise<Probe> {
     // A styled drop zone hides its real <input type=file> behind the visible
     // "browse" affordance, so file inputs count whether or not they are painted.
     //
-    // `input[type=number]` is in this list because a number box is somewhere to
-    // type, and leaving it out made this spec report a calculator as a page with
-    // nothing to use. `/science/coulomb-s-law-calculator` renders three of them
-    // and no action button, because the science workbench runs on its own as you
-    // type -- so with `number` uncounted the verdict fell to `hasResult`, which
-    // is a race against the 900 ms wait below. It lost that race once in a
-    // 1,997-URL sweep on a loaded machine and was reported as a dead end, which
-    // is the one thing it is not: a visitor can type in it.
+    // `input[type=number]` is NOT in this list, and that is deliberate. The two
+    // operations this spec was written for render a number box and nothing else:
+    // `/text/lorem-ipsum-generator` prerenders one number input, no textarea, no
+    // button and no result -- the exact shape of the bug. Counting a number box as
+    // somewhere to type would pass that page and disarm the whole file. A tool
+    // whose only fields are numbers is covered by `hasResult` instead: it runs on
+    // its own, so it owes the visitor an answer.
     const canType =
       all('input[type=file]').length > 0 ||
       all(
-        'textarea, [contenteditable=""], [contenteditable="true"], input[type=text], input[type=search], input[type=url], input[type=email], input[type=tel], input[type=number], input:not([type])',
+        'textarea, [contenteditable=""], [contenteditable="true"], input[type=text], input[type=search], input[type=url], input[type=email], input[type=tel], input:not([type])',
       ).some(shown);
     const canPress = all('button')
       .filter(shown)
@@ -116,9 +115,35 @@ test.describe('Every advertised tool is usable on arrival', () => {
       for (let url = queue.pop(); url; url = queue.pop()) {
         try {
           await page.goto(url, { waitUntil: 'networkidle', timeout: 25_000 });
-          // The workbench shells debounce their auto-run by 250 ms.
-          await page.waitForTimeout(900);
-          const seen = await probe(page);
+          /*
+            WAIT UNTIL THE PAGE IS USABLE, RATHER THAN SLEEPING AND HOPING.
+
+            This was a flat 900 ms, for the workbench shells' 250 ms auto-run
+            debounce. It judged some pages before they had hydrated, and the
+            verdict for an un-hydrated page is always "dead end": measured on
+            `/science/coulomb-s-law-calculator`, whose prerendered `<main>` holds
+            three number boxes and **zero** buttons, because its action button is
+            drawn on hydration. It was reported as a dead end in a sweep of 1,997
+            URLs, five at a time, on a loaded machine -- with its heading in the
+            report, so the page had rendered; it simply had not come alive yet.
+
+            Polling until it is usable does not weaken the assertion by one
+            inch. A page that never becomes usable still fails, having been given
+            ten seconds rather than nine hundred milliseconds to prove otherwise,
+            and a healthy page settles in well under that. What it removes is a
+            verdict that depended on how busy the machine was.
+          */
+          const deadline = Date.now() + 10_000;
+          let seen = await probe(page);
+          while (
+            !seen.canType &&
+            !seen.canPress &&
+            !seen.hasResult &&
+            Date.now() < deadline
+          ) {
+            await page.waitForTimeout(250);
+            seen = await probe(page);
+          }
           if (!seen.canType && !seen.canPress && !seen.hasResult) {
             deadEnds.push(`${url}  (heading: ${seen.heading || '—'})`);
           }
