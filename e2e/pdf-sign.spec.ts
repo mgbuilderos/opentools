@@ -22,6 +22,7 @@ import {
   testStoredChoicePdf,
   testUntouchedFormPdf,
 } from './fixtures';
+import { keepTheSupportCardShut } from './support-card';
 
 /**
  * A signing tool is only worth shipping if the values and the signature are
@@ -353,6 +354,10 @@ async function fieldSnapshot(document: PdfLibDocument, name: string) {
 }
 
 test.describe('Sign and fill PDF', () => {
+  test.beforeEach(async ({ page }) => {
+    await keepTheSupportCardShut(page);
+  });
+
   test('writes the fields and draws the signature on the chosen page, at the chosen spot and width', async ({
     page,
   }) => {
