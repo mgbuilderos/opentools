@@ -1,5 +1,6 @@
 /* oxlint-disable */
 import { currentEgressReading, formatEgressBytes } from './egress-meter';
+import { USAGE_COUNT_KEY, parseUsageCount } from './milestone';
 import {
   findRecipe,
   sanitiseRecipeValues,
@@ -108,12 +109,46 @@ export function announceCompletion(detail: CompletionDetail) {
       value: boundedDisplayText(metric.value, 64),
     }))
     .filter((metric) => metric.label && metric.value);
+  /*
+    The counter behind the 10/50/100 milestone card.
+
+    It is written here, at the one moment that is unambiguously "a task
+    finished", and read once per page load by `MilestoneModal`. It is *not*
+    read by `mayOfferSupport`, which is the support gate — so from the gate's
+    side it looks like a counter implementing a rule nobody applies, and it was
+    nearly deleted as one. The reader is `components/milestone-modal.tsx`,
+    mounted by `components/app-shell.tsx`, and `app/privacy/page.tsx` discloses
+    this key to visitors by name. Deleting it would silently retire the
+    milestone and leave the privacy page describing storage the site no longer
+    writes.
+
+    The key is imported rather than spelled again here. Two copies of one
+    storage key is exactly how the read path became invisible from the write
+    site; `completion.test.ts` now holds the two ends together.
+
+    `parseUsageCount` is the reader's own parser, used here so that a value the
+    reader would treat as 0 cannot be incremented by the writer into `NaN` and
+    stored — which the previous `parseInt` did, permanently freezing the count
+    for that visitor.
+
+    What was removed with it: a second window event dispatched beside this
+    write, named for a tool having run. Nothing has listened to it since
+    2026-09-19, when the milestone was deliberately moved off the completion
+    event because deciding there put a full-screen modal over the page in the
+    same tick the receipt needed — see the header of `lib/milestone.ts`. The
+    listener went; the dispatch stayed. A public event with no subscriber is an
+    invitation to reintroduce exactly that bug, so it is gone, and
+    `completion.test.ts` keeps it gone. That test reads this file as raw text,
+    comments included, which is why the event is described here rather than
+    named.
+  */
   try {
-    const count =
-      parseInt(localStorage.getItem('tool_usage_count') || '0', 10) + 1;
-    localStorage.setItem('tool_usage_count', count.toString());
-    window.dispatchEvent(new CustomEvent('tool-executed'));
-  } catch (e) {}
+    const count = parseUsageCount(localStorage.getItem(USAGE_COUNT_KEY)) + 1;
+    localStorage.setItem(USAGE_COUNT_KEY, count.toString());
+  } catch {
+    /* Storage can be blocked entirely. The receipt does not depend on the
+       count, and a milestone missed is not worth failing a finished job. */
+  }
 
   window.dispatchEvent(
     new CustomEvent<CompletionDetail>(COMPLETION_EVENT, {
