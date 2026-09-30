@@ -98,7 +98,17 @@ All 8 formats pass automated round-trip verifications in `table.test.ts`:
 
 Two critical high-intent URLs already showing early organic traction in Google Search Console were upgraded in-place to serve multi-format notation:
 
-### A. `/documents/latex-table-generator`
+### A. `/documents/latex-table-generator` — retired 2026-09-30, now `/latex/table-generator`
+
+> **This URL no longer exists.** The `/latex` hub grew its own `table-generator`
+> page and the two ran the same tool at two addresses. Search Console for
+> 2026-09-15..27 shows what that cost: the query `latex table generator` took 37
+> impressions at average position 28.8, and the two pages split its 75 impressions
+> between them at positions 35.3 and 37.7, neither reaching a click. `/latex`
+> keeps the page — it is the eight-format tool and the canonical path of the
+> `table-converter` embed — and this address 308s to it from
+> `lib/seo/removed-tool-redirects.ts`. The title below was the thing that made
+> this page work, so it moved with it into `lib/seo/hub-tool-meta.ts`.
 * **Target Query Cluster**: `"latex table generator"`, `"csv to latex table"`, `"markdown to latex table"`, `"latex table booktabs"`.
 * **Before / After Metadata**:
   * **Before Title**: `LaTeX table generator · OpenTools`

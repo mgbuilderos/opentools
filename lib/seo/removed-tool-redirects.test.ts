@@ -1,9 +1,14 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { getAllBlogPosts } from './blog-data';
 import { getCategoryBySlug, toCategorySlug } from './internal-linking-graph';
 import { LIVE_TOOL_CATALOG, isLiveToolUrl } from './live-tools';
-import { removedToolRedirect } from './removed-tool-redirects';
+import {
+  REDIRECTED_PATHS,
+  removedToolRedirect,
+} from './removed-tool-redirects';
 
 const liveGuideSlugs = new Set(LIVE_TOOL_CATALOG.map((tool) => tool.slug));
 const liveCategorySlugs = new Set(
@@ -25,6 +30,8 @@ function isLivePage(path: string) {
 }
 
 const removedPaths = [
+  // Deduplicated rather than removed: the tool still runs, at /latex.
+  '/documents/latex-table-generator',
   '/audio/transcribe',
   '/image/upscaler',
   '/developer/sql-visualizer',
@@ -106,6 +113,40 @@ describe('removed tool redirects', () => {
       removedToolRedirect(path, '?tool=youtube-chapter-generator'),
     ).toBeNull();
     expect(removedToolRedirect('/image/editor', search)).toBeNull();
+  });
+
+  /**
+   * A redirect the build shadows is a redirect nobody follows.
+   *
+   * `proxy.ts` runs only for a path with no file in `dist/client` -- a
+   * prerendered asset is served before the Worker is reached. So declaring a
+   * redirect is half of retiring a URL; the other half is the build no longer
+   * writing that page, and nothing until now failed when only the first half
+   * landed. The page would simply have gone on answering, which is exactly the
+   * duplicate `/documents/latex-table-generator` was.
+   *
+   * Swept over the whole table rather than `removedPaths` above, because a list
+   * kept by hand stops covering the day someone adds a redirect and not a case.
+   */
+  it('leaves no redirect behind a page the build still writes', () => {
+    const CLIENT_DIR = path.resolve(
+      import.meta.dirname,
+      '..',
+      '..',
+      'dist/client',
+    );
+    expect(
+      existsSync(CLIENT_DIR),
+      'run `npm run build` before this suite',
+    ).toBe(true);
+
+    const shadowed = REDIRECTED_PATHS.filter((route) => {
+      const clean = route.replace(/^\/+|\/+$/gu, '');
+      return [`${clean}.html`, path.join(clean, 'index.html')].some((rel) =>
+        existsSync(path.join(CLIENT_DIR, rel)),
+      );
+    });
+    expect(shadowed).toEqual([]);
   });
 
   it('handles trailing slashes and leaves live pages alone', () => {

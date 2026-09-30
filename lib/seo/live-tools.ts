@@ -416,6 +416,27 @@ const CROSS_PREFIX_OWNER: ReadonlyMap<string, string> = new Map([
   ['invoice-generator', '/finance'],
   ['receipt-generator', '/finance'],
   ['timesheet-calculator', '/finance'],
+  /*
+   * The same defect as `json-to-csv` above, hidden because the two pages were
+   * not spelled the same. `/documents/latex-table-generator` and
+   * `/latex/table-generator` both generate LaTeX tables, and the audit that
+   * caught the pairs above compares TITLES, which here differ ("LaTeX Table
+   * Generator — CSV & Markdown to LaTeX" against "Table Generator — LaTeX,
+   * Markdown, HTML & CSV"), so it passed them both.
+   *
+   * Search Console, 2026-09-15..27: the query "latex table generator" took 37
+   * impressions at average position 28.8, and the two pages divided its 75
+   * impressions between them at positions 35.3 and 37.7. Neither reached a
+   * click. That is what a split signal looks like.
+   *
+   * `/latex` owns it. Its page is the eight-format hub tool rather than a page
+   * generated from a one-line operation, it sits beside the other LaTeX tools,
+   * and `lib/embed/embeddable-tools.ts` already publishes it as the canonical
+   * path of the `table-converter` embed -- an address on other people's sites
+   * that we do not get to move. The `/documents` spelling 308s to it from
+   * `lib/seo/removed-tool-redirects.ts`.
+   */
+  ['latex-table-generator', '/latex'],
 ]);
 
 const ROUTED_TOOL_ROUTES = [...ROUTED_TOOL_PREFIXES].flatMap(

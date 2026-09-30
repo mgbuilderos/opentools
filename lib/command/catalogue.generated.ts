@@ -4776,13 +4776,6 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     op: 'document text text',
   },
   {
-    href: '/documents/latex-table-generator',
-    name: 'LaTeX table generator',
-    terms:
-      'alignment booktab caption csv decimal emit longtable markdown online siunitx tsv upload zero',
-    op: 'document text text',
-  },
-  {
     href: '/documents/legal-nda-generator',
     name: 'Mutual Non-Disclosure Agreement (NDA) maker',
     terms:
@@ -4932,6 +4925,13 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
     href: '/documents/workbench?tool=invoice-generator',
     name: 'Invoice generator',
     terms: 'calculate line markdown stated subtotal tax total workbench',
+    op: 'document text text',
+  },
+  {
+    href: '/documents/workbench?tool=latex-table-generator',
+    name: 'LaTeX table generator',
+    terms:
+      'alignment booktab caption csv decimal emit longtable markdown online siunitx tsv upload workbench zero',
     op: 'document text text',
   },
   {

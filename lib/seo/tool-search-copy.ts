@@ -145,9 +145,6 @@ export const TOOL_SEARCH_COPY: Readonly<Record<string, ToolSearchCopy>> = {
     description:
       'Decode and list each non-empty pathname segment. Paste a URL and read its path split into parts, each one percent-decoded, empty segments dropped.',
   },
-  '/documents/latex-table-generator': {
-    title: 'LaTeX Table Generator — CSV & Markdown to LaTeX',
-  },
   '/documents/markdown-file-maker': {
     title: 'Markdown (.md) File Maker — Free, No Sign-Up',
     description:

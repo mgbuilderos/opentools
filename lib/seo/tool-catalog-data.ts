@@ -4224,7 +4224,7 @@ export const TOOL_CATALOG: readonly ToolCatalogEntry[] = [
     validationStatus: 'backlog-candidate',
     notes:
       'Candidate must pass capability, license, security, and quality gates.',
-    destinationUrl: '/documents/latex-table-generator',
+    destinationUrl: '/latex/table-generator',
   },
   {
     id: 'pdf-and-documents.pdf-metadata',
