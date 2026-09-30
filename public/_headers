@@ -23,6 +23,29 @@
 # `public/robots.txt` and add an `X-Robots-Tag` line below — do not rely on the
 # environment variable alone.
 #
+# ## `Strict-Transport-Security` was here in `proxy.ts` and nowhere a visitor saw
+#
+# Added 2026-09-30. It had lived only in `proxy.ts`'s `responseHeaders`, and since
+# prerendering landed the Worker is not reached for any page that has a built file
+# — which is every page. Measured against production before the change:
+# `curl -sSI https://getopentools.com/self-host` carried no
+# `strict-transport-security`, while `https://getopentools.com/no-such-route-xyz`,
+# which does reach the Worker, carried it. So every real page was served without it.
+#
+# `proxy.ts` explains why that matters better than this file can: browsers ignore
+# HSTS over plain HTTP, so it is not the fix for plaintext being served — what it
+# fixes is every subsequent navigation, after which a browser refuses plaintext for
+# a year and a network attacker can no longer strip the `Content-Security-Policy`
+# above. Without it `connect-src 'none'` is advisory on any hostile network, which
+# makes the zero-egress promise conditional.
+#
+# No `preload`. That is a separate, near-irreversible commitment (removal from the
+# preload list takes months) and it is the owner's call, not this change's.
+#
+# `lib/security/header-parity.test.ts` now compares this file against `proxy.ts`
+# as well as `next.config.ts`, because two sources were being checked while three
+# existed.
+
 # ## A rule never replaces an earlier one — it adds to it
 #
 # Every pattern that matches the request contributes its lines, so two rules
@@ -88,6 +111,7 @@
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cache-Control: public, max-age=0, must-revalidate, s-maxage=3600, stale-while-revalidate=86400
 

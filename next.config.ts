@@ -87,6 +87,20 @@ const nextConfig: NextConfig = {
             value:
               'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
           },
+          /*
+           * Declared here as well as in `public/_headers` so the two paths agree
+           * and `lib/security/header-parity.test.ts` has both sides to compare.
+           *
+           * Browsers ignore this header over plain HTTP (RFC 6797 s7.2), so on a
+           * self-hosted instance reached over http it costs nothing and does
+           * nothing; behind the reverse proxy that instance is meant to sit
+           * behind, it does the same job it does in production. No `preload` —
+           * that is near-irreversible and the owner's call, not this change's.
+           */
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
         ],
       },
       /*
