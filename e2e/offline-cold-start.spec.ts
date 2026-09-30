@@ -10,6 +10,7 @@ import {
   type Worker,
 } from '@playwright/test';
 
+import { TELEMETRY_PREFIX } from '../lib/product-telemetry';
 import { testPdf, testPhotoPdf, testPng } from './fixtures';
 import { setFilesWhenLive } from './upload';
 
@@ -372,9 +373,40 @@ test.describe('cold start with no network', () => {
       let offline = false;
       page.on('requestfailed', (request) => {
         if (!offline) return;
-        missed.push(
-          `${request.url().replace(/^https?:\/\/[^/]+/u, '')} (${request.failure()?.errorText})`,
-        );
+        const requested = request.url().replace(/^https?:\/\/[^/]+/u, '');
+        /*
+          THE ONE EXEMPTION, AND WHY IT IS NOT FIXABLE ON THE PRODUCT SIDE.
+
+          `/telemetry/v1/*` is the product-signal counter. Its assets are
+          deliberately absent from the precache, so a completed job offline
+          issues one `Image` GET that cannot succeed, loses the count, and
+          carries on — ADR-020 records that visit as permanently uncounted.
+          Nothing is queued, retried or replayed, and
+          `e2e/product-telemetry.spec.ts` holds that shape.
+
+          The product does try not to ask: `recordProductSignal` returns early
+          when `navigator.onLine` is false. That covers a real browser and does
+          nothing here, and the difference was measured rather than assumed
+          (chromium-1194, this build):
+
+            before setOffline(true)                     onLine = true
+            same document, after setOffline(true)        onLine = false
+            NEW document navigated to while offline      onLine = TRUE
+
+          A document created while the context is offline comes up reporting
+          online, and step 4 of this test is exactly such a navigation. So the
+          guard cannot fire here, and no product change can make it: the page
+          genuinely believes it has a network.
+
+          The exemption is therefore on the harness side, by exact path prefix,
+          imported from the module that owns it so a rename cannot silently
+          widen it. Everything else still lands in `missed` — a missed font,
+          stylesheet or second engine fails exactly as before, and this test
+          still requires the tool to finish and the page not to say it is
+          offline, so a counter that broke a tool would fail here regardless.
+        */
+        if (requested.startsWith(TELEMETRY_PREFIX)) return;
+        missed.push(`${requested} (${request.failure()?.errorText})`);
       });
       page.on('pageerror', (error) => errors.push(String(error)));
 

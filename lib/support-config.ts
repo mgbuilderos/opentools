@@ -195,13 +195,19 @@ export interface SupportTier {
  * Nothing is promised in return for paying (owner decision 13: no paid tier;
  * business rule 35: no differential treatment by amount), no tier claims a
  * number that is not measured (board §1.7), and nothing names work that was
- * removed. Privacy wording follows owner decision 6 exactly — "no third-party
- * trackers" and "no client-side analytics", never "no trackers" — and no line
- * claims zero egress, which needs a release egress proof (rule 23, decision 5).
+ * removed. Privacy wording follows owner decision 6 — "no third-party
+ * trackers", never "no trackers" — and no line claims zero egress, which needs
+ * a release egress proof (rule 23, decision 5).
+ *
+ * "No client-side analytics" was here until 2026-09-28 and had to go: ADR-020
+ * added nine fixed, content-free product counters, and a support page is the
+ * last place a sentence should be left standing after it stopped being true.
+ * What replaced it is the part that is still exactly true — nothing here
+ * profiles anybody, because nothing recorded can be joined to a person.
  *
  * `popular` is deliberately unset on every tier. A "Popular" badge is a claim
- * about what other people chose, and with no client-side analytics there is
- * nothing that could measure it.
+ * about what other people chose, and nothing this site records could tell one
+ * person's choice from another's.
  */
 export const SUPPORT_TIERS: SupportTier[] = [
   {
@@ -212,7 +218,7 @@ export const SUPPORT_TIERS: SupportTier[] = [
     inrValue: 420,
     description: 'Covers the domain and the hosting.',
     features: [
-      'No ads, no third-party trackers, no client-side analytics',
+      'No ads, no third-party trackers, no profile of you',
       'Every tool stays free — no signup, no watermark',
       'Nothing in return — support is voluntary',
     ],

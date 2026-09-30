@@ -212,6 +212,24 @@ request from inside that container fails to resolve, as it should.
 This says the site serves correctly with no network available to the container.
 It is not a claim about what a browser does with the pages it is given.
 
+## Product signals stay on your own instance
+
+Since 2026-09-28 a page may request one of nine fixed counter images under
+`/telemetry/v1/` so that installs, launches and completed operations can be
+counted in aggregate (`decisions/ADR-020-product-signals.md`). They matter here
+for one reason: **every path is relative, so a self-hosted instance asks
+itself.** Nothing is forwarded, and getopentools.com is never contacted. The
+files are part of the built site and ship inside the image, so the
+`--network none` run above answers them from the container.
+
+They carry no query string, no body and no identifier, so the only trace is the
+line your own server writes while serving a 1×1 SVG. If you would rather have
+none at all, delete `public/telemetry/` before building: the requests then 404
+and the site behaves exactly as it did, because every failure is swallowed.
+
+`lib/product-telemetry-surface.test.ts` fails if any file that can send a signal
+contains an absolute URL or the string `getopentools`.
+
 ## What this does not include
 
 - No TLS. Put it behind a reverse proxy if you expose it beyond localhost.

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { HandedOverFile } from '@/components/handed-over-file';
+import { ProductSignals } from '@/components/product-signals';
 
 const httpsScheme = ['https:', '//'].join('');
 const siteOrigin = `${httpsScheme}getopentools.com`;
@@ -223,6 +224,8 @@ export default function RootLayout({
         {children}
         {/* Collects a file handed over by the smart dropzone. Renders nothing. */}
         <HandedOverFile />
+        {/* One counter for a page opened as an installed app. Renders nothing. */}
+        <ProductSignals />
       </body>
     </html>
   );
