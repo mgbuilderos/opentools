@@ -3,9 +3,12 @@ import {
   ArrowLeft,
   Database,
   FileLock2,
+  Gauge,
   Radio,
   ShieldCheck,
 } from 'lucide-react';
+import { ProductSignalControl } from '@/components/product-signal-control';
+import { PRODUCT_SIGNALS, SIGNAL_PATHS } from '@/lib/product-telemetry';
 import { LIVE_TOOL_CATALOG } from '@/lib/seo/live-tools';
 
 export const revalidate = 86400;
@@ -118,6 +121,11 @@ const STORED = [
     'Which of the three usage milestones you have already been shown, so the same one is not shown twice. A list of three possible numbers, and nothing else.',
   ],
   [
+    'opentools-product-signals',
+    'Local storage',
+    'Written only if you turn the anonymous product counters off below. It holds the single word “off” and nothing else — no identifier, and nothing that says who set it. It is absent until you use the switch.',
+  ],
+  [
     'opentools-offline-…',
     'Cache storage',
     'Copies of the front page, a handful of tool pages and the scripts and styles they need, stored so the app still opens when you have no signal. It holds pages from this site only — never a file of yours, and never anything you typed. A new version of the site replaces it, and clearing site data removes it.',
@@ -162,8 +170,9 @@ export default function PrivacyPage() {
             {LIVE_TOOL_CATALOG.length} tools on this site run inside the browser
             tab you already have open, so there is no upload step in which your
             document could be collected. What remains is a single server-side
-            visit log and four things your own browser remembers. Both are
-            listed below, completely, with the file that implements them.
+            visit log, nine anonymous counters that carry nothing, and the
+            things your own browser remembers. All three are listed below,
+            completely, with the file that implements them.
           </p>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -279,6 +288,66 @@ export default function PrivacyPage() {
             <code className="text-[0.9em]">.github/SECURITY.md</code> in the
             public repository.
           </p>
+        </section>
+
+        <section className="mt-4 rounded-2xl border bg-card p-5 sm:mt-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <Gauge aria-hidden="true" className="size-5 shrink-0" />
+            <h2 className="text-lg font-semibold tracking-[-0.02em] sm:text-2xl">
+              Nine anonymous counters
+            </h2>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            Since 28 September 2026 this site can answer one question about
+            itself that it previously could not: did anyone actually finish
+            something? Every tool runs in your tab and reports nothing, so a
+            visit that compressed a PDF and left looked identical to a visit
+            that opened the page and closed it. To tell them apart, the page
+            asks for one of nine fixed images. The image is blank and
+            meaningless; the <em>request</em> is the whole measurement.
+          </p>
+          <ul className="mt-4 grid gap-1.5 rounded-xl border bg-muted/40 p-3.5 font-mono text-[0.78rem] leading-6 sm:grid-cols-2 sm:p-4 sm:text-[0.82rem]">
+            {PRODUCT_SIGNALS.map((signal) => (
+              <li key={signal} className="text-muted-foreground">
+                {SIGNAL_PATHS[signal]}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            That list is the complete set, and it is the list the code uses —
+            this page reads it from{' '}
+            <code className="text-[0.9em]">lib/product-telemetry.ts</code>, so
+            it cannot fall out of date. A request is one of those exact
+            addresses with{' '}
+            <strong>
+              no question mark, no fragment, no body and no identifier
+            </strong>
+            . Nothing about your file, what you typed, what came out, which tool
+            you used, how long it took or where you are can be attached to one,
+            because the function that sends it takes no argument other than
+            which of the nine it is.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            Two requests from your browser are indistinguishable from two
+            different people, so these produce a daily total and nothing finer.
+            They cannot be counted into a user, a session, a return visit or a
+            journey, and no such thing is stored anywhere. As with every request
+            to any website, our hosting provider&rsquo;s own logs record the
+            address it came from and the browser that made it; that is not
+            copied into anything of ours and is not joined to these counts.
+          </p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            Used with no signal, nothing is sent and nothing is saved for later
+            — there is no queue and no catch-up. A self-hosted copy asks its own
+            server and never contacts this one. The reasoning, and the things
+            these numbers are therefore <em>not</em> allowed to be called, are
+            in the project&rsquo;s decision record{' '}
+            <strong className="font-semibold">
+              ADR-020, &ldquo;product signals&rdquo;
+            </strong>
+            .
+          </p>
+          <ProductSignalControl />
         </section>
 
         <section className="mt-4 rounded-2xl border bg-card p-5 sm:mt-6 sm:p-8">
