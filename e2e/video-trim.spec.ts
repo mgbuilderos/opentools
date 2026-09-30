@@ -1,4 +1,6 @@
 import { readFile } from 'node:fs/promises';
+
+import { actWhenLive, setFilesWhenLive } from './upload';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,12 +24,44 @@ const fixtureDir = path.join(
  */
 const VIDEO = 'tone-video.mp4';
 
+/**
+ * Hands the page a clip, and waits until the page has actually taken it.
+ *
+ * The input is server-rendered, so it exists before React has attached
+ * `onChange`; a file set in that window fires a change event into nothing and
+ * the page keeps its empty state. Every control these tests reach for next —
+ * the range, the keep select, the make button — exists only once a clip is
+ * loaded, so the failure always lands somewhere other than the cause.
+ */
 async function choose(page: Page, name = VIDEO, buffer?: Buffer) {
-  await page.getByLabel('Choose a video file').setInputFiles({
-    name,
-    mimeType: name.endsWith('.mov') ? 'video/quicktime' : 'video/mp4',
-    buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
-  });
+  await setFilesWhenLive(
+    page.getByLabel('Choose a video file'),
+    {
+      name,
+      mimeType: name.endsWith('.mov') ? 'video/quicktime' : 'video/mp4',
+      buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
+    },
+    page
+      .getByRole('button', { name: /^Make the (clip|GIF)$/u })
+      .or(page.getByRole('alert')),
+  );
+}
+
+/**
+ * Chooses what to keep, and checks the choice stuck.
+ *
+ * `keep` is a controlled select: React renders it from its own state, so a
+ * value chosen before hydration is not merely unheard, it is replaced on the
+ * first render. Asserting the value back is the only proof that works for
+ * every choice, since each one reveals different controls.
+ */
+async function keep(page: Page, value: string) {
+  const select = page.getByLabel('What to keep');
+  await actWhenLive(
+    page,
+    () => select.selectOption(value),
+    () => expect(select).toHaveValue(value, { timeout: 1_000 }),
+  );
 }
 
 async function make(page: Page) {
@@ -49,14 +83,20 @@ test.describe('Video trimmer', () => {
     await expect(page.getByText(/2 keyframes/u)).toBeVisible();
   });
 
-  test('the file it hands back is a real MP4 with both tracks', async ({ page }) => {
+  test('the file it hands back is a real MP4 with both tracks', async ({
+    page,
+  }) => {
     await page.goto('/video/trim');
     await choose(page);
     const mp4 = readMp4(await make(page));
 
     expect(mp4.tracks).toHaveLength(2);
-    expect(mp4.tracks.find((track) => track.kind === 'video')!.samples).toHaveLength(30);
-    expect(mp4.tracks.find((track) => track.kind === 'audio')!.samples).toHaveLength(88);
+    expect(
+      mp4.tracks.find((track) => track.kind === 'video')!.samples,
+    ).toHaveLength(30);
+    expect(
+      mp4.tracks.find((track) => track.kind === 'audio')!.samples,
+    ).toHaveLength(88);
   });
 
   test('trims to the range typed in, counted in frames', async ({ page }) => {
@@ -66,11 +106,17 @@ test.describe('Video trimmer', () => {
 
     const mp4 = readMp4(await make(page));
     // 15 fps for the second half of a 2s clip.
-    expect(mp4.tracks.find((track) => track.kind === 'video')!.samples).toHaveLength(15);
-    expect(mp4.tracks.find((track) => track.kind === 'audio')!.samples).toHaveLength(44);
+    expect(
+      mp4.tracks.find((track) => track.kind === 'video')!.samples,
+    ).toHaveLength(15);
+    expect(
+      mp4.tracks.find((track) => track.kind === 'audio')!.samples,
+    ).toHaveLength(44);
   });
 
-  test('tells the reader when it moved the cut back to a keyframe', async ({ page }) => {
+  test('tells the reader when it moved the cut back to a keyframe', async ({
+    page,
+  }) => {
     // 1.5s is between keyframes. Silently returning half a second the reader did
     // not ask for would be the surprise; saying so is the feature.
     await page.goto('/video/trim');
@@ -78,14 +124,18 @@ test.describe('Video trimmer', () => {
     await page.getByLabel('Start at (seconds)').fill('1.5');
     await page.getByRole('button', { name: 'Make the clip' }).click();
 
-    await expect(page.getByText(/A cut can only begin on a keyframe/u)).toBeVisible();
+    await expect(
+      page.getByText(/A cut can only begin on a keyframe/u),
+    ).toBeVisible();
     await expect(page.getByText(/0\.50s earlier/u)).toBeVisible();
   });
 
-  test('mutes by removing the sound track, not by silencing it', async ({ page }) => {
+  test('mutes by removing the sound track, not by silencing it', async ({
+    page,
+  }) => {
     await page.goto('/video/trim');
     await choose(page);
-    await page.getByLabel('What to keep').selectOption('video');
+    await keep(page, 'video');
 
     const mp4 = readMp4(await make(page));
     expect(mp4.tracks).toHaveLength(1);
@@ -95,7 +145,7 @@ test.describe('Video trimmer', () => {
   test('saves the sound on its own', async ({ page }) => {
     await page.goto('/video/trim');
     await choose(page);
-    await page.getByLabel('What to keep').selectOption('audio');
+    await keep(page, 'audio');
 
     const mp4 = readMp4(await make(page));
     expect(mp4.tracks).toHaveLength(1);
@@ -108,16 +158,21 @@ test.describe('Video trimmer', () => {
     // frame must be byte-identical to the source's frame at that position.
     const source = new Uint8Array(await readFile(path.join(fixtureDir, VIDEO)));
     const original = readMp4(source);
-    const sourceVideo = original.tracks.find((track) => track.kind === 'video')!;
+    const sourceVideo = original.tracks.find(
+      (track) => track.kind === 'video',
+    )!;
 
     await page.goto('/video/trim');
     await choose(page);
     const written = await make(page);
     const back = readMp4(written);
-    const first = back.tracks.find((track) => track.kind === 'video')!.samples[0];
+    const first = back.tracks.find((track) => track.kind === 'video')!
+      .samples[0];
 
     expect(first.size).toBe(sourceVideo.samples[0].size);
-    expect(Array.from(written.subarray(first.offset, first.offset + first.size))).toEqual(
+    expect(
+      Array.from(written.subarray(first.offset, first.offset + first.size)),
+    ).toEqual(
       Array.from(
         source.subarray(
           sourceVideo.samples[0].offset,
@@ -127,7 +182,9 @@ test.describe('Video trimmer', () => {
     );
   });
 
-  test('reads a QuickTime .mov, which is what an iPhone records', async ({ page }) => {
+  test('reads a QuickTime .mov, which is what an iPhone records', async ({
+    page,
+  }) => {
     await page.goto('/video/trim');
     await choose(page, 'pcm-audio.mov');
     await expect(page.getByText('128×96 · avc1')).toBeVisible();
@@ -140,7 +197,9 @@ test.describe('Video trimmer', () => {
     await choose(page, 'clip.webm', webm);
 
     await expect(page.getByRole('alert')).toContainText('WebM or Matroska');
-    await expect(page.getByRole('button', { name: 'Make the clip' })).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Make the clip' }),
+    ).toHaveCount(0);
   });
 
   test('refuses a backwards range', async ({ page }) => {
@@ -154,7 +213,9 @@ test.describe('Video trimmer', () => {
     await expect(page.getByRole('button', { name: /^Save / })).toHaveCount(0);
   });
 
-  test('says which of its outputs lose quality and which do not', async ({ page }) => {
+  test('says which of its outputs lose quality and which do not', async ({
+    page,
+  }) => {
     // This test previously asserted the page said GIF was "the one thing this
     // page cannot do". GIF now exists, and the old sentence survived an edit
     // that silently failed to match — so for a while the page both offered a
@@ -163,23 +224,84 @@ test.describe('Video trimmer', () => {
     await expect(
       page.getByText(/copy compressed frames across, so they lose nothing/u),
     ).toBeVisible();
-    await expect(page.getByText(/genuinely worse than its input/u)).toBeVisible();
-    await expect(page.getByText(/cannot do, because that genuinely needs decoding/u)).toHaveCount(0);
+    await expect(
+      page.getByText(/genuinely worse than its input/u),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/cannot do, because that genuinely needs decoding/u),
+    ).toHaveCount(0);
   });
 
-  test('turns a clip into a real animated GIF', async ({ page }) => {
+  /**
+   * The one test here that needs a decoder, and the one that has to survive not
+   * having one.
+   *
+   * Trim, mute and audio extraction copy compressed frames across; the GIF is
+   * the exception, because a GIF has to be decoded and re-encoded. Chromium
+   * builds without the H.264 decoder — the headless build in this container
+   * among them — have `VideoDecoder` and still refuse `avc1.64000a`, so
+   * checking that the API exists says nothing. Asking whether the config is
+   * supported is the question the tool itself asks.
+   *
+   * Where it is not, the page owes an explanation rather than a dead button,
+   * and that is worth asserting: it is the same shape as `video-encode`'s
+   * "or informs support", and it was this failure, not a race, behind the last
+   * red test in this file.
+   */
+  test('turns a clip into a real animated GIF, or says why it cannot', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
     await page.goto('/video/trim');
     await choose(page);
-    await page.getByLabel('What to keep').selectOption('gif');
+    await keep(page, 'gif');
     await expect(page.getByLabel('Frames a second')).toBeVisible();
     await page.getByLabel('Frames a second').selectOption('5');
     await page.getByLabel('Colours').selectOption('32');
 
+    const decodes = await page.evaluate(async () => {
+      const api = (
+        globalThis as {
+          VideoDecoder?: {
+            isConfigSupported(config: {
+              codec: string;
+            }): Promise<{ supported?: boolean }>;
+          };
+        }
+      ).VideoDecoder;
+      if (!api) return false;
+      try {
+        return (
+          (await api.isConfigSupported({ codec: 'avc1.64000a' })).supported ===
+          true
+        );
+      } catch {
+        return false;
+      }
+    });
+
     await page.getByRole('button', { name: 'Make the GIF' }).click();
-    await expect(page.getByRole('button', { name: /^Save / })).toBeVisible({ timeout: 30_000 });
+
+    if (!decodes) {
+      await expect(page.getByRole('alert')).toContainText(
+        'cannot make a GIF from this video',
+      );
+      // The refusal has to name what still works, or it reads as the tool
+      // being broken rather than the browser being short of a decoder.
+      await expect(page.getByRole('alert')).toContainText(
+        'Trimming and muting still work',
+      );
+      return;
+    }
+
+    await expect(page.getByRole('button', { name: /^Save / })).toBeVisible({
+      timeout: 30_000,
+    });
     const download: Promise<Download> = page.waitForEvent('download');
     await page.getByRole('button', { name: /^Save / }).click();
-    const bytes = new Uint8Array(await readFile((await (await download).path())!));
+    const bytes = new Uint8Array(
+      await readFile((await (await download).path())!),
+    );
 
     // A GIF89a, with a trailer, and the Netscape block that makes it loop.
     expect(new TextDecoder().decode(bytes.subarray(0, 6))).toBe('GIF89a');
@@ -200,22 +322,29 @@ test.describe('Video trimmer', () => {
     expect(frames).toBeGreaterThan(1);
   });
 
-  test('says plainly that the GIF is the one output that loses quality', async ({ page }) => {
+  test('says plainly that the GIF is the one output that loses quality', async ({
+    page,
+  }) => {
     // Every other operation on this page copies compressed frames. Letting a
     // reader assume the GIF does too would be the page overclaiming.
     await page.goto('/video/trim');
     await choose(page);
-    await page.getByLabel('What to keep').selectOption('gif');
+    await keep(page, 'gif');
     await expect(page.getByText(/Dithering hides the banding/u)).toBeVisible();
-    await expect(page.getByText(/re-encoded\s+rather than copied/u).first()).toBeVisible();
+    await expect(
+      page.getByText(/re-encoded\s+rather than copied/u).first(),
+    ).toBeVisible();
   });
 
-  test('sends nothing off this origin while doing the work', async ({ page }) => {
+  test('sends nothing off this origin while doing the work', async ({
+    page,
+  }) => {
     await page.goto('/video/trim');
     const origin = new URL(page.url()).origin;
     const offOrigin: string[] = [];
     page.on('request', (request) => {
-      if (new URL(request.url()).origin !== origin) offOrigin.push(request.url());
+      if (new URL(request.url()).origin !== origin)
+        offOrigin.push(request.url());
     });
 
     await choose(page);

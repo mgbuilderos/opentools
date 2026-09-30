@@ -1,4 +1,6 @@
 import { readFile } from 'node:fs/promises';
+
+import { actWhenLive, setFilesWhenLive, shows } from './upload';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,14 +26,57 @@ const fixtureDir = path.join(
  */
 const XLSX = 'sales.xlsx';
 
-async function chooseFile(page: Page, label: string, name: string, buffer?: Buffer) {
-  await page.getByLabel(label).setInputFiles({
-    name,
-    mimeType: name.endsWith('.xlsx')
-      ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      : 'text/csv',
-    buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
-  });
+/**
+ * Whichever preview this page owes for a file it has taken.
+ *
+ * The two modes render different panels — a sheet preview for a workbook
+ * opened, a CSV preview for rows on their way to becoming one — and only the
+ * mode in play renders at all. A signal from the wrong mode is worse than none:
+ * it never appears, so the guard waits out its whole timeout on a file the page
+ * took at once. A refusal counts too, because this spec hands the page an old
+ * .xls on purpose and its message proves the handler is live.
+ */
+function tookTheFile(page: Page) {
+  return page
+    .getByTestId('sheet-preview')
+    .or(page.getByTestId('csv-preview'))
+    .or(page.getByRole('alert'));
+}
+
+/**
+ * Opens a file, and waits until the page has actually taken it.
+ *
+ * The input is server-rendered, so it exists before React has attached
+ * `onChange`; a file set in that window fires a change event into nothing and
+ * the page keeps its empty state, so the failure lands later on a missing Save
+ * button and reads as a broken reader.
+ */
+async function chooseFile(
+  page: Page,
+  label: string,
+  name: string,
+  buffer?: Buffer,
+) {
+  await setFilesWhenLive(
+    page.getByLabel(label),
+    {
+      name,
+      mimeType: name.endsWith('.xlsx')
+        ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        : 'text/csv',
+      buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
+    },
+    tookTheFile(page),
+  );
+}
+
+/** The mode tabs are server-rendered too, so a click can land before React. */
+async function openMode(page: Page, tab: string, input: string) {
+  await actWhenLive(
+    page,
+    () => page.getByRole('tab', { name: tab }).click(),
+    shows(page.getByLabel(input)),
+  );
 }
 
 async function saved(page: Page) {
@@ -70,10 +115,19 @@ test.describe('Excel converter', () => {
   test('the CSV it hands back holds the real values', async ({ page }) => {
     await page.goto('/data/excel');
     await chooseFile(page, 'Choose a spreadsheet', XLSX);
-    await page.getByRole('button', { name: 'Convert this sheet to CSV' }).click();
+    await page
+      .getByRole('button', { name: 'Convert this sheet to CSV' })
+      .click();
 
     const rows = parseCsv(new TextDecoder().decode(await saved(page)));
-    expect(rows[0]).toEqual(['Region', 'Units', 'Price', 'Signed', 'Notes', 'Active']);
+    expect(rows[0]).toEqual([
+      'Region',
+      'Units',
+      'Price',
+      'Signed',
+      'Notes',
+      'Active',
+    ]);
     expect(rows[1][0]).toBe('North');
     expect(rows[1][1]).toBe('120');
     // A date written as a date, and `false` surviving as a value.
@@ -84,22 +138,30 @@ test.describe('Excel converter', () => {
     expect(rows[4][4]).toBe('quote " inside');
   });
 
-  test('writes the byte-order mark, so Excel reopens it as UTF-8', async ({ page }) => {
+  test('writes the byte-order mark, so Excel reopens it as UTF-8', async ({
+    page,
+  }) => {
     // Without it, Excel reads the file as the local codepage and any text
     // outside ASCII is mangled on the way back in.
     await page.goto('/data/excel');
     await chooseFile(page, 'Choose a spreadsheet', XLSX);
-    await page.getByRole('button', { name: 'Convert this sheet to CSV' }).click();
+    await page
+      .getByRole('button', { name: 'Convert this sheet to CSV' })
+      .click();
 
     const bytes = await saved(page);
     expect([bytes[0], bytes[1], bytes[2]]).toEqual([0xef, 0xbb, 0xbf]);
   });
 
-  test('converts the sheet the reader picked, not always the first', async ({ page }) => {
+  test('converts the sheet the reader picked, not always the first', async ({
+    page,
+  }) => {
     await page.goto('/data/excel');
     await chooseFile(page, 'Choose a spreadsheet', XLSX);
     await page.locator('select#sheet').selectOption({ index: 2 });
-    await page.getByRole('button', { name: 'Convert this sheet to CSV' }).click();
+    await page
+      .getByRole('button', { name: 'Convert this sheet to CSV' })
+      .click();
 
     // The "Gaps" sheet holds A1, D2 and B5, so the cells must land in those
     // columns rather than being packed to the left.
@@ -111,12 +173,14 @@ test.describe('Excel converter', () => {
 
   test('makes a real spreadsheet from a CSV', async ({ page }) => {
     await page.goto('/data/excel');
-    await page.getByRole('tab', { name: 'Make a spreadsheet' }).click();
+    await openMode(page, 'Make a spreadsheet', 'Choose a CSV file');
     await chooseFile(
       page,
       'Choose a CSV file',
       'people.csv',
-      Buffer.from('name,city,code\r\n"Ada, L",Mumbai,007\r\n"He said ""hi""",Delhi,042\r\n'),
+      Buffer.from(
+        'name,city,code\r\n"Ada, L",Mumbai,007\r\n"He said ""hi""",Delhi,042\r\n',
+      ),
     );
 
     await expect(page.getByText(/2 rows|3 rows/u)).toBeVisible();
@@ -135,7 +199,7 @@ test.describe('Excel converter', () => {
     // The comma is the decimal point in much of Europe, so Excel exports with
     // semicolons there. Reading it as comma-separated gives one column.
     await page.goto('/data/excel');
-    await page.getByRole('tab', { name: 'Make a spreadsheet' }).click();
+    await openMode(page, 'Make a spreadsheet', 'Choose a CSV file');
     await chooseFile(
       page,
       'Choose a CSV file',
@@ -151,43 +215,69 @@ test.describe('Excel converter', () => {
     expect(cellToText(book.sheets[0].rows[1][1])).toBe('1,50');
   });
 
-  test('names the old .xls format rather than calling it corrupt', async ({ page }) => {
+  test('names the old .xls format rather than calling it corrupt', async ({
+    page,
+  }) => {
     // An .xls is an OLE compound document — a different format that happens to
     // hold spreadsheets. Its signature is unmistakable.
-    const ole = Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0, 0, 0, 0, 0, 0, 0]);
+    const ole = Buffer.from([
+      0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0, 0, 0, 0, 0, 0, 0,
+    ]);
     await page.goto('/data/excel');
     await chooseFile(page, 'Choose a spreadsheet', 'old.xlsx', ole);
 
     await expect(page.getByRole('alert')).toContainText('old .xls file');
-    await expect(page.getByRole('button', { name: 'Convert this sheet to CSV' })).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Convert this sheet to CSV' }),
+    ).toHaveCount(0);
   });
 
   test('says a ZIP is not a spreadsheet', async ({ page }) => {
-    const zip = await readFile(path.join(fixtureDir, '..', '..', 'archive', '__fixtures__', 'simple.zip'));
+    const zip = await readFile(
+      path.join(
+        fixtureDir,
+        '..',
+        '..',
+        'archive',
+        '__fixtures__',
+        'simple.zip',
+      ),
+    );
     await page.goto('/data/excel');
     await chooseFile(page, 'Choose a spreadsheet', 'notasheet.xlsx', zip);
 
-    await expect(page.getByRole('alert')).toContainText('does not contain a spreadsheet');
+    await expect(page.getByRole('alert')).toContainText(
+      'does not contain a spreadsheet',
+    );
   });
 
-  test('tells the reader when a formula had no saved result', async ({ page }) => {
+  test('tells the reader when a formula had no saved result', async ({
+    page,
+  }) => {
     // The fixture's A7 holds `=A2` with no cached value. Showing an empty cell
     // with no explanation looks like the tool lost data.
     await page.goto('/data/excel');
     await chooseFile(page, 'Choose a spreadsheet', XLSX);
-    await expect(page.getByText(/Formulas are not calculated here/u)).toBeVisible();
+    await expect(
+      page.getByText(/Formulas are not calculated here/u),
+    ).toBeVisible();
   });
 
-  test('sends nothing off this origin while doing the work', async ({ page }) => {
+  test('sends nothing off this origin while doing the work', async ({
+    page,
+  }) => {
     await page.goto('/data/excel');
     const origin = new URL(page.url()).origin;
     const offOrigin: string[] = [];
     page.on('request', (request) => {
-      if (new URL(request.url()).origin !== origin) offOrigin.push(request.url());
+      if (new URL(request.url()).origin !== origin)
+        offOrigin.push(request.url());
     });
 
     await chooseFile(page, 'Choose a spreadsheet', XLSX);
-    await page.getByRole('button', { name: 'Convert this sheet to CSV' }).click();
+    await page
+      .getByRole('button', { name: 'Convert this sheet to CSV' })
+      .click();
     await expect(page.getByRole('button', { name: /^Save / })).toBeVisible();
 
     expect(offOrigin).toEqual([]);

@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { actWhenLive, setFilesWhenLive } from './upload';
 
 import { expect, test, type Download, type Page } from '@playwright/test';
 
@@ -19,15 +20,46 @@ const SRT = [
   '',
 ].join('\n');
 
+/**
+ * Opens the workbench on one tool, and checks the choice stuck.
+ *
+ * This page is `SchemaWorkbenchTool`, whose picker is a controlled select:
+ * React renders it from its own state, so a value chosen before hydration is
+ * not merely unheard — the first render replaces it. The test then runs a
+ * different tool than it asked for and fails on output that was never wrong for
+ * the tool that actually ran, which is why this looked like a converter bug.
+ */
 async function openTool(page: Page, operation?: string) {
   await page.goto('/subtitles/workbench');
-  if (operation) {
-    await page.getByLabel('Subtitle tool').selectOption(operation);
-  }
+  if (!operation) return;
+  const picker = page.getByLabel('Subtitle tool');
+  await actWhenLive(
+    page,
+    () => picker.selectOption(operation),
+    () => expect(picker).toHaveValue(operation, { timeout: 1_000 }),
+  );
 }
 
+/**
+ * Pastes subtitles in, and checks the text is still there.
+ *
+ * The same controlled-input race, on the box. Filled before hydration the text
+ * is plainly visible and unknown to React, and React's first render then wipes
+ * it, so the tool goes on believing it has nothing to do. Each attempt clears
+ * first: React records the value it finds on the node when it hydrates, and
+ * ignores a later event carrying that same value, so re-filling without
+ * clearing can spin as a no-op until the test times out.
+ */
 async function pasteSubtitles(page: Page, text: string) {
-  await page.getByLabel('Or paste the subtitles here').fill(text);
+  const box = page.getByLabel('Or paste the subtitles here');
+  await actWhenLive(
+    page,
+    async () => {
+      await box.fill('');
+      await box.fill(text);
+    },
+    () => expect(box).toHaveValue(text, { timeout: 1_000 }),
+  );
 }
 
 /**
@@ -36,6 +68,27 @@ async function pasteSubtitles(page: Page, text: string) {
  */
 function outputPanel(page: Page) {
   return page.locator('section[aria-live="polite"] pre');
+}
+
+/**
+ * Hands the shell a file, and waits until it has taken it.
+ *
+ * `SchemaWorkbenchTool` prints "No file selected" beside the input until it
+ * holds one, and "Selected and held only in this tab" once it does. That line
+ * is the shell's own answer, so it is the same signal for every tool built on
+ * it rather than something guessed per page.
+ */
+async function chooseSubtitleFile(
+  page: Page,
+  file: { name: string; mimeType: string; buffer: Buffer },
+) {
+  await setFilesWhenLive(
+    page.getByLabel('Choose a subtitle file (.srt, .vtt, .sbv, .lrc, .ass)'),
+    file,
+    page
+      .getByText('Selected and held only in this tab')
+      .or(page.getByRole('alert')),
+  );
 }
 
 async function outputContaining(page: Page, marker: string | RegExp) {
@@ -171,13 +224,11 @@ test.describe('Subtitle workbench', () => {
       0x0a,
     ]);
 
-    await page
-      .getByLabel('Choose a subtitle file (.srt, .vtt, .sbv, .lrc, .ass)')
-      .setInputFiles({
-        name: 'old-editor.srt',
-        mimeType: 'text/plain',
-        buffer: windows1252,
-      });
+    await chooseSubtitleFile(page, {
+      name: 'old-editor.srt',
+      mimeType: 'text/plain',
+      buffer: windows1252,
+    });
 
     const output = await outputContaining(page, 'Café — naïve');
     expect(output).toContain('decoded as windows-1252');
