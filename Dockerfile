@@ -23,6 +23,11 @@ RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.
 
 FROM ${NODE_IMAGE} AS runtime
 WORKDIR /app
+# XDG_CONFIG_HOME below is not cosmetic. Wrangler creates
+# `$XDG_CONFIG_HOME/.wrangler` on startup, defaulting to the user's home, and under
+# the `read_only: true` that docker-compose.yml ships that fails with
+# `ENOENT: ... mkdir '/home/node/.config/.wrangler'` and the container crash-loops.
+# /tmp is the one writable path the compose file guarantees.
 ENV NODE_ENV=production \
     PORT=8796 \
     CI=true \
@@ -30,6 +35,7 @@ ENV NODE_ENV=production \
     WRANGLER_WRITE_LOGS=false \
     WRANGLER_LOG_PATH=/tmp/wrangler-logs \
     MINIFLARE_REGISTRY_PATH=/tmp/miniflare-registry \
+    XDG_CONFIG_HOME=/tmp/xdg \
     CLOUDFLARE_CF_FETCH_ENABLED=false \
     X_LOCAL_EXPLORER=false \
     X_LOCAL_OBSERVABILITY=false
@@ -40,10 +46,22 @@ COPY --from=build /app/dist/client ./dist/client
 COPY --from=build /app/dist/server ./dist/server
 COPY LICENSE THIRD_PARTY_NOTICES.md ./
 COPY docker/start.sh /usr/local/bin/opentools-start
+# Read by start.sh when a gate variable is set. Without it in the runtime image a
+# gated container would fall back to serving every page unauthenticated.
+COPY docker/runtime-config.mjs ./docker/runtime-config.mjs
 
-# Wrangler writes a temporary bundle next to the config file.
+# `/var/lib/opentools` is the path `docker-compose.yml` mounts a named volume onto.
+# Docker copies an image directory's contents AND its ownership into a fresh
+# volume, so creating it here as `node` is what makes that volume writable by uid
+# 1000. Without it the container ran as `node` against a root-owned volume and died
+# on `EACCES: permission denied, mkdir '/var/lib/opentools/v3'`.
+#
+# Nothing needs to write under /app any more — `docker/start.sh` puts the config it
+# starts from in /tmp, and Wrangler's temporary bundle follows it there — so the
+# old `chown -R node:node /app/dist/server` is gone with it.
 RUN chmod 0755 /usr/local/bin/opentools-start \
-  && chown -R node:node /app/dist/server
+  && mkdir -p /var/lib/opentools \
+  && chown node:node /var/lib/opentools
 
 USER node
 EXPOSE 8796

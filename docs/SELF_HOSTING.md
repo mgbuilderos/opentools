@@ -61,6 +61,10 @@ observability are all switched off in the image.
 | `WRANGLER_LOG_LEVEL` | `info` | Wrangler log verbosity |
 | `OPENTOOLS_AUTH_USER` | unset | Username for the optional access gate |
 | `OPENTOOLS_AUTH_PASSWORD` | unset | Password for the optional access gate |
+| `OPENTOOLS_AUTH_TRUSTED_HEADER` | unset | Header your proxy puts the signed-in name in, e.g. `x-forwarded-user` |
+| `OPENTOOLS_AUTH_PROXY_SECRET` | unset | Shared secret proving a request came through your proxy. Required with the line above |
+| `OPENTOOLS_AUTH_PROXY_SECRET_HEADER` | `x-opentools-proxy-secret` | Header carrying that secret |
+| `OPENTOOLS_AUDIT_IDENTITY` | unset | `true` to put the signed-in name in this container's own log lines |
 
 The state directory is inside the container, so the page cache starts empty
 after every restart. Mount a volume there if you would rather it survive.
@@ -100,6 +104,84 @@ all" and nothing else, because anything more would mean storing people, which
 this product does not do. Terminate TLS in front of it — Basic credentials over
 plain HTTP are readable in transit.
 
+### Single sign-on, through your own proxy
+
+The access gate above is one shared password for the whole instance. That is
+enough for a team and not enough for a review that asks who signed in. The
+second mode answers that without this container learning anything about your
+people.
+
+Put your existing identity-aware proxy in front — oauth2-proxy, Authelia, an
+identity-aware gateway, any reverse proxy already bound to your directory. It
+authenticates against your identity provider, which stays the only system that
+knows who anyone is, and forwards the authenticated name in a header:
+
+```bash
+docker run --rm -p 8796:8796 \
+  -e OPENTOOLS_AUTH_TRUSTED_HEADER=x-forwarded-user \
+  -e OPENTOOLS_AUTH_PROXY_SECRET="$(openssl rand -hex 32)" \
+  opentools-selfhost:local
+```
+
+Your proxy must send both headers: the name in
+`OPENTOOLS_AUTH_TRUSTED_HEADER`, and that secret in
+`x-opentools-proxy-secret` (rename it with
+`OPENTOOLS_AUTH_PROXY_SECRET_HEADER`).
+
+**Why a secret as well as a header.** A forwarded header is a claim, not proof.
+Anything that can reach the port can invent one, so the header alone would make
+the instance believe whatever a browser told it — and it would look gated the
+whole time. The secret is what an ordinary client does not have. Setting the
+header without the secret does not start this mode: it refuses every request,
+loudly, on the day you configure it rather than quietly months later.
+
+Four refusals, all `403` with the reason in the body, because the only person
+who ever reads it is whoever is wiring the proxy up:
+
+| Body says | What happened |
+| --- | --- |
+| `not-from-the-proxy` | No secret, or the wrong one. The request did not come through your proxy |
+| `no-identity-forwarded` | Right secret, but your proxy forwarded no name — sign-on was bypassed |
+| `incomplete-proxy-configuration` | You set the header or the secret, not both |
+| `ambiguous-configuration` | Both this mode and the shared password are configured. Pick one |
+
+`403` and not `401` on purpose: the credential belongs to your proxy, so
+prompting the person at the screen for one could only ever fail.
+
+This mode issues no session, sets no cookie and stores nothing. Each request is
+judged on the headers it arrives with.
+
+### The log this container keeps
+
+One JSON object per request on stdout — your `docker logs`, your log collector,
+nowhere else. Nothing is sent anywhere: the image sets
+`WRANGLER_SEND_METRICS=false`, `NEXT_TELEMETRY_DISABLED=1` and
+`CLOUDFLARE_CF_FETCH_ENABLED=false`, there is no analytics script in any page,
+and you can prove all three by running it with `--network none` (below).
+
+The fields are coarse by design: country, device class (`mobile` / `tablet` /
+`desktop`), which kind of site referred the visit, the path, the tool, the
+browser's primary language, and a timestamp. No IP address, no stored user
+agent, no cookie, no identifier, and never a file, a filename or a result.
+Static assets are not logged at all.
+
+`OPENTOOLS_AUDIT_IDENTITY=true` on a trusted-proxy instance adds the name your
+proxy forwarded to that event. Off by default, and it does nothing without that
+mode — keeping a record of your own staff is your decision, not ours to make for
+you.
+
+**Measured, so you do not plan a compliance story around it:** those events were
+**not** observable on the container's stdout. The image runs the Worker through
+`wrangler dev --local`, the `console.log` that emits the event is present in the
+built Worker, and Wrangler logged every request — but no event line appeared, at
+`info` or at `debug`, in a container or outside one. The Worker's own config
+carries `observability: { enabled: true }`, which is Cloudflare-side log
+collection, and a self-hosted container has no Cloudflare. So treat the access
+record as **not yet working**: if you need one today, take it from your reverse
+proxy's own access log, which sees every request before this container does.
+`docker/runtime-config.test.ts` and the pull request that added this record the
+open question.
+
 ## Running with no network at all
 
 The image is built to need nothing at runtime, and that is checkable:
@@ -135,8 +217,15 @@ It is not a claim about what a browser does with the pages it is given.
 - No TLS. Put it behind a reverse proxy if you expose it beyond localhost.
 - No TLS for the access gate. It is HTTP Basic; without a reverse proxy
   terminating TLS the credentials travel in clear text.
-- No SSO, no user accounts, no per-user audit trail. The gate is one shared
-  credential for the whole instance.
+- No user accounts, and no identity system in the container. The shared-password
+  gate is one credential for the whole instance. For per-person sign-in, run your
+  own identity-aware proxy in front — see *Single sign-on, through your own
+  proxy*. This container never holds a directory, an account or a password for
+  anybody.
+- No access record unless you ask for one. The container logs coarse, non-identifying
+  request data to its own stdout; `OPENTOOLS_AUDIT_IDENTITY=true` adds the name
+  your proxy forwarded. There is no retention, rotation or search — that is your
+  log collector's job, not this container's.
 - One container, one process. There is no clustering and no shared cache
   between replicas.
 - No image of the latest commit. `.github/workflows/selfhost-image.yml` builds
