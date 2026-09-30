@@ -1,6 +1,7 @@
 /* oxlint-disable */
 import { currentEgressReading, formatEgressBytes } from './egress-meter';
 import { USAGE_COUNT_KEY, parseUsageCount } from './milestone';
+import { recordCompletionSignal } from './product-telemetry';
 import {
   findRecipe,
   sanitiseRecipeValues,
@@ -89,12 +90,27 @@ function normaliseRecipe(
  * value stay separate strings so that this file never spells out the settled
  * claim that `lib/tools/local-source-policy.test.ts` forbids while the release
  * egress proof is outstanding.
+ *
+ * THE LABEL SAYS "FILE BYTES" SINCE 2026-09-28, AND THAT IS A CORRECTION
+ * RATHER THAN A FLOURISH. `lib/egress-meter.ts` counts requests whose
+ * `initiatorType` is `fetch`, `xmlhttprequest` or `beacon` — the three that can
+ * carry a file body — and an image is none of them. So the reading was never a
+ * count of *every* byte this page sent, and from the moment a product signal
+ * could be requested (ADR-020) an unqualified "Sent from this page: 0 bytes"
+ * would have been a true measurement under a false name. What it measures is
+ * exactly what the label now says.
+ *
+ * The signal itself is disclosed permanently on `/privacy`, with a switch, and
+ * deliberately not in a per-job banner here: a one-line alarm beside somebody's
+ * finished work, about a counter that carries nothing, would be frightening out
+ * of all proportion to what it is.
  */
 function measuredEgressMetric(): CompletionMetric | null {
   const reading = currentEgressReading();
   if (!reading.measurable) return null;
   return {
-    label: 'Sent from this page',
+    // 30 characters. `boundedDisplayText` truncates at 32.
+    label: 'File bytes sent from this page',
     value: formatEgressBytes(reading.bytes),
   };
 }
@@ -148,6 +164,28 @@ export function announceCompletion(detail: CompletionDetail) {
   } catch {
     /* Storage can be blocked entirely. The receipt does not depend on the
        count, and a milestone missed is not worth failing a finished job. */
+  }
+
+  /*
+   * The one product signal a finished job produces, and the only place on this
+   * site that a completion is counted at all.
+   *
+   * AFTER the dispatch below would be wrong for a different reason and BEFORE
+   * it is wrong for this one: the receipt must open whatever happens here. So
+   * it is before, inside its own `try`, and `recordCompletionSignal` swallows
+   * every failure of its own as well. A counter that could make a finished job
+   * look unfinished would be worse than no counter.
+   *
+   * NOTHING FROM `detail` IS PASSED, and the function takes no argument that
+   * could carry it. The operation name, the duration, the summary and the
+   * metrics are all facts about somebody's file. What is sent is one of two
+   * fixed paths — `completed-web` or `completed-pwa` — chosen locally from the
+   * display mode, at most once per document. See `lib/product-telemetry.ts`.
+   */
+  try {
+    recordCompletionSignal();
+  } catch {
+    /* Unreachable by construction; here so that it stays unreachable. */
   }
 
   window.dispatchEvent(

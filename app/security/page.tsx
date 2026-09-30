@@ -44,7 +44,8 @@ export const metadata: Metadata = {
    the only way they can judge whether our bar matches theirs. */
 const TREATED_AS_VULNERABILITIES = [
   'Any network request carrying user file bytes, file names, pasted text, outputs, or anything derived from them.',
-  'Any client-side analytics, telemetry, session replay, advertising, fingerprinting or third-party tracking script.',
+  'Any third-party analytics, advertising, session replay, fingerprinting or tracking script.',
+  'Any client-side signal beyond the nine fixed, content-free product counters, or one of those nine gaining a query string, a body, an identifier or anything derived from a file, an input or a tool.',
   'Any server-side logging beyond the published visit log, or a visit log recording more than is published.',
   'Any silent fallback from local processing to a remote service.',
   'A support or payment flow that receives file, job or result data, or that withholds a local result.',

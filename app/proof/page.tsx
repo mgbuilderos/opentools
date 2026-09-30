@@ -478,10 +478,12 @@ export default function ProofPage() {
                 &bull;
               </span>
               <span>
-                No analytics script and no third-party origin.
-                Cloudflare&rsquo;s own Web Analytics beacon was switched off at
-                source on 19 September 2026, so the absence of trackers no
-                longer depends on the content-security policy catching one.
+                No analytics script and no third-party origin. The site may
+                request one of nine fixed, same-origin counter images that carry
+                no content and no identifier; see /privacy. Cloudflare&rsquo;s
+                own Web Analytics beacon was switched off at source on 19
+                September 2026, so the absence of trackers no longer depends on
+                the content-security policy catching one.
               </span>
             </li>
             <li className="flex gap-2.5">

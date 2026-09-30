@@ -197,6 +197,27 @@ export function noteFileWaiting() {
   }
 }
 
+/**
+ * Whether the marker is already up, without disturbing it.
+ *
+ * Read by `components/handed-over-file.tsx` to tell one kind of arrival from
+ * another. Every in-page route to a tool — the dropzone, Ask Link, the file
+ * handler — goes through `offerFile`, which raises this marker before it
+ * navigates. `public/sw.js` cannot: a service worker has no `sessionStorage`,
+ * which is exactly why an Android share carries the query flag instead. So
+ * "flag present, marker absent" identifies a share and nothing else.
+ *
+ * It must be read BEFORE `noteFileWaiting`, which is why it is a separate
+ * function rather than a field of the collector's own state.
+ */
+export function fileWaitingMarkerPresent(): boolean {
+  try {
+    return sessionStorage?.getItem(WAITING_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 function clearWaiting(): boolean {
   try {
     const waiting = sessionStorage?.getItem(WAITING_KEY) === '1';

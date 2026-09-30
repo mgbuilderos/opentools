@@ -13,9 +13,19 @@
  * the same captured event rather than racing for it.
  */
 
-/** Not in lib.dom; Chromium-only, so the shape is declared here. */
+import { recordProductSignal } from './product-telemetry';
+
+/**
+ * Not in lib.dom; Chromium-only, so the shape is declared here.
+ *
+ * `userChoice` resolves after the person answers the browser's own dialog, and
+ * it is the only truthful source for whether an install was accepted. Tapping
+ * our button is not acceptance — it opens a dialog that can still be
+ * cancelled — and `appinstalled` is the only thing that says an app exists.
+ */
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
+  userChoice?: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
 
 let captured: BeforeInstallPromptEvent | null = null;
@@ -39,6 +49,16 @@ if (typeof window !== 'undefined') {
   window.addEventListener('appinstalled', () => {
     captured = null;
     notify();
+    /*
+     * The only event that means an installation happened. Counted here rather
+     * than beside the button because Chrome's own omnibox install fires it too
+     * and that is just as real an installation.
+     *
+     * It is a LOWER BOUND and must never be reported as a total: it fires only
+     * while a page of ours is open, only on engines that implement it, and iOS
+     * Safari's Add to Home Screen fires nothing at all. See ADR-020.
+     */
+    recordProductSignal('pwa-installed');
   });
 }
 
@@ -73,5 +93,22 @@ export async function showInstallDialog(): Promise<boolean> {
   notify();
 
   await event.prompt();
+
+  /*
+   * What the person actually answered, from the browser rather than from the
+   * fact that they opened the dialog. Chromium resolves `userChoice`; anything
+   * that does not expose it contributes no funnel row rather than a guessed
+   * one, which is why this is a `?.` and not an assumption.
+   */
+  try {
+    const choice = await event.userChoice;
+    if (choice?.outcome === 'accepted')
+      recordProductSignal('install-prompt-accepted');
+    else if (choice?.outcome === 'dismissed')
+      recordProductSignal('install-prompt-dismissed');
+  } catch {
+    /* No answer available. Count nothing; a guess here would be a false funnel. */
+  }
+
   return true;
 }

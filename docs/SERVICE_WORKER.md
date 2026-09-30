@@ -135,6 +135,17 @@ fails the build if the worker stops stamping it or the script starts hardcoding
 one, and `e2e/share-target.spec.ts` reads the header back off a page loaded with
 the network switched off.
 
+`/telemetry/v1/*` is deliberately not precached either, and for a stronger
+reason than page weight. Those nine files are the product counters (ADR-020),
+and the request *is* the measurement. A cached copy would let the worker answer
+one from inside the browser: nothing would reach Cloudflare, and the event
+would be recorded as having happened when it never left the device. So an
+installed app with no network simply fails to send the signal and the event is
+permanently uncounted — which is the honest outcome, and the only one that does
+not require storing events about somebody's work.
+`lib/product-telemetry-precache.test.ts` fails if a telemetry path enters
+`SHELL`, `PAGES` or either asset crawler.
+
 `/image/background-remover` and `/image/editor` are deliberately not precached.
 They are served a looser policy so the local model can load its weights, and a
 cached copy stamped with the `/*` policy would be a stricter page than the real
