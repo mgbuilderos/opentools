@@ -30,12 +30,53 @@ export interface CompletionRecipe {
   values: RecipeValues;
 }
 
+/**
+ * The file this job produced, so that the receipt can offer the next operation
+ * on it rather than ending in a download and a dead end.
+ *
+ * It is the bytes themselves and not a URL, because an object URL created by a
+ * tool dies with that page and the whole point is to survive the navigation.
+ * The bytes go no further than this browser: the receipt hands them to
+ * `lib/file-handoff.ts`, which is the same on-device store the dropzone uses,
+ * and `app/privacy/page.tsx` already discloses it by name.
+ *
+ * The shape matches `GeneratedFile` in `lib/tools/file-workbench.ts` on purpose,
+ * so a tool passes what it already has rather than building something for this.
+ *
+ * Optional, and absent for most tools: `announceCompletion` has 66 callers, two
+ * of which pass this today. Where it is absent the receipt renders exactly as
+ * it did before, with no next-operation section — the one thing that must never
+ * happen is an offer a tool cannot honour.
+ */
+export interface CompletionOutput {
+  name: string;
+  type: string;
+  bytes: Uint8Array;
+}
+
+/**
+ * Above this, a finished job announces no output and the receipt offers no next
+ * operation.
+ *
+ * This is a policy choice, not a measurement, and the reasoning is copies: the
+ * tool already holds the result once for the download, announcing it holds it
+ * again for as long as the card is open, and handing it over holds a third
+ * while the transaction commits. Three copies of a very large file on a budget
+ * Android phone is where the tab is killed, and losing the tab would cost the
+ * person the result they had already earned — a far worse outcome than not
+ * being offered a follow-up tool. Devices are read by
+ * `detectDeviceMemory()` in `lib/kernel/capability.ts`; this ceiling is the
+ * blunt guard that applies before any of that is consulted.
+ */
+export const CHAINABLE_OUTPUT_MAX_BYTES = 64 * 1024 * 1024;
+
 export interface CompletionDetail {
   operation: string;
   durationMs: number;
   summary?: string;
   metrics?: CompletionMetric[];
   recipe?: CompletionRecipe;
+  output?: CompletionOutput;
 }
 
 function boundedDisplayText(value: string, maximum: number) {
@@ -74,6 +115,37 @@ function normaliseRecipe(
   if (!definition) return undefined;
   const values = sanitiseRecipeValues(definition, recipe.values);
   return Object.keys(values).length ? { id: definition.id, values } : undefined;
+}
+
+/**
+ * Reduce an announced output to something that can safely become a `File`.
+ *
+ * The name is the only field here that leaves this browser's own memory in any
+ * sense: it is written into the handoff store and then into a file input, so it
+ * is taken down to a basename. A tool that reports `../invoice.pdf` — or a
+ * source path picked up from an archive entry — should not get to choose a
+ * name with separators in it, and `boundedDisplayText` strips the control
+ * characters that would make it unreadable.
+ *
+ * Zero bytes resolves to `undefined` rather than to an empty offer. A job that
+ * produced nothing has no next operation, and the receipt renders no section at
+ * all, which is the state every tool that never passes an output is in.
+ */
+function normaliseOutput(
+  output: CompletionOutput | undefined,
+): CompletionOutput | undefined {
+  if (!output) return undefined;
+  if (!(output.bytes instanceof Uint8Array) || output.bytes.byteLength === 0) {
+    return undefined;
+  }
+  if (output.bytes.byteLength > CHAINABLE_OUTPUT_MAX_BYTES) return undefined;
+  const name = boundedDisplayText(output.name.split(/[\\/]/u).pop() ?? '', 120);
+  if (!name) return undefined;
+  return {
+    name,
+    type: boundedDisplayText(output.type, 120),
+    bytes: output.bytes,
+  };
 }
 
 /**
@@ -162,6 +234,7 @@ export function announceCompletion(detail: CompletionDetail) {
           : undefined,
         metrics: metrics?.length ? metrics : undefined,
         recipe: normaliseRecipe(detail.recipe),
+        output: normaliseOutput(detail.output),
       },
     }),
   );
