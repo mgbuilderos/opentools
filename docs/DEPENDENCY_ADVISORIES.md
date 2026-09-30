@@ -120,17 +120,24 @@ Proposed, after the `supply chain` bullet in the vulnerability-class list:
 > `docs/DEPENDENCY_ADVISORIES.md`. Advisories in dependencies that ship to a
 > visitor do block.
 
+It attaches after the `Classic web vulnerabilities: XSS, injection, unsafe
+`postMessage`, supply chain compromise, or malicious dependencies` bullet.
+Checked on 2026-09-30 against the other open branch that edits this file
+(`claude/product-telemetry`, +60/-3): that bullet is **byte-identical on both
+refs** and only its line number moves, so the wording above needs no rework
+once that branch lands. The two lines it removes are elsewhere in the list.
+
 If that bullet is already there, this section has done its job and can go.
 
 ## How much the blocking gate stopped seeing
 
 Narrowing sounds broader than it is, so it was counted rather than described.
 
-| | Packages |
-|---|---|
-| Audited by the old, unnarrowed gate | 314 |
-| Still audited by the blocking gate (`--omit=dev`) | **291** |
-| Dropped from blocking, moved to the report | 23 |
+|                                                   | Packages |
+| ------------------------------------------------- | -------- |
+| Audited by the old, unnarrowed gate               | 314      |
+| Still audited by the blocking gate (`--omit=dev`) | **291**  |
+| Dropped from blocking, moved to the report        | 23       |
 
 All 16 declared runtime dependencies and their entire transitive closure
 remain in the blocking gate's scope — checked by walking
