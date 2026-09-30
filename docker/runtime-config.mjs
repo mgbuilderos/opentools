@@ -16,12 +16,20 @@
  * deployed config is not touched by any of this, only the copy a gated container
  * starts from.
  *
- * Written to a temporary path rather than patched in place because the image's
- * filesystem may be read-only, which is the posture `docker-compose.yml` ships.
- * Relative paths inside the config resolve against the config's own directory,
- * so both are made absolute on the way out.
+ * **Why every instance uses this, not only a gated one.** Wrangler writes a
+ * temporary bundle beside its config, and `docker-compose.yml` ships
+ * `read_only: true`, so the config's directory has to be writable. It was made
+ * writable with `tmpfs: /app/dist/server` — and a tmpfs mount hides what the
+ * image put at that path. Proved against the real image: the container crash-looped
+ * on `ENOENT: no such file or directory, open '/app/dist/server/wrangler.json'`,
+ * so `docker compose up -d`, the documented first command, never came up at all.
+ * Writing the config to `/tmp` instead means `/app/dist/server` is only ever read,
+ * that mount can go, and one code path serves both kinds of instance.
  *
- * Imported by `docker/gated-config.test.ts`, so the rewrite is a pure function
+ * Relative paths inside the config resolve against the config's own directory, so
+ * both are made absolute on the way out.
+ *
+ * Imported by `docker/runtime-config.test.ts`, so the rewrite is a pure function
  * and nothing happens on import — the property `prerender-to-assets.mjs` lacked,
  * which is why its logic had to be moved out to be tested at all.
  */
@@ -31,18 +39,21 @@ import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 /**
- * `config` with the Worker ahead of the asset server, and its relative paths
- * resolved against `configDir` so the result can live anywhere.
+ * `config` with its relative paths resolved against `configDir` so the result can
+ * live anywhere, and — when `runWorkerFirst` — the Worker ahead of the asset server.
  */
-export function gatedConfig(config, configDir) {
+export function runtimeConfig(config, configDir, { runWorkerFirst = false } = {}) {
   const gated = {
     ...config,
-    assets: {
-      ...config.assets,
-      // `true` rather than a route list: a gate with an exception is not a gate,
-      // and the exceptions would have to be kept in step with the route set.
-      run_worker_first: true,
-    },
+    assets: runWorkerFirst
+      ? {
+          ...config.assets,
+          // `true` rather than a route list: a gate with an exception is not a
+          // gate, and the exceptions would have to be kept in step with the
+          // route set.
+          run_worker_first: true,
+        }
+      : { ...config.assets },
   };
   if (gated.assets.directory) {
     gated.assets.directory = resolve(configDir, gated.assets.directory);
@@ -54,13 +65,19 @@ export function gatedConfig(config, configDir) {
 }
 
 function main() {
-  const [source, destination] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const runWorkerFirst = args.includes('--run-worker-first');
+  const [source, destination] = args.filter((a) => !a.startsWith('--'));
   if (!source || !destination) {
-    console.error('usage: gated-config.mjs <built wrangler.json> <output path>');
+    console.error(
+      'usage: runtime-config.mjs [--run-worker-first] <built wrangler.json> <output path>',
+    );
     process.exit(2);
   }
   const config = JSON.parse(readFileSync(source, 'utf8'));
-  const gated = gatedConfig(config, dirname(resolve(source)));
+  const gated = runtimeConfig(config, dirname(resolve(source)), {
+    runWorkerFirst,
+  });
   mkdirSync(dirname(resolve(destination)), { recursive: true });
   writeFileSync(destination, `${JSON.stringify(gated, null, 2)}\n`);
 }

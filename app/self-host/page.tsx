@@ -124,7 +124,7 @@ const SETTINGS = [
   [
     'OPENTOOLS_AUDIT_IDENTITY',
     'unset',
-    'Set to true and this container writes the signed-in name into its own log lines. Off by default, and does nothing without the two variables above.',
+    'Adds the signed-in name to the container\u2019s structured log event. Off by default, does nothing without the two variables above, and those events were not observable on stdout when measured \u2014 see the self-hosting document.',
   ],
 ] as const;
 
@@ -486,13 +486,22 @@ export default function SelfHostPage() {
           </p>
           <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.95rem] sm:leading-7">
             No session, no cookie, nothing stored: each request is judged on the
-            headers it arrives with. If you need the access record your auditor
-            usually asks for, set{' '}
-            <code className="text-[0.9em]">OPENTOOLS_AUDIT_IDENTITY</code> and
-            the name appears in this container&rsquo;s own log lines — on its
-            stdout, in your log stack, and nowhere else. It is off by default,
-            because keeping a record of your own staff is your decision to make
-            and not ours to make for you.
+            headers it arrives with. If your auditor wants a record of who
+            reached the instance, take it from your proxy&rsquo;s own access log
+            — it sees every request before this container does.{' '}
+            <code className="text-[0.9em]">OPENTOOLS_AUDIT_IDENTITY</code>{' '}
+            exists to put the forwarded name into the container&rsquo;s
+            structured log event, but those events could not be observed on its
+            stdout when this was measured, so it is not something to plan around
+            yet.{' '}
+            <a
+              href={SELF_HOSTING_DOC}
+              className="focus-ring font-semibold text-foreground underline underline-offset-4"
+              rel="noopener"
+            >
+              The self-hosting document
+            </a>{' '}
+            records exactly what was and was not seen.
           </p>
           <h3 className="mt-5 text-base font-semibold sm:text-lg">Settings</h3>
           <ul className="mt-2 divide-y rounded-xl border bg-muted/40">

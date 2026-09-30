@@ -4,25 +4,31 @@
 # do in production. No Cloudflare account or network access is needed.
 set -eu
 
-# The config the Worker starts from.
+# The config the Worker starts from — always a rewritten copy in /tmp.
 #
-# `vinext build` emits `assets: {directory: '../client'}` and no
-# `run_worker_first`, and Wrangler's default with a `main` AND `assets` is to
-# serve a matching static file without ever reaching the Worker. The whole route
-# set is prerendered, so that is every real page -- and the access gate lives in
-# the Worker. Measured before this existed: with the gate configured and no
-# credentials sent, `/`, `/self-host`, `/pdf/compress` and `/robots.txt` all
-# returned 200, and only a path with no file returned 401.
+# Two reasons, and the second one is why this is unconditional.
 #
-# So a gated instance starts from a rewritten copy that runs the Worker first.
-# An ungated one does not, and keeps the asset-first path and its prerendering
-# speed -- which is also why the deployed config is left exactly as built.
-CONFIG=/app/dist/server/wrangler.json
+# 1. `vinext build` emits `assets: {directory: "../client"}` and no
+#    `run_worker_first`, and Wrangler's default with a `main` AND `assets` is to
+#    serve a matching static file without ever reaching the Worker. Every route is
+#    prerendered, so that is every real page — and the access gate lives in the
+#    Worker. Measured before this existed: gate configured, no credentials sent,
+#    `/`, `/self-host`, `/pdf/compress` and `/robots.txt` all 200, and 401 only
+#    for a path with no file. So a gated instance runs the Worker first. An
+#    ungated one does not, and keeps the asset-first path and its prerendering
+#    speed.
+# 2. Wrangler writes a temporary bundle beside its config, and the shipped compose
+#    file is `read_only: true`. That was solved with `tmpfs: /app/dist/server`,
+#    which hides what the image put there: the container crash-looped on
+#    `ENOENT ... /app/dist/server/wrangler.json`, so `docker compose up -d` never
+#    came up. Writing the config to /tmp means that directory is only ever read.
+CONFIG="${TMPDIR:-/tmp}/opentools-wrangler.json"
 if [ -n "${OPENTOOLS_AUTH_USER:-}${OPENTOOLS_AUTH_PASSWORD:-}${OPENTOOLS_AUTH_TRUSTED_HEADER:-}${OPENTOOLS_AUTH_PROXY_SECRET:-}" ]; then
-  GATED="${TMPDIR:-/tmp}/opentools-wrangler-gated.json"
-  node /app/docker/gated-config.mjs "$CONFIG" "$GATED"
-  CONFIG=$GATED
+  node /app/docker/runtime-config.mjs --run-worker-first \
+    /app/dist/server/wrangler.json "$CONFIG"
   echo "opentools: access gate configured -- running the Worker ahead of static assets." >&2
+else
+  node /app/docker/runtime-config.mjs /app/dist/server/wrangler.json "$CONFIG"
 fi
 
 set -- \

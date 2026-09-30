@@ -50,10 +50,16 @@ services:
       - ALL
     read_only: true
     tmpfs:
-      # Wrangler writes a temporary bundle next to its config, and its logs and
-      # miniflare registry are redirected to /tmp by the image.
+      # Wrangler's temporary bundle, its logs and its miniflare registry all live
+      # here: the image redirects the last two, and `docker/start.sh` writes the
+      # config it starts from here too, so the bundle lands beside it.
+      #
+      # There used to be a `- /app/dist/server` here as well, to make the config's
+      # own directory writable under `read_only: true`. A tmpfs mount hides what
+      # the image put at that path, so it emptied the directory holding
+      # `wrangler.json` and the Worker crash-looped on ENOENT — `docker compose up
+      # -d` never came up. Nothing writes under /app now, so it is gone.
       - /tmp
-      - /app/dist/server
 
 volumes:
   opentools-state:

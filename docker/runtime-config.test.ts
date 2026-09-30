@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 // A plain .mjs script, imported for its one pure function. TypeScript infers the
 // shape from the source, so no declaration file can drift from it.
-import { gatedConfig } from './gated-config.mjs';
+import { runtimeConfig } from './runtime-config.mjs';
 
 const ROOT = path.join(__dirname, '..');
 const read = (relative: string) =>
@@ -28,7 +28,7 @@ const read = (relative: string) =>
  * called it. So what is guarded here is the wiring: the rewrite, the script that
  * uses it, and the image that has to contain it.
  */
-describe('the gated Wrangler config', () => {
+describe('the runtime Wrangler config', () => {
   const built = {
     name: 'local-tools-canary',
     main: 'index.js',
@@ -37,20 +37,29 @@ describe('the gated Wrangler config', () => {
     kv_namespaces: [{ binding: 'VINEXT_KV_CACHE', id: 'abc' }],
   };
 
-  it('puts the Worker ahead of the asset server', () => {
-    expect(gatedConfig(built, '/app/dist/server').assets.run_worker_first).toBe(
+  it('puts the Worker ahead of the asset server when asked', () => {
+    expect(runtimeConfig(built, '/app/dist/server', { runWorkerFirst: true }).assets.run_worker_first).toBe(
       true,
     );
   });
 
   it('resolves the paths, because the copy does not live beside the build', () => {
-    const gated = gatedConfig(built, '/app/dist/server');
+    const gated = runtimeConfig(built, '/app/dist/server');
     expect(gated.assets.directory).toBe('/app/dist/client');
     expect(gated.main).toBe('/app/dist/server/index.js');
   });
 
+  it('leaves the asset server in front by default', () => {
+    // An unconditional `run_worker_first` would route every request on every
+    // self-hosted instance through the Worker and undo the prerendering that
+    // fixed the 503s. Only a gated instance pays that.
+    expect(
+      runtimeConfig(built, '/app/dist/server').assets.run_worker_first,
+    ).toBeUndefined();
+  });
+
   it('drops only `build`, and changes nothing else', () => {
-    const gated = gatedConfig(built, '/app/dist/server');
+    const gated = runtimeConfig(built, '/app/dist/server');
     expect(gated.build).toBeUndefined();
     expect(gated.kv_namespaces).toEqual(built.kv_namespaces);
     expect(gated.name).toBe(built.name);
@@ -58,7 +67,7 @@ describe('the gated Wrangler config', () => {
 
   it('does not mutate what it was given', () => {
     const input = structuredClone(built);
-    gatedConfig(input, '/app/dist/server');
+    runtimeConfig(input, '/app/dist/server');
     expect(input).toEqual(built);
   });
 
@@ -71,7 +80,9 @@ describe('the gated Wrangler config', () => {
     } catch {
       return;
     }
-    const gated = gatedConfig(JSON.parse(source), '/app/dist/server');
+    const gated = runtimeConfig(JSON.parse(source), '/app/dist/server', {
+      runWorkerFirst: true,
+    });
     expect(gated.assets.run_worker_first).toBe(true);
     expect(path.isAbsolute(gated.main)).toBe(true);
   });
@@ -81,7 +92,7 @@ describe('the container actually uses it', () => {
   it('start.sh runs the rewrite', () => {
     // The first version of this change shipped the rewriter and never called it,
     // so the container stayed ungated while every unit test passed.
-    expect(read('docker/start.sh')).toContain('gated-config.mjs');
+    expect(read('docker/start.sh')).toContain('runtime-config.mjs');
   });
 
   it('start.sh passes the chosen config to wrangler, not a fixed path', () => {
@@ -90,10 +101,12 @@ describe('the container actually uses it', () => {
     expect(start).not.toMatch(/--config\s+\/app\/dist\/server\/wrangler\.json/u);
   });
 
-  it('the rewrite is conditional on a gate being configured', () => {
-    // An unconditional rewrite would put every self-hosted instance behind the
-    // Worker and undo the prerendering that fixed the 503s.
+  it('worker-first is conditional on a gate being configured', () => {
+    // The rewrite itself always runs -- nothing may write under /app. It is the
+    // `--run-worker-first` flag that must stay conditional, or every instance
+    // loses the prerendering that fixed the 503s.
     const start = read('docker/start.sh');
+    expect(start).toContain('--run-worker-first');
     for (const variable of [
       'OPENTOOLS_AUTH_USER',
       'OPENTOOLS_AUTH_PASSWORD',
@@ -112,7 +125,24 @@ describe('the container actually uses it', () => {
     // named paths, so a script left out of it is missing where it is needed.
     const dockerfile = read('Dockerfile');
     const runtime = dockerfile.slice(dockerfile.lastIndexOf('FROM '));
-    expect(runtime).toContain('docker/gated-config.mjs');
+    expect(runtime).toContain('docker/runtime-config.mjs');
+  });
+
+  it('compose does not mount anything over the config directory', () => {
+    // `tmpfs: /app/dist/server` hid `wrangler.json`, and the Worker crash-looped
+    // on ENOENT -- `docker compose up -d`, the documented first command, never
+    // came up. Proved against the real image before this line existed.
+    const compose = read('docker-compose.yml');
+    const mounts = compose
+      .split('\n')
+      .filter((line) => /^\s*-\s*\/\S/u.test(line))
+      .map((line) => line.replace(/^\s*-\s*/u, '').trim());
+    for (const mount of mounts) {
+      expect(
+        mount.startsWith('/app'),
+        `compose mounts ${mount}, which would hide what the image put there`,
+      ).toBe(false);
+    }
   });
 
   it('forwards every variable the gate reads', () => {

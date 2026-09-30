@@ -165,11 +165,22 @@ browser's primary language, and a timestamp. No IP address, no stored user
 agent, no cookie, no identifier, and never a file, a filename or a result.
 Static assets are not logged at all.
 
-Set `OPENTOOLS_AUDIT_IDENTITY=true` on a trusted-proxy instance and each line
-also carries the name your proxy forwarded. Off by default, and it does nothing
-without that mode. This is the access record a reviewer usually asks for, and it
-is a decision about your own employees, in your own logs — which is why it is
-yours to switch on rather than ours to switch on for you.
+`OPENTOOLS_AUDIT_IDENTITY=true` on a trusted-proxy instance adds the name your
+proxy forwarded to that event. Off by default, and it does nothing without that
+mode — keeping a record of your own staff is your decision, not ours to make for
+you.
+
+**Measured, so you do not plan a compliance story around it:** those events were
+**not** observable on the container's stdout. The image runs the Worker through
+`wrangler dev --local`, the `console.log` that emits the event is present in the
+built Worker, and Wrangler logged every request — but no event line appeared, at
+`info` or at `debug`, in a container or outside one. The Worker's own config
+carries `observability: { enabled: true }`, which is Cloudflare-side log
+collection, and a self-hosted container has no Cloudflare. So treat the access
+record as **not yet working**: if you need one today, take it from your reverse
+proxy's own access log, which sees every request before this container does.
+`docker/runtime-config.test.ts` and the pull request that added this record the
+open question.
 
 ## Running with no network at all
 
