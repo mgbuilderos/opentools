@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { publicTools } from '../lib/tools/catalog';
+import { LIVE_TOOL_CATALOG } from '../lib/seo/live-tools';
 
 /**
  * App-store manifests are copies of facts that live elsewhere: the image name,
@@ -112,10 +112,24 @@ describe('app-store packaging manifests', () => {
 
   it('state a tool count that matches the registry', () => {
     /*
-     * Every one of these said **568 file tools** while `publicTools` held **86** —
-     * a figure matching nothing countable in the repo (distinct job ids 915, sum
-     * of jobs 1533, sitemap entries 2092) and about to be published to the CasaOS,
-     * Umbrel and Unraid catalogues as part of v0.2.0.
+     * ## Which registry, and a correction to what this comment used to say
+     *
+     * This compared against `publicTools.length` and described **568** as "a
+     * figure matching nothing countable in the repo". That was wrong: 568 is
+     * exactly `LIVE_TOOL_CATALOG.length`, measured 2026-09-30. Acting on it
+     * rewrote the three manifests and thirteen lines of `docs/LAUNCH_KIT.md`
+     * down to `publicTools.length`, which no visitor-facing surface prints.
+     *
+     * The site publishes `LIVE_TOOL_CATALOG.length` and computes it, so it
+     * cannot drift: `app/about/page.tsx` renders "{n} everyday tools",
+     * `app/privacy/page.tsx` renders "All {n} tools on this site", and the 19
+     * hubs in `app/guides/category/[category]/page.tsx` render
+     * `getLiveToolsByCategory(...).length` and sum to exactly that figure. A
+     * manifest quoting a smaller number contradicted the first page anyone
+     * opened after installing, which is worse than the overstatement it was
+     * meant to prevent. Owner decision 2026-09-30: the published count is
+     * `LIVE_TOOL_CATALOG.length`. `scripts/launch-claims.test.ts` holds the
+     * launch copy to the same registry, so all three agree by construction.
      *
      * `lib/seo/stated-numbers.test.ts` already forbids a hand-written count in
      * `app/` and `components/`, and cannot see these: a YAML tagline and an XML
@@ -127,7 +141,7 @@ describe('app-store packaging manifests', () => {
      * is not in it, and the check passed with `568` still in place. A guard over a
      * subset of the files that can carry the claim is not a guard.
      */
-    const stated = publicTools.length;
+    const stated = LIVE_TOOL_CATALOG.length;
     const offences: string[] = [];
     const text = /\.(ya?ml|json|xml|md|txt)$/iu;
     const walk = (dir: string): string[] =>
@@ -150,7 +164,7 @@ describe('app-store packaging manifests', () => {
         if (Number(count) !== stated) {
           offences.push(
             `${relativePath} says "${phrase.replace(/\s+/gu, ' ').trim()}" — ` +
-              `publicTools.length is ${stated}`,
+              `LIVE_TOOL_CATALOG.length is ${stated}`,
           );
         }
       }

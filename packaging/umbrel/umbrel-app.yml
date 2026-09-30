@@ -13,7 +13,7 @@ id: opentools
 category: files
 name: OpenTools
 version: "0.2.0"
-tagline: 86 file tools that run in your browser, not on the server
+tagline: 568 file tools that run in your browser, not on the server
 description: >-
   Document, image, audio, video, data and developer tools, served from one
   container.
