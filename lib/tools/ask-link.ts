@@ -672,84 +672,29 @@ export function askRequestedFormat(
   return typeof format === 'string' ? format : null;
 }
 
-/**
- * What a browser will REALLY produce when asked for an image format.
+/*
+ * `probeEncodedFormat` and `formatWasSubstituted` USED TO LIVE HERE and now do
+ * not. They are in `lib/tools/image-verify.ts`, which is where the question
+ * belongs: that module reads image bytes and judges them, and asking a browser
+ * what it would really encode is the same question one step earlier.
  *
- * WHY THIS EXISTS, AND IT IS NOT A THEORETICAL WORRY. Measured 2026-09-27 in
- * WebKit against the built site: `canvas.toBlob(cb, 'image/webp')` hands back a
- * blob whose type is `image/png`. It does not refuse, it does not return null,
- * it substitutes — so an ask link that says *"Please provide a WebP image"*
- * would send a Safari or iOS recipient away with a PNG while the page they read
- * promised otherwise. The file on disk is named honestly by the tool; the
- * broken promise is the sentence, which is this module's to keep.
+ * They were written here first, when this was the only lane that needed them —
+ * WebKit answers a WebP request with a PNG rather than refusing, so an ask link
+ * promising WebP would have handed a Safari recipient a PNG and called it
+ * right. Once the File Compiler lane needed the same check, two copies sat on
+ * `main` for a few hours. This is that debt settled rather than re-documented.
  *
- * WHY A REAL ENCODE AND NOT A FEATURE TEST. There is no reliable flag for WebP
- * *encoding*. The `canPlayType`-style checks answer the **decode** question,
- * which Safari does support — which is presumably why the substitution exists
- * at all. So the only honest test is to encode two pixels and read the type
- * back.
+ * ONE DIFFERENCE THAT WILL BITE A CARELESS CALLER: the surviving pair takes a
+ * FULL MEDIA TYPE (`image/webp`), not a bare subtype (`webp`). Building the
+ * type inside the function let a caller concatenate one that does not exist;
+ * taking it whole means the same value flows from a registry through to the
+ * probe without being reassembled anywhere.
  *
- * It costs one 2x2 canvas and touches no network: nothing here can, and
- * `lib/tools/local-source-policy.test.ts` is what keeps it that way.
- *
- * Returns the media type actually produced, or null where the question cannot
- * be asked at all — no canvas, no `toBlob`, a browser that returns nothing. A
- * null is NOT a failure: it means unknown, and the caller must not turn "I could
- * not check" into "this will not work".
+ * `formatLabel` below did NOT move, and is deliberately NOT interchangeable
+ * with the one over there: that one returns `WebP` for the sentences on `/do`,
+ * this one uppercases for the sentence here. Collapsing them is how `WEBP`
+ * comes back.
  */
-export async function probeEncodedFormat(
-  format: string,
-  createCanvas: () => HTMLCanvasElement | null = defaultCanvas,
-): Promise<string | null> {
-  const wanted = `image/${format}`;
-  try {
-    const canvas = createCanvas();
-    if (!canvas || typeof canvas.toBlob !== 'function') return null;
-    canvas.width = 2;
-    canvas.height = 2;
-    const produced = await new Promise<string | null>((resolve) => {
-      // A browser that never calls back must not hang the page.
-      const giveUp = setTimeout(() => resolve(null), 2000);
-      try {
-        canvas.toBlob(
-          (blob) => {
-            clearTimeout(giveUp);
-            resolve(blob ? blob.type : null);
-          },
-          wanted,
-          0.8,
-        );
-      } catch {
-        clearTimeout(giveUp);
-        resolve(null);
-      }
-    });
-    return produced === '' ? null : produced;
-  } catch {
-    return null;
-  }
-}
-
-function defaultCanvas(): HTMLCanvasElement | null {
-  if (typeof document === 'undefined') return null;
-  return document.createElement('canvas');
-}
-
-/**
- * Whether a probe result contradicts what the link asked for.
- *
- * Deliberately conservative in one direction: an unknown answer (`null`) is not
- * a substitution. Reporting "this browser cannot do it" because the check
- * failed would be inventing a limitation, which is the same class of untruth as
- * the one this whole function exists to prevent.
- */
-export function formatWasSubstituted(
-  requested: string,
-  produced: string | null,
-): boolean {
-  if (!produced) return false;
-  return produced.toLowerCase() !== `image/${requested.toLowerCase()}`;
-}
 
 /**
  * `image/png` -> `PNG`, for a sentence. Falls back to the raw type.

@@ -12,11 +12,13 @@ import {
   askSettingLines,
   describeAskRequest,
   formatLabel,
-  formatWasSubstituted,
-  probeEncodedFormat,
   readAskLink,
   type AskRequest,
 } from '@/lib/tools/ask-link';
+import {
+  formatWasSubstituted,
+  probeEncodedFormat,
+} from '@/lib/tools/image-verify';
 import type { RecipeValues } from '@/lib/tools/recipe-link';
 
 /**
@@ -142,10 +144,14 @@ export function AskLinkRequest({ request }: { request: AskRequest }) {
     const requested = askRequestedFormat(request, link.values);
     if (!requested) return;
     let cancelled = false;
-    void probeEncodedFormat(requested).then((produced) => {
+    // A FULL media type, not the bare subtype the registry holds: the shared
+    // probe takes the whole thing so no caller can concatenate a type that
+    // does not exist.
+    const wanted = `image/${requested}`;
+    void probeEncodedFormat(wanted).then((produced) => {
       if (cancelled) return;
       setSubstituteFormat(
-        formatWasSubstituted(requested, produced) ? produced : null,
+        formatWasSubstituted(wanted, produced) ? produced : null,
       );
     });
     return () => {
