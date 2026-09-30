@@ -120,14 +120,47 @@ describe('the embed entry point', () => {
     }
   });
 
-  it('agrees with the text register about what each tool is called', () => {
-    /* The summary a site owner reads before embedding must describe the tool
-       they get. A slug that matches an operation must name that operation. */
-    const ids = new Set(TEXT_OPERATIONS.map((item) => item.id as string));
+  it("copies each text tool's name and summary rather than rewriting them", () => {
+    /* The register is literal data on purpose -- importing TEXT_OPERATIONS into
+       it would pull lib/tools/text-workbench.ts into every page on the site,
+       because embed-this-tool.tsx imports it and AppShell renders that
+       everywhere. So the copying is real copying, and this is what stops the
+       two drifting: a site owner deciding whether to embed something must read
+       the same sentence as a visitor deciding whether to use it. */
+    const byId = new Map(
+      TEXT_OPERATIONS.map((item) => [item.id as string, item]),
+    );
     for (const tool of EMBEDDABLE_TOOLS) {
-      if (!ids.has(tool.slug)) continue;
+      const operation = byId.get(tool.slug);
+      if (!operation) continue; // not a text operation, e.g. table-converter
       expect(tool.canonicalPath).toBe(`/text/${tool.slug}`);
+      expect(tool.name, `${tool.slug} name`).toBe(operation.name);
+      expect(tool.summary, `${tool.slug} summary`).toBe(operation.description);
     }
+  });
+
+  it('gives every text tool the same frame height, which is one number', () => {
+    /* They are one shape: a textarea, an output box and a copy button. A
+       per-tool number would be a number somebody invented. */
+    const ids = new Set(TEXT_OPERATIONS.map((item) => item.id as string));
+    const heights = new Set(
+      EMBEDDABLE_TOOLS.filter((tool) => ids.has(tool.slug)).map(
+        (tool) => tool.defaultHeight,
+      ),
+    );
+    expect(heights.size).toBe(1);
+  });
+
+  it('registers every option-free text operation, not an arbitrary few', () => {
+    /* The four registered on 2026-09-30 were a sample; leaving the rest out
+       would be a decision nobody made and nobody could see. If an operation
+       becomes option-free upstream it belongs here too, and this says so. */
+    const eligible = TEXT_OPERATIONS.filter(
+      (item) => !item.optionKind && item.needsInput !== false,
+    ).map((item) => item.id as string);
+    const registered = new Set(EMBEDDABLE_TOOLS.map((tool) => tool.slug));
+    const missing = eligible.filter((id) => !registered.has(id));
+    expect(missing, 'option-free operations left unregistered').toEqual([]);
   });
 
   it('links each tool to its own snippet, which needs an anchor to land on', () => {

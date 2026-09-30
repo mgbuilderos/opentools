@@ -23,8 +23,58 @@ const EMBED_COMPONENTS: Record<string, () => React.ReactNode> = {
   'character-counter': () => (
     <EmbedTextOperation operation="character-counter" />
   ),
+  'sentence-counter': () => <EmbedTextOperation operation="sentence-counter" />,
+  'paragraph-counter': () => (
+    <EmbedTextOperation operation="paragraph-counter" />
+  ),
   'reading-time': () => <EmbedTextOperation operation="reading-time" />,
   'slug-generator': () => <EmbedTextOperation operation="slug-generator" />,
+  'whitespace-remover': () => (
+    <EmbedTextOperation operation="whitespace-remover" />
+  ),
+  'blank-line-remover': () => (
+    <EmbedTextOperation operation="blank-line-remover" />
+  ),
+  'duplicate-line-remover': () => (
+    <EmbedTextOperation operation="duplicate-line-remover" />
+  ),
+  'line-shuffler': () => <EmbedTextOperation operation="line-shuffler" />,
+  'line-number-adder': () => (
+    <EmbedTextOperation operation="line-number-adder" />
+  ),
+  'text-reverser': () => <EmbedTextOperation operation="text-reverser" />,
+  'text-deduplicator': () => (
+    <EmbedTextOperation operation="text-deduplicator" />
+  ),
+  'palindrome-checker': () => (
+    <EmbedTextOperation operation="palindrome-checker" />
+  ),
+  'smart-quote-converter': () => (
+    <EmbedTextOperation operation="smart-quote-converter" />
+  ),
+  'diacritic-remover': () => (
+    <EmbedTextOperation operation="diacritic-remover" />
+  ),
+  'emoji-remover': () => <EmbedTextOperation operation="emoji-remover" />,
+  'emoji-extractor': () => <EmbedTextOperation operation="emoji-extractor" />,
+  'punctuation-cleaner': () => (
+    <EmbedTextOperation operation="punctuation-cleaner" />
+  ),
+  'morse-code-translator': () => (
+    <EmbedTextOperation operation="morse-code-translator" />
+  ),
+  'nato-alphabet-translator': () => (
+    <EmbedTextOperation operation="nato-alphabet-translator" />
+  ),
+  'pig-latin-translator': () => (
+    <EmbedTextOperation operation="pig-latin-translator" />
+  ),
+  'subtitles-text-cleaner': () => (
+    <EmbedTextOperation operation="subtitles-text-cleaner" />
+  ),
+  'transcript-formatter': () => (
+    <EmbedTextOperation operation="transcript-formatter" />
+  ),
 };
 
 export function generateStaticParams() {
