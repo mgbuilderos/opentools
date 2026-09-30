@@ -8,6 +8,96 @@ import {
   announceCompletion,
   formatCompletionDuration,
 } from './completion';
+import { USAGE_COUNT_KEY } from './milestone';
+
+/**
+ * `tool_usage_count` is written here and read somewhere else, and that gap
+ * nearly cost it.
+ *
+ * It was reported as a counter the support gate never reads, with a
+ * recommendation to delete it rather than leave a rule nobody applies. The
+ * first half is true — `mayOfferSupport` does not read it, and never has. The
+ * conclusion is not: `MilestoneModal` reads it on mount to decide the 10/50/100
+ * card, and `app/privacy/page.tsx` discloses the key to visitors by name.
+ * Deleting it would have retired a shipped feature silently and left the
+ * privacy page describing storage the site no longer writes.
+ *
+ * What made it look unread was that the writer spelled the key as a literal
+ * while the reader imported a constant, so nothing connected the two ends.
+ * These tests are that connection: they fail if the writer stops writing it,
+ * if either side renames its key, if the reader is unmounted, or if the
+ * disclosure goes stale.
+ */
+describe('the usage counter the milestone card runs on', () => {
+  const read = (...segments: string[]) =>
+    readFileSync(path.join(import.meta.dirname, '..', ...segments), 'utf8');
+
+  it('is written under the same key the milestone card reads', () => {
+    expect(USAGE_COUNT_KEY).toBe('tool_usage_count');
+    // Imported, not respelled — a second literal is how the link was lost.
+    const writer = read('lib', 'completion.ts');
+    expect(writer).toContain('USAGE_COUNT_KEY');
+    expect(writer).not.toContain("'tool_usage_count'");
+  });
+
+  it('counts up once per announced completion', () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal('window', { dispatchEvent: vi.fn() });
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, value),
+    });
+
+    const announce = () =>
+      announceCompletion({
+        operation: 'CSV to JSON',
+        durationMs: 5,
+        metrics: [{ label: 'Rows', value: '2' }],
+      });
+    announce();
+    expect(store.get(USAGE_COUNT_KEY)).toBe('1');
+    announce();
+    announce();
+    expect(store.get(USAGE_COUNT_KEY)).toBe('3');
+
+    // A value the reader treats as 0 must not be incremented into `NaN` and
+    // stored, which froze the count for that visitor for ever.
+    store.set(USAGE_COUNT_KEY, 'not a number');
+    announce();
+    expect(store.get(USAGE_COUNT_KEY)).toBe('1');
+    vi.unstubAllGlobals();
+  });
+
+  it('still has a reader that is actually mounted', () => {
+    const reader = read('components', 'milestone-modal.tsx');
+    expect(reader).toContain('USAGE_COUNT_KEY');
+    expect(reader).toContain('parseUsageCount');
+    // A reader nothing renders is the same as no reader.
+    expect(read('components', 'app-shell.tsx')).toContain('<MilestoneModal />');
+  });
+
+  it('is still disclosed to visitors by name', () => {
+    // The quotes are part of the assertion. Without them this passes on any
+    // key that merely starts with the right characters — which is how the
+    // first version of this test survived being mutated.
+    expect(read('app', 'privacy', 'page.tsx')).toContain(
+      `'${USAGE_COUNT_KEY}'`,
+    );
+  });
+
+  /*
+    The dispatch that went with it. `tool-executed` was a window event fired
+    beside this write, and nothing has listened to it since the milestone was
+    moved off the completion event on 2026-09-19 — deciding there put a
+    full-screen modal over the page in the same tick the receipt needed the
+    moment. `local-source-policy.test.ts` already forbids the milestone card
+    from listening again; this forbids the other end, so the event cannot come
+    back and tempt someone into re-adding the listener.
+  */
+  it('announces no event that nothing subscribes to', () => {
+    expect(read('lib', 'completion.ts')).not.toContain('tool-executed');
+  });
+});
 
 /**
  * The share leaves from the receipt, so the settings have to reach it — and
