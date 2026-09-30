@@ -281,6 +281,19 @@ test.describe('a counter can never damage the work', () => {
      * engine-independent and stricter, and it is what `e2e/offline-dare.spec.ts`
      * already uses.
      *
+     * IT ALSO EXERCISES A DIFFERENT PRODUCT PATH FROM `offline-cold-start`, and
+     * that is the point of keeping both. Route-abort leaves `navigator.onLine`
+     * true, so the signal IS attempted here and fails — the real case of a
+     * browser that believes it is online and has no route out, where the only
+     * available behaviour is to try and lose the count.
+     * `context.setOffline(true)` instead makes `onLine` false, and
+     * `recordProductSignal` then declines to issue the request at all, because
+     * the offline payload does not hold these assets and
+     * `offline-cold-start.spec.ts` requires that a precached page ask the
+     * network for nothing. Do not convert this test to `setOffline` to match
+     * that one: it would stop covering the attempt, which is the half a real
+     * visitor is most likely to hit.
+     *
      * `/text/word-counter` because its work happens inside the chunk the page
      * has already loaded, so "the job still finishes with no network" is a
      * claim about the product rather than about what the bundler happened to

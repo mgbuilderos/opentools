@@ -147,6 +147,46 @@ export function signalsSuppressed(): boolean {
   return false;
 }
 
+/**
+ * Whether the browser is certain it has no network.
+ *
+ * Read only in the negative direction, and deliberately. `navigator.onLine`
+ * being `true` means nothing at all — a captive portal and a dead uplink both
+ * report online — but `false` is the one answer the browser is sure of, and it
+ * is enough to skip work that cannot succeed.
+ *
+ * WHY THIS IS HERE RATHER THAN LEAVING THE REQUEST TO FAIL. An installed app
+ * opened with no network still runs every precached tool, and ADR-020's promise
+ * for that visit is that nothing is sent and the event goes permanently
+ * uncounted. Without this the second half was true and the first was not: the
+ * `Image` was still created, its request still issued, and `onerror` still fired
+ * — the count was lost either way, but the page had asked the network for
+ * something the offline payload does not hold.
+ *
+ * `e2e/offline-cold-start.spec.ts` is what makes that distinction matter. It
+ * records every request that fails while offline and requires the list to be
+ * empty, because a missed font, stylesheet or second engine is exactly how a
+ * tool half-works offline without saying so. Exempting this path there would
+ * have widened a guard on the product to accommodate a counter; not issuing the
+ * request keeps the guard absolute and makes the documented behaviour literal.
+ *
+ * Note that this is NOT the same condition `e2e/product-telemetry.spec.ts`
+ * creates with `page.route(..., abort)`. Route-abort leaves `onLine` true, so
+ * the signal is still attempted and still fails there — which is the real-world
+ * case of a browser that believes it is online and is not, and is the case worth
+ * keeping a test on.
+ */
+function certainlyOffline(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  try {
+    return navigator.onLine === false;
+  } catch {
+    // A browser that will not answer is not a browser we assume is offline:
+    // guessing offline here would silently stop counting for everyone.
+    return false;
+  }
+}
+
 /** Turn the counters off, or on, for this browser only. */
 export function setProductSignalsEnabled(enabled: boolean): void {
   try {
@@ -203,6 +243,8 @@ export function recordProductSignal(signal: ProductSignal): boolean {
   if (!Object.hasOwn(SIGNAL_PATHS, signal)) return false;
   const path = SIGNAL_PATHS[signal];
   if (signalsSuppressed()) return false;
+  // Nothing to send it down, and the offline payload does not hold it.
+  if (certainlyOffline()) return false;
 
   try {
     const beacon = new Image();

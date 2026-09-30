@@ -44,6 +44,7 @@ function browser(
     dnt?: string | null;
     optedOut?: boolean;
     imageThrows?: boolean;
+    offline?: boolean;
   } = {},
 ): FakeBrowser {
   const requested: string[] = [];
@@ -76,6 +77,9 @@ function browser(
     }),
   });
   vi.stubGlobal('navigator', {
+    // `onLine` is left absent unless asked for, so every other case here runs
+    // the path a real online browser runs: `undefined === false` is false.
+    ...(options.offline ? { onLine: false } : {}),
     ...(options.safariStandalone ? { standalone: true } : {}),
     ...(options.gpc ? { globalPrivacyControl: true } : {}),
     ...(options.dnt === undefined ? {} : { doNotTrack: options.dnt }),
@@ -288,6 +292,44 @@ describe('the request is held against garbage collection', () => {
     recordProductSignal('completed-web');
     fake.settle('error');
     expect(fake.requested).toEqual(['/telemetry/v1/completed-web.svg']);
+  });
+});
+
+describe('a browser that knows it has no network is not asked to count', () => {
+  /*
+    The offline payload does not hold these assets, on purpose: ADR-020's
+    promise is that an installed app opened with no network sends nothing and
+    the event is permanently uncounted. Issuing a request that can only fail
+    kept the second half of that and broke the first, and
+    `e2e/offline-cold-start.spec.ts` failed on exactly that — it records every
+    request that fails while offline and requires the list to be empty, so eight
+    precached tools reported `/telemetry/v1/completed-web.svg
+    (net::ERR_INTERNET_DISCONNECTED)`.
+  */
+  it('sends nothing when navigator.onLine is false', () => {
+    const fake = browser({ offline: true });
+    expect(recordProductSignal('completed-web')).toBe(false);
+    expect(fake.requested).toEqual([]);
+  });
+
+  it('does not spend the once-per-document completion on a lost signal', () => {
+    // The guard is about counting a visit once, not about how many times the
+    // attempt was made, so an offline attempt still consumes it. Asserting the
+    // behaviour either way beats discovering it later: a visitor who finishes a
+    // job offline is uncounted for that document, which ADR-020 records as one
+    // of the known undercounts.
+    const fake = browser({ offline: true });
+    expect(recordCompletionSignal()).toBe(false);
+    expect(fake.requested).toEqual([]);
+  });
+
+  it('counts normally when onLine is true, and when it is absent', () => {
+    // The negative direction only. A browser reporting online may still have no
+    // route out, and that case must keep attempting: it is indistinguishable
+    // from a working network until the request fails.
+    const online = browser();
+    expect(recordProductSignal('completed-web')).toBe(true);
+    expect(online.requested).toEqual(['/telemetry/v1/completed-web.svg']);
   });
 });
 
