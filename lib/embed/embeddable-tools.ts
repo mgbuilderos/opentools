@@ -73,3 +73,31 @@ export function embedSnippet(tool: EmbeddableTool, origin: string): string {
     '        loading="lazy"></iframe>',
   ].join('\n');
 }
+
+/**
+ * The embeddable tool whose own page this is, or `undefined`.
+ *
+ * WHY THIS EXISTS. Until 2026-09-30 the embed programme had no entry point:
+ * `/embed` was live, it was in the sitemap, and **not one of the 1,031 pages on
+ * the site linked to it**. Measured that day against production — `curl` of
+ * `/pdf/redact`, `/data/csv-join` and `/math/median-calculator` returned no
+ * `/embed` link at all, and Cloudflare recorded a single request to `/embed` in
+ * 24 hours. A channel whose whole economics is other people's sites carrying a
+ * permanent link back cannot start from a page nobody can reach.
+ *
+ * Keyed on the pathname rather than a tool id on purpose: `canonicalPath` is
+ * already the field this list guarantees is "a real, live, canonical route",
+ * so there is no second mapping to keep in step and nothing to forget when a
+ * tool is added. `components/embed-this-tool.tsx` is the only caller.
+ *
+ * EXACT MATCH ONLY, including no trailing slash and no locale prefix. A
+ * localised edition at `/de/...` deliberately does not offer this: the snippet
+ * page and the embed header are English, so sending a German reader there would
+ * be a worse experience than not offering it. `embed-entry-point.test.ts` pins
+ * both halves of that.
+ */
+export function embeddableToolByPath(
+  pathname: string,
+): EmbeddableTool | undefined {
+  return EMBEDDABLE_TOOLS.find((tool) => tool.canonicalPath === pathname);
+}

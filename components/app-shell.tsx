@@ -48,6 +48,7 @@ import {
 import { navGroupName, navSectionTitle } from '@/lib/i18n/tool-ui';
 import { PageDepthContent } from '@/components/page-depth-content';
 import { EgressMeter } from '@/components/egress-meter';
+import { EmbedThisTool } from '@/components/embed-this-tool';
 import { PasteAnywhere } from '@/components/paste-anywhere';
 import { usePageDepth } from '@/components/page-depth-provider';
 import { MilestoneModal } from './milestone-modal';
@@ -808,6 +809,7 @@ export function AppShell({
           </div>
         ) : null}
         <EgressMeter />
+        <EmbedThisTool />
       </main>
 
       <PasteAnywhere />
