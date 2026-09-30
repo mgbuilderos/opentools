@@ -3,9 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-import { publicTools } from '../tools/catalog';
-import { LIVE_TOOL_CATALOG } from './live-tools';
-
 /**
  * Every page that tells a reader how many tools this site has must count them
  * from the same registry.
@@ -165,7 +162,7 @@ describe('the tool count this site publishes', () => {
     const undeclared = [...scanned.keys()]
       .filter((rel) => !(rel in PUBLISHED_COUNTS))
       .filter((rel) => !NOT_A_PUBLISHED_CLAIM.includes(rel))
-      .toSorted();
+      .toSorted((a, b) => a.localeCompare(b));
 
     expect(
       undeclared,
@@ -190,38 +187,66 @@ describe('the tool count this site publishes', () => {
     expect(
       moved,
       'a declared surface stopped reading the registry it was declared with. ' +
-        'If that is the resolution of the two-number split, update ' +
-        'PUBLISHED_COUNTS and delete whichever half is now empty.',
+        'THIS IS EXPECTED WHEN PR #107 MERGES: it moves ' +
+        'app/self-host/page.tsx onto LIVE_TOOL_CATALOG, which resolves the ' +
+        'split. Update PUBLISHED_COUNTS to match — it is a declaration, not a ' +
+        'regression.',
     ).toEqual([]);
   });
 
   it('lets no third registry become a published tool count', () => {
-    const declared = new Set<Registry>(Object.values(PUBLISHED_COUNTS));
+    const scanned = scanPublishedCounts();
+    const inUse = new Set<Registry>(
+      [...scanned]
+        .filter(([rel]) => rel in PUBLISHED_COUNTS)
+        .flatMap(([, registries]) => [...registries]),
+    );
+    const unknown = [...inUse].filter(
+      (registry) =>
+        registry !== REGISTRIES.publicTools &&
+        registry !== REGISTRIES.liveToolCatalog,
+    );
 
     expect(
-      [...declared].toSorted(),
-      'a published tool count is being read from a registry that is not one ' +
+      unknown,
+      'a published tool count is being read from a registry that is neither ' +
         'of the two this site already disagrees with. Three would be worse ' +
         'than two.',
-    ).toEqual([REGISTRIES.liveToolCatalog, REGISTRIES.publicTools].toSorted());
+    ).toEqual([]);
   });
 
   /*
    * The exception, and the condition for removing it.
    *
-   * This asserts that the split is still real rather than asserting the two
-   * numbers, because both move whenever a tool ships. When the owner picks one
-   * registry and the surfaces are moved onto it, the two counts become equal,
-   * this fails, and the message says what to do — which is the only way an
-   * exception recorded in a test gets taken out again.
+   * Derived from the scan and not from the two lengths, because a count that no
+   * surface publishes is not a published claim: PR #107 moves
+   * `app/self-host/page.tsx` onto `LIVE_TOOL_CATALOG`, after which
+   * `publicTools.length` reaches no reader at all even though the two registries
+   * still report different numbers. When that lands this fails, and the message
+   * says what to do — which is the only way an exception recorded in a test gets
+   * taken out again.
    */
-  it('still has two different published counts, pending the owner decision', () => {
+  it('still publishes two different counts, pending the owner decision', () => {
+    const scanned = scanPublishedCounts();
+    const published = new Set<Registry>(
+      [...scanned]
+        .filter(([rel]) => rel in PUBLISHED_COUNTS)
+        .flatMap(([, registries]) => [...registries]),
+    );
+
     expect(
-      new Set([publicTools.length, LIVE_TOOL_CATALOG.length]).size,
-      'the two registries now report the same tool count, so the split this ' +
-        'file exists to contain is over. Delete this test, collapse ' +
-        'PUBLISHED_COUNTS onto the one registry, and clear the open question ' +
-        'on AGENT_BOARD.md.',
-    ).toBe(2);
+      [...published].toSorted((a, b) => a.localeCompare(b)),
+      'every published tool count now comes from one registry, so the split ' +
+        'this file exists to contain is over — which is what PR #107 does by ' +
+        'moving app/self-host/page.tsx onto LIVE_TOOL_CATALOG. Collapse ' +
+        'PUBLISHED_COUNTS onto that registry, turn this assertion into "they ' +
+        'all agree", and clear the open question on AGENT_BOARD.md. The values ' +
+        'are deliberately not asserted: publicTools.length and ' +
+        'LIVE_TOOL_CATALOG.length both move whenever a tool ships.',
+    ).toEqual(
+      [REGISTRIES.liveToolCatalog, REGISTRIES.publicTools].toSorted((a, b) =>
+        a.localeCompare(b),
+      ),
+    );
   });
 });
