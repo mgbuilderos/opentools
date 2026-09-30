@@ -19,8 +19,16 @@ export interface HubToolMeta {
 }
 
 export const LATEX_TOOL_META: Readonly<Record<LatexHubTab, HubToolMeta>> = {
+  /*
+   * Leads with the exact query. `/documents/latex-table-generator` was tuned
+   * for the "latex table generator" cluster (docs/NOTATION_ENGINE.md s4A) and
+   * then 308'd into this page as a duplicate, so this title has to carry what
+   * that one was carrying: 37 impressions in the 2026-09-15..27 export went to
+   * that phrase and this title did not open with it. The description keeps the
+   * eight formats, which is what the tool actually does.
+   */
   'table-generator': {
-    title: 'Table Generator — LaTeX, Markdown, HTML & CSV',
+    title: 'LaTeX Table Generator — CSV, Markdown & HTML',
     description:
       'Convert tables between 8 technical formats at once: LaTeX (booktabs & longtable), Markdown, HTML, CSV, TSV, JSON, SQL, and AsciiDoc.',
   },

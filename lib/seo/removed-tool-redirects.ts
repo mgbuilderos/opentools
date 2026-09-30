@@ -15,6 +15,19 @@ const EXACT_REDIRECTS: Readonly<Record<string, string>> = {
   // "batch" — batch compress pdf, batch rename, bulk convert. The page is
   // unchanged; only the address people can guess is.
   '/bench': '/batch',
+  /*
+   * Deduplicated, not removed. The tool still runs; it just stopped answering
+   * at two addresses. `/latex/table-generator` is the surviving page and the
+   * embed's canonical path -- see the note beside `latex-table-generator` in
+   * lib/seo/live-tools.ts for the Search Console figures behind the choice.
+   *
+   * This redirect only fires for a path the build wrote no file for, because a
+   * prerendered asset is served before proxy.ts ever runs. Removing the id
+   * from the `/documents` route is therefore half of this fix, not a tidy-up:
+   * without it the old page would still be sitting there and nothing below
+   * would ever be read.
+   */
+  '/documents/latex-table-generator': '/latex/table-generator',
   '/audio/transcribe': '/guides/category/audio',
   '/image/upscaler': '/image/optimize',
   '/developer/sql-visualizer': '/developer/advanced?tool=sql-to-er-diagram',
@@ -69,6 +82,20 @@ const REMOVED_NUMEROLOGY_TOOLS = new Set([
 
 const LEGACY_ASTROLOGY_GUIDE =
   /^\/guides\/astrology-and-numerology-([a-z0-9-]+)$/u;
+
+/**
+ * Every path `EXACT_REDIRECTS` speaks for, so a test can sweep the real
+ * population rather than a list someone remembered to keep up.
+ *
+ * A redirect here is only ever read by `proxy.ts`, and `proxy.ts` only runs for
+ * a path the build wrote no file for -- a prerendered asset is served straight
+ * from `dist/client` and the Worker never sees the request. So a path that is
+ * still built AND listed here is a redirect that silently does nothing, which
+ * is the shape the `/documents/latex-table-generator` deduplication would have
+ * taken had only half of it landed. `removed-tool-redirects.test.ts` holds
+ * that line against this list.
+ */
+export const REDIRECTED_PATHS: readonly string[] = Object.keys(EXACT_REDIRECTS);
 
 export function removedToolRedirect(
   pathname: string,

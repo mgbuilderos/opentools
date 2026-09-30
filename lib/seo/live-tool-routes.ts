@@ -952,7 +952,6 @@ export const LIVE_TOOL_ROUTES: readonly string[] = [
   '/documents/bibtex-viewer',
   '/documents/ris-citation-viewer',
   '/documents/citation-formatter',
-  '/documents/latex-table-generator',
   '/documents/markdown-to-slides',
   '/documents/speaker-notes-extractor',
   '/documents/presentation-timer-pacer',

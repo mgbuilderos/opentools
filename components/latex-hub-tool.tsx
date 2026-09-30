@@ -349,15 +349,6 @@ and \\textit{contextual embeddings} consistently outperform unweighted models ac
                 TeXcount-standard word counting, and symbol lookups.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <a
-                href="/documents/latex-table-generator"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-                Dedicated LaTeX Table Generator &rarr;
-              </a>
-            </div>
           </div>
 
           <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
