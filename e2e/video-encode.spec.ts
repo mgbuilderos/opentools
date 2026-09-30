@@ -29,6 +29,23 @@ async function uploadFile(page: Page, filename: string) {
 }
 
 test.describe('Video Suite — WebCodecs Re-encoding Cluster', () => {
+  /**
+   * These pages hand the engine a `ByteSource` and never buffer the film, so
+   * the ceiling they quote is about browser file handling rather than memory.
+   * The sentence is generated from the same declaration that enforces it,
+   * which is what stops the copy drifting away from the number again.
+   */
+  test('states the ceiling it enforces, and that the file is not held whole', async ({
+    page,
+  }) => {
+    await page.goto('/video/compress');
+    await expect(
+      page.getByText(
+        'Up to 2.0 GB per file, because that is as far as browser file handling reaches. The file is read in slices, never held in memory whole.',
+      ),
+    ).toBeVisible();
+  });
+
   test('compress: reduces video size with WebCodecs hardware re-encoding or informs support', async ({
     page,
   }) => {
@@ -48,9 +65,7 @@ test.describe('Video Suite — WebCodecs Re-encoding Cluster', () => {
     );
 
     if (hasWebCodecs) {
-      await expect(
-        page.getByText(/Re-encoding Disclosure/i),
-      ).toBeVisible();
+      await expect(page.getByText(/Re-encoding Disclosure/i)).toBeVisible();
 
       const compressBtn = page.getByRole('button', { name: 'Compress Video' });
       await expect(compressBtn).toBeVisible();
@@ -101,9 +116,7 @@ test.describe('Video Suite — WebCodecs Re-encoding Cluster', () => {
     );
 
     if (hasWebCodecs) {
-      await expect(
-        page.getByText(/Re-encoding Disclosure/i),
-      ).toBeVisible();
+      await expect(page.getByText(/Re-encoding Disclosure/i)).toBeVisible();
 
       const resizeBtn = page.getByRole('button', { name: 'Resize Video' });
       await expect(resizeBtn).toBeVisible();
@@ -122,7 +135,10 @@ test.describe('Video Suite — WebCodecs Re-encoding Cluster', () => {
       const parsed = readMp4(resizedBytes);
       const videoTrack = parsed.tracks.find((t) => t.kind === 'video');
       expect(videoTrack).toBeDefined();
-      if (typeof videoTrack?.width === 'number' && typeof videoTrack?.height === 'number') {
+      if (
+        typeof videoTrack?.width === 'number' &&
+        typeof videoTrack?.height === 'number'
+      ) {
         expect(videoTrack.width % 2).toBe(0);
         expect(videoTrack.height % 2).toBe(0);
       }
@@ -151,9 +167,7 @@ test.describe('Video Suite — WebCodecs Re-encoding Cluster', () => {
     );
 
     if (hasWebCodecs) {
-      await expect(
-        page.getByText(/Re-encoding Disclosure/i),
-      ).toBeVisible();
+      await expect(page.getByText(/Re-encoding Disclosure/i)).toBeVisible();
 
       await page.getByRole('button', { name: '1:1 Square' }).click();
 
@@ -197,7 +211,9 @@ test.describe('Video Suite — WebCodecs Re-encoding Cluster', () => {
     });
 
     await uploadFile(page, TONE_MP4);
-    await expect(page.getByText('tone-video.mp4')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('tone-video.mp4')).toBeVisible({
+      timeout: 15000,
+    });
     const hasWebCodecs = await page.evaluate(
       () =>
         typeof window.VideoEncoder !== 'undefined' &&
