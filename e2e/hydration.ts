@@ -177,6 +177,75 @@ export async function typeAndRun(
 }
 
 /**
+ * Chooses an operation on a workbench shell and waits until React owns it.
+ *
+ * The auto-running workbenches — `/subtitles/workbench`, `/text/workbench`,
+ * `/math/workbench`, `/date/workbench` and the rest of
+ * `components/schema-workbench-tool.tsx`'s workbench routes — have
+ * no run button to wait on. They debounce their own run 250ms after the last
+ * change, so `waitForHydration` and `typeAndRun` above have nothing to watch.
+ * What every one of them does have is a prerendered
+ * `<select value={operation.id}>` that React controls.
+ *
+ * ## The race
+ *
+ * Measured on `/subtitles/workbench` with the page's own JS delayed 1.5s: a
+ * `selectOption` issued before React attaches sets the node to the chosen
+ * operation, and React writes the default straight back over it on hydrating —
+ * `subtitle-to-vtt` in, `subtitle-to-srt` out. The choice is not merely
+ * ignored, it is undone, and nothing says so. The test then fills in its input,
+ * the shell runs the *default* operation over it, and the failure surfaces much
+ * further down as a result in the wrong format. That is why this read for weeks
+ * as a product bug in the subtitle converter.
+ *
+ * The shell's own recovery cannot help here. The effect that re-applies a
+ * selection reads `?tool=` from the address bar, and a `selectOption` React
+ * never heard writes nothing there — so the one mechanism built to converge
+ * this is never engaged.
+ *
+ * ## What proves React took it
+ *
+ * That same `?tool=`. `selectOperation` sets it with `history.replaceState`,
+ * and the only path to that line is React's own `onChange`. The query appearing
+ * is therefore proof the event was *handled*, not merely dispatched — the
+ * property `networkidle` could never give. It is also a latch: once the
+ * operation is named in the URL, the shell's effect converges the selection
+ * back to it if anything later disagrees, which is what makes the subsequent
+ * `fill` safe without a second wait.
+ *
+ * ## Not for the per-tool pages
+ *
+ * Only the workbench routes, where the dropdown changes the operation in
+ * place. The same component also renders one operation per page under
+ * `app/<category>/[tool]/`, and there `selectOperation` calls
+ * `window.location.assign` instead of touching `?tool=` — so this would wait
+ * out its full timeout. It fails loudly rather than silently, but use a
+ * navigation there, not this.
+ *
+ * ## Why there is no clear here, unlike the text case
+ *
+ * Measured, not assumed. The same-value short circuit that deadlocks a re-typed
+ * text field cannot arise: React has already reset the node to its own state
+ * by the time a retry runs, so the next `selectOption` carries a genuinely new
+ * value and is announced. Adding a select-away-and-back step would be dead
+ * code defending against a case this component cannot reach.
+ */
+export async function selectOperationUntilApplied(
+  page: Page,
+  select: Locator,
+  operationId: string,
+): Promise<void> {
+  const named = new RegExp(
+    `[?&]tool=${operationId.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')}(?:&|$)`,
+    'u',
+  );
+  await expect(async () => {
+    await select.selectOption(operationId);
+    await expect(page).toHaveURL(named, { timeout: PROBE_TIMEOUT });
+  }).toPass({ timeout: HYDRATION_TIMEOUT });
+}
+
+/**
  * The same wait for a page whose readiness shows on a control that takes no
  * typing — a converter that enables its button once a format is chosen, say.
  *

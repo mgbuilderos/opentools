@@ -3,6 +3,25 @@ import { readFile } from 'node:fs/promises';
 import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { parseSubtitles } from '../lib/tools/subtitles/core';
+import { selectOperationUntilApplied } from './hydration';
+
+/**
+ * A line that appears in this file's input and nowhere else.
+ *
+ * The workbench opens with its own sample already in the box and runs it 250ms
+ * later, and `SAMPLE_SRT` in `lib/tools/subtitle-workbench.ts` carries the
+ * *same three timings* as the SRT below — 1.000→3.400, 3.600→7.000,
+ * 7.200→10.500 — with different dialogue. So every wait here that named only a
+ * timestamp was already satisfied by the sample's result before this test's
+ * input had been read at all, and the assertions that followed then ran
+ * against three cues that happened to have the right shape: `toHaveLength(3)`
+ * and a dotted timestamp both pass on the sample. Two of these tests could
+ * therefore go green without their own input ever reaching the tool.
+ *
+ * Waiting on a line of dialogue instead closes that, because dialogue is the
+ * one part of the fixture the sample does not share.
+ */
+const OURS = 'First line.';
 
 const SRT = [
   '1',
@@ -19,11 +38,23 @@ const SRT = [
   '',
 ].join('\n');
 
-async function openTool(page: Page, operation?: string) {
+/**
+ * Opens the workbench on `operation`, and does not return until React has it.
+ *
+ * The plain `selectOption` this used to do was undone: the page is prerendered,
+ * so the `<select>` exists before React attaches, and React writes the default
+ * operation back over any choice made in that window. See
+ * `selectOperationUntilApplied` in `./hydration` for the measurement. It also
+ * doubles as this file's hydration gate — once the shell has handled a change
+ * event, the `fill`s below reach React too.
+ */
+async function openTool(page: Page, operation: string) {
   await page.goto('/subtitles/workbench');
-  if (operation) {
-    await page.getByLabel('Subtitle tool').selectOption(operation);
-  }
+  await selectOperationUntilApplied(
+    page,
+    page.getByLabel('Subtitle tool'),
+    operation,
+  );
 }
 
 async function pasteSubtitles(page: Page, text: string) {
@@ -38,9 +69,22 @@ function outputPanel(page: Page) {
   return page.locator('section[aria-live="polite"] pre');
 }
 
-async function outputContaining(page: Page, marker: string | RegExp) {
+/**
+ * `ours` is the part only this test's input can produce and is asserted first,
+ * so a result made from the workbench's own sample can never satisfy the wait.
+ * `proves` is the thing the test is actually about — the format, the new
+ * timing — and is checked once the panel is known to be showing our own work.
+ */
+async function outputContaining(
+  page: Page,
+  ours: string | RegExp,
+  proves?: string | RegExp,
+) {
   const panel = outputPanel(page);
-  await expect(panel).toContainText(marker, { timeout: 15_000 });
+  await expect(panel).toContainText(ours, { timeout: 15_000 });
+  if (proves !== undefined) {
+    await expect(panel).toContainText(proves, { timeout: 15_000 });
+  }
   return (await panel.innerText()).trim();
 }
 
@@ -59,6 +103,7 @@ test.describe('Subtitle workbench', () => {
     await pasteSubtitles(page, SRT);
     const output = await outputContaining(
       page,
+      OURS,
       '00:00:01.000 --> 00:00:03.400',
     );
 
@@ -81,6 +126,7 @@ test.describe('Subtitle workbench', () => {
     await page.getByLabel(/^Shift by/u).fill('2.5');
     const output = await outputContaining(
       page,
+      OURS,
       '00:00:03,500 --> 00:00:05,900',
     );
 
@@ -127,7 +173,7 @@ test.describe('Subtitle workbench', () => {
       .getByLabel('True time of the LAST subtitle')
       .fill('00:00:11,000');
 
-    const output = await outputContaining(page, '00:00:02,000 -->');
+    const output = await outputContaining(page, OURS, '00:00:02,000 -->');
     const cues = parseSubtitles(output).cues;
     expect(cues[0].startMs).toBe(2000);
     expect(cues[cues.length - 1].startMs).toBe(11_000);
@@ -139,7 +185,7 @@ test.describe('Subtitle workbench', () => {
     await openTool(page, 'subtitle-shift');
     await pasteSubtitles(page, SRT);
     await page.getByLabel('Save the result as').selectOption('vtt');
-    await outputContaining(page, 'WEBVTT');
+    await outputContaining(page, OURS, 'WEBVTT');
 
     // The button must not promise .srt and then hand over WebVTT.
     const save = page.getByLabel('Download result as .vtt');
@@ -231,7 +277,7 @@ test.describe('Subtitle workbench', () => {
     });
 
     await pasteSubtitles(page, SRT);
-    await outputContaining(page, 'WEBVTT');
+    await outputContaining(page, OURS, 'WEBVTT');
     expect(offOrigin).toEqual([]);
   });
 });
