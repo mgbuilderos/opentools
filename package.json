@@ -82,5 +82,8 @@
     "vitest": "4.1.11",
     "wrangler": "4.133.0"
   },
-  "type": "module"
+  "type": "module",
+  "overrides": {
+    "undici": "7.29.1"
+  }
 }

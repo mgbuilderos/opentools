@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:16934c69-d7f4-4b0a-9e95-5ed2632f1da6",
+  "serialNumber": "urn:uuid:a89ef1d7-3a60-4781-9287-b490d336edf9",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-24T11:15:12.929Z",
+    "timestamp": "2026-09-30T14:10:34.884Z",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -21,7 +21,7 @@
     "component": {
       "bom-ref": "local-tools-canary@0.1.0",
       "type": "library",
-      "name": "claude-heic",
+      "name": "opentools",
       "version": "0.1.0",
       "scope": "required",
       "purl": "pkg:npm/local-tools-canary@0.1.0",
@@ -12560,12 +12560,12 @@
       ]
     },
     {
-      "bom-ref": "undici@7.29.0",
+      "bom-ref": "undici@7.29.1",
       "type": "library",
       "name": "undici",
-      "version": "7.29.0",
+      "version": "7.29.1",
       "scope": "optional",
-      "purl": "pkg:npm/undici@7.29.0",
+      "purl": "pkg:npm/undici@7.29.1",
       "properties": [
         {
           "name": "cdx:npm:package:development",
@@ -12575,13 +12575,13 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/undici/-/undici-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/undici/-/undici-7.29.1.tgz"
         }
       ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "203c5f95e2e699b4ac91f5925004e23759df9f6ac3baf9cc3aa6f909647dda221fa2303451dfae94e000110e7b2cfafdad69acade5327f9970c9aa3eec634d57"
+          "content": "45838d5b631e69f81896454e2982a403f020ec1997aa021609af2dd66d09731ad083da48f6512a46100eaee38109b02884e6bf824085fa23e2f61ae0bd3ceee9"
         }
       ],
       "licenses": [
@@ -15677,7 +15677,7 @@
       "dependsOn": [
         "@cspotcode/source-map-support@0.8.1",
         "sharp@0.35.4",
-        "undici@7.29.0",
+        "undici@7.29.1",
         "workerd@1.20260916.1",
         "ws@8.21.0",
         "youch@4.1.0-beta.10"
@@ -16227,7 +16227,7 @@
       "dependsOn": []
     },
     {
-      "ref": "undici@7.29.0",
+      "ref": "undici@7.29.1",
       "dependsOn": []
     },
     {

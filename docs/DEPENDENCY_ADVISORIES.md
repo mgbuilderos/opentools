@@ -58,33 +58,108 @@ advisory was published. Re-running a job could not clear it. The gate was
 reporting the advisory calendar rather than the change under test, and it was
 doing so on the one command a release has to pass.
 
-## Why the toolchain was not simply upgraded instead
+## Why the whole toolchain was not upgraded instead
 
-Upgrading was the other defensible option and it was rejected on measurement.
+Upgrading the plugin was the other defensible option and it was rejected on
+measurement.
 
 `@cloudflare/vite-plugin@1.62.2` is the current release and the version
 `npm audit fix --force` proposes. It brings:
 
-|                           | Now                | After                     |
-| ------------------------- | ------------------ | ------------------------- |
-| `@cloudflare/vite-plugin` | 1.54.11            | 1.62.2 (8 minor versions) |
-| `wrangler`                | 4.133.0            | 4.144.0                   |
-| `miniflare`               | 5.20260916.0-alpha | 5.20260926.1-alpha        |
-| `workerd`                 | 1.20260916.1       | 1.20260926.1              |
-| `undici`                  | 7.29.0             | **7.29.1**                |
+|                             | Now                | After                     |
+| --------------------------- | ------------------ | ------------------------- |
+| `@cloudflare/vite-plugin`   | 1.54.11            | 1.62.2 (8 minor versions) |
+| `wrangler`                  | 4.133.0            | 4.144.0                   |
+| `@cloudflare/workers-types` | 5.20260917.1       | 5.20260930.2 (forced)     |
+| `miniflare`                 | 5.20260916.0-alpha | 5.20260926.1-alpha        |
+| `workerd`                   | 1.20260916.1       | 1.20260926.1              |
+| `undici`                    | 7.29.0             | **7.29.1**                |
 
-The last row is the reason. `miniflare` exact-pins `undici`, and the new pin is
-**one patch above the vulnerable ceiling**, on the 7.x line that has already
-taken ten advisories. The eleventh re-blocks every lane, and clearing it would
-again wait on Cloudflare's alpha release cadence rather than on anything this
-repository controls.
+Two rows are the reason. The last one: `miniflare` exact-pins `undici`, and the
+new pin is **one patch above the vulnerable ceiling**, on the 7.x line that has
+already taken ten advisories — `undici@7.30.0` was published before this was
+written, so the pin is already behind. And the `workers-types` row is not
+optional: `wrangler@4.144.0` declares a peer range that the pinned
+`5.20260917.1` does not satisfy, so the install fails outright without it.
 
-So the upgrade buys an unknown and probably short amount of time, and it pays
-for it by moving `workerd` — the runtime that executes the Worker — and eight
-minor versions of the plugin that produces the deployed bundle. Changing
-production bytes to reset a clock is the worse trade. The upgrade remains
-available on its own merits, as a toolchain decision made deliberately rather
-than one forced by a red gate on an unrelated branch.
+So the upgrade moves `workerd` — the runtime that executes the Worker — plus
+eight minor versions of the plugin that produces the deployed bundle, and 110
+lines of lockfile, to reach an `undici` that is one patch from the next
+advisory.
+
+## What was done instead: override the transitive pin
+
+The advisory is a single transitive package, so it was moved on its own:
+
+```json
+"overrides": {
+  "undici": "7.29.1"
+}
+```
+
+That reaches **exactly the `undici` version the full upgrade would have
+reached**, so it buys the identical security outcome, and it moves nothing else:
+
+| Package                     | Before             | After               |
+| --------------------------- | ------------------ | ------------------- |
+| `@cloudflare/vite-plugin`   | 1.54.11            | unchanged           |
+| `wrangler`                  | 4.133.0            | unchanged           |
+| `@cloudflare/workers-types` | 5.20260917.1       | unchanged           |
+| `miniflare`                 | 5.20260916.0-alpha | unchanged           |
+| `workerd`                   | 1.20260916.1       | unchanged           |
+| `undici`                    | 7.29.0             | 7.29.1 (overridden) |
+
+Lockfile churn is **6 lines** against the upgrade's 110. `7.29.1` is not an
+arbitrary choice: it is the version Cloudflare's own newer `miniflare`
+exact-pins, so the pairing is the one upstream ships.
+
+Both release gates now exit 0, and the report-only gate prints
+`nothing to report` rather than a high advisory — so the narrowing from the
+previous section is no longer doing any work for this advisory. It stays
+because the reasoning for it stands on its own.
+
+**What it gives up.** `overrides` applies tree-wide, not just under
+`miniflare`. If `undici` ever enters the shipped graph, this pin silently
+applies there too and holds it at a version chosen for a build tool. The pin
+should be removed, not re-aimed, once `@cloudflare/vite-plugin` is upgraded for
+its own reasons.
+
+## Diffing `dist/` will mislead you: the `catalog` ↔ `app-shell` hash cycle
+
+Reviewing a dependency change by diffing built output does not work in this
+repository, and the failure mode is loud enough to look like a real finding.
+
+Changing only the `undici` pin makes **111 of 257** client chunks come out with
+different names and different bytes. That number is not the change. `catalog`
+imports `app-shell`, and `app-shell` lists `catalog` in its
+`__vite__mapDeps` array, so each one's content hash depends on the other's
+filename. The pair has more than one self-consistent solution, and a
+perturbation lands it on a different one, which then cascades to every chunk
+that references either.
+
+Measured on the 1 MB `catalog` chunk between two builds: **8 differing bytes
+out of 1,004,022**, all of them inside the embedded `app-shell-<hash>.js`
+filename.
+
+Normalise the embedded hashes away — rewrite every `-<8 chars>.js` to a
+placeholder in both filenames and file bodies — and the picture is flat:
+
+| Compared                        | Chunks | Byte-identical | Differing |
+| ------------------------------- | ------ | -------------- | --------- |
+| Two builds of the **same** tree | 239    | 236            | 3         |
+| `main` vs the `undici` override | 239    | 236            | 3         |
+
+The same three chunks (`pdf`, `vinext`, `qr-barcode`) differ in both rows, so
+they are the build's own noise floor, not the change's doing. **The override
+alters no shipped code.**
+
+Related and not root-caused: `main`'s build id is stable at
+`77de51d24b2771ae` across six builds (warm and after `rm -rf dist`), while any
+lockfile change produces a fresh id on every build. Why an unmodified tree
+settles on one fixed point and a modified one does not is unexplained. It does
+not affect what ships — the table above is the same either way — but it does
+mean the build is not byte-reproducible across dependency changes, which is
+worth its own look for a site that invites people to rebuild and compare.
 
 ## What this gives up
 
