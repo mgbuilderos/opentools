@@ -5,6 +5,7 @@ import {
   conversionUnitAliases,
 } from './conversion-aliases';
 import { CONVERSION_PAIRS, conversionPairById } from './conversion-pairs';
+import { publishedUnitPairs } from './unit-pair-consolidation';
 import { siteRedirect } from './site-redirects';
 
 describe('abbreviated conversion slugs', () => {
@@ -37,11 +38,22 @@ describe('abbreviated conversion slugs', () => {
   it('is a permanent redirect, not a second page', () => {
     // A page would be the same converter answering the same question at a
     // second address, which splits whatever either had earned.
+    expect(conversionAliasRedirect('/convert/kg-to-lbs')).toBe(
+      '/convert/kilograms-to-pounds',
+    );
+    expect(conversionPairById('kg-to-lbs')).toBeUndefined();
+
+    /*
+     * `kilograms-to-pounds` is itself folded (unit-pair-consolidation.ts), so
+     * the served redirect resolves both steps at once and lands on the
+     * converter. One hop, not two: site-redirects.ts promises a visitor never
+     * follows a chain, and an alias onto a folded page is where that promise
+     * would break first.
+     */
     expect(siteRedirect('/convert/kg-to-lbs')).toEqual({
-      location: '/convert/kilograms-to-pounds',
+      location: '/math/mass-converter',
       status: 301,
     });
-    expect(conversionPairById('kg-to-lbs')).toBeUndefined();
   });
 
   it('leaves a real page alone', () => {
@@ -50,6 +62,11 @@ describe('abbreviated conversion slugs', () => {
         conversionAliasRedirect(`/convert/${pair.id}`),
         pair.id,
       ).toBeNull();
+    }
+    // A pair that still has a page is served, not redirected. Checked against
+    // the published set rather than the whole registry, because the folded
+    // ones are supposed to redirect.
+    for (const pair of publishedUnitPairs()) {
       expect(siteRedirect(`/convert/${pair.id}`), pair.id).toBeNull();
     }
   });

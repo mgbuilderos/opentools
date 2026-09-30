@@ -186,7 +186,13 @@ function auditRoutes(): {
 
 describe('indexability sweep across all LIVE_TOOL_ROUTES', () => {
   it('covers all live tool routes', () => {
-    expect(LIVE_TOOL_ROUTES.length).toBeGreaterThanOrEqual(1325);
+    /*
+     * 1,362 before the 2026-09-28 unit-pair fold, 861 after it: 501 unit pages
+     * became 301s to their converter (unit-pair-consolidation-config.ts). The
+     * floor is lowered to the number the fold leaves, not removed — its job is
+     * still to fail when routes go missing for a reason nobody intended.
+     */
+    expect(LIVE_TOOL_ROUTES.length).toBeGreaterThanOrEqual(861);
   });
 
   it('verifies dist/client exists', () => {
