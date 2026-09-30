@@ -15,10 +15,18 @@ import { LIVE_TOOL_ROUTES } from './live-tool-routes';
  * by however many of those exist, silently, forever.
  *
  * So the population is measured rather than asserted. **Every route in
- * `LIVE_TOOL_ROUTES`**, not a sample: 1,362 of them at the time of writing,
- * each resolved to the page that actually serves it — including the dynamic
- * `[tool]` and `[pair]` segments, which is where 631 of them live and where a
- * first pass at this audit wrongly reported them as uncovered.
+ * `LIVE_TOOL_ROUTES`**, not a sample, each resolved to the page that actually
+ * serves it — including the dynamic `[tool]` and `[pair]` segments, where a
+ * first pass at this audit wrongly reported 631 routes as uncovered because it
+ * only followed `[tool]`.
+ *
+ * THE COUNT MOVES, SO DO NOT PIN IT. It was 1,362 when this was written and
+ * 862 a day later: the unit-pair fold (PR #82) turned 501 `/convert` pages
+ * into redirects in one commit. A test that asserted the exact figure, or a
+ * floor just beneath it, would have failed on a change that is none of its
+ * business. The floor below exists for one reason only — an empty or truncated
+ * route list would make every assertion here vacuously true — so it is set far
+ * enough down to survive ordinary catalogue churn and still catch that.
  *
  * WHAT THIS PROVES AND WHAT IT DOES NOT. It proves the boundary is *reachable*
  * from every live route's component graph. It does not prove each component
@@ -112,7 +120,12 @@ describe('every live tool can report that it finished', () => {
     // A guard against the guard: an empty or truncated route list would make
     // every assertion below vacuously true. This is the shape of failure that
     // let a hollow `catalog.test.ts` pass on 2026-09-20.
-    expect(population.length).toBeGreaterThan(1000);
+    //
+    // 500, not 1,000, and not the live figure. See the note above: the
+    // catalogue legitimately lost 501 routes in a single commit, and a floor
+    // set just under yesterday's count is a tripwire for other people's work
+    // rather than a guard on this one.
+    expect(population.length).toBeGreaterThan(500);
   });
 
   it('resolves every live route to a page that actually exists', () => {
