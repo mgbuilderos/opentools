@@ -190,11 +190,19 @@ export function FileWorkbenchTool({
       const completedIn = Date.now() - started;
       const inputBytes = files.reduce((sum, file) => sum + file.size, 0);
       setResult(nextResult);
-      setDuration(completedIn);
+      const firstDownload = nextResult.downloads[0];
+      const outputBlob = firstDownload
+        ? new Blob([firstDownload.bytes as unknown as BlobPart], {
+            type: firstDownload.type || 'application/octet-stream',
+          })
+        : undefined;
       announceCompletion({
         operation: operation.name,
         durationMs: completedIn,
         summary: nextResult.summary,
+        outputBlob,
+        outputFileName: firstDownload?.name,
+        outputMimeType: firstDownload?.type,
         metrics: [
           { label: 'Files', value: String(files.length) },
           { label: 'Input', value: fileSize(inputBytes) },

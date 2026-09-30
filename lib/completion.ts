@@ -36,6 +36,9 @@ export interface CompletionDetail {
   summary?: string;
   metrics?: CompletionMetric[];
   recipe?: CompletionRecipe;
+  outputBlob?: Blob;
+  outputFileName?: string;
+  outputMimeType?: string;
 }
 
 function boundedDisplayText(value: string, maximum: number) {
@@ -162,6 +165,13 @@ export function announceCompletion(detail: CompletionDetail) {
           : undefined,
         metrics: metrics?.length ? metrics : undefined,
         recipe: normaliseRecipe(detail.recipe),
+        outputBlob: detail.outputBlob,
+        outputFileName: detail.outputFileName
+          ? boundedDisplayText(detail.outputFileName, 120) || undefined
+          : undefined,
+        outputMimeType: detail.outputMimeType
+          ? boundedDisplayText(detail.outputMimeType, 80) || undefined
+          : undefined,
       },
     }),
   );

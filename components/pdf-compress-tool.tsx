@@ -523,6 +523,11 @@ export function PdfCompressTool({
               },
             },
             durationMs,
+            outputBlob: blob,
+            outputFileName: source?.file?.name
+              ? `compressed-${source.file.name}`
+              : 'compressed.pdf',
+            outputMimeType: 'application/pdf',
             summary: fillMessage(
               message.pageCount === 1
                 ? t.compressSummaryOne

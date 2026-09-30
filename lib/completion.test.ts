@@ -7,6 +7,7 @@ import {
   COMPLETION_EVENT,
   announceCompletion,
   formatCompletionDuration,
+  type CompletionDetail,
 } from './completion';
 import { USAGE_COUNT_KEY } from './milestone';
 
@@ -282,4 +283,36 @@ describe('every tool that announces a completion can actually offer support', ()
       ).toContain('data-receipt-download');
     },
   );
+
+  it('forwards outputBlob and file metadata in completion detail', () => {
+    let capturedDetail: CompletionDetail | null = null;
+    vi.stubGlobal('window', {
+      dispatchEvent: vi.fn((event: CustomEvent<CompletionDetail>) => {
+        capturedDetail = event.detail;
+      }),
+    });
+    vi.stubGlobal('localStorage', {
+      getItem: () => null,
+      setItem: () => {},
+    });
+
+    const testBlob = new Blob(['test pdf content'], {
+      type: 'application/pdf',
+    });
+    announceCompletion({
+      operation: 'PDF Compress',
+      durationMs: 120,
+      outputBlob: testBlob,
+      outputFileName: 'compressed.pdf',
+      outputMimeType: 'application/pdf',
+      metrics: [{ label: 'Saved', value: '45%' }],
+    });
+
+    const detail = capturedDetail as unknown as CompletionDetail;
+    expect(detail.outputBlob).toBe(testBlob);
+    expect(detail.outputFileName).toBe('compressed.pdf');
+    expect(detail.outputMimeType).toBe('application/pdf');
+
+    vi.unstubAllGlobals();
+  });
 });

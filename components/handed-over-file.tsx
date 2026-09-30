@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   fillFileInput,
@@ -31,6 +31,18 @@ import { HANDOFF_FLAG } from '@/lib/share-routing';
  * exactly as it was.
  */
 export function HandedOverFile() {
+  const [oversizedNotice, setOversizedNotice] = useState(() => {
+    try {
+      return (
+        typeof window !== 'undefined' &&
+        new URLSearchParams(window.location.search).get('handoff') ===
+          'oversized'
+      );
+    } catch {
+      return false;
+    }
+  });
+
   useEffect(() => {
     let cancelled = false;
 
@@ -72,6 +84,31 @@ export function HandedOverFile() {
       cancelled = true;
     };
   }, []);
+
+  if (oversizedNotice) {
+    return (
+      <output
+        aria-live="polite"
+        data-testid="oversized-notice"
+        className="fixed bottom-4 left-4 z-[90] block max-w-sm rounded-lg border border-border bg-card p-3 text-xs text-foreground shadow-lg"
+      >
+        <div className="flex items-start justify-between gap-2">
+          <span>
+            This file is too large to carry over automatically in Safari. Please
+            select the file again to continue.
+          </span>
+          <button
+            type="button"
+            onClick={() => setOversizedNotice(false)}
+            aria-label="Dismiss notice"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            ×
+          </button>
+        </div>
+      </output>
+    );
+  }
 
   return null;
 }

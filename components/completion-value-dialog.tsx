@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ArrowRight,
   Check,
   Clock3,
   HeartHandshake,
@@ -16,6 +17,11 @@ import {
   formatCompletionDuration,
   type CompletionDetail,
 } from '@/lib/completion';
+import { offerFile, SESSION_FALLBACK_MAX_BYTES } from '@/lib/file-handoff';
+import {
+  getNextOperations,
+  type NextOperationOption,
+} from '@/lib/tools/next-operations';
 import { loadsLocalModel } from '@/lib/security/content-security-policy';
 import {
   placeCompletionCard,
@@ -313,6 +319,31 @@ export function CompletionValueDialog() {
   // see `CompletionRecipe`. An unrecognised id simply renders no share.
   const shareRecipe = receipt.recipe ? findRecipe(receipt.recipe.id) : null;
 
+  const nextOps = receipt?.outputBlob
+    ? getNextOperations({
+        mimeType: receipt.outputMimeType,
+        fileName: receipt.outputFileName,
+        currentRoute:
+          typeof window !== 'undefined'
+            ? window.location.pathname + window.location.search
+            : undefined,
+      })
+    : [];
+
+  const handleNextOp = async (op: NextOperationOption) => {
+    if (!receipt?.outputBlob) return;
+    const fileName = receipt.outputFileName || 'file';
+    const fileType = receipt.outputMimeType || 'application/octet-stream';
+    const file = new File([receipt.outputBlob], fileName, { type: fileType });
+    const stored = await offerFile(file);
+    let destination = op.href;
+    if (!stored && file.size > SESSION_FALLBACK_MAX_BYTES) {
+      const separator = destination.includes('?') ? '&' : '?';
+      destination = `${destination}${separator}handoff=oversized`;
+    }
+    window.location.assign(destination);
+  };
+
   return (
     <dialog
       open
@@ -475,6 +506,33 @@ export function CompletionValueDialog() {
           >
             🖼️ Save a shareable card
           </a>
+        )}
+
+        {nextOps.length > 0 && (
+          <div
+            className="mb-4 rounded-xl border bg-muted/40 p-3.5"
+            data-testid="next-operations"
+          >
+            <p className="text-xs font-semibold leading-relaxed">
+              Next step with this file
+            </p>
+            <div className="mt-2.5 flex flex-col gap-1.5">
+              {nextOps.map((op) => (
+                <button
+                  key={op.href}
+                  type="button"
+                  onClick={() => void handleNextOp(op)}
+                  className="focus-ring flex items-center justify-between rounded-lg border border-border/60 bg-card px-3 py-2 text-left text-xs font-medium text-foreground transition-all duration-[var(--motion-standard)] ease-[var(--motion-ease)] hover:-translate-y-0.5 hover:bg-muted hover:border-foreground/25 active:translate-y-0 active:scale-[0.99]"
+                >
+                  <span className="truncate">{op.label}</span>
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="ml-2 size-3.5 shrink-0 text-muted-foreground"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         <p className="text-xs leading-5 text-muted-foreground">
