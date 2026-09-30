@@ -105,6 +105,23 @@ A toolchain advisory therefore needs a human to act on it. It appears on every
 `qc:release`, under a line reading `FOUND ADVISORIES … Not a release blocker;
 read the report above`.
 
+## The one line `.github/SECURITY.md` is missing
+
+That file is owned by another lane under §2 of `AGENT_BOARD.md`, so this change
+did not edit it, and a request was filed on the board instead. The request
+lives in an uncommitted coordination file in a repository with no remote, so
+the wording is recorded here as well — a reader of the policy should not have
+to grep `scripts/` to learn that one class of advisory no longer blocks.
+
+Proposed, after the `supply chain` bullet in the vulnerability-class list:
+
+> Advisories in build-time dependencies are reported by `qc:release` but do not
+> block a release; the reasoning and the evidence are in
+> `docs/DEPENDENCY_ADVISORIES.md`. Advisories in dependencies that ship to a
+> visitor do block.
+
+If that bullet is already there, this section has done its job and can go.
+
 ## How much the blocking gate stopped seeing
 
 Narrowing sounds broader than it is, so it was counted rather than described.
