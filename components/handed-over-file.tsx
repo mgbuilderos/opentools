@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   fillFileInput,
@@ -8,7 +8,11 @@ import {
   noteFileWaiting,
   takeOfferedFile,
 } from '@/lib/file-handoff';
-import { HANDOFF_FLAG } from '@/lib/share-routing';
+import {
+  HANDOFF_FLAG,
+  HANDOFF_UNAVAILABLE_FLAG,
+  HANDOFF_UNAVAILABLE_VALUE,
+} from '@/lib/share-routing';
 
 /**
  * Picks up a file handed over by the smart dropzone and drops it into this
@@ -31,6 +35,28 @@ import { HANDOFF_FLAG } from '@/lib/share-routing';
  * exactly as it was.
  */
 export function HandedOverFile() {
+  /**
+   * Whether this page was opened by a receipt whose file could not be carried.
+   *
+   * Read once, in the initialiser, so the notice is on screen in the first
+   * render rather than appearing a frame later beside a file input the person is
+   * already reaching for. The flag is set by `withHandoffUnavailable()` — see
+   * `lib/share-routing.ts` for why it is named for the effect and not a cause.
+   */
+  const [couldNotCarry, setCouldNotCarry] = useState(() => {
+    try {
+      return (
+        typeof window !== 'undefined' &&
+        new URLSearchParams(window.location.search).get(
+          HANDOFF_UNAVAILABLE_FLAG,
+        ) === HANDOFF_UNAVAILABLE_VALUE
+      );
+    } catch {
+      // An unparseable query is not a reason to render an alarm.
+      return false;
+    }
+  });
+
   useEffect(() => {
     let cancelled = false;
 
@@ -73,5 +99,53 @@ export function HandedOverFile() {
     };
   }, []);
 
-  return null;
+  /*
+    THE FILE DID NOT MAKE THE TRIP, SAID WHERE IT MATTERS.
+
+    Taken from `antigravity/depth-next-operation` (`9c348c0`), which had the
+    better half of this design: the person is told at the page they land on,
+    not on the receipt they are leaving. Two things are deliberately different.
+
+    THE COPY NAMES NO CAUSE. The original read "This file is too large to carry
+    over automatically in Safari." Neither half is knowable here. The refusal
+    can be size, WebKit declining IndexedDB, or a private window refusing both,
+    and the writer only learns that it failed — so a sentence naming size, or
+    naming Safari to someone in a private Chrome window, would be a claim the
+    site cannot support. It says what happened and what to do instead.
+
+    IT IS NOT KEYED ON SIZE. The marker is set whenever the handoff refused, for
+    any reason. Pairing it with a size test — as `!stored && size > cap` does —
+    leaves a storage refusal on a small file with no marker at all, which is the
+    silent empty page this notice exists to prevent.
+
+    Bottom-LEFT, while the completion card is bottom-right at `z-[80]`: they are
+    never on the same page, but a visitor who goes back would otherwise find one
+    under the other. `e2e/next-operation.spec.ts` holds that this notice leaves
+    the tool's own file input clickable at phone width, which is the failure
+    `e2e/completion-card.spec.ts` exists for.
+  */
+  if (!couldNotCarry) return null;
+
+  return (
+    <output
+      aria-live="polite"
+      data-testid="handoff-not-carried"
+      className="fixed bottom-4 left-4 z-[70] block max-w-sm rounded-lg border bg-card p-3 text-xs text-foreground shadow-[0_12px_48px_rgb(0_0_0/14%)]"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span className="leading-relaxed">
+          This browser could not carry your file over to this tool. Choose the
+          file you just saved to carry on — it never left your device.
+        </span>
+        <button
+          type="button"
+          onClick={() => setCouldNotCarry(false)}
+          aria-label="Dismiss notice"
+          className="text-muted-foreground hover:text-foreground"
+        >
+          ×
+        </button>
+      </div>
+    </output>
+  );
 }

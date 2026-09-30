@@ -60,6 +60,26 @@ async function receiptAfterCompressing(page: Page) {
   return card;
 }
 
+/**
+ * Take both handoff stores away, standing in for a browser that has: a private
+ * window, blocked site data, or WebKit on this origin. Only the handoff's own
+ * keys are refused, so everything else on the page behaves normally and the
+ * failure under test is the one being measured.
+ */
+async function refuseStorage(page: Page) {
+  await page.addInitScript(() => {
+    delete (window as { indexedDB?: IDBFactory }).indexedDB;
+    // Deliberately unbound: it is re-entered below with the storage object as
+    // its own receiver, which is the only way to keep every other key working.
+    // oxlint-disable-next-line typescript/unbound-method
+    const setItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key.startsWith('opentools-handoff')) throw new Error('blocked');
+      return setItem.call(this, key, value);
+    };
+  });
+}
+
 async function anyInputHasAFile(page: Page) {
   return page.evaluate(() =>
     [...document.querySelectorAll<HTMLInputElement>('input[type="file"]')].some(
@@ -128,48 +148,79 @@ test.describe('what to do next with the file that was just made', () => {
    * The branch neither engine reaches on its own, and the one mobile Safari
    * reaches in the field.
    *
-   * `lib/file-handoff.ts` records that WebKit refuses IndexedDB on this site and
-   * that its `sessionStorage` fallback is base64 and capped at
-   * `SESSION_FALLBACK_MAX_BYTES`, so a large output there cannot travel. Both
-   * stores are refused here rather than fixturing a file over the cap: the size
-   * is one way into this state and the visitor's experience of it is the same
-   * either way — and what must never happen is the tool opening empty with no
-   * explanation, which is the dead end this whole feature exists to remove.
+   * `lib/file-handoff.ts` records that WebKit will not open IndexedDB on this
+   * site and that its `sessionStorage` fallback is capped, so a large output
+   * there cannot travel; a private window can refuse both at any size. Both
+   * stores are refused here rather than fixturing a file over the cap, because
+   * the marker is deliberately NOT keyed on size — the visitor's experience is
+   * the same whatever the reason, and a storage refusal on a small file is
+   * precisely the case a size test would let arrive silent.
+   *
+   * The person is told at the page they land on, not on the card they are
+   * leaving. That half of the design is taken from `9c348c0`.
    */
-  test('says so when this browser will not carry the file, and still opens the tool', async ({
+  test('opens the tool and says so there when the file could not be carried', async ({
     page,
   }) => {
     test.setTimeout(240_000);
-    await page.addInitScript(() => {
-      // Removing a platform API on purpose, to stand in for a browser that has
-      // taken it away — a private window, or WebKit on this origin.
-      delete (window as { indexedDB?: IDBFactory }).indexedDB;
-      // Deliberately unbound: it is re-entered below with the storage object as
-      // its own receiver, which is the only way to keep every other key working.
-      // oxlint-disable-next-line typescript/unbound-method
-      const setItem = Storage.prototype.setItem;
-      // Only the handoff's own keys, so the rest of the page behaves normally
-      // and the failure under test is the one being measured.
-      Storage.prototype.setItem = function (key: string, value: string) {
-        if (key.startsWith('opentools-handoff')) throw new Error('blocked');
-        return setItem.call(this, key, value);
-      };
-    });
+    await refuseStorage(page);
 
     const card = await receiptAfterCompressing(page);
-    const next = card.getByRole('button', { name: 'Rotate PDF', exact: true });
-    await next.click();
+    await card.getByRole('button', { name: 'Rotate PDF', exact: true }).click();
 
-    await expect(card.getByText(/will not carry the file/u)).toBeVisible({
+    await page.waitForURL(/\/pdf\/page-tools/u, { timeout: 20_000 });
+    expect(new URL(page.url()).searchParams.get('handoff')).toBe('not-carried');
+    // The tool it was going to, not a consolation page — and the `tool` the
+    // receipt offered survived the extra parameter.
+    expect(new URL(page.url()).searchParams.get('tool')).toBe('rotate-pdf');
+
+    const notice = page.getByTestId('handoff-not-carried');
+    await expect(notice).toBeVisible({ timeout: 15_000 });
+    // No cause is claimed. The refusal here is storage being taken away, not
+    // size and not Safari, and the copy must not say otherwise.
+    await expect(notice).not.toContainText(/safari|too large|size/iu);
+
+    // And no file arrived, which is the state the notice is describing.
+    expect(await anyInputHasAFile(page)).toBe(false);
+  });
+
+  /**
+   * The notice is a fixed panel, and this repo already has a spec because a
+   * fixed panel landed on top of a download control once. Held at the width it
+   * happened at.
+   */
+  test('the notice leaves the tool usable at phone width', async ({ page }) => {
+    test.setTimeout(240_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await refuseStorage(page);
+
+    const card = await receiptAfterCompressing(page);
+    await card.getByRole('button', { name: 'Rotate PDF', exact: true }).click();
+    await page.waitForURL(/\/pdf\/page-tools/u, { timeout: 20_000 });
+    await expect(page.getByTestId('handoff-not-carried')).toBeVisible({
       timeout: 15_000,
     });
-    // Told, not moved: the person is still where their file is.
-    expect(new URL(page.url()).pathname).toBe('/pdf/compress');
 
-    // And pressing it again takes them to the tool anyway, rather than refusing
-    // twice. They have the saved file and now know to choose it.
-    await next.click();
-    await page.waitForURL(/\/pdf\/page-tools/u, { timeout: 20_000 });
+    // The control the notice tells them to use has to be reachable, which is
+    // the same question Playwright's actionability check asks.
+    const chooser = page.getByRole('button', { name: /choose a pdf/iu }).first();
+    await expect(chooser).toBeVisible();
+    await expect(chooser).toBeEnabled();
+    const covered = await page.evaluate(() => {
+      const control = document.querySelector<HTMLElement>(
+        'input[type="file"]',
+      )?.closest('label, div, form') as HTMLElement | null;
+      const panel = document.querySelector('[data-testid="handoff-not-carried"]');
+      if (!control || !panel) return false;
+      const box = control.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0) return false;
+      const hit = document.elementFromPoint(
+        box.left + box.width / 2,
+        box.top + box.height / 2,
+      );
+      return Boolean(hit && panel.contains(hit));
+    });
+    expect(covered).toBe(false);
   });
 
   /**

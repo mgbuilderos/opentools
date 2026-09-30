@@ -17,6 +17,7 @@ import {
   type CompletionDetail,
 } from '@/lib/completion';
 import { offerFile } from '@/lib/file-handoff';
+import { withHandoffUnavailable } from '@/lib/share-routing';
 import { nextOperations } from '@/lib/tools/next-operations';
 import { loadsLocalModel } from '@/lib/security/content-security-policy';
 import {
@@ -121,18 +122,6 @@ export function CompletionValueDialog() {
    * PDF it is not instant.
    */
   const [carrying, setCarrying] = useState<string | null>(null);
-  /**
-   * Set when the file could not be carried across the navigation at all.
-   *
-   * This is not a hypothetical branch. `lib/file-handoff.ts` records that
-   * WebKit refuses to open IndexedDB on this site, and its `sessionStorage`
-   * fallback is base64 and capped at `SESSION_FALLBACK_MAX_BYTES` — so on
-   * mobile Safari a large output genuinely cannot travel. The dead end that
-   * would create is the bug this whole feature exists to remove: a tool opening
-   * empty, with the file still sitting on the person's desk and no explanation.
-   * So it is said out loud, and the tool still opens if they want it.
-   */
-  const [carryFailed, setCarryFailed] = useState(false);
 
   const remember = (never = false) => {
     offeredThisPage.current = true;
@@ -373,12 +362,6 @@ export function CompletionValueDialog() {
   */
   const openWith = async (href: string) => {
     if (!produced) return;
-    if (carryFailed) {
-      // Already known not to travel. Take them to the tool anyway rather than
-      // refusing twice; the note above the buttons says what to expect.
-      window.location.assign(href);
-      return;
-    }
     setCarrying(href);
     let carried = false;
     try {
@@ -396,11 +379,20 @@ export function CompletionValueDialog() {
       carried = false;
     }
     setCarrying(null);
-    if (!carried) {
-      setCarryFailed(true);
-      return;
-    }
-    window.location.assign(href);
+    /*
+      The tool opens either way, and when the file did not travel it is told so
+      on arrival — see `components/handed-over-file.tsx`, and
+      `withHandoffUnavailable` for why the marker names no cause.
+
+      Opening it is the right half of the choice even on failure: the person has
+      the file saved, the tool is where they were going, and being told at the
+      empty input beats being told on the card they are leaving. The marker is
+      set on ANY refusal, never paired with a size test — a storage refusal on a
+      small file is exactly the case that would otherwise arrive silent.
+    */
+    window.location.assign(
+      carried ? href : withHandoffUnavailable(href, window.location.origin),
+    );
   };
 
   return (
@@ -512,9 +504,8 @@ export function CompletionValueDialog() {
               Next, without choosing the file again
             </p>
             <p className="mb-3 mt-1 text-xs leading-relaxed text-muted-foreground">
-              {carryFailed
-                ? 'This browser will not carry the file between pages, so the tool opens empty — choose the file you just saved.'
-                : 'Your finished file is handed straight to the next tool, still on this device.'}
+              Your finished file is handed straight to the next tool, still on
+              this device.
             </p>
             <div className="flex flex-wrap gap-2">
               {offers.map((offer) => (

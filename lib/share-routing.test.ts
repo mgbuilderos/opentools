@@ -3,11 +3,15 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import {
+  HANDOFF_FLAG,
   SHARE_KINDS,
   SHARE_ROUTES,
   shareDestinationFor,
   shareKindFor,
   withHandoffFlag,
+  HANDOFF_UNAVAILABLE_FLAG,
+  HANDOFF_UNAVAILABLE_VALUE,
+  withHandoffUnavailable,
 } from './share-routing';
 
 const projectRoot = path.resolve(import.meta.dirname, '..');
@@ -182,5 +186,63 @@ describe('the web app manifest', () => {
 
   it('points the share target at a page that exists', () => {
     expect(routeExists(manifest.share_target?.action ?? '')).toBe(true);
+  });
+});
+
+/**
+ * The marker a receipt sets when the file it produced could not be carried to
+ * the tool it is opening. See `withHandoffUnavailable` for why it is named for
+ * the effect rather than for a cause.
+ */
+describe('the marker for a file that did not make the trip', () => {
+  const ORIGIN = 'https://getopentools.com';
+
+  it('keeps the query the receipt offered, and adds the marker beside it', () => {
+    // Four of the six PDF actions are one path under different `tool` values,
+    // so losing that parameter would land the person on the wrong operation.
+    const marked = withHandoffUnavailable(
+      '/pdf/page-tools?tool=rotate-pdf',
+      ORIGIN,
+    );
+    const url = new URL(marked, ORIGIN);
+    expect(url.pathname).toBe('/pdf/page-tools');
+    expect(url.searchParams.get('tool')).toBe('rotate-pdf');
+    expect(url.searchParams.get(HANDOFF_UNAVAILABLE_FLAG)).toBe(
+      HANDOFF_UNAVAILABLE_VALUE,
+    );
+  });
+
+  it('adds the marker to a path with no query at all', () => {
+    const url = new URL(
+      withHandoffUnavailable('/image/background-remover', ORIGIN),
+      ORIGIN,
+    );
+    expect(url.pathname).toBe('/image/background-remover');
+    expect(url.searchParams.get(HANDOFF_UNAVAILABLE_FLAG)).toBe(
+      HANDOFF_UNAVAILABLE_VALUE,
+    );
+  });
+
+  it('returns a same-origin path and never an absolute URL', () => {
+    // The value is handed to `window.location.assign`, so an absolute URL here
+    // would be a way to send somebody off this origin from a receipt.
+    for (const destination of [
+      '/pdf/merge',
+      'https://example.com/evil',
+      '//example.com/evil',
+    ]) {
+      expect(withHandoffUnavailable(destination, ORIGIN).startsWith('/')).toBe(
+        true,
+      );
+      expect(withHandoffUnavailable(destination, ORIGIN)).not.toContain(
+        'example.com',
+      );
+    }
+  });
+
+  it('is not the same flag as the one that says a file IS waiting', () => {
+    // Both markers ride in the query string and one means the opposite of the
+    // other; `components/handed-over-file.tsx` reads both.
+    expect(HANDOFF_UNAVAILABLE_FLAG).not.toBe(HANDOFF_FLAG);
   });
 });
