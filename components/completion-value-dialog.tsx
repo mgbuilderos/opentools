@@ -17,6 +17,10 @@ import {
   type CompletionDetail,
 } from '@/lib/completion';
 import { loadsLocalModel } from '@/lib/security/content-security-policy';
+import {
+  placeCompletionCard,
+  type Placement,
+} from '@/lib/completion-card-placement';
 import { findRecipe } from '@/lib/tools/recipe-link';
 import {
   SHOW_UPI,
@@ -93,6 +97,13 @@ export function CompletionValueDialog() {
   const delayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [receipt, setReceipt] = useState<CompletionDetail | null>(null);
   const [proofUrl, setProofUrl] = useState<string>('');
+  /**
+   * Set only when a download control would otherwise be underneath the card.
+   * Left null in the ordinary case so the card keeps exactly the resting
+   * position and height its own classes give it. See
+   * `lib/completion-card-placement.ts` for the measurements behind this.
+   */
+  const [placement, setPlacement] = useState<Placement | null>(null);
   /**
    * Whether the UPI chips are offered instead of the coffee ones. Both
    * conditions have to hold: the visitor's own browser has to place them in
@@ -213,6 +224,71 @@ export function CompletionValueDialog() {
     return () => window.removeEventListener('keydown', escape);
   }, [receipt]);
 
+  /**
+   * Keep the card off the download controls.
+   *
+   * The card is fixed to the viewport and the controls scroll underneath it,
+   * so this is re-measured on scroll and on resize rather than once: a control
+   * that was clear of the card when it opened can be brought under it by the
+   * next flick of the wheel. `proofUrl` is a dependency because the share card
+   * arrives after the dialog does and makes it taller.
+   *
+   * `scrollHeight` is the height the card wants; the cap this returns is what
+   * it is allowed, and the card already scrolls internally past it.
+   */
+  useEffect(() => {
+    const card = receipt ? panel.current : null;
+    if (!card) {
+      // Deferred rather than called here: a synchronous setState in an effect
+      // body cascades renders, which the React compiler lint refuses — the
+      // same reason `proofUrl` is cleared in a teardown above.
+      const clear = requestAnimationFrame(() => setPlacement(null));
+      return () => cancelAnimationFrame(clear);
+    }
+
+    const measure = () => {
+      const controls = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-receipt-download]'),
+      )
+        .filter(
+          (control) => !control.matches(':disabled, [aria-disabled="true"]'),
+        )
+        .map((control) => control.getBoundingClientRect())
+        .filter((rect) => rect.width > 0 && rect.height > 0);
+
+      const next = placeCompletionCard(
+        card.getBoundingClientRect(),
+        card.scrollHeight,
+        controls,
+        window.innerHeight,
+      );
+      // Compared before storing: this runs on every scroll event, and a fresh
+      // object each time would re-render the card all the way down the page.
+      setPlacement((current) =>
+        current &&
+        current.bottom === next.bottom &&
+        current.maxHeight === next.maxHeight &&
+        current.lifted === next.lifted
+          ? current
+          : next,
+      );
+    };
+
+    // On the next frame, for the same reason as above, and because that is
+    // when the card has been laid out and there is something to measure.
+    const first = requestAnimationFrame(measure);
+    window.addEventListener('resize', measure, { passive: true });
+    window.addEventListener('scroll', measure, {
+      passive: true,
+      capture: true,
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure, { capture: true });
+    };
+  }, [receipt, proofUrl]);
+
   if (!receipt) return null;
 
   /*
@@ -244,6 +320,12 @@ export function CompletionValueDialog() {
       aria-modal="false"
       aria-labelledby="completion-title"
       aria-describedby="completion-description"
+      data-lifted={placement?.lifted ? 'true' : undefined}
+      style={
+        placement?.lifted
+          ? { bottom: placement.bottom, maxHeight: placement.maxHeight }
+          : undefined
+      }
       className="fixed bottom-4 left-auto right-4 top-auto z-[80] m-0 max-h-[calc(100dvh-6rem)] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-xl border bg-card p-0 text-foreground shadow-[0_12px_48px_rgb(0_0_0/14%)]"
     >
       <div className="p-5 sm:p-6">
