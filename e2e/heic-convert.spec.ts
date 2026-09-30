@@ -34,9 +34,11 @@ const fixturePath = path.join(
 
 /** JPEG starts FF D8 FF; PNG starts with the eight-byte signature. */
 function formatOf(bytes: Buffer) {
-  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'jpeg';
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff)
+    return 'jpeg';
   const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
-  if (pngSignature.every((value, index) => bytes[index] === value)) return 'png';
+  if (pngSignature.every((value, index) => bytes[index] === value))
+    return 'png';
   return 'unknown';
 }
 
@@ -67,7 +69,11 @@ async function convertAndSave(
 
 test.describe('HEIC conversion (/image/heic-to-jpg, /image/heic-to-png)', () => {
   test('converts a real HEIC to a real JPEG', async ({ page }) => {
-    const saved = await convertAndSave(page, '/image/heic-to-jpg', /save jpeg/iu);
+    const saved = await convertAndSave(
+      page,
+      '/image/heic-to-jpg',
+      /save jpeg/iu,
+    );
 
     expect(formatOf(saved), 'the saved file is not a JPEG').toBe('jpeg');
     expect(saved.length).toBeGreaterThan(500);
@@ -76,7 +82,11 @@ test.describe('HEIC conversion (/image/heic-to-jpg, /image/heic-to-png)', () => 
   });
 
   test('converts a real HEIC to a real PNG', async ({ page }) => {
-    const saved = await convertAndSave(page, '/image/heic-to-png', /save png/iu);
+    const saved = await convertAndSave(
+      page,
+      '/image/heic-to-png',
+      /save png/iu,
+    );
 
     expect(formatOf(saved), 'the saved file is not a PNG').toBe('png');
     // The PNG header carries the dimensions in bytes 16-23, big-endian, so the
@@ -89,18 +99,18 @@ test.describe('HEIC conversion (/image/heic-to-jpg, /image/heic-to-png)', () => 
     page,
   }) => {
     await page.goto('/image/heic-to-jpg');
-    await page
-      .locator('input[type="file"]')
-      .setInputFiles([
-        {
-          name: 'not-a-photo.heic',
-          mimeType: 'image/heic',
-          buffer: Buffer.from('this is not a photograph', 'utf8'),
-        },
-      ]);
+    await page.locator('input[type="file"]').setInputFiles([
+      {
+        name: 'not-a-photo.heic',
+        mimeType: 'image/heic',
+        buffer: Buffer.from('this is not a photograph', 'utf8'),
+      },
+    ]);
 
     await expect(page.getByRole('alert')).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByRole('link', { name: /save jpeg/iu })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /save jpeg/iu })).toHaveCount(
+      0,
+    );
   });
 
   test('tells the reader what it downloads before they choose a file', async ({

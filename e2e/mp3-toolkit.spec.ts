@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { parseMp3 } from '../lib/tools/audio/mp3';
+import { setFilesWhenLive } from './upload';
 
 const fixtureDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -23,15 +24,38 @@ function fixture(name: string) {
   return readFile(path.join(fixtureDir, name));
 }
 
-async function chooseMp3s(page: Page, names: readonly string[]) {
-  const files = await Promise.all(
-    names.map(async (name) => ({
-      name,
-      mimeType: 'audio/mpeg',
-      buffer: await fixture(name),
-    })),
+/**
+ * Hands the page its files, and waits until the page has actually taken them.
+ *
+ * The input is server-rendered, so it exists before React has attached
+ * `onChange`; files set in that window fire a change event into nothing and the
+ * page keeps its empty state. The failure then lands wherever the test looked
+ * next — a missing tab, a measurement that never appears — and reads as a
+ * broken decoder rather than a lost event. At four workers this spec failed a
+ * different pair of tests on every run, which is the tell.
+ *
+ * "Taken them" means the file list or a stated refusal: one test hands the page
+ * a WAV on purpose, and the refusal proves the handler is live just as well.
+ */
+function pick(page: Page, files: Parameters<typeof setFilesWhenLive>[1]) {
+  return setFilesWhenLive(
+    page.getByLabel('Choose MP3 files'),
+    files,
+    page.getByTestId('mp3-files').or(page.getByRole('alert')),
   );
-  await page.getByLabel('Choose MP3 files').setInputFiles(files);
+}
+
+async function chooseMp3s(page: Page, names: readonly string[]) {
+  await pick(
+    page,
+    await Promise.all(
+      names.map(async (name) => ({
+        name,
+        mimeType: 'audio/mpeg',
+        buffer: await fixture(name),
+      })),
+    ),
+  );
 }
 
 async function savedMp3(page: Page) {
@@ -195,7 +219,7 @@ test.describe('MP3 toolkit', () => {
     const wav = Buffer.alloc(2048);
     wav.write('RIFF', 0);
     wav.write('WAVE', 8);
-    await page.getByLabel('Choose MP3 files').setInputFiles({
+    await pick(page, {
       name: 'voice-note.wav',
       mimeType: 'audio/wav',
       buffer: wav,

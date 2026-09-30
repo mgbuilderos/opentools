@@ -98,7 +98,10 @@ test.describe('Burst PDF by rule (/pdf/burst)', () => {
     // outputs, and the invoice-derived names must go away.
     await page.selectOption('#burst-strategy', 'fixed-interval');
     await page.fill('#burst-interval', '1');
-    await page.getByRole('button', { name: /plan|update/i }).first().click();
+    await page
+      .getByRole('button', { name: /plan|update/i })
+      .first()
+      .click();
 
     await expect(page.getByText('INV-4471.pdf')).toHaveCount(0, {
       timeout: 30_000,

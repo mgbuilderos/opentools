@@ -31,20 +31,23 @@ test.describe('bank statement converter', () => {
     await page.goto(ROUTE);
     await page.waitForLoadState('networkidle');
 
-    await page.evaluate(async (data) => {
-      const binary = atob(data);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-      const file = new File([bytes], 'stmt.pdf', { type: 'application/pdf' });
-      const transfer = new DataTransfer();
-      transfer.items.add(file);
-      const input = document.querySelector<HTMLInputElement>(
-        'input[type=file]',
-      );
-      if (!input) throw new Error('no file input on the statement converter');
-      input.files = transfer.files;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    }, readFileSync(FIXTURE, 'base64'));
+    await page.evaluate(
+      async (data) => {
+        const binary = atob(data);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1)
+          bytes[i] = binary.charCodeAt(i);
+        const file = new File([bytes], 'stmt.pdf', { type: 'application/pdf' });
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        const input =
+          document.querySelector<HTMLInputElement>('input[type=file]');
+        if (!input) throw new Error('no file input on the statement converter');
+        input.files = transfer.files;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      },
+      readFileSync(FIXTURE, 'base64'),
+    );
 
     // Guards the guard: without the preview on screen every check below is
     // satisfied by a page that did nothing.

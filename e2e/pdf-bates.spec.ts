@@ -49,7 +49,9 @@ test.describe('Bates Numbering for PDFs (/pdf/bates)', () => {
     await suffixInput.fill('-US');
 
     // Check projected range updates in real time
-    await expect(page.getByText('CONF-000501-US – CONF-000505-US').first()).toBeVisible();
+    await expect(
+      page.getByText('CONF-000501-US – CONF-000505-US').first(),
+    ).toBeVisible();
 
     // Select position: top-right
     await page.getByRole('button', { name: 'Top Right' }).click();
@@ -60,7 +62,9 @@ test.describe('Bates Numbering for PDFs (/pdf/bates)', () => {
 
     // Complete state
     await expect(page.getByText('Bates Numbering Complete')).toBeVisible();
-    await expect(page.getByText('CONF-000501-US – CONF-000505-US').first()).toBeVisible();
+    await expect(
+      page.getByText('CONF-000501-US – CONF-000505-US').first(),
+    ).toBeVisible();
 
     // Download stamped PDF
     const downloadPromise: Promise<Download> = page.waitForEvent('download');
@@ -76,7 +80,10 @@ test.describe('Bates Numbering for PDFs (/pdf/bates)', () => {
     expect(stampedDoc.getPageCount()).toBe(5);
 
     // Verify PageLabels
-    const pageLabels = stampedDoc.catalog.lookup(PDFName.of('PageLabels'), PDFDict);
+    const pageLabels = stampedDoc.catalog.lookup(
+      PDFName.of('PageLabels'),
+      PDFDict,
+    );
     expect(pageLabels).toBeDefined();
     const nums = pageLabels.lookup(PDFName.of('Nums'), PDFArray);
     expect(nums.size()).toBe(10); // 5 pages * 2
@@ -104,7 +111,9 @@ test.describe('Bates Numbering for PDFs (/pdf/bates)', () => {
     await expect(page.getByText(/7 total pages/i)).toBeVisible();
 
     // Use default prefix EXHIBIT- and starting number 1
-    await expect(page.getByText('EXHIBIT-000001 – EXHIBIT-000007')).toBeVisible();
+    await expect(
+      page.getByText('EXHIBIT-000001 – EXHIBIT-000007'),
+    ).toBeVisible();
 
     // Click Stamp
     const stampBtn = page.getByRole('button', { name: /Stamp 2 Documents/i });
@@ -112,9 +121,7 @@ test.describe('Bates Numbering for PDFs (/pdf/bates)', () => {
 
     // Complete state
     await expect(page.getByText('Bates Numbering Complete')).toBeVisible();
-    await expect(
-      page.getByText('Combined Legal Exhibit Bundle'),
-    ).toBeVisible();
+    await expect(page.getByText('Combined Legal Exhibit Bundle')).toBeVisible();
 
     // Download combined bundle
     const downloadPromise: Promise<Download> = page.waitForEvent('download');
@@ -129,7 +136,10 @@ test.describe('Bates Numbering for PDFs (/pdf/bates)', () => {
     expect(bundleDoc.getPageCount()).toBe(7);
 
     // Verify continuous labels in merged bundle
-    const pageLabels = bundleDoc.catalog.lookup(PDFName.of('PageLabels'), PDFDict);
+    const pageLabels = bundleDoc.catalog.lookup(
+      PDFName.of('PageLabels'),
+      PDFDict,
+    );
     expect(pageLabels).toBeDefined();
     const nums = pageLabels.lookup(PDFName.of('Nums'), PDFArray);
     expect(nums.size()).toBe(14); // 7 pages * 2

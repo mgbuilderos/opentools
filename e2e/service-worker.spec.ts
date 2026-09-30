@@ -35,7 +35,9 @@ async function waitForController(page: Page) {
 }
 
 test.describe('the service worker', () => {
-  test('does not replace a working page with an offline notice', async ({ page }) => {
+  test('does not replace a working page with an offline notice', async ({
+    page,
+  }) => {
     await page.goto('/');
     await waitForController(page);
 
@@ -44,20 +46,30 @@ test.describe('the service worker', () => {
     await page.goto('/pdf/merge');
 
     const body = await page.locator('body').innerText();
-    expect(body, 'the worker served its offline notice while online').not.toContain(
-      'You are offline',
-    );
+    expect(
+      body,
+      'the worker served its offline notice while online',
+    ).not.toContain('You are offline');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   });
 
-  test('keeps serving real pages across several navigations', async ({ page }) => {
+  test('keeps serving real pages across several navigations', async ({
+    page,
+  }) => {
     await page.goto('/');
     await waitForController(page);
 
-    for (const route of ['/audio/mp3-toolkit', '/file/archive', '/pdf/merge', '/']) {
+    for (const route of [
+      '/audio/mp3-toolkit',
+      '/file/archive',
+      '/pdf/merge',
+      '/',
+    ]) {
       await page.goto(route);
       const body = await page.locator('body').innerText();
-      expect(body, `${route} served the offline notice`).not.toContain('You are offline');
+      expect(body, `${route} served the offline notice`).not.toContain(
+        'You are offline',
+      );
       await expect(page.locator('input[type="file"]').first()).toBeAttached({
         timeout: 15_000,
       });
@@ -83,7 +95,12 @@ test.describe('the service worker', () => {
     // page from fetching anything, including this file. An earlier version of
     // this test fetched it and failed — which is the policy working.
     const source = readFileSync(
-      path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'sw.js'),
+      path.join(
+        path.dirname(fileURLToPath(import.meta.url)),
+        '..',
+        'public',
+        'sw.js',
+      ),
       'utf8',
     );
     // Comments are stripped first. The file documents the bug it is avoiding,
@@ -95,7 +112,9 @@ test.describe('the service worker', () => {
       .replace(/^\s*\/\/.*$/gmu, '');
 
     // The notice was served in place of real pages while the network was fine.
-    expect(code, 'the offline notice is back in the code').not.toContain('You are offline');
+    expect(code, 'the offline notice is back in the code').not.toContain(
+      'You are offline',
+    );
 
     /*
      * This used to assert that `respondWith` appeared nowhere at all, on the
@@ -112,15 +131,19 @@ test.describe('the service worker', () => {
      * set of invariants is asserted in `lib/service-worker.test.ts`, which
      * runs in the unit gate on every build rather than only here.
      */
-    expect(code, 'the worker calls fetch, which our own header refuses').not.toMatch(
-      /\bfetch\s*\(/u,
-    );
-    expect(code, 'the worker answers a GET without checking it is offline').toContain(
-      'if (self.navigator.onLine) return;',
-    );
+    expect(
+      code,
+      'the worker calls fetch, which our own header refuses',
+    ).not.toMatch(/\bfetch\s*\(/u);
+    expect(
+      code,
+      'the worker answers a GET without checking it is offline',
+    ).toContain('if (self.navigator.onLine) return;');
   });
 
-  test('the install prompt does not overstate what works offline', async ({ page }) => {
+  test('the install prompt does not overstate what works offline', async ({
+    page,
+  }) => {
     /*
      * Rule: no claim unless code or a test proves it. Offline now genuinely
      * works — `e2e/share-target.spec.ts` loads a tool with the network
@@ -138,7 +161,9 @@ test.describe('the service worker', () => {
       ),
       'utf8',
     );
-    const rendered = source.replace(/\/\*[\s\S]*?\*\//gu, '').replace(/^\s*\/\/.*$/gmu, '');
+    const rendered = source
+      .replace(/\/\*[\s\S]*?\*\//gu, '')
+      .replace(/^\s*\/\/.*$/gmu, '');
     expect(rendered).not.toMatch(/works offline/iu);
     expect(rendered).not.toMatch(/no internet/iu);
 

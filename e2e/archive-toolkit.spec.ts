@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { readZip } from '../lib/tools/archive/zip-reader';
+import { setFilesWhenLive } from './upload';
 import { createZip } from '../lib/tools/docx/zip';
 
 const fixtureDir = path.join(
@@ -21,12 +22,34 @@ const SIMPLE = 'simple.zip';
 const STORED = 'stored.zip';
 const ENCRYPTED = 'encrypted.zip';
 
+/**
+ * Hands the page an archive, and waits until the page has actually taken it.
+ *
+ * The input is server-rendered, so it exists before React has attached
+ * `onChange`; files set in that window fire a change event into nothing and the
+ * page keeps its empty state. The failure then lands on whatever the test
+ * asserted next — a missing entry name, a refusal that never appears — and
+ * reads as a broken reader rather than a lost event. At four workers this spec
+ * failed four tests a run and a different four each run, which is the tell.
+ *
+ * "Taken it" means the contents panel or a stated refusal: this spec feeds
+ * damaged archives and a RAR on purpose, and a refusal proves the handler is
+ * live exactly as well as a listing does.
+ */
+function reacted(page: Page) {
+  return page.getByTestId('archive-contents').or(page.getByRole('alert'));
+}
+
 async function chooseArchive(page: Page, name: string, buffer?: Buffer) {
-  await page.getByLabel('Choose a ZIP file').setInputFiles({
-    name,
-    mimeType: 'application/zip',
-    buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
-  });
+  await setFilesWhenLive(
+    page.getByLabel('Choose a ZIP file'),
+    {
+      name,
+      mimeType: 'application/zip',
+      buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
+    },
+    reacted(page),
+  );
 }
 
 async function saved(page: Page) {
@@ -163,20 +186,30 @@ test.describe('Archive toolkit', () => {
     page,
   }) => {
     await page.goto('/file/archive');
-    await page.getByRole('tab', { name: 'Make a ZIP' }).click();
+    // The tab is server-rendered too, so the click needs the same guard: retry
+    // until the panel it opens is actually there.
+    const packInput = page.getByLabel('Choose files to pack');
+    await expect(async () => {
+      await page.getByRole('tab', { name: 'Make a ZIP' }).click();
+      await expect(packInput).toBeAttached({ timeout: 1_000 });
+    }).toPass({ timeout: 15_000 });
 
-    await page.getByLabel('Choose files to pack').setInputFiles([
-      {
-        name: 'one.txt',
-        mimeType: 'text/plain',
-        buffer: Buffer.from('first file'),
-      },
-      {
-        name: 'two.txt',
-        mimeType: 'text/plain',
-        buffer: Buffer.from('second file'),
-      },
-    ]);
+    await setFilesWhenLive(
+      packInput,
+      [
+        {
+          name: 'one.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('first file'),
+        },
+        {
+          name: 'two.txt',
+          mimeType: 'text/plain',
+          buffer: Buffer.from('second file'),
+        },
+      ],
+      page.getByTestId('pack-list').or(page.getByRole('alert')),
+    );
 
     await page.getByRole('button', { name: /Pack 2 into a ZIP/u }).click();
     await expect(

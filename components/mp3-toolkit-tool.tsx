@@ -479,7 +479,7 @@ export function Mp3ToolkitTool() {
             </div>
 
             {loaded.length ? (
-              <ul className="divide-y">
+              <ul className="divide-y" data-testid="mp3-files">
                 {loaded.map((entry, index) => (
                   <li
                     key={`${entry.name}-${index}`}

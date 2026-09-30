@@ -35,9 +35,7 @@ import {
 
 const TOOL_URLS = LIVE_TOOL_ROUTES.flatMap((route) => {
   const ids = operationIdsForRoute(route);
-  return ids?.size
-    ? [...ids].map((id) => `${route}?tool=${id}`)
-    : [route];
+  return ids?.size ? [...ids].map((id) => `${route}?tool=${id}`) : [route];
 });
 
 /** Buttons that visibly offer to do the work when nothing runs on its own. */
@@ -65,7 +63,8 @@ async function probe(page: Page): Promise<Probe> {
     if (!main) {
       return { canType: false, canPress: false, hasResult: false, heading: '' };
     }
-    const all = (selector: string) => Array.from(main.querySelectorAll(selector));
+    const all = (selector: string) =>
+      Array.from(main.querySelectorAll(selector));
     // A styled drop zone hides its real <input type=file> behind the visible
     // "browse" affordance, so file inputs count whether or not they are painted.
     const canType =

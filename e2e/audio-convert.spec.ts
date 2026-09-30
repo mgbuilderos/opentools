@@ -68,7 +68,9 @@ async function choose(page: Page, name: string, buffer?: Buffer) {
   await pick(page, [
     {
       name,
-      mimeType: name.endsWith('.wav') ? 'audio/wav' : 'application/octet-stream',
+      mimeType: name.endsWith('.wav')
+        ? 'audio/wav'
+        : 'application/octet-stream',
       buffer: buffer ?? (await readFile(path.join(fixtureDir, name))),
     },
   ]);

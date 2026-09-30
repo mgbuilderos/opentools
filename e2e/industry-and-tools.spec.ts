@@ -28,9 +28,7 @@ test.describe('Industry Workflows, Tool Deep Dives & Profession Templates', () =
     ).toBeVisible();
 
     // Verify unbuilt gaps are acknowledged honestly
-    await expect(
-      page.getByText('Bates Numbering').first(),
-    ).toBeVisible();
+    await expect(page.getByText('Bates Numbering').first()).toBeVisible();
     await expect(
       page.getByText('DOCX Metadata Scrubbing').first(),
     ).toBeVisible();

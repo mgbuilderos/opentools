@@ -64,10 +64,9 @@ test.describe('sidebar navigation', () => {
     expect(rendered).toEqual(expectedGroups);
 
     const browsable = rendered.reduce((total, group) => total + group.count, 0);
-    expect(
-      browsable,
-      'destinations a visitor can only reach by search',
-    ).toBe(everyDestination);
+    expect(browsable, 'destinations a visitor can only reach by search').toBe(
+      everyDestination,
+    );
   });
 
   test('opens a workspace that used to be unreachable', async ({ page }) => {
@@ -79,10 +78,7 @@ test.describe('sidebar navigation', () => {
       /Documents & office/,
     );
 
-    await page
-      .getByRole('link', { name: latexTableLinkName })
-      .first()
-      .click();
+    await page.getByRole('link', { name: latexTableLinkName }).first().click();
 
     await expect(page).toHaveURL(
       /\/documents\/workbench\?tool=latex-table-generator/,

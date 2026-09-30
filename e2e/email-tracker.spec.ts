@@ -52,9 +52,8 @@ test.describe('email reader tells the sender nothing', () => {
       const file = new File([eml], 'probe.eml', { type: 'message/rfc822' });
       const transfer = new DataTransfer();
       transfer.items.add(file);
-      const input = document.querySelector<HTMLInputElement>(
-        'input[type=file]',
-      );
+      const input =
+        document.querySelector<HTMLInputElement>('input[type=file]');
       if (!input) throw new Error('no file input on the email reader');
       input.files = transfer.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));

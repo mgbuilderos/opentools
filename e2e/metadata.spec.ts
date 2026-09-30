@@ -113,7 +113,9 @@ test.describe('Photo Metadata Viewer & Stripper (/image/metadata)', () => {
     ).toBeVisible();
     // The <dt> labels, not the depth paragraph describing what the panel
     // reports. getByText does a case-insensitive substring match by default.
-    await expect(page.getByText('Original size', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText('Original size', { exact: true }),
+    ).toBeVisible();
     await expect(page.getByText('Cleaned size', { exact: true })).toBeVisible();
   });
 

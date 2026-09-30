@@ -451,7 +451,10 @@ export function ArchiveToolkitTool() {
 
               {loaded && archive ? (
                 <>
-                  <div className="grid gap-3 border-b px-4 py-4 sm:grid-cols-4 sm:px-5">
+                  <div
+                    className="grid gap-3 border-b px-4 py-4 sm:grid-cols-4 sm:px-5"
+                    data-testid="archive-contents"
+                  >
                     <div>
                       <p className="text-xs text-muted-foreground">Files</p>
                       <p className="tabular mt-1 text-sm font-semibold">
@@ -654,7 +657,7 @@ export function ArchiveToolkitTool() {
 
               {toPack.length ? (
                 <>
-                  <ul className="divide-y">
+                  <ul className="divide-y" data-testid="pack-list">
                     {toPack.map((file, index) => (
                       <li
                         key={`${file.name}-${index}`}

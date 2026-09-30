@@ -33,7 +33,8 @@ test.describe('the install offer', () => {
   async function makeInstallable(page: import('@playwright/test').Page) {
     await page.evaluate(() => {
       const event = new Event('beforeinstallprompt', { cancelable: true });
-      (event as Event & { prompt?: () => Promise<void> }).prompt = () => Promise.resolve();
+      (event as Event & { prompt?: () => Promise<void> }).prompt = () =>
+        Promise.resolve();
       window.dispatchEvent(event);
     });
   }

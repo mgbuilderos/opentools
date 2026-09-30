@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
+import { setFilesWhenLive } from './upload';
+
 import { expect, test, type Download, type Page } from '@playwright/test';
 
 import { parseSubtitles } from '../lib/tools/subtitles/core';
@@ -36,6 +38,26 @@ async function pasteSubtitles(page: Page, text: string) {
  */
 function outputPanel(page: Page) {
   return page.locator('section[aria-live="polite"] pre');
+}
+
+/**
+ * Hands the page a subtitle file, and waits until the page has actually taken
+ * it.
+ *
+ * The input is server-rendered, so it exists before React has attached
+ * `onChange`; a file set in that window fires a change event into nothing and
+ * the output panel never fills. Four of these tests failed at six workers, a
+ * different set each run. Reacting means output or a stated refusal.
+ */
+async function chooseSubtitle(
+  page: Page,
+  file: { name: string; mimeType: string; buffer: Buffer },
+) {
+  await setFilesWhenLive(
+    page.getByLabel('Choose a subtitle file (.srt, .vtt, .sbv, .lrc, .ass)'),
+    file,
+    outputPanel(page).or(page.getByRole('alert')),
+  );
 }
 
 async function outputContaining(page: Page, marker: string | RegExp) {
@@ -171,13 +193,11 @@ test.describe('Subtitle workbench', () => {
       0x0a,
     ]);
 
-    await page
-      .getByLabel('Choose a subtitle file (.srt, .vtt, .sbv, .lrc, .ass)')
-      .setInputFiles({
-        name: 'old-editor.srt',
-        mimeType: 'text/plain',
-        buffer: windows1252,
-      });
+    await chooseSubtitle(page, {
+      name: 'old-editor.srt',
+      mimeType: 'text/plain',
+      buffer: windows1252,
+    });
 
     const output = await outputContaining(page, 'Café — naïve');
     expect(output).toContain('decoded as windows-1252');

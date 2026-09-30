@@ -80,7 +80,10 @@ export const PROBE_FOR_SECTION: Readonly<Record<string, ProbeKind>> = {
  * is a fact about the route, not a failure. Several workbench routes take typed
  * text rather than a file.
  */
-export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: string) => {
+export const HAND_PROBE_TO_PAGE = (
+  kind: Exclude<ProbeKind, 'none'>,
+  token: string,
+) => {
   const extensionFor: Record<string, string> = {
     text: 'txt',
     webm: 'webm',
@@ -158,7 +161,10 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
     return new Uint8Array(await blob!.arrayBuffer());
   }
 
-  async function recordedClip(): Promise<{ bytes: Uint8Array; mime: string } | null> {
+  async function recordedClip(): Promise<{
+    bytes: Uint8Array;
+    mime: string;
+  } | null> {
     // A real encoded clip from the browser's own encoder. Half a second of a
     // moving canvas: long enough that the container holds more than a header,
     // short enough that 12 routes do not add a minute to the run.
@@ -166,11 +172,7 @@ export const HAND_PROBE_TO_PAGE = (kind: Exclude<ProbeKind, 'none'>, token: stri
     canvas.width = 160;
     canvas.height = 120;
     const context = canvas.getContext('2d')!;
-    const candidates = [
-      'video/mp4',
-      'video/webm;codecs=vp8',
-      'video/webm',
-    ];
+    const candidates = ['video/mp4', 'video/webm;codecs=vp8', 'video/webm'];
     const type =
       candidates.find((candidate) =>
         typeof MediaRecorder !== 'undefined' &&

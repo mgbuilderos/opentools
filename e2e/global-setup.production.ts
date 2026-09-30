@@ -15,7 +15,8 @@ const BROWSER_UA =
 
 export default async function globalSetup(config: FullConfig) {
   const baseURL = config.projects[0]?.use.baseURL;
-  if (!baseURL) throw new Error('No baseURL configured for the deployed egress run.');
+  if (!baseURL)
+    throw new Error('No baseURL configured for the deployed egress run.');
 
   // A browser-shaped request on purpose: Cloudflare only injected its analytics
   // beacon for requests that looked like a real browser asking for HTML, so a

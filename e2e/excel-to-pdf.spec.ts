@@ -64,14 +64,14 @@ test.describe('Excel to PDF in-browser vector conversion', () => {
     await convertBtn.click();
 
     // Expect receipt card
-    await expect(
-      page.getByText(/PDF Generated Successfully/i),
-    ).toBeVisible();
+    await expect(page.getByText(/PDF Generated Successfully/i)).toBeVisible();
     await expect(page.getByText(/Processed Rows/i)).toBeVisible();
 
     // Wait for download event and click Download button
     const downloadPromise: Promise<Download> = page.waitForEvent('download');
-    const downloadBtn = page.locator('button[data-receipt-download="true"]').first();
+    const downloadBtn = page
+      .locator('button[data-receipt-download="true"]')
+      .first();
     await expect(downloadBtn).toBeVisible();
     await downloadBtn.click();
 

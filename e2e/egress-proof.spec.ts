@@ -289,7 +289,9 @@ test.describe('egress proof', () => {
       .fill(`https://${token}.example/upload`);
     await page
       .getByLabel('Paste response headers, or a content-security-policy')
-      .fill(`content-security-policy: default-src 'self'; connect-src 'none'; report-uri /${token}`);
+      .fill(
+        `content-security-policy: default-src 'self'; connect-src 'none'; report-uri /${token}`,
+      );
 
     /*
      * The tool must have actually answered. A blank page leaks nothing either,
@@ -321,10 +323,9 @@ test.describe('egress proof', () => {
           ),
       token,
     );
-    expect(
-      leakedInUrl,
-      'what was pasted appeared in a request URL',
-    ).toEqual([]);
+    expect(leakedInUrl, 'what was pasted appeared in a request URL').toEqual(
+      [],
+    );
   });
 
   /**
@@ -368,7 +369,13 @@ test.describe('egress proof', () => {
     await page.goto('/image/heic-to-jpg');
     await setFilesWhenLive(
       page.locator('input[type="file"]'),
-      [{ name: 'EGRESSPROBE-photo.heic', mimeType: 'image/heic', buffer: heic }],
+      [
+        {
+          name: 'EGRESSPROBE-photo.heic',
+          mimeType: 'image/heic',
+          buffer: heic,
+        },
+      ],
       page.getByRole('link', { name: /save jpeg/iu }),
     );
     await expect(page.getByRole('link', { name: /save jpeg/iu })).toBeVisible({

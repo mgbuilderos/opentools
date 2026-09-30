@@ -46,7 +46,9 @@ test.describe('/pdf/redact — True PDF Redaction Tool', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: /Black Out PDF|Redact/i }),
     ).toBeVisible();
-    await expect(page.getByText('Select or Drop a PDF to Redact')).toBeVisible();
+    await expect(
+      page.getByText('Select or Drop a PDF to Redact'),
+    ).toBeVisible();
     await expect(page.getByText('Choose PDF file')).toBeVisible();
   });
 
@@ -80,7 +82,9 @@ test.describe('/pdf/redact — True PDF Redaction Tool', () => {
     // Workspace should now be visible
     await expect(page.getByText('contract-source.pdf')).toBeVisible();
     await expect(page.getByText('2 pages')).toBeVisible();
-    await expect(page.locator('canvas').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('canvas').first()).toBeVisible({
+      timeout: 15000,
+    });
 
     // Page navigation check
     await expect(page.getByText('Page 1 of 2')).toBeVisible();
@@ -96,7 +100,9 @@ test.describe('/pdf/redact — True PDF Redaction Tool', () => {
 
     // Staged list should have 1 item
     await expect(page.getByText(/Staged Redactions \(1\)/i)).toBeVisible();
-    await expect(page.getByText(/P1:\s*Search:\s*"Confidential"/i)).toBeVisible();
+    await expect(
+      page.getByText(/P1:\s*Search:\s*"Confidential"/i),
+    ).toBeVisible();
 
     // 3. Detect PII Secrets
     await page.getByRole('button', { name: 'Detect Secrets' }).click();
@@ -119,7 +125,9 @@ test.describe('/pdf/redact — True PDF Redaction Tool', () => {
     await box.click();
 
     // 5. Apply Redaction & Download
-    const applyBtn = page.getByRole('button', { name: 'Apply Redactions & Export' });
+    const applyBtn = page.getByRole('button', {
+      name: 'Apply Redactions & Export',
+    });
     await applyBtn.click();
 
     // Verification facts panel appears

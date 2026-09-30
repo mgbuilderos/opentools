@@ -55,7 +55,10 @@ const SECTIONS = [...new Set(DEDICATED_TOOL_ROUTES.map(sectionOf))].sort();
  * same-origin requests are expected here, and assertion 2 already tolerates
  * those unless they carry a body.
  */
-const LOCAL_MODEL_ROUTES = new Set(['/image/background-remover', '/image/editor']);
+const LOCAL_MODEL_ROUTES = new Set([
+  '/image/background-remover',
+  '/image/editor',
+]);
 
 /**
  * The routes that accept a file, measured on 2026-09-26 against this build.
