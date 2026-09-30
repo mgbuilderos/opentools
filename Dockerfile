@@ -40,6 +40,9 @@ COPY --from=build /app/dist/client ./dist/client
 COPY --from=build /app/dist/server ./dist/server
 COPY LICENSE THIRD_PARTY_NOTICES.md ./
 COPY docker/start.sh /usr/local/bin/opentools-start
+# Read by start.sh when a gate variable is set. Without it in the runtime image a
+# gated container would fall back to serving every page unauthenticated.
+COPY docker/gated-config.mjs ./docker/gated-config.mjs
 
 # Wrangler writes a temporary bundle next to the config file.
 RUN chmod 0755 /usr/local/bin/opentools-start \
