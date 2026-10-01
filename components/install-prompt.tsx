@@ -1,7 +1,7 @@
 /* oxlint-disable */
 'use client';
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Download, Share, X } from 'lucide-react';
 import {
   canInstall,
@@ -10,6 +10,7 @@ import {
   subscribeInstall,
 } from '@/lib/pwa-install';
 import { COMPLETION_EVENT } from '@/lib/completion';
+import { recordProductSignal } from '@/lib/product-telemetry';
 
 const DISMISSED_KEY = 'opentools-install-dismissed-v1';
 
@@ -133,8 +134,28 @@ export function InstallPrompt() {
     if (await showInstallDialog()) close();
   };
 
-  if (dismissed || !finishedSomething || dialogOpen) return null;
-  if (!deferred && !showIosHint) return null;
+  const visible =
+    !dismissed && finishedSomething && !dialogOpen && (deferred || showIosHint);
+
+  /*
+   * `install-prompt-shown` means THIS BANNER became visible, not that Chrome
+   * fired `beforeinstallprompt`.
+   *
+   * The distinction is the whole value of the number. Chrome fires that event
+   * early and often, on visitors who never finish a job and therefore are never
+   * asked anything; counting it would report an offer that was never made, and
+   * every rate computed from it would be wrong in the flattering direction. The
+   * banner waits for a finished job and yields to any open dialog, so the
+   * condition above is the honest one. Once per document, by ref.
+   */
+  const announcedShown = useRef(false);
+  useEffect(() => {
+    if (!visible || announcedShown.current) return;
+    announcedShown.current = true;
+    recordProductSignal('install-prompt-shown');
+  }, [visible]);
+
+  if (!visible) return null;
 
   return (
     <div

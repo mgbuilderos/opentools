@@ -156,6 +156,25 @@ const nextConfig: NextConfig = {
         source: FIX_SOURCE,
         headers: [{ key: 'Cross-Origin-Opener-Policy', value: 'unsafe-none' }],
       },
+      /*
+       * The nine product counters, on the Node/Docker path. The Cloudflare
+       * deploy gets the same rule from `public/_headers`; both are required,
+       * and a header declared in one and not the other reaches half the users.
+       *
+       * `no-store` is load-bearing rather than tidy: the request IS the
+       * measurement, so a cacheable response means the second event of a kind
+       * is served from a copy and never counted again. A self-hosted instance
+       * requests these from itself and nowhere else — the paths are relative
+       * and `lib/product-telemetry.test.ts` proves no absolute host appears in
+       * the module at all.
+       */
+      {
+        source: '/telemetry/v1/:file*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ],
+      },
       // Later entries override the same header key.
       ...LOCAL_MODEL_SOURCES.map((source) => ({
         source,

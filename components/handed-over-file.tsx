@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 
 import {
+  fileWaitingMarkerPresent,
   fillFileInput,
   inputAccepts,
   noteFileWaiting,
   takeOfferedFile,
 } from '@/lib/file-handoff';
+import { recordProductSignal } from '@/lib/product-telemetry';
 import {
   HANDOFF_FLAG,
   HANDOFF_UNAVAILABLE_FLAG,
@@ -65,6 +67,30 @@ export function HandedOverFile() {
         if (
           new URLSearchParams(window.location.search).get(HANDOFF_FLAG) === '1'
         ) {
+          /*
+           * A SHARE FROM THE OPERATING SYSTEM'S SHARE SHEET, and not the two
+           * other things that put this flag on a URL.
+           *
+           * Three places set `?shared=1`: `public/sw.js` after answering the
+           * Android share POST, `components/share-target-landing.tsx` after a
+           * file-handler launch, and `components/ask-link-request.tsx` after
+           * someone prepares a file for a request. The two in-page ones call
+           * `offerFile` first, which raises the `sessionStorage` marker before
+           * navigating. The service worker has none to raise — that is the
+           * documented reason the query flag exists at all — so the marker is
+           * absent for exactly one of the three.
+           *
+           * Read before `noteFileWaiting` below, which would otherwise raise
+           * the marker we are testing for. Ordinary navigation to
+           * `/share-target` carries no flag and is never counted; the two
+           * in-page arrivals are counted by their own events or not at all.
+           *
+           * Nothing about the shared file is recorded, and this says nothing
+           * about whether the person then completed anything — that is a
+           * separate signal with a separate meaning.
+           */
+          if (!fileWaitingMarkerPresent())
+            recordProductSignal('share-target-opened');
           noteFileWaiting();
         }
       } catch {

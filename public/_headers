@@ -124,6 +124,27 @@
   ! Cache-Control
   Cache-Control: public, max-age=86400
 
+# The nine product counters. See `lib/product-telemetry.ts` and ADR-020.
+#
+# `no-store`, and it is the whole reason this rule exists. These are not
+# pictures; the request is the measurement. Anything cacheable — by the browser
+# or by the edge — means the second event of a kind is answered from a copy,
+# never reaches Cloudflare, and is never counted. The number would stop rising
+# and the failure would look exactly like nobody using the site, which is the
+# one reading that would be acted on.
+#
+# `! Cache-Control` first, because rules here ADD to the catch-all rather than
+# replace it: without the unset line this would ship `no-store` alongside
+# `public, max-age=0, must-revalidate, s-maxage=3600, ...` and the edge would
+# hold it for an hour. `lib/edge-cache-headers.test.ts` fails without it.
+#
+# `noindex` because a counter is not a page. They are absent from the sitemap
+# for the same reason, and `lib/product-telemetry-surface.test.ts` checks both.
+/telemetry/v1/*
+  ! Cache-Control
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+
 # Build output is content-addressed: every filename under here carries a content
 # hash (`framework-DTZGTDtF.js`, `layout.BusCenFg.css`) or sits inside a
 # build-id directory that changes on every build. A new build produces new
