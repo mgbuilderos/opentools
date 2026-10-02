@@ -13,11 +13,14 @@ import { PRODUCT_SIGNALS, SIGNAL_PATHS } from './product-telemetry';
  *    answers from its own cache, the request never reaches Cloudflare, and the
  *    number flattens. The site would look abandoned.
  * 2. **A synthesised 200 would report an event that never left the device.**
- *    An installed app with no network must simply fail to send the signal.
- *    Nothing is queued, nothing is replayed on reconnection, and an offline
- *    completion is honestly uncounted. That is a stated undercount in ADR-020,
- *    not a gap to close later — closing it would mean storing events, which
- *    means storing state about a person's work.
+ *    An installed app with no network sends no signal at all — since
+ *    2026-09-30 `recordProductSignal` declines to issue one while
+ *    `navigator.onLine` is false, so that the offline cold-start guard can go
+ *    on asserting that an offline page requests nothing whatsoever. Nothing is
+ *    queued, nothing is replayed on reconnection, and an offline completion is
+ *    honestly uncounted. That is a stated undercount in ADR-020, not a gap to
+ *    close later — closing it would mean storing events, which means storing
+ *    state about a person's work.
  *
  * `public/sw.js` already cannot do either, by construction: it only answers a
  * path in `INDEX`, and only when `navigator.onLine` is false. This file
