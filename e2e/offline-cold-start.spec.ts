@@ -398,6 +398,25 @@ test.describe('cold start with no network', () => {
           guard cannot fire here, and no product change can make it: the page
           genuinely believes it has a network.
 
+          CONTRADICTED ON A SECOND MACHINE, 2026-10-02 — READ BOTH BEFORE
+          DELETING EITHER. Re-measuring the same thing inside this spec's own
+          flow (playwright 1.63.0, macOS, serial) gave the opposite answer:
+          every one of the nine routes reported `navigator.onLine === false`
+          both immediately after the offline navigation and again after the
+          tool had run, and the spec passed 10/10 twice with the product guard
+          in place and NO exemption here.
+
+          So the table above does not reproduce universally, and this exemption
+          is belt-and-braces rather than the necessity it was written as. It is
+          being kept, not removed: the two measurements disagree, the condition
+          is plainly environment-dependent, and a wrong guess costs a red CI
+          run on a PR that is otherwise finished. Whoever settles it should run
+          this file with the exemption deleted on Linux CI specifically — that
+          is the environment neither measurement covered.
+
+          What the disagreement does NOT excuse is a loose exemption, hence the
+          same-origin check below.
+
           The exemption is therefore on the harness side, by exact path prefix,
           imported from the module that owns it so a rename cannot silently
           widen it. Everything else still lands in `missed` — a missed font,
@@ -405,7 +424,23 @@ test.describe('cold start with no network', () => {
           still requires the tool to finish and the page not to say it is
           offline, so a counter that broke a tool would fail here regardless.
         */
-        if (requested.startsWith(TELEMETRY_PREFIX)) return;
+        /*
+          SAME-ORIGIN ONLY. `requested` has had any origin stripped by the
+          line above, so matching the prefix on it alone would also exempt
+          `https://somewhere-else.example/telemetry/v1/completed-web.svg` —
+          a counter pointed at a third party, which is the single worst
+          outcome ADR-020 exists to prevent and the one thing this file
+          must never be the reason nobody noticed. The exemption is for our
+          own origin's counter and nothing else.
+        */
+        const sameOrigin = (() => {
+          try {
+            return new URL(request.url()).origin === new URL(page.url()).origin;
+          } catch {
+            return false;
+          }
+        })();
+        if (sameOrigin && requested.startsWith(TELEMETRY_PREFIX)) return;
         missed.push(`${requested} (${request.failure()?.errorText})`);
       });
       page.on('pageerror', (error) => errors.push(String(error)));
