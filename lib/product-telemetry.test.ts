@@ -312,7 +312,7 @@ describe('a browser that knows it has no network is not asked to count', () => {
     expect(fake.requested).toEqual([]);
   });
 
-  it('does not spend the once-per-document completion on a lost signal', () => {
+  it('spends the once-per-document completion even on a lost signal', () => {
     // The guard is about counting a visit once, not about how many times the
     // attempt was made, so an offline attempt still consumes it. Asserting the
     // behaviour either way beats discovering it later: a visitor who finishes a
@@ -323,13 +323,39 @@ describe('a browser that knows it has no network is not asked to count', () => {
     expect(fake.requested).toEqual([]);
   });
 
+  it('queues nothing, so reconnecting replays no missed signal', () => {
+    // The offline completion is spent. Coming back online must not release it:
+    // a replay would be state held about somebody's work, and ADR-020 takes the
+    // undercount instead. Nothing above asserts this — the once-per-document
+    // flag and the offline guard are separate, and only their combination says
+    // a reconnection sends nothing.
+    const offlineBrowser = browser({ offline: true });
+    expect(recordCompletionSignal()).toBe(false);
+    expect(offlineBrowser.requested).toEqual([]);
+
+    vi.stubGlobal('navigator', { onLine: true });
+    recordCompletionSignal();
+    expect(
+      offlineBrowser.requested,
+      'a signal was held while offline and sent on reconnection',
+    ).toEqual([]);
+  });
+
   it('counts normally when onLine is true, and when it is absent', () => {
     // The negative direction only. A browser reporting online may still have no
     // route out, and that case must keep attempting: it is indistinguishable
     // from a working network until the request fails.
-    const online = browser();
+    const absent = browser();
     expect(recordProductSignal('completed-web')).toBe(true);
-    expect(online.requested).toEqual(['/telemetry/v1/completed-web.svg']);
+    expect(absent.requested).toEqual(['/telemetry/v1/completed-web.svg']);
+
+    // And the half the title promises but a first version of this did not
+    // cover: an explicit `true`, which is the captive-portal case.
+    resetProductTelemetryForTests();
+    const online = browser();
+    vi.stubGlobal('navigator', { onLine: true });
+    expect(recordProductSignal('pwa-launch')).toBe(true);
+    expect(online.requested).toEqual(['/telemetry/v1/pwa-launch.svg']);
   });
 });
 
