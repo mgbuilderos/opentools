@@ -20,8 +20,8 @@ import path from 'node:path';
  *
  * | Build id moves because...        | Client chunks renamed | Precache     |
  * | -------------------------------- | --------------------- | ------------ |
- * | a dirty tree fell back to random | 111 of 257            | all 1.47 MB  |
- * | a commit touched only `docs/`    | 111 of 257            | all 1.47 MB  |
+ * | a dirty tree fell back to random | 111 of 259            | all 1.47 MB  |
+ * | a commit touched only `docs/`    | 111 of 259            | all 1.47 MB  |
  * | nothing (same content)           | 0                     | untouched    |
  *
  * The first row is why two builds of one uncommitted edit never matched, and

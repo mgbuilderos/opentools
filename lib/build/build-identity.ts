@@ -117,7 +117,7 @@ function deriveIdentity(
  * This id is the whole of the cascade. Measured 2026-10-02: it reaches exactly
  * one client chunk (`vinext-<hash>.js`), 17 chunks name that one, and the hash
  * of each of those folds into the hash of its own importers -- which is how one
- * 32-character value renames 111 of 257 chunks. The build ID itself reaches no
+ * 32-character value renames 111 of 259 chunks. The build ID itself reaches no
  * chunk at all; it appears only as `deploymentVersion` in the 1,052 prerendered
  * HTML files and their RSC payloads. So nothing about `dist/client/_next` moves
  * unless an input this id is derived from moved.

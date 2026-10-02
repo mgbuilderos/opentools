@@ -68,7 +68,7 @@ describe('the RSC identities that make the build reproducible', () => {
    * The ID is a digest of the build's own inputs, not the commit. Two things
    * follow, and both are what make the build reproducible rather than merely
    * labelled: it is the same on two calls from one tree, and it does not change
-   * when `HEAD` does -- which is what stops a prose commit renaming 111 of 257
+   * when `HEAD` does -- which is what stops a prose commit renaming 111 of 259
    * client chunks and reshipping the service worker's whole offline payload.
    * Shaped so nothing mistakes it for a commit: 64 hex characters, not 40.
    */

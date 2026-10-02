@@ -293,7 +293,7 @@ describe('the digest', () => {
 
   /**
    * The case this whole module exists for: pinning `undici`, which is reached
-   * only through miniflare and ships nowhere, used to rename 111 of 257 client
+   * only through miniflare and ships nowhere, used to rename 111 of 259 client
    * chunks because the build ID moved.
    */
   it('holds still when a package it leaves out resolves differently', () => {
