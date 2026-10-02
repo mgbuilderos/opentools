@@ -17,6 +17,10 @@ renamed client chunks**, each with different bytes. On the 1 MB `catalog` chunk
 the real difference was **8 bytes out of 1,004,022**, all of them inside the
 embedded `app-shell-<hash>.js` filename. No code differed.
 
+That was measured against base `9275422`. Re-measured against `ae95afb`, which
+emits 259 chunks rather than 257, moving the build ID renames **111 of 259** —
+the same number, which is the first hint that it was never about the dependency.
+
 Two things followed from that, and both cost something:
 
 - **Review.** Anyone measuring a dependency change by diffing `dist/` saw 111
@@ -121,20 +125,59 @@ comparison against `HEAD` could never see.
 
 ### What it buys
 
-Measured against `ae95afb`, counting chunks under
+Measured against `ae95afb`, counting the 259 chunks under
 `dist/client/_next/static/chunks/`:
 
-| The build ID moves because…                      | Before      | After |
-| ------------------------------------------------ | ----------- | ----- |
-| nothing — two builds of one clean tree           | 0 of 257    | 0     |
-| two builds of one tree with uncommitted work     | 111 of 257  | **0** |
-| a commit touched only `docs/`                    | 111 of 257  | **0** |
-| `overrides.undici` moved `7.29.0` → `7.29.1`     | 111 of 257  | **0** |
+| The build ID moves because…                  | Chunks renamed, before | After |
+| -------------------------------------------- | ---------------------- | ----- |
+| nothing — two builds of one clean tree       | 0                      | 0     |
+| two builds of one tree with uncommitted work | 111                    | **0** |
+| an edit under `docs/`                        | 111                    | **0** |
+| `overrides.undici` moved `7.29.0` → `7.29.1` | 111                    | **0** |
 
 The last three rows are the point. A prose commit, a test-only commit and a
 dev-only dependency bump now leave `dist/client` byte-identical — same chunk
 names, same bytes, same service-worker build id, so a returning visitor keeps
 the 1.47 MB they already have.
+
+The `docs/` row was measured on this page: a build, then this paragraph, then
+another build. All 3,025 files came out as they were apart from the eight that
+carry a random secret, listed below.
+
+In full, with nothing pinned at all and `undici` moved between `7.29.0` and
+`7.29.1` — the comparison the task of reviewing a dependency change actually
+asks for:
+
+| `find dist -type f \| sort \| xargs sha256sum`      | Files  |
+| --------------------------------------------------- | ------ |
+| Byte-identical                                      | 3,017  |
+| Renamed, identical once hashed filenames normalised | 4      |
+| Content differs                                     | 4      |
+| Present on one side only                            | 0      |
+
+All 2,427 files under `dist/client` are in the first group — every chunk name,
+every byte, and the same service-worker build id `bb167c731d3b3520`. The eight
+that moved are all under `dist/server` and all carry a random secret: the
+prerender secret in `vinext-server.json`, the revalidate secret in
+`isr-cache-<hash>.js`, the chunk that renames because of it, and the two
+manifests that name it. Supply the two secrets vinext reads from the
+environment and the same comparison reads **3,024 byte-identical of 3,025**,
+with `dist/server/index.js` the only file left — 28 bytes inside the 32-character
+draft-mode credential.
+
+### And it changes nothing the site serves
+
+Against `main`, built from the same lockfile:
+
+| Compared with `main`'s build                          | Result                               |
+| ----------------------------------------------------- | ------------------------------------ |
+| Client chunks whose content differs                   | **1** of 259 — `vinext-<hash>.js`, 38 bytes, all inside the 32-character compatibility id |
+| Client chunks renamed, identical once normalised      | 111 of 259                           |
+| HTML and RSC payloads                                 | 1,052 each: `deploymentVersion` is a 64-character digest where it was a 40-character commit, plus the renamed chunk references |
+| Files present on one side only                        | 4 each: `_next/static/<build id>/_buildManifest.js` and `_ssgManifest.js`, and the two `sw-precache-*-<id>.js` files, all of which carry an id in the name |
+
+No chunk's code differs. The build ID is a different string, so everything that
+embeds it says so, and nothing else moved.
 
 ### What is in the digest, and what is left out
 
@@ -232,7 +275,20 @@ node scripts/diff-dist.mjs /tmp/before /tmp/after
 
 `diff-dist.mjs` exits 0 when the two trees are the same build — nothing added,
 nothing removed, and nothing differing once hashed filenames are normalised —
-and 1 with a report of what really changed when they are not. Do not read a raw
-`diff -r` of two `dist/` trees and expect it to mean anything: one changed byte
-in a shared chunk renames it, which renames its importers, which renames theirs.
-That cascade is how content-addressed output works, and it is not going away.
+and 1 with a report of what really changed when they are not. Its last line
+splits the count, because the halves mean different things:
+
+```
+[DIFF DIST] These are different builds: 0 differing under client/, 4 under server/.
+```
+
+`0 differing under client/` is the answer to "does this ship anything?": nothing
+a visitor downloads moved. A `server/`-only difference is what two builds of one
+tree look like, because three values in the Worker are random by design. That
+line reads `0 differing under client/` for the `undici` pin and for the prose
+edit above, and `0 … 1 under server/` with the two secrets supplied.
+
+Do not read a raw `diff -r` of two `dist/` trees and expect it to mean anything:
+one changed byte in a shared chunk renames it, which renames its importers, which
+renames theirs. That cascade is how content-addressed output works, and it is not
+going away.

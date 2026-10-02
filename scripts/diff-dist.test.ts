@@ -91,13 +91,42 @@ describe('comparing two builds', () => {
     expect(status).toBe(0);
   });
 
+  /**
+   * The same-stem group again, with two of the three keeping their names and the
+   * renamed one carrying a real change as well -- which is the shape that broke
+   * a single pass over the files. The renamed chunk could not be matched on
+   * content, so it reached for the first same-stem file it saw, took the one a
+   * later file needed, and that file's partner then read as appearing out of
+   * nowhere. Measured against the three `server-<hash>.js` chunks this build
+   * emits, where the renamed one also embeds the build id.
+   */
+  it('does not let one pairing claim a file another needs', () => {
+    const before = tree({
+      [`${CHUNKS}/server-KEEPAAAA.js`]: 'kept one',
+      [`${CHUNKS}/server-GONEBBBB.js`]: 'const id = "40-hex";',
+      [`${CHUNKS}/server-KEEPCCCC.js`]: 'kept two',
+    });
+    const after = tree({
+      [`${CHUNKS}/server-KEEPAAAA.js`]: 'kept one',
+      [`${CHUNKS}/server-NEWDDDDD.js`]: 'const id = "64-hex-and-longer";',
+      [`${CHUNKS}/server-KEEPCCCC.js`]: 'kept two',
+    });
+    const { status, out } = diff(before, after);
+    expect(out).toContain('2  byte-identical');
+    expect(out).toContain('1  content differs');
+    expect(out).toMatch(/0 {2}only in/);
+    expect(out).not.toMatch(/1 {2}only in/);
+    expect(out).toContain('1 differing under client/');
+    expect(status).toBe(1);
+  });
+
   it('reports a real change, with where it is', () => {
     const before = tree({ [`${CHUNKS}/catalog-11111111.js`]: 'const a = 1;' });
     const after = tree({ [`${CHUNKS}/catalog-22222222.js`]: 'const a = 2;' });
     const { status, out } = diff(before, after);
     expect(out).toContain('1  content differs');
     expect(out).toContain('catalog-<hash>.js');
-    expect(out).toContain('These are different builds.');
+    expect(out).toContain('1 differing under client/, 0 under server/');
     expect(status).toBe(1);
   });
 

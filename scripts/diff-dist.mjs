@@ -181,32 +181,65 @@ function main() {
   const identical = [];
   const hashesOnly = [];
   const changed = [];
-  const removed = [];
   const added = new Map(after);
 
-  // Pair on the exact path first, then on the normalised name, matching equal
-  // content before unequal so a group of same-stem chunks pairs up correctly.
-  for (const entry of before.values()) {
-    const samePath = after.get(entry.file);
-    if (samePath && samePath.raw === entry.raw) {
-      identical.push(entry);
-      added.delete(entry.file);
-      continue;
+  /**
+   * Three passes, strongest evidence first, and every pass takes its partner out
+   * of `added` so nothing is claimed twice. Order within a pass cannot matter,
+   * which is what the passes are for: this build emits three chunks called
+   * `server-<hash>.js`, and pairing them one at a time let the first one reach
+   * for a partner a later one needed, which then read as a file added out of
+   * nowhere.
+   */
+  const claim = (pool, take) => {
+    const left = [];
+    for (const entry of pool) {
+      const match = take(entry);
+      if (!match) left.push(entry);
+      else added.delete(match.file);
     }
-    const candidates = [...added.values()].filter(
-      (other) => other.normalisedName === entry.normalisedName,
-    );
+    return left;
+  };
+
+  // 1. Same path, same bytes.
+  let pending = claim([...before.values()], (entry) => {
+    const other = added.get(entry.file);
+    if (!other || other.raw !== entry.raw) return null;
+    identical.push(entry);
+    return other;
+  });
+
+  // 2. Same path, same content once hashed filenames are normalised.
+  pending = claim(pending, (entry) => {
+    const other = added.get(entry.file);
+    if (!other || other.normalised !== entry.normalised) return null;
+    hashesOnly.push([entry, other]);
+    return other;
+  });
+
+  // 3. Renamed: pair by normalised name, equal content before unequal. Bucketed
+  // by that name so this stays linear in the number of same-stem candidates
+  // rather than in the size of the whole tree.
+  const byNormalisedName = new Map();
+  for (const other of added.values()) {
+    const bucket = byNormalisedName.get(other.normalisedName);
+    if (bucket) bucket.push(other);
+    else byNormalisedName.set(other.normalisedName, [other]);
+  }
+  pending = claim(pending, (entry) => {
+    const candidates = (
+      byNormalisedName.get(entry.normalisedName) ?? []
+    ).filter((other) => added.has(other.file));
     const match =
       candidates.find((other) => other.normalised === entry.normalised) ??
       candidates[0];
-    if (!match) {
-      removed.push(entry);
-      continue;
-    }
-    added.delete(match.file);
-    if (match.normalised !== entry.normalised) changed.push([entry, match]);
-    else hashesOnly.push([entry, match]);
-  }
+    if (!match) return null;
+    if (match.normalised === entry.normalised) hashesOnly.push([entry, match]);
+    else changed.push([entry, match]);
+    return match;
+  });
+
+  const removed = pending;
 
   const renamed = hashesOnly.filter(
     ([left, right]) => left.file !== right.file,
@@ -254,18 +287,29 @@ function main() {
   );
   listOnlyIn(dirs[1], [...added.keys()]);
 
-  const same = changed.length === 0 && removed.length === 0 && added.size === 0;
+  const moved = [
+    ...changed.map(([left]) => left.file),
+    ...removed.map((entry) => entry.file),
+    ...added.keys(),
+  ];
+  const underClient = moved.filter((file) => file.startsWith('client/')).length;
   process.stdout.write(
-    same
+    moved.length === 0
       ? `\n[DIFF DIST] Same build.${
           hashesOnly.length > 0
             ? ` ${hashesOnly.length} files differ only in the hashed filenames` +
               ` they carry, ${renamed.length} of them renamed. No code differs.`
             : ''
         }\n`
-      : '\n[DIFF DIST] These are different builds.\n',
+      : // Split, because the two halves mean different things. Nothing under
+        // `client/` means nothing a visitor downloads changed, whatever moved
+        // in the Worker -- and three values in there are random by design
+        // (`lib/build/build-identity.ts`), so a `server/`-only difference is
+        // what two builds of one tree look like.
+        `\n[DIFF DIST] These are different builds: ${underClient} differing ` +
+          `under client/, ${moved.length - underClient} under server/.\n`,
   );
-  process.exit(same ? 0 : 1);
+  process.exit(moved.length === 0 ? 0 : 1);
 }
 
 main();
