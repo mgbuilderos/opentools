@@ -32,6 +32,55 @@ import {
 const projectRoot = path.resolve(import.meta.dirname, '..', '..');
 const CLIENT_DIR = path.join(projectRoot, 'dist', 'client');
 
+/**
+ * How many pages this build promises, read from its own sitemap.
+ *
+ * WHY NOT A NUMBER. The population guard below was `pagesSwept > 1000`, picked
+ * when a build was 1,478 pages. The 2026-09-28 unit-pair fold took the
+ * catalogue to 1,031 sitemap URLs and 1,053 built pages, leaving that floor 53
+ * pages from failing on copy that was perfectly correct. The identical
+ * staleness had already failed `completion-coverage.test.ts` outright, on a
+ * branch that had not touched a single route — so this is a shape that has
+ * bitten, not a hypothetical.
+ *
+ * Raising or lowering the number only resets the clock, and every one of those
+ * edits looks from the outside exactly like blinding the guard. So the question
+ * gets asked against something that moves with the catalogue instead. The build
+ * writes a sitemap of every URL it undertakes to serve, and
+ * `scripts/verify-static-coverage.mjs` fails the build unless each of them has
+ * a file on disk. "Did the sweep see the whole site" therefore has an answer
+ * already in `dist/`: the sweep must cover at least as many pages as the
+ * sitemap offers. A half-written `dist/` fails that. A deliberate fold does
+ * not, and needs no edit here.
+ */
+const promisedPages = (() => {
+  const sitemap = path.join(CLIENT_DIR, 'sitemap.xml');
+  if (!existsSync(sitemap)) return 0;
+  return [...readFileSync(sitemap, 'utf8').matchAll(/<loc>/gu)].length;
+})();
+
+/**
+ * The population claim, asserted the same way for both sweeps below.
+ *
+ * Two assertions because they fail on different things. The first catches a
+ * partial `dist/` — the sweep ran, but over some of the site. The second
+ * catches a truncated *sitemap*, which would otherwise make the first agree
+ * with itself: 3 pages swept against 3 promised passes. 500 is far below any
+ * real catalogue this project has had (1,531 before the fold, 1,031 after) and
+ * far above anything a broken build produces.
+ */
+function expectWholeSiteSwept(): void {
+  expect(
+    pagesSwept,
+    `swept ${pagesSwept} pages but the sitemap offers ${promisedPages} — ` +
+      'a partial dist/ makes the assertion after this one vacuous',
+  ).toBeGreaterThanOrEqual(promisedPages);
+  expect(
+    pagesSwept,
+    'the sitemap itself looks truncated, so comparing the sweep to it proves nothing',
+  ).toBeGreaterThan(500);
+}
+
 function htmlFiles(directory: string, found: string[] = []): string[] {
   if (!existsSync(directory)) return found;
   for (const entry of readdirSync(directory)) {
@@ -92,12 +141,17 @@ describe('served copy names no competitor', () => {
       existsSync(CLIENT_DIR),
       'run `npm run build` before this suite',
     ).toBe(true);
+    expect(
+      promisedPages,
+      'dist/client/sitemap.xml is missing or empty, so the population claim ' +
+        'below has nothing to check itself against',
+    ).toBeGreaterThan(0);
   });
 
   it('names no competitor on any served page', () => {
     // Guards the guard: an empty or near-empty dist would pass every assertion
     // below while checking nothing at all.
-    expect(pagesSwept).toBeGreaterThan(1000);
+    expectWholeSiteSwept();
 
     expect(
       competitorFindings.slice(0, 20),
@@ -106,7 +160,7 @@ describe('served copy names no competitor', () => {
   });
 
   it('attributes no price to anybody but us on any served page', () => {
-    expect(pagesSwept).toBeGreaterThan(1000);
+    expectWholeSiteSwept();
 
     expect(
       priceFindings.slice(0, 20),
