@@ -116,7 +116,7 @@ function UtilityFrame({
           */}
           <UtilityExplainer id={id} title={title} />
           <footer className="mt-10 border-t py-6 text-xs leading-5 text-muted-foreground">
-            Local JavaScript · No client-side analytics · Formal multi-browser
+            Local JavaScript · No third-party trackers · Formal multi-browser
             egress proof pending
           </footer>
         </div>

@@ -34,7 +34,7 @@ happens in-memory on your device.
 | **Compute**      | PDF merge/extract runs `pdf-lib` in a dedicated **Web Worker**. Image work uses Canvas and `OffscreenCanvas`. Background removal runs **WebAssembly** model inference in a Web Worker. Audio and video edits copy compressed samples at the container level — no codec, no re-encode. Hashing uses **WebCrypto**. |
 | **Output**       | Results are handed back as temporary `blob:` URLs and revoked on clear, cancel, or unmount.                                                                                                                                                         |
 | **Enforcement**  | Production responses ship `Content-Security-Policy: connect-src 'none'`, and the test suite rejects direct network primitives in local engine code.                                                                                                 |
-| **Visit log**    | No analytics, session replay, advertising, or payment SDK is loaded in the browser. The server logs one metadata event per page visit, never your files or inputs — see [What the server logs](#what-the-server-logs). |
+| **Visit log**    | No third-party analytics, session replay, advertising or payment SDK is loaded in the browser. The server logs one metadata event per page visit, and the page may request one of nine fixed content-free counter images, never your files or inputs — see [What the server logs](#what-the-server-logs). |
 
 **Model downloads.** AI tools fetch their model weights once before first use.
 These are app assets, like JavaScript or fonts — they never contain your data.
@@ -233,8 +233,10 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the
 [owner decision log](docs/DECISION_LOG.md) first. In short:
 
 - Tools must never make network requests with user data, and must never add
-  client-side analytics or tracking. The only server-side log is the
-  [documented visit log](#what-the-server-logs); changes to it must update the
+  third-party analytics or tracking. The only server-side log is the
+  [documented visit log](#what-the-server-logs), and the only client-side
+  signals are the nine fixed, content-free counters in
+  `decisions/ADR-020-product-signals.md`; changes to either must update the
   docs in the same PR.
 - Dependencies must be MIT-compatible and recorded in
   [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

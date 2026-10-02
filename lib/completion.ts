@@ -1,6 +1,7 @@
 /* oxlint-disable */
 import { currentEgressReading, formatEgressBytes } from './egress-meter';
 import { USAGE_COUNT_KEY, parseUsageCount } from './milestone';
+import { recordCompletionSignal } from './product-telemetry';
 import {
   findRecipe,
   sanitiseRecipeValues,
@@ -30,12 +31,53 @@ export interface CompletionRecipe {
   values: RecipeValues;
 }
 
+/**
+ * The file this job produced, so that the receipt can offer the next operation
+ * on it rather than ending in a download and a dead end.
+ *
+ * It is the bytes themselves and not a URL, because an object URL created by a
+ * tool dies with that page and the whole point is to survive the navigation.
+ * The bytes go no further than this browser: the receipt hands them to
+ * `lib/file-handoff.ts`, which is the same on-device store the dropzone uses,
+ * and `app/privacy/page.tsx` already discloses it by name.
+ *
+ * The shape matches `GeneratedFile` in `lib/tools/file-workbench.ts` on purpose,
+ * so a tool passes what it already has rather than building something for this.
+ *
+ * Optional, and absent for most tools: `announceCompletion` has 66 callers, two
+ * of which pass this today. Where it is absent the receipt renders exactly as
+ * it did before, with no next-operation section — the one thing that must never
+ * happen is an offer a tool cannot honour.
+ */
+export interface CompletionOutput {
+  name: string;
+  type: string;
+  bytes: Uint8Array;
+}
+
+/**
+ * Above this, a finished job announces no output and the receipt offers no next
+ * operation.
+ *
+ * This is a policy choice, not a measurement, and the reasoning is copies: the
+ * tool already holds the result once for the download, announcing it holds it
+ * again for as long as the card is open, and handing it over holds a third
+ * while the transaction commits. Three copies of a very large file on a budget
+ * Android phone is where the tab is killed, and losing the tab would cost the
+ * person the result they had already earned — a far worse outcome than not
+ * being offered a follow-up tool. Devices are read by
+ * `detectDeviceMemory()` in `lib/kernel/capability.ts`; this ceiling is the
+ * blunt guard that applies before any of that is consulted.
+ */
+export const CHAINABLE_OUTPUT_MAX_BYTES = 64 * 1024 * 1024;
+
 export interface CompletionDetail {
   operation: string;
   durationMs: number;
   summary?: string;
   metrics?: CompletionMetric[];
   recipe?: CompletionRecipe;
+  output?: CompletionOutput;
 }
 
 function boundedDisplayText(value: string, maximum: number) {
@@ -77,6 +119,37 @@ function normaliseRecipe(
 }
 
 /**
+ * Reduce an announced output to something that can safely become a `File`.
+ *
+ * The name is the only field here that leaves this browser's own memory in any
+ * sense: it is written into the handoff store and then into a file input, so it
+ * is taken down to a basename. A tool that reports `../invoice.pdf` — or a
+ * source path picked up from an archive entry — should not get to choose a
+ * name with separators in it, and `boundedDisplayText` strips the control
+ * characters that would make it unreadable.
+ *
+ * Zero bytes resolves to `undefined` rather than to an empty offer. A job that
+ * produced nothing has no next operation, and the receipt renders no section at
+ * all, which is the state every tool that never passes an output is in.
+ */
+function normaliseOutput(
+  output: CompletionOutput | undefined,
+): CompletionOutput | undefined {
+  if (!output) return undefined;
+  if (!(output.bytes instanceof Uint8Array) || output.bytes.byteLength === 0) {
+    return undefined;
+  }
+  if (output.bytes.byteLength > CHAINABLE_OUTPUT_MAX_BYTES) return undefined;
+  const name = boundedDisplayText(output.name.split(/[\\/]/u).pop() ?? '', 120);
+  if (!name) return undefined;
+  return {
+    name,
+    type: boundedDisplayText(output.type, 120),
+    bytes: output.bytes,
+  };
+}
+
+/**
  * The second of the two numbers every finished job carries.
  *
  * A person feels speed, and this product's speed is a free consequence of not
@@ -89,12 +162,27 @@ function normaliseRecipe(
  * value stay separate strings so that this file never spells out the settled
  * claim that `lib/tools/local-source-policy.test.ts` forbids while the release
  * egress proof is outstanding.
+ *
+ * THE LABEL SAYS "FILE BYTES" SINCE 2026-09-28, AND THAT IS A CORRECTION
+ * RATHER THAN A FLOURISH. `lib/egress-meter.ts` counts requests whose
+ * `initiatorType` is `fetch`, `xmlhttprequest` or `beacon` — the three that can
+ * carry a file body — and an image is none of them. So the reading was never a
+ * count of *every* byte this page sent, and from the moment a product signal
+ * could be requested (ADR-020) an unqualified "Sent from this page: 0 bytes"
+ * would have been a true measurement under a false name. What it measures is
+ * exactly what the label now says.
+ *
+ * The signal itself is disclosed permanently on `/privacy`, with a switch, and
+ * deliberately not in a per-job banner here: a one-line alarm beside somebody's
+ * finished work, about a counter that carries nothing, would be frightening out
+ * of all proportion to what it is.
  */
 function measuredEgressMetric(): CompletionMetric | null {
   const reading = currentEgressReading();
   if (!reading.measurable) return null;
   return {
-    label: 'Sent from this page',
+    // 30 characters. `boundedDisplayText` truncates at 32.
+    label: 'File bytes sent from this page',
     value: formatEgressBytes(reading.bytes),
   };
 }
@@ -150,6 +238,28 @@ export function announceCompletion(detail: CompletionDetail) {
        count, and a milestone missed is not worth failing a finished job. */
   }
 
+  /*
+   * The one product signal a finished job produces, and the only place on this
+   * site that a completion is counted at all.
+   *
+   * AFTER the dispatch below would be wrong for a different reason and BEFORE
+   * it is wrong for this one: the receipt must open whatever happens here. So
+   * it is before, inside its own `try`, and `recordCompletionSignal` swallows
+   * every failure of its own as well. A counter that could make a finished job
+   * look unfinished would be worse than no counter.
+   *
+   * NOTHING FROM `detail` IS PASSED, and the function takes no argument that
+   * could carry it. The operation name, the duration, the summary and the
+   * metrics are all facts about somebody's file. What is sent is one of two
+   * fixed paths — `completed-web` or `completed-pwa` — chosen locally from the
+   * display mode, at most once per document. See `lib/product-telemetry.ts`.
+   */
+  try {
+    recordCompletionSignal();
+  } catch {
+    /* Unreachable by construction; here so that it stays unreachable. */
+  }
+
   window.dispatchEvent(
     new CustomEvent<CompletionDetail>(COMPLETION_EVENT, {
       detail: {
@@ -162,6 +272,7 @@ export function announceCompletion(detail: CompletionDetail) {
           : undefined,
         metrics: metrics?.length ? metrics : undefined,
         recipe: normaliseRecipe(detail.recipe),
+        output: normaliseOutput(detail.output),
       },
     }),
   );

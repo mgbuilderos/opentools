@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { offerFile } from '@/lib/file-handoff';
+import { recordProductSignal } from '@/lib/product-telemetry';
 import { shareDestinationFor, withHandoffFlag } from '@/lib/share-routing';
 
 /**
@@ -46,6 +47,22 @@ export function ShareTargetLanding() {
     queue.setConsumer((params) => {
       const handle = params.files?.[0];
       if (!handle) return;
+      /*
+       * A FILE HANDLER ACTIVATION, distinguishable from everything else that
+       * reaches this URL, which is why this event exists at all.
+       *
+       * `launchQueue` is Chromium-only and fires on every launch of an
+       * installed app, with `files` empty for an ordinary one. A file handle
+       * is present only when the operating system opened us *with a file* —
+       * "open with" on a desktop. An Android share is a POST that
+       * `public/sw.js` answers and redirects before this component ever
+       * mounts, and someone simply typing the URL delivers no handle either.
+       *
+       * Nothing about the file is recorded. Its name, type and size are all
+       * right here in `handle`, and none of them go anywhere: the signal is one
+       * fixed path with no query string.
+       */
+      recordProductSignal('file-handler-opened');
       setState('opening');
       void (async () => {
         try {

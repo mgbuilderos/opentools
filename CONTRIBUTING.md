@@ -9,7 +9,7 @@ must keep the core promise: **user data never leaves the browser.**
    `WebSocket`, `sendBeacon`, remote scripts, or remote images in tool code.
    The local-source policy tests and the production CSP (`connect-src 'none'`)
    enforce this.
-2. **No client-side analytics, telemetry, ads, session replay, or third-party
+2. **No third-party analytics, ads, session replay, or third-party
    embeds** — anywhere in the app. The only server-side log is the visit log in
    `proxy.ts`, documented in [`.github/SECURITY.md`](.github/SECURITY.md#server-side-visit-log).
    A PR that changes what it records must update that section and the README.
