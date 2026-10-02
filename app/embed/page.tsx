@@ -66,7 +66,7 @@ export default function EmbedIndexPage() {
 
       <h2 className="mt-12 text-lg font-semibold">Available embeds</h2>
       {EMBEDDABLE_TOOLS.map((tool) => (
-        <section key={tool.slug} className="ds-surface mt-4">
+        <section key={tool.slug} id={tool.slug} className="ds-surface mt-4">
           <header className="ds-surface-header">
             <h3 className="text-sm font-semibold">{tool.name}</h3>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">

@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -47,10 +47,20 @@ describe('the embeddable tool register', () => {
      * component that adds `<input type="file">` a year from now, in a state
      * a render test would not reach.
      */
-    const embedComponents = readFileSync(
-      path.join(componentsDir, 'embed-table-converter.tsx'),
-      'utf8',
-    );
+    /* EVERY embed component, found on disk rather than listed here. This swept
+       one hardcoded filename until 2026-09-30, so the four components added
+       that day would have been exempt from the rule this test exists to
+       enforce -- a sweep that names its own subjects stops covering the thing
+       it guards the moment somebody adds one. `embed-frame.tsx` is included:
+       it is the chrome every embed renders inside. */
+    const embedFiles = readdirSync(componentsDir)
+      .filter((name) => /^embed-.*\.tsx$/u.test(name))
+      .map((name) => path.join(componentsDir, name));
+    expect(embedFiles.length).toBeGreaterThan(1);
+
+    const embedComponents = embedFiles
+      .map((file) => readFileSync(file, 'utf8'))
+      .join('\n');
     for (const forbidden of [
       'type="file"',
       'showOpenFilePicker',
