@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { resolveBuildInputsDigest } from './build-inputs';
+import { resolveBuildInputsDigest } from './build-inputs.ts';
 
 /**
  * Pin the build ID to the content the build is made of.

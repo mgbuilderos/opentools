@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -88,6 +88,29 @@ describe('the RSC identities that make the build reproducible', () => {
     } finally {
       if (previous !== undefined) process.env.OPENTOOLS_BUILD_ID = previous;
     }
+  });
+
+  /**
+   * `scripts/predeploy.mjs` imports this module to recompute the digest and
+   * compare it with `dist/server/BUILD_ID`, and it runs under plain `node`,
+   * which does not guess extensions the way vite and vitest do. So this module's
+   * own imports have to resolve there too -- a dropped extension passed every
+   * other gate in this repository and crashed the script a human runs by hand
+   * before a deploy.
+   */
+  it('loads under plain node, the way predeploy runs it', () => {
+    const run = spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        "const m = await import('./lib/build/build-identity.ts');" +
+          'process.stdout.write(typeof m.resolvePinnedBuildId);',
+      ],
+      { cwd: appRoot, encoding: 'utf8' },
+    );
+    expect(run.stderr).toBe('');
+    expect(run.stdout).toBe('function');
   });
 
   /**
