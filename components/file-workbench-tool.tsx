@@ -200,6 +200,17 @@ export function FileWorkbenchTool({
           { label: 'Input', value: fileSize(inputBytes) },
           { label: 'Downloads', value: String(nextResult.downloads.length) },
         ],
+        /*
+          Handed over so the receipt can offer the next operation on it — see
+          `lib/tools/next-operations.ts`. Only when the run produced exactly one
+          file: the handoff store holds one file, and picking one of several on
+          somebody's behalf is a guess. A multi-file run keeps the receipt it
+          has always had.
+        */
+        output:
+          nextResult.downloads.length === 1
+            ? nextResult.downloads[0]
+            : undefined,
       });
     } catch (caught) {
       setResult(null);

@@ -16,6 +16,9 @@ import {
   formatCompletionDuration,
   type CompletionDetail,
 } from '@/lib/completion';
+import { offerFile } from '@/lib/file-handoff';
+import { withHandoffUnavailable } from '@/lib/share-routing';
+import { nextOperations } from '@/lib/tools/next-operations';
 import { loadsLocalModel } from '@/lib/security/content-security-policy';
 import {
   placeCompletionCard,
@@ -113,6 +116,12 @@ export function CompletionValueDialog() {
    */
   const [isIndiaVisitor] = useState(() => isLikelyIndiaVisitor());
   const showUpi = SHOW_UPI && isIndiaVisitor;
+  /**
+   * The next-operation button that is mid-flight, so it can say so: writing the
+   * file into the handoff store is a real IndexedDB transaction and on a large
+   * PDF it is not instant.
+   */
+  const [carrying, setCarrying] = useState<string | null>(null);
 
   const remember = (never = false) => {
     offeredThisPage.current = true;
@@ -313,6 +322,79 @@ export function CompletionValueDialog() {
   // see `CompletionRecipe`. An unrecognised id simply renders no share.
   const shareRecipe = receipt.recipe ? findRecipe(receipt.recipe.id) : null;
 
+  /*
+    WHAT TO DO NEXT WITH THE FILE THAT WAS JUST MADE.
+
+    The measurement this answers: on 24 September 939 people arrived and one of
+    them opened a second content page (`docs/traffic-log.csv`). Arrivals are not
+    this site's constraint; depth is. A finished job used to end here, with a
+    download and nothing else, even when the next thing the person needed was a
+    tool already on this domain.
+
+    Only tools that can read this particular file are offered, and the list
+    comes from `lib/tools/next-operations.ts` — see that file for why the kernel
+    manifest cannot answer the question and why the SEO related-tools graph must
+    not be asked it. Absent an output, `offers` is empty and this section does
+    not render, which is every tool that has not been wired yet.
+  */
+  const produced = receipt.output;
+  const offers = produced
+    ? nextOperations(
+        produced,
+        `${window.location.pathname}${window.location.search}`,
+      )
+    : [];
+
+  /*
+    Why a button and not a link, which is the opposite of what the dropzone does.
+
+    The file has to be in the handoff store *before* the next page loads, and
+    writing it is asynchronous. The dropzone solves that by cancelling its own
+    anchor and navigating when the write resolves. It cannot be solved that way
+    here: `lib/tools/local-source-policy.test.ts` forbids this file from
+    cancelling events or synthesising clicks, because this card sits on top of
+    somebody's real download and may take no action they did not. A button the
+    person presses is their action, and nothing is cancelled.
+
+    The cost is a control that cannot be middle-clicked into a new tab. That is
+    the right way round: a new tab would not carry the file anyway, so the
+    affordance would be a lie.
+  */
+  const openWith = async (href: string) => {
+    if (!produced) return;
+    setCarrying(href);
+    let carried = false;
+    try {
+      // Copied into a buffer of its own, the same way every download path in
+      // this codebase does it: the announced bytes may be a view onto a larger
+      // buffer a tool still owns, and `Blob` would otherwise keep that alive.
+      const payload = new Uint8Array(produced.bytes.length);
+      payload.set(produced.bytes);
+      carried = await offerFile(
+        new File([payload], produced.name, {
+          type: produced.type || 'application/octet-stream',
+        }),
+      );
+    } catch {
+      carried = false;
+    }
+    setCarrying(null);
+    /*
+      The tool opens either way, and when the file did not travel it is told so
+      on arrival — see `components/handed-over-file.tsx`, and
+      `withHandoffUnavailable` for why the marker names no cause.
+
+      Opening it is the right half of the choice even on failure: the person has
+      the file saved, the tool is where they were going, and being told at the
+      empty input beats being told on the card they are leaving. The marker is
+      set on ANY refusal, never paired with a size test — a storage refusal on a
+      small file is exactly the case that would otherwise arrive silent.
+    */
+    window.location.assign(
+      carried ? href : withHandoffUnavailable(href, window.location.origin),
+    );
+  };
+
   return (
     <dialog
       open
@@ -407,6 +489,39 @@ export function CompletionValueDialog() {
             <dd className="mt-1 text-base font-semibold">This browser</dd>
           </div>
         </dl>
+
+        {/*
+          The next operation sits ABOVE the share, and the share above the
+          support ask, so the card reads in descending order of who it serves:
+          this person's own unfinished job first, then a link that could bring
+          somebody else here, then an ask. The two asks are both worth making;
+          neither is worth making before the person has finished what they came
+          to do.
+        */}
+        {offers.length > 0 ? (
+          <div className="mb-4 rounded-xl border p-3.5">
+            <p className="text-xs font-semibold leading-relaxed">
+              Next, without choosing the file again
+            </p>
+            <p className="mb-3 mt-1 text-xs leading-relaxed text-muted-foreground">
+              Your finished file is handed straight to the next tool, still on
+              this device.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {offers.map((offer) => (
+                <Button
+                  key={offer.href}
+                  variant="outline"
+                  size="sm"
+                  disabled={carrying !== null}
+                  onClick={() => void openWith(offer.href)}
+                >
+                  {carrying === offer.href ? 'Opening…' : offer.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {/*
           THE SHARE, AND WHY IT IS HERE AND NOWHERE ELSE.
