@@ -32,6 +32,8 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { resolvePinnedBuildId } from '../lib/build/build-identity.ts';
+
 const ACCOUNT = '00f21e5724f9ebf7b1ab0cb42ae76b1e';
 const DAILY_ALLOWANCE = 1000;
 /**
@@ -230,19 +232,22 @@ function checkGuards() {
     ? readFileSync(path.join(ROOT, 'app/layout.tsx'), 'utf8')
     : '';
   // `wrangler deploy` ships whatever sits in dist/ and never rebuilds, so a
-  // stale artifact silently deploys a commit nobody chose. The pin makes this
-  // detectable: a build from a clean tree stamps BUILD_ID with its commit.
+  // stale artifact silently deploys code nobody chose. The pin makes this
+  // detectable: BUILD_ID is a digest of the content the build was made of, so
+  // recomputing it from the checkout answers the question directly. It used to
+  // be compared against HEAD, which could not see uncommitted work -- the one
+  // state a stale dist/ is most likely to be in.
   const builtId = existsSync(path.join(ROOT, 'dist/server/BUILD_ID'))
     ? readFileSync(path.join(ROOT, 'dist/server/BUILD_ID'), 'utf8').trim()
     : null;
-  const head = git('rev-parse HEAD');
+  const treeId = resolvePinnedBuildId();
 
   return {
     buildIdPinned: /generateBuildId/.test(config),
     blanketRevalidate: /^\s*export\s+const\s+revalidate/m.test(layout),
     builtId,
-    head,
-    staleDist: Boolean(builtId && head && builtId !== head),
+    treeId,
+    staleDist: Boolean(builtId && treeId && builtId !== treeId),
     dirty: dirtyWorktrees(),
     coverage: staticCoverage(),
     withheld: withheldInSitemap(),
@@ -327,7 +332,18 @@ async function main() {
   if (has('approve')) {
     writeFileSync(
       STATE,
-      `${JSON.stringify({ lastDeployedCommit: commit, at: new Date().toISOString() }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          lastDeployedCommit: commit,
+          // The build ID decides the `cache:app:<build id>:` prefix, so it, not
+          // the commit, is what the next run has to compare against: a deploy
+          // whose build ID is unchanged lands on the warm cache it already has.
+          lastDeployedBuildId: guards.builtId ?? guards.treeId,
+          at: new Date().toISOString(),
+        },
+        null,
+        2,
+      )}\n`,
     );
     console.log(
       `Recorded ${commit} as deployed. Next run will compare against it.`,
@@ -337,7 +353,18 @@ async function main() {
 
   // What this deploy will cost. An unpinned build ID gives every build a fresh
   // random cache key, so the whole cache is orphaned and re-warmed every time.
-  const codeChanged = state.lastDeployedCommit !== commit;
+  //
+  // Compared on the build ID, which is a digest of the build's own inputs since
+  // 2026-10-02: a commit that touched only `docs/` or a test produces the same
+  // ID, lands on the warm cache, and costs nothing. Comparing commits priced
+  // that deploy as a full re-warm. Falls back to the commit for a state file
+  // written before the ID moved, and when there is no build to read one from.
+  const deployedId = state.lastDeployedBuildId;
+  const buildingId = guards.builtId ?? guards.treeId;
+  const codeChanged =
+    deployedId && buildingId
+      ? deployedId !== buildingId
+      : state.lastDeployedCommit !== commit;
   const invalidates = !guards.buildIdPinned || codeChanged;
   // Measured from the build when there is one; the old constant only when
   // there is not. Two writes per page that still has to render: one for the
@@ -397,8 +424,8 @@ async function main() {
   console.log(
     `  ${guards.staleDist ? 'STOP' : 'ok  '} dist/ ${
       guards.staleDist
-        ? `holds ${guards.builtId?.slice(0, 7)}, HEAD is ${guards.head?.slice(0, 7)}`
-        : 'was built from the checked-out commit'
+        ? `holds ${guards.builtId?.slice(0, 7)}, this tree is ${guards.treeId?.slice(0, 7)}`
+        : 'was built from the content now checked out'
     }`,
   );
   if (guards.dirty.length > 0) {
@@ -444,18 +471,17 @@ async function main() {
     blocked = true;
   } else if (guards.staleDist) {
     console.log(
-      '  STOP. dist/ was not built from the commit you have checked out,',
+      '  STOP. dist/ was not built from the content you have checked out,',
     );
     console.log(
       '  and `wrangler deploy` ships dist/ without rebuilding — so this',
     );
+    console.log('  would deploy code nobody chose. Run `npm run build` first.');
+    console.log('  (A build id that is not 64 hex characters came from');
     console.log(
-      '  would deploy a commit nobody chose. Run `npm run build` first.',
+      '  OPENTOOLS_BUILD_ID or from a checkout with no .git; neither can be',
     );
-    console.log(
-      '  (A random-looking build id means the tree was dirty when it was',
-    );
-    console.log('  built; commit, then rebuild.)');
+    console.log('  checked against a tree.)');
     blocked = true;
   } else if (guards.blanketRevalidate) {
     console.log(

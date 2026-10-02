@@ -28,7 +28,7 @@
  * Any real change renames all three files and the browser installs the new
  * worker.
  *
- * That id is now also stable across rebuilds of the same commit, which it was
+ * That id is now also stable across rebuilds of the same tree, which it was
  * not until 2026-09-23. Two builds of an identical tree used to produce
  * different `/_next/static/chunks/*` filenames throughout (`index-CYnqNf_i.js`
  * then `index-Dt_YI4IA.js`), so the prerendered HTML differed, so the payload
@@ -40,19 +40,19 @@
  * `/_next/static/*` in `public/_headers` holding files a returning visitor
  * already has.
  *
- * MEASURE THAT FROM A CLEAN TREE OR THE ANSWER IS BACKWARDS. Re-checked
- * 2026-09-29: two builds of the same commit produce a byte-identical payload
- * and the same id, but only with nothing uncommitted.
- * `resolvePinnedBuildId` returns `null` for a dirty tree on purpose -- two
- * different builds must not share one cache key -- and `null` restores the
- * random id, so the chunk hashes move again. Measured on a dirty worktree with
- * four files edited, two builds renamed **18 of the 85 precached paths**
- * (`app-shell`, `catalog`, `index`, `image-optimize-tool`, `pdf-compress-tool`
- * and eight more), which renamed every chunk the 10 precached HTML pages
- * reference, so those pages changed too: 28 of 85 entries different, a new
- * payload hash, a new worker. Anyone asking "how many KB does my change add
- * here" from that state sees the whole 1.46 MB move and reads it as a
- * regression in their own change. Commit first, build twice, compare.
+ * THIS USED TO HOLD ONLY FROM A CLEAN TREE, AND NO LONGER DOES. Until
+ * 2026-10-02 `resolvePinnedBuildId` returned `null` for a dirty tree, `null`
+ * restored vinext's random id, and the chunk hashes moved again: measured on a
+ * worktree with four files edited, two builds renamed **18 of the 85 precached
+ * paths** (`app-shell`, `catalog`, `index`, `image-optimize-tool`,
+ * `pdf-compress-tool` and eight more), which renamed every chunk the 10
+ * precached HTML pages reference -- 28 of 85 entries different, a new payload
+ * hash, a new worker. Anyone asking "how many KB does my change add here" from
+ * that state saw the whole 1.46 MB move and read it as a regression in their
+ * own change. The build ID is now a digest of the build's own inputs, so
+ * uncommitted work gets a stable id of its own and two builds of it agree.
+ * Measuring from a dirty tree is now the same measurement as from a clean one,
+ * and an edit under `docs/` or `e2e/` moves nothing here at all.
  *
  * Runs after `prerender-to-assets.mjs`, because it reads what that wrote.
  */

@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -18,41 +19,41 @@ const identities = [
 
 describe('the RSC identities that make the build reproducible', () => {
   it.each(identities)(
-    'gives the same commit the same %s, and a different commit a different one',
+    'gives one build ID the same %s, and a different build ID a different one',
     (_name, pin) => {
-      const commit = 'a'.repeat(40);
-      expect(pin(commit)).toBe(pin(commit));
-      expect(pin(commit)).not.toBe(pin('b'.repeat(40)));
+      const buildId = 'a'.repeat(64);
+      expect(pin(buildId)).toBe(pin(buildId));
+      expect(pin(buildId)).not.toBe(pin('b'.repeat(64)));
     },
   );
 
   it.each(identities)(
     'does not put the build ID itself on the wire (%s)',
     (_name, pin) => {
-      const commit = 'a'.repeat(40);
-      const id = pin(commit);
+      const buildId = 'a'.repeat(64);
+      const id = pin(buildId);
       expect(id).not.toBeNull();
-      expect(id).not.toContain(commit);
+      expect(id).not.toContain(buildId);
       // Header-safe, and the shape vinext's own random value has.
       expect(id).toMatch(/^[0-9a-f]{32}$/);
     },
   );
 
   it.each(identities)(
-    'stays unpinned when the build ID is, so a dirty tree keeps its own %s',
+    'stays unpinned when the build ID is, so a tree with no git keeps its own %s',
     (_name, pin) => {
       expect(pin(null)).toBeNull();
     },
   );
 
-  it('keeps the two identities distinct for one commit', () => {
-    const commit = 'a'.repeat(40);
-    expect(pinnedRscCompatibilityId(commit)).not.toBe(
-      pinnedRscBuildIdentity(commit),
+  it('keeps the two identities distinct for one build', () => {
+    const buildId = 'a'.repeat(64);
+    expect(pinnedRscCompatibilityId(buildId)).not.toBe(
+      pinnedRscBuildIdentity(buildId),
     );
   });
 
-  it('reads OPENTOOLS_BUILD_ID ahead of git, so CI can supply the SHA', () => {
+  it('reads OPENTOOLS_BUILD_ID ahead of the tree, so a build can be pinned', () => {
     const previous = process.env.OPENTOOLS_BUILD_ID;
     process.env.OPENTOOLS_BUILD_ID = '  deadbeef  ';
     try {
@@ -60,6 +61,32 @@ describe('the RSC identities that make the build reproducible', () => {
     } finally {
       if (previous === undefined) delete process.env.OPENTOOLS_BUILD_ID;
       else process.env.OPENTOOLS_BUILD_ID = previous;
+    }
+  });
+
+  /**
+   * The ID is a digest of the build's own inputs, not the commit. Two things
+   * follow, and both are what make the build reproducible rather than merely
+   * labelled: it is the same on two calls from one tree, and it does not change
+   * when `HEAD` does -- which is what stops a prose commit renaming 111 of 257
+   * client chunks and reshipping the service worker's whole offline payload.
+   * Shaped so nothing mistakes it for a commit: 64 hex characters, not 40.
+   */
+  it('digests the tree rather than naming the commit', () => {
+    const previous = process.env.OPENTOOLS_BUILD_ID;
+    delete process.env.OPENTOOLS_BUILD_ID;
+    try {
+      const id = resolvePinnedBuildId();
+      expect(id).toMatch(/^[0-9a-f]{64}$/);
+      expect(id).toBe(resolvePinnedBuildId());
+      expect(id).not.toBe(
+        execFileSync('git', ['rev-parse', 'HEAD'], {
+          cwd: appRoot,
+          encoding: 'utf8',
+        }).trim(),
+      );
+    } finally {
+      if (previous !== undefined) process.env.OPENTOOLS_BUILD_ID = previous;
     }
   });
 

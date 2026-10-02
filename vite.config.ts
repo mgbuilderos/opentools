@@ -10,6 +10,10 @@ import {
   VINEXT_SHARED_RSC_BUILD_IDENTITY_ENV,
   VINEXT_SHARED_RSC_COMPATIBILITY_ID_ENV,
 } from './lib/build/build-identity';
+import {
+  packageCannotChangeTheBuild,
+  packageNameFromModuleId,
+} from './lib/build/build-inputs';
 import hostingConfig from './.openai/hosting.json' with { type: 'json' };
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
@@ -116,6 +120,53 @@ function pinRscIdentities(): Plugin {
   };
 }
 
+/**
+ * Fail the build if a package the build ID leaves out turns up in a bundle.
+ *
+ * `PACKAGES_THAT_CANNOT_CHANGE_THE_BUILD` is a list of packages whose version
+ * deliberately does not move the build ID, so that bumping a test runner or
+ * pinning a dev-only transitive does not rename half of
+ * `dist/client/_next/static/chunks/`. The claim behind every name on it is that
+ * no byte of `dist/` comes from it. One half of that claim is checkable for
+ * nothing right here: if the module is in the graph, its bytes are in the
+ * output, and the list is wrong. (The other half -- that it does not execute
+ * during a build -- is measured with `NODE_V8_COVERAGE`; see
+ * `lib/build/build-inputs.ts`.)
+ *
+ * `getModuleIds` is the Rollup-compatible plugin context rolldown provides. If
+ * it ever stops being there this errors rather than passing, because a guard
+ * that quietly matches nothing is worse than no guard.
+ */
+function guardBuildInputs(): Plugin {
+  return {
+    name: 'opentools:guard-build-inputs',
+    apply: 'build',
+    buildEnd() {
+      if (typeof this.getModuleIds !== 'function')
+        this.error(
+          'guard-build-inputs cannot read the module graph: the plugin ' +
+            'context has no getModuleIds(). Until it is ported, the packages ' +
+            'left out of the build ID are unchecked -- see ' +
+            'lib/build/build-inputs.ts.',
+        );
+      const bundled = new Set<string>();
+      for (const id of this.getModuleIds()) {
+        const name = packageNameFromModuleId(id);
+        if (name && packageCannotChangeTheBuild(name)) bundled.add(name);
+      }
+      if (bundled.size > 0)
+        this.error(
+          `${[...bundled].sort().join(', ')} ships, but the build ID leaves ` +
+            `it out, so changing its version would not rename the chunk it ` +
+            `lands in and a returning visitor would keep the old bytes under ` +
+            `an immutable cache. Remove it from ` +
+            `PACKAGES_THAT_CANNOT_CHANGE_THE_BUILD in ` +
+            `lib/build/build-inputs.ts.`,
+        );
+    },
+  };
+}
+
 export default defineConfig(async () => {
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
@@ -133,6 +184,7 @@ export default defineConfig(async () => {
       : undefined,
     plugins: [
       pinRscIdentities(),
+      guardBuildInputs(),
       vinext({
         // Every route is rendered at build time and served from the Worker
         // bundle, so a page request never renders React. The KV cache alone

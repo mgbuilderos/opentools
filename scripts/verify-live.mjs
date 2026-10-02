@@ -29,11 +29,13 @@
  *
  * Every page this build produces carries its own build id, inline:
  *
- *     "deploymentVersion":"a07ec3b5afa51c28951d7511ad17df3ae6a4e12e"
+ *     "deploymentVersion":"db561faa83392a9fb17c66816b0336c4579aa59d3b1025e39100685edac6bef7"
  *
- * The id is the commit the build was made from, pinned by `generateBuildId` in
- * `next.config.ts` (a dirty tree gets a random id instead, which is still
- * unique to that build). `dist/server/BUILD_ID` holds the same value on disk.
+ * The id is a digest of the content the build was made from, pinned by
+ * `generateBuildId` in `next.config.ts` -- 64 hex characters, not a commit, and
+ * the same for uncommitted work as for the commit that follows it only if the
+ * content the build reads is the same (`lib/build/build-inputs.ts`).
+ * `dist/server/BUILD_ID` holds the same value on disk.
  *
  * So every response carries the identity of the build that produced it, and
  * this script compares that against the build sitting in `dist/`. There is no

@@ -193,3 +193,30 @@ It is telling you a visitor can execute code with a known high-severity fault.
 Fix or replace the dependency. Do not add `--omit=dev` twice, do not raise
 `--audit-level` to `critical`, and do not delete the gate — `scripts/audit-gate.test.ts`
 fails on all three, and the reason it fails is this page.
+
+## Diffing `dist/` to check that a dependency change ships nothing
+
+It works now, and it did not before 2026-10-02, which is worth knowing if you
+read an older review of a dependency change.
+
+A raw `dist/` diff used to report **111 of 257 renamed client chunks** for a
+change to the `overrides.undici` pin — a dev-only transitive package that ships
+nowhere. On the 1 MB `catalog` chunk the real difference was 8 bytes out of
+1,004,022, all inside an embedded filename. The cause was the build ID: it was
+the commit, and `null` on a dirty tree, and `null` made vinext mint a random id
+that one client chunk carries and 111 inherit through their content hashes.
+Measuring a dependency change means editing `package.json`, so every such
+measurement was taken from a dirty tree and never agreed with itself.
+
+The build ID is now a digest of the build's own inputs, and that digest leaves
+out packages that cannot change what the build writes — `undici` among them,
+because it was measured not to. So the dependency bump this file is about now
+produces a byte-identical `dist/client`, and
+
+```sh
+node scripts/diff-dist.mjs /tmp/before /tmp/after
+```
+
+reports what really differs, pairing chunks by content rather than by name.
+`docs/BUILD_REPRODUCIBILITY.md` has the root cause, the measurements, and what
+is still deliberately random.
