@@ -537,6 +537,18 @@ export function PdfCompressTool({
                 value: `${savedPercent(next.originalBytes, next.compressedBytes)}%`,
               },
             ],
+            /*
+              Handed over so the receipt can offer what to do next with the
+              compressed PDF — see `lib/tools/next-operations.ts`. The name is
+              the one the download anchor below already uses, so the file the
+              person carries into the next tool is called what they were just
+              told it is called.
+            */
+            output: {
+              name: 'compressed.pdf',
+              type: 'application/pdf',
+              bytes: new Uint8Array(message.bytes),
+            },
           });
         } else if (message.type === 'error') {
           setStatus('error');

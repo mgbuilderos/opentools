@@ -95,3 +95,36 @@ export function withHandoffFlag(destination: string, origin: string): string {
   url.searchParams.set(HANDOFF_FLAG, '1');
   return `${url.pathname}${url.search}`;
 }
+
+/**
+ * The other flag: a tool page is being opened and the file could **not** be
+ * carried to it.
+ *
+ * The receipt offers the next operation on a file it has just produced, and
+ * `offerFile()` can refuse — WebKit will not open IndexedDB on this site, its
+ * `sessionStorage` fallback is capped at `SESSION_FALLBACK_MAX_BYTES`, and a
+ * private window can refuse both. Without this marker the tool opens empty and
+ * the person is left guessing, which is the dead end the feature exists to
+ * remove. `components/handed-over-file.tsx` reads it and says so.
+ *
+ * It lives beside `HANDOFF_FLAG` rather than at either end because that is the
+ * lesson `lib/completion.ts` records about the milestone key: two copies of one
+ * marker is how the read path becomes invisible from the write site.
+ *
+ * NAMED FOR THE EFFECT, NOT A CAUSE. Whether the refusal was size, the engine
+ * or a private window is not knowable at the moment of writing — only that the
+ * file did not travel — and a marker that names a cause invites copy that
+ * states it.
+ */
+export const HANDOFF_UNAVAILABLE_FLAG = 'handoff';
+export const HANDOFF_UNAVAILABLE_VALUE = 'not-carried';
+
+/** `/tool` plus the marker that its file did not make the trip. */
+export function withHandoffUnavailable(
+  destination: string,
+  origin: string,
+): string {
+  const url = new URL(destination, origin);
+  url.searchParams.set(HANDOFF_UNAVAILABLE_FLAG, HANDOFF_UNAVAILABLE_VALUE);
+  return `${url.pathname}${url.search}`;
+}
