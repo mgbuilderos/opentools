@@ -461,9 +461,24 @@ test.describe('cold start with no network', () => {
       await context.setOffline(true);
       offline = true;
       try {
-        // The browser genuinely has no network here, which is the only
-        // condition under which the worker answers a GET at all.
-        expect(await worker.evaluate(() => self.navigator.onLine)).toBe(false);
+        /*
+          The browser genuinely has no network here, which is the only condition
+          under which the worker answers a GET at all.
+
+          Polled rather than read once. `setOffline` reaches the page's target
+          immediately; a service worker is a separate target, and the flag
+          reaches it a moment later. Measured on an idle machine that moment is
+          0 ms, six times out of six -- but it is not zero by contract, and in a
+          1,097-test sweep on a loaded machine this read came back `true` for
+          one of these ten routes while the other nine, running the identical
+          code, passed. The assertion is unchanged: the worker must see the
+          network go away, and it still fails if it never does.
+        */
+        await expect
+          .poll(() => worker.evaluate(() => self.navigator.onLine), {
+            timeout: 10_000,
+          })
+          .toBe(false);
 
         const response = await page.goto(entry.route);
         expect(
