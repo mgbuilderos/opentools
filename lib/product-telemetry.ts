@@ -266,6 +266,112 @@ export function recordProductSignal(signal: ProductSignal): boolean {
 }
 
 /* ------------------------------------------------------------------ *
+ * Did a person actually do anything?
+ * ------------------------------------------------------------------ */
+
+/**
+ * Whether this document has seen a real interaction from a real person.
+ *
+ * ## The bug this exists to kill
+ *
+ * Measured on the live site, 2026-10-04: open `/math/pressure-converter`,
+ * touch nothing at all, and two seconds later
+ * `/telemetry/v1/completed-web.svg` has been requested and the page reads
+ * "Done — Pressure converter". The workbench seeds its fields from
+ * `field.defaultValue`, auto-runs 250ms later, and calls `announceCompletion`
+ * — all before the visitor has done a single thing. **70 live `/math/` routes
+ * behave this way.**
+ *
+ * That made the one number this whole feature exists to produce a count of
+ * *page loads*, not of finished work, on the routes most likely to be opened
+ * by accident. The business definition it is supposed to answer is "a visitor
+ * opens OpenTools and **completes at least one useful operation**", and
+ * converting the number 1 that nobody typed is not that. Worse, it was
+ * unfalsifiable in the flattering direction: a quiet inflation that would have
+ * been read as demand.
+ *
+ * ## Why it is gated here and not in the workbench
+ *
+ * One place, covering every tool that auto-runs now or later, rather than 70
+ * routes and a rule the next workbench has to remember. It also leaves the
+ * product alone: the receipt still opens on the auto-run, because showing
+ * someone the tool works instantly is a reasonable thing for the page to do.
+ * It is only the *count* that must not treat it as a success.
+ *
+ * ## Why these two sources, OR'd
+ *
+ * `navigator.userActivation.hasBeenActive` is the standard answer and is
+ * exactly right where it exists (verified present and correctly `false` on the
+ * live site in Chromium). But it is set only by *activation triggering* input
+ * — and dropping a file dragged from the desktop is not one of them, nor is it
+ * implemented in older Safari. A visitor who drags a PDF straight onto a tool
+ * and never clicks has unambiguously used the product, so losing that would
+ * trade one wrong number for another.
+ *
+ * So the flag below is OR'd in, set by the events a person cannot produce by
+ * arriving: pointer, key, touch, paste, drop and a committed `change`. It can
+ * only ever add a count relative to `hasBeenActive` alone, never remove one.
+ * `isTrusted` is required, so nothing the page dispatches at itself qualifies.
+ */
+let sawInteraction = false;
+
+const INTERACTION_EVENTS = [
+  'pointerdown',
+  'keydown',
+  'touchstart',
+  'paste',
+  'drop',
+  'change',
+] as const;
+
+/**
+ * Watch one target for the first real interaction, then stop watching.
+ *
+ * Takes its target rather than closing over `window` so the behaviour is
+ * reachable from a unit test: `vitest.config.ts` sets `environment: 'node'`,
+ * where there is no `window` at import time at all, and a module-scope
+ * listener bound to it would be permanently unexercised — the shape of
+ * "tested, and the test proves nothing" this repo has been bitten by before.
+ */
+export function installInteractionWatch(target: EventTarget): () => void {
+  const handler = (event: Event) => {
+    // A synthetic event is the page talking to itself, which is not a visitor.
+    if (!event.isTrusted) return;
+    sawInteraction = true;
+    stop();
+  };
+  const stop = () => {
+    for (const name of INTERACTION_EVENTS) {
+      target.removeEventListener(name, handler, true);
+    }
+  };
+  for (const name of INTERACTION_EVENTS) {
+    // Capturing, so a handler that stops propagation cannot hide the person,
+    // and passive, so this can never delay an interaction it only observes.
+    target.addEventListener(name, handler, { capture: true, passive: true });
+  }
+  return stop;
+}
+
+if (typeof window !== 'undefined') installInteractionWatch(window);
+
+export function visitorHasActed(): boolean {
+  if (sawInteraction) return true;
+  try {
+    const activation = (
+      navigator as Navigator & {
+        userActivation?: { hasBeenActive?: boolean };
+      }
+    ).userActivation;
+    return activation?.hasBeenActive === true;
+  } catch {
+    // Nothing to ask. Treated as "no interaction seen": the alternative is
+    // counting an automatic first run, which is the defect this guards.
+    return false;
+  }
+}
+
+/* ------------------------------------------------------------------ *
  * The once-per-document completion guard
  * ------------------------------------------------------------------ */
 
@@ -289,6 +395,16 @@ let completionRecorded = false;
  */
 export function recordCompletionSignal(): boolean {
   if (completionRecorded) return false;
+  /*
+   * BEFORE the flag is spent, deliberately.
+   *
+   * An auto-run must not consume the document's one completion: the visitor
+   * who then types something real has genuinely finished a job, and that is
+   * the event worth counting. Gating after the assignment would silently
+   * convert "we did not count the robot" into "we never counted this person",
+   * which is the same defect wearing the opposite sign.
+   */
+  if (!visitorHasActed()) return false;
   completionRecorded = true;
   return recordProductSignal(
     isStandaloneDocument() ? 'completed-pwa' : 'completed-web',
@@ -298,6 +414,7 @@ export function recordCompletionSignal(): boolean {
 /** Test seam. Never called by application code. */
 export function resetProductTelemetryForTests(): void {
   completionRecorded = false;
+  sawInteraction = false;
   inFlight.clear();
 }
 

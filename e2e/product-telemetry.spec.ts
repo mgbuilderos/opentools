@@ -117,7 +117,8 @@ async function handOverImage(page: Page, filename: string, stamp: string) {
       });
       const transfer = new DataTransfer();
       transfer.items.add(file);
-      const input = document.querySelector<HTMLInputElement>('input[type=file]')!;
+      const input =
+        document.querySelector<HTMLInputElement>('input[type=file]')!;
       input.files = transfer.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));
     },
@@ -180,10 +181,14 @@ test.describe('completing a real tool', () => {
 
     // The signal is issued synchronously inside `announceCompletion`, but the
     // request itself is the browser's to schedule. Poll rather than assume.
-    await expect.poll(() => watcher.paths().length, { timeout: 10_000 }).toBe(1);
+    await expect
+      .poll(() => watcher.paths().length, { timeout: 10_000 })
+      .toBe(1);
 
     const [signal] = watcher.seen;
-    expect(new URL(signal.url).pathname).toBe('/telemetry/v1/completed-web.svg');
+    expect(new URL(signal.url).pathname).toBe(
+      '/telemetry/v1/completed-web.svg',
+    );
     expect(new URL(signal.url).search).toBe('');
     expect(new URL(signal.url).hash).toBe('');
     expect(signal.method).toBe('GET');
@@ -198,7 +203,9 @@ test.describe('completing a real tool', () => {
     const watcher = watchSignals(page);
     await page.goto('/image/optimize');
     await optimiseAnImage(page, 'telemetry-probe-first.png', 'FIRST');
-    await expect.poll(() => watcher.paths().length, { timeout: 10_000 }).toBe(1);
+    await expect
+      .poll(() => watcher.paths().length, { timeout: 10_000 })
+      .toBe(1);
 
     await optimiseAnImage(page, 'telemetry-probe-second.png', 'SECOND');
     // Give the second run every chance to produce one. It must not.
@@ -238,6 +245,150 @@ test.describe('completing a real tool', () => {
   });
 });
 
+test.describe('an auto-running page that nobody touched', () => {
+  /*
+    REGRESSION, MEASURED ON THE LIVE SITE 2026-10-04. Open
+    /math/pressure-converter, touch nothing, wait: the page rendered
+    "Done — Pressure converter" by itself and `completed-web` had already been
+    requested. `components/math-workbench-tool.tsx` seeds its fields from
+    `field.defaultValue` and auto-runs 250ms after load, so 70 live /math/
+    routes announced a finished job before the visitor did anything at all.
+
+    The number meant to answer "did someone complete a useful operation" was
+    counting page loads on exactly the routes most often opened by accident.
+
+    ────────────────────────────────────────────────────────────────────────
+    WHY EVERY TEST HERE OVERRIDES `navigator.userActivation`, AND WHY THAT IS
+    NOT PAPERING OVER THE BUG.
+
+    Measured in this harness, chromium and webkit, on a page `goto` opened and
+    nothing touched:
+
+        navigator.userActivation.hasBeenActive = TRUE
+        navigator.userActivation.isActive      = TRUE
+        interaction events actually received   = none
+
+    Playwright grants the page user activation by itself. A real browser does
+    not: the same check against https://getopentools.com in an ordinary
+    Chromium reported `hasBeenActive: false`. So without the override below,
+    these tests cannot tell an untouched page from a used one, and would pass
+    whatever the product did — the "green for the wrong reason" shape this
+    repo keeps getting bitten by.
+
+    The override removes only the automation's free activation. It does not
+    stub the behaviour under test: with it in place the gate falls through to
+    `installInteractionWatch`, and Playwright's own clicks and typing arrive
+    as genuinely trusted events, so the second test below really does prove
+    the signal returns the moment a person acts.
+  */
+  const AUTO_RUNNING = '/math/pressure-converter';
+
+  /** Strip the activation Playwright grants that a real visitor would not. */
+  const asUntouched = (page: Page) =>
+    page.addInitScript(() => {
+      Object.defineProperty(navigator, 'userActivation', {
+        configurable: true,
+        get: () => ({ hasBeenActive: false, isActive: false }),
+      });
+    });
+
+  const autoRunFinished = async (page: Page) => {
+    await expect(page.getByText(/^Done —/u).first()).toBeVisible({
+      timeout: 30_000,
+    });
+    // Comfortably past the 250ms auto-run and any scheduling slack after it.
+    await page.waitForTimeout(2_000);
+  };
+
+  test('announces its result but sends no success signal', async ({ page }) => {
+    await asUntouched(page);
+    const watcher = watchSignals(page);
+    await page.goto(AUTO_RUNNING);
+
+    // The tool really does finish by itself — this is not a page that failed
+    // to run. That is exactly why the count has to tell the two apart.
+    await autoRunFinished(page);
+
+    expect(
+      watcher.paths(),
+      'a page nobody touched reported a completed visit',
+    ).toEqual([]);
+  });
+
+  test('counts the first real job after the visitor arrives', async ({
+    page,
+  }) => {
+    // The other half, and the one a careless fix breaks: suppressing the
+    // auto-run must not consume the document's single completion.
+    await asUntouched(page);
+    const watcher = watchSignals(page);
+    await page.goto(AUTO_RUNNING);
+    await autoRunFinished(page);
+    expect(watcher.paths()).toEqual([]);
+
+    const value = page.getByLabel('Value');
+    await value.click();
+    await value.fill('42');
+
+    await expect
+      .poll(() => watcher.paths().length, { timeout: 15_000 })
+      .toBe(1);
+    expect(new URL(watcher.seen[0].url).pathname).toBe(
+      '/telemetry/v1/completed-web.svg',
+    );
+  });
+
+  test('offers no install banner until the visitor has done something', async ({
+    page,
+  }) => {
+    // Same root cause, different victim. The ask is spent once and the
+    // dismissal remembered forever, so showing it for an automatic unit
+    // conversion spends the one ask this product gets on nothing.
+    await asUntouched(page);
+    await page.goto(AUTO_RUNNING);
+    await autoRunFinished(page);
+
+    // AFTER the app has loaded, so the module-scope listener in
+    // `lib/pwa-install.ts` is actually there to capture it. Dispatching this
+    // immediately after `goto` lands before that listener exists, and the
+    // test then passes because nothing was captured rather than because the
+    // banner was correctly withheld.
+    await page.evaluate(() => {
+      const event = new Event('beforeinstallprompt', { cancelable: true });
+      (event as Event & { prompt: () => Promise<void> }).prompt =
+        async () => {};
+      window.dispatchEvent(event);
+    });
+    await page.waitForTimeout(500);
+
+    await expect(page.locator('[data-install-prompt]')).toHaveCount(0);
+  });
+
+  test('shows the banner once the visitor has actually done something', async ({
+    page,
+  }) => {
+    // The counterpart, so the test above cannot pass by the banner being
+    // broken outright — which is what "it never renders" would look like.
+    await asUntouched(page);
+    await page.goto(AUTO_RUNNING);
+    await autoRunFinished(page);
+    await page.evaluate(() => {
+      const event = new Event('beforeinstallprompt', { cancelable: true });
+      (event as Event & { prompt: () => Promise<void> }).prompt =
+        async () => {};
+      window.dispatchEvent(event);
+    });
+
+    const value = page.getByLabel('Value');
+    await value.click();
+    await value.fill('7');
+
+    await expect(page.locator('[data-install-prompt]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
+  });
+});
+
 test.describe('a counter can never damage the work', () => {
   test('the tool still produces its result when the signal is aborted', async ({
     page,
@@ -250,7 +401,9 @@ test.describe('a counter can never damage the work', () => {
     // download link is visible, so reaching the end means the output survived.
     await optimiseAnImage(page, 'telemetry-probe-aborted.png', 'ABORTED');
 
-    const download = page.locator('[data-receipt-download], a[download]').first();
+    const download = page
+      .locator('[data-receipt-download], a[download]')
+      .first();
     await expect(download).toBeVisible();
 
     // One attempt, which the route refused.
@@ -304,10 +457,7 @@ test.describe('a counter can never damage the work', () => {
     await page.waitForLoadState('networkidle');
 
     await page.route('**/*', (route) => route.abort());
-    await page
-      .locator('main textarea')
-      .first()
-      .fill('one two three four five');
+    await page.locator('main textarea').first().fill('one two three four five');
 
     // The work itself succeeded with no network: the count is on the page.
     await expect(page.locator('main')).toContainText('5', { timeout: 15_000 });
@@ -337,7 +487,10 @@ test.describe('a counter can never damage the work', () => {
 });
 
 test.describe('installation, only where the engine supports it', () => {
-  test('appinstalled records one installation', async ({ page, browserName }) => {
+  test('appinstalled records one installation', async ({
+    page,
+    browserName,
+  }) => {
     // `appinstalled` is Chromium's. Firing a synthetic event in WebKit would
     // test our own listener against an event that engine never sends, which
     // is a test of nothing.
@@ -392,7 +545,9 @@ test.describe('installation, only where the engine supports it', () => {
       held.push(other);
       other.src = '/telemetry/v1/pwa-launch.svg';
     });
-    await expect.poll(() => watcher.paths().length, { timeout: 10_000 }).toBe(2);
+    await expect
+      .poll(() => watcher.paths().length, { timeout: 10_000 })
+      .toBe(2);
     expect(watcher.paths().sort()).toEqual([
       '/telemetry/v1/pwa-installed.svg',
       '/telemetry/v1/pwa-launch.svg',
@@ -403,7 +558,10 @@ test.describe('installation, only where the engine supports it', () => {
     page,
     browserName,
   }) => {
-    test.skip(browserName !== 'chromium', 'beforeinstallprompt is Chromium-only');
+    test.skip(
+      browserName !== 'chromium',
+      'beforeinstallprompt is Chromium-only',
+    );
 
     const watcher = watchSignals(page);
     await page.goto('/image/optimize');
@@ -486,7 +644,9 @@ test.describe('refusing to be counted', () => {
     await expect(
       page.getByRole('heading', { name: /nine anonymous counters/iu }),
     ).toBeVisible();
-    await expect(page.getByText('/telemetry/v1/completed-web.svg')).toBeVisible();
+    await expect(
+      page.getByText('/telemetry/v1/completed-web.svg'),
+    ).toBeVisible();
     const toggle = page.getByRole('button', { name: /turn them (off|on)/iu });
     await expect(toggle).toBeVisible({ timeout: 10_000 });
     await toggle.click();
@@ -514,7 +674,12 @@ test('no canary value appears in any request the page makes', async ({
   const CANARY_FILE = 'canary-ravenous-thimble-91d4e7.png';
   const CANARY_TEXT = 'CANARY-QUIXOTIC-LANTERN-5B8F2A';
 
-  const requests: { url: string; method: string; headers: Record<string, string>; body: string | null }[] = [];
+  const requests: {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    body: string | null;
+  }[] = [];
   page.on('request', (request) => {
     requests.push({
       url: request.url(),
@@ -528,10 +693,9 @@ test('no canary value appears in any request the page makes', async ({
   const before = requests.length;
   await optimiseAnImage(page, CANARY_FILE, CANARY_TEXT);
   await expect
-    .poll(
-      () => requests.filter((entry) => TELEMETRY.test(entry.url)).length,
-      { timeout: 10_000 },
-    )
+    .poll(() => requests.filter((entry) => TELEMETRY.test(entry.url)).length, {
+      timeout: 10_000,
+    })
     .toBe(1);
 
   const haystack = requests
@@ -551,9 +715,10 @@ test('no canary value appears in any request the page makes', async ({
     'canary-ravenous-thimble',
     'QUIXOTIC-LANTERN',
   ]) {
-    expect(haystack, `the canary "${canary}" appeared in a request`).not.toContain(
-      canary,
-    );
+    expect(
+      haystack,
+      `the canary "${canary}" appeared in a request`,
+    ).not.toContain(canary);
   }
 
   // The only request that may be new after the operation is the allowlisted
