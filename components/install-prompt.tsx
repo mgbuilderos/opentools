@@ -10,7 +10,7 @@ import {
   subscribeInstall,
 } from '@/lib/pwa-install';
 import { COMPLETION_EVENT } from '@/lib/completion';
-import { recordProductSignal } from '@/lib/product-telemetry';
+import { recordProductSignal, visitorHasActed } from '@/lib/product-telemetry';
 
 const DISMISSED_KEY = 'opentools-install-dismissed-v1';
 
@@ -100,7 +100,19 @@ export function InstallPrompt() {
     const iOS = /iPad|iPhone|iPod/u.test(ua) && !/CriOS|FxiOS|EdgiOS/u.test(ua);
     if (iOS) setShowIosHint(true);
 
-    const onCompletion = () => setFinishedSomething(true);
+    /*
+     * Not every completion is somebody's. The math workbench seeds its fields
+     * from `defaultValue` and auto-runs 250ms after load, so 70 live `/math/`
+     * routes announce a finished job before the visitor has touched anything
+     * — measured on the live site 2026-10-04. Acting on that would do the one
+     * thing the comment above says this must never do: ask a first-time
+     * visitor to install an app that has not yet done anything for them. The
+     * ask is spent once and remembered forever, so spending it on an
+     * automatic unit conversion is spending it on nothing.
+     */
+    const onCompletion = () => {
+      if (visitorHasActed()) setFinishedSomething(true);
+    };
     const readDialogs = () =>
       setDialogOpen(document.querySelector('dialog[open]') !== null);
 

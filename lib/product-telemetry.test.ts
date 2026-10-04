@@ -11,11 +11,13 @@ import {
   inFlightSignalCount,
   isStandaloneDocument,
   productSignalsEnabled,
+  installInteractionWatch,
   recordCompletionSignal,
   recordProductSignal,
   resetProductTelemetryForTests,
   setProductSignalsEnabled,
   signalsSuppressed,
+  visitorHasActed,
   type ProductSignal,
 } from './product-telemetry';
 
@@ -45,6 +47,16 @@ function browser(
     optedOut?: boolean;
     imageThrows?: boolean;
     offline?: boolean;
+    /**
+     * Whether a person has interacted with the document yet.
+     *
+     * Defaults to TRUE, because every test in this file other than the
+     * untouched-page ones is modelling a visitor who did something. The
+     * default is stated rather than implied: `recordCompletionSignal` is
+     * gated on it since 2026-10-04, so a harness that left it absent would
+     * turn every completion assertion below green for the wrong reason.
+     */
+    acted?: boolean;
   } = {},
 ): FakeBrowser {
   const requested: string[] = [];
@@ -83,6 +95,7 @@ function browser(
     ...(options.safariStandalone ? { standalone: true } : {}),
     ...(options.gpc ? { globalPrivacyControl: true } : {}),
     ...(options.dnt === undefined ? {} : { doNotTrack: options.dnt }),
+    userActivation: { hasBeenActive: options.acted !== false },
   });
   vi.stubGlobal('localStorage', {
     getItem: (key: string) => store.get(key) ?? null,
@@ -292,6 +305,115 @@ describe('the request is held against garbage collection', () => {
     recordProductSignal('completed-web');
     fake.settle('error');
     expect(fake.requested).toEqual(['/telemetry/v1/completed-web.svg']);
+  });
+});
+
+describe('a page nobody touched has not completed anything', () => {
+  /*
+    MEASURED ON THE LIVE SITE, 2026-10-04. Open /math/pressure-converter,
+    touch nothing, wait two seconds: `/telemetry/v1/completed-web.svg` has
+    been requested and the page reads "Done — Pressure converter". The math
+    workbench seeds its fields from `field.defaultValue` and auto-runs 250ms
+    after load, so 70 live /math/ routes announced a finished job before the
+    visitor did anything.
+
+    The number that was supposed to answer "did someone complete a useful
+    operation" was counting page loads on exactly the routes most likely to be
+    opened by accident, and inflating in the flattering direction.
+  */
+  it('sends nothing when the auto-run finishes before any interaction', () => {
+    const fake = browser({ acted: false });
+    expect(recordCompletionSignal()).toBe(false);
+    expect(fake.requested).toEqual([]);
+  });
+
+  it('does NOT spend the document on the auto-run — the real job still counts', () => {
+    // The sharp one. Gating after `completionRecorded = true` would turn "we
+    // ignored the robot" into "we never counted this person", which is the
+    // same defect with the opposite sign.
+    const fake = browser({ acted: false });
+    expect(recordCompletionSignal()).toBe(false);
+
+    vi.stubGlobal('navigator', { userActivation: { hasBeenActive: true } });
+    expect(
+      recordCompletionSignal(),
+      'the auto-run consumed the once-per-document completion',
+    ).toBe(true);
+    expect(fake.requested).toEqual(['/telemetry/v1/completed-web.svg']);
+  });
+
+  /** A real interaction, which a test cannot otherwise produce. */
+  const trusted = (type: string) => {
+    const event = new Event(type);
+    Object.defineProperty(event, 'isTrusted', { value: true });
+    return event;
+  };
+
+  it('counts a trusted interaction even where userActivation is absent', () => {
+    // Safari has no `userActivation`, and dropping a file dragged from the
+    // desktop is not an activation-triggering event anywhere — but it is
+    // unambiguously a person using the product, so the fallback must catch it.
+    const fake = browser({ acted: false });
+    vi.stubGlobal('navigator', {});
+    const target = new EventTarget();
+    const stop = installInteractionWatch(target);
+    expect(recordCompletionSignal()).toBe(false);
+
+    target.dispatchEvent(trusted('drop'));
+    expect(
+      recordCompletionSignal(),
+      'a real drop did not register as interaction',
+    ).toBe(true);
+    expect(fake.requested).toEqual(['/telemetry/v1/completed-web.svg']);
+    stop();
+  });
+
+  it('ignores an untrusted event the page dispatched at itself', () => {
+    // This is what stops a tool that fires its own synthetic input — or a
+    // script that wants the number to look better — from manufacturing
+    // completions. `new Event(...)` has `isTrusted` false, like anything the
+    // page dispatches.
+    const fake = browser({ acted: false });
+    vi.stubGlobal('navigator', {});
+    const target = new EventTarget();
+    const stop = installInteractionWatch(target);
+
+    target.dispatchEvent(new Event('pointerdown'));
+    expect(recordCompletionSignal()).toBe(false);
+    expect(fake.requested).toEqual([]);
+    stop();
+  });
+
+  it('stops listening after the first interaction, holding no state about it', () => {
+    // The flag is one bit for the life of the document: which event, when,
+    // where on the page and how many are all facts about the person's
+    // session, and none of them is kept.
+    const target = new EventTarget();
+    const stop = installInteractionWatch(target);
+    let delivered = 0;
+    for (const name of ['pointerdown', 'keydown', 'drop'])
+      target.addEventListener(name, () => (delivered += 1), true);
+
+    target.dispatchEvent(trusted('pointerdown'));
+    target.dispatchEvent(trusted('keydown'));
+    target.dispatchEvent(trusted('drop'));
+    expect(delivered, 'the probe listeners should still see every event').toBe(
+      3,
+    );
+    expect(visitorHasActed()).toBe(true);
+    stop();
+  });
+
+  it('leaves every other signal ungated — only completion claims work was done', () => {
+    // `pwa-installed` and the rest describe things the browser or the person
+    // did explicitly; none of them can be produced by a page auto-running.
+    const fake = browser({ acted: false });
+    expect(recordProductSignal('pwa-installed')).toBe(true);
+    expect(recordProductSignal('pwa-launch')).toBe(true);
+    expect(fake.requested).toEqual([
+      '/telemetry/v1/pwa-installed.svg',
+      '/telemetry/v1/pwa-launch.svg',
+    ]);
   });
 });
 
