@@ -315,6 +315,11 @@ export const TOOL_META: Readonly<Record<string, ToolMeta>> = {
     shortDescription:
       'Turn the .heic photos a phone saves into JPEG or PNG, in this tab.',
   },
+  'png-to-jpg': {
+    version: '0.1.0-canary',
+    shortDescription:
+      'Turn PNG images into JPEGs that any site accepts, in this tab.',
+  },
   'image-editor': {
     version: '0.1.0-canary',
     shortDescription: 'Crop, rotate, flip, and adjust a static image locally.',

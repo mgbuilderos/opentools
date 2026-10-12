@@ -88,6 +88,14 @@ export const SECTIONS: readonly BrowseSection[] = [
         href: '/image/heic-to-jpg',
         workspaceId: 'heic-converter',
       },
+      {
+        id: 'png-to-jpg',
+        name: 'PNG to JPEG converter',
+        description:
+          'Turn PNG images into JPEGs that any site accepts, in this tab.',
+        href: '/convert/png-to-jpg',
+        workspaceId: 'png-to-jpg',
+      },
     ],
   },
   {

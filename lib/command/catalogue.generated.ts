@@ -543,7 +543,8 @@ export const COMMAND_CATALOGUE: readonly CommandCatalogueEntry[] = [
   {
     href: '/convert/png-to-jpg',
     name: 'PNG to JPEG converter',
-    terms: 'browser jpg',
+    terms:
+      'accept file form image jpg once screenshot several site smaller tab upload',
   },
   {
     href: '/convert/png-to-webp',
