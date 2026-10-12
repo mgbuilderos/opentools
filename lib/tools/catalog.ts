@@ -1803,6 +1803,38 @@ export const publicTools: ToolManifest[] = [
     owner: 'platform-foundation',
   },
   {
+    // The generated `/convert/png-to-jpg` page, given a catalogue entry of its
+    // own so the header search and the Image menu reach it. Before this it was
+    // live and in the sitemap, but typing "png to jpg" in the search box
+    // offered HEIC to JPG and never this page.
+    id: 'png-to-jpg',
+    version: '0.1.0-canary',
+    status: 'canary',
+    name: 'PNG to JPEG converter',
+    shortDescription:
+      'Turn PNG images into JPEGs that any site accepts, in this tab.',
+    category: 'Image',
+    aliases: [
+      'png to jpg',
+      'png to jpeg',
+      'convert png to jpg',
+      'png to jpg converter',
+      'screenshot to jpg',
+    ],
+    jobs: [
+      'upload a png to a form that only accepts jpg',
+      'turn a screenshot into a smaller jpg',
+      'convert several png files to jpg at once',
+    ],
+    href: '/convert/png-to-jpg',
+    execution: {
+      mode: 'local-js',
+      capabilities: ['image.raster.decode', 'image.raster.encode'],
+      offlineReady: false,
+    },
+    owner: 'platform-foundation',
+  },
+  {
     id: 'image-editor',
     version: '0.1.0-canary',
     status: 'canary',
@@ -2608,6 +2640,7 @@ export const toolGroups: ToolGroup[] = [
       'image-exact-size',
       'image-editor',
       'heic-converter',
+      'png-to-jpg',
       'photo-metadata',
       'svg-optimizer',
       'color-converter',

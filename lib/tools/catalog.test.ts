@@ -11,6 +11,22 @@ import {
   toolsForGroup,
 } from './catalog';
 import { groupIcons } from '@/components/category-icons';
+import { imageSeoPairById } from '@/lib/seo/image-pairs';
+
+// True when `href` is a page the app serves. A generated image pair such as
+// `/convert/png-to-jpg` has no folder of its own -- `app/convert/[pair]` renders
+// it -- so it counts only when that route really knows the pair.
+function routeHasPage(href: string) {
+  const route = href.split('?')[0]!;
+  const appDir = path.join(import.meta.dirname, '../..', 'app');
+  if (existsSync(path.join(appDir, route, 'page.tsx'))) return true;
+  const pair = /^\/convert\/([a-z0-9-]+)$/.exec(route)?.[1];
+  return (
+    pair !== undefined &&
+    imageSeoPairById(pair) !== undefined &&
+    existsSync(path.join(appDir, 'convert', '[pair]', 'page.tsx'))
+  );
+}
 
 describe('public canary catalog', () => {
   it('contains only complete, uniquely routed tools', () => {
@@ -26,17 +42,7 @@ describe('public canary catalog', () => {
       if (tool.status === 'canary')
         expect(tool.execution.offlineReady).toBe(false);
       expect(tool.href).toMatch(/^\//);
-      expect(
-        existsSync(
-          path.join(
-            import.meta.dirname,
-            '../..',
-            'app',
-            tool.href.split('?')[0]!,
-            'page.tsx',
-          ),
-        ),
-      ).toBe(true);
+      expect(routeHasPage(tool.href), `${tool.href} has no page`).toBe(true);
       expect(ids.has(tool.id)).toBe(false);
       expect(routes.has(tool.href)).toBe(false);
       ids.add(tool.id);
@@ -64,6 +70,12 @@ describe('public canary catalog', () => {
     expect(searchTools('resize image to kb').map((tool) => tool.id)).toContain(
       'image-exact-size',
     );
+    // Live from 2026-09-25 while this search offered HEIC to JPG instead.
+    for (const query of ['png to jpg', 'png to jpeg', 'PNG to JPG converter']) {
+      expect(searchTools(query).map((tool) => tool.href)).toContain(
+        '/convert/png-to-jpg',
+      );
+    }
     expect(searchTools('validate json').map((tool) => tool.id)).toContain(
       'json-format',
     );
@@ -168,7 +180,8 @@ describe('public canary catalog', () => {
     // beside the two single-number maskers it shares its engine with, and 714
     // with the File Compiler at /do, which is one destination and not several:
     // it has no searchEntries because it is not a list of jobs, it is one
-    // surface that takes whatever requirement you state.
+    // surface that takes whatever requirement you state. 715 with the PNG to
+    // JPEG converter, live since 2026-09-25 but reachable by neither.
     const everyDestination = publicTools.reduce(
       (total, tool) => total + (tool.searchEntries?.length || 1),
       0,
@@ -183,7 +196,7 @@ describe('public canary catalog', () => {
         0,
       );
 
-    expect(everyDestination).toBe(714);
+    expect(everyDestination).toBe(715);
     expect(reachable).toBe(everyDestination);
   });
 
