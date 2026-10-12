@@ -71,10 +71,19 @@ describe('public canary catalog', () => {
       'image-exact-size',
     );
     // Live from 2026-09-25 while this search offered HEIC to JPG instead.
-    for (const query of ['png to jpg', 'png to jpeg', 'PNG to JPG converter']) {
-      expect(searchTools(query).map((tool) => tool.href)).toContain(
-        '/convert/png-to-jpg',
-      );
+    // Each generated image pair is the first answer for its own words, in the
+    // direction typed: "jpg to png" must not open the PNG to JPEG converter.
+    for (const [query, href] of [
+      ['png to jpg', '/convert/png-to-jpg'],
+      ['png to jpeg', '/convert/png-to-jpg'],
+      ['PNG to JPG converter', '/convert/png-to-jpg'],
+      ['jpg to png', '/convert/jpg-to-png'],
+      ['webp to png', '/convert/webp-to-png'],
+      ['png to webp', '/convert/png-to-webp'],
+      ['avif to jpg', '/convert/avif-to-jpg'],
+      ['heic to jpg', '/image/heic-to-jpg'],
+    ]) {
+      expect(searchTools(query!)[0]?.href, query).toBe(href);
     }
     expect(searchTools('validate json').map((tool) => tool.id)).toContain(
       'json-format',

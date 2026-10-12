@@ -18,6 +18,7 @@ import { TEXT_OPERATIONS } from './text-workbench';
 import { WEB_OPERATIONS } from './web-workbench';
 import { WRITING_OPERATIONS } from './writing-workbench';
 import { KERNEL_MANIFEST } from '../kernel/manifest';
+import { imagePairs } from './image-convert/formats';
 
 function searchEntries(
   href: string,
@@ -3048,8 +3049,15 @@ export function toolSubsectionsForGroup(group: ToolGroup): ToolSubsection[] {
 export type { NavSection as NavMajorSection } from './navigation';
 export { NAVIGATION_MAJOR_SECTIONS } from './navigation';
 
-const normalizeToken = (token: string) =>
-  token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;
+// "jpg" and "jpeg" name one format. Without this, "png to jpg" matched the PNG
+// to JPEG converter only through its aliases and ranked it below HEIC to JPG.
+const SAME_WORD: Readonly<Record<string, string>> = { jpeg: 'jpg' };
+
+const normalizeToken = (token: string) => {
+  const singular =
+    token.length > 3 && token.endsWith('s') ? token.slice(0, -1) : token;
+  return SAME_WORD[singular] ?? singular;
+};
 
 const tokenize = (value: string) =>
   value
@@ -3106,6 +3114,52 @@ const PREINDEXED_CANDIDATES: readonly PreindexedCandidate[] =
     return [mainCandidate, ...entryCandidates];
   });
 
+/*
+  The other generated image pages -- `/convert/webp-to-png`, `/convert/jpg-to-png`
+  and the rest. They are not workspaces, so they are not in `publicTools` or the
+  menu: the menu lists the PNG to JPEG converter, whose own format selects reach
+  every pair. But "jpg to png" typed here must open that page, and without these
+  the nearest match was the PNG to JPEG converter, which converts the other way.
+*/
+const IMAGE_PAIR_CANDIDATES: readonly PreindexedCandidate[] = (() => {
+  const parent = publicTools.find((tool) => tool.id === 'png-to-jpg');
+  if (!parent) throw new Error('image pairs need the png-to-jpg manifest');
+  const listed = new Set(publicTools.map((tool) => tool.href));
+  return imagePairs()
+    .filter((pair) => !listed.has(`/convert/${pair.id}`))
+    .map((pair) => {
+      const description = `Turn ${pair.from.name} images into ${pair.to.name}, in this tab.`;
+      return {
+        tool: parent,
+        resultId: `image-pair:${pair.id}`,
+        name: pair.title,
+        shortDescription: description,
+        href: `/convert/${pair.id}`,
+        normalizedName: pair.title.toLocaleLowerCase('en-US'),
+        nameTokens: tokenize(pair.title),
+        documentTokens: tokenize(
+          [
+            pair.title,
+            description,
+            ...pair.from.extensions,
+            ...pair.to.extensions,
+          ].join(' '),
+        ),
+      };
+    });
+})();
+
+const SEARCH_CANDIDATES: readonly PreindexedCandidate[] = [
+  ...PREINDEXED_CANDIDATES,
+  ...IMAGE_PAIR_CANDIDATES,
+];
+
+/** True when the name begins with the query's words, in the query's order. */
+const nameStartsWithTokens = (
+  nameTokens: readonly string[],
+  queryTokens: readonly string[],
+) => queryTokens.every((token, index) => nameTokens[index] === token);
+
 export function searchTools(query: string): ToolManifest[] {
   const queryTokens = tokenize(query);
   if (!queryTokens.length)
@@ -3121,7 +3175,7 @@ export function searchTools(query: string): ToolManifest[] {
   };
 
   const normalizedQuery = query.trim().toLocaleLowerCase('en-US');
-  return PREINDEXED_CANDIDATES.flatMap((candidate) => {
+  return SEARCH_CANDIDATES.flatMap((candidate) => {
     if (
       !queryTokens.every((queryToken) =>
         candidate.documentTokens.some((documentToken) =>
@@ -3135,7 +3189,8 @@ export function searchTools(query: string): ToolManifest[] {
     const score =
       candidate.normalizedName === normalizedQuery
         ? 100
-        : candidate.normalizedName.startsWith(normalizedQuery)
+        : candidate.normalizedName.startsWith(normalizedQuery) ||
+            nameStartsWithTokens(candidate.nameTokens, queryTokens)
           ? 80
           : queryTokens.every((token) => candidate.nameTokens.includes(token))
             ? 60
