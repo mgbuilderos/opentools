@@ -10,6 +10,7 @@ import {
   VINEXT_SHARED_RSC_BUILD_IDENTITY_ENV,
   VINEXT_SHARED_RSC_COMPATIBILITY_ID_ENV,
 } from './lib/build/build-identity';
+import { shippedPackagesPlugin } from './lib/build/shipped-packages';
 import hostingConfig from './.openai/hosting.json' with { type: 'json' };
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
@@ -133,6 +134,10 @@ export default defineConfig(async () => {
       : undefined,
     plugins: [
       pinRscIdentities(),
+      // Records which installed packages each output was built from, so the
+      // release advisory gate audits what ships rather than what npm's
+      // dependency sections imply. See lib/build/shipped-packages.ts.
+      shippedPackagesPlugin(),
       vinext({
         // Every route is rendered at build time and served from the Worker
         // bundle, so a page request never renders React. The KV cache alone
@@ -155,5 +160,7 @@ export default defineConfig(async () => {
         config: localBindingConfig,
       }),
     ],
+    // Web Workers are bundled in their own pass, which runs only these.
+    worker: { plugins: () => [shippedPackagesPlugin('worker')] },
   };
 });
