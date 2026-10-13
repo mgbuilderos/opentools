@@ -1,16 +1,249 @@
 # Dependency advisories: what blocks a release and what only reports
 
-The `qc:release` pass runs two `npm audit` gates. Only one of them can stop a
-release.
+The `qc:release` pass runs two advisory gates, straight after BUILD. Only one
+of them can stop a release.
 
-| Gate                                                   | Command                                   | Blocks? | Covers                                                                |
-| ------------------------------------------------------ | ----------------------------------------- | ------- | --------------------------------------------------------------------- |
-| `DEPENDENCY ADVISORIES (RUNTIME)`                      | `npm audit --audit-level=high --omit=dev` | **Yes** | Code bundled into the Worker and the client — what a visitor executes |
-| `DEPENDENCY ADVISORIES (BUILD TOOLCHAIN, REPORT ONLY)` | `npm audit --audit-level=high`            | No      | Everything, including the build toolchain                             |
+| Gate                                                   | Command                                                    | Blocks? | Covers                                                                                    |
+| ------------------------------------------------------ | ---------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------- |
+| `DEPENDENCY ADVISORIES (RUNTIME)`                      | `node scripts/audit-runtime.mjs` (wraps `npm audit --omit=dev --json`) | **Yes** | HIGH and CRITICAL advisories in code bundled into the Worker, the client and the Web Workers |
+| `DEPENDENCY ADVISORIES (BUILD TOOLCHAIN, REPORT ONLY)` | `npm audit --audit-level=high`                             | No      | Everything, including the build toolchain                                                 |
 
 Both are defined in `scripts/run-qc.mjs` and exist only under `--release`.
 Their wiring is pinned by `scripts/audit-gate.test.ts`, which fails if either
-half of the pairing is undone.
+half of the pairing is undone; the runtime gate's decision is tested on
+fixtures in `scripts/audit-runtime.test.ts`.
+
+Until 2026-10-13 the runtime gate was the bare
+`npm audit --audit-level=high --omit=dev`. The next section says why it is not
+any more. The sections after it are the 2026-09-30 history that narrowed it to
+runtime in the first place, and still hold.
+
+## Why the bare `npm audit --omit=dev` was replaced (2026-10-13)
+
+From about 2026-10-12 the runtime gate failed every pull request with
+`[QC] BLOCKED at DEPENDENCY ADVISORIES (RUNTIME)`: 9 vulnerabilities, 8 high
+and 1 moderate, from three advisories. `package.json` and `package-lock.json`
+were byte-identical to what was live, so, as on 2026-09-30, the gate was
+reporting the advisory calendar and no pull request could clear it.
+
+| Advisory                                                                    | Package and installed version | How npm's runtime graph reached it                                                                                | Fix in range? |
+| --------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------- |
+| [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), high | `braces` 3.0.3                | `vinext` → `vite-plugin-commonjs` → `vite-plugin-dynamic-import` → `fast-glob` → `micromatch` → `braces`          | **No**        |
+| [GHSA-68fv-2mgg-jv7q](https://github.com/advisories/GHSA-68fv-2mgg-jv7q), high | `source-map-js` 1.2.1         | `vinext` → `vite` (peer) → `postcss` → `source-map-js`                                                           | Yes, 1.2.2    |
+| [GHSA-hrr3-gc8f-f4qj](https://github.com/advisories/GHSA-hrr3-gc8f-f4qj), moderate | `fast-uri` 3.1.7          | `react-server-dom-webpack` → `webpack` (peer) → `schema-utils` → `ajv` → `fast-uri`                               | Yes, 3.1.8    |
+
+The one advisory counted seven times: npm lists every package on the braces
+path, up to `vinext` and `@vinext/cloudflare`, as "depends on vulnerable
+versions".
+
+### Option 1 — `npm audit fix`, without `--force`: done
+
+It changes exactly two packages, `source-map-js` 1.2.1 → 1.2.2 and `fast-uri`
+3.1.7 → 3.1.8: 6 lockfile lines, nothing in `package.json`. That leaves only
+braces.
+
+### Option 2 — a patched braces, or a newer path around it: none exists
+
+Every link was checked against the registry on 2026-10-13:
+
+| Package                      | Latest release        | What it still requires          |
+| ---------------------------- | --------------------- | ------------------------------- |
+| `braces`                     | 3.0.3 (2024-05-21)    | — the advisory covers `<=3.0.3` |
+| `micromatch`                 | 4.0.8                 | `braces ^3.0.3`                 |
+| `fast-glob`                  | 3.3.3                 | `micromatch ^4.0.8`             |
+| `vite-plugin-dynamic-import` | 1.6.0                 | `fast-glob ^3.3.2`              |
+| `vite-plugin-commonjs`       | 0.10.4                | `vite-plugin-dynamic-import ^1.6.0` |
+| `vinext`                     | 1.1.0 (2026-10-08)    | `vite-plugin-commonjs ^0.10.4`  |
+
+So an `overrides` entry has no version to point at, upgrading vinext changes
+nothing, and `npm audit fix --force` proposes **downgrading** vinext to 0.0.15.
+None of that was done.
+
+### Option 3 — move vinext to `devDependencies`: measured and refused
+
+This was the right move only if vinext were build-only, so it was measured.
+It is not. The build now records, per output, every installed package the
+bundler put into it (`lib/build/shipped-packages.ts`, below), and **453 of
+vinext's modules** are bundled: 110 into the client, 268 into the Worker's
+`rsc` environment and 75 into `ssr`. By folder that is vinext's server runtime,
+its `next/*` shims, its router and its client entry. `@vinext/cloudflare`
+(4 modules in the Worker) depends on vinext, so it would have had to move
+too.
+
+Moving them would have stopped the blocking gate from auditing 457 bundled
+modules, including code that runs on every page. A future advisory in vinext's own request
+handling would then have printed in the report and shipped. That is weaker,
+which the owner ruled out.
+
+What the measurement also showed is that only **two** of vinext's files use
+the glob plugin, `vinext/dist/index.js` and `vinext/dist/config/next-config.js`,
+and both build the Vite plugin. Neither is among the 453.
+
+### What the measurement found going the other way: pdf.js was never audited
+
+The same build record showed a package the gate could not see at all.
+`pdfjs-dist` 6.3.289 was a **devDependency**, while the build bundles it into
+the client (3 modules) and `ssr` (4) and serves its worker as
+`/_next/static/media/pdf.worker.*.mjs`. pdf.js parses the PDF the visitor
+drops in, which is the most exposed code on the site, and `--omit=dev` meant no
+blocking audit had ever looked at it.
+
+Proved on this repository's own files rather than argued. `pdfjs-dist` was
+rolled back to 4.1.392 — the version line covered by
+[GHSA-wgrm-67xf-hhpq](https://github.com/advisories/GHSA-wgrm-67xf-hhpq),
+"arbitrary JavaScript execution upon opening a malicious PDF" — in a scratch
+copy of `package.json`, `package-lock.json` and the build record:
+
+| Layout                                    | Old gate (`npm audit --omit=dev --audit-level=high`)     | New gate                                                                    |
+| ----------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `pdfjs-dist` in `devDependencies` (`main`) | red, but only for braces; **mentions pdfjs-dist 0 times** | **refused**: `node_modules/pdfjs-dist ships in client (3), ssr (4) but npm files it as dev-only` |
+| `pdfjs-dist` in `dependencies` (this change) | —                                                        | **blocked**: `pdfjs-dist (high) … GHSA-wgrm-67xf-hhpq`                       |
+
+`pdfjs-dist` is now in `dependencies` at the same version. Its lockfile entry
+and its optional Node-only canvas binding (`@napi-rs/canvas` and 11 platform
+builds) lose `"dev": true`; no version changes. `THIRD_PARTY_NOTICES.md` called
+it "development-only" and now lists it with the shipped packages.
+
+## What the runtime gate does now
+
+`scripts/audit-runtime.mjs` starts from npm's own answer and corrects it with
+what the build measured. Everything in npm's runtime graph still blocks unless
+one of the rules below says otherwise, and all three checks must pass:
+
+1. **Its graph must be npm's.** It re-derives the runtime graph from
+   `package-lock.json` (dependencies, optional and peer edges, Node's lookup
+   rules) and compares it, package by package, with the `dev` flags npm wrote.
+   On this lockfile both say **292 packages**. If they ever differ, the gate
+   refuses rather than narrow a graph it cannot trust.
+2. **Nothing that ships may be filed as dev-only.** Every package in the build
+   record must be in that graph. This is the check that found pdf.js.
+3. **A package is exempt only if a declared build-only edge is the only way
+   to reach it, and the build just proved nothing behind that edge shipped.**
+   There is one declaration:
+
+   ```js
+   { from: 'vinext', to: 'vite-plugin-commonjs', why: '…Measured 2026-10-13…' }
+   ```
+
+   It puts exactly 21 packages out of the blocking set: `vite-plugin-commonjs`,
+   `vite-plugin-dynamic-import` and its nested `es-module-lexer`, `fast-glob`,
+   `micromatch` and its nested `picomatch`, `braces`, `fill-range`,
+   `to-regex-range`, `is-number`, `glob-parent`, `is-glob`, `is-extglob`,
+   `merge2`, `@nodelib/fs.scandir`, `@nodelib/fs.stat`, `@nodelib/fs.walk`,
+   `fastq`, `reusify`, `run-parallel` and `queue-microtask`. `acorn` and
+   `magic-string`, which the plugin also uses, stay in, because the runtime
+   graph reaches them by other paths (`react-server-dom-webpack` → `acorn-loose`
+   → `acorn`; vinext depends on `magic-string` itself). If one module from behind the edge ever reaches an
+   output, the gate fails until the declaration is removed. A declaration for
+   an edge the lockfile no longer has also fails.
+
+An advisory then blocks if it is HIGH or CRITICAL and **any** installed copy
+of the package is outside the exempt set. An advisory on a copy the gate cannot
+place, or on no copy at all, blocks too. Only direct advisories count; npm's
+"depends on vulnerable versions" rows point at a fault elsewhere rather than
+being one.
+
+**Why this is not an allowlist.** An allowlist names advisories and waives
+them. A build-only edge names no advisory, no version and no date. It says
+where code goes, which is the statement `devDependencies` already makes, for
+the one case npm cannot express: a package that ships whose own dependency
+does not. `scripts/audit-runtime.test.ts` fails if a declaration grows any
+field beyond `from`, `to` and a measured `why`, or if it ever hides a package
+this project depends on directly.
+
+**What the build record cannot see, and why that is safe.** Files copied
+verbatim from `public/` (the Tesseract core and language data, the ONNX
+Runtime and libheif binaries) never pass through the bundler. Their packages
+are in npm's runtime graph and are not behind the edge, so an advisory in any
+of them blocks exactly as before. The record narrows nothing on its own; it
+only ever **adds** a refusal or **checks** a declaration.
+
+**Where the record comes from.** `lib/build/shipped-packages.ts` is a Vite
+plugin. Every chunk lists the modules it was built from and every emitted
+asset the files it came from, and anything under `node_modules/` is attributed
+to the package directory holding it, keyed the way the lockfile keys it. It
+writes `dist/shipped-packages/{client,rsc,ssr,worker}.json`, which sits beside
+`dist/client` and `dist/server` and is never deployed. The `worker` record
+matters: Vite bundles Web Workers in a separate pass that runs only
+`worker.plugins`, and before it was added `onnxruntime-web`, `libheif-js` and
+the PDF engine's `pdf-lib` were missing from the record. The Worker needs no
+separate check, because `dist/server/wrangler.json` sets `no_bundle: true`:
+Wrangler uploads what Vite wrote and resolves nothing from `node_modules`.
+
+The gate runs **after** BUILD, because it reads what BUILD wrote; before it, it
+could pass on the record of an earlier build. It refuses if any of the four
+records is missing or empty.
+
+## Measured on 2026-10-13
+
+Branch `claude/runtime-advisories-build-only`, off `main` `98f78f9`.
+
+**The build record.** 38 installed packages ship: 29 in `client`, 13 in `rsc`,
+34 in `ssr` and 9 in the Web Workers. None of the 21 exempt packages is among
+them.
+
+**The shipped bytes,** a text sweep of the 3,024 deployable files in
+`dist/client` and `dist/server` (the local simulator state in
+`dist/server/.wrangler` excluded):
+
+| Searched for                                             | Files matching |
+| -------------------------------------------------------- | -------------- |
+| `micromatch`, `fast-glob`                                | 0              |
+| `vite-plugin-commonjs`, `vite-plugin-dynamic-import`     | 0              |
+| `fill-range`, `to-regex-range`                           | 0              |
+| `source-map-js`, `SourceMapConsumer`, `SourceMapGenerator` | 0            |
+| `fast-uri`                                               | 0              |
+| `rangeLimit`, `keepEscaping`, `exceeds max characters` (strings unique to the braces source) | 0 |
+| `braces`                                                 | 1,004: the `lucide-braces` icon class and icon definition, English prose in guides ("curly braces"), and a LaTeX "Set braces" symbol label. No package code. |
+
+**The deploy dry run.** `wrangler deploy --dry-run --config
+dist/server/wrangler.json` packaged 587 modules, 15,506.92 KiB (4,000.08 KiB
+gzipped). Every search in the table above except `braces` was repeated on its
+output and matched 0 files, and `dist/shipped-packages` is not in it.
+
+**The change itself ships nothing.** `main` and this branch were built with
+the build ID, vinext's prerender secret and its revalidate secret all pinned
+to the same values. `dist/client`, every file a visitor downloads, is
+**byte-identical**. In `dist/server` only `index.js` differs, by two values:
+vinext's draft-mode secret, which it draws with `randomUUID()` on every build
+and offers no way to pin, and the absolute path of the checkout. Without the
+pins, five Worker chunks are also renamed, because they embed secrets vinext
+draws with `randomBytes(32)` on every build (`vinext/dist/cli.js`), so any two
+builds of the same tree differ that way.
+
+**The gate against the real registry, on fixtures.** Each fixture is a
+`package.json` with a real lockfile from `npm install --package-lock-only`
+and a four-file build record, run through `node scripts/audit-runtime.mjs
+--root <fixture> --inventory <fixture>/inventory`. Every fixture
+includes `vinext@1.0.0-beta.9`, as this repository does:
+
+| Fixture                                                        | Old gate | New gate | Why                                                                 |
+| -------------------------------------------------------------- | -------- | -------- | ------------------------------------------------------------------- |
+| vinext alone, as here                                          | exit 1   | **exit 0** | braces is behind the edge and nothing behind it shipped          |
+| vinext, plus `micromatch` as a direct dependency               | exit 1   | exit 1   | braces is now reachable outside the edge                            |
+| vinext, plus `braces` as a direct dependency                   | exit 1   | exit 1   | same                                                                |
+| vinext, plus `undici@7.29.0` in `devDependencies`              | exit 1   | exit 0   | toolchain only, as on 2026-09-30                                    |
+| vinext, plus `undici@7.29.0` in `dependencies`                 | exit 1   | exit 1   | runtime HIGH, blocks                                                |
+| vinext, plus `pdfjs-dist` in `devDependencies` and in the build record | exit 1 | exit 1 | refused: ships but filed as dev-only                          |
+| vinext, with `braces` in the build record                      | exit 1   | exit 1   | refused, and braces blocks: the edge no longer holds                |
+
+The old gate was red on every row with vinext in it, which is the failure this
+change exists to end. Every case where flagged code could reach a visitor is
+still red.
+
+**Unit and mutation checks.** `npm run qc` passes 8 of 8 gates, with 256 test
+files and 3,829 tests against `main`'s 254 and 3,798, so both new test files
+ran inside the gate. Sixteen one-line mutations were each made to the gate,
+the build plugin, the Vite config or the runner, and every one was caught:
+dropping the npm self-check, exempting a build-only package the build shipped,
+no longer refusing shipped dev-only packages, blocking only on CRITICAL,
+ignoring peer edges, exempting an advisory with no nodes, accepting a stale
+declaration, dropping `--omit=dev`, counting "depends on" rows, not recording
+Web Workers, attributing a nested copy to its parent, running the gates before
+BUILD, making the runtime gate non-blocking, letting the report block, and
+giving a declaration an expiry date. The first version of the ordering test
+missed the move before BUILD, because its slice fell back to the rest of the
+file when the splice line went missing. It was rewritten and re-checked.
 
 ## Why the blocking gate was narrowed (2026-09-30)
 
@@ -189,7 +422,27 @@ to `scripts/run-qc.mjs`, and each caught it.
 
 ## If you are here because the runtime gate is red
 
-It is telling you a visitor can execute code with a known high-severity fault.
-Fix or replace the dependency. Do not add `--omit=dev` twice, do not raise
-`--audit-level` to `critical`, and do not delete the gate — `scripts/audit-gate.test.ts`
-fails on all three, and the reason it fails is this page.
+Read which line it printed.
+
+- **`BLOCKING: <package> (high|critical) …`** — a visitor can execute code
+  with a known high-severity fault. Fix or replace the dependency. `npm audit
+  fix` without `--force` first; if the fix is out of range, an `overrides`
+  entry pinned to the patched version, as was done for `undici`.
+- **`REFUSED: … ships … but npm files it as dev-only`** — move that package to
+  `dependencies`. Do not argue with the record; it is what the bundler did.
+- **`REFUSED: … is behind a BUILD_ONLY_EDGES declaration, and the build put
+  it into …`** — that code now ships. Remove the declaration and treat the
+  advisory as a runtime one.
+- **`REFUSED: … has no such edge`** — the dependency it described is gone.
+  Delete the declaration.
+- **`REFUSED: This script and npm disagree about the runtime graph`** — the
+  lockfile has something the walk does not model (a workspace, an alias, a new
+  npm behaviour). Teach the walk, with a fixture in
+  `scripts/audit-runtime.test.ts`; do not loosen the comparison.
+- **`No usable record of what the build shipped`** — run `npm run build`.
+
+Do not raise the threshold to `critical`, do not delete the gate, and do not
+add a build-only edge to turn a red gate green unless the build record proves
+nothing behind it ships and the `why` says what was measured.
+`scripts/audit-gate.test.ts` and `scripts/audit-runtime.test.ts` fail on the
+first two, and the reason they fail is this page.
