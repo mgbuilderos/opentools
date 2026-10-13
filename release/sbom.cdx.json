@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:16934c69-d7f4-4b0a-9e95-5ed2632f1da6",
+  "serialNumber": "urn:uuid:6e0b1c00-ed8e-42c0-95f8-e826d46f32f1",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-24T11:15:12.929Z",
+    "timestamp": "2026-10-13T11:01:27.223Z",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -21,7 +21,7 @@
     "component": {
       "bom-ref": "local-tools-canary@0.1.0",
       "type": "library",
-      "name": "claude-heic",
+      "name": "opentools",
       "version": "0.1.0",
       "scope": "required",
       "purl": "pkg:npm/local-tools-canary@0.1.0",
@@ -2518,12 +2518,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2551,12 +2546,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-android-arm64@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2584,12 +2574,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-darwin-arm64@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2617,12 +2602,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-darwin-x64@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2650,12 +2630,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-linux-arm-gnueabihf@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2683,12 +2658,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-linux-arm64-gnu@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2716,12 +2686,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-linux-arm64-musl@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2749,12 +2714,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-linux-riscv64-gnu@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2782,12 +2742,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-linux-x64-gnu@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2815,12 +2770,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-linux-x64-musl@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2848,12 +2798,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-win32-arm64-msvc@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -2881,12 +2826,7 @@
       "version": "1.0.8",
       "scope": "optional",
       "purl": "pkg:npm/%40napi-rs/canvas-win32-x64-msvc@1.0.8",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -8717,23 +8657,23 @@
       ]
     },
     {
-      "bom-ref": "fast-uri@3.1.7",
+      "bom-ref": "fast-uri@3.1.8",
       "type": "library",
       "name": "fast-uri",
-      "version": "3.1.7",
+      "version": "3.1.8",
       "scope": "required",
-      "purl": "pkg:npm/fast-uri@3.1.7",
+      "purl": "pkg:npm/fast-uri@3.1.8",
       "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.7.tgz"
+          "url": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.8.tgz"
         }
       ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "74ebd95738dd65dcfba6177dbfa8c26f0c6b056ddf2ba9fc45cd02b5d98ce1bba6ccc9f1cb005886ea61e89f35f51470fe4bbeacb6de9707ccba792dbb35551e"
+          "content": "19932d6544cd4693952040a85f02cd652e7150613e99535b4c1f21ffb4708764c559c05088fcd3832662d39045f543192a42c9bfc5c14494e553bce0f3e65f32"
         }
       ],
       "licenses": [
@@ -10781,14 +10721,9 @@
       "type": "library",
       "name": "pdfjs-dist",
       "version": "6.3.289",
-      "scope": "optional",
+      "scope": "required",
       "purl": "pkg:npm/pdfjs-dist@6.3.289",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
+      "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
@@ -11703,23 +11638,23 @@
       ]
     },
     {
-      "bom-ref": "source-map-js@1.2.1",
+      "bom-ref": "source-map-js@1.2.2",
       "type": "library",
       "name": "source-map-js",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "scope": "required",
-      "purl": "pkg:npm/source-map-js@1.2.1",
+      "purl": "pkg:npm/source-map-js@1.2.2",
       "properties": [],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz"
+          "url": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.2.tgz"
         }
       ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "51758c2a12cec1529bef6f0852d40f5f17d853ebac7726ed52b2bff2e184f0240cbeb84ea70bf30c1c23d108522fb31073bbc8b084811bc550f3e203431a5f40"
+          "content": "2868fff18e37c77e5a6550edb7e27898ad61a0b18750b3187d290e0c93508cd0c2de85b53ea3e8c4cc28d292d4b1633f5041b338dfcdc5e1f2c047cd5cd3f757"
         }
       ],
       "licenses": [
@@ -13932,6 +13867,7 @@
         "lucide-react@1.31.0",
         "onnxruntime-web@1.21.0",
         "pdf-lib@1.17.1",
+        "pdfjs-dist@6.3.289",
         "qrcode@1.5.4",
         "react@19.2.8",
         "react-dom@19.2.8",
@@ -13952,7 +13888,6 @@
         "oxfmt@0.61.0",
         "oxlint@1.76.0",
         "oxlint-tsgolint@7.0.2001",
-        "pdfjs-dist@6.3.289",
         "tailwindcss@4.2.1",
         "typescript@5.9.3",
         "vite@8.2.2",
@@ -14820,7 +14755,7 @@
         "jiti@2.7.0",
         "lightningcss@1.31.1",
         "magic-string@0.30.21",
-        "source-map-js@1.2.1",
+        "source-map-js@1.2.2",
         "tailwindcss@4.2.1"
       ]
     },
@@ -15190,7 +15125,7 @@
       "ref": "ajv@8.20.0",
       "dependsOn": [
         "fast-deep-equal@3.1.3",
-        "fast-uri@3.1.7",
+        "fast-uri@3.1.8",
         "json-schema-traverse@1.0.0",
         "require-from-string@2.0.2"
       ]
@@ -15443,7 +15378,7 @@
       ]
     },
     {
-      "ref": "fast-uri@3.1.7",
+      "ref": "fast-uri@3.1.8",
       "dependsOn": []
     },
     {
@@ -15884,7 +15819,7 @@
       "dependsOn": [
         "nanoid@3.3.18",
         "picocolors@1.1.1",
-        "source-map-js@1.2.1"
+        "source-map-js@1.2.2"
       ]
     },
     {
@@ -16078,7 +16013,7 @@
       "dependsOn": []
     },
     {
-      "ref": "source-map-js@1.2.1",
+      "ref": "source-map-js@1.2.2",
       "dependsOn": []
     },
     {

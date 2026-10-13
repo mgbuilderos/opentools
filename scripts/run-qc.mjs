@@ -177,116 +177,126 @@ if (!distIsBuilt) {
 
 if (releaseMode) {
   /*
-    Two advisory gates, and only one of them can stop a release.
+    Two advisory gates, and only one of them can stop a release. Both run
+    straight after BUILD, because the blocking one reads what BUILD wrote.
 
-    WHAT BLOCKS: a HIGH advisory reachable from a *runtime* dependency -- the
-    code that is bundled into the Worker and the client, which a visitor
-    executes. `--omit=dev` narrows the audit to exactly that graph and to
-    nothing else.
+    WHAT BLOCKS: a HIGH or CRITICAL advisory in code a visitor can execute.
+    `scripts/audit-runtime.mjs` decides that. It runs
+    `npm audit --omit=dev --json`, so npm's runtime graph is the starting
+    point and everything in it blocks by default -- then corrects that graph
+    with what the build measured (`lib/build/shipped-packages.ts` records every
+    installed package the bundler put into the client, the Worker and the Web
+    Workers):
 
-    WHY IT WAS NARROWED (2026-09-30). The unnarrowed gate had stopped every
-    lane in the repository, and no pull request could fix it. The single HIGH
-    was `undici@7.29.0`, reachable only as
-    `@cloudflare/vite-plugin -> miniflare -> undici`, both of which are
-    devDependencies. It shipped nothing: a built `dist/` of 4,007 files
-    contains zero occurrences of `undici`, `miniflare`, `permessage-deflate`,
-    `RetryHandler` or `BalancedPool`. The advisories are WebSocket, retry and
-    cache faults in miniflare's HTTP client -- the local dev simulator. No
-    visitor can reach it, because it is not there.
+      - a package that ships while npm files it as dev-only stops the release
+        (this is how `pdfjs-dist` was found, 2026-10-13: shipped to every PDF
+        tool, never audited by a blocking gate);
+      - a package npm reaches only through a declared build-only edge
+        (`BUILD_ONLY_EDGES`, one entry: vinext's Vite plugin's own glob
+        dependencies) does not block, provided the build just measured that
+        nothing behind that edge reached any output. If anything behind it
+        ships, the gate fails.
 
-    It was also not any branch's doing, which is what made it the wrong shape
-    of gate: a branch whose `package-lock.json` was byte-identical to `main`'s
-    failed, while `main`'s own last green run predated the advisory being
-    published. The gate was reporting the calendar, not the diff, and a
-    re-run could not clear it.
+    WHY THE PLAIN `npm audit --omit=dev` WAS REPLACED (2026-10-13). From
+    2026-10-12 it stopped every pull request on `braces` (GHSA-vfj7-8cjw-p6xm,
+    every published version affected), reached as `vinext ->
+    vite-plugin-commonjs -> vite-plugin-dynamic-import -> fast-glob ->
+    micromatch -> braces`. vinext ships, so it is correctly a dependency; its
+    Vite plugin's glob library does not, and a 3,046-file `dist/` holds none of
+    it. No release of braces, micromatch, fast-glob, either plugin or vinext
+    (through 1.1.0) removes it, and `npm audit fix --force` would downgrade
+    vinext to 0.0.15. Moving vinext to devDependencies was measured and
+    refused: 453 of its modules (server runtime, router, `next/*` shims) are
+    bundled into the client and the Worker, so that would have stopped
+    auditing code that runs on every page.
 
-    WHY NOT UPGRADE INSTEAD. `@cloudflare/vite-plugin@1.62.2` pins
-    `miniflare@5.20260926.1-alpha`, which exact-pins `undici@7.29.1` -- one
-    patch above the vulnerable ceiling, on the 7.x line that has taken ten
-    advisories. The next one re-blocks every lane, and clearing it would again
-    wait on Cloudflare's alpha release cadence rather than on us. Buying that
-    week costs `workerd 1.20260916.1 -> 1.20260926.1` and eight plugin minor
-    versions inside the tool that produces the deployed Worker. Changing
-    production bytes to reset a clock is a worse trade than fixing what the
-    gate measures.
+    WHY IT WAS NARROWED TO RUNTIME AT ALL (2026-09-30). The unnarrowed audit
+    stopped every lane on `undici@7.29.0`, reachable only through
+    `@cloudflare/vite-plugin -> miniflare`, both devDependencies, with zero
+    occurrences in a 4,007-file `dist/`. It was nobody's change and no pull
+    request could clear it: the gate was reporting the advisory calendar, not
+    the diff.
 
     WHAT THIS GIVES UP, AND WHY THE SECOND GATE EXISTS. `.github/SECURITY.md`
     lists supply chain compromise as a vulnerability class, and the toolchain
     that builds the Worker is squarely in it: a compromised build dependency
     can write anything it likes into `dist/`. So the full audit still runs, on
-    every release pass, printing every dev advisory -- it simply cannot set
-    the exit code. Invisible is the failure mode that mattered; blocking was
+    every release pass, printing every advisory -- it simply cannot set the
+    exit code. Invisible is the failure mode that mattered; blocking was
     never what made it visible.
 
-    NO ALLOWLIST, DELIBERATELY. An allowlist with expiry dates was considered
-    and rejected. It was only ever needed to work around a gate that stopped
-    releases over advisories nobody could act on; once the blocking gate
-    covers only shipped code, every advisory it raises is one we must actually
-    fix, and a mechanism for waving those through is a mechanism for shipping
-    known-vulnerable runtime code on a deadline nobody would be watching.
-    The dev advisories it would have held are now on screen instead.
+    NO ALLOWLIST, DELIBERATELY. An allowlist names advisories and waives them;
+    a mechanism for waving those through is a mechanism for shipping
+    known-vulnerable runtime code on a deadline nobody would be watching. A
+    build-only edge names no advisory and waives nothing that ships: it says
+    where code goes, and the build checks that claim every time.
 
-    The full measurements behind every claim above -- the dist/ sweep, the
-    upgrade's dependency table, and the fixture runs that prove a runtime
-    advisory still blocks -- are in `docs/DEPENDENCY_ADVISORIES.md`.
+    The measurements behind every claim above -- the dist/ sweeps, the
+    package tables, and the fixture runs proving that a runtime advisory still
+    blocks -- are in `docs/DEPENDENCY_ADVISORIES.md`.
 
-    The wiring of both gates, including that this one keeps `--audit-level`
-    at `high` and that the report is never blocking, is pinned by
-    `scripts/audit-gate.test.ts`. Do not weaken this to `critical`: the flag
-    that narrows it is `--omit=dev`, which changes *whose* code is audited,
-    not *how bad* a fault has to be before someone is told.
+    The wiring of both gates, including that the blocking one keeps HIGH as
+    its threshold and that the report is never blocking, is pinned by
+    `scripts/audit-gate.test.ts`, and the decision itself by
+    `scripts/audit-runtime.test.ts`. Do not weaken the threshold to
+    `critical`: narrowing changes *whose* code is audited, not *how bad* a
+    fault has to be before someone is told.
   */
-  gates.splice(5, 0, {
-    name: 'DEPENDENCY ADVISORIES (RUNTIME)',
-    command: 'npm',
-    args: ['audit', '--audit-level=high', '--omit=dev'],
-    cwd: appRoot,
-  });
-
-  // Report only. `blocking: false` is honoured by the runner below, which
-  // prints the outcome and carries on. No `--omit=dev` here on purpose --
-  // omitting dev is what would make this gate report nothing at all.
-  gates.splice(6, 0, {
-    name: 'DEPENDENCY ADVISORIES (BUILD TOOLCHAIN, REPORT ONLY)',
-    command: 'npm',
-    args: ['audit', '--audit-level=high'],
-    cwd: appRoot,
-    blocking: false,
-  });
-
-  // End-to-end runs in release mode only, and it runs *after* BUILD so it
-  // exercises the bytes this pass just produced.
-  //
-  // Why it exists: the eight everyday gates never open a page. On 2026-09-21
-  // the file-upload path was broken in seven specs — files handed to a
-  // server-rendered input before React hydrated went nowhere — and every one
-  // of those gates stayed green while it reached `main`. A page that cannot
-  // accept a file is not something format, lint, types or a unit suite can
-  // see. Anything user-facing needs a browser to have opened it.
-  //
-  // `E2E_SKIP_BUILD` stops Playwright's `webServer` rebuilding what BUILD has
-  // already made a moment earlier. `e2e/global-setup.ts` still refuses to run
-  // against a server whose app chunk is not this worktree's, so a stray
-  // preview on 8788 fails the gate loudly instead of passing it silently.
   const buildIndex = gates.findIndex((gate) => gate.name === 'BUILD');
   if (buildIndex < 0) {
     // Not defensive noise: `findIndex` returns -1 when the gate is renamed,
-    // and -1 + 1 is 0, which would run the browser gate FIRST — against a
-    // `dist/` from some earlier pass, or none at all. Fail here, where the
-    // cause is obvious, rather than inside Playwright's global setup.
+    // and -1 + 1 is 0, which would run the gates that read `dist/` FIRST --
+    // against a `dist/` from some earlier pass, or none at all. Fail here,
+    // where the cause is obvious.
     process.stderr.write(
-      '[QC] cannot place END-TO-END: no gate named BUILD. ' +
+      '[QC] cannot place the release gates: no gate named BUILD. ' +
         'If BUILD was renamed, update this lookup.\n',
     );
     process.exit(1);
   }
-  gates.splice(buildIndex + 1, 0, {
-    name: 'END-TO-END (BROWSER)',
-    command: 'npx',
-    args: ['playwright', 'test'],
-    cwd: appRoot,
-    env: { ...process.env, E2E_SKIP_BUILD: '1' },
-  });
+
+  const releaseGates = [
+    {
+      name: 'DEPENDENCY ADVISORIES (RUNTIME)',
+      command: process.execPath,
+      args: ['scripts/audit-runtime.mjs'],
+      cwd: appRoot,
+    },
+    // Report only. `blocking: false` is honoured by the runner below, which
+    // prints the outcome and carries on. No `--omit=dev` here on purpose --
+    // this is the one place the build toolchain's advisories are shown.
+    {
+      name: 'DEPENDENCY ADVISORIES (BUILD TOOLCHAIN, REPORT ONLY)',
+      command: 'npm',
+      args: ['audit', '--audit-level=high'],
+      cwd: appRoot,
+      blocking: false,
+    },
+    // End-to-end runs in release mode only, and it runs *after* BUILD so it
+    // exercises the bytes this pass just produced.
+    //
+    // Why it exists: the eight everyday gates never open a page. On 2026-09-21
+    // the file-upload path was broken in seven specs — files handed to a
+    // server-rendered input before React hydrated went nowhere — and every one
+    // of those gates stayed green while it reached `main`. A page that cannot
+    // accept a file is not something format, lint, types or a unit suite can
+    // see. Anything user-facing needs a browser to have opened it.
+    //
+    // `E2E_SKIP_BUILD` stops Playwright's `webServer` rebuilding what BUILD has
+    // already made a moment earlier. `e2e/global-setup.ts` still refuses to run
+    // against a server whose app chunk is not this worktree's, so a stray
+    // preview on 8788 fails the gate loudly instead of passing it silently.
+    {
+      name: 'END-TO-END (BROWSER)',
+      command: 'npx',
+      args: ['playwright', 'test'],
+      cwd: appRoot,
+      env: { ...process.env, E2E_SKIP_BUILD: '1' },
+    },
+  ];
+  // The advisory gates take seconds, so they go before the forty-minute
+  // browser gate: a blocked release should say so before, not after, it.
+  gates.splice(buildIndex + 1, 0, ...releaseGates);
 }
 
 const started = performance.now();

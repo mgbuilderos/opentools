@@ -17,6 +17,10 @@ Primary runtime packages:
 - Base UI React 1.7.0 — MIT.
 - Lucide React 1.31.0 — ISC.
 - vinext 1.0.0-beta.9 — MIT.
+- `pdfjs-dist` (PDF.js) 6.3.289 — Apache-2.0 (Mozilla). Ships to the browser:
+  the PDF tools render and read pages with it, and its worker is served from
+  `/_next/static/media/pdf.worker.*.mjs`. The test suite also uses it to check
+  the PDFs the tools produce.
 
 AI runtime packages:
 
@@ -63,7 +67,5 @@ is also larger: 0.66 MB gzipped against 0.45 MB for the separate `.wasm`.
 **Patents.** HEVC decoding carries patent claims. The owner accepted that
 exposure on 2026-09-24; it has **not** been cleared. No page, notice or
 marketing copy may describe this tool as patent-safe.
-
-Development-only independent validation uses `pdfjs-dist` 6.3.289 under Apache-2.0.
 
 This summary does not replace the license texts distributed in the installed packages or the production notice/SBOM process.
